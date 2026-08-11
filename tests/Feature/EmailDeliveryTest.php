@@ -16,6 +16,8 @@ use App\Services\Notifications\EmailDeliveryService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
+use App\Models\ApplicationSetting;
+use App\Models\PartyRole;
 
 /**
  * Verifies Patrimoine financial email delivery.
@@ -33,7 +35,8 @@ class EmailDeliveryTest extends TestCase
      * @return array{
      *     invoice: Invoice,
      *     payment: Payment,
-     *     tenant: Party
+     *     tenant: Party,
+     *     managingOrganisation: Party
      * }
      */
     private function createContext(): array
@@ -63,6 +66,33 @@ class EmailDeliveryTest extends TestCase
             'due_day' => 1,
             'vat_rate' => 18,
             'status' => 'active',
+        ]);
+
+
+
+                /*
+         * Configure the single-tenant business identity used on outgoing
+         * Patrimoine correspondence.
+         */
+        $managingOrganisation = Party::create([
+            'type' => 'organisation',
+            'legal_name' => 'Email Management Limited',
+            'address' => 'Accra, Ghana',
+            'email' => 'accounts@email-management.example',
+            'contact_person_name' => 'Accounts Manager',
+            'contact_person_phone' => '0200001701',
+            'contact_person_email' =>
+                'manager@email-management.example',
+        ]);
+
+        PartyRole::create([
+            'party_id' => $managingOrganisation->id,
+            'role' => 'managing_organisation',
+        ]);
+
+        ApplicationSetting::create([
+            'managing_organisation_party_id' =>
+                $managingOrganisation->id,
         ]);
 
         $invoice = Invoice::create([
@@ -96,7 +126,8 @@ class EmailDeliveryTest extends TestCase
         return compact(
             'invoice',
             'payment',
-            'tenant'
+            'tenant',
+            'managingOrganisation'
         );
     }
 
@@ -121,7 +152,23 @@ class EmailDeliveryTest extends TestCase
                     $context['tenant']->email
                 )
                     && $mail->invoice->is(
+
                         $context['invoice']
+
+                    )
+
+                    && $mail->managingOrganisation?->is(
+
+                        $context['managingOrganisation']
+
+                    )
+
+                    && str_contains(
+
+                        $mail->envelope()->subject,
+
+                        'Email Management Limited'
+
                     )
                     && count($attachments) === 1;
             }
@@ -147,7 +194,23 @@ class EmailDeliveryTest extends TestCase
                     $context['tenant']->email
                 )
                     && $mail->payment->is(
+
                         $context['payment']
+
+                    )
+
+                    && $mail->managingOrganisation?->is(
+
+                        $context['managingOrganisation']
+
+                    )
+
+                    && str_contains(
+
+                        $mail->envelope()->subject,
+
+                        'Email Management Limited'
+
                     )
                     && count($mail->attachments()) === 1;
             }
@@ -175,7 +238,23 @@ class EmailDeliveryTest extends TestCase
                     $context['tenant']->email
                 )
                     && $mail->invoice->is(
+
                         $context['invoice']
+
+                    )
+
+                    && $mail->managingOrganisation?->is(
+
+                        $context['managingOrganisation']
+
+                    )
+
+                    && str_contains(
+
+                        $mail->envelope()->subject,
+
+                        'Email Management Limited'
+
                     )
                     && count($mail->attachments()) === 1;
             }

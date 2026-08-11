@@ -42,7 +42,9 @@
                                 font-size:26px;
                                 font-weight:bold;
                             ">
-                                Patrimoine
+                                {{ $managingOrganisation?->legal_name
+    ?? $managingOrganisation?->name
+    ?? 'Patrimoine' }}
                             </div>
 
                             <div style="
@@ -124,9 +126,25 @@
                             </p>
 
                             <p style="margin-top:28px;">
-                                Regards,<br>
-                                <strong>Patrimoine</strong>
-                            </p>
+Regards,<br>
+
+<strong>
+    {{ $managingOrganisation?->legal_name
+        ?? $managingOrganisation?->name
+        ?? 'Patrimoine' }}
+</strong>
+
+@if($managingOrganisation)
+    @if($managingOrganisation->phone)
+        <br>
+        {{ $managingOrganisation->phone }}
+    @endif
+
+    @if($managingOrganisation->email)
+        <br>
+        {{ $managingOrganisation->email }}
+    @endif
+@endif
 
                             <div style="
                                 margin-top:32px;

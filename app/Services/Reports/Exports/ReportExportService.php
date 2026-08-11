@@ -3,6 +3,7 @@
 namespace App\Services\Reports\Exports;
 
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\ApplicationIdentityService;
 
 /**
  * Converts an already-calculated Patrimoine report into downloadable
@@ -13,27 +14,59 @@ use Barryvdh\DomPDF\Facade\Pdf;
  * PDF and CSV outputs always use the same financial interpretation.
  */
 class ReportExportService
+
 {
-    /**
-     * Render a report as PDF and return the raw PDF contents.
-     */
-    public function pdf(
-        string $title,
-        array $report
-    ): string {
-        return Pdf::loadView(
-            'reports.report',
-            [
-                'title' => $title,
-                'sections' => $this->sections($report),
-            ]
-        )
-            ->setPaper('a4')
-            ->output();
+
+    public function __construct(
+
+        private ApplicationIdentityService $identity
+
+    ) {
+
     }
 
     /**
+
+     * Render a report as PDF and return the raw PDF contents.
+
+     */
+
+    public function pdf(
+
+        string $title,
+
+        array $report
+
+    ): string {
+
+        return Pdf::loadView(
+
+            'reports.report',
+
+            [
+
+                'title' => $title,
+
+                'sections' => $this->sections($report),
+
+                'managingOrganisation' =>
+
+                    $this->identity->managingOrganisation(),
+
+            ]
+
+        )
+
+            ->setPaper('a4')
+
+            ->output();
+
+    }
+
+    /**
+
      * Render a report as CSV.
+
      */
     public function csv(array $report): string
     {

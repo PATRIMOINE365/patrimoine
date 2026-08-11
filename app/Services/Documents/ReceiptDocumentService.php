@@ -3,17 +3,23 @@
 namespace App\Services\Documents;
 
 use App\Models\Payment;
+use App\Services\ApplicationIdentityService;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 /**
  * Generates PDF receipts for recorded tenant Payments.
  *
- * A receipt represents cash actually received by Patrimoine. It therefore
- * follows the Payment record rather than an individual Invoice because one
- * Payment may settle several Invoices through FIFO allocation.
+ * A receipt represents cash actually received by the managing organisation.
+ * It therefore follows the Payment record rather than an individual Invoice
+ * because one Payment may settle several Invoices through FIFO allocation.
  */
 class ReceiptDocumentService
 {
+    public function __construct(
+        private ApplicationIdentityService $identity
+    ) {
+    }
+
     /**
      * Generate the PDF contents for a Payment receipt.
      */
@@ -29,6 +35,8 @@ class ReceiptDocumentService
             'documents.receipt',
             [
                 'payment' => $payment,
+                'managingOrganisation' =>
+                    $this->identity->managingOrganisation(),
             ]
         )
             ->setPaper('a4')

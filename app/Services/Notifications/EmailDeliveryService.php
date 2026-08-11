@@ -7,6 +7,7 @@ use App\Mail\ReceiptMail;
 use App\Mail\RentReminderMail;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Services\ApplicationIdentityService;
 use App\Services\Documents\InvoiceDocumentService;
 use App\Services\Documents\ReceiptDocumentService;
 use Illuminate\Support\Facades\Mail;
@@ -18,6 +19,7 @@ use RuntimeException;
  * Responsibilities:
  *
  * - resolve the appropriate tenant recipient;
+ * - resolve the configured managing-organisation identity;
  * - generate the appropriate financial PDF;
  * - construct the corresponding Mailable;
  * - deliver it through Laravel Mail.
@@ -29,7 +31,8 @@ class EmailDeliveryService
 {
     public function __construct(
         private InvoiceDocumentService $invoiceDocuments,
-        private ReceiptDocumentService $receiptDocuments
+        private ReceiptDocumentService $receiptDocuments,
+        private ApplicationIdentityService $identity
     ) {
     }
 
@@ -55,7 +58,9 @@ class EmailDeliveryService
             new InvoiceMail(
                 invoice: $invoice,
                 pdfContents: $contents,
-                pdfFilename: $filename
+                pdfFilename: $filename,
+                managingOrganisation:
+                    $this->identity->managingOrganisation()
             )
         );
     }
@@ -82,7 +87,9 @@ class EmailDeliveryService
             new ReceiptMail(
                 payment: $payment,
                 pdfContents: $contents,
-                pdfFilename: $filename
+                pdfFilename: $filename,
+                managingOrganisation:
+                    $this->identity->managingOrganisation()
             )
         );
     }
@@ -115,7 +122,9 @@ class EmailDeliveryService
             new RentReminderMail(
                 invoice: $invoice,
                 pdfContents: $contents,
-                pdfFilename: $filename
+                pdfFilename: $filename,
+                managingOrganisation:
+                    $this->identity->managingOrganisation()
             )
         );
     }

@@ -105,10 +105,45 @@
 <table>
     <tr>
         <td>
-            <div class="brand">Patrimoine</div>
+
+
+            <div class="brand">
+                {{ $managingOrganisation?->legal_name
+                    ?? $managingOrganisation?->name
+                    ?? 'Patrimoine' }}
+            </div>
+
             <div class="muted">
                 Property Management
             </div>
+
+            @if($managingOrganisation)
+                @if($managingOrganisation->address)
+                    <div class="muted">
+                        {{ $managingOrganisation->address }}
+                    </div>
+                @endif
+
+                @if($managingOrganisation->phone)
+                    <div class="muted">
+                        {{ $managingOrganisation->phone }}
+                    </div>
+                @endif
+
+                @if($managingOrganisation->email)
+                    <div class="muted">
+                        {{ $managingOrganisation->email }}
+                    </div>
+                @endif
+
+                @if($managingOrganisation->vat_tin)
+                    <div class="muted">
+                        VAT/TIN: {{ $managingOrganisation->vat_tin }}
+                    </div>
+                @endif
+            @endif
+
+
         </td>
 
         <td>
@@ -266,7 +301,10 @@
 @endif
 
 <div class="footer">
-    Thank you. This receipt confirms payment recorded by Patrimoine.
+    Thank you. This receipt confirms payment recorded by
+    {{ $managingOrganisation?->legal_name
+        ?? $managingOrganisation?->name
+        ?? 'Patrimoine' }}.
 </div>
 
 </body>

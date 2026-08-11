@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Invoice;
+use App\Models\Party;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
@@ -21,7 +22,8 @@ class RentReminderMail extends Mailable
     public function __construct(
         public Invoice $invoice,
         public string $pdfContents,
-        public string $pdfFilename
+        public string $pdfFilename,
+        public ?Party $managingOrganisation = null
     ) {
     }
 
@@ -32,8 +34,9 @@ class RentReminderMail extends Mailable
     {
         return new Envelope(
             subject: sprintf(
-                'Rent Reminder - Invoice %s',
-                $this->invoice->invoice_number
+                'Rent Reminder - Invoice %s - %s',
+                $this->invoice->invoice_number,
+                $this->organisationName()
             )
         );
     }
@@ -61,5 +64,15 @@ class RentReminderMail extends Mailable
                 $this->pdfFilename
             )->withMime('application/pdf'),
         ];
+    }
+
+    /**
+     * Resolve the business name shown to the recipient.
+     */
+    private function organisationName(): string
+    {
+        return $this->managingOrganisation?->legal_name
+            ?? $this->managingOrganisation?->name
+            ?? 'Patrimoine';
     }
 }

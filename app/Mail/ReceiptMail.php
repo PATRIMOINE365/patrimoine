@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Party;
 use App\Models\Payment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -21,7 +22,8 @@ class ReceiptMail extends Mailable
     public function __construct(
         public Payment $payment,
         public string $pdfContents,
-        public string $pdfFilename
+        public string $pdfFilename,
+        public ?Party $managingOrganisation = null
     ) {
     }
 
@@ -32,8 +34,9 @@ class ReceiptMail extends Mailable
     {
         return new Envelope(
             subject: sprintf(
-                'Payment Receipt RCT-%06d - Patrimoine',
-                $this->payment->id
+                'Payment Receipt RCT-%06d - %s',
+                $this->payment->id,
+                $this->organisationName()
             )
         );
     }
@@ -61,5 +64,15 @@ class ReceiptMail extends Mailable
                 $this->pdfFilename
             )->withMime('application/pdf'),
         ];
+    }
+
+    /**
+     * Resolve the business name shown to the recipient.
+     */
+    private function organisationName(): string
+    {
+        return $this->managingOrganisation?->legal_name
+            ?? $this->managingOrganisation?->name
+            ?? 'Patrimoine';
     }
 }

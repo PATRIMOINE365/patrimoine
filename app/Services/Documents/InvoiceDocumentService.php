@@ -3,6 +3,7 @@
 namespace App\Services\Documents;
 
 use App\Models\Invoice;
+use App\Services\ApplicationIdentityService;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 /**
@@ -21,6 +22,11 @@ use Barryvdh\DomPDF\Facade\Pdf;
  */
 class InvoiceDocumentService
 {
+    public function __construct(
+        private ApplicationIdentityService $identity
+    ) {
+    }
+
     /**
      * Generate the PDF contents for an Invoice.
      */
@@ -41,6 +47,8 @@ class InvoiceDocumentService
             'documents.invoice',
             [
                 'invoice' => $invoice,
+                'managingOrganisation' =>
+                    $this->identity->managingOrganisation(),
             ]
         )
             ->setPaper('a4')
