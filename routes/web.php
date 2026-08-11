@@ -34,3 +34,13 @@ Route::view(
     '/properties',
     'app.properties'
 )->name('properties');
+
+Route::view(
+    '/parties',
+    'app.parties'
+)->name('parties');
+
+Route::view(
+    '/settings',
+    'app.settings'
+)->name('settings');

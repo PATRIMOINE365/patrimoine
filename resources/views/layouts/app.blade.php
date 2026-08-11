@@ -171,14 +171,16 @@
                 </a>
 
                 <a
-                    href="#"
+                    href="/parties"
                     class="
+                        {{ request()->is('parties')
+                            ? 'bg-white/10 text-white'
+                            : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                        }}
                         flex items-center gap-3
                         rounded-lg px-3 py-2.5
                         text-sm font-medium
-                        text-patrimoine-200
                         transition
-                        hover:bg-white/5 hover:text-white
                     "
                 >
                     <svg
@@ -288,17 +290,19 @@
                     Reports
                 </a>
 
-                <a
-                    href="#"
-                    class="
-                        flex items-center gap-3
-                        rounded-lg px-3 py-2.5
-                        text-sm font-medium
-                        text-patrimoine-200
-                        transition
-                        hover:bg-white/5 hover:text-white
-                    "
-                >
+                    <a
+                        href="/settings"
+                        class="
+                            {{ request()->is('settings')
+                                ? 'bg-white/10 text-white'
+                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                            }}
+                            flex items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-sm font-medium
+                            transition
+                        "
+                    >
                     <svg
                         class="h-5 w-5"
                         viewBox="0 0 24 24"
