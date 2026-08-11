@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\BuildingController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\LeaseController;
 use App\Http\Controllers\Api\OwnerExpenseController;
 use App\Http\Controllers\Api\OwnerLedgerController;
@@ -27,6 +28,24 @@ Route::apiResource('parties', PartyController::class);
 Route::apiResource('buildings', BuildingController::class);
 Route::apiResource('units', UnitController::class);
 Route::apiResource('leases', LeaseController::class);
+
+/*
+ * Dashboard and operational reporting.
+ */
+Route::get(
+    'dashboard',
+    [DashboardController::class, 'summary']
+);
+
+Route::get(
+    'dashboard/overdue',
+    [DashboardController::class, 'overdue']
+);
+
+Route::get(
+    'dashboard/upcoming',
+    [DashboardController::class, 'upcoming']
+);
 
 /*
  * Payments are transactional records and intentionally do not expose
