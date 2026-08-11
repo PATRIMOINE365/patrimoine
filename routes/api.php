@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\BuildingController;
 use App\Http\Controllers\Api\LeaseController;
 use App\Http\Controllers\Api\PartyController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\TenantFundController;
 use App\Http\Controllers\Api\UnitController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,12 +24,17 @@ Route::apiResource('units', UnitController::class);
 Route::apiResource('leases', LeaseController::class);
 
 /*
- * Payments are transactional records.
- *
- * Patrimoine does not expose generic update/delete operations because
- * financial history should not be casually edited after allocation.
- * Corrections will later use explicit reversal/adjustment workflows.
+ * Payments are transactional records and intentionally do not expose
+ * generic update/delete operations.
  */
 Route::get('payments', [PaymentController::class, 'index']);
 Route::post('payments', [PaymentController::class, 'store']);
 Route::get('payments/{payment}', [PaymentController::class, 'show']);
+
+/*
+ * Explicitly classify unapplied Payment money into tenant-held funds.
+ */
+Route::post(
+    'payments/{payment}/tenant-funds',
+    [TenantFundController::class, 'allocate']
+);
