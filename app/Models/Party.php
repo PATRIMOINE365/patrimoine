@@ -88,4 +88,12 @@ class Party extends Model
             foreignKey: 'agent_id'
         );
     }
+    /**
+     * Consolidated owner financial account for this Party, when the Party
+     * participates in Patrimoine as an owner.
+     */
+    public function ownerAccount(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(OwnerAccount::class);
+    }
 }

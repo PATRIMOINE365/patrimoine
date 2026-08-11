@@ -11,6 +11,7 @@ use App\Models\Unit;
 use App\Services\PaymentAllocationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Models\BuildingOwner;
 
 /**
  * Verifies Patrimoine's FIFO payment-allocation rules.
@@ -26,6 +27,23 @@ class PaymentAllocationServiceTest extends TestCase
     {
         $building = Building::create([
             'name' => 'Payment Test Building',
+        ]);
+
+        /*
+        * Every financially active Building requires complete ownership so
+        * collected rent can be attributed to the correct owner accounts.
+        */
+        $owner = Party::create([
+            'type' => 'person',
+            'name' => 'Payment Test Owner',
+            'phone' => '0200000031',
+            'email' => 'payment-owner@example.test',
+        ]);
+
+        BuildingOwner::create([
+            'building_id' => $building->id,
+            'party_id' => $owner->id,
+            'ownership_percentage' => 100.00,
         ]);
 
         $unit = Unit::create([

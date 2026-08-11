@@ -67,10 +67,19 @@ class PaymentAllocationService
 
                 $allocationAmount = min($remaining, $outstanding);
 
-                $payment->allocations()->create([
+                $allocation = $payment->allocations()->create([
                     'invoice_id' => $invoice->id,
                     'amount' => $allocationAmount,
                 ]);
+
+                /*
+                * Patrimoine uses cash-basis owner accounting.
+                *
+                * Owner entitlement is therefore created at exactly the point where
+                * tenant money is allocated to an Invoice.
+                */
+                $this->ownerAccountingService
+                    ->postCollectedRentEntitlement($allocation);
 
                 $remaining -= $allocationAmount;
 
@@ -103,5 +112,15 @@ class PaymentAllocationService
                 'Payment allocations exceed the amount received.'
             );
         }
+    }
+    /**
+     * Create the payment-allocation service.
+     *
+     * Owner accounting is triggered immediately after each successful tenant
+     * payment allocation so collected rent and owner funds remain synchronized.
+     */
+    public function __construct(
+        private readonly OwnerAccountingService $ownerAccountingService
+    ) {
     }
 }
