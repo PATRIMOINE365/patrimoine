@@ -9,10 +9,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * Represents a billing document issued under a Lease.
  *
- * An Invoice records what the tenant owes. It does not record how
- * money was received. Payment and allocation records will later
- * settle invoices independently, which allows Patrimoine to support
- * partial payments and FIFO allocation.
+ * An Invoice records what the tenant owes. Settlement may come from:
+ *
+ * - normal tenant Payments allocated through PaymentAllocation; or
+ * - Rent Reserve consumption during the termination-notice period.
+ *
+ * The remaining balance is always derived from those settlement records
+ * rather than stored as a mutable balance column.
  */
 class Invoice extends Model
 {
@@ -49,7 +52,6 @@ class Invoice extends Model
             'period_end' => 'date',
             'issue_date' => 'date',
             'due_date' => 'date',
-
             'total_amount' => 'integer',
             'vat_rate' => 'decimal:2',
             'net_amount' => 'integer',
@@ -59,14 +61,15 @@ class Invoice extends Model
     }
 
     /**
-     * Lease that generated this invoice.
+     * Lease that generated this Invoice.
      */
     public function lease(): BelongsTo
     {
         return $this->belongsTo(Lease::class);
     }
+
     /**
-     * Payment allocations applied to this Invoice.
+     * Normal cash Payment allocations applied to this Invoice.
      */
     public function paymentAllocations(): HasMany
     {
@@ -74,11 +77,45 @@ class Invoice extends Model
     }
 
     /**
-     * Total amount already settled against this Invoice.
+     * Tenant-fund ledger movements associated with this Invoice.
+     *
+     * Rent Reserve consumption is recorded here as a debit transaction.
+     */
+    public function tenantFundTransactions(): HasMany
+    {
+        return $this->hasMany(TenantFundTransaction::class);
+    }
+
+    /**
+     * Amount settled through ordinary tenant Payments.
+     */
+    public function paymentPaidAmount(): int
+    {
+        return (int) $this->paymentAllocations()
+            ->sum('amount');
+    }
+
+    /**
+     * Amount settled through Rent Reserve consumption.
+     */
+    public function reservePaidAmount(): int
+    {
+        return (int) $this->tenantFundTransactions()
+            ->where('direction', 'debit')
+            ->where('category', 'rent_consumption')
+            ->sum('amount');
+    }
+
+    /**
+     * Total amount settled against this Invoice.
+     *
+     * Settlement can originate from ordinary Payments or protected
+     * Rent Reserve once termination notice permits its use.
      */
     public function paidAmount(): int
     {
-        return (int) $this->paymentAllocations()->sum('amount');
+        return $this->paymentPaidAmount()
+            + $this->reservePaidAmount();
     }
 
     /**
@@ -86,11 +123,14 @@ class Invoice extends Model
      */
     public function outstandingAmount(): int
     {
-        return max(0, $this->total_amount - $this->paidAmount());
+        return max(
+            0,
+            $this->total_amount - $this->paidAmount()
+        );
     }
 
     /**
-     * Determine whether the Invoice is fully settled.
+     * Determine whether the Invoice has been fully settled.
      */
     public function isFullyPaid(): bool
     {

@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\BuildingController;
 use App\Http\Controllers\Api\LeaseController;
 use App\Http\Controllers\Api\PartyController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\RentReserveController;
+use App\Http\Controllers\Api\SecurityDepositController;
 use App\Http\Controllers\Api\TenantFundController;
 use App\Http\Controllers\Api\UnitController;
 use Illuminate\Support\Facades\Route;
@@ -32,9 +34,25 @@ Route::post('payments', [PaymentController::class, 'store']);
 Route::get('payments/{payment}', [PaymentController::class, 'show']);
 
 /*
- * Explicitly classify unapplied Payment money into tenant-held funds.
+ * Classify unapplied tenant Payment money into dedicated held funds.
  */
 Route::post(
     'payments/{payment}/tenant-funds',
     [TenantFundController::class, 'allocate']
+);
+
+/*
+ * Consume protected Rent Reserve once termination notice permits it.
+ */
+Route::post(
+    'tenant-funds/{tenantFundAccount}/consume-rent',
+    [RentReserveController::class, 'consume']
+);
+
+/*
+ * Finalize Security Deposit deductions, refund and tenant debt.
+ */
+Route::post(
+    'leases/{lease}/security-deposit/settle',
+    [SecurityDepositController::class, 'settle']
 );

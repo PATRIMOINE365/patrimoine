@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\ConsumeRentReserveRequest;
+use App\Models\Invoice;
+use App\Models\TenantFundAccount;
+use App\Services\RentReserveService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
+use RuntimeException;
+
+/**
+ * Transactional API controller for Rent Reserve consumption.
+ *
+ * The underlying RentReserveService remains the authority for financial
+ * rules. This controller translates service failures into appropriate
+ * API validation responses.
+ */
+class RentReserveController extends Controller
+{
+    /**
+     * Consume Rent Reserve against an outstanding tenant Invoice.
+     */
+    public function consume(
+        ConsumeRentReserveRequest $request,
+        TenantFundAccount $tenantFundAccount,
+        RentReserveService $service
+    ): JsonResponse {
+        /*
+         * Route-level protection prevents another fund-account type from
+         * accidentally being passed to the Rent Reserve workflow.
+         */
+        if ($tenantFundAccount->type !== 'rent_reserve') {
+            throw ValidationException::withMessages([
+                'tenant_fund_account' => [
+                    'The selected tenant fund account is not a Rent Reserve account.',
+                ],
+            ]);
+        }
+
+        $validated = $request->validated();
+
+        $invoice = Invoice::findOrFail(
+            $validated['invoice_id']
+        );
+
+        try {
+            $transaction = $service->consume(
+                account: $tenantFundAccount,
+                invoice: $invoice,
+                amount: (int) $validated['amount'],
+                transactionDate: $validated['transaction_date']
+            );
+        } catch (RuntimeException $exception) {
+            /*
+             * These are expected business-rule failures rather than
+             * unexpected server faults.
+             */
+            throw ValidationException::withMessages([
+                'rent_reserve' => [
+                    $exception->getMessage(),
+                ],
+            ]);
+        }
+
+        $tenantFundAccount->refresh();
+        $invoice->refresh();
+
+        return response()->json(
+            data: [
+                'transaction' => $transaction->load([
+                    'account',
+                    'invoice',
+                ]),
+
+                'rent_reserve' => [
+                    'account_id' => $tenantFundAccount->id,
+                    'balance' => $tenantFundAccount->balance(),
+                ],
+
+                'invoice' => [
+                    'id' => $invoice->id,
+                    'invoice_number' => $invoice->invoice_number,
+                    'status' => $invoice->status,
+                    'paid_amount' => $invoice->paidAmount(),
+                    'outstanding_amount' =>
+                        $invoice->outstandingAmount(),
+                ],
+            ],
+            status: 201
+        );
+    }
+}

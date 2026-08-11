@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Building;
+use App\Models\BuildingOwner;
 use App\Models\Invoice;
 use App\Models\Lease;
+use App\Models\OwnerAccount;
 use App\Models\Party;
 use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
@@ -15,7 +17,7 @@ use RuntimeException;
 use Tests\TestCase;
 
 /**
- * Verifies Patrimoine's Rent Reserve protection rules.
+ * Verifies Patrimoine's Rent Reserve protection and settlement rules.
  */
 class RentReserveServiceTest extends TestCase
 {
@@ -27,13 +29,27 @@ class RentReserveServiceTest extends TestCase
      * @return array{
      *     lease: Lease,
      *     invoice: Invoice,
-     *     account: TenantFundAccount
+     *     account: TenantFundAccount,
+     *     owner: Party
      * }
      */
     private function createContext(): array
     {
         $building = Building::create([
             'name' => 'Reserve Test Building',
+        ]);
+
+        $owner = Party::create([
+            'type' => 'person',
+            'name' => 'Reserve Test Owner',
+            'phone' => '0200000051',
+            'email' => 'reserve-owner@example.test',
+        ]);
+
+        BuildingOwner::create([
+            'building_id' => $building->id,
+            'party_id' => $owner->id,
+            'ownership_percentage' => 100.00,
         ]);
 
         $unit = Unit::create([
@@ -73,6 +89,7 @@ class RentReserveServiceTest extends TestCase
         $account = TenantFundAccount::create([
             'lease_id' => $lease->id,
             'type' => 'rent_reserve',
+            'status' => 'active',
         ]);
 
         TenantFundTransaction::create([
@@ -83,7 +100,12 @@ class RentReserveServiceTest extends TestCase
             'transaction_date' => '2026-01-01',
         ]);
 
-        return compact('lease', 'invoice', 'account');
+        return compact(
+            'lease',
+            'invoice',
+            'account',
+            'owner'
+        );
     }
 
     /**
@@ -126,9 +148,50 @@ class RentReserveServiceTest extends TestCase
         );
 
         $this->assertSame('debit', $transaction->direction);
-        $this->assertSame('rent_consumption', $transaction->category);
+        $this->assertSame(
+            'rent_consumption',
+            $transaction->category
+        );
+
         $this->assertSame(5000, $transaction->amount);
-        $this->assertSame(10000, $context['account']->fresh()->balance());
+
+        /*
+         * GHS 15,000 reserve - GHS 5,000 consumed.
+         */
+        $this->assertSame(
+            10000,
+            $context['account']->fresh()->balance()
+        );
+
+        /*
+         * Reserve consumption actually settles the Invoice.
+         */
+        $this->assertSame(
+            5000,
+            $context['invoice']->fresh()->paidAmount()
+        );
+
+        $this->assertSame(
+            0,
+            $context['invoice']->fresh()->outstandingAmount()
+        );
+
+        $this->assertSame(
+            'paid',
+            $context['invoice']->fresh()->status
+        );
+
+        /*
+         * The released rent now belongs to the owner.
+         */
+        $ownerAccount = OwnerAccount::query()
+            ->where('party_id', $context['owner']->id)
+            ->firstOrFail();
+
+        $this->assertSame(
+            5000,
+            $ownerAccount->creditedAmount()
+        );
     }
 
     /**
