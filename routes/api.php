@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\BuildingController;
+use App\Http\Controllers\Api\LeaseController;
 use App\Http\Controllers\Api\PartyController;
 use App\Http\Controllers\Api\UnitController;
 use Illuminate\Support\Facades\Route;
@@ -18,3 +19,4 @@ use Illuminate\Support\Facades\Route;
 Route::apiResource('parties', PartyController::class);
 Route::apiResource('buildings', BuildingController::class);
 Route::apiResource('units', UnitController::class);
+Route::apiResource('leases', LeaseController::class);
