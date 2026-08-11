@@ -129,5 +129,12 @@ class Lease extends Model
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
-}
+    }
+    /**
+     * Payments received under this Lease.
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Represents a billing document issued under a Lease.
@@ -63,5 +64,36 @@ class Invoice extends Model
     public function lease(): BelongsTo
     {
         return $this->belongsTo(Lease::class);
+    }
+    /**
+     * Payment allocations applied to this Invoice.
+     */
+    public function paymentAllocations(): HasMany
+    {
+        return $this->hasMany(PaymentAllocation::class);
+    }
+
+    /**
+     * Total amount already settled against this Invoice.
+     */
+    public function paidAmount(): int
+    {
+        return (int) $this->paymentAllocations()->sum('amount');
+    }
+
+    /**
+     * Amount still outstanding on this Invoice.
+     */
+    public function outstandingAmount(): int
+    {
+        return max(0, $this->total_amount - $this->paidAmount());
+    }
+
+    /**
+     * Determine whether the Invoice is fully settled.
+     */
+    public function isFullyPaid(): bool
+    {
+        return $this->outstandingAmount() === 0;
     }
 }

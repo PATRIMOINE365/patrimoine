@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+/**
+ * Represents money received from a tenant under a Lease.
+ *
+ * Payments are kept separate from Invoices because one Payment may
+ * settle several Invoices, while one Invoice may also be settled by
+ * several Payments.
+ */
+class Payment extends Model
+{
+    /**
+     * Attributes that may be mass assigned.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'lease_id',
+        'amount',
+        'payment_date',
+        'payment_method',
+        'reference',
+        'collector_name',
+        'notes',
+    ];
+
+    /**
+     * Convert stored values to appropriate PHP representations.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'amount' => 'integer',
+            'payment_date' => 'date',
+        ];
+    }
+
+    /**
+     * Lease under which this Payment was received.
+     */
+    public function lease(): BelongsTo
+    {
+        return $this->belongsTo(Lease::class);
+    }
+
+    /**
+     * Invoice allocations made from this Payment.
+     */
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(PaymentAllocation::class);
+    }
+
+    /**
+     * Total amount already allocated to invoices.
+     */
+    public function allocatedAmount(): int
+    {
+        return (int) $this->allocations()->sum('amount');
+    }
+
+    /**
+     * Amount of the Payment not yet allocated.
+     *
+     * A positive value represents unapplied funds that may later be
+     * consumed by another invoice or transferred to an advance/reserve
+     * workflow.
+     */
+    public function unallocatedAmount(): int
+    {
+        return $this->amount - $this->allocatedAmount();
+    }
+}
