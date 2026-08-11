@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\UnitController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ConsumableAdvanceController;
 use App\Http\Controllers\Api\DocumentController;
+use App\Http\Controllers\Api\EmailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -127,4 +128,16 @@ Route::post(
 Route::post(
     'owner-accounts/{ownerAccount}/payouts',
     [OwnerPayoutController::class, 'store']
+);
+/*
+ * Manual financial email resend endpoints.
+ */
+Route::post(
+    'invoices/{invoice}/send-email',
+    [EmailController::class, 'invoice']
+);
+
+Route::post(
+    'payments/{payment}/send-receipt',
+    [EmailController::class, 'receipt']
 );

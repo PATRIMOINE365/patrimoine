@@ -9,6 +9,8 @@ use App\Services\PaymentAllocationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\Notifications\EmailDeliveryService;
+use Throwable;
 
 /**
  * Transactional API controller for tenant Payments.
@@ -80,12 +82,20 @@ class PaymentController extends Controller
         );
     }
 
+
+
+
+
     /**
      * Record and immediately allocate a tenant Payment.
+     *
+     * Receipt email delivery happens only after the financial transaction has
+     * committed. A mail failure must never roll back a valid recorded payment.
      */
     public function store(
         StorePaymentRequest $request,
-        PaymentAllocationService $allocationService
+        PaymentAllocationService $allocationService,
+        EmailDeliveryService $emailDeliveryService
     ): JsonResponse {
         $payment = DB::transaction(
             function () use (
@@ -93,18 +103,18 @@ class PaymentController extends Controller
                 $allocationService
             ): Payment {
                 /*
-                 * Persist the incoming payment first.
-                 */
+                * Persist the incoming payment first.
+                */
                 $payment = Payment::create(
                     $request->validated()
                 );
 
                 /*
-                 * FIFO allocation is performed immediately.
-                 *
-                 * PaymentAllocationService also triggers cash-basis owner
-                 * entitlement creation for every allocation produced.
-                 */
+                * FIFO allocation is performed immediately.
+                *
+                * PaymentAllocationService also triggers cash-basis owner
+                * entitlement creation for every allocation produced.
+                */
                 $allocationService->allocate($payment);
 
                 return $payment->refresh()->load([
@@ -115,11 +125,27 @@ class PaymentController extends Controller
             }
         );
 
+        /*
+        * Financial persistence is already complete at this point.
+        *
+        * Email is intentionally best-effort so temporary SMTP problems do not
+        * invalidate or roll back a legitimate tenant payment.
+        */
+        try {
+            $emailDeliveryService->sendReceipt($payment);
+        } catch (Throwable $exception) {
+            report($exception);
+        }
+
         return response()->json(
             data: $this->serializePayment($payment),
             status: 201
         );
     }
+
+
+
+
 
     /**
      * Return one Payment with allocation and balance information.

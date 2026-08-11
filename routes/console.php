@@ -33,3 +33,15 @@ Schedule::command('patrimoine:generate-due-invoices')
     ->daily()
     ->withoutOverlapping()
     ->onOneServer();
+/*
+|--------------------------------------------------------------------------
+| Rent Reminders
+|--------------------------------------------------------------------------
+|
+| Run daily and remind tenants whose Invoice is due today or overdue.
+|
+*/
+Schedule::command('patrimoine:send-rent-reminders')
+    ->dailyAt('08:00')
+    ->withoutOverlapping()
+    ->onOneServer();
