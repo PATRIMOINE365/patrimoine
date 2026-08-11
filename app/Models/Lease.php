@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Represents the contractual agreement for renting one Unit
@@ -145,5 +146,20 @@ class Lease extends Model
     public function tenantFundAccounts(): HasMany
     {
         return $this->hasMany(TenantFundAccount::class);
+    }
+    /**
+     * Itemized charges applied against this Lease's security deposit.
+     */
+    public function securityDepositDeductions(): HasMany
+    {
+        return $this->hasMany(SecurityDepositDeduction::class);
+    }
+
+    /**
+     * Final security-deposit close-out for this Lease.
+     */
+    public function securityDepositSettlement(): HasOne
+    {
+        return $this->hasOne(SecurityDepositSettlement::class);
     }
 }
