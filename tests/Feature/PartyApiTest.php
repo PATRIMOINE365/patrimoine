@@ -6,6 +6,7 @@ use App\Models\Party;
 use App\Models\PartyRole;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Concerns\AuthenticatesApiUser;
 
 /**
  * Verifies the Patrimoine Party REST API.
@@ -13,6 +14,14 @@ use Tests\TestCase;
 class PartyApiTest extends TestCase
 {
     use RefreshDatabase;
+    use AuthenticatesApiUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->authenticateApiUser();
+    }
 
     /**
      * A valid person may be created with several functional roles.

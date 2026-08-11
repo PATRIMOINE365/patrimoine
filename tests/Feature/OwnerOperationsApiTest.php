@@ -10,6 +10,7 @@ use App\Models\Party;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Concerns\AuthenticatesApiUser;
 
 /**
  * Verifies transactional owner financial APIs.
@@ -17,6 +18,14 @@ use Tests\TestCase;
 class OwnerOperationsApiTest extends TestCase
 {
     use RefreshDatabase;
+    use AuthenticatesApiUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->authenticateApiUser();
+    }
 
     /**
      * Create a single-owner Building and corresponding OwnerAccount.

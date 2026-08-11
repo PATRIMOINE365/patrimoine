@@ -11,6 +11,7 @@ use App\Models\TenantFundTransaction;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Concerns\AuthenticatesApiUser;
 
 /**
  * Verifies the Patrimoine Security Deposit settlement API.
@@ -18,6 +19,14 @@ use Tests\TestCase;
 class SecurityDepositApiTest extends TestCase
 {
     use RefreshDatabase;
+    use AuthenticatesApiUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->authenticateApiUser();
+    }
 
     /**
      * Build a terminated Lease with a funded Security Deposit.

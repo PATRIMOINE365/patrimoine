@@ -14,6 +14,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 use App\Models\BuildingOwner;
+use Tests\Concerns\AuthenticatesApiUser;
 
 /**
  * Verifies application-level email workflows.
@@ -21,6 +22,14 @@ use App\Models\BuildingOwner;
 class EmailWorkflowTest extends TestCase
 {
     use RefreshDatabase;
+    use AuthenticatesApiUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->authenticateApiUser();
+    }
 
     /**
      * Create a tenant Lease suitable for payment and reminder tests.

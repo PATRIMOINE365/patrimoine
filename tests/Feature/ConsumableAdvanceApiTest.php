@@ -13,6 +13,7 @@ use App\Models\TenantFundTransaction;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Concerns\AuthenticatesApiUser;
 
 /**
  * Verifies the Patrimoine Consumable Advance transactional API.
@@ -20,6 +21,14 @@ use Tests\TestCase;
 class ConsumableAdvanceApiTest extends TestCase
 {
     use RefreshDatabase;
+    use AuthenticatesApiUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->authenticateApiUser();
+    }
 
     /**
      * Build a funded Consumable Advance with an outstanding Invoice.

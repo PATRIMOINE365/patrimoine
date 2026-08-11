@@ -13,6 +13,7 @@ use App\Models\Payment;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Concerns\AuthenticatesApiUser;
 
 /**
  * Verifies the Patrimoine read-only dashboard API.
@@ -20,6 +21,14 @@ use Tests\TestCase;
 class DashboardApiTest extends TestCase
 {
     use RefreshDatabase;
+    use AuthenticatesApiUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->authenticateApiUser();
+    }
 
     /**
      * Create a minimal occupied property context.

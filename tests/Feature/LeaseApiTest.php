@@ -9,6 +9,7 @@ use App\Models\PartyRole;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Concerns\AuthenticatesApiUser;
 
 /**
  * Verifies the Patrimoine Lease REST API.
@@ -16,6 +17,14 @@ use Tests\TestCase;
 class LeaseApiTest extends TestCase
 {
     use RefreshDatabase;
+    use AuthenticatesApiUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->authenticateApiUser();
+    }
 
     /**
      * Build the minimum Unit and Party context required by Lease tests.

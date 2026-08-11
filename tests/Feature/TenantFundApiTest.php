@@ -11,6 +11,7 @@ use App\Models\TenantFundAccount;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Concerns\AuthenticatesApiUser;
 
 /**
  * Verifies classification of unapplied tenant Payments into held funds.
@@ -18,6 +19,14 @@ use Tests\TestCase;
 class TenantFundApiTest extends TestCase
 {
     use RefreshDatabase;
+    use AuthenticatesApiUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->authenticateApiUser();
+    }
 
     /**
      * Build a Lease with a Payment that has no Invoice allocations.

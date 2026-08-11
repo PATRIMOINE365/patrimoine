@@ -14,6 +14,7 @@ use App\Models\PaymentAllocation;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Concerns\AuthenticatesApiUser;
 
 /**
  * Verifies the formal reporting API surface.
@@ -21,6 +22,14 @@ use Tests\TestCase;
 class ReportApiTest extends TestCase
 {
     use RefreshDatabase;
+    use AuthenticatesApiUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->authenticateApiUser();
+    }
 
     /**
      * Create a financially valid reporting context.

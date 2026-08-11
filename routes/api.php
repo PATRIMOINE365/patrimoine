@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BuildingController;
 use App\Http\Controllers\Api\ConsumableAdvanceController;
 use App\Http\Controllers\Api\DashboardController;
@@ -24,302 +25,335 @@ use Illuminate\Support\Facades\Route;
 | Patrimoine API Routes
 |--------------------------------------------------------------------------
 |
-| Authentication middleware will be added once the initial API surface
-| has been completed and tested.
+| Authentication is provided by Laravel Sanctum.
+|
+| Only the login endpoint is public. All business data and financial
+| operations require an authenticated Property Manager.
 |
 */
 
 /*
 |--------------------------------------------------------------------------
-| Core Domain Resources
+| Authentication
 |--------------------------------------------------------------------------
 */
 
-Route::apiResource(
-    'parties',
-    PartyController::class
-);
-
-Route::apiResource(
-    'buildings',
-    BuildingController::class
-);
-
-Route::apiResource(
-    'units',
-    UnitController::class
-);
-
-Route::apiResource(
-    'leases',
-    LeaseController::class
-);
-
 /*
-|--------------------------------------------------------------------------
-| Dashboard
-|--------------------------------------------------------------------------
-|
-| Operational and financial dashboard metrics.
-|
-*/
-
-Route::get(
-    'dashboard',
-    [DashboardController::class, 'summary']
-);
-
-Route::get(
-    'dashboard/overdue',
-    [DashboardController::class, 'overdue']
-);
-
-Route::get(
-    'dashboard/upcoming',
-    [DashboardController::class, 'upcoming']
-);
-
-/*
-|--------------------------------------------------------------------------
-| Financial Documents
-|--------------------------------------------------------------------------
-|
-| PDFs are rendered on demand so document-generation services can also
-| be reused for email attachments and future archival workflows.
-|
-*/
-
-Route::get(
-    'invoices/{invoice}/pdf',
-    [DocumentController::class, 'invoice']
-);
-
-Route::get(
-    'payments/{payment}/receipt',
-    [DocumentController::class, 'receipt']
-);
-
-/*
-|--------------------------------------------------------------------------
-| Payments
-|--------------------------------------------------------------------------
-|
-| Payments are transactional financial records and intentionally do not
-| expose generic update or delete operations.
-|
-*/
-
-Route::get(
-    'payments',
-    [PaymentController::class, 'index']
-);
-
-Route::post(
-    'payments',
-    [PaymentController::class, 'store']
-);
-
-Route::get(
-    'payments/{payment}',
-    [PaymentController::class, 'show']
-);
-
-/*
-|--------------------------------------------------------------------------
-| Tenant Funds
-|--------------------------------------------------------------------------
-|
-| Unallocated tenant Payment money may be classified into dedicated held
-| funds such as Rent Reserve, Consumable Advance and Security Deposit.
-|
-*/
-
-Route::post(
-    'payments/{payment}/tenant-funds',
-    [TenantFundController::class, 'allocate']
-);
-
-/*
- * Rent Reserve may only be consumed when the Lease termination-notice
- * workflow permits it.
+ * Login is public but rate-limited.
  */
 Route::post(
-    'tenant-funds/{tenantFundAccount}/consume-rent',
-    [RentReserveController::class, 'consume']
-);
+    'auth/login',
+    [AuthController::class, 'login']
+)->middleware('throttle:5,1');
 
 /*
- * Consumable Advance may be applied against rent during the normal Lease
- * lifecycle.
+ * Any authenticated Patrimoine user may inspect their identity
+ * or revoke their current API token, regardless of application role.
  */
-Route::post(
-    'tenant-funds/{tenantFundAccount}/consume-advance',
-    [ConsumableAdvanceController::class, 'consume']
-);
+Route::middleware('auth:sanctum')->group(
+    function (): void {
+        Route::get(
+            'auth/me',
+            [AuthController::class, 'me']
+        );
 
-/*
- * Finalize Security Deposit deductions, tenant debt and refund.
- */
-Route::post(
-    'leases/{lease}/security-deposit/settle',
-    [SecurityDepositController::class, 'settle']
-);
-
-/*
-|--------------------------------------------------------------------------
-| Owner Financial Operations
-|--------------------------------------------------------------------------
-*/
-
-Route::post(
-    'owner-expenses',
-    [OwnerExpenseController::class, 'store']
-);
-
-Route::post(
-    'owner-accounts/{ownerAccount}/deposits',
-    [OwnerLedgerController::class, 'deposit']
-);
-
-Route::post(
-    'owner-accounts/{ownerAccount}/adjustments',
-    [OwnerLedgerController::class, 'adjustment']
-);
-
-Route::post(
-    'owner-accounts/{ownerAccount}/payouts',
-    [OwnerPayoutController::class, 'store']
+        Route::post(
+            'auth/logout',
+            [AuthController::class, 'logout']
+        );
+    }
 );
 
 /*
 |--------------------------------------------------------------------------
-| Financial Email Delivery
+| Property Manager API
 |--------------------------------------------------------------------------
 |
-| These endpoints allow administrators to resend previously generated
-| invoices and receipts without recreating the financial records.
+| Patrimoine 1.0 business operations are restricted to authenticated
+| users with the property_manager role.
 |
 */
 
-Route::post(
-    'invoices/{invoice}/send-email',
-    [EmailController::class, 'invoice']
-);
+Route::middleware([
+    'auth:sanctum',
+    'role:property_manager',
+])->group(
+    function (): void {
+        /*
+        |--------------------------------------------------------------------------
+        | Core Domain Resources
+        |--------------------------------------------------------------------------
+        */
 
-Route::post(
-    'payments/{payment}/send-receipt',
-    [EmailController::class, 'receipt']
-);
+        Route::apiResource(
+            'parties',
+            PartyController::class
+        );
 
-/*
-|--------------------------------------------------------------------------
-| Formal Report Exports
-|--------------------------------------------------------------------------
-|
-| PDF and CSV representations reuse the same report-service calculations
-| exposed through the JSON reporting API.
-|
-| More-specific export routes are deliberately registered before the
-| corresponding plain report routes.
-|
-*/
+        Route::apiResource(
+            'buildings',
+            BuildingController::class
+        );
 
-/*
- * Owner report exports.
- */
-Route::get(
-    'reports/owners/{party}/pdf',
-    [ReportExportController::class, 'ownerPdf']
-);
+        Route::apiResource(
+            'units',
+            UnitController::class
+        );
 
-Route::get(
-    'reports/owners/{party}/csv',
-    [ReportExportController::class, 'ownerCsv']
-);
+        Route::apiResource(
+            'leases',
+            LeaseController::class
+        );
 
-/*
- * Building report exports.
- */
-Route::get(
-    'reports/buildings/{building}/pdf',
-    [ReportExportController::class, 'buildingPdf']
-);
+        /*
+        |--------------------------------------------------------------------------
+        | Dashboard
+        |--------------------------------------------------------------------------
+        |
+        | Operational and financial dashboard metrics.
+        |
+        */
 
-Route::get(
-    'reports/buildings/{building}/csv',
-    [ReportExportController::class, 'buildingCsv']
-);
+        Route::get(
+            'dashboard',
+            [DashboardController::class, 'summary']
+        );
 
-/*
- * Unit report exports.
- */
-Route::get(
-    'reports/units/{unit}/pdf',
-    [ReportExportController::class, 'unitPdf']
-);
+        Route::get(
+            'dashboard/overdue',
+            [DashboardController::class, 'overdue']
+        );
 
-Route::get(
-    'reports/units/{unit}/csv',
-    [ReportExportController::class, 'unitCsv']
-);
+        Route::get(
+            'dashboard/upcoming',
+            [DashboardController::class, 'upcoming']
+        );
 
-/*
- * Tenant statement exports.
- */
-Route::get(
-    'reports/tenants/{party}/pdf',
-    [ReportExportController::class, 'tenantPdf']
-);
+        /*
+        |--------------------------------------------------------------------------
+        | Financial Documents
+        |--------------------------------------------------------------------------
+        |
+        | PDFs are rendered on demand so document-generation services can also
+        | be reused for email attachments and future archival workflows.
+        |
+        */
 
-Route::get(
-    'reports/tenants/{party}/csv',
-    [ReportExportController::class, 'tenantCsv']
-);
+        Route::get(
+            'invoices/{invoice}/pdf',
+            [DocumentController::class, 'invoice']
+        );
 
-/*
- * Managing Organisation report exports.
- */
-Route::get(
-    'reports/managing-organisation/pdf',
-    [ReportExportController::class, 'managingOrganisationPdf']
-);
+        Route::get(
+            'payments/{payment}/receipt',
+            [DocumentController::class, 'receipt']
+        );
 
-Route::get(
-    'reports/managing-organisation/csv',
-    [ReportExportController::class, 'managingOrganisationCsv']
-);
+        /*
+        |--------------------------------------------------------------------------
+        | Payments
+        |--------------------------------------------------------------------------
+        |
+        | Payments are transactional financial records and intentionally do not
+        | expose generic update or delete operations.
+        |
+        */
 
-/*
-|--------------------------------------------------------------------------
-| Formal Report JSON API
-|--------------------------------------------------------------------------
-|
-| These endpoints expose the read-only projections produced by the report
-| service layer.
-|
-*/
+        Route::get(
+            'payments',
+            [PaymentController::class, 'index']
+        );
 
-Route::get(
-    'reports/owners/{party}',
-    [ReportController::class, 'owner']
-);
+        Route::post(
+            'payments',
+            [PaymentController::class, 'store']
+        );
 
-Route::get(
-    'reports/buildings/{building}',
-    [ReportController::class, 'building']
-);
+        Route::get(
+            'payments/{payment}',
+            [PaymentController::class, 'show']
+        );
 
-Route::get(
-    'reports/units/{unit}',
-    [ReportController::class, 'unit']
-);
+        /*
+        |--------------------------------------------------------------------------
+        | Tenant Funds
+        |--------------------------------------------------------------------------
+        |
+        | Unallocated tenant Payment money may be classified into dedicated held
+        | funds such as Rent Reserve, Consumable Advance and Security Deposit.
+        |
+        */
 
-Route::get(
-    'reports/tenants/{party}',
-    [ReportController::class, 'tenant']
-);
+        Route::post(
+            'payments/{payment}/tenant-funds',
+            [TenantFundController::class, 'allocate']
+        );
 
-Route::get(
-    'reports/managing-organisation',
-    [ReportController::class, 'managingOrganisation']
+        /*
+         * Rent Reserve may only be consumed when the Lease termination-notice
+         * workflow permits it.
+         */
+        Route::post(
+            'tenant-funds/{tenantFundAccount}/consume-rent',
+            [RentReserveController::class, 'consume']
+        );
+
+        /*
+         * Consumable Advance may be applied against rent during the normal
+         * Lease lifecycle.
+         */
+        Route::post(
+            'tenant-funds/{tenantFundAccount}/consume-advance',
+            [ConsumableAdvanceController::class, 'consume']
+        );
+
+        /*
+         * Finalize Security Deposit deductions, tenant debt and refund.
+         */
+        Route::post(
+            'leases/{lease}/security-deposit/settle',
+            [SecurityDepositController::class, 'settle']
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Owner Financial Operations
+        |--------------------------------------------------------------------------
+        */
+
+        Route::post(
+            'owner-expenses',
+            [OwnerExpenseController::class, 'store']
+        );
+
+        Route::post(
+            'owner-accounts/{ownerAccount}/deposits',
+            [OwnerLedgerController::class, 'deposit']
+        );
+
+        Route::post(
+            'owner-accounts/{ownerAccount}/adjustments',
+            [OwnerLedgerController::class, 'adjustment']
+        );
+
+        Route::post(
+            'owner-accounts/{ownerAccount}/payouts',
+            [OwnerPayoutController::class, 'store']
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Financial Email Delivery
+        |--------------------------------------------------------------------------
+        |
+        | These endpoints allow administrators to resend previously generated
+        | invoices and receipts without recreating the financial records.
+        |
+        */
+
+        Route::post(
+            'invoices/{invoice}/send-email',
+            [EmailController::class, 'invoice']
+        );
+
+        Route::post(
+            'payments/{payment}/send-receipt',
+            [EmailController::class, 'receipt']
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Formal Report Exports
+        |--------------------------------------------------------------------------
+        |
+        | PDF and CSV representations reuse the same report-service calculations
+        | exposed through the JSON reporting API.
+        |
+        */
+
+        Route::get(
+            'reports/owners/{party}/pdf',
+            [ReportExportController::class, 'ownerPdf']
+        );
+
+        Route::get(
+            'reports/owners/{party}/csv',
+            [ReportExportController::class, 'ownerCsv']
+        );
+
+        Route::get(
+            'reports/buildings/{building}/pdf',
+            [ReportExportController::class, 'buildingPdf']
+        );
+
+        Route::get(
+            'reports/buildings/{building}/csv',
+            [ReportExportController::class, 'buildingCsv']
+        );
+
+        Route::get(
+            'reports/units/{unit}/pdf',
+            [ReportExportController::class, 'unitPdf']
+        );
+
+        Route::get(
+            'reports/units/{unit}/csv',
+            [ReportExportController::class, 'unitCsv']
+        );
+
+        Route::get(
+            'reports/tenants/{party}/pdf',
+            [ReportExportController::class, 'tenantPdf']
+        );
+
+        Route::get(
+            'reports/tenants/{party}/csv',
+            [ReportExportController::class, 'tenantCsv']
+        );
+
+        Route::get(
+            'reports/managing-organisation/pdf',
+            [ReportExportController::class, 'managingOrganisationPdf']
+        );
+
+        Route::get(
+            'reports/managing-organisation/csv',
+            [ReportExportController::class, 'managingOrganisationCsv']
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Formal Report JSON API
+        |--------------------------------------------------------------------------
+        |
+        | These endpoints expose the read-only projections produced by the
+        | report service layer.
+        |
+        */
+
+        Route::get(
+            'reports/owners/{party}',
+            [ReportController::class, 'owner']
+        );
+
+        Route::get(
+            'reports/buildings/{building}',
+            [ReportController::class, 'building']
+        );
+
+        Route::get(
+            'reports/units/{unit}',
+            [ReportController::class, 'unit']
+        );
+
+        Route::get(
+            'reports/tenants/{party}',
+            [ReportController::class, 'tenant']
+        );
+
+        Route::get(
+            'reports/managing-organisation',
+            [ReportController::class, 'managingOrganisation']
+        );
+    }
 );

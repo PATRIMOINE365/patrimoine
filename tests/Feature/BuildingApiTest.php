@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Party;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Concerns\AuthenticatesApiUser;
 
 /**
  * Verifies the Patrimoine Building REST API.
@@ -12,6 +13,17 @@ use Tests\TestCase;
 class BuildingApiTest extends TestCase
 {
     use RefreshDatabase;
+    use AuthenticatesApiUser;
+
+    protected function setUp(): void
+
+    {
+
+        parent::setUp();
+
+        $this->authenticateApiUser();
+
+    }
 
     /**
      * Create an owner Party for Building API tests.

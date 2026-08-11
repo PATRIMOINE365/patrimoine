@@ -13,6 +13,7 @@ use App\Models\TenantFundTransaction;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Concerns\AuthenticatesApiUser;
 
 /**
  * Verifies the Patrimoine Rent Reserve transactional API.
@@ -20,6 +21,14 @@ use Tests\TestCase;
 class RentReserveApiTest extends TestCase
 {
     use RefreshDatabase;
+    use AuthenticatesApiUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->authenticateApiUser();
+    }
 
     /**
      * Build a funded Rent Reserve with an outstanding Invoice.

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Building;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Concerns\AuthenticatesApiUser;
 
 /**
  * Verifies the Patrimoine Unit REST API.
@@ -12,6 +13,14 @@ use Tests\TestCase;
 class UnitApiTest extends TestCase
 {
     use RefreshDatabase;
+    use AuthenticatesApiUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->authenticateApiUser();
+    }
 
     /**
      * Create a Building for Unit API tests.

@@ -14,6 +14,7 @@ use App\Models\PaymentAllocation;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Concerns\AuthenticatesApiUser;
 
 /**
  * Verifies formal report PDF and CSV exports.
@@ -21,6 +22,14 @@ use Tests\TestCase;
 class ReportExportTest extends TestCase
 {
     use RefreshDatabase;
+    use AuthenticatesApiUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->authenticateApiUser();
+    }
 
     /**
      * @return array<string, mixed>
