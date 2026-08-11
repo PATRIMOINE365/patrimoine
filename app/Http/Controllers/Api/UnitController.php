@@ -3,47 +3,112 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreUnitRequest;
+use App\Http\Requests\UpdateUnitRequest;
+use App\Models\Unit;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * REST API controller for individually leasable Units.
+ */
 class UnitController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Return Units with their parent Building.
      */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        //
+        $query = Unit::query()
+            ->with('building');
+
+        if ($request->filled('building_id')) {
+            $query->where(
+                'building_id',
+                (int) $request->input('building_id')
+            );
+        }
+
+        if ($request->filled('search')) {
+            $search = trim(
+                $request->string('search')->toString()
+            );
+
+            $query->where(
+                'name',
+                'like',
+                "%{$search}%"
+            );
+        }
+
+        return response()->json(
+            $query
+                ->orderBy('building_id')
+                ->orderBy('name')
+                ->paginate(
+                    perPage: min(
+                        max((int) $request->input('per_page', 25), 1),
+                        100
+                    )
+                )
+        );
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create a Unit.
      */
-    public function store(Request $request)
-    {
-        //
+    public function store(
+        StoreUnitRequest $request
+    ): JsonResponse {
+        $unit = Unit::create(
+            $request->validated()
+        );
+
+        return response()->json(
+            data: $unit->load('building'),
+            status: 201
+        );
     }
 
     /**
-     * Display the specified resource.
+     * Return one Unit with Building and Lease history.
      */
-    public function show(string $id)
+    public function show(Unit $unit): JsonResponse
     {
-        //
+        return response()->json(
+            $unit->load([
+                'building',
+                'leases.tenant',
+            ])
+        );
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update a Unit.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+    public function update(
+        UpdateUnitRequest $request,
+        Unit $unit
+    ): JsonResponse {
+        $unit->update(
+            $request->validated()
+        );
+
+        return response()->json(
+            $unit->refresh()->load('building')
+        );
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete a Unit if no protected Lease history references it.
      */
-    public function destroy(string $id)
+    public function destroy(Unit $unit): JsonResponse
     {
-        //
+        $unit->delete();
+
+        return response()->json(
+            data: null,
+            status: 204
+        );
     }
 }

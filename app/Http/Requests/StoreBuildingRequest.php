@@ -2,28 +2,124 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Validate creation of a Patrimoine Building.
+ *
+ * Building ownership is supplied as an array of owner Party IDs and
+ * ownership percentages. The application requires the percentages to
+ * total exactly 100%.
+ */
 class StoreBuildingRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Authorization will later be enforced through Patrimoine permissions.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Validation rules for Building creation.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
-            //
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'description' => [
+                'nullable',
+                'string',
+            ],
+
+            'address' => [
+                'nullable',
+                'string',
+            ],
+
+            'location' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'latitude' => [
+                'nullable',
+                'numeric',
+                'between:-90,90',
+            ],
+
+            'longitude' => [
+                'nullable',
+                'numeric',
+                'between:-180,180',
+            ],
+
+            'notes' => [
+                'nullable',
+                'string',
+            ],
+
+            /*
+             * Every Building must have at least one owner in Patrimoine V1.
+             */
+            'owners' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+
+            'owners.*.party_id' => [
+                'required',
+                'integer',
+                'distinct',
+                'exists:parties,id',
+            ],
+
+            'owners.*.ownership_percentage' => [
+                'required',
+                'numeric',
+                'gt:0',
+                'lte:100',
+            ],
+        ];
+    }
+
+    /**
+     * Validate rules that depend on the complete ownership collection.
+     *
+     * @param \Illuminate\Validation\Validator $validator
+     */
+    public function after(): array
+    {
+        return [
+            function ($validator): void {
+                if ($validator->errors()->isNotEmpty()) {
+                    return;
+                }
+
+                $owners = $this->input('owners', []);
+
+                $total = collect($owners)->sum(
+                    fn (array $owner): float =>
+                        (float) $owner['ownership_percentage']
+                );
+
+                if (abs($total - 100.0) > 0.001) {
+                    $validator->errors()->add(
+                        'owners',
+                        'Building ownership percentages must total 100%.'
+                    );
+                }
+            },
         ];
     }
 }

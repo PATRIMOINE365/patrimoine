@@ -3,47 +3,158 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreBuildingRequest;
+use App\Http\Requests\UpdateBuildingRequest;
+use App\Models\Building;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
+/**
+ * REST API controller for Patrimoine Buildings.
+ */
 class BuildingController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Return Buildings with ownership and Unit information.
      */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        //
+        $query = Building::query()
+            ->with([
+                'ownerships.party',
+                'units',
+            ]);
+
+        if ($request->filled('search')) {
+            $search = trim(
+                $request->string('search')->toString()
+            );
+
+            $query->where(function ($query) use ($search) {
+                $query
+                    ->where('name', 'like', "%{$search}%")
+                    ->orWhere('location', 'like', "%{$search}%")
+                    ->orWhere('address', 'like', "%{$search}%");
+            });
+        }
+
+        return response()->json(
+            $query
+                ->orderBy('name')
+                ->paginate(
+                    perPage: min(
+                        max((int) $request->input('per_page', 25), 1),
+                        100
+                    )
+                )
+        );
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create a Building and its complete ownership allocation.
      */
-    public function store(Request $request)
-    {
-        //
+    public function store(
+        StoreBuildingRequest $request
+    ): JsonResponse {
+        $building = DB::transaction(
+            function () use ($request): Building {
+                $validated = $request->validated();
+
+                $owners = $validated['owners'];
+
+                unset($validated['owners']);
+
+                $building = Building::create($validated);
+
+                foreach ($owners as $owner) {
+                    $building->ownerships()->create([
+                        'party_id' => $owner['party_id'],
+                        'ownership_percentage' =>
+                            $owner['ownership_percentage'],
+                    ]);
+                }
+
+                return $building->load([
+                    'ownerships.party',
+                    'units',
+                ]);
+            }
+        );
+
+        return response()->json(
+            data: $building,
+            status: 201
+        );
     }
 
     /**
-     * Display the specified resource.
+     * Return a single Building with owners and Units.
      */
-    public function show(string $id)
+    public function show(Building $building): JsonResponse
     {
-        //
+        return response()->json(
+            $building->load([
+                'ownerships.party',
+                'units',
+            ])
+        );
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Building details and replace its ownership allocation.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+    public function update(
+        UpdateBuildingRequest $request,
+        Building $building
+    ): JsonResponse {
+        $building = DB::transaction(
+            function () use ($request, $building): Building {
+                $validated = $request->validated();
+
+                $owners = $validated['owners'];
+
+                unset($validated['owners']);
+
+                $building->update($validated);
+
+                /*
+                 * Patrimoine V1 does not preserve historical ownership
+                 * percentage changes. The current allocation is therefore
+                 * replaced as one complete set.
+                 */
+                $building->ownerships()->delete();
+
+                foreach ($owners as $owner) {
+                    $building->ownerships()->create([
+                        'party_id' => $owner['party_id'],
+                        'ownership_percentage' =>
+                            $owner['ownership_percentage'],
+                    ]);
+                }
+
+                return $building->refresh()->load([
+                    'ownerships.party',
+                    'units',
+                ]);
+            }
+        );
+
+        return response()->json($building);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete an unreferenced Building.
+     *
+     * Foreign-key restrictions protect contractual and financial history.
      */
-    public function destroy(string $id)
+    public function destroy(Building $building): JsonResponse
     {
-        //
+        $building->delete();
+
+        return response()->json(
+            data: null,
+            status: 204
+        );
     }
 }

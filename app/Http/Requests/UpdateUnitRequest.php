@@ -2,28 +2,53 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
+/**
+ * Validate updates to an existing Unit.
+ */
 class UpdateUnitRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
+        $unit = $this->route('unit');
+
         return [
-            //
+            'building_id' => [
+                'required',
+                'integer',
+                'exists:buildings,id',
+            ],
+
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+
+                Rule::unique('units', 'name')
+                    ->ignore($unit?->id)
+                    ->where(
+                        fn ($query) =>
+                            $query->where(
+                                'building_id',
+                                $this->input('building_id')
+                            )
+                    ),
+            ],
+
+            'description' => [
+                'nullable',
+                'string',
+            ],
         ];
     }
 }
