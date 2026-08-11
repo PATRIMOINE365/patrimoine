@@ -107,15 +107,29 @@ class Invoice extends Model
     }
 
     /**
+     * Amount settled through Consumable Advance.
+     */
+    public function advancePaidAmount(): int
+    {
+        return (int) $this->tenantFundTransactions()
+            ->where('direction', 'debit')
+            ->where('category', 'advance_consumption')
+            ->sum('amount');
+    }
+
+    /**
      * Total amount settled against this Invoice.
      *
-     * Settlement can originate from ordinary Payments or protected
-     * Rent Reserve once termination notice permits its use.
+     * Settlement may come from:
+     * - ordinary tenant Payments;
+     * - Rent Reserve;
+     * - Consumable Advance.
      */
     public function paidAmount(): int
     {
         return $this->paymentPaidAmount()
-            + $this->reservePaidAmount();
+            + $this->reservePaidAmount()
+            + $this->advancePaidAmount();
     }
 
     /**

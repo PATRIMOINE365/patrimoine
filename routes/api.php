@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\SecurityDepositController;
 use App\Http\Controllers\Api\TenantFundController;
 use App\Http\Controllers\Api\UnitController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ConsumableAdvanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +70,15 @@ Route::post(
 Route::post(
     'tenant-funds/{tenantFundAccount}/consume-rent',
     [RentReserveController::class, 'consume']
+);
+
+/*
+ * Consume tenant Consumable Advance against rent during the normal
+ * Lease lifecycle.
+ */
+Route::post(
+    'tenant-funds/{tenantFundAccount}/consume-advance',
+    [ConsumableAdvanceController::class, 'consume']
 );
 
 /*
