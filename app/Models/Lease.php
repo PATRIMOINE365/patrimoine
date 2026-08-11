@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Represents the contractual agreement for renting one Unit
@@ -119,4 +120,14 @@ class Lease extends Model
         return $this->due_day
             ?? $this->start_date->day;
     }
+    /**
+     * Invoices generated under this Lease.
+     *
+     * Historical invoices remain independent snapshots of the contractual
+     * values that applied when they were issued.
+     */
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+}
 }
