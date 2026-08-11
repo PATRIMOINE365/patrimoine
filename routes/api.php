@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\TenantFundController;
 use App\Http\Controllers\Api\UnitController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ConsumableAdvanceController;
+use App\Http\Controllers\Api\DocumentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +47,22 @@ Route::get(
 Route::get(
     'dashboard/upcoming',
     [DashboardController::class, 'upcoming']
+);
+
+/*
+ * Generated financial documents.
+ *
+ * PDFs are rendered on demand so the same document generation services
+ * can later be reused for email attachments and document archival.
+ */
+Route::get(
+    'invoices/{invoice}/pdf',
+    [DocumentController::class, 'invoice']
+);
+
+Route::get(
+    'payments/{payment}/receipt',
+    [DocumentController::class, 'receipt']
 );
 
 /*
