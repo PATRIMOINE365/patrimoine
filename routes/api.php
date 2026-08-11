@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Api\BuildingController;
 use App\Http\Controllers\Api\LeaseController;
+use App\Http\Controllers\Api\OwnerExpenseController;
+use App\Http\Controllers\Api\OwnerLedgerController;
+use App\Http\Controllers\Api\OwnerPayoutController;
 use App\Http\Controllers\Api\PartyController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\RentReserveController;
@@ -55,4 +58,27 @@ Route::post(
 Route::post(
     'leases/{lease}/security-deposit/settle',
     [SecurityDepositController::class, 'settle']
+);
+
+/*
+ * Owner financial operations.
+ */
+Route::post(
+    'owner-expenses',
+    [OwnerExpenseController::class, 'store']
+);
+
+Route::post(
+    'owner-accounts/{ownerAccount}/deposits',
+    [OwnerLedgerController::class, 'deposit']
+);
+
+Route::post(
+    'owner-accounts/{ownerAccount}/adjustments',
+    [OwnerLedgerController::class, 'adjustment']
+);
+
+Route::post(
+    'owner-accounts/{ownerAccount}/payouts',
+    [OwnerPayoutController::class, 'store']
 );
