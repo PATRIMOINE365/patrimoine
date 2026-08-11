@@ -137,4 +137,13 @@ class Lease extends Model
     {
         return $this->hasMany(Payment::class);
     }
+    /**
+     * Tenant-held financial accounts associated with this Lease.
+     *
+     * These include Rent Reserve, Consumable Advance and Security Deposit.
+     */
+    public function tenantFundAccounts(): HasMany
+    {
+        return $this->hasMany(TenantFundAccount::class);
+    }
 }
