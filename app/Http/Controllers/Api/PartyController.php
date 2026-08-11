@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePartyRequest;
 use App\Http\Requests\UpdatePartyRequest;
+use App\Models\ApplicationSetting;
 use App\Models\Party;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 /**
  * REST API controller for Patrimoine Parties.
@@ -125,6 +127,9 @@ class PartyController extends Controller
      *
      * When roles are supplied they replace the current role set.
      * When roles are omitted, the current role assignments are preserved.
+     *
+     * The configured managing organisation is protected from losing its
+     * managing_organisation role through this generic Party endpoint.
      */
     public function update(
         UpdatePartyRequest $request,
@@ -141,6 +146,26 @@ class PartyController extends Controller
 
                 $roles = $validated['roles'] ?? [];
 
+                /*
+                 * The Party designated as Patrimoine's application-wide
+                 * managing organisation must retain that role.
+                 */
+                if (
+                    $rolesSupplied
+                    && $this->isConfiguredManagingOrganisation($party)
+                    && ! in_array(
+                        'managing_organisation',
+                        $roles,
+                        true
+                    )
+                ) {
+                    throw ValidationException::withMessages([
+                        'roles' => [
+                            'The configured managing organisation cannot lose the managing_organisation role.',
+                        ],
+                    ]);
+                }
+
                 unset($validated['roles']);
 
                 $party->update($validated);
@@ -155,7 +180,9 @@ class PartyController extends Controller
                     }
                 }
 
-                return $party->refresh()->load('roles');
+                return $party
+                    ->refresh()
+                    ->load('roles');
             }
         );
 
@@ -165,16 +192,43 @@ class PartyController extends Controller
     /**
      * Delete a Party when database relationships allow it.
      *
-     * Foreign-key restrictions protect financial and contractual history
-     * from being silently removed.
+     * The configured managing organisation is application identity and may
+     * not be removed through the generic Party API.
+     *
+     * Foreign-key restrictions continue to protect other contractual and
+     * financial Party relationships from accidental deletion.
      */
     public function destroy(Party $party): JsonResponse
     {
+        if ($this->isConfiguredManagingOrganisation($party)) {
+            return response()->json(
+                [
+                    'message' =>
+                        'The configured managing organisation cannot be deleted.',
+                ],
+                409
+            );
+        }
+
         $party->delete();
 
         return response()->json(
             data: null,
             status: 204
         );
+    }
+
+    /**
+     * Determine whether a Party is the application-wide managing organisation.
+     */
+    private function isConfiguredManagingOrganisation(
+        Party $party
+    ): bool {
+        return ApplicationSetting::query()
+            ->where(
+                'managing_organisation_party_id',
+                $party->id
+            )
+            ->exists();
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ManagingOrganisationController;
 use App\Http\Controllers\Api\BuildingController;
 use App\Http\Controllers\Api\ConsumableAdvanceController;
 use App\Http\Controllers\Api\DashboardController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\Api\SecurityDepositController;
 use App\Http\Controllers\Api\TenantFundController;
 use App\Http\Controllers\Api\UnitController;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -104,6 +106,30 @@ Route::middleware([
             'leases',
             LeaseController::class
         );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Managing Organisation
+        |--------------------------------------------------------------------------
+        |
+        | Patrimoine 1.0 is single-tenant and therefore has one application-wide
+        | managing organisation used as the legal and administrative identity.
+        |
+        */
+
+        Route::get(
+            'managing-organisation',
+            [ManagingOrganisationController::class, 'show']
+        );
+
+        Route::put(
+            'managing-organisation',
+            [ManagingOrganisationController::class, 'update']
+        );
+
+
+
 
         /*
         |--------------------------------------------------------------------------
