@@ -67,4 +67,25 @@ class Party extends Model
     {
         return $this->hasMany(BuildingOwner::class);
     }
+    /**
+     * Leases where this Party is the tenant.
+     */
+    public function tenantLeases(): HasMany
+    {
+        return $this->hasMany(
+            related: Lease::class,
+            foreignKey: 'tenant_id'
+        );
+    }
+
+    /**
+     * Leases where this Party acted as the Agent.
+     */
+    public function agentLeases(): HasMany
+    {
+        return $this->hasMany(
+            related: Lease::class,
+            foreignKey: 'agent_id'
+        );
+    }
 }
