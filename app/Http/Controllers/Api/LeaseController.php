@@ -9,16 +9,22 @@ use App\Models\Lease;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/**
- * REST API controller for Patrimoine Leases.
- *
- * Business validation remains in Form Requests and financial services so
- * this controller stays focused on HTTP/application orchestration.
- */
-class LeaseController extends Controller
-{
+    /**
+     * REST API controller for Patrimoine Leases.
+     *
+     * Business validation remains in Form Requests and financial services so
+     * this controller stays focused on HTTP/application orchestration.
+     */
+    class LeaseController extends Controller
+    {
     /**
      * Return Leases with their Unit, Building, Tenant and Agent.
+     *
+     * Supported filters:
+     * - status;
+     * - Unit;
+     * - Tenant;
+     * - free-text search across Tenant, Unit and Building.
      */
     public function index(Request $request): JsonResponse
     {
@@ -29,6 +35,9 @@ class LeaseController extends Controller
                 'agent',
             ]);
 
+        /*
+        * Lease lifecycle filter.
+        */
         if ($request->filled('status')) {
             $query->where(
                 'status',
@@ -36,6 +45,10 @@ class LeaseController extends Controller
             );
         }
 
+        /*
+        * Direct relationship filters remain useful for contextual screens
+        * such as a Unit detail page or Tenant statement.
+        */
         if ($request->filled('unit_id')) {
             $query->where(
                 'unit_id',
@@ -50,13 +63,95 @@ class LeaseController extends Controller
             );
         }
 
+        /*
+        * The main Lease screen needs one search box rather than separate
+        * Tenant, Unit and Building searches.
+        *
+        * Search therefore traverses the principal Lease relationships.
+        */
+        if ($request->filled('search')) {
+            $search = trim(
+                $request->string('search')->toString()
+            );
+
+            $query->where(
+                function ($query) use ($search): void {
+                    $query
+                        ->whereHas(
+                            'tenant',
+                            function ($query) use ($search): void {
+                                $query
+                                    ->where(
+                                        'name',
+                                        'like',
+                                        "%{$search}%"
+                                    )
+                                    ->orWhere(
+                                        'legal_name',
+                                        'like',
+                                        "%{$search}%"
+                                    )
+                                    ->orWhere(
+                                        'phone',
+                                        'like',
+                                        "%{$search}%"
+                                    )
+                                    ->orWhere(
+                                        'email',
+                                        'like',
+                                        "%{$search}%"
+                                    );
+                            }
+                        )
+                        ->orWhereHas(
+                            'unit',
+                            function ($query) use ($search): void {
+                                $query
+                                    ->where(
+                                        'name',
+                                        'like',
+                                        "%{$search}%"
+                                    )
+                                    ->orWhereHas(
+                                        'building',
+                                        function ($query) use ($search): void {
+                                            $query
+                                                ->where(
+                                                    'name',
+                                                    'like',
+                                                    "%{$search}%"
+                                                )
+                                                ->orWhere(
+                                                    'location',
+                                                    'like',
+                                                    "%{$search}%"
+                                                )
+                                                ->orWhere(
+                                                    'address',
+                                                    'like',
+                                                    "%{$search}%"
+                                                );
+                                        }
+                                    );
+                            }
+                        );
+                }
+            );
+        }
+
         return response()->json(
             $query
                 ->orderByDesc('start_date')
                 ->orderByDesc('id')
                 ->paginate(
                     perPage: min(
-                        max((int) $request->input('per_page', 25), 1),
+                        max(
+                            (int) $request->input(
+                                'per_page',
+                                25
+                            ),
+                            1
+                        ),
                         100
                     )
                 )

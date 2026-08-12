@@ -26,18 +26,79 @@ class BuildingController extends Controller
                 'units',
             ]);
 
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Building / Unit Search
+        |--------------------------------------------------------------------------
+        |
+        | The Properties screen represents Buildings together with their Units.
+        | A user should therefore be able to find a Property either by:
+        |
+        | - Building name;
+        | - Building location;
+        | - Building address;
+        | - Building description;
+        | - Unit name / number;
+        | - Unit description.
+        |
+        | When a Unit matches, the parent Building is returned so the normal
+        | Properties UI can render the Building and all of its Units.
+        |
+        */
+
         if ($request->filled('search')) {
             $search = trim(
                 $request->string('search')->toString()
             );
 
-            $query->where(function ($query) use ($search) {
-                $query
-                    ->where('name', 'like', "%{$search}%")
-                    ->orWhere('location', 'like', "%{$search}%")
-                    ->orWhere('address', 'like', "%{$search}%");
-            });
+            $query->where(
+                function ($query) use ($search) {
+                    $query
+                        ->where(
+                            'name',
+                            'like',
+                            "%{$search}%"
+                        )
+                        ->orWhere(
+                            'location',
+                            'like',
+                            "%{$search}%"
+                        )
+                        ->orWhere(
+                            'address',
+                            'like',
+                            "%{$search}%"
+                        )
+                        ->orWhere(
+                            'description',
+                            'like',
+                            "%{$search}%"
+                        )
+                        ->orWhereHas(
+                            'units',
+                            function ($unitQuery) use ($search) {
+                                $unitQuery
+                                    ->where(
+                                        'name',
+                                        'like',
+                                        "%{$search}%"
+                                    )
+                                    ->orWhere(
+                                        'description',
+                                        'like',
+                                        "%{$search}%"
+                                    );
+                            }
+                        );
+                }
+            );
         }
+
+
+
+
 
         return response()->json(
             $query

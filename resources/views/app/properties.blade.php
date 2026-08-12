@@ -228,7 +228,7 @@
                     <input
                         id="property-search"
                         type="search"
-                        placeholder="Search buildings or locations..."
+                        placeholder="Search buildings or units..."
                         class="
                             w-full rounded-lg
                             border border-slate-200

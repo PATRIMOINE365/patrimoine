@@ -44,3 +44,9 @@ Route::view(
     '/settings',
     'app.settings'
 )->name('settings');
+
+Route::view(
+    '/leases',
+    'app.leases'
+)->name('leases');
+

@@ -3,7 +3,7 @@
 | Patrimoine Browser Application Bootstrap
 |--------------------------------------------------------------------------
 |
-| This file is intentionally small.
+| This file intentionally remains small.
 |
 | Feature-specific behaviour lives in dedicated modules:
 |
@@ -11,11 +11,12 @@
 | - dashboard.js   Dashboard functionality
 | - properties.js  Property and Unit management
 | - parties.js     Party management
+| - leases.js      Lease management
 | - settings.js    Application-wide settings
 | - core.js        Shared browser/API helpers
 |
-| Future application areas such as Leases, Payments and Reports will be
-| imported here as their UI modules are implemented.
+| Future application areas such as Payments and Reports will be imported
+| here as their UI modules are implemented.
 |
 */
 
@@ -35,6 +36,10 @@ import {
 import {
     initializeParties,
 } from './parties.js';
+
+import {
+    initializeLeases,
+} from './leases.js';
 
 import {
     initializeSettings,
@@ -72,8 +77,8 @@ document.addEventListener(
         }
 
         /*
-         * Each initializer detects its own page and returns immediately when
-         * its corresponding DOM elements do not exist.
+         * Each initializer detects its own page and returns immediately
+         * when its corresponding DOM elements do not exist.
          *
          * This allows one Vite bundle to serve the entire application.
          */
@@ -82,6 +87,8 @@ document.addEventListener(
         await initializeProperties();
 
         await initializeParties();
+
+        await initializeLeases();
 
         await initializeSettings();
     }
