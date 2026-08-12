@@ -272,7 +272,43 @@
                 Finance
             </p>
 
+
+
+
+
+
+
             <div class="space-y-1">
+
+                <a
+                    href="/owners"
+                    class="
+                        {{
+                            request()->is('owners')
+                                ? 'bg-white/10 text-white'
+                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                        }}
+                        flex items-center gap-3
+                        rounded-lg px-3 py-2.5
+                        text-sm font-medium
+                        transition
+                    "
+                >
+                    <svg
+                        class="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M3 21v-2a6 6 0 0 1 12 0v2"/>
+                        <path d="M17 8h4"/>
+                        <path d="M19 6v4"/>
+                    </svg>
+
+                    Owners
+                </a>
 
                 <a
                     href="#"
@@ -298,6 +334,17 @@
 
                     Reports
                 </a>
+
+
+
+
+
+
+
+
+
+
+
 
                     <a
                         href="/settings"

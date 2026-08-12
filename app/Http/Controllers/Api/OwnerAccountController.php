@@ -4,25 +4,33 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\OwnerAccount;
+use App\Models\OwnerTransaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
  * Read-only API for owner financial accounts.
  *
- * OwnerAccount is the accounting identity used for owner deposits,
- * expenses, payouts and other owner-ledger transactions.
+ * OwnerAccount is the consolidated accounting identity used for:
  *
- * Patrimoine 1.0 keeps one consolidated OwnerAccount per Owner Party,
- * regardless of how many Buildings that Party owns.
+ * - collected rent entitlement;
+ * - owner deposits;
+ * - property expenses;
+ * - management fees;
+ * - agent commissions;
+ * - owner payouts;
+ * - manual accounting adjustments.
+ *
+ * Patrimoine 1.0 keeps one OwnerAccount per Owner Party, regardless of
+ * how many Buildings that Party owns.
  */
 class OwnerAccountController extends Controller
 {
     /**
-     * Return OwnerAccounts together with their Owner Party.
+     * Return searchable OwnerAccounts for the Owner workspace.
      *
-     * This endpoint is intentionally lightweight because it is also used by
-     * browser-side owner search fields.
+     * This endpoint is also intentionally suitable for lightweight owner
+     * search fields used elsewhere in the application.
      *
      * Supported filters:
      *
@@ -90,8 +98,10 @@ class OwnerAccountController extends Controller
             );
 
         /*
-         * The balance is derived from the OwnerTransaction ledger rather
-         * than stored as a mutable field on OwnerAccount.
+         * Financial balances are intentionally calculated from the ledger.
+         *
+         * Patrimoine does not maintain a mutable cached balance on the
+         * OwnerAccount record.
          */
         $accounts->getCollection()->transform(
             function (OwnerAccount $account): array {
@@ -107,6 +117,18 @@ class OwnerAccountController extends Controller
 
                     'balance' =>
                         $account->balance(),
+
+                    'credited_amount' =>
+                        $account->creditedAmount(),
+
+                    'debited_amount' =>
+                        $account->debitedAmount(),
+
+                    'property_count' =>
+                        $account
+                            ->party
+                            ->buildingOwnerships()
+                            ->count(),
 
                     'party' =>
                         $account->party,
@@ -126,22 +148,29 @@ class OwnerAccountController extends Controller
     }
 
     /**
-     * Return one OwnerAccount with:
+     * Return the complete operational view of one OwnerAccount.
      *
-     * - Owner Party;
-     * - current consolidated balance;
-     * - Buildings owned by the Party;
-     * - Units belonging to those Buildings.
+     * The response includes:
      *
-     * Building ownership, rather than Lease activity, determines the property
-     * list. This is important because an Owner may need to provide money for
-     * repairs while a Building is completely vacant.
+     * - owner identity;
+     * - consolidated balance;
+     * - credit/debit totals;
+     * - Buildings owned;
+     * - Units within those Buildings;
+     * - recent owner ledger activity;
+     * - owner payout history.
+     *
+     * Property visibility depends exclusively on Building ownership and not
+     * on Lease activity. This ensures vacant properties remain available for
+     * owner deposits, repairs and other financial operations.
      */
     public function show(
+        Request $request,
         OwnerAccount $ownerAccount
     ): JsonResponse {
         $ownerAccount->load([
             'party.buildingOwnerships.building.units',
+            'payouts',
         ]);
 
         $properties =
@@ -195,6 +224,148 @@ class OwnerAccountController extends Controller
                 )
                 ->values();
 
+        /*
+         * Ledger transactions are returned separately from the account
+         * identity because this history may grow significantly over time.
+         *
+         * Pagination prevents an old OwnerAccount from producing an
+         * excessively large API response.
+         */
+        $transactions =
+            OwnerTransaction::query()
+                ->where(
+                    'owner_account_id',
+                    $ownerAccount->id
+                )
+                ->with([
+                    'building',
+                    'unit',
+                    'lease',
+                    'invoice',
+                ])
+                ->orderByDesc(
+                    'transaction_date'
+                )
+                ->orderByDesc(
+                    'id'
+                )
+                ->paginate(
+                    perPage: min(
+                        max(
+                            (int) $request->input(
+                                'transactions_per_page',
+                                25
+                            ),
+                            1
+                        ),
+                        100
+                    ),
+                    pageName:
+                        'transactions_page'
+                );
+
+        /*
+         * Owner deposit transactions represent actual incoming cash and
+         * therefore have an official receipt.
+         *
+         * Other owner ledger categories are accounting movements rather than
+         * receipts and intentionally do not expose a receipt endpoint.
+         */
+        $transactions
+            ->getCollection()
+            ->transform(
+                function (OwnerTransaction $transaction): array {
+                    return [
+                        'id' =>
+                            $transaction->id,
+
+                        'direction' =>
+                            $transaction->direction,
+
+                        'category' =>
+                            $transaction->category,
+
+                        'amount' =>
+                            $transaction->amount,
+
+                        'transaction_date' =>
+                            $transaction
+                                ->transaction_date
+                                ->toDateString(),
+
+                        'payment_method' =>
+                            $transaction->payment_method,
+
+                        'deposit_purpose' =>
+                            $transaction->deposit_purpose,
+
+                        'collector_name' =>
+                            $transaction->collector_name,
+
+                        'reference' =>
+                            $transaction->reference,
+
+                        'notes' =>
+                            $transaction->notes,
+
+                        'building' =>
+                            $transaction->building,
+
+                        'unit' =>
+                            $transaction->unit,
+
+                        'lease_id' =>
+                            $transaction->lease_id,
+
+                        'invoice_id' =>
+                            $transaction->invoice_id,
+
+                        'receipt_endpoint' =>
+                            (
+                                $transaction->direction === 'credit'
+                                && $transaction->category === 'owner_deposit'
+                            )
+                                ? sprintf(
+                                    '/api/owner-deposits/%d/receipt',
+                                    $transaction->id
+                                )
+                                : null,
+
+                        'created_at' =>
+                            $transaction->created_at,
+                    ];
+                }
+            );
+
+        $payouts =
+            $ownerAccount
+                ->payouts
+                ->sortByDesc('payout_date')
+                ->values()
+                ->map(
+                    fn ($payout): array => [
+                        'id' =>
+                            $payout->id,
+
+                        'amount' =>
+                            $payout->amount,
+
+                        'payout_date' =>
+                            $payout
+                                ->payout_date
+                                ->toDateString(),
+
+                        'payment_method' =>
+                            $payout->payment_method,
+
+                        'reference' =>
+                            $payout->reference,
+
+                        'notes' =>
+                            $payout->notes,
+                    ]
+                );
+
         return response()->json([
             'id' =>
                 $ownerAccount->id,
@@ -208,17 +379,23 @@ class OwnerAccountController extends Controller
             'balance' =>
                 $ownerAccount->balance(),
 
+            'credited_amount' =>
+                $ownerAccount->creditedAmount(),
+
+            'debited_amount' =>
+                $ownerAccount->debitedAmount(),
+
             'party' =>
                 $ownerAccount->party,
 
-            /*
-             * These are based solely on Building ownership.
-             *
-             * No Lease, tenant Payment or owner ledger history is required
-             * for the Building to appear here.
-             */
             'properties' =>
                 $properties,
+
+            'transactions' =>
+                $transactions,
+
+            'payouts' =>
+                $payouts,
 
             'created_at' =>
                 $ownerAccount->created_at,

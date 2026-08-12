@@ -51,6 +51,11 @@ Route::view(
 )->name('payments');
 
 Route::view(
+    '/owners',
+    'app.owners'
+)->name('owners');
+
+Route::view(
     '/settings',
     'app.settings'
 )->name('settings');
