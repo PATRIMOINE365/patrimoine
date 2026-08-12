@@ -4,14 +4,19 @@ namespace Tests\Feature;
 
 use App\Models\Building;
 use App\Models\BuildingOwner;
+use App\Models\Invoice;
+use App\Models\Lease;
 use App\Models\OwnerAccount;
-use App\Models\OwnerExpense;
 use App\Models\OwnerTransaction;
 use App\Models\Party;
+use App\Models\Payment;
+use App\Models\PaymentAllocation;
+use App\Models\Unit;
 use App\Services\OwnerAccountingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use RuntimeException;
 use Tests\TestCase;
+use App\Models\OwnerExpense;
 
 /**
  * Verifies owner-ledger accounting and property-expense allocation.
@@ -293,44 +298,58 @@ class OwnerAccountingServiceTest extends TestCase
 
 
 
-
     /**
-     * Percentage management fees reduce owner balances according to
-     * ownership percentages.
+     * Percentage management fees are charged only when tenant rent is
+     * actually collected and allocated to an Invoice.
      */
     public function test_percentage_management_fee_is_charged_to_owners(): void
     {
-        $context = $this->createBuildingWithOwners(60.00, 40.00);
+        $building = Building::create([
+            'name' => 'Management Fee Building',
+        ]);
 
-        $unit = \App\Models\Unit::create([
-            'building_id' => $context['building']->id,
+        $owner = Party::create([
+            'type' => 'person',
+            'name' => 'Management Fee Owner',
+            'phone' => '0200000300',
+            'email' => 'management-owner@example.test',
+        ]);
+
+        BuildingOwner::create([
+            'building_id' => $building->id,
+            'party_id' => $owner->id,
+            'ownership_percentage' => 100.00,
+        ]);
+
+        $unit = Unit::create([
+            'building_id' => $building->id,
             'name' => 'Unit 1',
         ]);
 
         $tenant = Party::create([
             'type' => 'person',
             'name' => 'Management Fee Tenant',
-            'phone' => '0200000081',
-            'email' => 'fee-tenant@example.test',
+            'phone' => '0200000301',
+            'email' => 'management-tenant@example.test',
         ]);
 
-        $lease = \App\Models\Lease::create([
+        $lease = Lease::create([
             'unit_id' => $unit->id,
             'tenant_id' => $tenant->id,
-            'start_date' => '2026-08-01',
+            'start_date' => '2026-01-01',
             'rent_amount' => 10000,
+            'status' => 'active',
             'management_fee_type' => 'percentage',
             'management_fee_value' => 10,
-            'status' => 'active',
         ]);
 
-        $invoice = \App\Models\Invoice::create([
+        $invoice = Invoice::create([
             'lease_id' => $lease->id,
-            'invoice_number' => 'INV-OWNER-002',
-            'period_start' => '2026-08-01',
-            'period_end' => '2026-08-31',
-            'issue_date' => '2026-08-01',
-            'due_date' => '2026-08-01',
+            'invoice_number' => 'INV-MGT-FEE-001',
+            'period_start' => '2026-01-01',
+            'period_end' => '2026-01-31',
+            'issue_date' => '2026-01-01',
+            'due_date' => '2026-01-01',
             'status' => 'issued',
             'total_amount' => 10000,
             'vat_rate' => 0,
@@ -338,26 +357,68 @@ class OwnerAccountingServiceTest extends TestCase
             'vat_amount' => 0,
         ]);
 
+        $payment = \App\Models\Payment::create([
+            'lease_id' => $lease->id,
+            'amount' => 10000,
+            'payment_date' => '2026-01-05',
+            'payment_method' => 'bank_transfer',
+            'reference' => 'MGMT-FEE-PAY-001',
+        ]);
+
+        $allocation = \App\Models\PaymentAllocation::create([
+            'payment_id' => $payment->id,
+            'invoice_id' => $invoice->id,
+            'amount' => 10000,
+        ]);
+
         app(OwnerAccountingService::class)
-            ->postManagementFee($invoice);
+            ->postCollectedRentEntitlement(
+                $allocation
+            );
 
-        $firstAccount = OwnerAccount::where(
-            'party_id',
-            $context['firstOwner']->id
-        )->firstOrFail();
+        app(OwnerAccountingService::class)
+            ->postManagementFee(
+                $allocation
+            );
 
-        $secondAccount = OwnerAccount::where(
-            'party_id',
-            $context['secondOwner']->id
-        )->firstOrFail();
+        $ownerAccount = OwnerAccount::query()
+            ->where('party_id', $owner->id)
+            ->firstOrFail();
 
         /*
-        * Management fee = 10% of GHS 10,000 = GHS 1,000.
-        * Owner shares = GHS 600 and GHS 400.
+        * GHS 10,000 cash collected creates:
+        *
+        * + GHS 10,000 rent entitlement
+        * - GHS  1,000 management fee
+        *
+        * Owner funds held therefore equal GHS 9,000.
         */
-        $this->assertSame(600, $firstAccount->debitedAmount());
-        $this->assertSame(400, $secondAccount->debitedAmount());
+        $this->assertSame(
+            10000,
+            (int) $ownerAccount->transactions()
+                ->where('direction', 'credit')
+                ->where('category', 'rent_entitlement')
+                ->sum('amount')
+        );
+
+        $this->assertSame(
+            1000,
+            (int) $ownerAccount->transactions()
+                ->where('direction', 'debit')
+                ->where('category', 'management_fee')
+                ->sum('amount')
+        );
+
+        $this->assertSame(
+            9000,
+            $ownerAccount->balance()
+        );
     }
+
+
+
+
+
 
     /**
      * One-time Agent commission is distributed across owners.

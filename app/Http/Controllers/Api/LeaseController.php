@@ -8,6 +8,9 @@ use App\Http\Requests\UpdateLeaseRequest;
 use App\Models\Lease;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Services\LeaseInitializationService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Arr;
 
     /**
      * REST API controller for Patrimoine Leases.
@@ -30,7 +33,7 @@ use Illuminate\Http\Request;
     {
         $query = Lease::query()
             ->with([
-                'unit.building',
+                'unit.building.ownerships.party',
                 'tenant',
                 'agent',
             ]);
@@ -157,26 +160,93 @@ use Illuminate\Http\Request;
                 )
         );
     }
-
     /**
-     * Create a Lease.
+     * Create a Lease and initialize all operational records that should
+     * already exist as of today.
+     *
+     * Backdated Active/Notice Leases immediately receive all missing rent
+     * Invoices from their contractual start date through the current date.
+     *
+     * The entire operation is transactional so Patrimoine never leaves behind
+     * a partially initialized Lease if billing initialization fails.
      */
-    public function store(
-        StoreLeaseRequest $request
-    ): JsonResponse {
-        $lease = Lease::create(
-            $request->validated()
+/**
+ * Create a Lease and reconstruct all records that should already exist.
+ *
+ * Contractual Lease attributes and historical opening-financial instructions
+ * are deliberately separated because payment metadata does not belong to the
+ * leases table.
+ */
+
+public function store(
+    StoreLeaseRequest $request,
+    LeaseInitializationService $initializer
+): JsonResponse {
+    $validated =
+        $request->validated();
+
+    /*
+     * These fields describe an historical financial event rather than
+     * contractual Lease attributes.
+     */
+    $openingFinancialData =
+        Arr::only(
+            $validated,
+            [
+                'advance_received',
+                'advance_received_date',
+                'advance_received_method',
+                'advance_received_reference',
+                'advance_received_collector',
+            ]
         );
 
-        return response()->json(
-            data: $lease->load([
-                'unit.building',
-                'tenant',
-                'agent',
-            ]),
-            status: 201
+    $leaseAttributes =
+        Arr::except(
+            $validated,
+            [
+                'advance_received',
+                'advance_received_date',
+                'advance_received_method',
+                'advance_received_reference',
+                'advance_received_collector',
+            ]
         );
-    }
+
+    $lease = DB::transaction(
+        function () use (
+            $leaseAttributes,
+            $openingFinancialData,
+            $initializer
+        ): Lease {
+            $lease = Lease::create(
+                $leaseAttributes
+            );
+
+            $initializer->initialize(
+                lease: $lease,
+                openingFinancialData:
+                    $openingFinancialData
+            );
+
+            return $lease->refresh();
+        }
+    );
+
+    return response()->json(
+        data: $lease->load([
+            'unit.building.ownerships.party',
+            'tenant',
+            'agent',
+            'invoices',
+            'payments.allocations.invoice',
+            'tenantFundAccounts.transactions',
+        ]),
+        status: 201
+    );
+}
+
+
 
     /**
      * Return one Lease with its principal relationships.
@@ -185,7 +255,7 @@ use Illuminate\Http\Request;
     {
         return response()->json(
             $lease->load([
-                'unit.building',
+                'unit.building.ownerships.party',
                 'tenant',
                 'agent',
                 'invoices',
@@ -195,22 +265,93 @@ use Illuminate\Http\Request;
         );
     }
 
+
     /**
-     * Update a Lease's contractual configuration and lifecycle state.
+     * Update a Lease and initialize any historical operational records requested.
+     *
+     * This also allows older Leases that were created before opening-financial
+     * reconstruction existed to be brought into the correct accounting state.
      */
     public function update(
         UpdateLeaseRequest $request,
-        Lease $lease
+        Lease $lease,
+        LeaseInitializationService $initializer
     ): JsonResponse {
-        $lease->update(
-            $request->validated()
+        $validated =
+            $request->validated();
+
+        /*
+        * Historical payment instructions are deliberately kept separate
+        * from contractual Lease attributes.
+        */
+        $openingFinancialData =
+            Arr::only(
+                $validated,
+                [
+                    'advance_received',
+                    'advance_received_date',
+                    'advance_received_method',
+                    'advance_received_reference',
+                    'advance_received_collector',
+                ]
+            );
+
+        $leaseAttributes =
+            Arr::except(
+                $validated,
+                [
+                    'advance_received',
+                    'advance_received_date',
+                    'advance_received_method',
+                    'advance_received_reference',
+                    'advance_received_collector',
+                ]
+            );
+
+        $lease = DB::transaction(
+            function () use (
+                $lease,
+                $leaseAttributes,
+                $openingFinancialData,
+                $initializer
+            ): Lease {
+                /*
+                * First persist the contractual state.
+                */
+                $lease->update(
+                    $leaseAttributes
+                );
+
+                /*
+                * Then reconstruct anything that should already exist:
+                *
+                * - missing historical Invoices;
+                * - historical opening Advance Payment;
+                * - Rent Reserve;
+                * - FIFO rent settlement;
+                * - Consumable Advance;
+                * - owner entitlement;
+                * - Managing Organisation fee;
+                * - Agent commission.
+                */
+                $initializer->initialize(
+                    lease: $lease->refresh(),
+                    openingFinancialData:
+                        $openingFinancialData
+                );
+
+                return $lease->refresh();
+            }
         );
 
         return response()->json(
-            $lease->refresh()->load([
-                'unit.building',
+            $lease->load([
+                'unit.building.ownerships.party',
                 'tenant',
                 'agent',
+                'invoices',
+                'payments.allocations.invoice',
+                'tenantFundAccounts.transactions',
             ])
         );
     }

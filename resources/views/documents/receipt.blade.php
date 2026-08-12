@@ -89,6 +89,35 @@
             text-align: right;
         }
 
+        .summary-table {
+            margin-top: 8px;
+        }
+
+        .summary-table td {
+            padding: 5px 0;
+            vertical-align: top;
+        }
+
+        .summary-table .summary-label {
+            font-weight: bold;
+        }
+
+        .summary-table .summary-amount {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .summary-table .summary-detail {
+            color: #555;
+            padding-left: 16px;
+        }
+
+        .summary-table .total-row td {
+            padding-top: 8px;
+            border-top: 1px solid #aaa;
+            font-weight: bold;
+        }
+
         .footer {
             margin-top: 36px;
             padding-top: 12px;
@@ -102,11 +131,95 @@
 
 <body>
 
+@php
+    /*
+     * Payment money may be used in several different ways:
+     *
+     * - allocated to rent invoices;
+     * - protected as Rent Reserve;
+     * - retained as Consumable Advance;
+     * - held as Security Deposit;
+     * - or remain genuinely unclassified.
+     *
+     * The receipt should explain these destinations clearly rather than
+     * describing all non-invoice money simply as "Unallocated".
+     */
+    $allocatedAmount =
+        $payment->allocatedAmount();
+
+    $rentReserveAmount =
+        (int) \App\Models\TenantFundTransaction::query()
+            ->where(
+                'payment_id',
+                $payment->id
+            )
+            ->where(
+                'direction',
+                'credit'
+            )
+            ->where(
+                'category',
+                'reserve_funding'
+            )
+            ->sum('amount');
+
+    $consumableAdvanceAmount =
+        (int) \App\Models\TenantFundTransaction::query()
+            ->where(
+                'payment_id',
+                $payment->id
+            )
+            ->where(
+                'direction',
+                'credit'
+            )
+            ->where(
+                'category',
+                'advance_funding'
+            )
+            ->sum('amount');
+
+    $securityDepositAmount =
+        (int) \App\Models\TenantFundTransaction::query()
+            ->where(
+                'payment_id',
+                $payment->id
+            )
+            ->where(
+                'direction',
+                'credit'
+            )
+            ->where(
+                'category',
+                'deposit_funding'
+            )
+            ->sum('amount');
+
+    $classifiedFundAmount =
+        $rentReserveAmount
+        + $consumableAdvanceAmount
+        + $securityDepositAmount;
+
+    /*
+     * Any positive amount here represents money that has genuinely not yet
+     * been assigned either to rent or to a tenant-held fund.
+     */
+    $unclassifiedAmount =
+        max(
+            0,
+            $payment->amount
+            - $allocatedAmount
+            - $classifiedFundAmount
+        );
+
+    $accountedAmount =
+        $allocatedAmount
+        + $classifiedFundAmount;
+@endphp
+
 <table>
     <tr>
         <td>
-
-
             <div class="brand">
                 {{ $managingOrganisation?->legal_name
                     ?? $managingOrganisation?->name
@@ -142,8 +255,6 @@
                     </div>
                 @endif
             @endif
-
-
         </td>
 
         <td>
@@ -242,7 +353,7 @@
 
     @if($payment->allocations->isEmpty())
         <p>
-            This payment is currently unapplied to rent invoices.
+            No portion of this payment has been applied directly to rent invoices.
         </p>
     @else
         <table class="allocation-table">
@@ -278,16 +389,88 @@
 </div>
 
 <div class="section">
-    <table class="details-table">
+    <div class="section-title">
+        Payment Summary
+    </div>
+
+    <table class="summary-table">
         <tr>
-            <td>
-                <strong>Allocated:</strong>
-                GHS {{ number_format($payment->allocatedAmount(), 0) }}
+            <td class="summary-label">
+                Amount Received
             </td>
 
+            <td class="summary-amount">
+                GHS {{ number_format($payment->amount, 0) }}
+            </td>
+        </tr>
+
+        @if($allocatedAmount > 0)
+            <tr>
+                <td class="summary-detail">
+                    Applied to Rent
+                </td>
+
+                <td class="summary-amount">
+                    GHS {{ number_format($allocatedAmount, 0) }}
+                </td>
+            </tr>
+        @endif
+
+        @if($rentReserveAmount > 0)
+            <tr>
+                <td class="summary-detail">
+                    Held as Rent Reserve
+                </td>
+
+                <td class="summary-amount">
+                    GHS {{ number_format($rentReserveAmount, 0) }}
+                </td>
+            </tr>
+        @endif
+
+        @if($consumableAdvanceAmount > 0)
+            <tr>
+                <td class="summary-detail">
+                    Held as Consumable Advance
+                </td>
+
+                <td class="summary-amount">
+                    GHS {{ number_format($consumableAdvanceAmount, 0) }}
+                </td>
+            </tr>
+        @endif
+
+        @if($securityDepositAmount > 0)
+            <tr>
+                <td class="summary-detail">
+                    Held as Security Deposit
+                </td>
+
+                <td class="summary-amount">
+                    GHS {{ number_format($securityDepositAmount, 0) }}
+                </td>
+            </tr>
+        @endif
+
+        @if($unclassifiedAmount > 0)
+            <tr>
+                <td class="summary-detail">
+                    Unclassified Balance
+                </td>
+
+                <td class="summary-amount">
+                    GHS {{ number_format($unclassifiedAmount, 0) }}
+                </td>
+            </tr>
+        @endif
+
+        <tr class="total-row">
             <td>
-                <strong>Unallocated:</strong>
-                GHS {{ number_format($payment->unallocatedAmount(), 0) }}
+                Accounted For
+            </td>
+
+            <td class="summary-amount">
+                GHS {{ number_format($accountedAmount, 0) }}
             </td>
         </tr>
     </table>
@@ -295,7 +478,10 @@
 
 @if($payment->notes)
     <div class="section">
-        <div class="section-title">Notes</div>
+        <div class="section-title">
+            Notes
+        </div>
+
         {{ $payment->notes }}
     </div>
 @endif

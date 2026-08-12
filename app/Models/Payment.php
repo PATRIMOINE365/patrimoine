@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\TenantFundTransaction;
 
 /**
  * Represents money received from a tenant under a Lease.
@@ -28,6 +29,7 @@ class Payment extends Model
         'reference',
         'collector_name',
         'notes',
+        'is_opening_advance',
     ];
 
     /**
@@ -40,6 +42,7 @@ class Payment extends Model
         return [
             'amount' => 'integer',
             'payment_date' => 'date',
+            'is_opening_advance' => 'boolean',
         ];
     }
 
@@ -77,5 +80,42 @@ class Payment extends Model
     public function unallocatedAmount(): int
     {
         return $this->amount - $this->allocatedAmount();
+    }
+    /**
+     * Total unapplied Payment money already classified into tenant-held funds.
+     *
+     * Classified money remains unapplied to Invoices, but it is no longer
+     * available for ordinary FIFO rent allocation.
+     */
+    public function classifiedFundAmount(): int
+    {
+        return (int) TenantFundTransaction::query()
+            ->where('payment_id', $this->id)
+            ->where('direction', 'credit')
+            ->whereIn('category', [
+                'reserve_funding',
+                'advance_funding',
+                'deposit_funding',
+            ])
+            ->sum('amount');
+    }
+
+    /**
+     * Money that remains available for ordinary Invoice allocation.
+     *
+     * Formula:
+     *
+     * Payment amount
+     * - Invoice allocations
+     * - tenant-fund classifications
+     */
+    public function allocatableAmount(): int
+    {
+        return max(
+            0,
+            $this->amount
+            - $this->allocatedAmount()
+            - $this->classifiedFundAmount()
+        );
     }
 }

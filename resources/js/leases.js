@@ -151,9 +151,14 @@ async function loadLeaseReferenceData() {
             : [];
 
     /*
-     * Flatten Building -> Unit relationships into one collection while
-     * retaining the Building identity for display.
-     */
+    * Flatten Building -> Unit relationships into one searchable Unit
+    * collection.
+    *
+    * The full Building context is deliberately retained because the Lease
+    * composer shows ownership information immediately after a Unit is
+    * selected. Patrimoine V1 defines ownership at Building level, therefore
+    * every Unit inherits its Building's ownership structure.
+    */
     availableUnits =
         buildings.flatMap(
             (building) =>
@@ -170,6 +175,19 @@ async function loadLeaseReferenceData() {
 
                                 name:
                                     building.name,
+
+                                address:
+                                    building.address,
+
+                                location:
+                                    building.location,
+
+                                ownerships:
+                                    Array.isArray(
+                                        building.ownerships
+                                    )
+                                        ? building.ownerships
+                                        : [],
                             },
                         })
                     )
@@ -213,7 +231,12 @@ function populateLeaseReferenceControls() {
         'No Agent'
     );
 
-    populateUnitSelect();
+    /*
+    * Unit selection uses the searchable Unit picker rather than a native
+    * select. Refreshing here ensures any newly loaded Unit information is
+    * available to the search control.
+    */
+    refreshUnitSearch();
 }
 
 /**
@@ -270,105 +293,625 @@ function populatePartySelect(
     }
 }
 
-/**
- * Populate Units grouped visually by Building.
- */
-function populateUnitSelect() {
-    const select =
-        document.getElementById(
-            'lease-unit'
-        );
-
-    if (! select) {
-        return;
-    }
-
-    const previousValue =
-        select.value;
-
-    const groups =
-        new Map();
-
-    availableUnits.forEach(
-        (unit) => {
-            const buildingId =
-                String(
-                    unit.building?.id
-                    ?? ''
-                );
-
-            if (! groups.has(buildingId)) {
-                groups.set(
-                    buildingId,
-                    {
-                        name:
-                            unit.building?.name
-                            || 'Property',
-
-                        units:
-                            [],
-                    }
-                );
-            }
-
-            groups
-                .get(buildingId)
-                .units
-                .push(unit);
-        }
-    );
-
-    select.innerHTML = `
-        <option value="">
-            Select unit…
-        </option>
-
-        ${
-            Array
-                .from(groups.values())
-                .map(
-                    (group) => `
-                        <optgroup
-                            label="${escapeHtml(
-                                group.name
-                            )}"
-                        >
-                            ${
-                                group.units
-                                    .map(
-                                        (unit) => `
-                                            <option
-                                                value="${escapeHtml(
-                                                    unit.id
-                                                )}"
-                                            >
-                                                ${escapeHtml(
-                                                    unit.name
-                                                    || `Unit #${unit.id}`
-                                                )}
-                                            </option>
-                                        `
-                                    )
-                                    .join('')
-                            }
-                        </optgroup>
-                    `
-                )
-                .join('')
-        }
-    `;
-
-    if (previousValue !== '') {
-        select.value =
-            previousValue;
-    }
-}
 
 function partyDisplayName(party) {
     return party?.name
         || party?.legal_name
         || `Party #${party?.id ?? ''}`;
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| Searchable Unit Picker
+|--------------------------------------------------------------------------
+|
+| Patrimoine installations may eventually contain hundreds or thousands
+| of Units. A standard HTML select therefore becomes impractical.
+|
+| The Lease composer uses an in-memory search over the Units already
+| returned with the Building reference data.
+|
+| The selected Unit ID is stored in the hidden #lease-unit input so the
+| remainder of the Lease submission code can continue treating unit_id
+| exactly as it did previously.
+|
+*/
+
+let selectedLeaseUnit =
+    null;
+
+/**
+ * Configure the searchable Unit control.
+ */
+function initializeUnitSearch() {
+    const input =
+        document.getElementById(
+            'lease-unit-search'
+        );
+
+    const results =
+        document.getElementById(
+            'lease-unit-results'
+        );
+
+    if (! input || ! results) {
+        return;
+    }
+
+    input.addEventListener(
+        'input',
+        () => {
+            /*
+             * Typing after a Unit has been selected means the user is
+             * looking for another Unit.
+             */
+            const selectedLabel =
+                selectedLeaseUnit
+                    ? unitSearchLabel(
+                        selectedLeaseUnit
+                    )
+                    : '';
+
+            if (
+                selectedLeaseUnit
+                && input.value.trim()
+                    !== selectedLabel
+            ) {
+                clearSelectedUnit(
+                    false
+                );
+            }
+
+            renderUnitSearchResults(
+                input.value
+            );
+        }
+    );
+
+    input.addEventListener(
+        'focus',
+        () => {
+            if (! selectedLeaseUnit) {
+                renderUnitSearchResults(
+                    input.value
+                );
+            }
+        }
+    );
+
+    document
+        .getElementById(
+            'lease-unit-clear'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                clearSelectedUnit();
+
+                input.focus();
+            }
+        );
+
+    /*
+     * Clicking elsewhere closes the results without clearing the selected
+     * Unit.
+     */
+    document.addEventListener(
+        'click',
+        (event) => {
+            const picker =
+                document.getElementById(
+                    'lease-unit-picker'
+                );
+
+            if (
+                picker
+                && ! picker.contains(
+                    event.target
+                )
+            ) {
+                hideUnitSearchResults();
+            }
+        }
+    );
+}
+
+/**
+ * Refresh the Unit search control after reference data is loaded.
+ */
+function refreshUnitSearch() {
+    if (
+        selectedLeaseUnit
+        && ! availableUnits.some(
+            (unit) =>
+                Number(unit.id)
+                === Number(
+                    selectedLeaseUnit.id
+                )
+        )
+    ) {
+        clearSelectedUnit();
+    }
+}
+
+/**
+ * Return one human-readable Building / Unit label.
+ */
+function unitSearchLabel(unit) {
+    return [
+        unit?.building?.name,
+        unit?.name,
+    ]
+        .filter(Boolean)
+        .join(' / ');
+}
+
+/**
+ * Return all searchable text associated with a Unit.
+ *
+ * Owners are included as a convenience so searching an owner's name can
+ * also locate the properties they own.
+ */
+function unitSearchHaystack(unit) {
+    const owners =
+        Array.isArray(
+            unit?.building?.ownerships
+        )
+            ? unit.building.ownerships
+                .map(
+                    (ownership) =>
+                        partyDisplayName(
+                            ownership.party
+                        )
+                )
+            : [];
+
+    return [
+        unit?.name,
+        unit?.description,
+        unit?.building?.name,
+        unit?.building?.location,
+        unit?.building?.address,
+        ...owners,
+    ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+}
+
+/**
+ * Show Unit search results matching the current text.
+ */
+function renderUnitSearchResults(
+    search
+) {
+    const results =
+        document.getElementById(
+            'lease-unit-results'
+        );
+
+    if (! results) {
+        return;
+    }
+
+    const term =
+        String(
+            search || ''
+        )
+            .trim()
+            .toLowerCase();
+
+    /*
+     * When the search field is empty, display only a small initial sample
+     * rather than rendering hundreds of Units.
+     */
+    const matchingUnits =
+        availableUnits
+            .filter(
+                (unit) =>
+                    term === ''
+                    || unitSearchHaystack(
+                        unit
+                    ).includes(term)
+            )
+            .slice(
+                0,
+                12
+            );
+
+    if (matchingUnits.length === 0) {
+        results.innerHTML = `
+            <div
+                class="
+                    px-4 py-5
+                    text-center text-sm
+                    text-slate-500
+                "
+            >
+                No matching units found.
+            </div>
+        `;
+
+        results.classList.remove(
+            'hidden'
+        );
+
+        return;
+    }
+
+    results.innerHTML =
+        matchingUnits
+            .map(
+                (unit) =>
+                    unitSearchResult(
+                        unit
+                    )
+            )
+            .join('');
+
+    results.classList.remove(
+        'hidden'
+    );
+
+    results
+        .querySelectorAll(
+            '[data-select-unit]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        selectLeaseUnit(
+                            button.dataset
+                                .unitId
+                        );
+                    }
+                );
+            }
+        );
+}
+
+/**
+ * Render one Unit search result.
+ */
+function unitSearchResult(unit) {
+    const building =
+        unit?.building?.name
+        || 'Property';
+
+    const unitName =
+        unit?.name
+        || `Unit #${unit?.id ?? ''}`;
+
+    const location =
+        unit?.building?.location
+        || unit?.building?.address
+        || '';
+
+    const owners =
+        unitOwnerNames(
+            unit
+        );
+
+    return `
+        <button
+            type="button"
+            data-select-unit
+            data-unit-id="${escapeHtml(
+                unit.id
+            )}"
+            class="
+                block w-full
+                border-b border-slate-100
+                px-4 py-3
+                text-left
+                transition
+                last:border-b-0
+                hover:bg-patrimoine-50
+                focus:bg-patrimoine-50
+                focus:outline-none
+            "
+        >
+            <div
+                class="
+                    text-sm font-medium
+                    text-slate-950
+                "
+            >
+                ${escapeHtml(
+                    unitName
+                )}
+            </div>
+
+            <div
+                class="
+                    mt-0.5 text-xs
+                    text-slate-600
+                "
+            >
+                ${escapeHtml(
+                    building
+                )}
+            </div>
+
+            ${
+                location
+                    ? `
+                        <div
+                            class="
+                                mt-1 text-xs
+                                text-slate-400
+                            "
+                        >
+                            ${escapeHtml(
+                                location
+                            )}
+                        </div>
+                    `
+                    : ''
+            }
+
+            ${
+                owners.length > 0
+                    ? `
+                        <div
+                            class="
+                                mt-1.5 text-xs
+                                text-patrimoine-700
+                            "
+                        >
+                            Owner:
+                            ${escapeHtml(
+                                owners.join(
+                                    ', '
+                                )
+                            )}
+                        </div>
+                    `
+                    : ''
+            }
+        </button>
+    `;
+}
+
+/**
+ * Return owner names inherited by a Unit through its Building.
+ */
+function unitOwnerNames(unit) {
+    const ownerships =
+        Array.isArray(
+            unit?.building?.ownerships
+        )
+            ? unit.building.ownerships
+            : [];
+
+    return ownerships
+        .map(
+            (ownership) =>
+                partyDisplayName(
+                    ownership.party
+                )
+        )
+        .filter(Boolean);
+}
+
+/**
+ * Select one Unit from the searchable picker.
+ */
+function selectLeaseUnit(
+    unitId
+) {
+    const numericUnitId =
+        Number(
+            unitId
+        );
+
+    const unit =
+        availableUnits.find(
+            (candidate) =>
+                Number(candidate.id)
+                === numericUnitId
+        );
+
+    if (! unit) {
+        return;
+    }
+
+    selectedLeaseUnit =
+        unit;
+
+    setFormValue(
+        'lease-unit',
+        unit.id
+    );
+
+    const input =
+        document.getElementById(
+            'lease-unit-search'
+        );
+
+    if (input) {
+        input.value =
+            unitSearchLabel(
+                unit
+            );
+    }
+
+    renderSelectedUnit(
+        unit
+    );
+
+    hideUnitSearchResults();
+}
+
+/**
+ * Clear the selected Unit.
+ */
+function clearSelectedUnit(
+    clearSearch = true
+) {
+    selectedLeaseUnit =
+        null;
+
+    setFormValue(
+        'lease-unit',
+        ''
+    );
+
+    if (clearSearch) {
+        setFormValue(
+            'lease-unit-search',
+            ''
+        );
+    }
+
+    const selection =
+        document.getElementById(
+            'lease-unit-selection'
+        );
+
+    selection?.classList.add(
+        'hidden'
+    );
+
+    const owners =
+        document.getElementById(
+            'lease-unit-owners'
+        );
+
+    if (owners) {
+        owners.innerHTML = '';
+    }
+}
+
+/**
+ * Display the selected Unit and its inherited Building ownership.
+ */
+function renderSelectedUnit(unit) {
+    const selection =
+        document.getElementById(
+            'lease-unit-selection'
+        );
+
+    if (! selection) {
+        return;
+    }
+
+    setText(
+        'lease-selected-unit-name',
+        unitSearchLabel(
+            unit
+        )
+    );
+
+    const location =
+        unit?.building?.location
+        || unit?.building?.address
+        || '';
+
+    setText(
+        'lease-selected-unit-location',
+        location
+    );
+
+    const ownersContainer =
+        document.getElementById(
+            'lease-unit-owners'
+        );
+
+    const ownerships =
+        Array.isArray(
+            unit?.building?.ownerships
+        )
+            ? unit.building.ownerships
+            : [];
+
+    if (ownersContainer) {
+        if (ownerships.length === 0) {
+            ownersContainer.innerHTML = `
+                <span
+                    class="
+                        text-sm text-slate-400
+                    "
+                >
+                    No ownership information available.
+                </span>
+            `;
+        } else {
+            ownersContainer.innerHTML =
+                ownerships
+                    .map(
+                        (ownership) => `
+                            <span
+                                class="
+                                    inline-flex items-center
+                                    rounded-full
+                                    bg-white
+                                    px-3 py-1.5
+                                    text-xs font-medium
+                                    text-slate-700
+                                    ring-1 ring-slate-200
+                                "
+                            >
+                                ${escapeHtml(
+                                    partyDisplayName(
+                                        ownership.party
+                                    )
+                                )}
+
+                                ${
+                                    ownership
+                                        .ownership_percentage
+                                        !== undefined
+                                    && ownership
+                                        .ownership_percentage
+                                        !== null
+                                        ? `
+                                            <span
+                                                class="
+                                                    ml-1
+                                                    text-slate-400
+                                                "
+                                            >
+                                                · ${escapeHtml(
+                                                    Number(
+                                                        ownership
+                                                            .ownership_percentage
+                                                    ).toFixed(
+                                                        0
+                                                    )
+                                                )}%
+                                            </span>
+                                        `
+                                        : ''
+                                }
+                            </span>
+                        `
+                    )
+                    .join('');
+        }
+    }
+
+    selection.classList.remove(
+        'hidden'
+    );
+}
+
+/**
+ * Hide the Unit search-results popup.
+ */
+function hideUnitSearchResults() {
+    document
+        .getElementById(
+            'lease-unit-results'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+}
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1476,6 +2019,10 @@ function initializeLeaseForm() {
         return;
     }
 
+    initializeUnitSearch();
+
+    initializeLeaseFinancialControls();
+
     openButton.addEventListener(
         'click',
         openCreateLeaseModal
@@ -1708,7 +2255,68 @@ function resetLeaseForm() {
         'lease-security-deposit',
         '0'
     );
+    setFormValue(
+        'lease-advance-payment',
+        '0'
+    );
 
+
+
+    const advanceReceivedCheckbox =
+        document.getElementById(
+            'lease-advance-received'
+        );
+
+    if (advanceReceivedCheckbox) {
+        advanceReceivedCheckbox.checked =
+            false;
+    }
+
+    setFormValue(
+        'lease-advance-received-date',
+        ''
+    );
+
+    setFormValue(
+        'lease-advance-received-method',
+        ''
+    );
+
+    setFormValue(
+        'lease-advance-received-reference',
+        ''
+    );
+
+    setFormValue(
+        'lease-advance-received-collector',
+        ''
+    );
+
+    updateAdvanceReceivedControls();
+
+
+
+
+
+    setFormValue(
+        'lease-rent-reserve',
+        '0'
+    );
+
+    setFormValue(
+        'lease-rent-increment-type',
+        'none'
+    );
+
+    setFormValue(
+        'lease-rent-increment-value',
+        '0'
+    );
+
+    setFormValue(
+        'lease-next-rent-increment-date',
+        ''
+    );
     setFormValue(
         'lease-management-fee-type',
         'none'
@@ -1724,14 +2332,25 @@ function resetLeaseForm() {
         '0'
     );
 
+    clearSelectedUnit();
+
+    updateConsumableAdvance();
+
+    updateRentIncrementControls();
+
+    updateManagementFeeControls();
+
     hideLeaseFormError();
 }
 
 function populateLeaseForm(
     lease
 ) {
-    setFormValue(
-        'lease-unit',
+    /*
+    * Use the searchable Unit picker so Edit mode displays both the selected
+    * Unit and its inherited ownership information.
+    */
+    selectLeaseUnit(
         lease.unit_id
     );
 
@@ -1802,6 +2421,33 @@ function populateLeaseForm(
     );
 
     setFormValue(
+    'lease-advance-payment',
+    lease.advance_payment_amount
+    );
+
+    setFormValue(
+        'lease-rent-reserve',
+        lease.rent_reserve_amount
+    );
+
+    setFormValue(
+        'lease-rent-increment-type',
+        lease.rent_increment_type
+    );
+
+    setFormValue(
+        'lease-rent-increment-value',
+        lease.rent_increment_value
+    );
+
+    setFormValue(
+        'lease-next-rent-increment-date',
+        dateInputValue(
+            lease.next_rent_increment_date
+        )
+    );
+
+    setFormValue(
         'lease-management-fee-type',
         lease.management_fee_type
     );
@@ -1820,6 +2466,14 @@ function populateLeaseForm(
         'lease-notes',
         lease.notes
     );
+
+    updateConsumableAdvance();
+
+    updateRentIncrementControls();
+
+    updateManagementFeeControls();
+
+
 }
 
 function dateInputValue(value) {
@@ -1846,6 +2500,352 @@ function setFormValue(
             value ?? '';
     }
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| Lease Financial / Contractual Controls
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * Configure calculated and conditional Lease fields.
+ */
+function initializeLeaseFinancialControls() {
+    document
+        .getElementById(
+            'lease-advance-payment'
+        )
+        ?.addEventListener(
+            'input',
+            () => {
+                updateConsumableAdvance();
+                updateAdvanceReceivedControls();
+            }
+        );
+
+    document
+        .getElementById(
+            'lease-rent-reserve'
+        )
+        ?.addEventListener(
+            'input',
+            updateConsumableAdvance
+        );
+
+    document
+        .getElementById(
+            'lease-rent-increment-type'
+        )
+        ?.addEventListener(
+            'change',
+            updateRentIncrementControls
+        );
+
+    document
+        .getElementById(
+            'lease-management-fee-type'
+        )
+        ?.addEventListener(
+            'change',
+            updateManagementFeeControls
+        );
+
+            document
+        .getElementById(
+            'lease-advance-received'
+        )
+        ?.addEventListener(
+            'change',
+            updateAdvanceReceivedControls
+        );
+
+    document
+        .getElementById(
+            'lease-advance-received-method'
+        )
+        ?.addEventListener(
+            'change',
+            updateAdvanceReceivedControls
+        );
+
+    updateAdvanceReceivedControls();
+
+    updateConsumableAdvance();
+
+    updateRentIncrementControls();
+
+    updateManagementFeeControls();
+}
+
+/**
+ * Calculate the contractual Consumable Advance.
+ *
+ * No financial ledger transaction is created here.
+ */
+function updateConsumableAdvance() {
+    const advance =
+        Number(
+            formValue(
+                'lease-advance-payment'
+            )
+        );
+
+    const reserve =
+        Number(
+            formValue(
+                'lease-rent-reserve'
+            )
+        );
+
+    const consumable =
+        Math.max(
+            0,
+            (
+                Number.isFinite(advance)
+                    ? advance
+                    : 0
+            )
+            -
+            (
+                Number.isFinite(reserve)
+                    ? reserve
+                    : 0
+            )
+        );
+
+    setText(
+        'lease-consumable-advance',
+        formatCurrency(
+            consumable
+        )
+    );
+}
+
+
+/**
+ * Show or hide historical Advance Payment receipt fields.
+ *
+ * These fields are relevant only when the operator confirms that the
+ * contractual Advance Payment had already been received before the Lease
+ * was entered into Patrimoine.
+ */
+function updateAdvanceReceivedControls() {
+    const checkbox =
+        document.getElementById(
+            'lease-advance-received'
+        );
+
+    const details =
+        document.getElementById(
+            'lease-advance-received-details'
+        );
+
+    const method =
+        document.getElementById(
+            'lease-advance-received-method'
+        );
+
+    const collectorWrapper =
+        document.getElementById(
+            'lease-advance-received-collector-wrapper'
+        );
+
+    const advance =
+        Number(
+            formValue(
+                'lease-advance-payment'
+            )
+        );
+
+    if (
+        ! checkbox
+        || ! details
+    ) {
+        return;
+    }
+
+    /*
+     * A zero contractual Advance Payment cannot logically have been
+     * historically received.
+     */
+    const hasAdvance =
+        Number.isFinite(advance)
+        && advance > 0;
+
+    checkbox.disabled =
+        ! hasAdvance;
+
+    if (! hasAdvance) {
+        checkbox.checked =
+            false;
+    }
+
+    const enabled =
+        checkbox.checked
+        && hasAdvance;
+
+    details.classList.toggle(
+        'hidden',
+        ! enabled
+    );
+
+    const dateInput =
+        document.getElementById(
+            'lease-advance-received-date'
+        );
+
+    const methodInput =
+        document.getElementById(
+            'lease-advance-received-method'
+        );
+
+    if (dateInput) {
+        dateInput.required =
+            enabled;
+    }
+
+    if (methodInput) {
+        methodInput.required =
+            enabled;
+    }
+
+    const isCash =
+        enabled
+        && method?.value === 'cash';
+
+    collectorWrapper
+        ?.classList.toggle(
+            'hidden',
+            ! isCash
+        );
+
+    const collector =
+        document.getElementById(
+            'lease-advance-received-collector'
+        );
+
+    if (collector) {
+        collector.required =
+            isCash;
+
+        if (! isCash) {
+            collector.value =
+                '';
+        }
+    }
+}
+
+/**
+ * Update Rent Increment fields according to their selected type.
+ */
+function updateRentIncrementControls() {
+    const type =
+        formValue(
+            'lease-rent-increment-type'
+        );
+
+    const valueInput =
+        document.getElementById(
+            'lease-rent-increment-value'
+        );
+
+    const dateInput =
+        document.getElementById(
+            'lease-next-rent-increment-date'
+        );
+
+    const unit =
+        document.getElementById(
+            'lease-rent-increment-unit'
+        );
+
+    const disabled =
+        type === 'none';
+
+    if (valueInput) {
+        valueInput.disabled =
+            disabled;
+
+        valueInput.step =
+            type === 'fixed'
+                ? '1'
+                : '0.01';
+
+        if (disabled) {
+            valueInput.value =
+                '0';
+        }
+    }
+
+    if (dateInput) {
+        dateInput.disabled =
+            disabled;
+
+        if (disabled) {
+            dateInput.value =
+                '';
+        }
+    }
+
+    if (unit) {
+        unit.textContent =
+            type === 'percentage'
+                ? '%'
+                : (
+                    type === 'fixed'
+                        ? 'GHS'
+                        : '—'
+                );
+    }
+}
+
+/**
+ * Make the Managing Organisation Fee value visually unambiguous.
+ */
+function updateManagementFeeControls() {
+    const type =
+        formValue(
+            'lease-management-fee-type'
+        );
+
+    const valueInput =
+        document.getElementById(
+            'lease-management-fee-value'
+        );
+
+    const unit =
+        document.getElementById(
+            'lease-management-fee-unit'
+        );
+
+    if (valueInput) {
+        valueInput.disabled =
+            type === 'none';
+
+        valueInput.step =
+            type === 'fixed'
+                ? '1'
+                : '0.01';
+
+        if (type === 'none') {
+            valueInput.value =
+                '0';
+        }
+    }
+
+    if (unit) {
+        unit.textContent =
+            type === 'percentage'
+                ? '%'
+                : (
+                    type === 'fixed'
+                        ? 'GHS'
+                        : '—'
+                );
+    }
+}
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1889,6 +2889,31 @@ async function submitLeaseForm(
 
     const payload =
         buildLeasePayload();
+
+
+        if (
+            ! Number.isInteger(
+                payload.unit_id
+            )
+            || payload.unit_id <= 0
+        ) {
+            showLeaseFormError(
+                'Select a valid Property / Unit.'
+            );
+
+            return;
+        }
+
+        if (
+            payload.rent_reserve_amount
+            > payload.advance_payment_amount
+        ) {
+            showLeaseFormError(
+                'Rent Reserve cannot exceed Total Advance Payment.'
+            );
+
+            return;
+        }
 
     try {
         submitButton.disabled =
@@ -2033,6 +3058,50 @@ function buildLeasePayload() {
                 )
             ),
 
+
+
+        /*
+        * Contractual tenant advance terms.
+        *
+        * These values do not create actual tenant-fund balances.
+        */
+        advance_payment_amount:
+            Number(
+                formValue(
+                    'lease-advance-payment'
+                )
+            ),
+
+        rent_reserve_amount:
+            Number(
+                formValue(
+                    'lease-rent-reserve'
+                )
+            ),
+
+        /*
+        * Contractual next rent increment.
+        */
+        rent_increment_type:
+            formValue(
+                'lease-rent-increment-type'
+            ),
+
+        rent_increment_value:
+            Number(
+                formValue(
+                    'lease-rent-increment-value'
+                )
+            ),
+
+        next_rent_increment_date:
+            nullableFormValue(
+                'lease-next-rent-increment-date'
+            ),
+
+
+
+
         management_fee_type:
             formValue(
                 'lease-management-fee-type'
@@ -2056,6 +3125,41 @@ function buildLeasePayload() {
             nullableFormValue(
                 'lease-notes'
             ),
+
+
+
+
+        advance_received:
+        document
+            .getElementById(
+                'lease-advance-received'
+            )
+            ?.checked
+            ?? false,
+
+        advance_received_date:
+            nullableFormValue(
+                'lease-advance-received-date'
+            ),
+
+        advance_received_method:
+            nullableFormValue(
+                'lease-advance-received-method'
+            ),
+
+        advance_received_reference:
+            nullableFormValue(
+                'lease-advance-received-reference'
+            ),
+
+        advance_received_collector:
+            nullableFormValue(
+                'lease-advance-received-collector'
+            ),
+
+
+
+
     };
 }
 

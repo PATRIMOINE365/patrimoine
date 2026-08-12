@@ -34,7 +34,14 @@ class PaymentAllocationService
              */
             $payment->refresh();
 
-            $remaining = $payment->unallocatedAmount();
+            /*
+            * Only genuinely free Payment money may be allocated to Invoices.
+            *
+            * Money already classified into Rent Reserve, Consumable Advance or
+            * Security Deposit is tenant-held money and must never be spent again
+            * through ordinary FIFO allocation.
+            */
+            $remaining = $payment->allocatableAmount();
 
             if ($remaining <= 0) {
                 return $payment;
@@ -81,6 +88,13 @@ class PaymentAllocationService
                 $this->ownerAccountingService
                     ->postCollectedRentEntitlement($allocation);
 
+
+                /*
+                * Management fees follow the same cash event as owner entitlement.
+                */
+                $this->ownerAccountingService
+                    ->postManagementFee($allocation);
+
                 $remaining -= $allocationAmount;
 
                 /*
@@ -107,9 +121,13 @@ class PaymentAllocationService
      */
     public function assertNotOverAllocated(Payment $payment): void
     {
-        if ($payment->allocatedAmount() > $payment->amount) {
+        $committed =
+            $payment->allocatedAmount()
+            + $payment->classifiedFundAmount();
+
+        if ($committed > $payment->amount) {
             throw new RuntimeException(
-                'Payment allocations exceed the amount received.'
+                'Payment allocations and tenant-fund classifications exceed the amount received.'
             );
         }
     }

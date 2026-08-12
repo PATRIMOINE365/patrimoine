@@ -11,17 +11,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * Represents the contractual agreement for renting one Unit
  * to one tenant.
  *
- * The Lease model contains contractual terms and lifecycle state.
- * It does not represent the financial ledger.
+ * The Lease contains contractual terms and lifecycle state.
  *
- * Future financial entities will reference the Lease for:
- * - invoices;
- * - payments;
- * - rent reserve movements;
- * - security deposit movements;
- * - management fees;
- * - agent commission deductions;
- * - owner accounting.
+ * It deliberately does not store mutable financial balances.
+ * Actual money received and held on behalf of a Tenant remains in the
+ * financial ledger through Payments, TenantFundAccounts and
+ * TenantFundTransactions.
  */
 class Lease extends Model
 {
@@ -44,8 +39,29 @@ class Lease extends Model
         'vat_rate',
         'proration_amount',
         'security_deposit_amount',
+
+        /*
+         * Contractual tenant advance terms.
+         *
+         * These are expectations agreed in the Lease and not actual
+         * tenant-fund account balances.
+         */
+        'advance_payment_amount',
+        'rent_reserve_amount',
+
+        /*
+         * Contractual rent-increment configuration.
+         */
+        'rent_increment_type',
+        'rent_increment_value',
+        'next_rent_increment_date',
+
+        /*
+         * Managing organisation fee.
+         */
         'management_fee_type',
         'management_fee_value',
+
         'agent_commission_amount',
         'notes',
     ];
@@ -53,11 +69,11 @@ class Lease extends Model
     /**
      * Convert database values to appropriate PHP representations.
      *
-     * Monetary amounts remain integers because Patrimoine does not
-     * use fractional currency values.
+     * Monetary values use integers because Patrimoine V1 stores whole
+     * currency units only.
      *
-     * Decimal percentage/configuration fields remain fixed-precision
-     * decimal strings so floating-point rounding is avoided.
+     * Percentage/configuration values use decimal casts so their precision
+     * is retained without relying on binary floating-point storage.
      *
      * @return array<string, string>
      */
@@ -67,19 +83,29 @@ class Lease extends Model
             'start_date' => 'date',
             'end_date' => 'date',
             'termination_notice_date' => 'date',
+            'next_rent_increment_date' => 'date',
 
             'rent_amount' => 'integer',
             'due_day' => 'integer',
+
             'vat_rate' => 'decimal:2',
+
             'proration_amount' => 'integer',
             'security_deposit_amount' => 'integer',
+
+            'advance_payment_amount' => 'integer',
+            'rent_reserve_amount' => 'integer',
+
+            'rent_increment_value' => 'decimal:2',
+
             'management_fee_value' => 'decimal:2',
+
             'agent_commission_amount' => 'integer',
         ];
     }
 
     /**
-     * Unit covered by this lease.
+     * Unit covered by this Lease.
      */
     public function unit(): BelongsTo
     {
@@ -89,7 +115,7 @@ class Lease extends Model
     /**
      * Party renting the Unit.
      *
-     * Patrimoine 1.0 supports exactly one tenant per lease.
+     * Patrimoine V1 supports exactly one tenant per Lease.
      */
     public function tenant(): BelongsTo
     {
@@ -100,7 +126,7 @@ class Lease extends Model
     }
 
     /**
-     * Optional Party acting as Agent for this lease.
+     * Optional Party acting as Agent for this Lease.
      */
     public function agent(): BelongsTo
     {
@@ -113,24 +139,43 @@ class Lease extends Model
     /**
      * Determine the contractual day of the month on which rent is due.
      *
-     * If no explicit override exists, the day is inherited from the
-     * lease start date.
+     * When no explicit override exists, the Lease start-date day is used.
      */
     public function effectiveDueDay(): int
     {
         return $this->due_day
             ?? $this->start_date->day;
     }
+
+    /**
+     * Return the contractual portion of the Advance Payment that is
+     * available as Consumable Advance.
+     *
+     * This is a contractual figure only.
+     *
+     * Actual available tenant funds must always be obtained from the
+     * tenant-fund ledger.
+     */
+    public function contractualConsumableAdvanceAmount(): int
+    {
+        return max(
+            0,
+            $this->advance_payment_amount
+                - $this->rent_reserve_amount
+        );
+    }
+
     /**
      * Invoices generated under this Lease.
      *
-     * Historical invoices remain independent snapshots of the contractual
+     * Historical Invoices remain independent snapshots of the contractual
      * values that applied when they were issued.
      */
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
     }
+
     /**
      * Payments received under this Lease.
      */
@@ -138,28 +183,40 @@ class Lease extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
     /**
      * Tenant-held financial accounts associated with this Lease.
      *
-     * These include Rent Reserve, Consumable Advance and Security Deposit.
+     * These contain actual accounted tenant money:
+     *
+     * - Rent Reserve;
+     * - Consumable Advance;
+     * - Security Deposit.
      */
     public function tenantFundAccounts(): HasMany
     {
-        return $this->hasMany(TenantFundAccount::class);
-    }
-    /**
-     * Itemized charges applied against this Lease's security deposit.
-     */
-    public function securityDepositDeductions(): HasMany
-    {
-        return $this->hasMany(SecurityDepositDeduction::class);
+        return $this->hasMany(
+            TenantFundAccount::class
+        );
     }
 
     /**
-     * Final security-deposit close-out for this Lease.
+     * Itemized charges applied against this Lease's Security Deposit.
+     */
+    public function securityDepositDeductions(): HasMany
+    {
+        return $this->hasMany(
+            SecurityDepositDeduction::class
+        );
+    }
+
+    /**
+     * Final Security Deposit close-out for this Lease.
      */
     public function securityDepositSettlement(): HasOne
     {
-        return $this->hasOne(SecurityDepositSettlement::class);
+        return $this->hasOne(
+            SecurityDepositSettlement::class
+        );
     }
 }

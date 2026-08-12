@@ -8,6 +8,7 @@ use App\Models\OwnerExpense;
 use App\Models\OwnerTransaction;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Models\Unit;
 
 /**
  * Handles owner-side accounting entries.
@@ -250,52 +251,124 @@ class OwnerAccountingService
      *
      * @return array<int, OwnerTransaction>
      */
-    public function postManagementFee(\App\Models\Invoice $invoice): array
-    {
-        return DB::transaction(function () use ($invoice): array {
-            $invoice->refresh();
 
-            $lease = $invoice->lease()->with('unit.building.ownerships')->firstOrFail();
 
-            if ($lease->management_fee_type === 'none') {
-                return [];
+
+
+    /**
+ * Post the management fee attributable to collected tenant rent.
+ *
+ * Patrimoine uses cash-basis owner accounting. Management fees therefore
+ * become chargeable only when tenant rent is actually received and allocated
+ * to an Invoice.
+ *
+ * Percentage fees are calculated from the collected allocation.
+ *
+ * Fixed fees are charged once when the first collection is made against the
+ * Invoice.
+ *
+ * @return array<int, OwnerTransaction>
+ */
+
+    public function postManagementFee(
+        \App\Models\PaymentAllocation $allocation
+    ): array {
+        return DB::transaction(
+            function () use ($allocation): array {
+                $allocation->refresh();
+
+                $invoice = $allocation->invoice()
+                    ->with('lease.unit.building.ownerships')
+                    ->firstOrFail();
+
+                $lease = $invoice->lease;
+
+                if ($lease->management_fee_type === 'none') {
+                    return [];
+                }
+
+                /*
+                * Percentage fees follow cash actually collected.
+                */
+                if ($lease->management_fee_type === 'percentage') {
+                    $feeAmount = (int) round(
+                        $allocation->amount
+                        * (float) $lease->management_fee_value
+                        / 100
+                    );
+
+                    /*
+                    * One fee posting per PaymentAllocation protects against
+                    * duplicate processing of the same collection.
+                    */
+                    $alreadyPosted = OwnerTransaction::query()
+                        ->where(
+                            'payment_allocation_id',
+                            $allocation->id
+                        )
+                        ->where(
+                            'category',
+                            'management_fee'
+                        )
+                        ->exists();
+
+                    if ($alreadyPosted) {
+                        return [];
+                    }
+                } elseif ($lease->management_fee_type === 'fixed') {
+                    /*
+                    * A fixed management fee belongs to the Invoice rather than
+                    * each individual Payment. Charge it only once when that
+                    * Invoice first receives cash.
+                    */
+                    $alreadyPosted = OwnerTransaction::query()
+                        ->where('invoice_id', $invoice->id)
+                        ->where('category', 'management_fee')
+                        ->exists();
+
+                    if ($alreadyPosted) {
+                        return [];
+                    }
+
+                    $feeAmount = (int) round(
+                        (float) $lease->management_fee_value
+                    );
+                } else {
+                    throw new RuntimeException(
+                        'Unsupported management fee type.'
+                    );
+                }
+
+                if ($feeAmount <= 0) {
+                    return [];
+                }
+
+                return $this->allocateOwnerDebit(
+                    building: $lease->unit->building,
+                    amount: $feeAmount,
+                    category: 'management_fee',
+                    transactionDate:
+                        $allocation->payment->payment_date->toDateString(),
+                    leaseId: $lease->id,
+                    unitId: $lease->unit_id,
+                    invoiceId: $invoice->id,
+                    paymentAllocationId: $allocation->id,
+                    reference:
+                        $allocation->payment->reference
+                        ?? $invoice->invoice_number,
+                    notes:
+                        'Management fee charged against tenant rent actually collected.'
+                );
             }
-
-            $feeAmount = match ($lease->management_fee_type) {
-                'percentage' => (int) round(
-                    $invoice->total_amount
-                    * (float) $lease->management_fee_value
-                    / 100
-                ),
-
-                'fixed' => (int) round(
-                    (float) $lease->management_fee_value
-                ),
-
-                default => throw new RuntimeException(
-                    'Unsupported management fee type.'
-                ),
-            };
-
-            if ($feeAmount <= 0) {
-                return [];
-            }
-
-            $building = $lease->unit->building;
-
-            return $this->allocateOwnerDebit(
-                building: $building,
-                amount: $feeAmount,
-                category: 'management_fee',
-                transactionDate: $invoice->issue_date->toDateString(),
-                leaseId: $lease->id,
-                unitId: $lease->unit_id,
-                invoiceId: $invoice->id,
-                reference: $invoice->invoice_number,
-                notes: 'Management fee charged against owner rent entitlement.'
-            );
-        });
+        );
     }
+
+
+
+
+
+
+
 
     /**
      * Post the one-time Agent commission configured on a Lease.
@@ -314,6 +387,18 @@ class OwnerAccountingService
             $lease->refresh();
 
             if ($lease->agent_commission_amount <= 0) {
+                return [];
+            }
+
+            /*
+            * Agent commission is a one-time Lease charge.
+            */
+            $alreadyPosted = OwnerTransaction::query()
+                ->where('lease_id', $lease->id)
+                ->where('category', 'agent_commission')
+                ->exists();
+
+            if ($alreadyPosted) {
                 return [];
             }
 
@@ -347,6 +432,7 @@ class OwnerAccountingService
         ?int $leaseId = null,
         ?int $unitId = null,
         ?int $invoiceId = null,
+        ?int $paymentAllocationId = null,
         ?string $reference = null,
         ?string $notes = null
     ): array {
@@ -396,6 +482,7 @@ class OwnerAccountingService
                 'unit_id' => $unitId,
                 'lease_id' => $leaseId,
                 'invoice_id' => $invoiceId,
+                'payment_allocation_id' => $paymentAllocationId,
                 'direction' => 'debit',
                 'category' => $category,
                 'amount' => $ownerShare,

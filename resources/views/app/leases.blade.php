@@ -455,47 +455,181 @@
                                 md:grid-cols-2
                             "
                         >
-                            <div class="md:col-span-2">
 
 
-                            <label
-                            for="lease-unit"
-                            class="
-                                mb-1.5 flex items-center gap-1.5
-                                text-sm font-medium
-                                text-slate-700
-                            "
-                        >
-                            Property / Unit
 
-                            <x-field-help label="About Property and Unit">
-                                Select the specific leasable unit covered by this agreement.
-                                A unit can have historical leases, but it cannot have more than
-                                one Active or Notice lease at the same time.
-                            </x-field-help>
 
-                            <span class="text-red-500">*</span>
-                        </label>
+<div class="md:col-span-2">
+    <label
+        for="lease-unit-search"
+        class="
+            mb-1.5 flex items-center gap-1.5
+            text-sm font-medium
+            text-slate-700
+        "
+    >
+        Property / Unit
 
-                                <select
-                                    id="lease-unit"
-                                    required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        bg-white px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
-                                >
-                                    <option value="">
-                                        Select unit…
-                                    </option>
-                                </select>
-                            </div>
+        <x-field-help label="About Property and Unit">
+            Search for the specific leasable Unit covered by this agreement.
+            A Unit inherits the ownership of its Building and cannot have
+            more than one Active or Notice Lease at the same time.
+        </x-field-help>
+
+        <span class="text-red-500">*</span>
+    </label>
+
+    <div
+        id="lease-unit-picker"
+        class="relative"
+    >
+        {{-- Actual Unit ID submitted to the API. --}}
+        <input
+            id="lease-unit"
+            type="hidden"
+        >
+
+        <div class="relative">
+            <svg
+                class="
+                    pointer-events-none
+                    absolute left-3.5 top-1/2
+                    h-4 w-4
+                    -translate-y-1/2
+                    text-slate-400
+                "
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <circle cx="11" cy="11" r="7"/>
+                <path d="m20 20-3.5-3.5"/>
+            </svg>
+
+            <input
+                id="lease-unit-search"
+                type="search"
+                autocomplete="off"
+                placeholder="Search property, location, unit or owner…"
+                class="
+                    w-full rounded-lg
+                    border border-slate-200
+                    bg-white
+                    py-2.5 pl-10 pr-11
+                    text-sm
+                    outline-none transition
+                    focus:border-patrimoine-500
+                    focus:ring-2
+                    focus:ring-patrimoine-100
+                "
+            >
+
+            <button
+                id="lease-unit-clear"
+                type="button"
+                aria-label="Clear selected Unit"
+                class="
+                    absolute right-2 top-1/2
+                    inline-flex h-7 w-7
+                    -translate-y-1/2
+                    items-center justify-center
+                    rounded-md
+                    text-slate-400
+                    transition
+                    hover:bg-slate-100
+                    hover:text-slate-700
+                "
+            >
+                <svg
+                    class="h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <path d="M18 6 6 18"/>
+                    <path d="m6 6 12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div
+            id="lease-unit-results"
+            class="
+                absolute z-50 mt-1
+                hidden max-h-80 w-full
+                overflow-y-auto
+                rounded-xl
+                border border-slate-200
+                bg-white
+                shadow-xl
+            "
+        ></div>
+    </div>
+
+    {{-- Visual confirmation after Unit selection. --}}
+    <div
+        id="lease-unit-selection"
+        class="
+            mt-3 hidden
+            rounded-xl border
+            border-patrimoine-100
+            bg-patrimoine-50/60
+            p-4
+        "
+    >
+        <div
+            class="
+                text-[11px] font-semibold
+                uppercase tracking-[0.12em]
+                text-patrimoine-700
+            "
+        >
+            Selected Unit
+        </div>
+
+        <div
+            id="lease-selected-unit-name"
+            class="
+                mt-1 text-sm font-semibold
+                text-slate-950
+            "
+        ></div>
+
+        <div
+            id="lease-selected-unit-location"
+            class="
+                mt-1 text-xs
+                text-slate-500
+            "
+        ></div>
+
+        <div
+            class="
+                mt-4 text-[11px]
+                font-semibold uppercase
+                tracking-[0.12em]
+                text-slate-500
+            "
+        >
+            Ownership
+        </div>
+
+        <div
+            id="lease-unit-owners"
+            class="
+                mt-2 flex flex-wrap
+                gap-2
+            "
+        ></div>
+    </div>
+</div>
+
+
+
+
+
 
                             <div>
                                 <label
@@ -800,13 +934,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Rent Amount
+                                    Monthly Rent
 
-                                    <x-field-help label="About Rent Amount">
-                                        The VAT-inclusive rent charged for one payment period.
-                                        For example, with Monthly frequency this is the monthly rent;
-                                        with Yearly frequency this is the yearly rent.
-                                        Patrimoine stores money as whole Ghana cedis.
+                                    <x-field-help label="About Monthly Rent">
+                                    The VAT-inclusive monthly contractual rent for the Unit.
+                                    Payment Frequency determines how many months are invoiced together.
+                                    For example, GHS 5,000 Monthly Rent with Quarterly frequency creates
+                                    a GHS 15,000 rent obligation for each quarterly billing period.
                                     </x-field-help>
 
                                     <span class="text-red-500">*</span>
@@ -842,9 +976,9 @@
                                     Payment Frequency
 
                                     <x-field-help label="About Payment Frequency">
-                                        Controls how often the Rent Amount becomes due:
+                                        Controls how often the Monthly Rent becomes due:
                                         Monthly, Quarterly, every six months, or Yearly.
-                                        The Rent Amount represents one complete period of the selected frequency.
+                                        The Monthly Rent represents one complete period of the selected frequency.
                                     </x-field-help>
 
                                     <span class="text-red-500">*</span>
@@ -930,7 +1064,7 @@
                                     VAT Rate %
 
                                     <x-field-help label="About VAT Rate">
-                                        Patrimoine treats configured rent amounts as VAT inclusive.
+                                        Patrimoine treats configured Monthly Rent as VAT inclusive.
                                         The default rate is 18%, but this lease may use another rate,
                                         including 0% where applicable.
                                     </x-field-help>
@@ -1036,6 +1170,533 @@
                         </div>
                     </section>
 
+
+                    {{-- =================================================
+                        Advance Payment
+                    ================================================= --}}
+
+                    <section
+                        class="
+                            mt-8 border-t
+                            border-slate-100 pt-7
+                        "
+                    >
+                        <div class="mb-4">
+                            <h3
+                                class="
+                                    text-sm font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                Advance Payment
+                            </h3>
+
+                            <p class="mt-1 text-xs text-slate-500">
+                                Record the contractual advance and how much should remain protected as Rent Reserve.
+                            </p>
+                        </div>
+
+                        <div
+                            class="
+                                grid gap-4
+                                md:grid-cols-3
+                            "
+                        >
+                            <div>
+                                <label
+                                    for="lease-advance-payment"
+                                    class="
+                                        mb-1.5 flex items-center gap-1.5
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    Total Advance Payment
+
+                                    <x-field-help label="About Advance Payment">
+                                        Total advance rent contractually expected from the Tenant.
+                                        This records the Lease agreement only. It does not mean
+                                        Patrimoine has actually received the money. Actual funds
+                                        are recorded later through Payments.
+                                    </x-field-help>
+                                </label>
+
+                                <input
+                                    id="lease-advance-payment"
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    value="0"
+                                    required
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm outline-none
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    for="lease-rent-reserve"
+                                    class="
+                                        mb-1.5 flex items-center gap-1.5
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    Rent Reserve
+
+                                    <x-field-help label="About Rent Reserve">
+                                        Portion of the contractual Advance Payment that should
+                                        remain protected while the Lease is running. After
+                                        termination notice, Rent Reserve may be consumed against
+                                        rent according to Patrimoine's reserve rules.
+                                    </x-field-help>
+                                </label>
+
+                                <input
+                                    id="lease-rent-reserve"
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    value="0"
+                                    required
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm outline-none
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    class="
+                                        mb-1.5 flex items-center gap-1.5
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    Consumable Advance
+
+                                    <x-field-help label="About Consumable Advance">
+                                        The contractual portion of Advance Payment that is not
+                                        reserved. Patrimoine calculates this as Total Advance
+                                        Payment minus Rent Reserve. Actual available money still
+                                        comes from the tenant-fund ledger.
+                                    </x-field-help>
+                                </label>
+
+                                <div
+                                    class="
+                                        flex h-[42px] items-center
+                                        rounded-lg border
+                                        border-slate-200
+                                        bg-slate-50
+                                        px-3.5
+                                    "
+                                >
+                                    <span
+                                        id="lease-consumable-advance"
+                                        class="
+                                            text-sm font-semibold
+                                            text-slate-800
+                                        "
+                                    >
+                                        GHS 0
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                                                <div
+                            class="
+                                mt-5 rounded-xl
+                                border border-slate-200
+                                bg-slate-50
+                                p-4
+                            "
+                        >
+                            <label
+                                class="
+                                    flex cursor-pointer
+                                    items-start gap-3
+                                "
+                            >
+                                <input
+                                    id="lease-advance-received"
+                                    type="checkbox"
+                                    class="
+                                        mt-1 h-4 w-4
+                                        rounded border-slate-300
+                                        text-patrimoine-700
+                                        focus:ring-patrimoine-200
+                                    "
+                                >
+
+                                <span>
+                                    <span
+                                        class="
+                                            flex items-center gap-1.5
+                                            text-sm font-semibold
+                                            text-slate-900
+                                        "
+                                    >
+                                        Advance already received
+
+                                        <x-field-help label="About Advance already received">
+                                            Select this only when the contractual Advance Payment
+                                            was actually received before this Lease was entered into
+                                            Patrimoine. Patrimoine will reconstruct the historical
+                                            payment, protect the Rent Reserve portion, allocate the
+                                            remaining advance against outstanding rent and create the
+                                            corresponding owner accounting entries.
+                                        </x-field-help>
+                                    </span>
+
+                                    <span
+                                        class="
+                                            mt-1 block text-xs
+                                            leading-5 text-slate-500
+                                        "
+                                    >
+                                        Use this when entering an existing or backdated Lease
+                                        for which the tenant already paid the advance.
+                                    </span>
+                                </span>
+                            </label>
+
+                            <div
+                                id="lease-advance-received-details"
+                                class="
+                                    mt-5 hidden
+                                    grid gap-4
+                                    md:grid-cols-2
+                                    xl:grid-cols-4
+                                "
+                            >
+                                <div>
+                                    <label
+                                        for="lease-advance-received-date"
+                                        class="
+                                            mb-1.5 flex items-center gap-1.5
+                                            text-sm font-medium
+                                            text-slate-700
+                                        "
+                                    >
+                                        Date Received
+                                        <span class="text-red-500">*</span>
+                                    </label>
+
+                                    <input
+                                        id="lease-advance-received-date"
+                                        type="date"
+                                        class="
+                                            w-full rounded-lg
+                                            border border-slate-200
+                                            px-3.5 py-2.5
+                                            text-sm outline-none
+                                            focus:border-patrimoine-500
+                                            focus:ring-2
+                                            focus:ring-patrimoine-100
+                                        "
+                                    >
+                                </div>
+
+                                <div>
+                                    <label
+                                        for="lease-advance-received-method"
+                                        class="
+                                            mb-1.5 flex items-center gap-1.5
+                                            text-sm font-medium
+                                            text-slate-700
+                                        "
+                                    >
+                                        Payment Method
+                                        <span class="text-red-500">*</span>
+                                    </label>
+
+                                    <select
+                                        id="lease-advance-received-method"
+                                        class="
+                                            w-full rounded-lg
+                                            border border-slate-200
+                                            bg-white px-3.5 py-2.5
+                                            text-sm outline-none
+                                            focus:border-patrimoine-500
+                                            focus:ring-2
+                                            focus:ring-patrimoine-100
+                                        "
+                                    >
+                                        <option value="">
+                                            Select method...
+                                        </option>
+
+                                        <option value="bank_transfer">
+                                            Bank Transfer
+                                        </option>
+
+                                        <option value="momo">
+                                            Mobile Money
+                                        </option>
+
+                                        <option value="cash">
+                                            Cash
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label
+                                        for="lease-advance-received-reference"
+                                        class="
+                                            mb-1.5 flex items-center gap-1.5
+                                            text-sm font-medium
+                                            text-slate-700
+                                        "
+                                    >
+                                        Reference
+                                    </label>
+
+                                    <input
+                                        id="lease-advance-received-reference"
+                                        type="text"
+                                        maxlength="255"
+                                        placeholder="Optional"
+                                        class="
+                                            w-full rounded-lg
+                                            border border-slate-200
+                                            px-3.5 py-2.5
+                                            text-sm outline-none
+                                            focus:border-patrimoine-500
+                                            focus:ring-2
+                                            focus:ring-patrimoine-100
+                                        "
+                                    >
+                                </div>
+
+                                <div
+                                    id="lease-advance-received-collector-wrapper"
+                                    class="hidden"
+                                >
+                                    <label
+                                        for="lease-advance-received-collector"
+                                        class="
+                                            mb-1.5 flex items-center gap-1.5
+                                            text-sm font-medium
+                                            text-slate-700
+                                        "
+                                    >
+                                        Cash Collector
+                                        <span class="text-red-500">*</span>
+                                    </label>
+
+                                    <input
+                                        id="lease-advance-received-collector"
+                                        type="text"
+                                        maxlength="255"
+                                        placeholder="Person who received the cash"
+                                        class="
+                                            w-full rounded-lg
+                                            border border-slate-200
+                                            px-3.5 py-2.5
+                                            text-sm outline-none
+                                            focus:border-patrimoine-500
+                                            focus:ring-2
+                                            focus:ring-patrimoine-100
+                                        "
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+
+                    {{-- =================================================
+                        Rent Increment
+                    ================================================= --}}
+
+                    <section
+                        class="
+                            mt-8 border-t
+                            border-slate-100 pt-7
+                        "
+                    >
+                        <div class="mb-4">
+                            <h3
+                                class="
+                                    text-sm font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                Rent Increment
+                            </h3>
+
+                            <p class="mt-1 text-xs text-slate-500">
+                                Configure the next contractual rent increase where applicable.
+                            </p>
+                        </div>
+
+                        <div
+                            class="
+                                grid gap-4
+                                md:grid-cols-3
+                            "
+                        >
+                            <div>
+                                <label
+                                    for="lease-rent-increment-type"
+                                    class="
+                                        mb-1.5 flex items-center gap-1.5
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    Increment Type
+
+                                    <x-field-help label="About Rent Increment Type">
+                                        Choose how the next rent increase is defined.
+                                        Percentage increases the existing Monthly Rent by a rate.
+                                        Fixed Amount adds a specific Ghana cedi amount.
+                                        Choose None when no increase has been agreed.
+                                    </x-field-help>
+                                </label>
+
+                                <select
+                                    id="lease-rent-increment-type"
+                                    required
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        bg-white px-3.5 py-2.5
+                                        text-sm outline-none
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                                    <option value="none">
+                                        None
+                                    </option>
+
+                                    <option value="percentage">
+                                        Percentage
+                                    </option>
+
+                                    <option value="fixed">
+                                        Fixed Amount
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label
+                                    for="lease-rent-increment-value"
+                                    class="
+                                        mb-1.5 flex items-center gap-1.5
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    Increment Value
+
+                                    <x-field-help label="About Rent Increment Value">
+                                        Enter the rate or amount of the next rent increase.
+                                        Its meaning depends on the selected Increment Type.
+                                    </x-field-help>
+                                </label>
+
+                                <div class="relative">
+                                    <input
+                                        id="lease-rent-increment-value"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value="0"
+                                        disabled
+                                        required
+                                        class="
+                                            w-full rounded-lg
+                                            border border-slate-200
+                                            px-3.5 py-2.5 pr-14
+                                            text-sm outline-none
+                                            disabled:bg-slate-50
+                                            disabled:text-slate-400
+                                            focus:border-patrimoine-500
+                                            focus:ring-2
+                                            focus:ring-patrimoine-100
+                                        "
+                                    >
+
+                                    <span
+                                        id="lease-rent-increment-unit"
+                                        class="
+                                            absolute right-3.5
+                                            top-1/2
+                                            -translate-y-1/2
+                                            text-xs font-medium
+                                            text-slate-400
+                                        "
+                                    >
+                                        —
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label
+                                    for="lease-next-rent-increment-date"
+                                    class="
+                                        mb-1.5 flex items-center gap-1.5
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    Next Increment Date
+
+                                    <x-field-help label="About Next Rent Increment Date">
+                                        Date on which the configured increase should first take
+                                        effect. Patrimoine V1 stores this contractual date but
+                                        does not infer future recurring increases beyond it.
+                                    </x-field-help>
+                                </label>
+
+                                <input
+                                    id="lease-next-rent-increment-date"
+                                    type="date"
+                                    disabled
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm outline-none
+                                        disabled:bg-slate-50
+                                        disabled:text-slate-400
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+                        </div>
+                    </section>
+
+
+
+
+
+
+
+
+
                     {{-- =================================================
                          Fees & Commission
                     ================================================= --}}
@@ -1057,7 +1718,7 @@
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                Configure management fees and one-time Agent commission applicable to this Lease.
+                                Configure the managing organisation fee and one-time Agent commission applicable to this Lease.
                             </p>
                         </div>
 
@@ -1076,13 +1737,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Management Fee
+                                    Managing Organisation Fee
 
-                                    <x-field-help label="About Management Fee">
-                                        Defines how the managing organisation earns its management fee
-                                        from this lease. Choose None, a Percentage of rent, or a Fixed Amount.
-                                        The actual value is entered in Fee Value.
-                                    </x-field-help>
+                                <x-field-help label="About Managing Organisation Fee">
+                                    Defines the fee earned by the Managing Organisation for managing
+                                    rent under this Lease. Choose None, Percentage of rent, or Fixed Amount.
+                                    The amount is ultimately deducted from Owner entitlement.
+                                </x-field-help>
                                 </label>
 
                                 <select
@@ -1123,31 +1784,45 @@
                                 >
                                     Fee Value
 
-                                    <x-field-help label="About Management Fee Value">
-                                        The meaning depends on the Management Fee type.
+                                    <x-field-help label="About Managing Organisation Fee Value">
+                                        The meaning depends on the Managing Organisation Fee type.
                                         For Percentage, enter the percentage rate.
                                         For Fixed Amount, enter the monetary amount.
-                                        When Management Fee is None, this must remain 0.
+                                        When Managing Organisation Fee is None, this must remain 0.
                                     </x-field-help>
                                 </label>
+                                <div class="relative">
+                                    <input
+                                        id="lease-management-fee-value"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value="0"
+                                        required
+                                        class="
+                                            w-full rounded-lg
+                                            border border-slate-200
+                                            px-3.5 py-2.5 pr-14
+                                            text-sm outline-none
+                                            focus:border-patrimoine-500
+                                            focus:ring-2
+                                            focus:ring-patrimoine-100
+                                        "
+                                    >
 
-                                <input
-                                    id="lease-management-fee-value"
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                    value="0"
-                                    required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
-                                >
+                                    <span
+                                        id="lease-management-fee-unit"
+                                        class="
+                                            absolute right-3.5
+                                            top-1/2
+                                            -translate-y-1/2
+                                            text-xs font-medium
+                                            text-slate-400
+                                        "
+                                    >
+                                        —
+                                    </span>
+                                </div>
                             </div>
 
                             <div>
