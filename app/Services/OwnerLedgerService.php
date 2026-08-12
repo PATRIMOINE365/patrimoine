@@ -20,30 +20,85 @@ use RuntimeException;
  */
 class OwnerLedgerService
 {
-    /**
-     * Record money deposited by an owner into Patrimoine.
-     *
-     * Owner deposits increase the owner's available balance and may be used
-     * to offset a previously negative balance caused by expenses or fees.
-     */
-    public function recordDeposit(
-        OwnerAccount $account,
-        int $amount,
-        string $transactionDate,
-        ?string $reference = null,
-        ?string $notes = null
-    ): OwnerTransaction {
-        if ($amount <= 0) {
-            throw new RuntimeException(
-                'Owner deposit amount must be greater than zero.'
-            );
-        }
 
-        return DB::transaction(function () use (
+/**
+ * Record actual money received from an owner.
+ *
+ * The deposit increases the owner's consolidated balance. Building and Unit
+ * references provide operational context but do not create or settle an
+ * expense automatically.
+ */
+public function recordDeposit(
+    OwnerAccount $account,
+    int $amount,
+    string $transactionDate,
+    string $paymentMethod,
+    string $depositPurpose,
+    ?int $buildingId = null,
+    ?int $unitId = null,
+    ?string $reference = null,
+    ?string $collectorName = null,
+    ?string $notes = null
+): OwnerTransaction {
+    if ($amount <= 0) {
+        throw new RuntimeException(
+            'Owner deposit amount must be greater than zero.'
+        );
+    }
+
+    if (
+        ! in_array(
+            $paymentMethod,
+            [
+                'cash',
+                'bank_transfer',
+                'momo',
+            ],
+            true
+        )
+    ) {
+        throw new RuntimeException(
+            'Unsupported owner deposit payment method.'
+        );
+    }
+
+    if (
+        ! in_array(
+            $depositPurpose,
+            [
+                'general_funding',
+                'property_expense',
+                'repair_maintenance',
+                'other',
+            ],
+            true
+        )
+    ) {
+        throw new RuntimeException(
+            'Unsupported owner deposit purpose.'
+        );
+    }
+
+    if (
+        $paymentMethod === 'cash'
+        && trim((string) $collectorName) === ''
+    ) {
+        throw new RuntimeException(
+            'Cash owner deposits require a collector.'
+        );
+    }
+
+    return DB::transaction(
+        function () use (
             $account,
             $amount,
             $transactionDate,
+            $paymentMethod,
+            $depositPurpose,
+            $buildingId,
+            $unitId,
             $reference,
+            $collectorName,
             $notes
         ): OwnerTransaction {
             $account = OwnerAccount::query()
@@ -51,16 +106,46 @@ class OwnerLedgerService
                 ->findOrFail($account->id);
 
             return OwnerTransaction::create([
-                'owner_account_id' => $account->id,
-                'direction' => 'credit',
-                'category' => 'owner_deposit',
-                'amount' => $amount,
-                'transaction_date' => $transactionDate,
-                'reference' => $reference,
-                'notes' => $notes ?? 'Funds deposited by owner.',
+                'owner_account_id' =>
+                    $account->id,
+
+                'building_id' =>
+                    $buildingId,
+
+                'unit_id' =>
+                    $unitId,
+
+                'direction' =>
+                    'credit',
+
+                'category' =>
+                    'owner_deposit',
+
+                'amount' =>
+                    $amount,
+
+                'transaction_date' =>
+                    $transactionDate,
+
+                'payment_method' =>
+                    $paymentMethod,
+
+                'deposit_purpose' =>
+                    $depositPurpose,
+
+                'collector_name' =>
+                    $collectorName,
+
+                'reference' =>
+                    $reference,
+
+                'notes' =>
+                    $notes
+                    ?? 'Funds deposited by owner.',
             ]);
-        });
-    }
+        }
+    );
+}
 
     /**
      * Record a manual owner-ledger adjustment.

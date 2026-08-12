@@ -41,12 +41,16 @@ Route::view(
 )->name('parties');
 
 Route::view(
-    '/settings',
-    'app.settings'
-)->name('settings');
-
-Route::view(
     '/leases',
     'app.leases'
 )->name('leases');
 
+Route::view(
+    '/payments',
+    'app.payments'
+)->name('payments');
+
+Route::view(
+    '/settings',
+    'app.settings'
+)->name('settings');

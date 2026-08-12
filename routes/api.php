@@ -20,6 +20,8 @@ use App\Http\Controllers\Api\SecurityDepositController;
 use App\Http\Controllers\Api\TenantFundController;
 use App\Http\Controllers\Api\UnitController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\PaymentRegisterController;
+use App\Http\Controllers\Api\OwnerAccountController;
 
 
 /*
@@ -175,6 +177,26 @@ Route::middleware([
             [DocumentController::class, 'receipt']
         );
 
+        Route::get(
+            'owner-deposits/{ownerTransaction}/receipt',
+            [DocumentController::class, 'ownerDepositReceipt']
+        );
+
+                /*
+        |--------------------------------------------------------------------------
+        | Unified Payment Register
+        |--------------------------------------------------------------------------
+        |
+        | Read-only operational view combining tenant Payments and incoming
+        | Owner deposits without merging their underlying accounting models.
+        |
+        */
+
+        Route::get(
+            'payment-register',
+            [PaymentRegisterController::class, 'index']
+        );
+
         /*
         |--------------------------------------------------------------------------
         | Payments
@@ -240,7 +262,25 @@ Route::middleware([
             'leases/{lease}/security-deposit/settle',
             [SecurityDepositController::class, 'settle']
         );
+        /*
+        |--------------------------------------------------------------------------
+        | Owner Accounts
+        |--------------------------------------------------------------------------
+        |
+        | Read-only access used by the Payments workspace to resolve an Owner
+        | Party to the consolidated financial account used by owner deposits.
+        |
+        */
 
+        Route::get(
+            'owner-accounts',
+            [OwnerAccountController::class, 'index']
+        );
+
+        Route::get(
+            'owner-accounts/{ownerAccount}',
+            [OwnerAccountController::class, 'show']
+        );
         /*
         |--------------------------------------------------------------------------
         | Owner Financial Operations

@@ -14,6 +14,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * - Owner 2: 40%
  *
  * Patrimoine 1.0 keeps ownership at Building level rather than Unit level.
+ *
+ * Every Party that becomes a Building Owner must also have exactly one
+ * consolidated OwnerAccount. This financial account exists independently
+ * from Lease activity, rent collection or the current owner balance.
  */
 class BuildingOwner extends Model
 {
@@ -41,11 +45,38 @@ class BuildingOwner extends Model
     }
 
     /**
+     * Enforce owner-account creation as a domain invariant.
+     *
+     * A landlord must be able to deposit money even when:
+     *
+     * - the Building has no active Lease;
+     * - all previous rent has already been paid out;
+     * - no tenant advance exists;
+     * - the OwnerAccount has never had a transaction.
+     *
+     * Creating the OwnerAccount when ownership is established ensures the
+     * Payments workspace can always find every genuine property owner.
+     */
+    protected static function booted(): void
+    {
+        static::created(
+            function (BuildingOwner $ownership): void {
+                OwnerAccount::firstOrCreate([
+                    'party_id' =>
+                        $ownership->party_id,
+                ]);
+            }
+        );
+    }
+
+    /**
      * Building associated with this ownership allocation.
      */
     public function building(): BelongsTo
     {
-        return $this->belongsTo(Building::class);
+        return $this->belongsTo(
+            Building::class
+        );
     }
 
     /**
@@ -53,6 +84,8 @@ class BuildingOwner extends Model
      */
     public function party(): BelongsTo
     {
-        return $this->belongsTo(Party::class);
+        return $this->belongsTo(
+            Party::class
+        );
     }
 }

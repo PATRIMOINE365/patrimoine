@@ -106,10 +106,14 @@ class ReportApiTest extends TestCase
             'amount' => 6000,
         ]);
 
-        $ownerAccount = OwnerAccount::create([
-            'party_id' => $owner->id,
-            'status' => 'active',
-        ]);
+        /*
+        * Building ownership provisions the OwnerAccount automatically.
+        * Reporting fixtures must use the domain-created account rather than
+        * attempting to create a duplicate account for the same owner Party.
+        */
+        $ownerAccount = $owner
+            ->ownerAccount()
+            ->firstOrFail();
 
         OwnerTransaction::create([
             'owner_account_id' => $ownerAccount->id,

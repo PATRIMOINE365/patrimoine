@@ -100,10 +100,14 @@ class ReportingServiceTest extends TestCase
             'amount' => 6000,
         ]);
 
-        $ownerAccount = OwnerAccount::create([
-            'party_id' => $owner->id,
-            'status' => 'active',
-        ]);
+        /*
+        * The BuildingOwner relationship provisions the owner's consolidated
+        * OwnerAccount. Reporting uses that existing account for all ledger
+        * transactions associated with this owner.
+        */
+        $ownerAccount = $owner
+            ->ownerAccount()
+            ->firstOrFail();
 
         OwnerTransaction::create([
             'owner_account_id' => $ownerAccount->id,

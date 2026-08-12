@@ -9,8 +9,8 @@ use App\Models\OwnerTransaction;
 use App\Models\Party;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
+use Tests\TestCase;
 
 /**
  * Verifies transactional owner financial APIs.
@@ -28,7 +28,8 @@ class OwnerOperationsApiTest extends TestCase
     }
 
     /**
-     * Create a single-owner Building and corresponding OwnerAccount.
+     * Create a single-owner Building and its automatically provisioned
+     * consolidated OwnerAccount.
      *
      * @return array{
      *     building: Building,
@@ -50,15 +51,25 @@ class OwnerOperationsApiTest extends TestCase
             'email' => 'owner-operations@example.test',
         ]);
 
+        /*
+         * Creating Building ownership automatically provisions the Owner's
+         * consolidated financial account.
+         */
         BuildingOwner::create([
             'building_id' => $building->id,
             'party_id' => $owner->id,
             'ownership_percentage' => 100.00,
         ]);
 
-        $account = OwnerAccount::create([
-            'party_id' => $owner->id,
-        ]);
+        /*
+         * Reuse the automatically provisioned account.
+         *
+         * OwnerAccount has a unique party_id, so explicitly creating another
+         * account here would violate the one-account-per-owner invariant.
+         */
+        $account = $owner
+            ->ownerAccount()
+            ->firstOrFail();
 
         $unit = Unit::create([
             'building_id' => $building->id,
@@ -108,7 +119,9 @@ class OwnerOperationsApiTest extends TestCase
 
         $this->assertSame(
             -3000,
-            $context['account']->fresh()->balance()
+            $context['account']
+                ->fresh()
+                ->balance()
         );
     }
 
@@ -145,7 +158,8 @@ class OwnerOperationsApiTest extends TestCase
     }
 
     /**
-     * Owner deposits increase the OwnerAccount balance.
+     * Owner deposits increase the OwnerAccount balance and preserve
+     * the source/payment details required by the Payments workflow.
      */
     public function test_owner_deposit_can_be_recorded(): void
     {
@@ -156,7 +170,23 @@ class OwnerOperationsApiTest extends TestCase
             [
                 'amount' => 5000,
                 'transaction_date' => '2026-08-11',
+
+                /*
+                 * Owner money is actual incoming money and therefore records
+                 * the operational payment method used to receive it.
+                 */
+                'payment_method' => 'bank_transfer',
+
+                /*
+                 * This deposit is being supplied specifically for repair and
+                 * maintenance work on the Owner's property.
+                 */
+                'deposit_purpose' => 'repair_maintenance',
+
+                'building_id' => $context['building']->id,
+                'unit_id' => $context['unit']->id,
                 'reference' => 'DEP-API-001',
+                'notes' => 'Funds supplied for air-conditioner repairs.',
             ]
         );
 
@@ -167,9 +197,123 @@ class OwnerOperationsApiTest extends TestCase
                 'owner_deposit'
             )
             ->assertJsonPath(
+                'transaction.direction',
+                'credit'
+            )
+            ->assertJsonPath(
+                'transaction.amount',
+                5000
+            )
+            ->assertJsonPath(
+                'transaction.payment_method',
+                'bank_transfer'
+            )
+            ->assertJsonPath(
+                'transaction.deposit_purpose',
+                'repair_maintenance'
+            )
+            ->assertJsonPath(
+                'transaction.building_id',
+                $context['building']->id
+            )
+            ->assertJsonPath(
+                'transaction.unit_id',
+                $context['unit']->id
+            )
+            ->assertJsonPath(
                 'owner_account.balance',
                 5000
             );
+
+        $this->assertDatabaseHas('owner_transactions', [
+            'owner_account_id' => $context['account']->id,
+            'building_id' => $context['building']->id,
+            'unit_id' => $context['unit']->id,
+            'direction' => 'credit',
+            'category' => 'owner_deposit',
+            'amount' => 5000,
+            'payment_method' => 'bank_transfer',
+            'deposit_purpose' => 'repair_maintenance',
+            'reference' => 'DEP-API-001',
+        ]);
+    }
+
+    /**
+     * Cash received from an owner must identify the collector.
+     */
+    public function test_cash_owner_deposit_requires_collector(): void
+    {
+        $context = $this->createContext();
+
+        $this->postJson(
+            "/api/owner-accounts/{$context['account']->id}/deposits",
+            [
+                'amount' => 5000,
+                'transaction_date' => '2026-08-11',
+                'payment_method' => 'cash',
+                'deposit_purpose' => 'repair_maintenance',
+                'building_id' => $context['building']->id,
+                'unit_id' => $context['unit']->id,
+            ]
+        )
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'collector_name',
+            ]);
+    }
+
+    /**
+     * A cash owner deposit may be recorded when its collector is supplied.
+     */
+    public function test_cash_owner_deposit_can_be_recorded_with_collector(): void
+    {
+        $context = $this->createContext();
+
+        $response = $this->postJson(
+            "/api/owner-accounts/{$context['account']->id}/deposits",
+            [
+                'amount' => 2500,
+                'transaction_date' => '2026-08-11',
+                'payment_method' => 'cash',
+                'deposit_purpose' => 'repair_maintenance',
+                'building_id' => $context['building']->id,
+                'unit_id' => $context['unit']->id,
+                'collector_name' => 'Property Manager',
+                'reference' => 'DEP-CASH-001',
+            ]
+        );
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath(
+                'transaction.payment_method',
+                'cash'
+            )
+            ->assertJsonPath(
+                'transaction.deposit_purpose',
+                'repair_maintenance'
+            )
+            ->assertJsonPath(
+                'transaction.collector_name',
+                'Property Manager'
+            )
+            ->assertJsonPath(
+                'owner_account.balance',
+                2500
+            );
+
+        $this->assertDatabaseHas('owner_transactions', [
+            'owner_account_id' => $context['account']->id,
+            'building_id' => $context['building']->id,
+            'unit_id' => $context['unit']->id,
+            'category' => 'owner_deposit',
+            'direction' => 'credit',
+            'amount' => 2500,
+            'payment_method' => 'cash',
+            'deposit_purpose' => 'repair_maintenance',
+            'collector_name' => 'Property Manager',
+            'reference' => 'DEP-CASH-001',
+        ]);
     }
 
     /**
@@ -250,10 +394,22 @@ class OwnerOperationsApiTest extends TestCase
 
         $response
             ->assertCreated()
-            ->assertJsonPath('payout.amount', 7000)
-            ->assertJsonPath('allocated_amount', 7000)
-            ->assertJsonPath('unallocated_amount', 0)
-            ->assertJsonPath('owner_balance', 3000);
+            ->assertJsonPath(
+                'payout.amount',
+                7000
+            )
+            ->assertJsonPath(
+                'allocated_amount',
+                7000
+            )
+            ->assertJsonPath(
+                'unallocated_amount',
+                0
+            )
+            ->assertJsonPath(
+                'owner_balance',
+                3000
+            );
     }
 
     /**
@@ -308,6 +464,10 @@ class OwnerOperationsApiTest extends TestCase
             'email' => 'shared-two@example.test',
         ]);
 
+        /*
+         * Each BuildingOwner creation automatically provisions the
+         * corresponding consolidated OwnerAccount.
+         */
         BuildingOwner::create([
             'building_id' => $building->id,
             'party_id' => $firstOwner->id,
@@ -330,12 +490,12 @@ class OwnerOperationsApiTest extends TestCase
             ]
         )->assertCreated();
 
-        $firstAccount = OwnerAccount::query()
-            ->where('party_id', $firstOwner->id)
+        $firstAccount = $firstOwner
+            ->ownerAccount()
             ->firstOrFail();
 
-        $secondAccount = OwnerAccount::query()
-            ->where('party_id', $secondOwner->id)
+        $secondAccount = $secondOwner
+            ->ownerAccount()
             ->firstOrFail();
 
         $this->assertSame(

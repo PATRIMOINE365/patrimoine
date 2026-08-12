@@ -25,6 +25,9 @@ class OwnerTransaction extends Model
         'category',
         'amount',
         'transaction_date',
+        'payment_method',
+        'deposit_purpose',
+        'collector_name',
         'reference',
         'notes',
     ];

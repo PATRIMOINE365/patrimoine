@@ -6,18 +6,30 @@ use App\Models\Building;
 use App\Models\BuildingOwner;
 use App\Models\Invoice;
 use App\Models\Lease;
+use App\Models\OwnerAccount;
+use App\Models\OwnerTransaction;
 use App\Models\Party;
 use App\Models\Payment;
 use App\Models\PaymentAllocation;
 use App\Models\Unit;
 use App\Services\Documents\InvoiceDocumentService;
+use App\Services\Documents\OwnerDepositReceiptDocumentService;
 use App\Services\Documents\ReceiptDocumentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
+use Tests\TestCase;
 
 /**
- * Verifies Patrimoine Invoice and Receipt PDF generation.
+ * Verifies Patrimoine financial document generation.
+ *
+ * Covered documents:
+ *
+ * - Tenant Invoices;
+ * - Tenant Payment receipts;
+ * - Owner Deposit receipts.
+ *
+ * Incoming tenant and owner money remain separate accounting records,
+ * but both must produce auditable customer-facing receipt documents.
  */
 class DocumentGenerationTest extends TestCase
 {
@@ -32,7 +44,7 @@ class DocumentGenerationTest extends TestCase
     }
 
     /**
-     * Build a complete Invoice and Payment document context.
+     * Build a complete Invoice and tenant Payment document context.
      *
      * @return array{
      *     invoice: Invoice,
@@ -116,6 +128,106 @@ class DocumentGenerationTest extends TestCase
     }
 
     /**
+     * Build an Owner Deposit that does not depend on any active Lease.
+     *
+     * This is important because an owner may fund repairs or other property
+     * costs while a Building is vacant and after all previously held owner
+     * funds have already been paid out.
+     *
+     * @return array{
+     *     owner: Party,
+     *     account: OwnerAccount,
+     *     building: Building,
+     *     unit: Unit,
+     *     deposit: OwnerTransaction
+     * }
+     */
+    private function createOwnerDepositContext(): array
+    {
+        $building = Building::create([
+            'name' => 'Owner Deposit Receipt Building',
+        ]);
+
+        $owner = Party::create([
+            'type' => 'person',
+            'name' => 'Owner Deposit Receipt Owner',
+            'phone' => '0200001550',
+            'email' => 'owner-deposit-receipt@example.test',
+        ]);
+
+        BuildingOwner::create([
+            'building_id' => $building->id,
+            'party_id' => $owner->id,
+            'ownership_percentage' => 100.00,
+        ]);
+
+        /*
+         * BuildingOwner creation automatically provisions the owner's
+         * consolidated financial account.
+         */
+        $account = OwnerAccount::query()
+            ->where(
+                'party_id',
+                $owner->id
+            )
+            ->firstOrFail();
+
+        $unit = Unit::create([
+            'building_id' => $building->id,
+            'name' => 'Unit OD-1',
+        ]);
+
+        /*
+         * No Lease is created deliberately.
+         *
+         * Owner deposits are valid independently of tenancy and rent
+         * collection activity.
+         */
+        $deposit = OwnerTransaction::create([
+            'owner_account_id' =>
+                $account->id,
+
+            'building_id' =>
+                $building->id,
+
+            'unit_id' =>
+                $unit->id,
+
+            'direction' =>
+                'credit',
+
+            'category' =>
+                'owner_deposit',
+
+            'amount' =>
+                7500,
+
+            'transaction_date' =>
+                '2026-08-12',
+
+            'payment_method' =>
+                'bank_transfer',
+
+            'deposit_purpose' =>
+                'repair_maintenance',
+
+            'reference' =>
+                'OWNER-DEP-PDF-001',
+
+            'notes' =>
+                'Funds supplied for vacant-unit repairs.',
+        ]);
+
+        return compact(
+            'owner',
+            'account',
+            'building',
+            'unit',
+            'deposit'
+        );
+    }
+
+    /**
      * Invoice service returns a genuine PDF document.
      */
     public function test_invoice_service_generates_pdf(): void
@@ -147,7 +259,7 @@ class DocumentGenerationTest extends TestCase
     }
 
     /**
-     * Receipt service returns a genuine PDF document.
+     * Tenant Payment receipt service returns a genuine PDF document.
      */
     public function test_receipt_service_generates_pdf(): void
     {
@@ -157,6 +269,33 @@ class DocumentGenerationTest extends TestCase
             ReceiptDocumentService::class
         )->generate(
             $context['payment']
+        );
+
+        $this->assertStringStartsWith(
+            '%PDF-',
+            $contents
+        );
+
+        $this->assertGreaterThan(
+            1000,
+            strlen($contents)
+        );
+    }
+
+    /**
+     * Owner Deposit receipt service returns a genuine PDF document.
+     *
+     * The deposit is intentionally unrelated to a Lease.
+     */
+    public function test_owner_deposit_receipt_service_generates_pdf(): void
+    {
+        $context =
+            $this->createOwnerDepositContext();
+
+        $contents = app(
+            OwnerDepositReceiptDocumentService::class
+        )->generate(
+            $context['deposit']
         );
 
         $this->assertStringStartsWith(
@@ -202,7 +341,7 @@ class DocumentGenerationTest extends TestCase
     }
 
     /**
-     * Receipt API streams a PDF with a stable receipt filename.
+     * Tenant Payment receipt API streams a PDF with a stable filename.
      */
     public function test_receipt_pdf_can_be_downloaded_through_api(): void
     {
@@ -238,6 +377,93 @@ class DocumentGenerationTest extends TestCase
     }
 
     /**
+     * Owner Deposit receipt API streams a genuine PDF.
+     *
+     * This protects the receipt action shown beside owner deposits in the
+     * unified Payments register.
+     */
+    public function test_owner_deposit_receipt_can_be_downloaded_through_api(): void
+    {
+        $context =
+            $this->createOwnerDepositContext();
+
+        $response = $this->get(
+            "/api/owner-deposits/{$context['deposit']->id}/receipt"
+        );
+
+        $response
+            ->assertOk()
+            ->assertHeader(
+                'Content-Type',
+                'application/pdf'
+            );
+
+        $this->assertStringStartsWith(
+            '%PDF-',
+            $response->getContent()
+        );
+
+        /*
+         * Keep the filename assertion flexible enough to allow the service
+         * to use its own owner-specific receipt naming convention while still
+         * ensuring the response is an inline PDF document.
+         */
+        $this->assertStringContainsString(
+            '.pdf',
+            (string) $response->headers->get(
+                'Content-Disposition'
+            )
+        );
+    }
+
+    /**
+     * An arbitrary owner-ledger transaction must not be presented as an
+     * Owner Deposit receipt.
+     *
+     * Only actual incoming owner money with category owner_deposit qualifies
+     * for this customer-facing receipt document.
+     */
+    public function test_non_deposit_owner_transaction_cannot_generate_receipt(): void
+    {
+        $context =
+            $this->createOwnerDepositContext();
+
+        $expense = OwnerTransaction::create([
+            'owner_account_id' =>
+                $context['account']->id,
+
+            'building_id' =>
+                $context['building']->id,
+
+            'unit_id' =>
+                $context['unit']->id,
+
+            'direction' =>
+                'debit',
+
+            'category' =>
+                'expense',
+
+            'amount' =>
+                2000,
+
+            'transaction_date' =>
+                '2026-08-12',
+
+            'reference' =>
+                'EXP-NOT-RECEIPT-001',
+
+            'notes' =>
+                'This accounting debit is not incoming owner money.',
+        ]);
+
+        $this->getJson(
+            "/api/owner-deposits/{$expense->id}/receipt"
+        )
+            ->assertUnprocessable();
+    }
+
+    /**
      * Missing Invoice returns the standard API 404 response.
      */
     public function test_missing_invoice_pdf_returns_not_found(): void
@@ -248,12 +474,22 @@ class DocumentGenerationTest extends TestCase
     }
 
     /**
-     * Missing Payment receipt returns the standard API 404 response.
+     * Missing tenant Payment receipt returns the standard API 404 response.
      */
     public function test_missing_receipt_returns_not_found(): void
     {
         $this->getJson(
             '/api/payments/999999/receipt'
+        )->assertNotFound();
+    }
+
+    /**
+     * Missing Owner Deposit transaction returns the standard API 404 response.
+     */
+    public function test_missing_owner_deposit_receipt_returns_not_found(): void
+    {
+        $this->getJson(
+            '/api/owner-deposits/999999/receipt'
         )->assertNotFound();
     }
 }

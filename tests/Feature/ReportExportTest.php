@@ -103,10 +103,13 @@ class ReportExportTest extends TestCase
             'amount' => 6000,
         ]);
 
-        $account = OwnerAccount::create([
-            'party_id' => $owner->id,
-            'status' => 'active',
-        ]);
+        /*
+        * Building ownership provisions the OwnerAccount automatically.
+        * Reuse that consolidated account for the reporting fixture.
+        */
+        $account = $owner
+            ->ownerAccount()
+            ->firstOrFail();
 
         OwnerTransaction::create([
             'owner_account_id' => $account->id,

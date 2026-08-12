@@ -117,9 +117,14 @@ class DashboardApiTest extends TestCase
             'payment_method' => 'bank_transfer',
         ]);
 
-        $ownerAccount = OwnerAccount::create([
-            'party_id' => $context['owner']->id,
-        ]);
+        /*
+        * Building ownership automatically provisions the owner's consolidated
+        * financial account. Retrieve that account rather than creating a second
+        * account for the same Party.
+        */
+        $ownerAccount = $context['owner']
+            ->ownerAccount()
+            ->firstOrFail();
 
         OwnerTransaction::create([
             'owner_account_id' => $ownerAccount->id,

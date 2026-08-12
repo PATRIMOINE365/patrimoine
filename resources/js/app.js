@@ -42,6 +42,10 @@ import {
 } from './leases.js';
 
 import {
+    initializePayments,
+} from './payments.js';
+
+import {
     initializeSettings,
 } from './settings.js';
 
@@ -89,6 +93,8 @@ document.addEventListener(
         await initializeParties();
 
         await initializeLeases();
+
+        await initializePayments();
 
         await initializeSettings();
     }

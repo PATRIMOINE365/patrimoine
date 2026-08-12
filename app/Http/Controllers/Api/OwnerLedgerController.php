@@ -34,9 +34,22 @@ class OwnerLedgerController extends Controller
             $transaction = $service->recordDeposit(
                 account: $ownerAccount,
                 amount: (int) $validated['amount'],
-                transactionDate: $validated['transaction_date'],
-                reference: $validated['reference'] ?? null,
-                notes: $validated['notes'] ?? null
+                transactionDate:
+                    $validated['transaction_date'],
+                paymentMethod:
+                    $validated['payment_method'],
+                depositPurpose:
+                    $validated['deposit_purpose'],
+                buildingId:
+                    $validated['building_id'] ?? null,
+                unitId:
+                    $validated['unit_id'] ?? null,
+                reference:
+                    $validated['reference'] ?? null,
+                collectorName:
+                    $validated['collector_name'] ?? null,
+                notes:
+                    $validated['notes'] ?? null
             );
         } catch (RuntimeException $exception) {
             throw ValidationException::withMessages([
@@ -48,10 +61,21 @@ class OwnerLedgerController extends Controller
 
         return response()->json(
             data: [
-                'transaction' => $transaction,
+                'transaction' =>
+                    $transaction->load([
+                        'ownerAccount.party',
+                        'building',
+                        'unit',
+                    ]),
+
                 'owner_account' => [
-                    'id' => $ownerAccount->id,
-                    'balance' => $ownerAccount->fresh()->balance(),
+                    'id' =>
+                        $ownerAccount->id,
+
+                    'balance' =>
+                        $ownerAccount
+                            ->fresh()
+                            ->balance(),
                 ],
             ],
             status: 201

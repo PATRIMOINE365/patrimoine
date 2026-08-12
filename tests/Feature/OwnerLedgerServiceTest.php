@@ -13,6 +13,9 @@ use Tests\TestCase;
 /**
  * Verifies direct owner-ledger operations such as deposits and
  * administrative adjustments.
+ *
+ * Owner deposits represent real money received from an owner and therefore
+ * include payment metadata such as payment method and deposit purpose.
  */
 class OwnerLedgerServiceTest extends TestCase
 {
@@ -37,21 +40,51 @@ class OwnerLedgerServiceTest extends TestCase
 
     /**
      * Owner deposits increase the owner's available balance.
+     *
+     * The transaction must also preserve how and why the money was received.
      */
     public function test_owner_deposit_increases_balance(): void
     {
         $account = $this->createAccount();
 
         $transaction = app(OwnerLedgerService::class)->recordDeposit(
-            $account,
-            5000,
-            '2026-08-11',
-            'DEP-001'
+            account: $account,
+            amount: 5000,
+            transactionDate: '2026-08-11',
+            paymentMethod: 'bank_transfer',
+            depositPurpose: 'general_funding',
+            reference: 'DEP-001'
         );
 
-        $this->assertSame('credit', $transaction->direction);
-        $this->assertSame('owner_deposit', $transaction->category);
-        $this->assertSame(5000, $transaction->amount);
+        $this->assertSame(
+            'credit',
+            $transaction->direction
+        );
+
+        $this->assertSame(
+            'owner_deposit',
+            $transaction->category
+        );
+
+        $this->assertSame(
+            5000,
+            $transaction->amount
+        );
+
+        $this->assertSame(
+            'bank_transfer',
+            $transaction->payment_method
+        );
+
+        $this->assertSame(
+            'general_funding',
+            $transaction->deposit_purpose
+        );
+
+        $this->assertSame(
+            'DEP-001',
+            $transaction->reference
+        );
 
         $this->assertSame(
             5000,
@@ -80,9 +113,11 @@ class OwnerLedgerServiceTest extends TestCase
         );
 
         app(OwnerLedgerService::class)->recordDeposit(
-            $account,
-            5000,
-            '2026-08-11'
+            account: $account,
+            amount: 5000,
+            transactionDate: '2026-08-11',
+            paymentMethod: 'bank_transfer',
+            depositPurpose: 'general_funding'
         );
 
         /*
@@ -112,8 +147,15 @@ class OwnerLedgerServiceTest extends TestCase
             'ADJ-001'
         );
 
-        $this->assertSame('credit', $transaction->direction);
-        $this->assertSame('adjustment', $transaction->category);
+        $this->assertSame(
+            'credit',
+            $transaction->direction
+        );
+
+        $this->assertSame(
+            'adjustment',
+            $transaction->category
+        );
 
         $this->assertSame(
             2000,
@@ -130,9 +172,11 @@ class OwnerLedgerServiceTest extends TestCase
         $account = $this->createAccount();
 
         app(OwnerLedgerService::class)->recordDeposit(
-            $account,
-            3000,
-            '2026-08-01'
+            account: $account,
+            amount: 3000,
+            transactionDate: '2026-08-01',
+            paymentMethod: 'bank_transfer',
+            depositPurpose: 'general_funding'
         );
 
         app(OwnerLedgerService::class)->recordAdjustment(
@@ -157,14 +201,17 @@ class OwnerLedgerServiceTest extends TestCase
         $account = $this->createAccount();
 
         $this->expectException(RuntimeException::class);
+
         $this->expectExceptionMessage(
             'Owner deposit amount must be greater than zero.'
         );
 
         app(OwnerLedgerService::class)->recordDeposit(
-            $account,
-            0,
-            '2026-08-11'
+            account: $account,
+            amount: 0,
+            transactionDate: '2026-08-11',
+            paymentMethod: 'bank_transfer',
+            depositPurpose: 'general_funding'
         );
     }
 
@@ -176,6 +223,7 @@ class OwnerLedgerServiceTest extends TestCase
         $account = $this->createAccount();
 
         $this->expectException(RuntimeException::class);
+
         $this->expectExceptionMessage(
             'Owner adjustment direction must be credit or debit.'
         );
@@ -197,6 +245,7 @@ class OwnerLedgerServiceTest extends TestCase
         $account = $this->createAccount();
 
         $this->expectException(RuntimeException::class);
+
         $this->expectExceptionMessage(
             'Owner adjustment reason is required.'
         );

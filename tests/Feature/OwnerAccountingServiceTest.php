@@ -506,7 +506,18 @@ class OwnerAccountingServiceTest extends TestCase
             'vat_amount' => 0,
         ]);
 
-        $this->assertDatabaseCount('owner_accounts', 0);
+        /*
+        * OwnerAccounts are provisioned as soon as Building ownership exists.
+        *
+        * The existence of an OwnerAccount does not represent rent entitlement.
+        * An unpaid Invoice must therefore leave the owner ledger untouched:
+        * no rent entitlement or other financial transaction may be created.
+        *
+        * This test context contains two Building owners, so two consolidated
+        * OwnerAccounts are expected to exist before any rent is collected.
+        */
+        $this->assertDatabaseCount('owner_accounts', 2);
+
         $this->assertDatabaseCount('owner_transactions', 0);
     }
     /**
