@@ -56,6 +56,11 @@ Route::view(
 )->name('owners');
 
 Route::view(
+    '/reports',
+    'app.reports'
+)->name('reports');
+
+Route::view(
     '/settings',
     'app.settings'
 )->name('settings');
