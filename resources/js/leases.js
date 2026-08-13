@@ -86,6 +86,15 @@ export async function initializeLeases() {
 
     initializeSecurityDepositModal();
 
+    /*
+     * Register operational Tenant Funds controls.
+     *
+     * This initializer owns the modal close/backdrop actions, Rent Reserve
+     * and Consumable Advance forms, and the hand-off to the Security Deposit
+     * close-out workflow.
+     */
+    initializeTenantFundsModal();
+
     initializeLeaseFieldHelp();
 
     try {
@@ -3503,6 +3512,25 @@ function initializeSecurityDepositModal() {
             submitSecurityDepositSettlement
         );
 
+
+            /*
+        * Financial document API routes require the same Sanctum Bearer token
+        * used by the rest of the authenticated application.
+        *
+        * The voucher must therefore be fetched through apiRequest() rather than
+        * opened through ordinary browser navigation.
+        */
+        document
+            .getElementById(
+                'security-deposit-voucher-link'
+            )
+            ?.addEventListener(
+                'click',
+                openSecurityDepositVoucher
+            );
+
+
+
     document.addEventListener(
         'keydown',
         (event) => {
@@ -3672,6 +3700,18 @@ function resetSecurityDepositModal() {
         lifecycle.classList.add(
             'hidden'
         );
+    }
+
+    const voucherButton =
+        document.getElementById(
+            'security-deposit-voucher-link'
+        );
+
+    if (voucherButton) {
+        delete voucherButton.dataset.endpoint;
+
+        voucherButton.disabled =
+            true;
     }
 }
 
@@ -3845,15 +3885,27 @@ function renderSecurityDepositPosition(
             `Voucher ${settlement.refund_voucher_number}`
         );
 
-        const link =
+
+        const voucherButton =
             document.getElementById(
                 'security-deposit-voucher-link'
             );
 
-        if (link) {
-            link.href =
+        if (voucherButton) {
+            /*
+             * Store the authenticated API endpoint as data rather than
+             * assigning it as an href. Ordinary navigation would omit the
+             * sessionStorage Bearer token and receive HTTP 401.
+             */
+            voucherButton.dataset.endpoint =
                 `/api/security-deposit-settlements/${settlement.id}/voucher`;
+
+            voucherButton.disabled =
+                false;
         }
+
+
+
 
         return;
     }
@@ -4092,6 +4144,126 @@ function renderSecurityDepositDeductions(
         </div>
     `;
 }
+
+
+/**
+ * Download and display the finalized Security Deposit voucher.
+ *
+ * Financial document routes are protected by Sanctum. The application token
+ * therefore has to be attached through apiRequest() rather than relying on a
+ * normal browser link.
+ */
+async function openSecurityDepositVoucher() {
+    const button =
+        document.getElementById(
+            'security-deposit-voucher-link'
+        );
+
+    const endpoint =
+        button?.dataset
+            ?.endpoint;
+
+    if (
+        ! button
+        || ! endpoint
+    ) {
+        return;
+    }
+
+    hideSecurityDepositError();
+
+    /*
+     * Open an empty browser tab immediately while this code is still running
+     * inside the user's click event. This avoids popup blockers treating the
+     * eventual PDF window as an unsolicited popup after the asynchronous
+     * authenticated request completes.
+     */
+    const viewer =
+        window.open(
+            '',
+            '_blank'
+        );
+
+    if (! viewer) {
+        showSecurityDepositError(
+            'The voucher could not be opened because the browser blocked the new tab.'
+        );
+
+        return;
+    }
+
+    const originalLabel =
+        button.textContent;
+
+    try {
+        button.disabled =
+            true;
+
+        button.textContent =
+            'Opening…';
+
+        const response =
+            await apiRequest(
+                endpoint,
+                {
+                    headers: {
+                        Accept:
+                            'application/pdf',
+                    },
+                }
+            );
+
+        if (! response.ok) {
+            throw new Error(
+                'Unable to open Security Deposit voucher.'
+            );
+        }
+
+        const blob =
+            await response.blob();
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        /*
+         * Navigate the already-opened tab to the authenticated PDF blob.
+         */
+        viewer.location.href =
+            url;
+
+        /*
+         * The browser no longer needs the temporary object URL once the PDF
+         * viewer has had sufficient time to load it.
+         */
+        window.setTimeout(
+            () => {
+                URL.revokeObjectURL(
+                    url
+                );
+            },
+            60000
+        );
+    } catch (error) {
+        viewer.close();
+
+        showSecurityDepositError(
+            error instanceof Error
+                ? error.message
+                : 'Unable to open Security Deposit voucher.'
+        );
+    } finally {
+        button.disabled =
+            false;
+
+        button.textContent =
+            originalLabel
+            || 'Download Voucher';
+    }
+}
+
+
 
 /**
  * Persist one itemized deduction and refresh the server-calculated preview.

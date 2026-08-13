@@ -2623,11 +2623,9 @@
                                     </div>
                                 </div>
 
-                                <a
+                                <button
                                     id="security-deposit-voucher-link"
-                                    href="#"
-                                    target="_blank"
-                                    rel="noopener"
+                                    type="button"
                                     class="
                                         inline-flex items-center
                                         justify-center rounded-lg
@@ -2637,10 +2635,12 @@
                                         text-green-800
                                         transition
                                         hover:bg-green-100
+                                        disabled:cursor-not-allowed
+                                        disabled:opacity-60
                                     "
                                 >
                                     Download Voucher
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </section>
