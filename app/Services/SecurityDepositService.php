@@ -8,6 +8,7 @@ use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Models\Invoice;
 
 /**
  * Handles final settlement of a Lease's Security Deposit.
@@ -157,6 +158,89 @@ class SecurityDepositService
                     'refund_voucher_number' =>
                         $voucherNumber,
                 ]);
+
+
+                /*
+ * Excess Security Deposit deductions remain a genuine amount owed by
+ * the tenant after the held deposit has been exhausted.
+ *
+ * Represent that amount as an Invoice so Patrimoine can use its existing
+ * Payment and PaymentAllocation infrastructure for collection.
+ *
+ * This is deliberately NOT a rent Invoice. Cash later collected against
+ * this receivable must not create owner rent entitlement or management
+ * fees.
+ */
+if ($tenantDebtAmount > 0) {
+    $debtInvoice =
+        Invoice::create([
+            'lease_id' =>
+                $lease->id,
+
+            'invoice_number' =>
+                sprintf(
+                    'SDD-%06d',
+                    $settlement->id
+                ),
+
+            'type' =>
+                'security_deposit_debt',
+
+            /*
+             * A close-out debt has no recurring rent billing period.
+             *
+             * The settlement date is used for both dates so the existing
+             * Invoice schema remains auditable without inventing a rent
+             * period.
+             */
+            'period_start' =>
+                $settlementDate,
+
+            'period_end' =>
+                $settlementDate,
+
+            'issue_date' =>
+                $settlementDate,
+
+            'due_date' =>
+                $settlementDate,
+
+            'status' =>
+                'issued',
+
+            'total_amount' =>
+                $tenantDebtAmount,
+
+            /*
+             * This is recovery of a Security Deposit close-out charge,
+             * not contractual VAT-inclusive rent.
+             */
+            'vat_rate' =>
+                0,
+
+            'net_amount' =>
+                $tenantDebtAmount,
+
+            'vat_amount' =>
+                0,
+
+            'proration_amount' =>
+                null,
+
+            'notes' =>
+                sprintf(
+                    'Security Deposit close-out debt from settlement %s.',
+                    $voucherNumber
+                ),
+        ]);
+
+    $settlement->update([
+        'debt_invoice_id' =>
+            $debtInvoice->id,
+    ]);
+}
+
+
 
                 /*
                  * Consume the portion of the deposit retained against

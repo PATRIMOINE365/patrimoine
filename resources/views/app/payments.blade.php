@@ -1410,7 +1410,7 @@
                             "
                         >
                             <div class="text-xs text-slate-500">
-                                Allocated to Rent
+                                Allocated to Invoices
                             </div>
 
                             <div

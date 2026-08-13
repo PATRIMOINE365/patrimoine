@@ -135,6 +135,10 @@ class SecurityDepositServiceTest extends TestCase
             $settlement->refund_voucher_number
         );
 
+        $this->assertNull(
+    $settlement->debt_invoice_id
+);
+
         /*
          * After deduction and refund, no Security Deposit funds remain held.
          */
@@ -215,6 +219,45 @@ class SecurityDepositServiceTest extends TestCase
             3000,
             $settlement->tenant_debt_amount
         );
+
+        $settlement->refresh();
+
+$this->assertNotNull(
+    $settlement->debt_invoice_id
+);
+
+$debtInvoice =
+    $settlement
+        ->debtInvoice()
+        ->firstOrFail();
+
+$this->assertSame(
+    'security_deposit_debt',
+    $debtInvoice->type
+);
+
+$this->assertSame(
+    3000,
+    $debtInvoice->total_amount
+);
+
+$this->assertSame(
+    3000,
+    $debtInvoice->outstandingAmount()
+);
+
+$this->assertSame(
+    'issued',
+    $debtInvoice->status
+);
+
+$this->assertSame(
+    sprintf(
+        'SDD-%06d',
+        $settlement->id
+    ),
+    $debtInvoice->invoice_number
+);
 
         $this->assertSame(
             sprintf(

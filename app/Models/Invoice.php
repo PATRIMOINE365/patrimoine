@@ -27,6 +27,7 @@ class Invoice extends Model
     protected $fillable = [
         'lease_id',
         'invoice_number',
+        'type',
         'period_start',
         'period_end',
         'issue_date',
@@ -150,4 +151,26 @@ class Invoice extends Model
     {
         return $this->outstandingAmount() === 0;
     }
+
+    /**
+     * Determine whether this Invoice represents ordinary contractual rent.
+     *
+     * Only rent invoices participate in owner rent entitlement and management
+     * fee accounting when tenant cash is collected.
+     */
+    public function isRentInvoice(): bool
+    {
+        return $this->type === 'rent';
+    }
+
+    /**
+     * Determine whether this Invoice represents Security Deposit close-out debt.
+     *
+     * This is a tenant receivable but is not rent revenue.
+     */
+    public function isSecurityDepositDebtInvoice(): bool
+    {
+        return $this->type === 'security_deposit_debt';
+    }
+
 }

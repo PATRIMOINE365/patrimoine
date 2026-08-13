@@ -130,6 +130,12 @@ class InvoiceGenerationService
 
             $invoice = Invoice::create([
                 'lease_id' => $lease->id,
+
+                /*
+                * Periodic Lease billing always represents contractual rent.
+                */
+                'type' => 'rent',
+
                 'invoice_number' =>
                     $this->nextInvoiceNumber(),
                 'period_start' => $periodStart->toDateString(),

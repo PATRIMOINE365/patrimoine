@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+
 /**
  * Represents the final security-deposit close-out for a Lease.
  *
@@ -24,6 +25,7 @@ class SecurityDepositSettlement extends Model
         'deduction_amount',
         'refund_amount',
         'tenant_debt_amount',
+        'debt_invoice_id',
         'settlement_date',
         'refund_voucher_number',
         'notes',
@@ -51,5 +53,19 @@ class SecurityDepositSettlement extends Model
     public function lease(): BelongsTo
     {
         return $this->belongsTo(Lease::class);
+    }
+
+    /**
+     * Receivable created when final Security Deposit deductions exceed
+     * the money actually held for the tenant.
+     *
+     * NULL means the settlement produced no tenant debt.
+     */
+    public function debtInvoice(): BelongsTo
+    {
+        return $this->belongsTo(
+            related: Invoice::class,
+            foreignKey: 'debt_invoice_id'
+        );
     }
 }

@@ -144,8 +144,38 @@
      * The receipt should explain these destinations clearly rather than
      * describing all non-invoice money simply as "Unallocated".
      */
-    $allocatedAmount =
-        $payment->allocatedAmount();
+/*
+ * Separate normal rent allocations from other tenant receivables.
+ *
+ * PaymentAllocation is shared infrastructure, but not every Invoice
+ * represents rent. In particular, Security Deposit close-out debt uses
+ * the same allocation mechanism without becoming rent revenue.
+ */
+$rentAllocatedAmount =
+    (int) $payment
+        ->allocations
+        ->filter(
+            fn ($allocation) =>
+                $allocation->invoice?->isRentInvoice()
+        )
+        ->sum('amount');
+
+$securityDepositDebtAllocatedAmount =
+    (int) $payment
+        ->allocations
+        ->filter(
+            fn ($allocation) =>
+                $allocation->invoice
+                    ?->isSecurityDepositDebtInvoice()
+        )
+        ->sum('amount');
+
+/*
+ * Total money allocated to receivable Invoices regardless of type.
+ */
+$allocatedAmount =
+    $rentAllocatedAmount
+    + $securityDepositDebtAllocatedAmount;
 
     $rentReserveAmount =
         (int) \App\Models\TenantFundTransaction::query()
@@ -351,39 +381,52 @@
         Payment Allocation
     </div>
 
-    @if($payment->allocations->isEmpty())
-        <p>
-            No portion of this payment has been applied directly to rent invoices.
-        </p>
+@if($payment->allocations->isEmpty())
+    <p>
+        No portion of this payment has been applied directly to an outstanding receivable.
+    </p>
     @else
         <table class="allocation-table">
-            <thead>
-                <tr>
-                    <th>Invoice</th>
-                    <th>Period</th>
-                    <th class="numeric">Allocated</th>
-                </tr>
-            </thead>
+<thead>
+    <tr>
+        <th>Invoice</th>
+        <th>Purpose</th>
+        <th>Period</th>
+        <th class="numeric">Allocated</th>
+    </tr>
+</thead>
 
-            <tbody>
-                @foreach($payment->allocations as $allocation)
-                    <tr>
-                        <td>
-                            {{ $allocation->invoice->invoice_number }}
-                        </td>
+<tbody>
+    @foreach($payment->allocations as $allocation)
+        <tr>
+            <td>
+                {{ $allocation->invoice->invoice_number }}
+            </td>
 
-                        <td>
-                            {{ $allocation->invoice->period_start->format('d M Y') }}
-                            -
-                            {{ $allocation->invoice->period_end->format('d M Y') }}
-                        </td>
+            <td>
+                @if($allocation->invoice->isSecurityDepositDebtInvoice())
+                    Security Deposit Debt
+                @else
+                    Rent
+                @endif
+            </td>
 
-                        <td class="numeric">
-                            GHS {{ number_format($allocation->amount, 0) }}
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
+            <td>
+                @if($allocation->invoice->isSecurityDepositDebtInvoice())
+                    Close-out
+                @else
+                    {{ $allocation->invoice->period_start->format('d M Y') }}
+                    -
+                    {{ $allocation->invoice->period_end->format('d M Y') }}
+                @endif
+            </td>
+
+            <td class="numeric">
+                GHS {{ number_format($allocation->amount, 0) }}
+            </td>
+        </tr>
+    @endforeach
+</tbody>
         </table>
     @endif
 </div>
@@ -404,17 +447,29 @@
             </td>
         </tr>
 
-        @if($allocatedAmount > 0)
-            <tr>
-                <td class="summary-detail">
-                    Applied to Rent
-                </td>
+@if($rentAllocatedAmount > 0)
+    <tr>
+        <td class="summary-detail">
+            Applied to Rent
+        </td>
 
-                <td class="summary-amount">
-                    GHS {{ number_format($allocatedAmount, 0) }}
-                </td>
-            </tr>
-        @endif
+        <td class="summary-amount">
+            GHS {{ number_format($rentAllocatedAmount, 0) }}
+        </td>
+    </tr>
+@endif
+
+@if($securityDepositDebtAllocatedAmount > 0)
+    <tr>
+        <td class="summary-detail">
+            Applied to Security Deposit Debt
+        </td>
+
+        <td class="summary-amount">
+            GHS {{ number_format($securityDepositDebtAllocatedAmount, 0) }}
+        </td>
+    </tr>
+@endif
 
         @if($rentReserveAmount > 0)
             <tr>
