@@ -14,11 +14,16 @@ use Illuminate\Support\Facades\DB;
  *
  * Patrimoine 1.0 is not multi-tenant. Exactly one Party is designated as
  * the application-wide managing organisation.
+ *
+ * Application-wide financial defaults remain on ApplicationSetting rather
+ * than on the Party because they configure Patrimoine behaviour rather than
+ * describe the legal organisation itself.
  */
 class ManagingOrganisationController extends Controller
 {
     /**
-     * Return the currently configured managing organisation.
+     * Return the currently configured managing organisation together with
+     * application-wide financial defaults.
      */
     public function show(): JsonResponse
     {
@@ -40,18 +45,21 @@ class ManagingOrganisationController extends Controller
         }
 
         return response()->json(
-            $settings->managingOrganisation
+            $this->responseData(
+                $settings
+            )
         );
     }
 
     /**
-     * Create or update the singleton managing organisation.
+     * Create or update the singleton managing organisation and its
+     * application-wide defaults.
      */
     public function update(
         UpdateManagingOrganisationRequest $request
     ): JsonResponse {
-        $party = DB::transaction(
-            function () use ($request): Party {
+        $settings = DB::transaction(
+            function () use ($request): ApplicationSetting {
                 $settings = ApplicationSetting::query()
                     ->lockForUpdate()
                     ->first();
@@ -64,49 +72,122 @@ class ManagingOrganisationController extends Controller
                     $settings = ApplicationSetting::create();
                 }
 
-                $validated = $request->validated();
+                $validated =
+                    $request->validated();
+
+                /*
+                 * Financial defaults configure the application rather than
+                 * describe the Managing Organisation Party.
+                 *
+                 * Extract them before passing organisation attributes into
+                 * Party::create() or Party::update().
+                 */
+                $defaultVatRate =
+                    $validated['default_vat_rate'];
+
+                unset(
+                    $validated['default_vat_rate']
+                );
 
                 /*
                  * Managing organisations are always Organisation Parties.
                  * The API therefore does not expose Party type as user input.
                  */
-                $partyAttributes = array_merge(
-                    $validated,
-                    [
-                        'type' => 'organisation',
-                    ]
-                );
+                $partyAttributes =
+                    array_merge(
+                        $validated,
+                        [
+                            'type' =>
+                                'organisation',
+                        ]
+                    );
 
-                if ($settings->managing_organisation_party_id === null) {
-                    $party = Party::create($partyAttributes);
+                if (
+                    $settings
+                        ->managing_organisation_party_id
+                    === null
+                ) {
+                    $party =
+                        Party::create(
+                            $partyAttributes
+                        );
 
                     $settings->update([
                         'managing_organisation_party_id' =>
                             $party->id,
                     ]);
                 } else {
-                    $party = Party::query()
-                        ->findOrFail(
-                            $settings->managing_organisation_party_id
-                        );
+                    $party =
+                        Party::query()
+                            ->findOrFail(
+                                $settings
+                                    ->managing_organisation_party_id
+                            );
 
-                    $party->update($partyAttributes);
+                    $party->update(
+                        $partyAttributes
+                    );
                 }
+
+                /*
+                 * Store financial defaults independently from Party identity.
+                 *
+                 * Existing Leases and Invoices retain their own VAT snapshots;
+                 * this value applies only when creating future records.
+                 */
+                $settings->update([
+                    'default_vat_rate' =>
+                        $defaultVatRate,
+                ]);
 
                 /*
                  * Ensure the application identity always carries the
                  * managing_organisation functional role.
                  */
-                $party->roles()->firstOrCreate([
-                    'role' => 'managing_organisation',
-                ]);
+                $party
+                    ->roles()
+                    ->firstOrCreate([
+                        'role' =>
+                            'managing_organisation',
+                    ]);
 
-                return $party
+                return $settings
                     ->refresh()
-                    ->load('roles');
+                    ->load(
+                        'managingOrganisation.roles'
+                    );
             }
         );
 
-        return response()->json($party);
+        return response()->json(
+            $this->responseData(
+                $settings
+            )
+        );
+    }
+
+    /**
+     * Build the API representation of Managing Organisation configuration.
+     *
+     * Organisation identity remains represented by Party while financial
+     * defaults are merged into the response for the Settings workspace.
+     *
+     * @return array<string, mixed>
+     */
+    private function responseData(
+        ApplicationSetting $settings
+    ): array {
+        $party =
+            $settings
+                ->managingOrganisation;
+
+        return array_merge(
+            $party->toArray(),
+            [
+                'default_vat_rate' =>
+                    $settings
+                        ->default_vat_rate,
+            ]
+        );
     }
 }

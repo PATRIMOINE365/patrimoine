@@ -269,7 +269,69 @@ class ManagingOrganisationApiTest extends TestCase
 
 
 
+/**
+ * The Managing Organisation API exposes the application-wide
+ * default VAT rate.
+ */
+public function test_managing_organisation_exposes_default_vat_rate(): void
+{
+    $payload =
+        $this->validPayload();
 
+    $payload['default_vat_rate'] =
+        15.00;
+
+    $this
+        ->putJson(
+            '/api/managing-organisation',
+            $payload
+        )
+        ->assertOk()
+        ->assertJsonPath(
+            'default_vat_rate',
+            '15.00'
+        );
+
+    $this
+        ->getJson(
+            '/api/managing-organisation'
+        )
+        ->assertOk()
+        ->assertJsonPath(
+            'default_vat_rate',
+            '15.00'
+        );
+
+    $this->assertDatabaseHas(
+        'application_settings',
+        [
+            'default_vat_rate' =>
+                15.00,
+        ]
+    );
+}
+
+/**
+ * Default VAT must remain a valid percentage.
+ */
+public function test_managing_organisation_rejects_invalid_default_vat_rate(): void
+{
+    $payload =
+        $this->validPayload();
+
+    $payload['default_vat_rate'] =
+        150;
+
+    $this
+        ->putJson(
+            '/api/managing-organisation',
+            $payload
+        )
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors([
+            'default_vat_rate',
+        ]);
+}
 
     /**
      * Return a complete valid managing-organisation payload.
@@ -317,6 +379,9 @@ class ManagingOrganisationApiTest extends TestCase
 
             'bank_branch' =>
                 'Accra',
+
+            'default_vat_rate' =>
+                18.00,
 
             'notes' =>
                 'Primary Patrimoine managing organisation.',

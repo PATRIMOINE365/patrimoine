@@ -57,6 +57,8 @@ let leaseFormMode =
 let editingLeaseId =
     null;
 
+let defaultVatRate =
+    '18.00';
 /*
 |--------------------------------------------------------------------------
 | Public Initializer
@@ -84,6 +86,15 @@ export async function initializeLeases() {
 
     try {
         /*
+         * Application-level defaults are loaded before the Lease form is
+         * first used so newly created Leases inherit the configured VAT rate.
+         *
+         * Existing Leases remain unaffected because edit mode populates
+         * the VAT field from the Lease's own stored vat_rate value.
+         */
+        await loadLeaseDefaults();
+
+        /*
          * Tenant data is used by both the list filter and Lease form.
          */
         await loadLeaseReferenceData();
@@ -99,7 +110,62 @@ export async function initializeLeases() {
         );
     }
 }
+/*
+|--------------------------------------------------------------------------
+| Application Defaults
+|--------------------------------------------------------------------------
+*/
 
+/**
+ * Load application-wide Lease defaults.
+ *
+ * Patrimoine currently exposes financial defaults through the existing
+ * Managing Organisation endpoint because ApplicationSetting belongs to
+ * the single Patrimoine installation.
+ *
+ * A fresh installation may not yet have a Managing Organisation.
+ * In that case the historical Patrimoine default of 18% remains active.
+ */
+async function loadLeaseDefaults() {
+    defaultVatRate =
+        '18.00';
+
+    const response =
+        await apiRequest(
+            '/api/managing-organisation'
+        );
+
+    /*
+     * A fresh installation can legitimately have no configured managing
+     * organisation yet. Preserve the built-in fallback rather than blocking
+     * Lease creation.
+     */
+    if (response.status === 404) {
+        return;
+    }
+
+    const organisation =
+        await parseJsonResponse(
+            response
+        );
+
+    const configuredRate =
+        Number(
+            organisation
+                ?.default_vat_rate
+        );
+
+    if (
+        Number.isFinite(
+            configuredRate
+        )
+        && configuredRate >= 0
+        && configuredRate <= 100
+    ) {
+        defaultVatRate =
+            configuredRate.toFixed(2);
+    }
+}
 /*
 |--------------------------------------------------------------------------
 | Reference Data
@@ -2248,7 +2314,7 @@ function resetLeaseForm() {
 
     setFormValue(
         'lease-vat-rate',
-        '18'
+        defaultVatRate
     );
 
     setFormValue(

@@ -451,6 +451,91 @@
                     </div>
                 </section>
 
+                {{-- Financial defaults --}}
+                <section
+                    class="
+                        border-t border-slate-100
+                        pt-7
+                    "
+                >
+                    <h3
+                        class="
+                            mb-1 text-sm font-semibold
+                            text-slate-950
+                        "
+                    >
+                        Financial Defaults
+                    </h3>
+
+                    <p class="mb-4 text-xs text-slate-500">
+                        Defaults apply to newly created records only.
+                        Existing leases and invoices keep their stored values.
+                    </p>
+
+                    <div
+                        class="
+                            grid gap-4
+                            md:grid-cols-2
+                        "
+                    >
+                        <div>
+                            <label
+                                for="organisation-default-vat-rate"
+                                class="
+                                    mb-1.5 flex items-center gap-1.5
+                                    text-sm font-medium
+                                    text-slate-700
+                                "
+                            >
+                                Default VAT Rate %
+
+                                <x-field-help label="About Default VAT Rate">
+                                    This rate is pre-filled when creating a new Lease.
+                                    Individual Leases may still override the value,
+                                    including using 0% where applicable.
+                                    Changing this setting does not alter existing
+                                    Leases or historical Invoices.
+                                </x-field-help>
+
+                                <span class="text-red-500">*</span>
+                            </label>
+
+                            <input
+                                id="organisation-default-vat-rate"
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                required
+                                value="18"
+                                class="
+                                    w-full rounded-lg
+                                    border border-slate-200
+                                    px-3.5 py-2.5
+                                    text-sm outline-none
+                                    transition
+                                    focus:border-patrimoine-500
+                                    focus:ring-2
+                                    focus:ring-patrimoine-100
+                                "
+                            >
+
+                            <p
+                                class="
+                                    mt-1.5 text-xs
+                                    text-slate-500
+                                "
+                            >
+                                Used as the starting VAT rate for new Leases.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+
+
+
+
                 {{-- Banking --}}
                 <section
                     class="

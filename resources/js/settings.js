@@ -157,6 +157,12 @@ function populateManagingOrganisationForm(
     );
 
     setFormValue(
+        'organisation-default-vat-rate',
+        organisation.default_vat_rate
+        ?? '18.00'
+    );
+
+    setFormValue(
         'organisation-bank-name',
         organisation.bank_name
     );
@@ -290,6 +296,14 @@ async function submitManagingOrganisation(
         vat_tin:
             nullableFormValue(
                 'organisation-vat-tin'
+            ),
+
+
+        default_vat_rate:
+            Number(
+                formValue(
+                    'organisation-default-vat-rate'
+                )
             ),
 
         bank_name:

@@ -112,6 +112,12 @@ class UpdateManagingOrganisationRequest extends FormRequest
                 'max:255',
             ],
 
+            'default_vat_rate' => [
+                'required',
+                'numeric',
+                'between:0,100',
+            ],
+
             'notes' => [
                 'nullable',
                 'string',
