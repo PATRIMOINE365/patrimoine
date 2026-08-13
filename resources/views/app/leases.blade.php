@@ -1976,3 +1976,676 @@
     "
 ></div>
 @endsection
+
+{{-- ================================================================
+     Security Deposit Operational Modal
+================================================================ --}}
+
+<div
+    id="security-deposit-modal"
+    class="
+        fixed inset-0 z-[80]
+        hidden overflow-y-auto
+    "
+    aria-hidden="true"
+>
+    <div
+        id="security-deposit-modal-backdrop"
+        class="
+            fixed inset-0
+            bg-slate-950/50
+            backdrop-blur-[1px]
+        "
+    ></div>
+
+    <div
+        class="
+            relative flex min-h-full
+            items-start justify-center
+            p-4 sm:p-6 lg:p-10
+        "
+    >
+        <div
+            class="
+                relative w-full max-w-4xl
+                overflow-hidden rounded-2xl
+                bg-white shadow-2xl
+            "
+        >
+            {{-- Header --}}
+
+            <div
+                class="
+                    flex items-start justify-between gap-5
+                    border-b border-slate-100
+                    px-6 py-5
+                "
+            >
+                <div>
+                    <div
+                        class="
+                            text-xs font-medium uppercase
+                            tracking-wide text-patrimoine-700
+                        "
+                    >
+                        Lease Close-out
+                    </div>
+
+                    <h2
+                        class="
+                            mt-1 text-xl font-semibold
+                            tracking-tight text-slate-950
+                        "
+                    >
+                        Security Deposit
+                    </h2>
+
+                    <p
+                        id="security-deposit-modal-description"
+                        class="mt-1 text-sm text-slate-500"
+                    >
+                        Review held funds, itemized deductions and final settlement.
+                    </p>
+                </div>
+
+                <button
+                    id="security-deposit-modal-close"
+                    type="button"
+                    aria-label="Close"
+                    class="
+                        inline-flex h-9 w-9
+                        shrink-0 items-center
+                        justify-center rounded-lg
+                        text-slate-400 transition
+                        hover:bg-slate-100
+                        hover:text-slate-700
+                    "
+                >
+                    <svg
+                        class="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path d="M18 6 6 18"/>
+                        <path d="m6 6 12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div
+                class="
+                    max-h-[calc(100vh-11rem)]
+                    overflow-y-auto
+                    px-6 py-6
+                "
+            >
+                <div
+                    id="security-deposit-error"
+                    class="
+                        mb-5 hidden rounded-lg
+                        border border-red-200
+                        bg-red-50 px-4 py-3
+                        text-sm text-red-700
+                    "
+                ></div>
+
+                <div
+                    id="security-deposit-loading"
+                    class="
+                        py-12 text-center
+                        text-sm text-slate-400
+                    "
+                >
+                    Loading Security Deposit…
+                </div>
+
+                <div
+                    id="security-deposit-content"
+                    class="hidden"
+                >
+                    {{-- Position Summary --}}
+
+                    <section>
+                        <div
+                            class="
+                                grid gap-4
+                                sm:grid-cols-2
+                                xl:grid-cols-5
+                            "
+                        >
+                            <div
+                                class="
+                                    rounded-xl border border-slate-200
+                                    bg-slate-50 p-4
+                                "
+                            >
+                                <div class="text-xs text-slate-500">
+                                    Contractual Deposit
+                                </div>
+
+                                <div
+                                    id="security-deposit-contractual"
+                                    class="
+                                        mt-2 text-lg font-semibold
+                                        text-slate-950
+                                    "
+                                >
+                                    —
+                                </div>
+                            </div>
+
+                            <div
+                                class="
+                                    rounded-xl border border-slate-200
+                                    bg-slate-50 p-4
+                                "
+                            >
+                                <div class="text-xs text-slate-500">
+                                    Held Balance
+                                </div>
+
+                                <div
+                                    id="security-deposit-held"
+                                    class="
+                                        mt-2 text-lg font-semibold
+                                        text-slate-950
+                                    "
+                                >
+                                    —
+                                </div>
+                            </div>
+
+                            <div
+                                class="
+                                    rounded-xl border border-slate-200
+                                    bg-slate-50 p-4
+                                "
+                            >
+                                <div class="text-xs text-slate-500">
+                                    Deductions
+                                </div>
+
+                                <div
+                                    id="security-deposit-deduction-total"
+                                    class="
+                                        mt-2 text-lg font-semibold
+                                        text-slate-950
+                                    "
+                                >
+                                    —
+                                </div>
+                            </div>
+
+                            <div
+                                class="
+                                    rounded-xl border border-green-200
+                                    bg-green-50 p-4
+                                "
+                            >
+                                <div class="text-xs text-green-700">
+                                    Refund
+                                </div>
+
+                                <div
+                                    id="security-deposit-refund"
+                                    class="
+                                        mt-2 text-lg font-semibold
+                                        text-green-800
+                                    "
+                                >
+                                    —
+                                </div>
+                            </div>
+
+                            <div
+                                class="
+                                    rounded-xl border border-red-200
+                                    bg-red-50 p-4
+                                "
+                            >
+                                <div class="text-xs text-red-700">
+                                    Tenant Debt
+                                </div>
+
+                                <div
+                                    id="security-deposit-debt"
+                                    class="
+                                        mt-2 text-lg font-semibold
+                                        text-red-800
+                                    "
+                                >
+                                    —
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {{-- Lifecycle Notice --}}
+
+                    <div
+                        id="security-deposit-lifecycle-message"
+                        class="
+                            mt-5 hidden rounded-xl
+                            border border-amber-200
+                            bg-amber-50 px-4 py-3
+                            text-sm text-amber-800
+                        "
+                    ></div>
+
+                    {{-- Itemized Deductions --}}
+
+                    <section
+                        class="
+                            mt-7 border-t
+                            border-slate-100 pt-6
+                        "
+                    >
+                        <div
+                            class="
+                                flex flex-col gap-3
+                                sm:flex-row
+                                sm:items-center
+                                sm:justify-between
+                            "
+                        >
+                            <div>
+                                <h3
+                                    class="
+                                        text-sm font-semibold
+                                        text-slate-950
+                                    "
+                                >
+                                    Itemized Deductions
+                                </h3>
+
+                                <p class="mt-1 text-xs text-slate-500">
+                                    Charges retained from the tenant's Security Deposit.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div
+                            id="security-deposit-deductions"
+                            class="mt-4"
+                        ></div>
+
+                        <form
+                            id="security-deposit-deduction-form"
+                            class="
+                                mt-5 hidden rounded-xl
+                                border border-slate-200
+                                bg-slate-50 p-4
+                            "
+                        >
+                            <div
+                                class="
+                                    grid gap-4
+                                    md:grid-cols-2
+                                "
+                            >
+                                <div class="md:col-span-2">
+                                    <label
+                                        for="security-deduction-description"
+                                        class="
+                                            mb-1.5 block
+                                            text-sm font-medium
+                                            text-slate-700
+                                        "
+                                    >
+                                        Description
+                                        <span class="text-red-500">*</span>
+                                    </label>
+
+                                    <input
+                                        id="security-deduction-description"
+                                        type="text"
+                                        maxlength="255"
+                                        required
+                                        placeholder="e.g. Damaged lock"
+                                        class="
+                                            w-full rounded-lg
+                                            border border-slate-200
+                                            bg-white px-3.5 py-2.5
+                                            text-sm outline-none
+                                            focus:border-patrimoine-500
+                                            focus:ring-2
+                                            focus:ring-patrimoine-100
+                                        "
+                                    >
+                                </div>
+
+                                <div>
+                                    <label
+                                        for="security-deduction-amount"
+                                        class="
+                                            mb-1.5 block
+                                            text-sm font-medium
+                                            text-slate-700
+                                        "
+                                    >
+                                        Amount
+                                        <span class="text-red-500">*</span>
+                                    </label>
+
+                                    <input
+                                        id="security-deduction-amount"
+                                        type="number"
+                                        min="1"
+                                        step="1"
+                                        required
+                                        class="
+                                            w-full rounded-lg
+                                            border border-slate-200
+                                            bg-white px-3.5 py-2.5
+                                            text-sm outline-none
+                                            focus:border-patrimoine-500
+                                            focus:ring-2
+                                            focus:ring-patrimoine-100
+                                        "
+                                    >
+                                </div>
+
+                                <div>
+                                    <label
+                                        for="security-deduction-date"
+                                        class="
+                                            mb-1.5 block
+                                            text-sm font-medium
+                                            text-slate-700
+                                        "
+                                    >
+                                        Deduction Date
+                                        <span class="text-red-500">*</span>
+                                    </label>
+
+                                    <input
+                                        id="security-deduction-date"
+                                        type="date"
+                                        required
+                                        class="
+                                            w-full rounded-lg
+                                            border border-slate-200
+                                            bg-white px-3.5 py-2.5
+                                            text-sm outline-none
+                                            focus:border-patrimoine-500
+                                            focus:ring-2
+                                            focus:ring-patrimoine-100
+                                        "
+                                    >
+                                </div>
+
+                                <div>
+                                    <label
+                                        for="security-deduction-reference"
+                                        class="
+                                            mb-1.5 block
+                                            text-sm font-medium
+                                            text-slate-700
+                                        "
+                                    >
+                                        Reference
+                                    </label>
+
+                                    <input
+                                        id="security-deduction-reference"
+                                        type="text"
+                                        maxlength="255"
+                                        placeholder="Inspection / work order reference"
+                                        class="
+                                            w-full rounded-lg
+                                            border border-slate-200
+                                            bg-white px-3.5 py-2.5
+                                            text-sm outline-none
+                                            focus:border-patrimoine-500
+                                            focus:ring-2
+                                            focus:ring-patrimoine-100
+                                        "
+                                    >
+                                </div>
+
+                                <div>
+                                    <label
+                                        for="security-deduction-notes"
+                                        class="
+                                            mb-1.5 block
+                                            text-sm font-medium
+                                            text-slate-700
+                                        "
+                                    >
+                                        Notes
+                                    </label>
+
+                                    <input
+                                        id="security-deduction-notes"
+                                        type="text"
+                                        placeholder="Optional details"
+                                        class="
+                                            w-full rounded-lg
+                                            border border-slate-200
+                                            bg-white px-3.5 py-2.5
+                                            text-sm outline-none
+                                            focus:border-patrimoine-500
+                                            focus:ring-2
+                                            focus:ring-patrimoine-100
+                                        "
+                                    >
+                                </div>
+                            </div>
+
+                            <div
+                                class="
+                                    mt-4 flex justify-end
+                                "
+                            >
+                                <button
+                                    id="security-deduction-submit"
+                                    type="submit"
+                                    class="
+                                        rounded-lg bg-slate-900
+                                        px-4 py-2.5
+                                        text-sm font-medium text-white
+                                        transition
+                                        hover:bg-slate-800
+                                    "
+                                >
+                                    Add Deduction
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    {{-- Final Settlement --}}
+
+                    <section
+                        id="security-deposit-settlement-section"
+                        class="
+                            mt-7 border-t
+                            border-slate-100 pt-6
+                        "
+                    >
+                        <div>
+                            <h3
+                                class="
+                                    text-sm font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                Final Settlement
+                            </h3>
+
+                            <p class="mt-1 text-xs text-slate-500">
+                                Finalize the Security Deposit and create the formal settlement voucher.
+                            </p>
+                        </div>
+
+                        <form
+                            id="security-deposit-settlement-form"
+                            class="
+                                mt-4 hidden rounded-xl
+                                border border-slate-200
+                                p-4
+                            "
+                        >
+                            <div
+                                class="
+                                    grid gap-4
+                                    md:grid-cols-2
+                                "
+                            >
+                                <div>
+                                    <label
+                                        for="security-settlement-date"
+                                        class="
+                                            mb-1.5 block
+                                            text-sm font-medium
+                                            text-slate-700
+                                        "
+                                    >
+                                        Settlement Date
+                                        <span class="text-red-500">*</span>
+                                    </label>
+
+                                    <input
+                                        id="security-settlement-date"
+                                        type="date"
+                                        required
+                                        class="
+                                            w-full rounded-lg
+                                            border border-slate-200
+                                            px-3.5 py-2.5
+                                            text-sm outline-none
+                                            focus:border-patrimoine-500
+                                            focus:ring-2
+                                            focus:ring-patrimoine-100
+                                        "
+                                    >
+                                </div>
+
+                                <div>
+                                    <label
+                                        for="security-settlement-notes"
+                                        class="
+                                            mb-1.5 block
+                                            text-sm font-medium
+                                            text-slate-700
+                                        "
+                                    >
+                                        Notes
+                                    </label>
+
+                                    <input
+                                        id="security-settlement-notes"
+                                        type="text"
+                                        placeholder="Optional close-out notes"
+                                        class="
+                                            w-full rounded-lg
+                                            border border-slate-200
+                                            px-3.5 py-2.5
+                                            text-sm outline-none
+                                            focus:border-patrimoine-500
+                                            focus:ring-2
+                                            focus:ring-patrimoine-100
+                                        "
+                                    >
+                                </div>
+                            </div>
+
+                            <div
+                                class="
+                                    mt-4 rounded-lg
+                                    border border-amber-200
+                                    bg-amber-50 px-4 py-3
+                                    text-xs leading-5
+                                    text-amber-800
+                                "
+                            >
+                                Final settlement is irreversible. Once confirmed,
+                                no additional Security Deposit deductions can be added.
+                            </div>
+
+                            <div
+                                class="
+                                    mt-4 flex justify-end
+                                "
+                            >
+                                <button
+                                    id="security-settlement-submit"
+                                    type="submit"
+                                    class="
+                                        rounded-lg bg-patrimoine-950
+                                        px-4 py-2.5
+                                        text-sm font-medium text-white
+                                        transition
+                                        hover:bg-patrimoine-900
+                                    "
+                                >
+                                    Finalize Settlement
+                                </button>
+                            </div>
+                        </form>
+
+                        <div
+                            id="security-deposit-settled"
+                            class="
+                                mt-4 hidden rounded-xl
+                                border border-green-200
+                                bg-green-50 p-5
+                            "
+                        >
+                            <div
+                                class="
+                                    flex flex-col gap-4
+                                    sm:flex-row
+                                    sm:items-center
+                                    sm:justify-between
+                                "
+                            >
+                                <div>
+                                    <div
+                                        class="
+                                            text-sm font-semibold
+                                            text-green-900
+                                        "
+                                    >
+                                        Security Deposit Settled
+                                    </div>
+
+                                    <div
+                                        id="security-deposit-voucher-number"
+                                        class="
+                                            mt-1 text-xs
+                                            text-green-700
+                                        "
+                                    >
+                                        —
+                                    </div>
+                                </div>
+
+                                <a
+                                    id="security-deposit-voucher-link"
+                                    href="#"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="
+                                        inline-flex items-center
+                                        justify-center rounded-lg
+                                        border border-green-300
+                                        bg-white px-4 py-2.5
+                                        text-sm font-medium
+                                        text-green-800
+                                        transition
+                                        hover:bg-green-100
+                                    "
+                                >
+                                    Download Voucher
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

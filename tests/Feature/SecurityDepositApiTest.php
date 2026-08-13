@@ -10,11 +10,11 @@ use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
+use Tests\TestCase;
 
 /**
- * Verifies the Patrimoine Security Deposit settlement API.
+ * Verifies the Patrimoine Security Deposit operational API.
  */
 class SecurityDepositApiTest extends TestCase
 {
@@ -29,7 +29,7 @@ class SecurityDepositApiTest extends TestCase
     }
 
     /**
-     * Build a terminated Lease with a funded Security Deposit.
+     * Build a Lease with a funded Security Deposit.
      *
      * @return array{
      *     lease: Lease,
@@ -37,7 +37,8 @@ class SecurityDepositApiTest extends TestCase
      * }
      */
     private function createContext(
-        int $depositAmount = 10000
+        int $depositAmount = 10000,
+        string $status = 'terminated'
     ): array {
         $building = Building::create([
             'name' => 'Security Deposit API Building',
@@ -60,7 +61,8 @@ class SecurityDepositApiTest extends TestCase
             'tenant_id' => $tenant->id,
             'start_date' => '2026-01-01',
             'rent_amount' => 5000,
-            'status' => 'terminated',
+            'security_deposit_amount' => $depositAmount,
+            'status' => $status,
         ]);
 
         $account = TenantFundAccount::create([
@@ -84,42 +86,363 @@ class SecurityDepositApiTest extends TestCase
     }
 
     /**
+     * Security Deposit endpoint returns current operational position.
+     */
+    public function test_security_deposit_position_can_be_retrieved(): void
+    {
+        $context =
+            $this->createContext(
+                10000
+            );
+
+        SecurityDepositDeduction::create([
+            'lease_id' =>
+                $context['lease']->id,
+
+            'description' =>
+                'Damaged lock',
+
+            'amount' =>
+                3000,
+
+            'deduction_date' =>
+                '2026-08-10',
+        ]);
+
+        $this->getJson(
+            "/api/leases/{$context['lease']->id}/security-deposit"
+        )
+            ->assertOk()
+            ->assertJsonPath(
+                'contractual_amount',
+                10000
+            )
+            ->assertJsonPath(
+                'held_balance',
+                10000
+            )
+            ->assertJsonPath(
+                'deduction_total',
+                3000
+            )
+            ->assertJsonPath(
+                'estimated_refund',
+                7000
+            )
+            ->assertJsonPath(
+                'estimated_tenant_debt',
+                0
+            )
+            ->assertJsonPath(
+                'deductions.0.description',
+                'Damaged lock'
+            )
+            ->assertJsonPath(
+                'deductions.0.amount',
+                3000
+            );
+    }
+
+    /**
+     * Itemized deduction can be recorded through the API.
+     */
+    public function test_security_deposit_deduction_can_be_created(): void
+    {
+        $context =
+            $this->createContext();
+
+        $this->postJson(
+            "/api/leases/{$context['lease']->id}/security-deposit/deductions",
+            [
+                'description' =>
+                    'Repainting',
+
+                'amount' =>
+                    2500,
+
+                'deduction_date' =>
+                    '2026-08-10',
+
+                'reference' =>
+                    'INSPECTION-001',
+
+                'notes' =>
+                    'Bedroom wall repainting.',
+            ]
+        )
+            ->assertCreated()
+            ->assertJsonPath(
+                'description',
+                'Repainting'
+            )
+            ->assertJsonPath(
+                'amount',
+                2500
+            )
+            ->assertJsonPath(
+                'reference',
+                'INSPECTION-001'
+            );
+
+        $this->assertDatabaseHas(
+            'security_deposit_deductions',
+            [
+                'lease_id' =>
+                    $context['lease']->id,
+
+                'description' =>
+                    'Repainting',
+
+                'amount' =>
+                    2500,
+
+                'reference' =>
+                    'INSPECTION-001',
+            ]
+        );
+    }
+
+    /**
+     * Deduction endpoint validates required itemized details.
+     */
+    public function test_security_deposit_deduction_requires_valid_fields(): void
+    {
+        $context =
+            $this->createContext();
+
+        $this->postJson(
+            "/api/leases/{$context['lease']->id}/security-deposit/deductions",
+            [
+                'description' =>
+                    '',
+
+                'amount' =>
+                    0,
+
+                'deduction_date' =>
+                    '',
+            ]
+        )
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'description',
+                'amount',
+                'deduction_date',
+            ]);
+    }
+
+    /**
+     * Final deductions cannot be added while the tenancy is still active.
+     */
+    public function test_security_deposit_deduction_requires_terminated_lease(): void
+    {
+        $context =
+            $this->createContext(
+                depositAmount:
+                    10000,
+
+                status:
+                    'active'
+            );
+
+        $this->postJson(
+            "/api/leases/{$context['lease']->id}/security-deposit/deductions",
+            [
+                'description' =>
+                    'Damaged lock',
+
+                'amount' =>
+                    1000,
+
+                'deduction_date' =>
+                    '2026-08-10',
+            ]
+        )
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'security_deposit',
+            ]);
+
+        $this->assertDatabaseCount(
+            'security_deposit_deductions',
+            0
+        );
+    }
+
+    /**
+     * Deductions cannot be altered after final settlement.
+     */
+    public function test_security_deposit_deduction_cannot_be_added_after_settlement(): void
+    {
+        $context =
+            $this->createContext();
+
+        $this->postJson(
+            "/api/leases/{$context['lease']->id}/security-deposit/settle",
+            [
+                'settlement_date' =>
+                    '2026-08-11',
+            ]
+        )->assertCreated();
+
+        $this->postJson(
+            "/api/leases/{$context['lease']->id}/security-deposit/deductions",
+            [
+                'description' =>
+                    'Late deduction',
+
+                'amount' =>
+                    1000,
+
+                'deduction_date' =>
+                    '2026-08-12',
+            ]
+        )
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'security_deposit',
+            ]);
+
+        $this->assertDatabaseCount(
+            'security_deposit_deductions',
+            0
+        );
+    }
+
+    /**
      * Remaining deposit is refunded after itemized deductions.
      */
     public function test_security_deposit_can_be_settled_with_refund(): void
     {
-        $context = $this->createContext(10000);
+        $context =
+            $this->createContext(
+                10000
+            );
 
         SecurityDepositDeduction::create([
-            'lease_id' => $context['lease']->id,
-            'description' => 'Damaged lock',
-            'amount' => 3000,
-            'deduction_date' => '2026-08-10',
+            'lease_id' =>
+                $context['lease']->id,
+
+            'description' =>
+                'Damaged lock',
+
+            'amount' =>
+                3000,
+
+            'deduction_date' =>
+                '2026-08-10',
         ]);
 
-        $response = $this->postJson(
-            "/api/leases/{$context['lease']->id}/security-deposit/settle",
-            [
-                'settlement_date' => '2026-08-11',
-                'refund_voucher_number' => 'REF-API-001',
-            ]
-        );
+        $response =
+            $this->postJson(
+                "/api/leases/{$context['lease']->id}/security-deposit/settle",
+                [
+                    'settlement_date' =>
+                        '2026-08-11',
+
+                ]
+            );
 
         $response
             ->assertCreated()
-            ->assertJsonPath('deposit_amount', 10000)
-            ->assertJsonPath('deduction_amount', 3000)
-            ->assertJsonPath('refund_amount', 7000)
-            ->assertJsonPath('tenant_debt_amount', 0)
+            ->assertJsonPath(
+                'deposit_amount',
+                10000
+            )
+            ->assertJsonPath(
+                'deduction_amount',
+                3000
+            )
+            ->assertJsonPath(
+                'refund_amount',
+                7000
+            )
+            ->assertJsonPath(
+                'tenant_debt_amount',
+                0
+            )
             ->assertJsonPath(
                 'refund_voucher_number',
-                'REF-API-001'
+                'SDV-000001'
             );
 
         $this->assertSame(
             0,
-            $context['account']->fresh()->balance()
+            $context['account']
+                ->fresh()
+                ->balance()
         );
+    }
+
+    /**
+     * Final settlement endpoint returns the immutable snapshot afterward.
+     */
+    public function test_security_deposit_position_returns_settlement_snapshot(): void
+    {
+        $context =
+            $this->createContext(
+                10000
+            );
+
+        SecurityDepositDeduction::create([
+            'lease_id' =>
+                $context['lease']->id,
+
+            'description' =>
+                'Cleaning',
+
+            'amount' =>
+                1500,
+
+            'deduction_date' =>
+                '2026-08-10',
+        ]);
+
+        $this->postJson(
+            "/api/leases/{$context['lease']->id}/security-deposit/settle",
+            [
+                'settlement_date' =>
+                    '2026-08-11',
+
+            ]
+        )->assertCreated();
+
+        $this->getJson(
+            "/api/leases/{$context['lease']->id}/security-deposit"
+        )
+            ->assertOk()
+            ->assertJsonPath(
+                'held_balance',
+                0
+            )
+            ->assertJsonPath(
+                'settlement.deposit_amount',
+                10000
+            )
+            ->assertJsonPath(
+                'settlement.deduction_amount',
+                1500
+            )
+            ->assertJsonPath(
+                'settlement.refund_amount',
+                8500
+            )
+            ->assertJsonPath(
+                'settlement.tenant_debt_amount',
+                0
+            )
+            ->assertJsonPath(
+                'settlement.refund_voucher_number',
+                'SDV-000001'
+            )
+            /*
+             * Preview values become the historical settlement values after
+             * close-out rather than being recalculated from the zero balance.
+             */
+            ->assertJsonPath(
+                'estimated_refund',
+                8500
+            );
     }
 
     /**
@@ -127,28 +450,47 @@ class SecurityDepositApiTest extends TestCase
      */
     public function test_security_deposit_settlement_can_create_tenant_debt(): void
     {
-        $context = $this->createContext(10000);
+        $context =
+            $this->createContext(
+                10000
+            );
 
         SecurityDepositDeduction::create([
-            'lease_id' => $context['lease']->id,
-            'description' => 'Major repairs',
-            'amount' => 13000,
-            'deduction_date' => '2026-08-10',
+            'lease_id' =>
+                $context['lease']->id,
+
+            'description' =>
+                'Major repairs',
+
+            'amount' =>
+                13000,
+
+            'deduction_date' =>
+                '2026-08-10',
         ]);
 
         $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/settle",
             [
-                'settlement_date' => '2026-08-11',
+                'settlement_date' =>
+                    '2026-08-11',
             ]
         )
             ->assertCreated()
-            ->assertJsonPath('refund_amount', 0)
-            ->assertJsonPath('tenant_debt_amount', 3000);
+            ->assertJsonPath(
+                'refund_amount',
+                0
+            )
+            ->assertJsonPath(
+                'tenant_debt_amount',
+                3000
+            );
 
         $this->assertSame(
             0,
-            $context['account']->fresh()->balance()
+            $context['account']
+                ->fresh()
+                ->balance()
         );
     }
 
@@ -157,19 +499,22 @@ class SecurityDepositApiTest extends TestCase
      */
     public function test_security_deposit_cannot_be_settled_twice(): void
     {
-        $context = $this->createContext();
+        $context =
+            $this->createContext();
 
         $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/settle",
             [
-                'settlement_date' => '2026-08-11',
+                'settlement_date' =>
+                    '2026-08-11',
             ]
         )->assertCreated();
 
         $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/settle",
             [
-                'settlement_date' => '2026-08-12',
+                'settlement_date' =>
+                    '2026-08-12',
             ]
         )
             ->assertUnprocessable()
@@ -183,19 +528,24 @@ class SecurityDepositApiTest extends TestCase
      */
     public function test_security_deposit_account_is_required(): void
     {
-        $context = $this->createContext();
+        $context =
+            $this->createContext();
 
         /*
-         * Remove the empty funded account and its transaction so the Lease
+         * Remove the funded account and its ledger entry so the Lease
          * genuinely has no Security Deposit account.
          */
-        TenantFundTransaction::query()->delete();
-        $context['account']->delete();
+        TenantFundTransaction::query()
+            ->delete();
+
+        $context['account']
+            ->delete();
 
         $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/settle",
             [
-                'settlement_date' => '2026-08-11',
+                'settlement_date' =>
+                    '2026-08-11',
             ]
         )
             ->assertUnprocessable()

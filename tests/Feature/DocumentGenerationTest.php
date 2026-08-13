@@ -18,6 +18,12 @@ use App\Services\Documents\ReceiptDocumentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\AuthenticatesApiUser;
 use Tests\TestCase;
+use App\Models\SecurityDepositDeduction;
+use App\Models\SecurityDepositSettlement;
+use App\Models\TenantFundAccount;
+use App\Models\TenantFundTransaction;
+use App\Services\Documents\SecurityDepositVoucherDocumentService;
+use App\Services\SecurityDepositService;
 
 /**
  * Verifies Patrimoine financial document generation.
@@ -492,4 +498,137 @@ class DocumentGenerationTest extends TestCase
             '/api/owner-deposits/999999/receipt'
         )->assertNotFound();
     }
+
+    /**
+ * Build a finalized Security Deposit settlement for document testing.
+ *
+ * @return SecurityDepositSettlement
+ */
+private function createSecurityDepositSettlementContext(): SecurityDepositSettlement
+{
+    $building = Building::create([
+        'name' => 'Security Deposit Voucher Building',
+    ]);
+
+    $unit = Unit::create([
+        'building_id' => $building->id,
+        'name' => 'Unit SDV-1',
+    ]);
+
+    $tenant = Party::create([
+        'type' => 'person',
+        'name' => 'Security Deposit Voucher Tenant',
+        'phone' => '0200001560',
+        'email' => 'security-voucher@example.test',
+    ]);
+
+    $lease = Lease::create([
+        'unit_id' => $unit->id,
+        'tenant_id' => $tenant->id,
+        'start_date' => '2026-01-01',
+        'rent_amount' => 5000,
+        'security_deposit_amount' => 10000,
+        'status' => 'terminated',
+    ]);
+
+    $account = TenantFundAccount::create([
+        'lease_id' => $lease->id,
+        'type' => 'security_deposit',
+        'status' => 'active',
+    ]);
+
+    TenantFundTransaction::create([
+        'tenant_fund_account_id' => $account->id,
+        'direction' => 'credit',
+        'category' => 'deposit_funding',
+        'amount' => 10000,
+        'transaction_date' => '2026-01-01',
+    ]);
+
+    SecurityDepositDeduction::create([
+        'lease_id' => $lease->id,
+        'description' => 'Damaged lock',
+        'amount' => 3000,
+        'deduction_date' => '2026-08-10',
+        'reference' => 'INSPECTION-SDV-001',
+    ]);
+
+    return app(
+        SecurityDepositService::class
+    )->settle(
+        $lease,
+        '2026-08-11',
+        'Final move-out settlement.'
+    );
+}
+/**
+ * Security Deposit settlement service generates a genuine PDF voucher.
+ */
+public function test_security_deposit_voucher_service_generates_pdf(): void
+{
+    $settlement =
+        $this->createSecurityDepositSettlementContext();
+
+    $contents =
+        app(
+            SecurityDepositVoucherDocumentService::class
+        )->generate(
+            $settlement
+        );
+
+    $this->assertStringStartsWith(
+        '%PDF-',
+        $contents
+    );
+
+    $this->assertGreaterThan(
+        1000,
+        strlen($contents)
+    );
+}
+
+/**
+ * Security Deposit voucher can be downloaded through the API.
+ */
+public function test_security_deposit_voucher_can_be_downloaded_through_api(): void
+{
+    $settlement =
+        $this->createSecurityDepositSettlementContext();
+
+    $response =
+        $this->get(
+            "/api/security-deposit-settlements/{$settlement->id}/voucher"
+        );
+
+    $response
+        ->assertOk()
+        ->assertHeader(
+            'Content-Type',
+            'application/pdf'
+        );
+
+    $this->assertStringContainsString(
+        'Patrimoine-Security-Deposit-Voucher-SDV-000001.pdf',
+        (string) $response
+            ->headers
+            ->get(
+                'Content-Disposition'
+            )
+    );
+
+    $this->assertStringStartsWith(
+        '%PDF-',
+        $response->getContent()
+    );
+}
+
+/**
+ * Missing Security Deposit settlement voucher returns standard 404.
+ */
+public function test_missing_security_deposit_voucher_returns_not_found(): void
+{
+    $this->getJson(
+        '/api/security-deposit-settlements/999999/voucher'
+    )->assertNotFound();
+}
 }

@@ -260,7 +260,9 @@ public function store(
                 'agent',
                 'invoices',
                 'payments',
-                'tenantFundAccounts',
+                'tenantFundAccounts.transactions',
+                'securityDepositDeductions',
+                'securityDepositSettlement',
             ])
         );
     }

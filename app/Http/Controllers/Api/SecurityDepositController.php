@@ -4,17 +4,213 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SettleSecurityDepositRequest;
+use App\Http\Requests\StoreSecurityDepositDeductionRequest;
 use App\Models\Lease;
+use App\Models\SecurityDepositDeduction;
+use App\Models\TenantFundAccount;
 use App\Services\SecurityDepositService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
 
 /**
- * Transactional API controller for final Security Deposit settlement.
+ * Operational API controller for Security Deposit close-out.
+ *
+ * This controller exposes:
+ *
+ * - the current Security Deposit position;
+ * - itemized deductions;
+ * - settlement preview values;
+ * - final settlement.
+ *
+ * Financial calculations remain authoritative on the server so the browser
+ * never has to reproduce accounting logic.
  */
 class SecurityDepositController extends Controller
 {
+    /**
+     * Return the current Security Deposit operational position for a Lease.
+     */
+    public function show(
+        Lease $lease
+    ): JsonResponse {
+        $account =
+            TenantFundAccount::query()
+                ->where(
+                    'lease_id',
+                    $lease->id
+                )
+                ->where(
+                    'type',
+                    'security_deposit'
+                )
+                ->first();
+
+        $heldBalance =
+            $account !== null
+                ? $account->balance()
+                : 0;
+
+        $deductions =
+            $lease
+                ->securityDepositDeductions()
+                ->orderBy(
+                    'deduction_date'
+                )
+                ->orderBy(
+                    'id'
+                )
+                ->get();
+
+        $deductionTotal =
+            (int) $deductions->sum(
+                'amount'
+            );
+
+        $settlement =
+            $lease
+                ->securityDepositSettlement()
+                ->first();
+
+        /*
+         * Preview figures are meaningful only before final settlement.
+         *
+         * Once settled, the immutable settlement snapshot becomes the
+         * authoritative historical record.
+         */
+        $estimatedRefund =
+            $settlement === null
+                ? max(
+                    0,
+                    $heldBalance - $deductionTotal
+                )
+                : $settlement->refund_amount;
+
+        $estimatedTenantDebt =
+            $settlement === null
+                ? max(
+                    0,
+                    $deductionTotal - $heldBalance
+                )
+                : $settlement->tenant_debt_amount;
+
+        return response()->json([
+            'contractual_amount' =>
+                (int) ($lease->security_deposit_amount ?? 0),
+
+            'held_balance' =>
+                $heldBalance,
+
+            'deductions' =>
+                $deductions,
+
+            'deduction_total' =>
+                $deductionTotal,
+
+            'estimated_refund' =>
+                $estimatedRefund,
+
+            'estimated_tenant_debt' =>
+                $estimatedTenantDebt,
+
+            'settlement' =>
+                $settlement,
+        ]);
+    }
+
+    /**
+     * Add an itemized deduction before final settlement.
+     */
+    public function addDeduction(
+        StoreSecurityDepositDeductionRequest $request,
+        Lease $lease
+    ): JsonResponse {
+        if (
+            $lease
+                ->securityDepositSettlement()
+                ->exists()
+        ) {
+            throw ValidationException::withMessages([
+                'security_deposit' => [
+                    'Security deposit deductions cannot be changed after final settlement.',
+                ],
+            ]);
+        }
+
+        /*
+         * Deductions are part of final Lease close-out.
+         *
+         * Prevent an active tenancy from accumulating final-settlement
+         * deductions accidentally.
+         */
+        if (
+            $lease->status
+            !== 'terminated'
+        ) {
+            throw ValidationException::withMessages([
+                'security_deposit' => [
+                    'Security deposit deductions can only be recorded for a terminated Lease.',
+                ],
+            ]);
+        }
+
+        $account =
+            TenantFundAccount::query()
+                ->where(
+                    'lease_id',
+                    $lease->id
+                )
+                ->where(
+                    'type',
+                    'security_deposit'
+                )
+                ->first();
+
+        if ($account === null) {
+            throw ValidationException::withMessages([
+                'security_deposit' => [
+                    'No security deposit account exists for this Lease.',
+                ],
+            ]);
+        }
+
+        $deduction =
+            SecurityDepositDeduction::create([
+                'lease_id' =>
+                    $lease->id,
+
+                'description' =>
+                    $request->validated(
+                        'description'
+                    ),
+
+                'amount' =>
+                    $request->integer(
+                        'amount'
+                    ),
+
+                'deduction_date' =>
+                    $request->validated(
+                        'deduction_date'
+                    ),
+
+                'reference' =>
+                    $request->validated(
+                        'reference'
+                    ),
+
+                'notes' =>
+                    $request->validated(
+                        'notes'
+                    ),
+            ]);
+
+        return response()->json(
+            data: $deduction,
+            status: 201
+        );
+    }
+
     /**
      * Finalize the Security Deposit for a Lease.
      *
@@ -28,15 +224,24 @@ class SecurityDepositController extends Controller
         Lease $lease,
         SecurityDepositService $service
     ): JsonResponse {
-        $validated = $request->validated();
+        $validated =
+            $request->validated();
 
         try {
-            $settlement = $service->settle(
-                lease: $lease,
-                settlementDate: $validated['settlement_date'],
-                refundVoucherNumber:
-                    $validated['refund_voucher_number'] ?? null,
-                notes: $validated['notes'] ?? null
+        $settlement =
+            $service->settle(
+                lease:
+                    $lease,
+
+                settlementDate:
+                    $validated[
+                        'settlement_date'
+                    ],
+
+                notes:
+                    $validated[
+                        'notes'
+                    ] ?? null
             );
         } catch (RuntimeException $exception) {
             throw ValidationException::withMessages([
@@ -47,8 +252,13 @@ class SecurityDepositController extends Controller
         }
 
         return response()->json(
-            data: $settlement->load('lease'),
-            status: 201
+            data:
+                $settlement->load(
+                    'lease'
+                ),
+
+            status:
+                201
         );
     }
 }

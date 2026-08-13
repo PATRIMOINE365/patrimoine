@@ -12,6 +12,8 @@ use App\Services\Documents\ReceiptDocumentService;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\SecurityDepositSettlement;
+use App\Services\Documents\SecurityDepositVoucherDocumentService;
 
 /**
  * Read-only endpoints for generated Patrimoine financial documents.
@@ -119,6 +121,39 @@ class DocumentController extends Controller
 
                 'Content-Length' =>
                     strlen($contents),
+            ]
+        );
+    }
+    /**
+     * Download a Security Deposit settlement/refund voucher PDF.
+     */
+    public function securityDepositVoucher(
+        SecurityDepositSettlement $settlement,
+        SecurityDepositVoucherDocumentService $service
+    ): Response {
+        $contents =
+            $service->generate(
+                $settlement
+            );
+
+        return response(
+            $contents,
+            200,
+            [
+                'Content-Type' =>
+                    'application/pdf',
+
+                'Content-Disposition' =>
+                    'inline; filename="'
+                    .$service->filename(
+                        $settlement
+                    )
+                    .'"',
+
+                'Content-Length' =>
+                    strlen(
+                        $contents
+                    ),
             ]
         );
     }

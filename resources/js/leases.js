@@ -15,11 +15,13 @@
 | - Lease deletion;
 | - Unit selection;
 | - Tenant and Agent Party selection;
-| - Lease contractual terms.
+| - Lease contractual terms;
+| - Security Deposit close-out;
+| - itemized Security Deposit deductions;
+| - final Security Deposit settlement and voucher access.
 |
-| Financial transactions such as payments, invoices, rent reserve
-| movements and security-deposit settlement intentionally remain outside
-| this module.
+| General financial transactions such as Payments, Invoices and owner
+| accounting remain in their dedicated modules.
 |
 */
 
@@ -81,6 +83,8 @@ export async function initializeLeases() {
     initializeLeaseFilters();
 
     initializeLeaseForm();
+
+    initializeSecurityDepositModal();
 
     initializeLeaseFieldHelp();
 
@@ -1398,6 +1402,25 @@ function leaseCard(lease) {
                 >
                     <button
                         type="button"
+                        data-security-deposit
+                        data-lease-id="${escapeHtml(
+                            lease.id
+                        )}"
+                        class="
+                            rounded-lg
+                            border border-slate-200
+                            bg-white px-3.5 py-2
+                            text-sm font-medium
+                            text-slate-700
+                            transition
+                            hover:bg-slate-50
+                        "
+                    >
+                        Security Deposit
+                    </button>
+
+                    <button
+                        type="button"
                         data-edit-lease
                         data-lease-id="${escapeHtml(
                             lease.id
@@ -1554,6 +1577,24 @@ function formatDate(value) {
 function attachLeaseActionListeners(
     container
 ) {
+    container
+        .querySelectorAll(
+            '[data-security-deposit]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        openSecurityDepositModal(
+                            button.dataset
+                                .leaseId
+                        );
+                    }
+                );
+            }
+        );
+
     container
         .querySelectorAll(
             '[data-edit-lease]'
@@ -3393,6 +3434,872 @@ function hideLeasePageError() {
     const box =
         document.getElementById(
             'leases-error'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent = '';
+
+    box.classList.add(
+        'hidden'
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Security Deposit Operations
+|--------------------------------------------------------------------------
+|
+| Security Deposit settlement is an operational Lease close-out workflow.
+|
+| Contractual deposit terms remain in the normal Lease editor, while this
+| modal works with actual held funds, deductions and immutable settlement
+| records from the server.
+|
+*/
+
+let securityDepositLeaseId =
+    null;
+
+/**
+ * Initialize Security Deposit modal controls.
+ */
+function initializeSecurityDepositModal() {
+    document
+        .getElementById(
+            'security-deposit-modal-close'
+        )
+        ?.addEventListener(
+            'click',
+            closeSecurityDepositModal
+        );
+
+    document
+        .getElementById(
+            'security-deposit-modal-backdrop'
+        )
+        ?.addEventListener(
+            'click',
+            closeSecurityDepositModal
+        );
+
+    document
+        .getElementById(
+            'security-deposit-deduction-form'
+        )
+        ?.addEventListener(
+            'submit',
+            submitSecurityDepositDeduction
+        );
+
+    document
+        .getElementById(
+            'security-deposit-settlement-form'
+        )
+        ?.addEventListener(
+            'submit',
+            submitSecurityDepositSettlement
+        );
+
+    document.addEventListener(
+        'keydown',
+        (event) => {
+            const modal =
+                document.getElementById(
+                    'security-deposit-modal'
+                );
+
+            if (
+                event.key === 'Escape'
+                && modal
+                && ! modal.classList.contains(
+                    'hidden'
+                )
+            ) {
+                closeSecurityDepositModal();
+            }
+        }
+    );
+}
+
+/**
+ * Open the operational Security Deposit view for one Lease.
+ */
+async function openSecurityDepositModal(
+    leaseId
+) {
+    const numericLeaseId =
+        Number(
+            leaseId
+        );
+
+    if (
+        ! Number.isInteger(
+            numericLeaseId
+        )
+        || numericLeaseId <= 0
+    ) {
+        return;
+    }
+
+    securityDepositLeaseId =
+        numericLeaseId;
+
+    resetSecurityDepositModal();
+
+    const lease =
+        loadedLeasesById.get(
+            String(
+                numericLeaseId
+            )
+        );
+
+    setText(
+        'security-deposit-modal-description',
+        [
+            lease?.unit?.building?.name,
+            lease?.unit?.name,
+            partyDisplayName(
+                lease?.tenant
+            ),
+        ]
+            .filter(Boolean)
+            .join(' · ')
+            || 'Review held funds, deductions and final settlement.'
+    );
+
+    const modal =
+        document.getElementById(
+            'security-deposit-modal'
+        );
+
+    modal?.classList.remove(
+        'hidden'
+    );
+
+    modal?.setAttribute(
+        'aria-hidden',
+        'false'
+    );
+
+    document.body.classList.add(
+        'overflow-hidden'
+    );
+
+    await loadSecurityDepositPosition();
+}
+
+/**
+ * Close and reset the Security Deposit modal.
+ */
+function closeSecurityDepositModal() {
+    const modal =
+        document.getElementById(
+            'security-deposit-modal'
+        );
+
+    modal?.classList.add(
+        'hidden'
+    );
+
+    modal?.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+
+    document.body.classList.remove(
+        'overflow-hidden'
+    );
+
+    securityDepositLeaseId =
+        null;
+
+    resetSecurityDepositModal();
+}
+
+/**
+ * Restore modal controls to their initial loading state.
+ */
+function resetSecurityDepositModal() {
+    hideSecurityDepositError();
+
+    document
+        .getElementById(
+            'security-deposit-loading'
+        )
+        ?.classList.remove(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'security-deposit-content'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'security-deposit-deduction-form'
+        )
+        ?.reset();
+
+    document
+        .getElementById(
+            'security-deposit-settlement-form'
+        )
+        ?.reset();
+
+    document
+        .getElementById(
+            'security-deposit-settled'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    const lifecycle =
+        document.getElementById(
+            'security-deposit-lifecycle-message'
+        );
+
+    if (lifecycle) {
+        lifecycle.textContent = '';
+
+        lifecycle.classList.add(
+            'hidden'
+        );
+    }
+}
+
+/**
+ * Retrieve server-calculated Security Deposit position.
+ */
+async function loadSecurityDepositPosition() {
+    if (! securityDepositLeaseId) {
+        return;
+    }
+
+    try {
+        hideSecurityDepositError();
+
+        const response =
+            await apiRequest(
+                `/api/leases/${securityDepositLeaseId}/security-deposit`
+            );
+
+        const position =
+            await parseJsonResponse(
+                response
+            );
+
+        renderSecurityDepositPosition(
+            position
+        );
+    } catch (error) {
+        showSecurityDepositError(
+            error instanceof Error
+                ? error.message
+                : 'Unable to load Security Deposit.'
+        );
+    } finally {
+        document
+            .getElementById(
+                'security-deposit-loading'
+            )
+            ?.classList.add(
+                'hidden'
+            );
+
+        document
+            .getElementById(
+                'security-deposit-content'
+            )
+            ?.classList.remove(
+                'hidden'
+            );
+    }
+}
+
+/**
+ * Render authoritative Security Deposit values returned by the API.
+ */
+function renderSecurityDepositPosition(
+    position
+) {
+    const lease =
+        loadedLeasesById.get(
+            String(
+                securityDepositLeaseId
+            )
+        );
+
+    setText(
+        'security-deposit-contractual',
+        formatCurrency(
+            Number(
+                position?.contractual_amount
+                ?? 0
+            )
+        )
+    );
+
+    setText(
+        'security-deposit-held',
+        formatCurrency(
+            Number(
+                position?.held_balance
+                ?? 0
+            )
+        )
+    );
+
+    setText(
+        'security-deposit-deduction-total',
+        formatCurrency(
+            Number(
+                position?.deduction_total
+                ?? 0
+            )
+        )
+    );
+
+    setText(
+        'security-deposit-refund',
+        formatCurrency(
+            Number(
+                position?.estimated_refund
+                ?? 0
+            )
+        )
+    );
+
+    setText(
+        'security-deposit-debt',
+        formatCurrency(
+            Number(
+                position?.estimated_tenant_debt
+                ?? 0
+            )
+        )
+    );
+
+    renderSecurityDepositDeductions(
+        position?.deductions
+    );
+
+    const settlement =
+        position?.settlement
+        ?? null;
+
+    const terminated =
+        lease?.status
+        === 'terminated';
+
+    const deductionForm =
+        document.getElementById(
+            'security-deposit-deduction-form'
+        );
+
+    const settlementForm =
+        document.getElementById(
+            'security-deposit-settlement-form'
+        );
+
+    const settledBox =
+        document.getElementById(
+            'security-deposit-settled'
+        );
+
+    const lifecycle =
+        document.getElementById(
+            'security-deposit-lifecycle-message'
+        );
+
+    deductionForm?.classList.add(
+        'hidden'
+    );
+
+    settlementForm?.classList.add(
+        'hidden'
+    );
+
+    settledBox?.classList.add(
+        'hidden'
+    );
+
+    lifecycle?.classList.add(
+        'hidden'
+    );
+
+    if (settlement) {
+        settledBox?.classList.remove(
+            'hidden'
+        );
+
+        setText(
+            'security-deposit-voucher-number',
+            `Voucher ${settlement.refund_voucher_number}`
+        );
+
+        const link =
+            document.getElementById(
+                'security-deposit-voucher-link'
+            );
+
+        if (link) {
+            link.href =
+                `/api/security-deposit-settlements/${settlement.id}/voucher`;
+        }
+
+        return;
+    }
+
+    if (! terminated) {
+        if (lifecycle) {
+            lifecycle.textContent =
+                'Final Security Deposit deductions and settlement become available once the Lease is terminated.';
+
+            lifecycle.classList.remove(
+                'hidden'
+            );
+        }
+
+        return;
+    }
+
+    deductionForm?.classList.remove(
+        'hidden'
+    );
+
+    settlementForm?.classList.remove(
+        'hidden'
+    );
+
+    /*
+     * Default operational dates to today while still allowing the Property
+     * Manager to enter the actual assessment/settlement date.
+     */
+    const today =
+        new Date()
+            .toISOString()
+            .slice(
+                0,
+                10
+            );
+
+    const deductionDate =
+        document.getElementById(
+            'security-deduction-date'
+        );
+
+    if (
+        deductionDate
+        && ! deductionDate.value
+    ) {
+        deductionDate.value =
+            today;
+    }
+
+    const settlementDate =
+        document.getElementById(
+            'security-settlement-date'
+        );
+
+    if (
+        settlementDate
+        && ! settlementDate.value
+    ) {
+        settlementDate.value =
+            today;
+    }
+}
+
+/**
+ * Render itemized close-out deductions.
+ */
+function renderSecurityDepositDeductions(
+    deductions
+) {
+    const container =
+        document.getElementById(
+            'security-deposit-deductions'
+        );
+
+    if (! container) {
+        return;
+    }
+
+    const items =
+        Array.isArray(
+            deductions
+        )
+            ? deductions
+            : [];
+
+    if (items.length === 0) {
+        container.innerHTML = `
+            <div
+                class="
+                    rounded-lg border
+                    border-dashed border-slate-200
+                    px-4 py-6 text-center
+                    text-sm text-slate-500
+                "
+            >
+                No deductions recorded.
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="overflow-x-auto">
+            <table
+                class="
+                    w-full border-collapse
+                    text-left text-sm
+                "
+            >
+                <thead>
+                    <tr
+                        class="
+                            border-b border-slate-200
+                            text-xs uppercase
+                            tracking-wide text-slate-500
+                        "
+                    >
+                        <th class="px-3 py-2">
+                            Date
+                        </th>
+
+                        <th class="px-3 py-2">
+                            Description
+                        </th>
+
+                        <th class="px-3 py-2">
+                            Reference
+                        </th>
+
+                        <th
+                            class="
+                                px-3 py-2
+                                text-right
+                            "
+                        >
+                            Amount
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${
+                        items
+                            .map(
+                                (deduction) => `
+                                    <tr
+                                        class="
+                                            border-b
+                                            border-slate-100
+                                        "
+                                    >
+                                        <td
+                                            class="
+                                                px-3 py-3
+                                                text-slate-600
+                                            "
+                                        >
+                                            ${escapeHtml(
+                                                formatDate(
+                                                    deduction
+                                                        .deduction_date
+                                                )
+                                            )}
+                                        </td>
+
+                                        <td class="px-3 py-3">
+                                            <div
+                                                class="
+                                                    font-medium
+                                                    text-slate-900
+                                                "
+                                            >
+                                                ${escapeHtml(
+                                                    deduction
+                                                        .description
+                                                    ?? ''
+                                                )}
+                                            </div>
+
+                                            ${
+                                                deduction.notes
+                                                    ? `
+                                                        <div
+                                                            class="
+                                                                mt-1 text-xs
+                                                                text-slate-500
+                                                            "
+                                                        >
+                                                            ${escapeHtml(
+                                                                deduction.notes
+                                                            )}
+                                                        </div>
+                                                    `
+                                                    : ''
+                                            }
+                                        </td>
+
+                                        <td
+                                            class="
+                                                px-3 py-3
+                                                text-slate-600
+                                            "
+                                        >
+                                            ${escapeHtml(
+                                                deduction.reference
+                                                || '—'
+                                            )}
+                                        </td>
+
+                                        <td
+                                            class="
+                                                px-3 py-3
+                                                text-right
+                                                font-medium
+                                                text-slate-900
+                                            "
+                                        >
+                                            ${escapeHtml(
+                                                formatCurrency(
+                                                    Number(
+                                                        deduction.amount
+                                                        ?? 0
+                                                    )
+                                                )
+                                            )}
+                                        </td>
+                                    </tr>
+                                `
+                            )
+                            .join('')
+                    }
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+/**
+ * Persist one itemized deduction and refresh the server-calculated preview.
+ */
+async function submitSecurityDepositDeduction(
+    event
+) {
+    event.preventDefault();
+
+    if (! securityDepositLeaseId) {
+        return;
+    }
+
+    const button =
+        document.getElementById(
+            'security-deduction-submit'
+        );
+
+    try {
+        hideSecurityDepositError();
+
+        if (button) {
+            button.disabled =
+                true;
+
+            button.textContent =
+                'Adding…';
+        }
+
+        const response =
+            await apiRequest(
+                `/api/leases/${securityDepositLeaseId}/security-deposit/deductions`,
+                {
+                    method:
+                        'POST',
+
+                    body:
+                        JSON.stringify({
+                            description:
+                                formValue(
+                                    'security-deduction-description'
+                                ),
+
+                            amount:
+                                Number(
+                                    formValue(
+                                        'security-deduction-amount'
+                                    )
+                                ),
+
+                            deduction_date:
+                                formValue(
+                                    'security-deduction-date'
+                                ),
+
+                            reference:
+                                nullableFormValue(
+                                    'security-deduction-reference'
+                                ),
+
+                            notes:
+                                nullableFormValue(
+                                    'security-deduction-notes'
+                                ),
+                        }),
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        document
+            .getElementById(
+                'security-deposit-deduction-form'
+            )
+            ?.reset();
+
+        await loadSecurityDepositPosition();
+    } catch (error) {
+        showSecurityDepositError(
+            error instanceof Error
+                ? error.message
+                : 'Unable to add Security Deposit deduction.'
+        );
+    } finally {
+        if (button) {
+            button.disabled =
+                false;
+
+            button.textContent =
+                'Add Deduction';
+        }
+    }
+}
+
+/**
+ * Finalize Security Deposit close-out.
+ */
+async function submitSecurityDepositSettlement(
+    event
+) {
+    event.preventDefault();
+
+    if (! securityDepositLeaseId) {
+        return;
+    }
+
+    const confirmed =
+        window.confirm(
+            'Finalize this Security Deposit settlement?\n\n'
+            + 'This action is permanent. No further deductions can be added afterward.'
+        );
+
+    if (! confirmed) {
+        return;
+    }
+
+    const button =
+        document.getElementById(
+            'security-settlement-submit'
+        );
+
+    try {
+        hideSecurityDepositError();
+
+        if (button) {
+            button.disabled =
+                true;
+
+            button.textContent =
+                'Finalizing…';
+        }
+
+        const response =
+            await apiRequest(
+                `/api/leases/${securityDepositLeaseId}/security-deposit/settle`,
+                {
+                    method:
+                        'POST',
+
+                    body:
+                        JSON.stringify({
+                            settlement_date:
+                                formValue(
+                                    'security-settlement-date'
+                                ),
+
+                            notes:
+                                nullableFormValue(
+                                    'security-settlement-notes'
+                                ),
+                        }),
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        await loadSecurityDepositPosition();
+    } catch (error) {
+        showSecurityDepositError(
+            error instanceof Error
+                ? error.message
+                : 'Unable to finalize Security Deposit.'
+        );
+    } finally {
+        if (button) {
+            button.disabled =
+                false;
+
+            button.textContent =
+                'Finalize Settlement';
+        }
+    }
+}
+
+/**
+ * Display an operational Security Deposit error.
+ */
+function showSecurityDepositError(
+    message
+) {
+    const box =
+        document.getElementById(
+            'security-deposit-error'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent =
+        message;
+
+    box.classList.remove(
+        'hidden'
+    );
+}
+
+/**
+ * Clear an operational Security Deposit error.
+ */
+function hideSecurityDepositError() {
+    const box =
+        document.getElementById(
+            'security-deposit-error'
         );
 
     if (! box) {

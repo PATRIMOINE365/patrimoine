@@ -182,6 +182,11 @@ Route::middleware([
             [DocumentController::class, 'ownerDepositReceipt']
         );
 
+        Route::get(
+            'security-deposit-settlements/{settlement}/voucher',
+            [DocumentController::class, 'securityDepositVoucher']
+        );
+
                 /*
         |--------------------------------------------------------------------------
         | Unified Payment Register
@@ -253,6 +258,23 @@ Route::middleware([
         Route::post(
             'tenant-funds/{tenantFundAccount}/consume-advance',
             [ConsumableAdvanceController::class, 'consume']
+        );
+
+
+        /*
+        * Return the current Security Deposit position and settlement preview.
+        */
+        Route::get(
+            'leases/{lease}/security-deposit',
+            [SecurityDepositController::class, 'show']
+        );
+
+        /*
+        * Record one itemized final Security Deposit deduction.
+        */
+        Route::post(
+            'leases/{lease}/security-deposit/deductions',
+            [SecurityDepositController::class, 'addDeduction']
         );
 
         /*
