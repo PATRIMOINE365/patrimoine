@@ -4,9 +4,11 @@ namespace App\Services\Notifications;
 
 use App\Mail\InvoiceMail;
 use App\Mail\ReceiptMail;
+use App\Mail\RentIncrementNoticeMail;
 use App\Mail\RentReminderMail;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\RentIncrement;
 use App\Services\ApplicationIdentityService;
 use App\Services\Documents\InvoiceDocumentService;
 use App\Services\Documents\ReceiptDocumentService;
@@ -20,11 +22,11 @@ use RuntimeException;
  *
  * - resolve the appropriate tenant recipient;
  * - resolve the configured managing-organisation identity;
- * - generate the appropriate financial PDF;
+ * - generate financial PDFs where required;
  * - construct the corresponding Mailable;
  * - deliver it through Laravel Mail.
  *
- * Controllers, payment services and scheduled commands should call this
+ * Controllers, financial services and scheduled commands should call this
  * service rather than constructing email messages themselves.
  */
 class EmailDeliveryService
@@ -39,28 +41,42 @@ class EmailDeliveryService
     /**
      * Send or resend an Invoice to the tenant.
      */
-    public function sendInvoice(Invoice $invoice): void
-    {
+    public function sendInvoice(
+        Invoice $invoice
+    ): void {
         $invoice->loadMissing([
             'lease.tenant',
             'lease.unit.building',
         ]);
 
-        $email = $this->invoiceRecipient($invoice);
+        $email =
+            $this->invoiceRecipient(
+                $invoice
+            );
 
-        $contents = $this->invoiceDocuments
-            ->generate($invoice);
+        $contents =
+            $this->invoiceDocuments
+                ->generate(
+                    $invoice
+                );
 
-        $filename = $this->invoiceDocuments
-            ->filename($invoice);
+        $filename =
+            $this->invoiceDocuments
+                ->filename(
+                    $invoice
+                );
 
-        Mail::to($email)->send(
+        Mail::to(
+            $email
+        )->send(
             new InvoiceMail(
                 invoice: $invoice,
                 pdfContents: $contents,
                 pdfFilename: $filename,
                 managingOrganisation:
-                    $this->identity->managingOrganisation()
+                    $this
+                        ->identity
+                        ->managingOrganisation()
             )
         );
     }
@@ -68,28 +84,42 @@ class EmailDeliveryService
     /**
      * Send a receipt for money actually received from a tenant.
      */
-    public function sendReceipt(Payment $payment): void
-    {
+    public function sendReceipt(
+        Payment $payment
+    ): void {
         $payment->loadMissing([
             'lease.tenant',
             'lease.unit.building',
         ]);
 
-        $email = $this->paymentRecipient($payment);
+        $email =
+            $this->paymentRecipient(
+                $payment
+            );
 
-        $contents = $this->receiptDocuments
-            ->generate($payment);
+        $contents =
+            $this->receiptDocuments
+                ->generate(
+                    $payment
+                );
 
-        $filename = $this->receiptDocuments
-            ->filename($payment);
+        $filename =
+            $this->receiptDocuments
+                ->filename(
+                    $payment
+                );
 
-        Mail::to($email)->send(
+        Mail::to(
+            $email
+        )->send(
             new ReceiptMail(
                 payment: $payment,
                 pdfContents: $contents,
                 pdfFilename: $filename,
                 managingOrganisation:
-                    $this->identity->managingOrganisation()
+                    $this
+                        ->identity
+                        ->managingOrganisation()
             )
         );
     }
@@ -97,34 +127,96 @@ class EmailDeliveryService
     /**
      * Send a rent reminder with the current Invoice attached.
      */
-    public function sendRentReminder(Invoice $invoice): void
-    {
+    public function sendRentReminder(
+        Invoice $invoice
+    ): void {
         $invoice->loadMissing([
             'lease.tenant',
             'lease.unit.building',
         ]);
 
-        if ($invoice->outstandingAmount() <= 0) {
+        if (
+            $invoice
+                ->outstandingAmount()
+            <= 0
+        ) {
             throw new RuntimeException(
                 'A fully paid Invoice does not require a rent reminder.'
             );
         }
 
-        $email = $this->invoiceRecipient($invoice);
+        $email =
+            $this->invoiceRecipient(
+                $invoice
+            );
 
-        $contents = $this->invoiceDocuments
-            ->generate($invoice);
+        $contents =
+            $this->invoiceDocuments
+                ->generate(
+                    $invoice
+                );
 
-        $filename = $this->invoiceDocuments
-            ->filename($invoice);
+        $filename =
+            $this->invoiceDocuments
+                ->filename(
+                    $invoice
+                );
 
-        Mail::to($email)->send(
+        Mail::to(
+            $email
+        )->send(
             new RentReminderMail(
                 invoice: $invoice,
                 pdfContents: $contents,
                 pdfFilename: $filename,
                 managingOrganisation:
-                    $this->identity->managingOrganisation()
+                    $this
+                        ->identity
+                        ->managingOrganisation()
+            )
+        );
+    }
+
+    /**
+     * Send advance notice of an approved future rent increment.
+     *
+     * The caller is responsible for deciding when the notification is due
+     * and for marking the RentIncrement as notified only after this method
+     * returns successfully.
+     */
+    public function sendRentIncrementNotice(
+        RentIncrement $rentIncrement
+    ): void {
+        $rentIncrement->loadMissing([
+            'lease.tenant',
+            'lease.unit.building',
+        ]);
+
+        if (
+            ! $rentIncrement
+                ->isScheduled()
+        ) {
+            throw new RuntimeException(
+                'Only a scheduled rent increment can be notified.'
+            );
+        }
+
+        $email =
+            $this->rentIncrementRecipient(
+                $rentIncrement
+            );
+
+        Mail::to(
+            $email
+        )->send(
+            new RentIncrementNoticeMail(
+                rentIncrement:
+                    $rentIncrement,
+
+                managingOrganisation:
+                    $this
+                        ->identity
+                        ->managingOrganisation()
             )
         );
     }
@@ -135,9 +227,14 @@ class EmailDeliveryService
     private function invoiceRecipient(
         Invoice $invoice
     ): string {
-        $email = trim(
-            (string) $invoice->lease->tenant->email
-        );
+        $email =
+            trim(
+                (string)
+                $invoice
+                    ->lease
+                    ->tenant
+                    ->email
+            );
 
         if ($email === '') {
             throw new RuntimeException(
@@ -154,9 +251,38 @@ class EmailDeliveryService
     private function paymentRecipient(
         Payment $payment
     ): string {
-        $email = trim(
-            (string) $payment->lease->tenant->email
-        );
+        $email =
+            trim(
+                (string)
+                $payment
+                    ->lease
+                    ->tenant
+                    ->email
+            );
+
+        if ($email === '') {
+            throw new RuntimeException(
+                'Tenant does not have an email address.'
+            );
+        }
+
+        return $email;
+    }
+
+    /**
+     * Resolve the recipient of a rent-increment notice.
+     */
+    private function rentIncrementRecipient(
+        RentIncrement $rentIncrement
+    ): string {
+        $email =
+            trim(
+                (string)
+                $rentIncrement
+                    ->lease
+                    ->tenant
+                    ->email
+            );
 
         if ($email === '') {
             throw new RuntimeException(

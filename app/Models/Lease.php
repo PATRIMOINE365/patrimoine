@@ -219,4 +219,17 @@ class Lease extends Model
             SecurityDepositSettlement::class
         );
     }
+
+    /**
+     * Historical and scheduled rent increments for this Lease.
+     *
+     * The Lease stores only the current contractual rent. RentIncrement records
+     * preserve the complete history of approved, applied, or cancelled changes.
+     */
+    public function rentIncrements(): HasMany
+    {
+        return $this->hasMany(
+            RentIncrement::class
+        );
+    }
 }
