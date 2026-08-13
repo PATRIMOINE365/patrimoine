@@ -438,4 +438,113 @@ class PaymentApiTest extends TestCase
                 $first['lease']->id
             );
     }
+
+    /**
+     * Payment detail distinguishes raw unapplied money from tenant money
+     * already classified into held funds.
+     */
+    public function test_payment_exposes_remaining_unclassified_funds(): void
+    {
+        $context =
+            $this->createContext();
+
+        $this->createInvoice(
+            $context['lease'],
+            'INV-PAY-FUND-001',
+            '2026-08-01',
+            5000
+        );
+
+        /*
+         * GHS 8,000 received:
+         *
+         * - GHS 5,000 settles rent through normal FIFO allocation;
+         * - GHS 3,000 remains unapplied.
+         */
+        $paymentResponse =
+            $this->postJson(
+                '/api/payments',
+                [
+                    'lease_id' =>
+                        $context['lease']->id,
+
+                    'amount' =>
+                        8000,
+
+                    'payment_date' =>
+                        '2026-08-01',
+
+                    'payment_method' =>
+                        'bank_transfer',
+                ]
+            );
+
+        $paymentResponse
+            ->assertCreated()
+            ->assertJsonPath(
+                'allocated_amount',
+                5000
+            )
+            ->assertJsonPath(
+                'unallocated_amount',
+                3000
+            )
+            ->assertJsonPath(
+                'classified_fund_amount',
+                0
+            )
+            ->assertJsonPath(
+                'remaining_unclassified_amount',
+                3000
+            );
+
+        $paymentId =
+            $paymentResponse->json(
+                'id'
+            );
+
+        /*
+         * Classify GHS 2,000 of the unapplied money into Rent Reserve.
+         */
+        $this->postJson(
+            "/api/payments/{$paymentId}/tenant-funds",
+            [
+                'fund_type' =>
+                    'rent_reserve',
+
+                'amount' =>
+                    2000,
+
+                'transaction_date' =>
+                    '2026-08-01',
+            ]
+        )->assertCreated();
+
+        /*
+         * Raw unallocated Payment money remains GHS 3,000 because none of it
+         * was applied to an Invoice. Operationally, however, only GHS 1,000
+         * remains available for additional tenant-fund classification.
+         */
+        $this->getJson(
+            "/api/payments/{$paymentId}"
+        )
+            ->assertOk()
+            ->assertJsonPath(
+                'allocated_amount',
+                5000
+            )
+            ->assertJsonPath(
+                'unallocated_amount',
+                3000
+            )
+            ->assertJsonPath(
+                'classified_fund_amount',
+                2000
+            )
+            ->assertJsonPath(
+                'remaining_unclassified_amount',
+                1000
+            );
+    }
+
 }

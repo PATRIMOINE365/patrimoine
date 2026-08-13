@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePaymentRequest;
 use App\Models\Payment;
+use App\Models\TenantFundTransaction;
 use App\Services\PaymentAllocationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -191,6 +192,21 @@ class PaymentController extends Controller
             'unallocated_amount' =>
                 $payment->unallocatedAmount(),
 
+            /*
+             * Unapplied money may already have been moved into one or more
+             * tenant-held funds. Keep that distinct from raw unallocated
+             * Payment money so the browser knows what remains actionable.
+             */
+            'classified_fund_amount' =>
+                $this->classifiedFundAmount(
+                    $payment
+                ),
+
+            'remaining_unclassified_amount' =>
+                $this->remainingUnclassifiedAmount(
+                    $payment
+                ),
+
             'lease' => $payment->lease,
 
             'allocations' => $payment->allocations,
@@ -198,5 +214,52 @@ class PaymentController extends Controller
             'created_at' => $payment->created_at,
             'updated_at' => $payment->updated_at,
         ];
+    }
+
+    /**
+     * Return unapplied Payment money already classified into tenant funds.
+     */
+    private function classifiedFundAmount(
+        Payment $payment
+    ): int {
+        return (int) TenantFundTransaction::query()
+            ->where(
+                'payment_id',
+                $payment->id
+            )
+            ->where(
+                'direction',
+                'credit'
+            )
+            ->whereIn(
+                'category',
+                [
+                    'reserve_funding',
+                    'advance_funding',
+                    'deposit_funding',
+                ]
+            )
+            ->sum(
+                'amount'
+            );
+    }
+
+    /**
+     * Return unapplied Payment money still available for classification.
+     *
+     * This amount is safe to present to the Property Manager as the maximum
+     * that can still be assigned to Rent Reserve, Consumable Advance or
+     * Security Deposit.
+     */
+    private function remainingUnclassifiedAmount(
+        Payment $payment
+    ): int {
+        return max(
+            0,
+            $payment->unallocatedAmount()
+            - $this->classifiedFundAmount(
+                $payment
+            )
+        );
     }
 }

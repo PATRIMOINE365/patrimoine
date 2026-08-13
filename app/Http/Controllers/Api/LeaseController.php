@@ -249,21 +249,51 @@ public function store(
 
 
     /**
-     * Return one Lease with its principal relationships.
+     * Return one Lease with its operational financial relationships.
+     *
+     * Tenant-fund workflows need authoritative Invoice settlement values.
+     * These are calculated by the Invoice model from Payment allocations and
+     * tenant-fund ledger transactions rather than recalculated in JavaScript.
      */
     public function show(Lease $lease): JsonResponse
     {
+        $lease->load([
+            'unit.building.ownerships.party',
+            'tenant',
+            'agent',
+            'invoices',
+            'payments',
+            'tenantFundAccounts.transactions',
+            'securityDepositDeductions',
+            'securityDepositSettlement',
+        ]);
+
+        /*
+        * Invoice settlement is derived from:
+        *
+        * - normal Payment allocations;
+        * - Rent Reserve consumption;
+        * - Consumable Advance consumption.
+        *
+        * Expose those calculated values explicitly so the browser can present
+        * only legitimate outstanding rent obligations.
+        */
+        $lease->invoices->each(
+            function ($invoice): void {
+                $invoice->setAttribute(
+                    'paid_amount',
+                    $invoice->paidAmount()
+                );
+
+                $invoice->setAttribute(
+                    'outstanding_amount',
+                    $invoice->outstandingAmount()
+                );
+            }
+        );
+
         return response()->json(
-            $lease->load([
-                'unit.building.ownerships.party',
-                'tenant',
-                'agent',
-                'invoices',
-                'payments',
-                'tenantFundAccounts.transactions',
-                'securityDepositDeductions',
-                'securityDepositSettlement',
-            ])
+            $lease
         );
     }
 

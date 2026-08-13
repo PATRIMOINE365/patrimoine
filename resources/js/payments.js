@@ -58,7 +58,11 @@ export async function initializePayments() {
 
     initializeReceiptActions();
 
+    initializeTenantFundActions();
+
     initializePaymentModal();
+
+    initializeTenantFundModal();
 
     await loadPaymentRegister();
 
@@ -383,6 +387,39 @@ function renderPaymentRow(
      * payment source. Tenant Payments and Owner Deposits may both therefore
      * display the same Receipt action.
      */
+    /*
+     * Tenant Payments may contain unapplied money that must be explicitly
+     * classified into Rent Reserve, Consumable Advance or Security Deposit.
+     *
+     * We deliberately show the action on every Tenant Payment and fetch its
+     * current server-side position only when opened. This avoids relying on
+     * potentially stale values in the unified Payment Register.
+     */
+    const manageFundsAction =
+        tenantPayment
+            ? `
+                <button
+                    type="button"
+                    data-manage-tenant-funds
+                    data-payment-id="${escapeAttribute(
+                        transaction.id
+                    )}"
+                    class="
+                        rounded-lg border
+                        border-slate-200
+                        bg-white px-3 py-2
+                        text-xs font-medium
+                        text-slate-700
+                        transition
+                        hover:border-slate-300
+                        hover:bg-slate-50
+                    "
+                >
+                    Manage Funds
+                </button>
+            `
+            : '';
+
     const receiptAction =
         transaction.receipt_endpoint
             ? `
@@ -576,6 +613,8 @@ function renderPaymentRow(
                             )
                         )}
                     </div>
+
+                    ${manageFundsAction}
 
                     ${receiptAction}
                 </div>
@@ -3266,5 +3305,615 @@ function escapeAttribute(
 ) {
     return escapeHtml(
         value
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Tenant Fund Classification
+|--------------------------------------------------------------------------
+|
+| Unapplied tenant Payment money is not automatically treated as Advance,
+| Rent Reserve or Security Deposit.
+|
+| The Property Manager must explicitly classify it. All availability
+| calculations are reloaded from the API before and after each operation so
+| browser state can never become the accounting authority.
+|
+*/
+
+let tenantFundPaymentId =
+    null;
+
+/**
+ * Listen for Manage Funds actions rendered in the unified Payment Register.
+ *
+ * Event delegation is used because register rows are replaced after filters,
+ * pagination and successful financial operations.
+ */
+function initializeTenantFundActions() {
+    document.addEventListener(
+        'click',
+        async (event) => {
+            const button =
+                event.target.closest(
+                    '[data-manage-tenant-funds]'
+                );
+
+            if (! button) {
+                return;
+            }
+
+            await openTenantFundModal(
+                button.dataset.paymentId
+            );
+        }
+    );
+}
+
+/**
+ * Initialize modal lifecycle and allocation submission.
+ */
+function initializeTenantFundModal() {
+    document
+        .getElementById(
+            'close-tenant-fund-modal-button'
+        )
+        ?.addEventListener(
+            'click',
+            closeTenantFundModal
+        );
+
+    document
+        .getElementById(
+            'tenant-fund-form'
+        )
+        ?.addEventListener(
+            'submit',
+            submitTenantFundAllocation
+        );
+
+    document.addEventListener(
+        'keydown',
+        (event) => {
+            const modal =
+                document.getElementById(
+                    'tenant-fund-modal'
+                );
+
+            if (
+                event.key === 'Escape'
+                && modal
+                && ! modal.classList.contains(
+                    'hidden'
+                )
+            ) {
+                closeTenantFundModal();
+            }
+        }
+    );
+}
+
+/**
+ * Open Manage Funds for one Tenant Payment.
+ */
+async function openTenantFundModal(
+    paymentId
+) {
+    const numericPaymentId =
+        Number(
+            paymentId
+        );
+
+    if (
+        ! Number.isInteger(
+            numericPaymentId
+        )
+        || numericPaymentId <= 0
+    ) {
+        return;
+    }
+
+    tenantFundPaymentId =
+        numericPaymentId;
+
+    resetTenantFundModal();
+
+    const modal =
+        document.getElementById(
+            'tenant-fund-modal'
+        );
+
+    if (! modal) {
+        return;
+    }
+
+    modal.classList.remove(
+        'hidden'
+    );
+
+    modal.classList.add(
+        'flex'
+    );
+
+    modal.setAttribute(
+        'aria-hidden',
+        'false'
+    );
+
+    document.body.classList.add(
+        'overflow-hidden'
+    );
+
+    await loadTenantFundPayment();
+}
+
+/**
+ * Close the Manage Funds modal.
+ */
+function closeTenantFundModal() {
+    const modal =
+        document.getElementById(
+            'tenant-fund-modal'
+        );
+
+    modal?.classList.add(
+        'hidden'
+    );
+
+    modal?.classList.remove(
+        'flex'
+    );
+
+    modal?.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+
+    document.body.classList.remove(
+        'overflow-hidden'
+    );
+
+    tenantFundPaymentId =
+        null;
+
+    resetTenantFundModal();
+}
+
+/**
+ * Restore modal loading and form state.
+ */
+function resetTenantFundModal() {
+    hideTenantFundError();
+
+    document
+        .getElementById(
+            'tenant-fund-loading'
+        )
+        ?.classList.remove(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'tenant-fund-content'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'tenant-fund-complete-message'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    const form =
+        document.getElementById(
+            'tenant-fund-form'
+        );
+
+    form?.reset();
+
+    form?.classList.add(
+        'hidden'
+    );
+}
+
+/**
+ * Reload the authoritative Payment classification position.
+ */
+async function loadTenantFundPayment() {
+    if (! tenantFundPaymentId) {
+        return;
+    }
+
+    try {
+        hideTenantFundError();
+
+        const response =
+            await apiRequest(
+                `/api/payments/${tenantFundPaymentId}`
+            );
+
+        const payment =
+            await parseJsonResponse(
+                response
+            );
+
+        renderTenantFundPayment(
+            payment
+        );
+    } catch (error) {
+        showTenantFundError(
+            error instanceof Error
+                ? error.message
+                : 'Unable to load Payment funds.'
+        );
+    } finally {
+        document
+            .getElementById(
+                'tenant-fund-loading'
+            )
+            ?.classList.add(
+                'hidden'
+            );
+
+        document
+            .getElementById(
+                'tenant-fund-content'
+            )
+            ?.classList.remove(
+                'hidden'
+            );
+    }
+}
+
+/**
+ * Render Payment amounts and available classification capacity.
+ */
+function renderTenantFundPayment(
+    payment
+) {
+    const amount =
+        Number(
+            payment?.amount
+            ?? 0
+        );
+
+    const allocated =
+        Number(
+            payment?.allocated_amount
+            ?? 0
+        );
+
+    const unallocated =
+        Number(
+            payment?.unallocated_amount
+            ?? 0
+        );
+
+    const classified =
+        Number(
+            payment?.classified_fund_amount
+            ?? 0
+        );
+
+    const remaining =
+        Number(
+            payment?.remaining_unclassified_amount
+            ?? 0
+        );
+
+    setText(
+        'tenant-fund-payment-amount',
+        formatCurrency(
+            amount
+        )
+    );
+
+    setText(
+        'tenant-fund-allocated',
+        formatCurrency(
+            allocated
+        )
+    );
+
+    setText(
+        'tenant-fund-unallocated',
+        formatCurrency(
+            unallocated
+        )
+    );
+
+    setText(
+        'tenant-fund-classified',
+        formatCurrency(
+            classified
+        )
+    );
+
+    setText(
+        'tenant-fund-remaining',
+        formatCurrency(
+            remaining
+        )
+    );
+
+    const property =
+        [
+            payment?.lease?.unit?.building?.name,
+            payment?.lease?.unit?.name,
+        ]
+            .filter(Boolean)
+            .join(' / ');
+
+    const tenant =
+        payment?.lease?.tenant?.name
+        || payment?.lease?.tenant?.legal_name
+        || 'Tenant';
+
+    setText(
+        'tenant-fund-modal-description',
+        property
+            ? `${tenant} · ${property}`
+            : tenant
+    );
+
+    const form =
+        document.getElementById(
+            'tenant-fund-form'
+        );
+
+    const complete =
+        document.getElementById(
+            'tenant-fund-complete-message'
+        );
+
+    form?.classList.add(
+        'hidden'
+    );
+
+    complete?.classList.add(
+        'hidden'
+    );
+
+    if (remaining <= 0) {
+        complete?.classList.remove(
+            'hidden'
+        );
+
+        return;
+    }
+
+    form?.classList.remove(
+        'hidden'
+    );
+
+    const amountInput =
+        document.getElementById(
+            'tenant-fund-amount'
+        );
+
+    if (amountInput) {
+        amountInput.max =
+            String(
+                remaining
+            );
+    }
+
+    setText(
+        'tenant-fund-amount-help',
+        `Maximum available: ${formatCurrency(remaining)}`
+    );
+
+    /*
+     * Payment classification normally occurs on the original Payment date.
+     *
+     * The operator may still deliberately choose another valid transaction
+     * date if needed for historical reconstruction.
+     */
+    const dateInput =
+        document.getElementById(
+            'tenant-fund-date'
+        );
+
+    if (
+        dateInput
+        && ! dateInput.value
+    ) {
+        dateInput.value =
+            String(
+                payment?.payment_date
+                ?? ''
+            ).slice(
+                0,
+                10
+            );
+    }
+
+    const reference =
+        document.getElementById(
+            'tenant-fund-reference'
+        );
+
+    if (
+        reference
+        && ! reference.value
+        && payment?.reference
+    ) {
+        reference.value =
+            payment.reference;
+    }
+}
+
+/**
+ * Classify unapplied Payment money into one tenant-held fund.
+ */
+async function submitTenantFundAllocation(
+    event
+) {
+    event.preventDefault();
+
+    if (! tenantFundPaymentId) {
+        return;
+    }
+
+    const fundType =
+        fieldValue(
+            'tenant-fund-type'
+        );
+
+    const amount =
+        Number(
+            fieldValue(
+                'tenant-fund-amount'
+            )
+        );
+
+    const transactionDate =
+        fieldValue(
+            'tenant-fund-date'
+        );
+
+    const reference =
+        fieldValue(
+            'tenant-fund-reference'
+        );
+
+    const notes =
+        fieldValue(
+            'tenant-fund-notes'
+        );
+
+    const button =
+        document.getElementById(
+            'tenant-fund-submit-button'
+        );
+
+    try {
+        hideTenantFundError();
+
+        if (button) {
+            button.disabled =
+                true;
+
+            button.textContent =
+                'Allocating…';
+        }
+
+        const response =
+            await apiRequest(
+                `/api/payments/${tenantFundPaymentId}/tenant-funds`,
+                {
+                    method:
+                        'POST',
+
+                    headers: {
+                        'Content-Type':
+                            'application/json',
+                    },
+
+                    body:
+                        JSON.stringify({
+                            fund_type:
+                                fundType,
+
+                            amount,
+
+                            transaction_date:
+                                transactionDate,
+
+                            reference:
+                                reference || null,
+
+                            notes:
+                                notes || null,
+                        }),
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        /*
+         * Reset only allocation-specific fields. Keep the Payment modal open
+         * and reload its authoritative financial position from the backend.
+         */
+        document
+            .getElementById(
+                'tenant-fund-form'
+            )
+            ?.reset();
+
+        await loadTenantFundPayment();
+
+        /*
+         * Refresh the unified register so the workspace reflects any new
+         * operational activity immediately.
+         */
+        await loadPaymentRegister(
+            currentPage
+        );
+    } catch (error) {
+        showTenantFundError(
+            error instanceof Error
+                ? error.message
+                : 'Unable to classify tenant funds.'
+        );
+    } finally {
+        if (button) {
+            button.disabled =
+                false;
+
+            button.textContent =
+                'Allocate Funds';
+        }
+    }
+}
+
+/**
+ * Display Manage Funds workflow errors.
+ */
+function showTenantFundError(
+    message
+) {
+    const box =
+        document.getElementById(
+            'tenant-fund-error'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent =
+        message;
+
+    box.classList.remove(
+        'hidden'
+    );
+}
+
+/**
+ * Clear Manage Funds workflow errors.
+ */
+function hideTenantFundError() {
+    const box =
+        document.getElementById(
+            'tenant-fund-error'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent = '';
+
+    box.classList.add(
+        'hidden'
     );
 }

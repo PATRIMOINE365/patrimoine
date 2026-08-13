@@ -1261,4 +1261,472 @@
         </div>
     </div>
 </div>
+
+{{-- ================================================================
+     Tenant Fund Classification Modal
+================================================================ --}}
+
+<div
+    id="tenant-fund-modal"
+    class="
+        fixed inset-0 z-[70] hidden
+        items-center justify-center
+        bg-slate-950/50
+        px-4 py-6
+    "
+    aria-hidden="true"
+>
+    <div
+        class="
+            flex max-h-[92vh] w-full max-w-3xl
+            flex-col overflow-hidden
+            rounded-2xl bg-white
+            shadow-2xl
+        "
+    >
+        {{-- Header --}}
+
+        <div
+            class="
+                flex items-start justify-between
+                border-b border-slate-100
+                px-6 py-5
+            "
+        >
+            <div>
+                <p
+                    class="
+                        text-xs font-medium uppercase
+                        tracking-wide text-patrimoine-700
+                    "
+                >
+                    Tenant Payment
+                </p>
+
+                <h2
+                    class="
+                        mt-1 text-xl font-semibold
+                        tracking-tight text-slate-950
+                    "
+                >
+                    Manage Funds
+                </h2>
+
+                <p
+                    id="tenant-fund-modal-description"
+                    class="mt-1 text-sm text-slate-500"
+                >
+                    Classify unapplied tenant money into held funds.
+                </p>
+            </div>
+
+            <button
+                id="close-tenant-fund-modal-button"
+                type="button"
+                aria-label="Close"
+                class="
+                    rounded-lg p-2
+                    text-slate-400 transition
+                    hover:bg-slate-100
+                    hover:text-slate-700
+                "
+            >
+                <svg
+                    class="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <path d="M18 6 6 18"/>
+                    <path d="m6 6 12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        {{-- Body --}}
+
+        <div class="overflow-y-auto px-6 py-6">
+
+            <div
+                id="tenant-fund-error"
+                class="
+                    mb-5 hidden rounded-xl
+                    border border-red-200
+                    bg-red-50 px-4 py-3
+                    text-sm text-red-700
+                "
+            ></div>
+
+            <div
+                id="tenant-fund-loading"
+                class="
+                    py-12 text-center
+                    text-sm text-slate-400
+                "
+            >
+                Loading Payment position…
+            </div>
+
+            <div
+                id="tenant-fund-content"
+                class="hidden"
+            >
+                {{-- Payment position --}}
+
+                <section>
+                    <div
+                        class="
+                            grid gap-3
+                            sm:grid-cols-2
+                            xl:grid-cols-5
+                        "
+                    >
+                        <div
+                            class="
+                                rounded-xl border border-slate-200
+                                bg-slate-50 p-4
+                            "
+                        >
+                            <div class="text-xs text-slate-500">
+                                Received
+                            </div>
+
+                            <div
+                                id="tenant-fund-payment-amount"
+                                class="
+                                    mt-2 text-lg font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                —
+                            </div>
+                        </div>
+
+                        <div
+                            class="
+                                rounded-xl border border-slate-200
+                                bg-slate-50 p-4
+                            "
+                        >
+                            <div class="text-xs text-slate-500">
+                                Allocated to Rent
+                            </div>
+
+                            <div
+                                id="tenant-fund-allocated"
+                                class="
+                                    mt-2 text-lg font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                —
+                            </div>
+                        </div>
+
+                        <div
+                            class="
+                                rounded-xl border border-slate-200
+                                bg-slate-50 p-4
+                            "
+                        >
+                            <div class="text-xs text-slate-500">
+                                Unapplied
+                            </div>
+
+                            <div
+                                id="tenant-fund-unallocated"
+                                class="
+                                    mt-2 text-lg font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                —
+                            </div>
+                        </div>
+
+                        <div
+                            class="
+                                rounded-xl border border-blue-200
+                                bg-blue-50 p-4
+                            "
+                        >
+                            <div class="text-xs text-blue-700">
+                                Classified
+                            </div>
+
+                            <div
+                                id="tenant-fund-classified"
+                                class="
+                                    mt-2 text-lg font-semibold
+                                    text-blue-900
+                                "
+                            >
+                                —
+                            </div>
+                        </div>
+
+                        <div
+                            class="
+                                rounded-xl border border-green-200
+                                bg-green-50 p-4
+                            "
+                        >
+                            <div class="text-xs text-green-700">
+                                Available
+                            </div>
+
+                            <div
+                                id="tenant-fund-remaining"
+                                class="
+                                    mt-2 text-lg font-semibold
+                                    text-green-900
+                                "
+                            >
+                                —
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- Nothing remaining --}}
+
+                <div
+                    id="tenant-fund-complete-message"
+                    class="
+                        mt-5 hidden rounded-xl
+                        border border-slate-200
+                        bg-slate-50 px-4 py-4
+                        text-sm text-slate-600
+                    "
+                >
+                    This Payment has no money remaining to classify.
+                </div>
+
+                {{-- Allocation form --}}
+
+                <form
+                    id="tenant-fund-form"
+                    class="
+                        mt-6 hidden border-t
+                        border-slate-100 pt-6
+                    "
+                >
+                    <div>
+                        <h3
+                            class="
+                                text-sm font-semibold
+                                text-slate-950
+                            "
+                        >
+                            Classify Remaining Money
+                        </h3>
+
+                        <p class="mt-1 text-xs text-slate-500">
+                            Move unapplied Payment money into a dedicated
+                            tenant-held fund.
+                        </p>
+                    </div>
+
+                    <div
+                        class="
+                            mt-5 grid gap-4
+                            md:grid-cols-2
+                        "
+                    >
+                        <div>
+                            <label
+                                for="tenant-fund-type"
+                                class="
+                                    mb-1.5 block
+                                    text-sm font-medium
+                                    text-slate-700
+                                "
+                            >
+                                Fund
+                                <span class="text-red-500">*</span>
+                            </label>
+
+                            <select
+                                id="tenant-fund-type"
+                                required
+                                class="
+                                    w-full rounded-lg
+                                    border border-slate-200
+                                    bg-white px-3.5 py-2.5
+                                    text-sm outline-none
+                                    focus:border-patrimoine-500
+                                    focus:ring-2
+                                    focus:ring-patrimoine-100
+                                "
+                            >
+                                <option value="">
+                                    Select fund…
+                                </option>
+
+                                <option value="rent_reserve">
+                                    Rent Reserve
+                                </option>
+
+                                <option value="consumable_advance">
+                                    Consumable Advance
+                                </option>
+
+                                <option value="security_deposit">
+                                    Security Deposit
+                                </option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label
+                                for="tenant-fund-amount"
+                                class="
+                                    mb-1.5 block
+                                    text-sm font-medium
+                                    text-slate-700
+                                "
+                            >
+                                Amount
+                                <span class="text-red-500">*</span>
+                            </label>
+
+                            <input
+                                id="tenant-fund-amount"
+                                type="number"
+                                min="1"
+                                step="1"
+                                required
+                                class="
+                                    w-full rounded-lg
+                                    border border-slate-200
+                                    px-3.5 py-2.5
+                                    text-sm outline-none
+                                    focus:border-patrimoine-500
+                                    focus:ring-2
+                                    focus:ring-patrimoine-100
+                                "
+                            >
+
+                            <p
+                                id="tenant-fund-amount-help"
+                                class="mt-1.5 text-xs text-slate-500"
+                            ></p>
+                        </div>
+
+                        <div>
+                            <label
+                                for="tenant-fund-date"
+                                class="
+                                    mb-1.5 block
+                                    text-sm font-medium
+                                    text-slate-700
+                                "
+                            >
+                                Transaction Date
+                                <span class="text-red-500">*</span>
+                            </label>
+
+                            <input
+                                id="tenant-fund-date"
+                                type="date"
+                                required
+                                class="
+                                    w-full rounded-lg
+                                    border border-slate-200
+                                    px-3.5 py-2.5
+                                    text-sm outline-none
+                                    focus:border-patrimoine-500
+                                    focus:ring-2
+                                    focus:ring-patrimoine-100
+                                "
+                            >
+                        </div>
+
+                        <div>
+                            <label
+                                for="tenant-fund-reference"
+                                class="
+                                    mb-1.5 block
+                                    text-sm font-medium
+                                    text-slate-700
+                                "
+                            >
+                                Reference
+                            </label>
+
+                            <input
+                                id="tenant-fund-reference"
+                                type="text"
+                                maxlength="255"
+                                placeholder="Optional"
+                                class="
+                                    w-full rounded-lg
+                                    border border-slate-200
+                                    px-3.5 py-2.5
+                                    text-sm outline-none
+                                    focus:border-patrimoine-500
+                                    focus:ring-2
+                                    focus:ring-patrimoine-100
+                                "
+                            >
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label
+                                for="tenant-fund-notes"
+                                class="
+                                    mb-1.5 block
+                                    text-sm font-medium
+                                    text-slate-700
+                                "
+                            >
+                                Notes
+                            </label>
+
+                            <textarea
+                                id="tenant-fund-notes"
+                                rows="3"
+                                placeholder="Optional classification notes"
+                                class="
+                                    w-full rounded-lg
+                                    border border-slate-200
+                                    px-3.5 py-2.5
+                                    text-sm outline-none
+                                    focus:border-patrimoine-500
+                                    focus:ring-2
+                                    focus:ring-patrimoine-100
+                                "
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <div
+                        class="
+                            mt-5 flex justify-end
+                        "
+                    >
+                        <button
+                            id="tenant-fund-submit-button"
+                            type="submit"
+                            class="
+                                rounded-lg bg-patrimoine-950
+                                px-4 py-2.5
+                                text-sm font-medium text-white
+                                shadow-sm transition
+                                hover:bg-patrimoine-900
+                                disabled:cursor-not-allowed
+                                disabled:opacity-60
+                            "
+                        >
+                            Allocate Funds
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @endsection

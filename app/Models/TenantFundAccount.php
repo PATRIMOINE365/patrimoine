@@ -31,6 +31,17 @@ class TenantFundAccount extends Model
     ];
 
     /**
+     * Derived values included when this account is serialized to JSON.
+     *
+     * Balance remains ledger-derived and is never stored as a mutable column.
+     *
+     * @var list<string>
+     */
+    protected $appends = [
+        'balance',
+    ];
+
+    /**
      * Lease owning this tenant fund account.
      */
     public function lease(): BelongsTo
@@ -71,6 +82,50 @@ class TenantFundAccount extends Model
      */
     public function balance(): int
     {
-        return $this->creditedAmount() - $this->debitedAmount();
+        /*
+         * When transactions were eager-loaded for an API response, calculate
+         * from the in-memory ledger and avoid additional database queries.
+         */
+        if (
+            $this->relationLoaded(
+                'transactions'
+            )
+        ) {
+            $credits =
+                (int) $this
+                    ->transactions
+                    ->where(
+                        'direction',
+                        'credit'
+                    )
+                    ->sum(
+                        'amount'
+                    );
+
+            $debits =
+                (int) $this
+                    ->transactions
+                    ->where(
+                        'direction',
+                        'debit'
+                    )
+                    ->sum(
+                        'amount'
+                    );
+
+            return $credits
+                - $debits;
+        }
+
+        return $this->creditedAmount()
+            - $this->debitedAmount();
+    }
+
+    /**
+     * Expose the ledger-derived balance when the Account is serialized.
+     */
+    public function getBalanceAttribute(): int
+    {
+        return $this->balance();
     }
 }

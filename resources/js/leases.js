@@ -1402,7 +1402,7 @@ function leaseCard(lease) {
                 >
                     <button
                         type="button"
-                        data-security-deposit
+                        data-tenant-funds
                         data-lease-id="${escapeHtml(
                             lease.id
                         )}"
@@ -1416,7 +1416,7 @@ function leaseCard(lease) {
                             hover:bg-slate-50
                         "
                     >
-                        Security Deposit
+                        Tenant Funds
                     </button>
 
                     <button
@@ -1579,14 +1579,14 @@ function attachLeaseActionListeners(
 ) {
     container
         .querySelectorAll(
-            '[data-security-deposit]'
+            '[data-tenant-funds]'
         )
         .forEach(
             (button) => {
                 button.addEventListener(
                     'click',
                     () => {
-                        openSecurityDepositModal(
+                        openTenantFundsModal(
                             button.dataset
                                 .leaseId
                         );
@@ -4300,6 +4300,809 @@ function hideSecurityDepositError() {
     const box =
         document.getElementById(
             'security-deposit-error'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent = '';
+
+    box.classList.add(
+        'hidden'
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Tenant Fund Operations
+|--------------------------------------------------------------------------
+|
+| This workspace exposes actual tenant-held money rather than contractual
+| Lease expectations.
+|
+| All balances and Invoice obligations originate from the backend. The
+| browser never performs accounting calculations or mutates balances itself.
+|
+*/
+
+let tenantFundsLeaseId =
+    null;
+
+let tenantFundsLease =
+    null;
+
+/**
+ * Register Tenant Funds modal controls.
+ */
+function initializeTenantFundsModal() {
+    document
+        .getElementById(
+            'tenant-funds-modal-close'
+        )
+        ?.addEventListener(
+            'click',
+            closeTenantFundsModal
+        );
+
+    document
+        .getElementById(
+            'tenant-funds-modal-backdrop'
+        )
+        ?.addEventListener(
+            'click',
+            closeTenantFundsModal
+        );
+
+    document
+        .getElementById(
+            'tenant-funds-reserve-form'
+        )
+        ?.addEventListener(
+            'submit',
+            submitRentReserveConsumption
+        );
+
+    document
+        .getElementById(
+            'tenant-funds-advance-form'
+        )
+        ?.addEventListener(
+            'submit',
+            submitConsumableAdvanceConsumption
+        );
+
+    document
+        .getElementById(
+            'tenant-funds-security-manage'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                const leaseId =
+                    tenantFundsLeaseId;
+
+                if (! leaseId) {
+                    return;
+                }
+
+                closeTenantFundsModal();
+
+                openSecurityDepositModal(
+                    leaseId
+                );
+            }
+        );
+}
+
+/**
+ * Open the actual tenant-held fund position for one Lease.
+ */
+async function openTenantFundsModal(
+    leaseId
+) {
+    const numericLeaseId =
+        Number(
+            leaseId
+        );
+
+    if (
+        ! Number.isInteger(
+            numericLeaseId
+        )
+        || numericLeaseId <= 0
+    ) {
+        return;
+    }
+
+    tenantFundsLeaseId =
+        numericLeaseId;
+
+    tenantFundsLease =
+        null;
+
+    hideTenantFundsError();
+
+    document
+        .getElementById(
+            'tenant-funds-loading'
+        )
+        ?.classList.remove(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'tenant-funds-content'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    const lease =
+        loadedLeasesById.get(
+            String(
+                numericLeaseId
+            )
+        );
+
+    setText(
+        'tenant-funds-modal-description',
+        [
+            lease?.unit?.building?.name,
+            lease?.unit?.name,
+            partyDisplayName(
+                lease?.tenant
+            ),
+        ]
+            .filter(Boolean)
+            .join(' · ')
+            || 'Review actual tenant-held funds.'
+    );
+
+    const modal =
+        document.getElementById(
+            'tenant-funds-modal'
+        );
+
+    modal?.classList.remove(
+        'hidden'
+    );
+
+    modal?.setAttribute(
+        'aria-hidden',
+        'false'
+    );
+
+    document.body.classList.add(
+        'overflow-hidden'
+    );
+
+    await loadTenantFundsLease();
+}
+
+/**
+ * Reload authoritative Lease financial information.
+ */
+async function loadTenantFundsLease() {
+    if (! tenantFundsLeaseId) {
+        return;
+    }
+
+    try {
+        hideTenantFundsError();
+
+        const response =
+            await apiRequest(
+                `/api/leases/${tenantFundsLeaseId}`
+            );
+
+        tenantFundsLease =
+            await parseJsonResponse(
+                response
+            );
+
+        renderTenantFunds();
+    } catch (error) {
+        showTenantFundsError(
+            error instanceof Error
+                ? error.message
+                : 'Unable to load Tenant Funds.'
+        );
+    } finally {
+        document
+            .getElementById(
+                'tenant-funds-loading'
+            )
+            ?.classList.add(
+                'hidden'
+            );
+
+        document
+            .getElementById(
+                'tenant-funds-content'
+            )
+            ?.classList.remove(
+                'hidden'
+            );
+    }
+}
+
+/**
+ * Render server-calculated balances and outstanding Invoices.
+ */
+function renderTenantFunds() {
+    const accounts =
+        Array.isArray(
+            tenantFundsLease
+                ?.tenant_fund_accounts
+        )
+            ? tenantFundsLease
+                .tenant_fund_accounts
+            : [];
+
+    const reserve =
+        accounts.find(
+            (account) =>
+                account.type
+                === 'rent_reserve'
+        )
+        ?? null;
+
+    const advance =
+        accounts.find(
+            (account) =>
+                account.type
+                === 'consumable_advance'
+        )
+        ?? null;
+
+    const securityDeposit =
+        accounts.find(
+            (account) =>
+                account.type
+                === 'security_deposit'
+        )
+        ?? null;
+
+    setText(
+        'tenant-funds-reserve-balance',
+        formatCurrency(
+            Number(
+                reserve?.balance
+                ?? 0
+            )
+        )
+    );
+
+    setText(
+        'tenant-funds-advance-balance',
+        formatCurrency(
+            Number(
+                advance?.balance
+                ?? 0
+            )
+        )
+    );
+
+    setText(
+        'tenant-funds-security-balance',
+        formatCurrency(
+            Number(
+                securityDeposit?.balance
+                ?? 0
+            )
+        )
+    );
+
+    renderTenantFundInvoiceSelect(
+        'tenant-funds-reserve-invoice'
+    );
+
+    renderTenantFundInvoiceSelect(
+        'tenant-funds-advance-invoice'
+    );
+
+    configureRentReserveOperation(
+        reserve
+    );
+
+    configureConsumableAdvanceOperation(
+        advance
+    );
+
+    const today =
+        new Date()
+            .toISOString()
+            .slice(
+                0,
+                10
+            );
+
+    setFormValue(
+        'tenant-funds-reserve-date',
+        today
+    );
+
+    setFormValue(
+        'tenant-funds-advance-date',
+        today
+    );
+}
+
+/**
+ * Populate an Invoice selector from authoritative outstanding balances.
+ */
+function renderTenantFundInvoiceSelect(
+    id
+) {
+    const select =
+        document.getElementById(
+            id
+        );
+
+    if (! select) {
+        return;
+    }
+
+    const invoices =
+        Array.isArray(
+            tenantFundsLease
+                ?.invoices
+        )
+            ? tenantFundsLease
+                .invoices
+            : [];
+
+    const outstanding =
+        invoices.filter(
+            (invoice) =>
+                Number(
+                    invoice.outstanding_amount
+                    ?? 0
+                ) > 0
+        );
+
+    if (outstanding.length === 0) {
+        select.innerHTML = `
+            <option value="">
+                No outstanding Invoice
+            </option>
+        `;
+
+        select.disabled =
+            true;
+
+        return;
+    }
+
+    select.disabled =
+        false;
+
+    select.innerHTML = `
+        <option value="">
+            Select Invoice…
+        </option>
+
+        ${outstanding
+            .map(
+                (invoice) => `
+                    <option
+                        value="${escapeHtml(
+                            invoice.id
+                        )}"
+                    >
+                        ${escapeHtml(
+                            invoice.invoice_number
+                            || `Invoice #${invoice.id}`
+                        )}
+                        ·
+                        ${escapeHtml(
+                            formatCurrency(
+                                Number(
+                                    invoice.outstanding_amount
+                                    ?? 0
+                                )
+                            )
+                        )}
+                        outstanding
+                    </option>
+                `
+            )
+            .join('')}
+    `;
+}
+
+/**
+ * Determine whether Rent Reserve consumption can be offered.
+ */
+function configureRentReserveOperation(
+    account
+) {
+    const form =
+        document.getElementById(
+            'tenant-funds-reserve-form'
+        );
+
+    const unavailable =
+        document.getElementById(
+            'tenant-funds-reserve-unavailable'
+        );
+
+    const balance =
+        Number(
+            account?.balance
+            ?? 0
+        );
+
+    const noticeStarted =
+        Boolean(
+            tenantFundsLease
+                ?.termination_notice_date
+        );
+
+    form?.classList.remove(
+        'hidden'
+    );
+
+    unavailable?.classList.add(
+        'hidden'
+    );
+
+    if (! account || balance <= 0) {
+        form?.classList.add(
+            'hidden'
+        );
+
+        if (unavailable) {
+            unavailable.textContent =
+                'No Rent Reserve balance is currently available.';
+
+            unavailable.classList.remove(
+                'hidden'
+            );
+        }
+
+        return;
+    }
+
+    if (! noticeStarted) {
+        form?.classList.add(
+            'hidden'
+        );
+
+        if (unavailable) {
+            unavailable.textContent =
+                'Rent Reserve remains protected until termination notice has been recorded.';
+
+            unavailable.classList.remove(
+                'hidden'
+            );
+        }
+
+        return;
+    }
+
+    setText(
+        'tenant-funds-reserve-help',
+        'Termination notice has been recorded. Available Reserve may now be applied to outstanding rent.'
+    );
+}
+
+/**
+ * Determine whether Consumable Advance consumption can be offered.
+ */
+function configureConsumableAdvanceOperation(
+    account
+) {
+    const form =
+        document.getElementById(
+            'tenant-funds-advance-form'
+        );
+
+    const unavailable =
+        document.getElementById(
+            'tenant-funds-advance-unavailable'
+        );
+
+    const balance =
+        Number(
+            account?.balance
+            ?? 0
+        );
+
+    form?.classList.remove(
+        'hidden'
+    );
+
+    unavailable?.classList.add(
+        'hidden'
+    );
+
+    if (! account || balance <= 0) {
+        form?.classList.add(
+            'hidden'
+        );
+
+        if (unavailable) {
+            unavailable.textContent =
+                'No Consumable Advance balance is currently available.';
+
+            unavailable.classList.remove(
+                'hidden'
+            );
+        }
+    }
+}
+
+/**
+ * Apply Rent Reserve against an outstanding Invoice.
+ */
+async function submitRentReserveConsumption(
+    event
+) {
+    event.preventDefault();
+
+    const account =
+        tenantFundAccountByType(
+            'rent_reserve'
+        );
+
+    if (! account) {
+        return;
+    }
+
+    const button =
+        document.getElementById(
+            'tenant-funds-reserve-submit'
+        );
+
+    try {
+        hideTenantFundsError();
+
+        if (button) {
+            button.disabled =
+                true;
+
+            button.textContent =
+                'Applying…';
+        }
+
+        const response =
+            await apiRequest(
+                `/api/tenant-funds/${account.id}/consume-rent`,
+                {
+                    method:
+                        'POST',
+
+                    body:
+                        JSON.stringify({
+                            invoice_id:
+                                Number(
+                                    formValue(
+                                        'tenant-funds-reserve-invoice'
+                                    )
+                                ),
+
+                            amount:
+                                Number(
+                                    formValue(
+                                        'tenant-funds-reserve-amount'
+                                    )
+                                ),
+
+                            transaction_date:
+                                formValue(
+                                    'tenant-funds-reserve-date'
+                                ),
+                        }),
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        document
+            .getElementById(
+                'tenant-funds-reserve-form'
+            )
+            ?.reset();
+
+        await loadTenantFundsLease();
+    } catch (error) {
+        showTenantFundsError(
+            error instanceof Error
+                ? error.message
+                : 'Unable to apply Rent Reserve.'
+        );
+    } finally {
+        if (button) {
+            button.disabled =
+                false;
+
+            button.textContent =
+                'Apply Rent Reserve';
+        }
+    }
+}
+
+/**
+ * Apply Consumable Advance against an outstanding Invoice.
+ */
+async function submitConsumableAdvanceConsumption(
+    event
+) {
+    event.preventDefault();
+
+    const account =
+        tenantFundAccountByType(
+            'consumable_advance'
+        );
+
+    if (! account) {
+        return;
+    }
+
+    const button =
+        document.getElementById(
+            'tenant-funds-advance-submit'
+        );
+
+    try {
+        hideTenantFundsError();
+
+        if (button) {
+            button.disabled =
+                true;
+
+            button.textContent =
+                'Applying…';
+        }
+
+        const response =
+            await apiRequest(
+                `/api/tenant-funds/${account.id}/consume-advance`,
+                {
+                    method:
+                        'POST',
+
+                    body:
+                        JSON.stringify({
+                            invoice_id:
+                                Number(
+                                    formValue(
+                                        'tenant-funds-advance-invoice'
+                                    )
+                                ),
+
+                            amount:
+                                Number(
+                                    formValue(
+                                        'tenant-funds-advance-amount'
+                                    )
+                                ),
+
+                            transaction_date:
+                                formValue(
+                                    'tenant-funds-advance-date'
+                                ),
+                        }),
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        document
+            .getElementById(
+                'tenant-funds-advance-form'
+            )
+            ?.reset();
+
+        await loadTenantFundsLease();
+    } catch (error) {
+        showTenantFundsError(
+            error instanceof Error
+                ? error.message
+                : 'Unable to apply Consumable Advance.'
+        );
+    } finally {
+        if (button) {
+            button.disabled =
+                false;
+
+            button.textContent =
+                'Apply Consumable Advance';
+        }
+    }
+}
+
+/**
+ * Find one actual tenant-fund account by type.
+ */
+function tenantFundAccountByType(
+    type
+) {
+    const accounts =
+        Array.isArray(
+            tenantFundsLease
+                ?.tenant_fund_accounts
+        )
+            ? tenantFundsLease
+                .tenant_fund_accounts
+            : [];
+
+    return accounts.find(
+        (account) =>
+            account.type
+            === type
+    )
+    ?? null;
+}
+
+/**
+ * Close the Tenant Funds workspace.
+ */
+function closeTenantFundsModal() {
+    const modal =
+        document.getElementById(
+            'tenant-funds-modal'
+        );
+
+    modal?.classList.add(
+        'hidden'
+    );
+
+    modal?.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+
+    document.body.classList.remove(
+        'overflow-hidden'
+    );
+
+    tenantFundsLeaseId =
+        null;
+
+    tenantFundsLease =
+        null;
+
+    hideTenantFundsError();
+}
+
+/**
+ * Display Tenant Funds operational failures.
+ */
+function showTenantFundsError(
+    message
+) {
+    const box =
+        document.getElementById(
+            'tenant-funds-error'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent =
+        message;
+
+    box.classList.remove(
+        'hidden'
+    );
+}
+
+/**
+ * Clear Tenant Funds operational failures.
+ */
+function hideTenantFundsError() {
+    const box =
+        document.getElementById(
+            'tenant-funds-error'
         );
 
     if (! box) {

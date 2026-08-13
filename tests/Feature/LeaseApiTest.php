@@ -1305,4 +1305,103 @@ public function test_backdated_lease_with_received_advance_initializes_finances(
 }
 
 
+
+    /**
+     * Lease detail exposes actual ledger-derived tenant-fund balances.
+     *
+     * Contractual Advance / Rent Reserve amounts remain separate from these
+     * operational balances.
+     */
+    public function test_lease_detail_exposes_tenant_fund_balance(): void
+    {
+        $context =
+            $this->createContext();
+
+        $leaseResponse =
+            $this->postJson(
+                '/api/leases',
+                $this->validPayload(
+                    $context,
+                    [
+                        'advance_payment_amount' =>
+                            0,
+
+                        'rent_reserve_amount' =>
+                            0,
+                    ]
+                )
+            );
+
+        $leaseResponse
+            ->assertCreated();
+
+        $leaseId =
+            $leaseResponse->json(
+                'id'
+            );
+
+        $account =
+            \App\Models\TenantFundAccount::create([
+                'lease_id' =>
+                    $leaseId,
+
+                'type' =>
+                    'consumable_advance',
+
+                'status' =>
+                    'active',
+            ]);
+
+        \App\Models\TenantFundTransaction::create([
+            'tenant_fund_account_id' =>
+                $account->id,
+
+            'direction' =>
+                'credit',
+
+            'category' =>
+                'advance_funding',
+
+            'amount' =>
+                6000,
+
+            'transaction_date' =>
+                '2026-08-01',
+        ]);
+
+        \App\Models\TenantFundTransaction::create([
+            'tenant_fund_account_id' =>
+                $account->id,
+
+            'direction' =>
+                'debit',
+
+            'category' =>
+                'advance_consumption',
+
+            'amount' =>
+                1500,
+
+            'transaction_date' =>
+                '2026-08-05',
+        ]);
+
+        $this->getJson(
+            "/api/leases/{$leaseId}"
+        )
+            ->assertOk()
+            ->assertJsonPath(
+                'tenant_fund_accounts.0.type',
+                'consumable_advance'
+            )
+            ->assertJsonPath(
+                'tenant_fund_accounts.0.balance',
+                4500
+            )
+            ->assertJsonCount(
+                2,
+                'tenant_fund_accounts.0.transactions'
+            );
+    }
+
 }

@@ -2649,3 +2649,512 @@
         </div>
     </div>
 </div>
+
+{{-- ================================================================
+     Tenant Funds Operational Modal
+================================================================ --}}
+
+<div
+    id="tenant-funds-modal"
+    class="
+        fixed inset-0 z-[85]
+        hidden overflow-y-auto
+    "
+    aria-hidden="true"
+>
+    <div
+        id="tenant-funds-modal-backdrop"
+        class="
+            fixed inset-0
+            bg-slate-950/50
+            backdrop-blur-[1px]
+        "
+    ></div>
+
+    <div
+        class="
+            relative flex min-h-full
+            items-start justify-center
+            p-4 sm:p-6 lg:p-10
+        "
+    >
+        <div
+            class="
+                relative w-full max-w-5xl
+                overflow-hidden rounded-2xl
+                bg-white shadow-2xl
+            "
+        >
+            {{-- Header --}}
+
+            <div
+                class="
+                    flex items-start justify-between gap-5
+                    border-b border-slate-100
+                    px-6 py-5
+                "
+            >
+                <div>
+                    <div
+                        class="
+                            text-xs font-medium uppercase
+                            tracking-wide text-patrimoine-700
+                        "
+                    >
+                        Tenant Money
+                    </div>
+
+                    <h2
+                        class="
+                            mt-1 text-xl font-semibold
+                            tracking-tight text-slate-950
+                        "
+                    >
+                        Tenant Funds
+                    </h2>
+
+                    <p
+                        id="tenant-funds-modal-description"
+                        class="mt-1 text-sm text-slate-500"
+                    >
+                        Review actual held balances and apply eligible funds to rent.
+                    </p>
+                </div>
+
+                <button
+                    id="tenant-funds-modal-close"
+                    type="button"
+                    aria-label="Close"
+                    class="
+                        inline-flex h-9 w-9
+                        shrink-0 items-center
+                        justify-center rounded-lg
+                        text-slate-400 transition
+                        hover:bg-slate-100
+                        hover:text-slate-700
+                    "
+                >
+                    <svg
+                        class="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path d="M18 6 6 18"/>
+                        <path d="m6 6 12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div
+                class="
+                    max-h-[calc(100vh-11rem)]
+                    overflow-y-auto
+                    px-6 py-6
+                "
+            >
+                <div
+                    id="tenant-funds-error"
+                    class="
+                        mb-5 hidden rounded-lg
+                        border border-red-200
+                        bg-red-50 px-4 py-3
+                        text-sm text-red-700
+                    "
+                ></div>
+
+                <div
+                    id="tenant-funds-loading"
+                    class="
+                        py-12 text-center
+                        text-sm text-slate-400
+                    "
+                >
+                    Loading tenant funds…
+                </div>
+
+                <div
+                    id="tenant-funds-content"
+                    class="hidden"
+                >
+                    {{-- Actual Balances --}}
+
+                    <section>
+                        <div
+                            class="
+                                grid gap-4
+                                md:grid-cols-3
+                            "
+                        >
+                            <div
+                                class="
+                                    rounded-xl border
+                                    border-slate-200
+                                    bg-slate-50 p-5
+                                "
+                            >
+                                <div class="text-xs text-slate-500">
+                                    Rent Reserve
+                                </div>
+
+                                <div
+                                    id="tenant-funds-reserve-balance"
+                                    class="
+                                        mt-2 text-xl font-semibold
+                                        text-slate-950
+                                    "
+                                >
+                                    —
+                                </div>
+
+                                <p
+                                    id="tenant-funds-reserve-help"
+                                    class="
+                                        mt-2 text-xs
+                                        leading-5 text-slate-500
+                                    "
+                                >
+                                    Protected until termination notice.
+                                </p>
+                            </div>
+
+                            <div
+                                class="
+                                    rounded-xl border
+                                    border-slate-200
+                                    bg-slate-50 p-5
+                                "
+                            >
+                                <div class="text-xs text-slate-500">
+                                    Consumable Advance
+                                </div>
+
+                                <div
+                                    id="tenant-funds-advance-balance"
+                                    class="
+                                        mt-2 text-xl font-semibold
+                                        text-slate-950
+                                    "
+                                >
+                                    —
+                                </div>
+
+                                <p
+                                    class="
+                                        mt-2 text-xs
+                                        leading-5 text-slate-500
+                                    "
+                                >
+                                    Available tenant advance that may be applied to rent.
+                                </p>
+                            </div>
+
+                            <div
+                                class="
+                                    rounded-xl border
+                                    border-slate-200
+                                    bg-slate-50 p-5
+                                "
+                            >
+                                <div class="text-xs text-slate-500">
+                                    Security Deposit
+                                </div>
+
+                                <div
+                                    id="tenant-funds-security-balance"
+                                    class="
+                                        mt-2 text-xl font-semibold
+                                        text-slate-950
+                                    "
+                                >
+                                    —
+                                </div>
+
+                                <button
+                                    id="tenant-funds-security-manage"
+                                    type="button"
+                                    class="
+                                        mt-3 text-xs font-semibold
+                                        text-patrimoine-700
+                                        hover:text-patrimoine-950
+                                    "
+                                >
+                                    Manage Security Deposit →
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    {{-- Rent Reserve --}}
+
+                    <section
+                        class="
+                            mt-7 border-t
+                            border-slate-100 pt-7
+                        "
+                    >
+                        <div class="mb-4">
+                            <h3
+                                class="
+                                    text-sm font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                Apply Rent Reserve
+                            </h3>
+
+                            <p class="mt-1 text-xs text-slate-500">
+                                Rent Reserve becomes consumable after termination notice and may settle an outstanding Invoice.
+                            </p>
+                        </div>
+
+                        <div
+                            id="tenant-funds-reserve-unavailable"
+                            class="
+                                hidden rounded-lg
+                                border border-amber-200
+                                bg-amber-50 px-4 py-3
+                                text-sm text-amber-800
+                            "
+                        ></div>
+
+                        <form
+                            id="tenant-funds-reserve-form"
+                            class="
+                                grid gap-4
+                                md:grid-cols-4
+                            "
+                        >
+                            <div class="md:col-span-2">
+                                <label
+                                    for="tenant-funds-reserve-invoice"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    Outstanding Invoice
+                                </label>
+
+                                <select
+                                    id="tenant-funds-reserve-invoice"
+                                    required
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        bg-white px-3.5 py-2.5
+                                        text-sm
+                                    "
+                                ></select>
+                            </div>
+
+                            <div>
+                                <label
+                                    for="tenant-funds-reserve-amount"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    Amount
+                                </label>
+
+                                <input
+                                    id="tenant-funds-reserve-amount"
+                                    type="number"
+                                    min="1"
+                                    step="1"
+                                    required
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                    "
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    for="tenant-funds-reserve-date"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    Date
+                                </label>
+
+                                <input
+                                    id="tenant-funds-reserve-date"
+                                    type="date"
+                                    required
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                    "
+                                >
+                            </div>
+
+                            <div class="md:col-span-4">
+                                <button
+                                    id="tenant-funds-reserve-submit"
+                                    type="submit"
+                                    class="
+                                        rounded-lg bg-patrimoine-950
+                                        px-4 py-2.5
+                                        text-sm font-medium text-white
+                                        disabled:cursor-not-allowed
+                                        disabled:opacity-50
+                                    "
+                                >
+                                    Apply Rent Reserve
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    {{-- Consumable Advance --}}
+
+                    <section
+                        class="
+                            mt-7 border-t
+                            border-slate-100 pt-7
+                        "
+                    >
+                        <div class="mb-4">
+                            <h3
+                                class="
+                                    text-sm font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                Apply Consumable Advance
+                            </h3>
+
+                            <p class="mt-1 text-xs text-slate-500">
+                                Apply available Consumable Advance against an outstanding rent Invoice.
+                            </p>
+                        </div>
+
+                        <div
+                            id="tenant-funds-advance-unavailable"
+                            class="
+                                hidden rounded-lg
+                                border border-slate-200
+                                bg-slate-50 px-4 py-3
+                                text-sm text-slate-600
+                            "
+                        ></div>
+
+                        <form
+                            id="tenant-funds-advance-form"
+                            class="
+                                grid gap-4
+                                md:grid-cols-4
+                            "
+                        >
+                            <div class="md:col-span-2">
+                                <label
+                                    for="tenant-funds-advance-invoice"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    Outstanding Invoice
+                                </label>
+
+                                <select
+                                    id="tenant-funds-advance-invoice"
+                                    required
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        bg-white px-3.5 py-2.5
+                                        text-sm
+                                    "
+                                ></select>
+                            </div>
+
+                            <div>
+                                <label
+                                    for="tenant-funds-advance-amount"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    Amount
+                                </label>
+
+                                <input
+                                    id="tenant-funds-advance-amount"
+                                    type="number"
+                                    min="1"
+                                    step="1"
+                                    required
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                    "
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    for="tenant-funds-advance-date"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    Date
+                                </label>
+
+                                <input
+                                    id="tenant-funds-advance-date"
+                                    type="date"
+                                    required
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                    "
+                                >
+                            </div>
+
+                            <div class="md:col-span-4">
+                                <button
+                                    id="tenant-funds-advance-submit"
+                                    type="submit"
+                                    class="
+                                        rounded-lg bg-patrimoine-950
+                                        px-4 py-2.5
+                                        text-sm font-medium text-white
+                                        disabled:cursor-not-allowed
+                                        disabled:opacity-50
+                                    "
+                                >
+                                    Apply Consumable Advance
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
