@@ -19,20 +19,60 @@ Artisan::command('inspire', function () {
 
 /*
 |--------------------------------------------------------------------------
+| Automatic Rent Increments
+|--------------------------------------------------------------------------
+|
+| Apply previously approved rent increments whose effective dates have
+| arrived.
+|
+| This job runs before automated billing so an Invoice generated on an
+| increment's effective date snapshots the newly effective contractual rent.
+|
+| The underlying service is idempotent and overdue scheduled increments are
+| picked up by the next successful daily run.
+|
+*/
+Schedule::command('patrimoine:apply-due-rent-increments')
+    ->dailyAt('00:05')
+    ->withoutOverlapping()
+    ->onOneServer();
+
+/*
+|--------------------------------------------------------------------------
 | Automated Billing
 |--------------------------------------------------------------------------
 |
-| Run daily and generate every missing Invoice whose billing period has
-| started by the current application date.
+| Generate every missing Invoice whose billing period has started by the
+| current application date.
 |
-| The underlying generation process is idempotent, so a repeated run on
-| the same day will not create duplicate billing periods.
+| Billing runs after due rent increments have been applied so newly effective
+| rent is available before the day's Invoice generation begins.
+|
+| The underlying generation process is idempotent, so a repeated run will not
+| create duplicate billing periods.
 |
 */
 Schedule::command('patrimoine:generate-due-invoices')
-    ->daily()
+    ->dailyAt('00:15')
     ->withoutOverlapping()
     ->onOneServer();
+
+/*
+|--------------------------------------------------------------------------
+| Rent Increment Notices
+|--------------------------------------------------------------------------
+|
+| Notify tenants three calendar months before an approved rent increment
+| becomes effective.
+|
+| Missed notices remain eligible until the day before the effective date.
+|
+*/
+Schedule::command('patrimoine:send-rent-increment-notices')
+    ->dailyAt('07:45')
+    ->withoutOverlapping()
+    ->onOneServer();
+
 /*
 |--------------------------------------------------------------------------
 | Rent Reminders
