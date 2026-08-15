@@ -23,6 +23,7 @@ class ReceiptMail extends Mailable
         public Payment $payment,
         public string $pdfContents,
         public string $pdfFilename,
+        public \App\Services\ApplicationPresentationFormatter $formatter,
         public ?Party $managingOrganisation = null
     ) {
     }

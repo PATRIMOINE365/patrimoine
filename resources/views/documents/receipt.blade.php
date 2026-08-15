@@ -325,7 +325,7 @@ $allocatedAmount =
                 <br>
 
                 <strong>Payment Date:</strong>
-                {{ $payment->payment_date->format('d M Y') }}
+                {{ $formatter->date($payment->payment_date) }}
                 <br>
 
                 <strong>Method:</strong>
@@ -353,7 +353,7 @@ $allocatedAmount =
     </div>
 
     <div class="payment-amount">
-        GHS {{ number_format($payment->amount, 0) }}
+        {{ $formatter->money($payment->amount) }}
     </div>
 </div>
 
@@ -415,14 +415,14 @@ $allocatedAmount =
                 @if($allocation->invoice->isSecurityDepositDebtInvoice())
                     Close-out
                 @else
-                    {{ $allocation->invoice->period_start->format('d M Y') }}
+                    {{ $formatter->date($allocation->invoice->period_start) }}
                     -
-                    {{ $allocation->invoice->period_end->format('d M Y') }}
+                    {{ $formatter->date($allocation->invoice->period_end) }}
                 @endif
             </td>
 
             <td class="numeric">
-                GHS {{ number_format($allocation->amount, 0) }}
+                {{ $formatter->money($allocation->amount) }}
             </td>
         </tr>
     @endforeach
@@ -443,7 +443,7 @@ $allocatedAmount =
             </td>
 
             <td class="summary-amount">
-                GHS {{ number_format($payment->amount, 0) }}
+                {{ $formatter->money($payment->amount) }}
             </td>
         </tr>
 
@@ -454,7 +454,7 @@ $allocatedAmount =
         </td>
 
         <td class="summary-amount">
-            GHS {{ number_format($rentAllocatedAmount, 0) }}
+            {{ $formatter->money($rentAllocatedAmount) }}
         </td>
     </tr>
 @endif
@@ -466,7 +466,7 @@ $allocatedAmount =
         </td>
 
         <td class="summary-amount">
-            GHS {{ number_format($securityDepositDebtAllocatedAmount, 0) }}
+            {{ $formatter->money($securityDepositDebtAllocatedAmount) }}
         </td>
     </tr>
 @endif
@@ -478,7 +478,7 @@ $allocatedAmount =
                 </td>
 
                 <td class="summary-amount">
-                    GHS {{ number_format($rentReserveAmount, 0) }}
+                    {{ $formatter->money($rentReserveAmount) }}
                 </td>
             </tr>
         @endif
@@ -490,7 +490,7 @@ $allocatedAmount =
                 </td>
 
                 <td class="summary-amount">
-                    GHS {{ number_format($consumableAdvanceAmount, 0) }}
+                    {{ $formatter->money($consumableAdvanceAmount) }}
                 </td>
             </tr>
         @endif
@@ -502,7 +502,7 @@ $allocatedAmount =
                 </td>
 
                 <td class="summary-amount">
-                    GHS {{ number_format($securityDepositAmount, 0) }}
+                    {{ $formatter->money($securityDepositAmount) }}
                 </td>
             </tr>
         @endif
@@ -514,7 +514,7 @@ $allocatedAmount =
                 </td>
 
                 <td class="summary-amount">
-                    GHS {{ number_format($unclassifiedAmount, 0) }}
+                    {{ $formatter->money($unclassifiedAmount) }}
                 </td>
             </tr>
         @endif
@@ -525,7 +525,7 @@ $allocatedAmount =
             </td>
 
             <td class="summary-amount">
-                GHS {{ number_format($accountedAmount, 0) }}
+                {{ $formatter->money($accountedAmount) }}
             </td>
         </tr>
     </table>

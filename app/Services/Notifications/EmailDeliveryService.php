@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\RentIncrement;
 use App\Services\ApplicationIdentityService;
+use App\Services\ApplicationPresentationFormatter;
 use App\Services\Documents\InvoiceDocumentService;
 use App\Services\Documents\ReceiptDocumentService;
 use Illuminate\Support\Facades\Mail;
@@ -34,7 +35,8 @@ class EmailDeliveryService
     public function __construct(
         private InvoiceDocumentService $invoiceDocuments,
         private ReceiptDocumentService $receiptDocuments,
-        private ApplicationIdentityService $identity
+        private ApplicationIdentityService $identity,
+        private ApplicationPresentationFormatter $formatter
     ) {
     }
 
@@ -76,7 +78,10 @@ class EmailDeliveryService
                 managingOrganisation:
                     $this
                         ->identity
-                        ->managingOrganisation()
+                        ->managingOrganisation(),
+
+                formatter:
+                    $this->formatter
             )
         );
     }
@@ -119,7 +124,10 @@ class EmailDeliveryService
                 managingOrganisation:
                     $this
                         ->identity
-                        ->managingOrganisation()
+                        ->managingOrganisation(),
+
+                formatter:
+                    $this->formatter
             )
         );
     }
@@ -172,7 +180,10 @@ class EmailDeliveryService
                 managingOrganisation:
                     $this
                         ->identity
-                        ->managingOrganisation()
+                        ->managingOrganisation(),
+
+                formatter:
+                    $this->formatter
             )
         );
     }
@@ -216,7 +227,10 @@ class EmailDeliveryService
                 managingOrganisation:
                     $this
                         ->identity
-                        ->managingOrganisation()
+                        ->managingOrganisation(),
+
+                formatter:
+                    $this->formatter
             )
         );
     }

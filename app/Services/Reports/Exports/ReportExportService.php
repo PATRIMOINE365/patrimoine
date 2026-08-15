@@ -4,6 +4,7 @@ namespace App\Services\Reports\Exports;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Services\ApplicationIdentityService;
+use App\Services\ApplicationPresentationFormatter;
 
 /**
  * Converts an already-calculated Patrimoine report into downloadable
@@ -19,7 +20,8 @@ class ReportExportService
 
     public function __construct(
 
-        private ApplicationIdentityService $identity
+        private ApplicationIdentityService $identity,
+        private ApplicationPresentationFormatter $formatter
 
     ) {
 
@@ -171,7 +173,10 @@ class ReportExportService
                     'rows' => [
                         [
                             'label' => $this->humanize($key),
-                            'value' => $this->displayValue($value),
+                            'value' => $this->displayValue(
+                                $value,
+                                (string) $key
+                            ),
                         ],
                     ],
                 ];
@@ -246,7 +251,10 @@ class ReportExportService
 
             $rows[] = [
                 'label' => $label,
-                'value' => $this->displayValue($value),
+                'value' => $this->displayValue(
+                    $value,
+                    (string) $key
+                ),
             ];
         }
 
@@ -282,7 +290,10 @@ class ReportExportService
                 ],
                 'rows' => array_map(
                     fn ($value): array => [
-                        $this->displayValue($value),
+                        $this->displayValue(
+                            $value,
+                            null
+                        ),
                     ],
                     $items
                 ),
@@ -304,7 +315,8 @@ class ReportExportService
 
             foreach ($keys as $column) {
                 $row[] = $this->displayValue(
-                    $item[$column] ?? null
+                    $item[$column] ?? null,
+                    (string) $column
                 );
             }
 
@@ -320,10 +332,19 @@ class ReportExportService
     }
 
     /**
-     * Convert stored/report values into readable document values.
+     * Convert stored/report values into readable export presentation.
+     *
+     * Report services deliberately keep raw business values. Formatting
+     * happens only here so JSON/API consumers continue receiving integers,
+     * ISO dates and the existing report structure.
+     *
+     * Semantic field names are used instead of guessing from numeric values:
+     * an ID or count may also be an integer but must never become money.
      */
-    private function displayValue(mixed $value): string
-    {
+    private function displayValue(
+        mixed $value,
+        ?string $field
+    ): string {
         if ($value === null) {
             return '';
         }
@@ -342,7 +363,131 @@ class ReportExportService
             ) ?: '';
         }
 
+        if (
+            $field !== null
+            && $this->isDateField($field)
+        ) {
+            return $this->formatter->date(
+                is_string($value)
+                    ? $value
+                    : (string) $value
+            );
+        }
+
+        if (
+            $field !== null
+            && $this->isMoneyField($field)
+        ) {
+            return $this->formatter->money(
+                $value
+            );
+        }
+
         return (string) $value;
+    }
+
+    /**
+     * Report date fields use stable semantic names.
+     */
+    private function isDateField(
+        string $field
+    ): bool {
+        if (
+            in_array(
+                $field,
+                [
+                    'date',
+                    'from',
+                    'to',
+                ],
+                true
+            )
+        ) {
+            return true;
+        }
+
+        return str_ends_with(
+            $field,
+            '_date'
+        );
+    }
+
+    /**
+     * Report monetary fields.
+     *
+     * Keep this explicit enough that IDs, counts and percentages cannot be
+     * accidentally formatted as money while still covering the shared
+     * financial vocabulary used by Patrimoine report services.
+     */
+    private function isMoneyField(
+        string $field
+    ): bool {
+        if (
+            in_array(
+                $field,
+                [
+                    'amount',
+                    'paid',
+                    'settled',
+                    'outstanding',
+                    'allocated',
+                    'unallocated',
+
+                    'credits',
+                    'debits',
+
+                    'invoiced',
+                    'invoice_settled',
+                    'cash_received',
+
+                    'opening_balance',
+                    'closing_balance',
+
+                    'rent_entitlement',
+                    'owner_rent_entitlement',
+
+                    'owner_deposits',
+
+                    'management_fees',
+                    'agent_commissions',
+
+                    'expenses',
+                    'property_expenses',
+                    'owner_expenses',
+
+                    'payouts',
+                    'owner_payouts',
+
+                    'adjustments_credit',
+                    'adjustments_debit',
+
+                    'rent_invoiced',
+                    'security_deposit_debt_invoiced',
+
+                    'rent_outstanding',
+                    'security_deposit_debt_outstanding',
+                    'total_outstanding',
+
+                    'rent_reserve',
+                    'consumable_advance',
+                    'security_deposit',
+
+                    'rent_reserve_balance',
+                    'consumable_advance_balance',
+                    'security_deposit_balance',
+
+                    'owner_funds_held',
+                ],
+                true
+            )
+        ) {
+            return true;
+        }
+
+        return str_ends_with(
+            $field,
+            '_amount'
+        );
     }
 
     /**

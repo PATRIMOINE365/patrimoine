@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ApplicationSetting;
 use App\Models\Building;
 use App\Models\BuildingOwner;
 use App\Models\Invoice;
@@ -174,7 +175,7 @@ class ReportExportTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            '10000',
+            'GH₵ 10,000',
             $response->getContent()
         );
     }
@@ -211,7 +212,7 @@ class ReportExportTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            '6000',
+            'GH₵ 6,000',
             $response->getContent()
         );
     }
@@ -253,7 +254,7 @@ class ReportExportTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            '6000',
+            'GH₵ 6,000',
             $response->getContent()
         );
     }
@@ -271,4 +272,65 @@ class ReportExportTest extends TestCase
                 'to',
             ]);
     }
+
+
+    public function test_csv_export_renders_french_dates_and_fcfa_money(): void
+    {
+        $context =
+            $this->createContext();
+
+        ApplicationSetting::create([
+            'language' => 'fr',
+            'currency' => 'FCFA',
+        ]);
+
+        $response =
+            $this->get(
+                "/api/reports/tenants/{$context['tenant']->id}/csv"
+                . '?from=2026-08-01&to=2026-08-31'
+            );
+
+        $response->assertOk();
+
+        $contents =
+            $response->getContent();
+
+        /*
+         * Currency presentation follows FCFA independently from language.
+         */
+        $this->assertStringContainsString(
+            '10 000 FCFA',
+            $contents
+        );
+
+        $this->assertStringContainsString(
+            '6 000 FCFA',
+            $contents
+        );
+
+        /*
+         * Report-period and row dates follow the selected French locale.
+         */
+        $this->assertStringContainsString(
+            '01 août 2026',
+            $contents
+        );
+
+        /*
+         * IDs/counts must remain plain numbers rather than becoming money.
+         *
+         * The tenant section is exported as Field/Value rows, therefore
+         * the semantic field appears as "Id" rather than "Tenant Id".
+         */
+        $this->assertStringContainsString(
+            'Id,2',
+            $contents
+        );
+
+        $this->assertStringNotContainsString(
+            '2 FCFA',
+            $contents
+        );
+    }
+
 }

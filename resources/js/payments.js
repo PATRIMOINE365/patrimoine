@@ -1,6 +1,7 @@
 import {
     apiRequest,
     formatCurrency,
+    formatDate,
     parseJsonResponse,
 } from './core.js';
 
@@ -2961,62 +2962,6 @@ function leaseOptionLabel(
         .join(' — ');
 }
 
-/**
- * Format a database date without timezone shifting.
- *
- * @param {string|null} value
- * @returns {string}
- */
-function formatDate(
-    value
-) {
-    if (! value) {
-        return '';
-    }
-
-    const dateParts =
-        String(value)
-            .slice(
-                0,
-                10
-            )
-            .split('-');
-
-    if (dateParts.length !== 3) {
-        return String(value);
-    }
-
-    const date =
-        new Date(
-            Number(dateParts[0]),
-            Number(dateParts[1]) - 1,
-            Number(dateParts[2])
-        );
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-        return String(value);
-    }
-
-    return new Intl.DateTimeFormat(
-        'en-GB',
-        {
-            day:
-                '2-digit',
-
-            month:
-                'short',
-
-            year:
-                'numeric',
-        }
-    ).format(
-        date
-    );
-}
 
 /**
  * Return today's date in local browser time as YYYY-MM-DD.

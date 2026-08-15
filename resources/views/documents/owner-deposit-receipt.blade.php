@@ -233,9 +233,9 @@
 
                 <strong>Payment Date:</strong>
 
-                {{ $transaction
-                    ->transaction_date
-                    ->format('d M Y') }}
+                {{ $formatter->date(
+                    $transaction->transaction_date
+                ) }}
 
                 <br>
 
@@ -272,9 +272,8 @@
     </div>
 
     <div class="payment-amount">
-        GHS {{ number_format(
-            $transaction->amount,
-            0
+        {{ $formatter->money(
+            $transaction->amount
         ) }}
     </div>
 </div>
@@ -348,9 +347,8 @@
             </td>
 
             <td class="summary-value">
-                GHS {{ number_format(
-                    $ownerBalance,
-                    0
+                {{ $formatter->money(
+                    $ownerBalance
                 ) }}
             </td>
         </tr>

@@ -23,6 +23,7 @@ class RentReminderMail extends Mailable
         public Invoice $invoice,
         public string $pdfContents,
         public string $pdfFilename,
+        public \App\Services\ApplicationPresentationFormatter $formatter,
         public ?Party $managingOrganisation = null
     ) {
     }

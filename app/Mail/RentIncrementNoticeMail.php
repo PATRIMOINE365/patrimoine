@@ -27,6 +27,7 @@ class RentIncrementNoticeMail extends Mailable
 
     public function __construct(
         public RentIncrement $rentIncrement,
+        public \App\Services\ApplicationPresentationFormatter $formatter,
         public ?Party $managingOrganisation = null
     ) {
     }

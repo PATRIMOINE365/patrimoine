@@ -90,7 +90,7 @@
                                     font-weight:bold;
                                     margin-top:8px;
                                 ">
-                                    GHS {{ number_format($payment->amount, 0) }}
+                                    {{ $formatter->money($payment->amount) }}
                                 </div>
                             </div>
 
@@ -121,7 +121,7 @@
                                     </td>
 
                                     <td align="right">
-                                        {{ $payment->payment_date->format('d M Y') }}
+                                        {{ $formatter->date($payment->payment_date) }}
                                     </td>
                                 </tr>
 

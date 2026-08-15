@@ -1,6 +1,7 @@
 import {
     apiRequest,
     formatCurrency,
+    formatDate,
     parseJsonResponse,
 } from './core.js';
 
@@ -3049,60 +3050,6 @@ function numberFormat(
         value
         ?? 0
     ).toLocaleString();
-}
-
-function formatDate(
-    value
-) {
-    if (! value) {
-        return '';
-    }
-
-    const parts =
-        String(value)
-            .slice(
-                0,
-                10
-            )
-            .split('-');
-
-    if (
-        parts.length
-        !== 3
-    ) {
-        return String(value);
-    }
-
-    const date =
-        new Date(
-            Number(parts[0]),
-            Number(parts[1]) - 1,
-            Number(parts[2])
-        );
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-        return String(value);
-    }
-
-    return new Intl.DateTimeFormat(
-        'en-GB',
-        {
-            day:
-                '2-digit',
-
-            month:
-                'short',
-
-            year:
-                'numeric',
-        }
-    ).format(
-        date
-    );
 }
 
 function capitalizeWords(

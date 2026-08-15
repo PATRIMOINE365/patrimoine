@@ -94,7 +94,7 @@
 
                                     <td align="right">
                                         <strong>
-                                            GHS {{ number_format($invoice->total_amount, 0) }}
+                                            {{ $formatter->money($invoice->total_amount) }}
                                         </strong>
                                     </td>
                                 </tr>
@@ -105,7 +105,7 @@
                                     </td>
 
                                     <td align="right">
-                                        GHS {{ number_format($invoice->paidAmount(), 0) }}
+                                        {{ $formatter->money($invoice->paidAmount()) }}
                                     </td>
                                 </tr>
 
@@ -116,7 +116,7 @@
 
                                     <td align="right">
                                         <strong>
-                                            GHS {{ number_format($invoice->outstandingAmount(), 0) }}
+                                            {{ $formatter->money($invoice->outstandingAmount()) }}
                                         </strong>
                                     </td>
                                 </tr>
@@ -127,7 +127,7 @@
                                     </td>
 
                                     <td align="right">
-                                        {{ $invoice->due_date->format('d M Y') }}
+                                        {{ $formatter->date($invoice->due_date) }}
                                     </td>
                                 </tr>
                             </table>

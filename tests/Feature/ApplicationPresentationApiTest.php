@@ -31,6 +31,10 @@ class ApplicationPresentationApiTest extends TestCase
             ->assertJsonPath(
                 'locale',
                 'en'
+            )
+            ->assertJsonPath(
+                'browser_locale',
+                'en-GB'
             );
     }
 
@@ -57,6 +61,10 @@ class ApplicationPresentationApiTest extends TestCase
             ->assertJsonPath(
                 'currency_definition.code',
                 'GHS'
+            )
+            ->assertJsonPath(
+                'browser_locale',
+                'fr-FR'
             );
     }
 

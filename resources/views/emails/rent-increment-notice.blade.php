@@ -152,7 +152,7 @@
                                 @endif
                                 is scheduled to change with effect from
                                 <strong>
-                                    {{ $increment->effective_date->format('j F Y') }}
+                                    {{ $formatter->date($increment->effective_date) }}
                                 </strong>.
                             </p>
 
@@ -191,10 +191,8 @@
                                             text-align: right;
                                         "
                                     >
-                                        GHS
-                                        {{ number_format(
-                                            $increment->old_rent_amount,
-                                            0
+                                        {{ $formatter->money(
+                                            $increment->old_rent_amount
                                         ) }}
                                     </td>
                                 </tr>
@@ -230,10 +228,8 @@
                                                 2
                                             ) }}%
                                         @else
-                                            GHS
-                                            {{ number_format(
-                                                (float) $increment->increment_value,
-                                                0
+                                            {{ $formatter->money(
+                                                $increment->increment_value
                                             ) }}
                                         @endif
                                     </td>
@@ -261,10 +257,8 @@
                                             text-align: right;
                                         "
                                     >
-                                        GHS
-                                        {{ number_format(
-                                            $increment->new_rent_amount,
-                                            0
+                                        {{ $formatter->money(
+                                            $increment->new_rent_amount
                                         ) }}
                                     </td>
                                 </tr>
@@ -291,7 +285,7 @@
                                             text-align: right;
                                         "
                                     >
-                                        {{ $increment->effective_date->format('j F Y') }}
+                                        {{ $formatter->date($increment->effective_date) }}
                                     </td>
                                 </tr>
                             </table>

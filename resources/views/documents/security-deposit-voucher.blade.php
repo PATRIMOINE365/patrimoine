@@ -148,8 +148,6 @@
             ?? $managingOrganisation?->name
             ?? 'Patrimoine';
 
-        $money = static fn (int $amount): string =>
-            number_format($amount, 0);
     @endphp
 
     <div class="header">
@@ -197,7 +195,7 @@
                 </div>
 
                 <div class="value">
-                    {{ $settlement->settlement_date->format('d M Y') }}
+                    {{ $formatter->date($settlement->settlement_date) }}
                 </div>
             </td>
         </tr>
@@ -257,7 +255,7 @@
             @forelse ($deductions as $deduction)
                 <tr>
                     <td>
-                        {{ $deduction->deduction_date->format('d M Y') }}
+                        {{ $formatter->date($deduction->deduction_date) }}
                     </td>
 
                     <td>
@@ -275,7 +273,7 @@
                     </td>
 
                     <td class="amount">
-                        {{ $money($deduction->amount) }}
+                        {{ $formatter->money($deduction->amount) }}
                     </td>
                 </tr>
             @empty
@@ -299,7 +297,7 @@
                 </td>
 
                 <td class="amount">
-                    {{ $money($settlement->deposit_amount) }}
+                    {{ $formatter->money($settlement->deposit_amount) }}
                 </td>
             </tr>
 
@@ -309,7 +307,7 @@
                 </td>
 
                 <td class="amount">
-                    {{ $money($settlement->deduction_amount) }}
+                    {{ $formatter->money($settlement->deduction_amount) }}
                 </td>
             </tr>
 
@@ -319,7 +317,7 @@
                 </td>
 
                 <td class="amount">
-                    {{ $money($settlement->refund_amount) }}
+                    {{ $formatter->money($settlement->refund_amount) }}
                 </td>
             </tr>
 
@@ -329,7 +327,7 @@
                 </td>
 
                 <td class="amount">
-                    {{ $money($settlement->tenant_debt_amount) }}
+                    {{ $formatter->money($settlement->tenant_debt_amount) }}
                 </td>
             </tr>
         </table>
@@ -338,11 +336,11 @@
     <div class="result-box">
         @if ($settlement->refund_amount > 0)
             The tenant is due a Security Deposit refund of
-            <strong>{{ $money($settlement->refund_amount) }}</strong>.
+            <strong>{{ $formatter->money($settlement->refund_amount) }}</strong>.
         @elseif ($settlement->tenant_debt_amount > 0)
             The Security Deposit has been fully applied and an outstanding
             tenant debt of
-            <strong>{{ $money($settlement->tenant_debt_amount) }}</strong>
+            <strong>{{ $formatter->money($settlement->tenant_debt_amount) }}</strong>
             remains.
         @else
             The Security Deposit has been fully settled with no refund and

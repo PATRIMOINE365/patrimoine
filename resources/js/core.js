@@ -219,14 +219,142 @@ export async function parseJsonResponse(
 
 /*
 |--------------------------------------------------------------------------
+| Application Presentation
+|--------------------------------------------------------------------------
+|
+| Browser presentation is controlled by the Managing Organisation settings.
+|
+| The public presentation endpoint is loaded once during application
+| bootstrap. Stable compatibility defaults remain available so login and
+| other browser screens can still render if the endpoint is temporarily
+| unavailable.
+|
+*/
+
+const DEFAULT_PRESENTATION_CONFIGURATION = {
+    language: 'en',
+    currency: 'GHS',
+    locale: 'en',
+    browser_locale: 'en-GB',
+
+    currency_definition: {
+        code: 'GHS',
+        symbol: 'GH₵',
+        symbol_position: 'before',
+        decimal_digits: 0,
+        decimal_separator: '.',
+        group_separator: ',',
+    },
+
+    supported_languages: [
+        'en',
+        'fr',
+    ],
+
+    supported_currencies: [
+        'GHS',
+        'FCFA',
+    ],
+};
+
+let presentationConfiguration =
+    {
+        ...DEFAULT_PRESENTATION_CONFIGURATION,
+
+        currency_definition: {
+            ...DEFAULT_PRESENTATION_CONFIGURATION
+                .currency_definition,
+        },
+    };
+
+let presentationConfigurationPromise =
+    null;
+
+/**
+ * Load organisation-wide browser presentation configuration.
+ *
+ * The request is public because the login screen must know the organisation
+ * language before authentication. The promise is cached so the endpoint is
+ * requested at most once during a page load.
+ *
+ * Failure is deliberately non-fatal. Compatibility defaults allow the
+ * application to remain usable.
+ *
+ * @returns {Promise<object>}
+ */
+export async function loadPresentationConfiguration() {
+    if (presentationConfigurationPromise) {
+        return presentationConfigurationPromise;
+    }
+
+    presentationConfigurationPromise =
+        fetch(
+            '/api/presentation-config',
+            {
+                headers: {
+                    Accept:
+                        'application/json',
+                },
+            }
+        )
+            .then(
+                async (response) => {
+                    if (! response.ok) {
+                        throw new Error(
+                            'Unable to load presentation configuration.'
+                        );
+                    }
+
+                    const configuration =
+                        await response.json();
+
+                    presentationConfiguration = {
+                        ...presentationConfiguration,
+                        ...configuration,
+
+                        currency_definition: {
+                            ...presentationConfiguration
+                                .currency_definition,
+
+                            ...(
+                                configuration
+                                    .currency_definition
+                                || {}
+                            ),
+                        },
+                    };
+
+                    return presentationConfiguration;
+                }
+            )
+            .catch(
+                () =>
+                    presentationConfiguration
+            );
+
+    return presentationConfigurationPromise;
+}
+
+/**
+ * Return the currently loaded presentation configuration.
+ *
+ * @returns {object}
+ */
+export function getPresentationConfiguration() {
+    return presentationConfiguration;
+}
+
+/*
+|--------------------------------------------------------------------------
 | Display Helpers
 |--------------------------------------------------------------------------
 */
 
 /**
- * Format an integer amount as Ghanaian Cedis.
+ * Format a whole-number Patrimoine monetary amount.
  *
- * Patrimoine stores monetary amounts as whole-number values in V1.
+ * Currency is presentation metadata only. This function never converts
+ * monetary values between currencies.
  *
  * @param {number|string|null} value
  * @returns {string}
@@ -244,15 +372,201 @@ export function formatCurrency(
             ? numericValue
             : 0;
 
-    return new Intl.NumberFormat(
-        'en-GH',
+    const definition =
+        presentationConfiguration
+            .currency_definition
+        || {};
+
+    const symbol =
+        String(
+            definition.symbol
+            || presentationConfiguration.currency
+            || ''
+        );
+
+    const position =
+        definition.symbol_position
+        === 'after'
+            ? 'after'
+            : 'before';
+
+    const groupSeparator =
+        typeof definition.group_separator
+        === 'string'
+            ? definition.group_separator
+            : ',';
+
+    const absoluteAmount =
+        Math.abs(
+            Math.round(
+                amount
+            )
+        );
+
+    const grouped =
+        String(
+            absoluteAmount
+        ).replace(
+            /\B(?=(\d{3})+(?!\d))/g,
+            groupSeparator
+        );
+
+    const sign =
+        amount < 0
+            ? '-'
+            : '';
+
+    if (position === 'after') {
+        return amount < 0
+            ? `- ${grouped} ${symbol}`.trim()
+            : `${grouped} ${symbol}`.trim();
+    }
+
+    return amount < 0
+        ? `${symbol} - ${grouped}`.trim()
+        : `${symbol} ${grouped}`.trim();
+}
+
+/**
+ * Parse a database date without UTC timezone shifting.
+ *
+ * @param {string|Date|null} value
+ * @returns {Date|null}
+ */
+function presentationDate(
+    value
+) {
+    if (value instanceof Date) {
+        return Number.isNaN(
+            value.getTime()
+        )
+            ? null
+            : value;
+    }
+
+    if (! value) {
+        return null;
+    }
+
+    const parts =
+        String(value)
+            .slice(
+                0,
+                10
+            )
+            .split('-');
+
+    if (parts.length !== 3) {
+        return null;
+    }
+
+    const date =
+        new Date(
+            Number(parts[0]),
+            Number(parts[1]) - 1,
+            Number(parts[2])
+        );
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return null;
+    }
+
+    return date;
+}
+
+/**
+ * Format a database date using the organisation language locale.
+ *
+ * @param {string|Date|null} value
+ * @returns {string}
+ */
+export function formatDate(
+    value
+) {
+    if (! value) {
+        return '';
+    }
+
+    const date =
+        presentationDate(
+            value
+        );
+
+    if (! date) {
+        return String(value);
+    }
+
+    return new Intl.DateTimeFormat(
+        presentationConfiguration.browser_locale
+        || 'en-GB',
         {
-            style: 'currency',
-            currency: 'GHS',
-            maximumFractionDigits: 0,
+            day:
+                '2-digit',
+
+            month:
+                'short',
+
+            year:
+                'numeric',
         }
     ).format(
-        amount
+        date
+    );
+}
+
+/**
+ * Format a date using the long application date style.
+ *
+ * Used for presentation such as the Dashboard heading.
+ *
+ * @param {string|Date|null} value
+ * @returns {string}
+ */
+export function formatLongDate(
+    value
+) {
+    if (! value) {
+        return '';
+    }
+
+    const date =
+        value instanceof Date
+            ? value
+            : presentationDate(
+                value
+            );
+
+    if (
+        ! date
+        || Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return String(value);
+    }
+
+    return new Intl.DateTimeFormat(
+        presentationConfiguration.browser_locale
+        || 'en-GB',
+        {
+            weekday:
+                'long',
+
+            day:
+                'numeric',
+
+            month:
+                'long',
+
+            year:
+                'numeric',
+        }
+    ).format(
+        date
     );
 }
 

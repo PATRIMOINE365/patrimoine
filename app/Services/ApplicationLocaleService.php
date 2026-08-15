@@ -160,6 +160,12 @@ class ApplicationLocaleService
                     $language
                 ),
 
+            'browser_locale' =>
+                (string) config(
+                    "patrimoine.languages.{$language}.browser_locale",
+                    'en-GB'
+                ),
+
             'currency_definition' =>
                 $this->currencyDefinition(
                     $currency

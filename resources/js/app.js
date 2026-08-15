@@ -26,6 +26,10 @@ import {
 } from './auth.js';
 
 import {
+    loadPresentationConfiguration,
+} from './core.js';
+
+import {
     initializeDashboard,
 } from './dashboard.js';
 
@@ -70,6 +74,15 @@ import {
 document.addEventListener(
     'DOMContentLoaded',
     async () => {
+        /*
+         * Presentation configuration is public and must be available before
+         * either login or authenticated application UI is initialized.
+         *
+         * The loader falls back safely to compatibility defaults when the
+         * endpoint cannot be reached.
+         */
+        await loadPresentationConfiguration();
+
         /*
          * Login and authenticated application screens are mutually
          * exclusive.

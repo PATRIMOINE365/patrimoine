@@ -30,6 +30,8 @@ import {
     escapeHtml,
     formValue,
     formatCurrency,
+    formatDate,
+    getPresentationConfiguration,
     nullableFormValue,
     parseJsonResponse,
     setText,
@@ -1553,36 +1555,6 @@ function frequencyLabel(frequency) {
     }
 }
 
-function formatDate(value) {
-    if (! value) {
-        return '';
-    }
-
-    const date =
-        new Date(
-            `${String(value).slice(0, 10)}T00:00:00`
-        );
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-        return String(
-            value
-        );
-    }
-
-    return new Intl.DateTimeFormat(
-        'en-GH',
-        {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric',
-        }
-    ).format(date);
-}
-
 function attachLeaseActionListeners(
     container
 ) {
@@ -2910,7 +2882,11 @@ function updateRentIncrementControls() {
                 ? '%'
                 : (
                     type === 'fixed'
-                        ? 'GHS'
+                        ? (
+                            getPresentationConfiguration()
+                                .currency
+                            || 'GHS'
+                        )
                         : '—'
                 );
     }
@@ -2956,7 +2932,11 @@ function updateManagementFeeControls() {
                 ? '%'
                 : (
                     type === 'fixed'
-                        ? 'GHS'
+                        ? (
+                            getPresentationConfiguration()
+                                .currency
+                            || 'GHS'
+                        )
                         : '—'
                 );
     }

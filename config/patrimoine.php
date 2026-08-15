@@ -34,11 +34,15 @@ return [
 
         'en' => [
             'locale' => 'en',
+            'date_locale' => 'en_GB',
+            'browser_locale' => 'en-GB',
             'name' => 'English',
         ],
 
         'fr' => [
             'locale' => 'fr',
+            'date_locale' => 'fr_FR',
+            'browser_locale' => 'fr-FR',
             'name' => 'Français',
         ],
 

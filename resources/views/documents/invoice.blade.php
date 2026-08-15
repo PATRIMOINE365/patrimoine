@@ -234,7 +234,7 @@
                             Issue Date:
                         </td>
                         <td class="meta-value">
-                            {{ $invoice->issue_date->format('d M Y') }}
+                            {{ $formatter->date($invoice->issue_date) }}
                         </td>
                     </tr>
 
@@ -243,7 +243,7 @@
                             Due Date:
                         </td>
                         <td class="meta-value">
-                            {{ $invoice->due_date->format('d M Y') }}
+                            {{ $formatter->date($invoice->due_date) }}
                         </td>
                     </tr>
 
@@ -284,9 +284,9 @@
         <tr>
             <td>
                 <strong>Billing Period:</strong>
-                {{ $invoice->period_start->format('d M Y') }}
+                {{ $formatter->date($invoice->period_start) }}
                 -
-                {{ $invoice->period_end->format('d M Y') }}
+                {{ $formatter->date($invoice->period_end) }}
             </td>
 
             <td>
@@ -309,13 +309,13 @@
         <tr>
             <td>
                 Rent —
-                {{ $invoice->period_start->format('d M Y') }}
+                {{ $formatter->date($invoice->period_start) }}
                 to
-                {{ $invoice->period_end->format('d M Y') }}
+                {{ $formatter->date($invoice->period_end) }}
             </td>
 
             <td class="numeric">
-                GHS {{ number_format($invoice->total_amount, 0) }}
+                {{ $formatter->money($invoice->total_amount) }}
             </td>
         </tr>
     </tbody>
@@ -326,7 +326,7 @@
         <tr>
             <td>Net Amount</td>
             <td class="numeric">
-                GHS {{ number_format($invoice->net_amount, 0) }}
+                {{ $formatter->money($invoice->net_amount) }}
             </td>
         </tr>
 
@@ -336,28 +336,28 @@
             </td>
 
             <td class="numeric">
-                GHS {{ number_format($invoice->vat_amount, 0) }}
+                {{ $formatter->money($invoice->vat_amount) }}
             </td>
         </tr>
 
         <tr class="total">
             <td>Total</td>
             <td class="numeric">
-                GHS {{ number_format($invoice->total_amount, 0) }}
+                {{ $formatter->money($invoice->total_amount) }}
             </td>
         </tr>
 
         <tr>
             <td>Paid</td>
             <td class="numeric">
-                GHS {{ number_format($invoice->paidAmount(), 0) }}
+                {{ $formatter->money($invoice->paidAmount()) }}
             </td>
         </tr>
 
         <tr class="total">
             <td>Balance Due</td>
             <td class="numeric">
-                GHS {{ number_format($invoice->outstandingAmount(), 0) }}
+                {{ $formatter->money($invoice->outstandingAmount()) }}
             </td>
         </tr>
     </table>

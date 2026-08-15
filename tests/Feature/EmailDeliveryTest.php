@@ -260,4 +260,44 @@ class EmailDeliveryTest extends TestCase
             }
         );
     }
+
+
+    public function test_invoice_email_renders_french_date_and_fcfa_currency(): void
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+
+        $context =
+            $this->createContext();
+
+        ApplicationSetting::query()
+            ->firstOrFail()
+            ->update([
+                'language' => 'fr',
+                'currency' => 'FCFA',
+            ]);
+
+        app(
+            \App\Services\Notifications\EmailDeliveryService::class
+        )->sendInvoice(
+            $context['invoice']
+        );
+
+        \Illuminate\Support\Facades\Mail::assertSent(
+            \App\Mail\InvoiceMail::class,
+            function ($mail): bool {
+                $html =
+                    $mail->render();
+
+                return str_contains(
+                    $html,
+                    '11 800 FCFA'
+                )
+                    && str_contains(
+                        $html,
+                        '15 août 2026'
+                    );
+            }
+        );
+    }
+
 }

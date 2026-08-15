@@ -19,6 +19,7 @@ import {
     apiRequest,
     escapeHtml,
     formatCurrency,
+    formatLongDate,
     parseJsonResponse,
     setText,
 } from './core.js';
@@ -52,15 +53,7 @@ export async function initializeDashboard() {
 
     if (dateElement) {
         dateElement.textContent =
-            new Intl.DateTimeFormat(
-                'en-GH',
-                {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                }
-            ).format(
+            formatLongDate(
                 new Date()
             );
     }

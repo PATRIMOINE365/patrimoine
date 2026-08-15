@@ -4,6 +4,7 @@ namespace App\Services\Documents;
 
 use App\Models\Payment;
 use App\Services\ApplicationIdentityService;
+use App\Services\ApplicationPresentationFormatter;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 /**
@@ -16,7 +17,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class ReceiptDocumentService
 {
     public function __construct(
-        private ApplicationIdentityService $identity
+        private ApplicationIdentityService $identity,
+        private ApplicationPresentationFormatter $formatter
     ) {
     }
 
@@ -35,6 +37,7 @@ class ReceiptDocumentService
             'documents.receipt',
             [
                 'payment' => $payment,
+                'formatter' => $this->formatter,
                 'managingOrganisation' =>
                     $this->identity->managingOrganisation(),
             ]
