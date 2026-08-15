@@ -30,6 +30,7 @@ import {
     nullableFormValue,
     parseJsonResponse,
     setText,
+    translate,
 } from './core.js';
 
 /*
@@ -183,7 +184,11 @@ async function loadProperties(
                 text-sm text-slate-400
             "
         >
-            Loading properties…
+            ${escapeHtml(
+                translate(
+                    'properties.loading'
+                )
+            )}
         </div>
     `;
 
@@ -235,7 +240,9 @@ async function loadProperties(
             errorBox.textContent =
                 error instanceof Error
                     ? error.message
-                    : 'Unable to load properties.';
+                    : translate(
+                        'properties.unable_to_load'
+                    );
 
             errorBox.classList.remove(
                 'hidden'
@@ -603,11 +610,15 @@ function propertyCard(
     const address =
         building.address
         || building.location
-        || 'No address provided';
+        || translate(
+            'properties.no_address'
+        );
 
     const buildingName =
         building.name
-        || 'Unnamed Property';
+        || translate(
+            'properties.unnamed_property'
+        );
 
     const owners =
         renderPropertyOwners(
@@ -674,8 +685,12 @@ function propertyCard(
                             ${units.length}
                             ${
                                 units.length === 1
-                                    ? 'unit'
-                                    : 'units'
+                                    ? translate(
+                                        'properties.unit_lower'
+                                    )
+                                    : translate(
+                                        'properties.units_lower'
+                                    )
                             }
                         </span>
                     </div>
@@ -750,7 +765,11 @@ function propertyCard(
                             <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/>
                         </svg>
 
-                        Edit
+                        ${escapeHtml(
+                            translate(
+                                'properties.edit'
+                            )
+                        )}
                     </button>
 
                     <button
@@ -784,7 +803,11 @@ function propertyCard(
                             <path d="M5 12h14"/>
                         </svg>
 
-                        Add Unit
+                        ${escapeHtml(
+                            translate(
+                                'properties.add_unit'
+                            )
+                        )}
                     </button>
 
                     <button
@@ -814,8 +837,12 @@ function propertyCard(
                         >
                             ${
                                 expandUnits
-                                    ? 'Hide Units'
-                                    : 'View Units'
+                                    ? translate(
+                                        'properties.hide_units'
+                                    )
+                                    : translate(
+                                        'properties.view_units'
+                                    )
                             }
                         </span>
 
@@ -863,7 +890,11 @@ function propertyCard(
                         text-slate-400
                     "
                 >
-                    Units
+                    ${escapeHtml(
+                        translate(
+                            'properties.units'
+                        )
+                    )}
                 </div>
 
                 <div>
@@ -892,7 +923,11 @@ function renderPropertyOwners(
                     text-xs text-slate-400
                 "
             >
-                No ownership information
+                ${escapeHtml(
+                    translate(
+                        'properties.no_ownership_information'
+                    )
+                )}
             </span>
         `;
     }
@@ -907,7 +942,9 @@ function renderPropertyOwners(
                 const name =
                     party.name
                     || party.legal_name
-                    || 'Owner';
+                    || translate(
+                        'properties.owner'
+                    );
 
                 const percentage =
                     ownership
@@ -972,7 +1009,11 @@ function renderPropertyUnits(
                     text-slate-400
                 "
             >
-                No units have been added to this property.
+                ${escapeHtml(
+                    translate(
+                        'properties.no_units'
+                    )
+                )}
             </div>
         `;
     }
@@ -1017,7 +1058,9 @@ function renderPropertyUnits(
                         >
                             ${escapeHtml(
                                 unit.name
-                                || 'Unnamed Unit'
+                                || translate(
+                                    'properties.unnamed_unit'
+                                )
                             )}
                         </div>
 
@@ -1054,7 +1097,11 @@ function renderPropertyUnits(
                                 text-slate-500
                             "
                         >
-                            Unit
+                            ${escapeHtml(
+                                translate(
+                                    'properties.unit'
+                                )
+                            )}
                         </span>
 
                         <button
@@ -1079,7 +1126,11 @@ function renderPropertyUnits(
                                 hover:bg-slate-50
                             "
                         >
-                            Edit
+                            ${escapeHtml(
+                                translate(
+                                    'properties.edit'
+                                )
+                            )}
                         </button>
                     </div>
                 </div>
@@ -1192,8 +1243,12 @@ function togglePropertyUnits(button) {
     if (label) {
         label.textContent =
             expanded
-                ? 'View Units'
-                : 'Hide Units';
+                ? translate(
+                    'properties.view_units'
+                )
+                : translate(
+                    'properties.hide_units'
+                );
     }
 }
 
@@ -1261,8 +1316,16 @@ function renderPropertiesPagination(
                     text-sm text-slate-500
                 "
             >
-                Page ${currentPage}
-                of ${lastPage}
+                ${escapeHtml(
+                    translate(
+                        'properties.page'
+                    )
+                )} ${currentPage}
+                ${escapeHtml(
+                    translate(
+                        'properties.of'
+                    )
+                )} ${lastPage}
             </div>
 
             <div
@@ -1286,7 +1349,11 @@ function renderPropertiesPagination(
                         disabled:opacity-40
                     "
                 >
-                    Previous
+                    ${escapeHtml(
+                        translate(
+                            'properties.previous'
+                        )
+                    )}
                 </button>
 
                 <button
@@ -1307,7 +1374,11 @@ function renderPropertiesPagination(
                         disabled:opacity-40
                     "
                 >
-                    Next
+                    ${escapeHtml(
+                        translate(
+                            'properties.next'
+                        )
+                    )}
                 </button>
             </div>
         </div>
@@ -1498,15 +1569,23 @@ function configurePropertyModal(mode) {
     if (title) {
         title.textContent =
             editing
-                ? 'Edit Property'
-                : 'Add Property';
+                ? translate(
+                    'properties.edit_property'
+                )
+                : translate(
+                    'properties.add_property'
+                );
     }
 
     if (description) {
         description.textContent =
             editing
-                ? 'Update the building details and ownership allocation.'
-                : 'Create a building, define its ownership and add its units.';
+                ? translate(
+                    'properties.edit_property_description'
+                )
+                : translate(
+                    'properties.add_property_description'
+                );
     }
 
     /*
@@ -1522,8 +1601,12 @@ function configurePropertyModal(mode) {
     if (submitButton) {
         submitButton.textContent =
             editing
-                ? 'Save Changes'
-                : 'Create Property';
+                ? translate(
+                    'properties.save_changes'
+                )
+                : translate(
+                    'properties.create_property'
+                );
     }
 }
 
@@ -1570,7 +1653,9 @@ async function openPropertyModal() {
         showPropertyFormError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load property owners.'
+                : translate(
+                    'properties.unable_to_load_owners'
+                )
         );
     }
 }
@@ -1641,7 +1726,9 @@ async function openEditPropertyModal(
         showPropertyFormError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load property.'
+                : translate(
+                    'properties.unable_to_load_property'
+                )
         );
     }
 }
@@ -1872,7 +1959,9 @@ function ownerPartyDisplayName(
 ) {
     return party?.name
         || party?.legal_name
-        || `Party #${party?.id ?? ''}`;
+        || `${translate(
+            'properties.party'
+        )} #${party?.id ?? ''}`;
 }
 
 /**
@@ -1918,8 +2007,12 @@ function ownerPartyOptions(
             ${
                 availableOwnerParties
                     .length === 0
-                    ? 'Create an owner first…'
-                    : 'Select owner…'
+                    ? translate(
+                        'properties.create_owner_first'
+                    )
+                    : translate(
+                        'properties.select_owner'
+                    )
             }
         </option>
 
@@ -1963,7 +2056,11 @@ function addPropertyOwnerRow(
                     text-slate-600
                 "
             >
-                Owner
+                ${escapeHtml(
+                    translate(
+                        'properties.owner'
+                    )
+                )}
             </label>
 
             <div class="flex gap-2">
@@ -1998,9 +2095,17 @@ function addPropertyOwnerRow(
                         transition
                         hover:bg-patrimoine-50
                     "
-                    title="Create a new owner"
+                    title="${escapeHtml(
+                        translate(
+                            'properties.create_new_owner'
+                        )
+                    )}"
                 >
-                    + New
+                    ${escapeHtml(
+                        translate(
+                            'properties.new'
+                        )
+                    )}
                 </button>
             </div>
 
@@ -2014,7 +2119,11 @@ function addPropertyOwnerRow(
                                 text-slate-500
                             "
                         >
-                            No owners yet. Create the first Owner Party.
+                            ${escapeHtml(
+                                translate(
+                                    'properties.no_owners_yet'
+                                )
+                            )}
                         </p>
                     `
                     : ''
@@ -2029,7 +2138,11 @@ function addPropertyOwnerRow(
                     text-slate-600
                 "
             >
-                Ownership %
+                ${escapeHtml(
+                    translate(
+                        'properties.ownership_percentage'
+                    )
+                )}
             </label>
 
             <input
@@ -2071,7 +2184,11 @@ function addPropertyOwnerRow(
                 hover:text-red-600
             "
         >
-            Remove
+            ${escapeHtml(
+                translate(
+                    'properties.remove'
+                )
+            )}
         </button>
     `;
 
@@ -2117,7 +2234,7 @@ function addPropertyOwnerRow(
                     rows.length <= 1
                 ) {
                     showPropertyFormError(
-                        'A property must have at least one owner.'
+                        translate('properties.validation_owner_required')
                     );
 
                     return;
@@ -2181,7 +2298,9 @@ function updateOwnershipTotal() {
         ) / 100;
 
     output.textContent =
-        `Total: ${normalized}%`;
+        `${translate(
+            'properties.total'
+        )}: ${normalized}%`;
 
     output.classList.remove(
         'bg-slate-100',
@@ -2258,7 +2377,11 @@ function addPropertyUnitRow(
                     text-slate-600
                 "
             >
-                Unit Name / Number
+                ${escapeHtml(
+                    translate(
+                        'properties.unit_name_number'
+                    )
+                )}
             </label>
 
             <input
@@ -2269,7 +2392,11 @@ function addPropertyUnitRow(
                 value="${escapeHtml(
                     name
                 )}"
-                placeholder="e.g. Apartment A1"
+                placeholder="${escapeHtml(
+                    translate(
+                        'properties.unit_name_placeholder'
+                    )
+                )}"
                 class="
                     w-full rounded-lg
                     border border-slate-200
@@ -2291,7 +2418,11 @@ function addPropertyUnitRow(
                     text-slate-600
                 "
             >
-                Description
+                ${escapeHtml(
+                    translate(
+                        'properties.description'
+                    )
+                )}
             </label>
 
             <input
@@ -2300,7 +2431,11 @@ function addPropertyUnitRow(
                 value="${escapeHtml(
                     description
                 )}"
-                placeholder="Optional description"
+                placeholder="${escapeHtml(
+                    translate(
+                        'properties.optional_description'
+                    )
+                )}"
                 class="
                     w-full rounded-lg
                     border border-slate-200
@@ -2330,7 +2465,11 @@ function addPropertyUnitRow(
                 hover:text-red-600
             "
         >
-            Remove
+            ${escapeHtml(
+                translate(
+                    'properties.remove'
+                )
+            )}
         </button>
     `;
 
@@ -2354,7 +2493,7 @@ function addPropertyUnitRow(
                     rows.length <= 1
                 ) {
                     showPropertyFormError(
-                        'A property must have at least one unit.'
+                        translate('properties.validation_unit_required')
                     );
 
                     return;
@@ -2450,7 +2589,7 @@ function validatePropertyOwnership(
         owners.length === 0
     ) {
         throw new Error(
-            'A property must have at least one owner.'
+            translate('properties.validation_owner_required')
         );
     }
 
@@ -2468,7 +2607,7 @@ function validatePropertyOwnership(
         )
     ) {
         throw new Error(
-            'Select an owner for every ownership row.'
+            translate('properties.validation_select_every_owner')
         );
     }
 
@@ -2479,7 +2618,7 @@ function validatePropertyOwnership(
         !== ownerIds.length
     ) {
         throw new Error(
-            'The same owner cannot be added more than once.'
+            translate('properties.validation_duplicate_owner')
         );
     }
 
@@ -2499,7 +2638,7 @@ function validatePropertyOwnership(
         )
     ) {
         throw new Error(
-            'Enter a valid ownership percentage for every owner.'
+            translate('properties.validation_owner_percentage')
         );
     }
 
@@ -2521,7 +2660,7 @@ function validatePropertyOwnership(
         ) > 0.001
     ) {
         throw new Error(
-            'Property ownership must total exactly 100%.'
+            translate('properties.validation_ownership_total')
         );
     }
 }
@@ -2545,7 +2684,7 @@ function validatePropertyCreation(
         units.length === 0
     ) {
         throw new Error(
-            'A property must have at least one unit.'
+            translate('properties.validation_unit_required')
         );
     }
 
@@ -2556,7 +2695,7 @@ function validatePropertyCreation(
         )
     ) {
         throw new Error(
-            'Every unit must have a name or number.'
+            translate('properties.validation_every_unit_name')
         );
     }
 
@@ -2575,7 +2714,7 @@ function validatePropertyCreation(
             .length
     ) {
         throw new Error(
-            'Unit names must be unique within the property.'
+            translate('properties.validation_unique_unit_names')
         );
     }
 }
@@ -2652,8 +2791,12 @@ async function submitPropertyForm(
 
         submitButton.textContent =
             editing
-                ? 'Saving Changes…'
-                : 'Creating Property…';
+                ? translate(
+                    'properties.saving_changes'
+                )
+                : translate(
+                    'properties.creating_property'
+                );
 
         const buildingPayload = {
             name:
@@ -2699,8 +2842,12 @@ async function submitPropertyForm(
                 ? error.message
                 : (
                     editing
-                        ? 'Unable to update property.'
-                        : 'Unable to create property.'
+                        ? translate(
+                            'properties.unable_to_update_property'
+                        )
+                        : translate(
+                            'properties.unable_to_create_property'
+                        )
                 )
         );
     } finally {
@@ -2709,8 +2856,12 @@ async function submitPropertyForm(
 
         submitButton.textContent =
             editing
-                ? 'Save Changes'
-                : 'Create Property';
+                ? translate(
+                    'properties.save_changes'
+                )
+                : translate(
+                    'properties.create_property'
+                );
     }
 }
 
@@ -3123,7 +3274,9 @@ async function submitOwnerForm(
             true;
 
         submitButton.textContent =
-            'Creating Owner…';
+            translate(
+                'properties.creating_owner'
+            );
 
         const response =
             await apiRequest(
@@ -3173,14 +3326,18 @@ async function submitOwnerForm(
         showOwnerFormError(
             error instanceof Error
                 ? error.message
-                : 'Unable to create owner.'
+                : translate(
+                    'properties.unable_to_create_owner'
+                )
         );
     } finally {
         submitButton.disabled =
             false;
 
         submitButton.textContent =
-            'Create Owner';
+            translate(
+                'properties.create_owner'
+            );
     }
 }
 
@@ -3211,7 +3368,9 @@ function buildPersonOwnerPayload() {
         || email === ''
     ) {
         showOwnerFormError(
-            'Name, phone and email are required for a person.'
+            translate(
+                'properties.person_required_fields'
+            )
         );
 
         return null;
@@ -3274,7 +3433,9 @@ function buildOrganisationOwnerPayload(
         || contactEmail === ''
     ) {
         showOwnerFormError(
-            'Legal name and contact person details are required.'
+            translate(
+                'properties.organisation_required_fields'
+            )
         );
 
         return null;
@@ -3547,7 +3708,9 @@ function openExistingUnitModal(
 
         if (! unit) {
             showExistingUnitFormError(
-                'Unable to locate this unit.'
+                translate(
+                    'properties.unable_to_locate_unit'
+                )
             );
 
             return;
@@ -3625,28 +3788,42 @@ function configureExistingUnitModal(
     if (buildingNameElement) {
         buildingNameElement.textContent =
             buildingName
-            || 'Property';
+            || translate(
+                'properties.property'
+            );
     }
 
     if (title) {
         title.textContent =
             editing
-                ? 'Edit Unit'
-                : 'Add Unit';
+                ? translate(
+                    'properties.edit_unit'
+                )
+                : translate(
+                    'properties.add_unit'
+                );
     }
 
     if (descriptionElement) {
         descriptionElement.textContent =
             editing
-                ? 'Update this unit\'s name or description.'
-                : 'Add a leasable unit to an existing property.';
+                ? translate(
+                    'properties.edit_unit_description'
+                )
+                : translate(
+                    'properties.add_unit_description'
+                );
     }
 
     if (submitButton) {
         submitButton.textContent =
             editing
-                ? 'Save Changes'
-                : 'Add Unit';
+                ? translate(
+                    'properties.save_changes'
+                )
+                : translate(
+                    'properties.add_unit'
+                );
     }
 }
 
@@ -3790,17 +3967,23 @@ function resetExistingUnitModalLabels() {
 
     if (title) {
         title.textContent =
-            'Add Unit';
+            translate(
+                'properties.add_unit'
+            );
     }
 
     if (descriptionElement) {
         descriptionElement.textContent =
-            'Add a leasable unit to an existing property.';
+            translate(
+                'properties.add_unit_description'
+            );
     }
 
     if (submitButton) {
         submitButton.textContent =
-            'Add Unit';
+            translate(
+                'properties.add_unit'
+            );
     }
 }
 
@@ -3863,7 +4046,9 @@ async function submitExistingUnitForm(
         || buildingId <= 0
     ) {
         showExistingUnitFormError(
-            'A valid property must be selected.'
+            translate(
+                'properties.validation_valid_property'
+            )
         );
 
         return;
@@ -3871,7 +4056,9 @@ async function submitExistingUnitForm(
 
     if (name === '') {
         showExistingUnitFormError(
-            'Unit name or number is required.'
+            translate(
+                'properties.validation_unit_name_required'
+            )
         );
 
         return;
@@ -3890,8 +4077,12 @@ async function submitExistingUnitForm(
 
         submitButton.textContent =
             editing
-                ? 'Saving Changes…'
-                : 'Adding Unit…';
+                ? translate(
+                    'properties.saving_changes'
+                )
+                : translate(
+                    'properties.adding_unit'
+                );
 
         const endpoint =
             editing
@@ -3932,8 +4123,12 @@ async function submitExistingUnitForm(
                 ? error.message
                 : (
                     editing
-                        ? 'Unable to update unit.'
-                        : 'Unable to add unit.'
+                        ? translate(
+                            'properties.unable_to_update_unit'
+                        )
+                        : translate(
+                            'properties.unable_to_add_unit'
+                        )
                 )
         );
     } finally {
@@ -3942,8 +4137,12 @@ async function submitExistingUnitForm(
 
         submitButton.textContent =
             editing
-                ? 'Save Changes'
-                : 'Add Unit';
+                ? translate(
+                    'properties.save_changes'
+                )
+                : translate(
+                    'properties.add_unit'
+                );
     }
 }
 

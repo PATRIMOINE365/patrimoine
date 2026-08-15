@@ -134,4 +134,92 @@ class BrowserLocalisationTest extends TestCase
             );
     }
 
+
+
+    public function test_properties_exposes_translation_hooks(): void
+    {
+        $this
+            ->get('/properties')
+            ->assertOk()
+            ->assertSee(
+                'data-i18n-title="properties.title"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="properties.heading"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="properties.add_property"',
+                false
+            )
+            ->assertSee(
+                'data-i18n-placeholder="properties.search_placeholder"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="properties.ownership"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="properties.owner_type"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="properties.unit_name_number"',
+                false
+            )
+            ->assertSee(
+                'data-i18n-aria-label="properties.close"',
+                false
+            )
+            ->assertSeeText(
+                'Property Portfolio'
+            );
+    }
+
+
+
+    public function test_parties_exposes_translation_hooks(): void
+    {
+        $this
+            ->get('/parties')
+            ->assertOk()
+            ->assertSee(
+                'data-i18n-title="parties.title"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="parties.heading"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="parties.add_party"',
+                false
+            )
+            ->assertSee(
+                'data-i18n-placeholder="parties.search_placeholder"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="parties.party_type"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="parties.roles"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="parties.banking_details"',
+                false
+            )
+            ->assertSee(
+                'data-i18n-aria-label="parties.close"',
+                false
+            )
+            ->assertSeeText(
+                'Party Directory'
+            );
+    }
+
 }
