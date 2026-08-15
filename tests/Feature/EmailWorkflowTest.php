@@ -332,4 +332,34 @@ public function test_reminder_command_skips_security_deposit_debt_invoice(): voi
             );
     }
 
+
+    /**
+     * Email delivery business-rule failures follow the configured language.
+     */
+    public function test_missing_tenant_email_error_renders_in_french(): void
+    {
+        Mail::fake();
+
+        ApplicationSetting::create([
+            'language' => 'fr',
+            'currency' => 'GHS',
+        ]);
+
+        $context = $this->createContext();
+
+        $context['tenant']->update([
+            'email' => '',
+        ]);
+
+        $this
+            ->postJson(
+                "/api/invoices/{$context['invoice']->id}/send-email"
+            )
+            ->assertUnprocessable()
+            ->assertJsonPath(
+                'errors.email.0',
+                'Le locataire ne possède pas d’adresse e-mail.'
+            );
+    }
+
 }

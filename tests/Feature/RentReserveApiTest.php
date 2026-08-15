@@ -14,6 +14,7 @@ use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
+use App\Models\ApplicationSetting;
 
 /**
  * Verifies the Patrimoine Rent Reserve transactional API.
@@ -234,4 +235,37 @@ class RentReserveApiTest extends TestCase
                 'tenant_fund_account',
             ]);
     }
+
+    /**
+     * Rent Reserve service failures are returned in the configured language.
+     */
+    public function test_rent_reserve_business_error_renders_in_french(): void
+    {
+        ApplicationSetting::create([
+            'language' => 'fr',
+            'currency' => 'GHS',
+        ]);
+
+        $context = $this->createContext();
+
+        $context['account']->update([
+            'status' => 'closed',
+        ]);
+
+        $this
+            ->postJson(
+                "/api/tenant-funds/{$context['account']->id}/consume-rent",
+                [
+                    'invoice_id' => $context['invoice']->id,
+                    'amount' => 100,
+                    'transaction_date' => now()->toDateString(),
+                ]
+            )
+            ->assertUnprocessable()
+            ->assertJsonPath(
+                'errors.rent_reserve.0',
+                'Le compte de réserve de loyer est fermé.'
+            );
+    }
+
 }

@@ -57,13 +57,13 @@ class RentReserveService
 
             if ($account->type !== 'rent_reserve') {
                 throw new RuntimeException(
-                    'Only a Rent Reserve account can be consumed by this service.'
+                    __('business.rent_reserve.wrong_account_type')
                 );
             }
 
             if ($account->status !== 'active') {
                 throw new RuntimeException(
-                    'Rent Reserve account is closed.'
+                    __('business.rent_reserve.account_closed')
                 );
             }
 
@@ -78,12 +78,12 @@ class RentReserveService
                 || $lease->termination_notice_date === null
             ) {
                 throw new RuntimeException(
-                    'Rent Reserve cannot be consumed before termination notice.'
+                    __('business.rent_reserve.before_notice')
                 );
             }
 if ($invoice->lease_id !== $lease->id) {
     throw new RuntimeException(
-        'The Invoice does not belong to the Rent Reserve Lease.'
+        __('business.rent_reserve.wrong_invoice_lease')
     );
 }
 
@@ -96,25 +96,25 @@ if ($invoice->lease_id !== $lease->id) {
  */
 if (! $invoice->isRentInvoice()) {
     throw new RuntimeException(
-        'Rent Reserve can only settle rent invoices.'
+        __('business.rent_reserve.rent_only')
     );
 }
 
 if ($amount <= 0) {
     throw new RuntimeException(
-        'Rent Reserve consumption amount must be greater than zero.'
+        __('business.rent_reserve.amount_positive')
     );
 }
 
             if ($amount > $account->balance()) {
                 throw new RuntimeException(
-                    'Rent Reserve balance is insufficient.'
+                    __('business.rent_reserve.insufficient_balance')
                 );
             }
 
             if ($amount > $invoice->outstandingAmount()) {
                 throw new RuntimeException(
-                    'Rent Reserve consumption exceeds the Invoice outstanding amount.'
+                    __('business.rent_reserve.exceeds_invoice')
                 );
             }
 
@@ -186,7 +186,7 @@ if ($amount <= 0) {
 
         if ($ownerships->isEmpty()) {
             throw new RuntimeException(
-                'Building has no ownership allocations.'
+                __('business.rent_reserve.no_ownership')
             );
         }
 
@@ -197,7 +197,7 @@ if ($amount <= 0) {
 
         if (abs($ownershipTotal - 100.0) > 0.001) {
             throw new RuntimeException(
-                'Building ownership percentages must total 100%.'
+                __('business.rent_reserve.ownership_total')
             );
         }
 

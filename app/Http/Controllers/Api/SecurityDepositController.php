@@ -132,7 +132,7 @@ class SecurityDepositController extends Controller
         ) {
             throw ValidationException::withMessages([
                 'security_deposit' => [
-                    'Security deposit deductions cannot be changed after final settlement.',
+                    __('business.security_deposit.deductions_after_settlement'),
                 ],
             ]);
         }
@@ -149,7 +149,7 @@ class SecurityDepositController extends Controller
         ) {
             throw ValidationException::withMessages([
                 'security_deposit' => [
-                    'Security deposit deductions can only be recorded for a terminated Lease.',
+                    __('business.security_deposit.deductions_terminated_only'),
                 ],
             ]);
         }
@@ -169,7 +169,7 @@ class SecurityDepositController extends Controller
         if ($account === null) {
             throw ValidationException::withMessages([
                 'security_deposit' => [
-                    'No security deposit account exists for this Lease.',
+                    __('business.security_deposit.account_missing'),
                 ],
             ]);
         }

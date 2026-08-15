@@ -12,6 +12,7 @@ use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\AuthenticatesApiUser;
 use Tests\TestCase;
+use App\Models\ApplicationSetting;
 
 /**
  * Verifies the Patrimoine Security Deposit operational API.
@@ -553,4 +554,41 @@ class SecurityDepositApiTest extends TestCase
                 'security_deposit',
             ]);
     }
+
+    /**
+     * Security Deposit service failures follow the configured language.
+     */
+    public function test_security_deposit_business_error_renders_in_french(): void
+    {
+        ApplicationSetting::create([
+            'language' => 'fr',
+            'currency' => 'GHS',
+        ]);
+
+        $context = $this->createContext();
+
+        /*
+         * Mirror the existing missing-account regression case so the
+         * translated business rule is genuinely exercised.
+         */
+        TenantFundTransaction::query()
+            ->delete();
+
+        $context['account']
+            ->delete();
+
+        $this
+            ->postJson(
+                "/api/leases/{$context['lease']->id}/security-deposit/settle",
+                [
+                    'settlement_date' => now()->toDateString(),
+                ]
+            )
+            ->assertUnprocessable()
+            ->assertJsonPath(
+                'errors.security_deposit.0',
+                'Aucun compte de dépôt de garantie n’existe pour ce bail.'
+            );
+    }
+
 }

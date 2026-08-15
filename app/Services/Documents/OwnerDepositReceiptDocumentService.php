@@ -101,7 +101,7 @@ class OwnerDepositReceiptDocumentService
             || $transaction->category !== 'owner_deposit'
         ) {
             throw new RuntimeException(
-                'Only Owner deposits may generate an Owner deposit receipt.'
+                __('business.owner.deposit_receipt_only')
             );
         }
     }

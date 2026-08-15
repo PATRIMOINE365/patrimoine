@@ -36,7 +36,7 @@ class ConsumableAdvanceController extends Controller
         if ($tenantFundAccount->type !== 'consumable_advance') {
             throw ValidationException::withMessages([
                 'tenant_fund_account' => [
-                    'The selected tenant fund account is not a Consumable Advance account.',
+                    __('business.fund_accounts.not_consumable_advance'),
                 ],
             ]);
         }

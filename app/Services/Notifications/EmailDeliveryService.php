@@ -270,7 +270,7 @@ class EmailDeliveryService
 
         if ($email === '') {
             throw new RuntimeException(
-                'Tenant does not have an email address.'
+                __('business.email.tenant_email_missing')
             );
         }
 
@@ -294,7 +294,7 @@ class EmailDeliveryService
 
         if ($email === '') {
             throw new RuntimeException(
-                'Tenant does not have an email address.'
+                __('business.email.tenant_email_missing')
             );
         }
 
@@ -318,7 +318,7 @@ class EmailDeliveryService
 
         if ($email === '') {
             throw new RuntimeException(
-                'Tenant does not have an email address.'
+                __('business.email.tenant_email_missing')
             );
         }
 

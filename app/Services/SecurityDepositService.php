@@ -50,7 +50,7 @@ class SecurityDepositService
                         ->exists()
                 ) {
                     throw new RuntimeException(
-                        'Security deposit has already been settled for this Lease.'
+                        __('business.security_deposit.already_settled')
                     );
                 }
 
@@ -75,7 +75,7 @@ class SecurityDepositService
 
                 if ($account === null) {
                     throw new RuntimeException(
-                        'No security deposit account exists for this Lease.'
+                        __('business.security_deposit.account_missing')
                     );
                 }
 
@@ -84,7 +84,7 @@ class SecurityDepositService
 
                 if ($depositAmount < 0) {
                     throw new RuntimeException(
-                        'Security deposit account has an invalid negative balance.'
+                        __('business.security_deposit.negative_balance')
                     );
                 }
 

@@ -11,6 +11,7 @@ use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\AuthenticatesApiUser;
 use Tests\TestCase;
+use App\Models\ApplicationSetting;
 
 /**
  * Verifies transactional owner financial APIs.
@@ -508,4 +509,33 @@ class OwnerOperationsApiTest extends TestCase
             $secondAccount->balance()
         );
     }
+
+    /**
+     * Owner payout business-rule failures follow the configured language.
+     */
+    public function test_owner_payout_business_error_renders_in_french(): void
+    {
+        ApplicationSetting::create([
+            'language' => 'fr',
+            'currency' => 'GHS',
+        ]);
+
+        $context = $this->createContext();
+
+        $this
+            ->postJson(
+                "/api/owner-accounts/{$context['account']->id}/payouts",
+                [
+                    'amount' => 100,
+                    'payout_date' => now()->toDateString(),
+                    'payment_method' => 'bank_transfer',
+                ]
+            )
+            ->assertUnprocessable()
+            ->assertJsonPath(
+                'errors.payout.0',
+                'Aucun fonds n’est disponible pour un paiement à ce propriétaire.'
+            );
+    }
+
 }

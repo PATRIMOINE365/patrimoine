@@ -24,6 +24,7 @@ use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
 use App\Services\Documents\SecurityDepositVoucherDocumentService;
 use App\Services\SecurityDepositService;
+use App\Models\ApplicationSetting;
 
 /**
  * Verifies Patrimoine financial document generation.
@@ -631,4 +632,34 @@ public function test_missing_security_deposit_voucher_returns_not_found(): void
         '/api/security-deposit-settlements/999999/voucher'
     )->assertNotFound();
 }
+
+    /**
+     * Owner deposit receipt validation failures follow French.
+     */
+    public function test_owner_deposit_receipt_error_renders_in_french(): void
+    {
+        ApplicationSetting::create([
+            'language' => 'fr',
+            'currency' => 'GHS',
+        ]);
+
+        $context = $this->createOwnerDepositContext();
+
+        $transaction = $context['deposit'];
+
+        $transaction->update([
+            'category' => 'adjustment',
+        ]);
+
+        $this
+            ->getJson(
+                "/api/owner-deposits/{$transaction->id}/receipt"
+            )
+            ->assertUnprocessable()
+            ->assertJsonPath(
+                'errors.owner_transaction.0',
+                'Seuls les dépôts de propriétaire peuvent générer un reçu de dépôt de propriétaire.'
+            );
+    }
+
 }
