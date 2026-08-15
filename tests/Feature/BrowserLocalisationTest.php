@@ -339,4 +339,64 @@ class BrowserLocalisationTest extends TestCase
             );
     }
 
+
+    public function test_owners_exposes_translation_hooks(): void
+    {
+        $response = $this->get('/owners');
+
+        $response
+            ->assertOk()
+            ->assertSee(
+                'data-i18n="owners.heading"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="owners.property_owners"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="owners.current_balance"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="owners.owner_ledger"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="owners.payout_history"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="owners.record_owner_deposit"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="owners.record_property_expense"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="owners.make_owner_payout"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="owners.owner_account_adjustment"',
+                false
+            )
+            ->assertSee(
+                'data-i18n-placeholder="owners.search_placeholder"',
+                false
+            )
+            ->assertSee(
+                'data-i18n-aria-label="owners.close"',
+                false
+            )
+            ->assertSee(
+                'data-currency-display',
+                false
+            )
+            ->assertSeeText(
+                'Property Owners'
+            );
+    }
+
 }

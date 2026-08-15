@@ -2,7 +2,9 @@ import {
     apiRequest,
     formatCurrency,
     formatDate,
+    formatNumber,
     parseJsonResponse,
+    translate,
 } from './core.js';
 
 /*
@@ -186,11 +188,11 @@ async function loadOwnerDirectory(
         showOwnersError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load Property Owners.'
+                : translate('owners.unable_to_load')
         );
 
         renderOwnerDirectoryEmpty(
-            'Unable to load Property Owners.'
+            translate('owners.unable_to_load')
         );
     }
 }
@@ -221,7 +223,7 @@ function renderOwnerDirectory(
 
     if (accounts.length === 0) {
         renderOwnerDirectoryEmpty(
-            'No Property Owners match your search.'
+            translate('owners.no_search_results')
         );
 
         return;
@@ -350,17 +352,23 @@ function renderOwnerDirectoryRow(
                             text-slate-400
                         "
                     >
-                        ${Number(
-                            account.property_count
-                            ?? 0
-                        ).toLocaleString()}
+                        ${formatNumber(
+                            Number(
+                                account.property_count
+                                ?? 0
+                            )
+                        )}
                         ${
                             Number(
                                 account.property_count
                                 ?? 0
                             ) === 1
-                                ? 'property'
-                                : 'properties'
+                                ? translate(
+                                    'owners.property'
+                                )
+                                : translate(
+                                    'owners.properties_lower'
+                                )
                         }
                     </div>
                 </div>
@@ -389,7 +397,9 @@ function renderOwnerDirectoryRow(
                             text-slate-400
                         "
                     >
-                        balance
+                        ${translate(
+                            'owners.balance'
+                        )}
                     </div>
                 </div>
             </div>
@@ -464,8 +474,17 @@ function renderOwnerDirectoryPagination(
                     text-xs text-slate-500
                 "
             >
-                ${total.toLocaleString()}
-                owner${total === 1 ? '' : 's'}
+                ${translate(
+                    total === 1
+                        ? 'owners.pagination_owner'
+                        : 'owners.pagination_owners',
+                    {
+                        total:
+                            formatNumber(
+                                total
+                            ),
+                    }
+                )}
             </div>
 
             <div class="flex gap-2">
@@ -485,7 +504,9 @@ function renderOwnerDirectoryPagination(
                         disabled:opacity-40
                     "
                 >
-                    Previous
+                    ${translate(
+                        'owners.previous'
+                    )}
                 </button>
 
                 <button
@@ -504,7 +525,9 @@ function renderOwnerDirectoryPagination(
                         disabled:opacity-40
                     "
                 >
-                    Next
+                    ${translate(
+                        'owners.next'
+                    )}
                 </button>
             </div>
         </div>
@@ -626,11 +649,11 @@ async function selectOwnerAccount(
         showOwnersError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load Owner details.'
+                : translate('owners.unable_to_load_details')
         );
 
         showOwnerDetailEmpty(
-            'Unable to load this Property Owner.'
+            translate('owners.unable_to_load_owner')
         );
     }
 }
@@ -683,7 +706,7 @@ function renderOwnerDetail(
         contactSummary(
             party
         )
-        || 'No contact information available.'
+        || translate('owners.no_contact_information')
     );
 
     renderOwnerStatus(
@@ -720,7 +743,9 @@ function renderOwnerDetail(
 
         payoutButton.title =
             availableBalance <= 0
-                ? 'This Owner has no funds available for payout.'
+                ? translate(
+                    'owners.no_funds_available'
+                )
                 : '';
     }
 
@@ -749,8 +774,9 @@ function renderOwnerDetail(
 
     setText(
         'owner-detail-property-count',
-        properties.length
-            .toLocaleString()
+        formatNumber(
+            properties.length
+        )
     );
 
     /*
@@ -810,10 +836,17 @@ function renderOwnerStatus(
 
     badge.textContent =
         active
-            ? 'Active'
-            : capitalize(
+            ? translate(
+                'owners.active'
+            )
+            : (
                 status
-                ?? 'Unknown'
+                    ? capitalize(
+                        status
+                    )
+                    : translate(
+                        'owners.unknown'
+                    )
             );
 
     badge.className = active
@@ -872,7 +905,9 @@ function renderOwnerProperties(
                     text-sm text-slate-500
                 "
             >
-                No Building ownership records found.
+                ${translate(
+                    'owners.no_building_ownership'
+                )}
             </div>
         `;
 
@@ -938,7 +973,9 @@ function renderOwnerProperty(
                     >
                         ${escapeHtml(
                             building.name
-                            ?? `Building #${building.id ?? ''}`
+                            ?? `${translate(
+                                'owners.building'
+                            )} #${building.id ?? ''}`
                         )}
                     </div>
 
@@ -989,7 +1026,9 @@ function renderOwnerProperty(
                         text-slate-400
                     "
                 >
-                    Units
+                    ${translate(
+                        'owners.units'
+                    )}
                 </div>
 
                 ${
@@ -1015,7 +1054,9 @@ function renderOwnerProperty(
                                             >
                                                 ${escapeHtml(
                                                     unit.name
-                                                    ?? `Unit #${unit.id}`
+                                                    ?? `${translate(
+                                                        'owners.unit'
+                                                    )} #${unit.id}`
                                                 )}
                                             </span>
                                         `
@@ -1030,7 +1071,9 @@ function renderOwnerProperty(
                                     text-slate-400
                                 "
                             >
-                                No Units have been created yet.
+                                ${translate(
+                                    'owners.no_units_created'
+                                )}
                             </div>
                         `
                 }
@@ -1079,7 +1122,9 @@ function renderOwnerLedger(
                     text-sm text-slate-500
                 "
             >
-                No owner financial transactions have been recorded.
+                ${translate(
+                    'owners.no_transactions'
+                )}
             </div>
         `;
 
@@ -1141,7 +1186,9 @@ function renderOwnerTransaction(
                         hover:bg-slate-50
                     "
                 >
-                    Receipt
+                    ${translate(
+                        'owners.receipt'
+                    )}
                 </button>
             `
             : '';
@@ -1185,8 +1232,12 @@ function renderOwnerTransaction(
                         >
                             ${
                                 credit
-                                    ? 'Credit'
-                                    : 'Debit'
+                                    ? translate(
+                                        'owners.credit'
+                                    )
+                                    : translate(
+                                        'owners.debit'
+                                    )
                             }
                         </span>
 
@@ -1249,7 +1300,9 @@ function renderOwnerTransaction(
                             transaction.reference
                                 ? `
                                     <span>
-                                        Ref:
+                                        ${translate(
+                                            'owners.reference_short'
+                                        )}
                                         ${escapeHtml(
                                             transaction.reference
                                         )}
@@ -1276,7 +1329,9 @@ function renderOwnerTransaction(
                             transaction.collector_name
                                 ? `
                                     <span>
-                                        Collector:
+                                        ${translate(
+                                            'owners.collector_short'
+                                        )}
                                         ${escapeHtml(
                                             transaction.collector_name
                                         )}
@@ -1289,7 +1344,9 @@ function renderOwnerTransaction(
                             transaction.invoice_id
                                 ? `
                                     <span>
-                                        Invoice #${escapeHtml(
+                                        ${translate(
+                                            'owners.invoice'
+                                        )} #${escapeHtml(
                                             transaction.invoice_id
                                         )}
                                     </span>
@@ -1414,10 +1471,32 @@ function renderOwnerLedgerPagination(
                     text-xs text-slate-500
                 "
             >
-                Page ${current} of ${last}
+                ${translate(
+                    'owners.page_of',
+                    {
+                        current:
+                            formatNumber(
+                                current
+                            ),
+
+                        last:
+                            formatNumber(
+                                last
+                            ),
+                    }
+                )}
                 ·
-                ${total.toLocaleString()}
-                transaction${total === 1 ? '' : 's'}
+                ${translate(
+                    total === 1
+                        ? 'owners.pagination_transaction'
+                        : 'owners.pagination_transactions',
+                    {
+                        total:
+                            formatNumber(
+                                total
+                            ),
+                    }
+                )}
             </div>
 
             <div class="flex gap-2">
@@ -1437,7 +1516,9 @@ function renderOwnerLedgerPagination(
                         disabled:opacity-40
                     "
                 >
-                    Previous
+                    ${translate(
+                        'owners.previous'
+                    )}
                 </button>
 
                 <button
@@ -1456,7 +1537,9 @@ function renderOwnerLedgerPagination(
                         disabled:opacity-40
                     "
                 >
-                    Next
+                    ${translate(
+                        'owners.next'
+                    )}
                 </button>
             </div>
         </div>
@@ -1541,7 +1624,9 @@ function renderOwnerPayouts(
                     text-sm text-slate-500
                 "
             >
-                No payouts have been recorded for this Owner.
+                ${translate(
+                    'owners.no_payouts'
+                )}
             </div>
         `;
 
@@ -1608,7 +1693,9 @@ function renderOwnerPayouts(
                                         payout.reference
                                             ? `
                                                 <span>
-                                                    Ref:
+                                                    ${translate(
+                                            'owners.reference_short'
+                                        )}
                                                     ${escapeHtml(
                                                         payout.reference
                                                     )}
@@ -2006,7 +2093,7 @@ function hasSelectedOwner() {
         || ! selectedOwnerAccountId
     ) {
         showOwnersError(
-            'Select a Property Owner first.'
+            translate('owners.select_owner_first')
         );
 
         return false;
@@ -2052,12 +2139,16 @@ function populateOwnerActionBuildings(
         optional
             ? `
                 <option value="">
-                    No specific Building
+                    ${translate(
+                        'owners.no_specific_building'
+                    )}
                 </option>
             `
             : `
                 <option value="">
-                    Select Building
+                    ${translate(
+                        'owners.select_building'
+                    )}
                 </option>
             `;
 
@@ -2082,7 +2173,9 @@ function populateOwnerActionBuildings(
 
             option.textContent =
                 building.name
-                ?? `Building #${building.id}`;
+                ?? `${translate(
+                    'owners.building'
+                )} #${building.id}`;
 
             select.appendChild(
                 option
@@ -2150,7 +2243,9 @@ function populateOwnerActionUnits(
 
     unitSelect.innerHTML = `
         <option value="">
-            No specific Unit
+            ${translate(
+                'owners.no_specific_unit'
+            )}
         </option>
     `;
 
@@ -2168,7 +2263,9 @@ function populateOwnerActionUnits(
 
             option.textContent =
                 unit.name
-                ?? `Unit #${unit.id}`;
+                ?? `${translate(
+                    'owners.unit'
+                )} #${unit.id}`;
 
             unitSelect.appendChild(
                 option
@@ -2194,7 +2291,9 @@ function resetOwnerActionUnits(
 
     select.innerHTML = `
         <option value="">
-            Select a Building first
+            ${translate(
+                'owners.select_building_first'
+            )}
         </option>
     `;
 
@@ -2332,7 +2431,7 @@ async function submitOwnerDeposit() {
     ) {
         showOwnerActionError(
             'owner-deposit-error',
-            'Enter a valid deposit amount greater than zero.'
+            translate('owners.invalid_deposit_amount')
         );
 
         return;
@@ -2344,7 +2443,7 @@ async function submitOwnerDeposit() {
     ) {
         showOwnerActionError(
             'owner-deposit-error',
-            'Collector is required for cash deposits.'
+            translate('owners.collector_required')
         );
 
         return;
@@ -2407,8 +2506,8 @@ async function submitOwnerDeposit() {
     setOwnerActionSubmitting(
         'owner-deposit-submit',
         true,
-        'Recording…',
-        'Record Deposit'
+        translate('owners.recording'),
+        translate('owners.record_deposit')
     );
 
     try {
@@ -2450,14 +2549,14 @@ async function submitOwnerDeposit() {
             'owner-deposit-error',
             error instanceof Error
                 ? error.message
-                : 'Unable to record Owner deposit.'
+                : translate('owners.unable_to_record_deposit')
         );
     } finally {
         setOwnerActionSubmitting(
             'owner-deposit-submit',
             false,
-            'Recording…',
-            'Record Deposit'
+            translate('owners.recording'),
+            translate('owners.record_deposit')
         );
     }
 }
@@ -2482,7 +2581,7 @@ function openOwnerExpenseModal() {
 
     if (properties.length === 0) {
         showOwnersError(
-            'This Owner has no Building ownership against which an expense can be recorded.'
+            translate('owners.no_property_for_expense')
         );
 
         return;
@@ -2570,9 +2669,13 @@ function updateExpenseOwnershipWarning() {
     }
 
     warning.textContent =
-        `This Owner holds ${percentage.toFixed(2)}% of this Building. `
-        + 'Patrimoine will allocate the full expense across all Building '
-        + 'owners according to their ownership percentages.';
+        translate(
+            'owners.expense_sharing_warning',
+            {
+                percentage:
+                    percentage.toFixed(2),
+            }
+        );
 
     warning.classList.remove(
         'hidden'
@@ -2625,7 +2728,7 @@ async function submitOwnerExpense() {
     if (! buildingId) {
         showOwnerActionError(
             'owner-expense-error',
-            'Select the Building against which the expense was incurred.'
+            translate('owners.select_expense_building')
         );
 
         return;
@@ -2637,7 +2740,7 @@ async function submitOwnerExpense() {
     ) {
         showOwnerActionError(
             'owner-expense-error',
-            'Enter a valid expense amount greater than zero.'
+            translate('owners.invalid_expense_amount')
         );
 
         return;
@@ -2651,7 +2754,7 @@ async function submitOwnerExpense() {
     if (! description) {
         showOwnerActionError(
             'owner-expense-error',
-            'Expense description is required.'
+            translate('owners.expense_description_required')
         );
 
         return;
@@ -2691,8 +2794,8 @@ async function submitOwnerExpense() {
     setOwnerActionSubmitting(
         'owner-expense-submit',
         true,
-        'Recording…',
-        'Record Expense'
+        translate('owners.recording'),
+        translate('owners.record_expense')
     );
 
     try {
@@ -2724,14 +2827,14 @@ async function submitOwnerExpense() {
             'owner-expense-error',
             error instanceof Error
                 ? error.message
-                : 'Unable to record Owner expense.'
+                : translate('owners.unable_to_record_expense')
         );
     } finally {
         setOwnerActionSubmitting(
             'owner-expense-submit',
             false,
-            'Recording…',
-            'Record Expense'
+            translate('owners.recording'),
+            translate('owners.record_expense')
         );
     }
 }
@@ -2755,7 +2858,7 @@ function openOwnerPayoutModal() {
 
     if (balance <= 0) {
         showOwnersError(
-            'This Owner does not currently have funds available for payout.'
+            translate('owners.no_payout_funds')
         );
 
         return;
@@ -2833,7 +2936,7 @@ async function submitOwnerPayout() {
     ) {
         showOwnerActionError(
             'owner-payout-error',
-            'Enter a valid payout amount greater than zero.'
+            translate('owners.invalid_payout_amount')
         );
 
         return;
@@ -2842,7 +2945,15 @@ async function submitOwnerPayout() {
     if (amount > balance) {
         showOwnerActionError(
             'owner-payout-error',
-            `Payout cannot exceed the available Owner balance of ${formatCurrency(balance)}.`
+            translate(
+                'owners.payout_exceeds_balance',
+                {
+                    balance:
+                        formatCurrency(
+                            balance
+                        ),
+                }
+            )
         );
 
         return;
@@ -2877,8 +2988,8 @@ async function submitOwnerPayout() {
     setOwnerActionSubmitting(
         'owner-payout-submit',
         true,
-        'Processing…',
-        'Make Payout'
+        translate('owners.processing'),
+        translate('owners.make_payout')
     );
 
     try {
@@ -2910,14 +3021,14 @@ async function submitOwnerPayout() {
             'owner-payout-error',
             error instanceof Error
                 ? error.message
-                : 'Unable to create Owner payout.'
+                : translate('owners.unable_to_create_payout')
         );
     } finally {
         setOwnerActionSubmitting(
             'owner-payout-submit',
             false,
-            'Processing…',
-            'Make Payout'
+            translate('owners.processing'),
+            translate('owners.make_payout')
         );
     }
 }
@@ -2985,7 +3096,7 @@ async function submitOwnerAdjustment() {
     ) {
         showOwnerActionError(
             'owner-adjustment-error',
-            'Enter a valid adjustment amount greater than zero.'
+            translate('owners.invalid_adjustment_amount')
         );
 
         return;
@@ -2994,7 +3105,7 @@ async function submitOwnerAdjustment() {
     if (! reason) {
         showOwnerActionError(
             'owner-adjustment-error',
-            'An audit reason is required for every manual adjustment.'
+            translate('owners.adjustment_reason_required')
         );
 
         return;
@@ -3025,8 +3136,8 @@ async function submitOwnerAdjustment() {
     setOwnerActionSubmitting(
         'owner-adjustment-submit',
         true,
-        'Recording…',
-        'Record Adjustment'
+        translate('owners.recording'),
+        translate('owners.record_adjustment')
     );
 
     try {
@@ -3058,14 +3169,14 @@ async function submitOwnerAdjustment() {
             'owner-adjustment-error',
             error instanceof Error
                 ? error.message
-                : 'Unable to record Owner adjustment.'
+                : translate('owners.unable_to_record_adjustment')
         );
     } finally {
         setOwnerActionSubmitting(
             'owner-adjustment-submit',
             false,
-            'Recording…',
-            'Record Adjustment'
+            translate('owners.recording'),
+            translate('owners.record_adjustment')
         );
     }
 }
@@ -3207,7 +3318,7 @@ async function openAuthenticatedPdf(
 
         if (! response.ok) {
             throw new Error(
-                'Unable to open document.'
+                translate('owners.unable_to_open_document')
             );
         }
 
@@ -3237,7 +3348,7 @@ async function openAuthenticatedPdf(
         showOwnersError(
             error instanceof Error
                 ? error.message
-                : 'Unable to open document.'
+                : translate('owners.unable_to_open_document')
         );
     }
 }
@@ -3253,30 +3364,32 @@ function ownerTransactionCategoryLabel(
 ) {
     switch (category) {
         case 'owner_deposit':
-            return 'Owner Deposit';
+            return translate('owners.owner_deposit');
 
         case 'rent_entitlement':
-            return 'Rent Collected';
+            return translate('owners.rent_collected');
 
         case 'expense':
-            return 'Property Expense';
+            return translate('owners.property_expense');
 
         case 'management_fee':
-            return 'Management Fee';
+            return translate('owners.management_fee');
 
         case 'agent_commission':
-            return 'Agent Commission';
+            return translate('owners.agent_commission');
 
         case 'adjustment':
-            return 'Adjustment';
+            return translate('owners.adjustment');
 
         case 'payout':
-            return 'Owner Payout';
+            return translate('owners.owner_payout');
 
         default:
             return capitalizeWords(
                 category
-                ?? 'Transaction'
+                ?? translate(
+                    'owners.transaction'
+                )
             );
     }
 }
@@ -3286,13 +3399,13 @@ function paymentMethodLabel(
 ) {
     switch (method) {
         case 'cash':
-            return 'Cash';
+            return translate('owners.cash');
 
         case 'bank_transfer':
-            return 'Bank Transfer';
+            return translate('owners.bank_transfer');
 
         case 'momo':
-            return 'MoMo';
+            return translate('owners.momo');
 
         default:
             return capitalizeWords(
@@ -3307,16 +3420,16 @@ function depositPurposeLabel(
 ) {
     switch (purpose) {
         case 'general_funding':
-            return 'General Funding';
+            return translate('owners.general_funding');
 
         case 'property_expense':
-            return 'Property Expense';
+            return translate('owners.property_expense');
 
         case 'repair_maintenance':
-            return 'Repair / Maintenance';
+            return translate('owners.repair_maintenance');
 
         case 'other':
-            return 'Other';
+            return translate('owners.other');
 
         default:
             return capitalizeWords(
@@ -3370,7 +3483,7 @@ function partyDisplayName(
 ) {
     return party?.name
         || party?.legal_name
-        || 'Unnamed Owner';
+        || translate('owners.unnamed_owner');
 }
 
 function contactSummary(
@@ -3484,7 +3597,9 @@ function showOwnerDirectoryLoading() {
                 text-sm text-slate-400
             "
         >
-            Loading owners…
+            ${translate(
+                'owners.loading'
+            )}
         </div>
     `;
 }
@@ -3543,7 +3658,9 @@ function showOwnerDetailLoading() {
                 text-slate-400
             "
         >
-            Loading Owner details…
+            ${translate(
+                'owners.loading_details'
+            )}
         </div>
     `;
 }

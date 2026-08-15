@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Owners — Patrimoine')
+@section('title-i18n', 'owners.title')
 
 @section('content')
 
@@ -23,7 +24,7 @@
                     text-patrimoine-700
                 "
             >
-                Finance
+                <span data-i18n="owners.finance">Finance</span>
             </p>
 
             <h1
@@ -32,12 +33,12 @@
                     tracking-tight text-slate-950
                 "
             >
-                Owners
+                <span data-i18n="owners.heading">Owners</span>
             </h1>
 
             <p class="mt-2 text-sm text-slate-500">
-                Review property ownership, owner balances, transactions,
-                deposits and payouts.
+                <span data-i18n="owners.page_description">Review property ownership, owner balances, transactions,
+                deposits and payouts.</span>
             </p>
         </div>
     </div>
@@ -88,11 +89,11 @@
                         text-slate-950
                     "
                 >
-                    Property Owners
+                    <span data-i18n="owners.property_owners">Property Owners</span>
                 </h2>
 
                 <p class="mt-1 text-xs text-slate-500">
-                    Search by owner name, phone or email.
+                    <span data-i18n="owners.search_description">Search by owner name, phone or email.</span>
                 </p>
 
                 <div class="mt-4">
@@ -100,7 +101,7 @@
                         for="owners-search"
                         class="sr-only"
                     >
-                        Search Property Owners
+                        <span data-i18n="owners.search_property_owners">Search Property Owners</span>
                     </label>
 
                     <div class="relative">
@@ -125,7 +126,7 @@
                             id="owners-search"
                             type="search"
                             autocomplete="off"
-                            placeholder="Search owners..."
+                            placeholder="Search owners..." data-i18n-placeholder="owners.search_placeholder"
                             class="
                                 w-full rounded-lg
                                 border border-slate-200
@@ -155,7 +156,7 @@
                         text-sm text-slate-400
                     "
                 >
-                    Loading owners…
+                    <span data-i18n="owners.loading">Loading owners…</span>
                 </div>
             </div>
 
@@ -225,7 +226,7 @@
                             text-slate-900
                         "
                     >
-                        Select a Property Owner
+                        <span data-i18n="owners.select_property_owner">Select a Property Owner</span>
                     </h2>
 
                     <p
@@ -234,8 +235,8 @@
                             text-slate-500
                         "
                     >
-                        Choose an owner from the directory to review their
-                        properties, account balance and financial history.
+                        <span data-i18n="owners.select_owner_description">Choose an owner from the directory to review their
+                        properties, account balance and financial history.</span>
                     </p>
                 </div>
             </div>
@@ -295,7 +296,7 @@
                                         text-emerald-700
                                     "
                                 >
-                                    Active
+                                    <span data-i18n="owners.active">Active</span>
                                 </span>
                             </div>
 
@@ -338,7 +339,7 @@
                                     <path d="M5 12h14"/>
                                 </svg>
 
-                                Deposit
+                                <span data-i18n="owners.deposit">Deposit</span>
                             </button>
 
                             <button
@@ -356,7 +357,7 @@
                                     hover:bg-slate-50
                                 "
                             >
-                                Expense
+                                <span data-i18n="owners.expense">Expense</span>
                             </button>
 
                             <button
@@ -376,7 +377,7 @@
                                     disabled:opacity-50
                                 "
                             >
-                                Payout
+                                <span data-i18n="owners.payout">Payout</span>
                             </button>
 
                             <button
@@ -394,7 +395,7 @@
                                     hover:bg-slate-50
                                 "
                             >
-                                Adjustment
+                                <span data-i18n="owners.adjustment">Adjustment</span>
                             </button>
 
                             <a
@@ -412,7 +413,7 @@
                                     hover:bg-slate-50
                                 "
                             >
-                                Owner Report
+                                <span data-i18n="owners.owner_report">Owner Report</span>
                             </a>
                         </div>
                     </div>
@@ -440,7 +441,7 @@
                                 text-slate-500
                             "
                         >
-                            Current Balance
+                            <span data-i18n="owners.current_balance">Current Balance</span>
                         </div>
 
                         <div
@@ -462,7 +463,7 @@
                                 text-slate-500
                             "
                         >
-                            Total Credits
+                            <span data-i18n="owners.total_credits">Total Credits</span>
                         </div>
 
                         <div
@@ -484,7 +485,7 @@
                                 text-slate-500
                             "
                         >
-                            Total Debits
+                            <span data-i18n="owners.total_debits">Total Debits</span>
                         </div>
 
                         <div
@@ -506,7 +507,7 @@
                                 text-slate-500
                             "
                         >
-                            Properties
+                            <span data-i18n="owners.properties">Properties</span>
                         </div>
 
                         <div
@@ -522,7 +523,7 @@
                 </div>
 
                 {{-- ====================================================
-                     Properties
+                     <span data-i18n="owners.properties">Properties</span>
                 ==================================================== --}}
 
                 <div
@@ -544,7 +545,7 @@
                                     text-slate-950
                                 "
                             >
-                                Properties
+                                <span data-i18n="owners.properties">Properties</span>
                             </h3>
 
                             <p
@@ -553,8 +554,8 @@
                                     text-slate-500
                                 "
                             >
-                                Buildings owned by this Party, including
-                                vacant properties.
+                                <span data-i18n="owners.properties_description">Buildings owned by this Party, including
+                                vacant properties.</span>
                             </p>
                         </div>
                     </div>
@@ -585,7 +586,7 @@
                                 text-slate-950
                             "
                         >
-                            Owner Ledger
+                            <span data-i18n="owners.owner_ledger">Owner Ledger</span>
                         </h3>
 
                         <p
@@ -594,8 +595,8 @@
                                 text-slate-500
                             "
                         >
-                            Complete auditable financial movements affecting
-                            the owner's consolidated account.
+                            <span data-i18n="owners.ledger_description">Complete auditable financial movements affecting
+                            the owner's consolidated account.</span>
                         </p>
                     </div>
 
@@ -615,7 +616,7 @@
                 </div>
 
                 {{-- ====================================================
-                     Payout History
+                     <span data-i18n="owners.payout_history">Payout History</span>
                 ==================================================== --}}
 
                 <div
@@ -630,7 +631,7 @@
                                 text-slate-950
                             "
                         >
-                            Payout History
+                            <span data-i18n="owners.payout_history">Payout History</span>
                         </h3>
 
                         <p
@@ -639,7 +640,7 @@
                                 text-slate-500
                             "
                         >
-                            Funds previously paid out to this Property Owner.
+                            <span data-i18n="owners.payout_history_description">Funds previously paid out to this Property Owner.</span>
                         </p>
                     </div>
 
@@ -688,14 +689,14 @@
                         tracking-tight text-slate-950
                     "
                 >
-                    Record Owner Deposit
+                    <span data-i18n="owners.record_owner_deposit">Record Owner Deposit</span>
                 </h2>
 
                 <p
                     id="owner-deposit-subtitle"
                     class="mt-1 text-sm text-slate-500"
                 >
-                    Record money received from this Property Owner.
+                    <span data-i18n="owners.deposit_description">Record money received from this Property Owner.</span>
                 </p>
             </div>
 
@@ -709,7 +710,8 @@
                     hover:bg-slate-100
                     hover:text-slate-700
                 "
-            >
+
+                data-i18n-aria-label="owners.close">
                 <svg
                     class="h-5 w-5"
                     viewBox="0 0 24 24"
@@ -752,7 +754,7 @@
                             text-slate-700
                         "
                     >
-                        Amount
+                        <span data-i18n="owners.amount">Amount</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -764,7 +766,7 @@
                                 flex items-center pl-3.5
                                 text-sm text-slate-500
                             "
-                        >
+                         data-currency-display>
                             GHS
                         </span>
 
@@ -796,7 +798,7 @@
                             text-slate-700
                         "
                     >
-                        Deposit Date
+                        <span data-i18n="owners.deposit_date">Deposit Date</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -825,7 +827,7 @@
                             text-slate-700
                         "
                     >
-                        Payment Method
+                        <span data-i18n="owners.payment_method">Payment Method</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -842,15 +844,15 @@
                             focus:ring-patrimoine-100
                         "
                     >
-                        <option value="bank_transfer">
+                        <option value="bank_transfer" data-i18n="owners.bank_transfer">
                             Bank Transfer
                         </option>
 
-                        <option value="momo">
+                        <option value="momo" data-i18n="owners.momo">
                             MoMo
                         </option>
 
-                        <option value="cash">
+                        <option value="cash" data-i18n="owners.cash">
                             Cash
                         </option>
                     </select>
@@ -865,7 +867,7 @@
                             text-slate-700
                         "
                     >
-                        Deposit Purpose
+                        <span data-i18n="owners.deposit_purpose">Deposit Purpose</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -882,19 +884,19 @@
                             focus:ring-patrimoine-100
                         "
                     >
-                        <option value="general_funding">
+                        <option value="general_funding" data-i18n="owners.general_funding">
                             General Funding
                         </option>
 
-                        <option value="property_expense">
+                        <option value="property_expense" data-i18n="owners.property_expense">
                             Property Expense
                         </option>
 
-                        <option value="repair_maintenance">
+                        <option value="repair_maintenance" data-i18n="owners.repair_maintenance_static">
                             Repair & Maintenance
                         </option>
 
-                        <option value="other">
+                        <option value="other" data-i18n="owners.other">
                             Other
                         </option>
                     </select>
@@ -909,9 +911,9 @@
                             text-slate-700
                         "
                     >
-                        Building
+                        <span data-i18n="owners.building">Building</span>
                         <span class="text-xs text-slate-400">
-                            (Optional)
+                            <span data-i18n="owners.optional">(Optional)</span>
                         </span>
                     </label>
 
@@ -927,7 +929,7 @@
                             focus:ring-patrimoine-100
                         "
                     >
-                        <option value="">
+                        <option value="" data-i18n="owners.no_specific_building">
                             No specific Building
                         </option>
                     </select>
@@ -942,9 +944,9 @@
                             text-slate-700
                         "
                     >
-                        Unit
+                        <span data-i18n="owners.unit">Unit</span>
                         <span class="text-xs text-slate-400">
-                            (Optional)
+                            <span data-i18n="owners.optional">(Optional)</span>
                         </span>
                     </label>
 
@@ -963,7 +965,7 @@
                             focus:ring-patrimoine-100
                         "
                     >
-                        <option value="">
+                        <option value="" data-i18n="owners.select_building_first">
                             Select a Building first
                         </option>
                     </select>
@@ -978,9 +980,9 @@
                             text-slate-700
                         "
                     >
-                        Reference
+                        <span data-i18n="owners.reference">Reference</span>
                         <span class="text-xs text-slate-400">
-                            (Optional)
+                            <span data-i18n="owners.optional">(Optional)</span>
                         </span>
                     </label>
 
@@ -1012,7 +1014,7 @@
                             text-slate-700
                         "
                     >
-                        Collector
+                        <span data-i18n="owners.collector">Collector</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1041,9 +1043,9 @@
                             text-slate-700
                         "
                     >
-                        Notes
+                        <span data-i18n="owners.notes">Notes</span>
                         <span class="text-xs text-slate-400">
-                            (Optional)
+                            <span data-i18n="owners.optional">(Optional)</span>
                         </span>
                     </label>
 
@@ -1082,7 +1084,7 @@
                     hover:bg-slate-50
                 "
             >
-                Cancel
+                <span data-i18n="owners.cancel">Cancel</span>
             </button>
 
             <button
@@ -1098,7 +1100,7 @@
                     disabled:opacity-60
                 "
             >
-                Record Deposit
+                <span data-i18n="owners.record_deposit">Record Deposit</span>
             </button>
         </div>
     </div>
@@ -1135,11 +1137,11 @@
         >
             <div>
                 <h2 class="text-xl font-semibold text-slate-950">
-                    Record Property Expense
+                    <span data-i18n="owners.record_property_expense">Record Property Expense</span>
                 </h2>
 
                 <p class="mt-1 text-sm text-slate-500">
-                    Record an expense against one of this Owner's properties.
+                    <span data-i18n="owners.expense_description">Record an expense against one of this Owner's properties.</span>
                 </p>
             </div>
 
@@ -1151,7 +1153,9 @@
                     text-slate-400
                     hover:bg-slate-100
                 "
-            >
+
+                aria-label="Close"
+                data-i18n-aria-label="owners.close">
                 ✕
             </button>
         </div>
@@ -1186,7 +1190,7 @@
                         for="owner-expense-building"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Building
+                        <span data-i18n="owners.building">Building</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1202,7 +1206,7 @@
                             focus:ring-2 focus:ring-patrimoine-100
                         "
                     >
-                        <option value="">
+                        <option value="" data-i18n="owners.select_building">
                             Select Building
                         </option>
                     </select>
@@ -1213,9 +1217,9 @@
                         for="owner-expense-unit"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Unit
+                        <span data-i18n="owners.unit">Unit</span>
                         <span class="text-xs text-slate-400">
-                            (Optional)
+                            <span data-i18n="owners.optional">(Optional)</span>
                         </span>
                     </label>
 
@@ -1231,7 +1235,7 @@
                             disabled:text-slate-400
                         "
                     >
-                        <option value="">
+                        <option value="" data-i18n="owners.select_building_first">
                             Select a Building first
                         </option>
                     </select>
@@ -1242,7 +1246,7 @@
                         for="owner-expense-description"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Description
+                        <span data-i18n="owners.description">Description</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1251,7 +1255,7 @@
                         type="text"
                         maxlength="255"
                         required
-                        placeholder="e.g. Air-conditioner repair"
+                        placeholder="e.g. Air-conditioner repair" data-i18n-placeholder="owners.expense_description_placeholder"
                         class="
                             w-full rounded-lg
                             border border-slate-200
@@ -1268,7 +1272,7 @@
                         for="owner-expense-amount"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Amount
+                        <span data-i18n="owners.amount">Amount</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1279,7 +1283,7 @@
                                 flex items-center pl-3.5
                                 text-sm text-slate-500
                             "
-                        >
+                         data-currency-display>
                             GHS
                         </span>
 
@@ -1304,7 +1308,7 @@
                         for="owner-expense-date"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Expense Date
+                        <span data-i18n="owners.expense_date">Expense Date</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1326,9 +1330,9 @@
                         for="owner-expense-reference"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Reference
+                        <span data-i18n="owners.reference">Reference</span>
                         <span class="text-xs text-slate-400">
-                            (Optional)
+                            <span data-i18n="owners.optional">(Optional)</span>
                         </span>
                     </label>
 
@@ -1350,9 +1354,9 @@
                         for="owner-expense-notes"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Notes
+                        <span data-i18n="owners.notes">Notes</span>
                         <span class="text-xs text-slate-400">
-                            (Optional)
+                            <span data-i18n="owners.optional">(Optional)</span>
                         </span>
                     </label>
 
@@ -1386,7 +1390,7 @@
                     text-sm font-medium text-slate-700
                 "
             >
-                Cancel
+                <span data-i18n="owners.cancel">Cancel</span>
             </button>
 
             <button
@@ -1400,7 +1404,7 @@
                     disabled:opacity-60
                 "
             >
-                Record Expense
+                <span data-i18n="owners.record_expense">Record Expense</span>
             </button>
         </div>
     </div>
@@ -1436,11 +1440,11 @@
         >
             <div>
                 <h2 class="text-xl font-semibold text-slate-950">
-                    Make Owner Payout
+                    <span data-i18n="owners.make_owner_payout">Make Owner Payout</span>
                 </h2>
 
                 <p class="mt-1 text-sm text-slate-500">
-                    Pay available funds to the selected Property Owner.
+                    <span data-i18n="owners.payout_description">Pay available funds to the selected Property Owner.</span>
                 </p>
             </div>
 
@@ -1448,7 +1452,9 @@
                 type="button"
                 data-close-owner-modal="owner-payout-modal"
                 class="rounded-lg p-2 text-slate-400 hover:bg-slate-100"
-            >
+
+                aria-label="Close"
+                data-i18n-aria-label="owners.close">
                 ✕
             </button>
         </div>
@@ -1475,7 +1481,7 @@
                 "
             >
                 <div class="text-xs font-medium uppercase text-slate-500">
-                    Available Owner Balance
+                    <span data-i18n="owners.available_owner_balance">Available Owner Balance</span>
                 </div>
 
                 <div
@@ -1495,7 +1501,7 @@
                         for="owner-payout-amount"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Amount
+                        <span data-i18n="owners.amount">Amount</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1519,7 +1525,7 @@
                         for="owner-payout-date"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Payout Date
+                        <span data-i18n="owners.payout_date">Payout Date</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1541,7 +1547,7 @@
                         for="owner-payout-method"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Payment Method
+                        <span data-i18n="owners.payment_method">Payment Method</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1555,15 +1561,15 @@
                             text-sm outline-none
                         "
                     >
-                        <option value="bank_transfer">
+                        <option value="bank_transfer" data-i18n="owners.bank_transfer">
                             Bank Transfer
                         </option>
 
-                        <option value="momo">
+                        <option value="momo" data-i18n="owners.momo">
                             MoMo
                         </option>
 
-                        <option value="cash">
+                        <option value="cash" data-i18n="owners.cash">
                             Cash
                         </option>
                     </select>
@@ -1574,9 +1580,9 @@
                         for="owner-payout-reference"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Reference
+                        <span data-i18n="owners.reference">Reference</span>
                         <span class="text-xs text-slate-400">
-                            (Optional)
+                            <span data-i18n="owners.optional">(Optional)</span>
                         </span>
                     </label>
 
@@ -1598,9 +1604,9 @@
                         for="owner-payout-notes"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Notes
+                        <span data-i18n="owners.notes">Notes</span>
                         <span class="text-xs text-slate-400">
-                            (Optional)
+                            <span data-i18n="owners.optional">(Optional)</span>
                         </span>
                     </label>
 
@@ -1634,7 +1640,7 @@
                     text-sm font-medium text-slate-700
                 "
             >
-                Cancel
+                <span data-i18n="owners.cancel">Cancel</span>
             </button>
 
             <button
@@ -1648,7 +1654,7 @@
                     disabled:opacity-60
                 "
             >
-                Make Payout
+                <span data-i18n="owners.make_payout">Make Payout</span>
             </button>
         </div>
     </div>
@@ -1684,11 +1690,11 @@
         >
             <div>
                 <h2 class="text-xl font-semibold text-slate-950">
-                    Owner Account Adjustment
+                    <span data-i18n="owners.owner_account_adjustment">Owner Account Adjustment</span>
                 </h2>
 
                 <p class="mt-1 text-sm text-slate-500">
-                    Record an exceptional manual accounting correction.
+                    <span data-i18n="owners.adjustment_description">Record an exceptional manual accounting correction.</span>
                 </p>
             </div>
 
@@ -1696,7 +1702,9 @@
                 type="button"
                 data-close-owner-modal="owner-adjustment-modal"
                 class="rounded-lg p-2 text-slate-400 hover:bg-slate-100"
-            >
+
+                aria-label="Close"
+                data-i18n-aria-label="owners.close">
                 ✕
             </button>
         </div>
@@ -1723,9 +1731,9 @@
                     text-sm leading-6 text-amber-800
                 "
             >
-                Adjustments should only be used for accounting corrections.
+                <span data-i18n="owners.adjustment_warning">Adjustments should only be used for accounting corrections.
                 Normal owner deposits, expenses and payouts should use their
-                dedicated actions.
+                dedicated actions.</span>
             </div>
 
             <div class="grid gap-4 md:grid-cols-2">
@@ -1734,7 +1742,7 @@
                         for="owner-adjustment-direction"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Direction
+                        <span data-i18n="owners.direction">Direction</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1748,11 +1756,11 @@
                             text-sm outline-none
                         "
                     >
-                        <option value="credit">
+                        <option value="credit" data-i18n="owners.credit_increase_balance">
                             Credit — Increase Owner Balance
                         </option>
 
-                        <option value="debit">
+                        <option value="debit" data-i18n="owners.debit_reduce_balance">
                             Debit — Reduce Owner Balance
                         </option>
                     </select>
@@ -1763,7 +1771,7 @@
                         for="owner-adjustment-amount"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Amount
+                        <span data-i18n="owners.amount">Amount</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1787,7 +1795,7 @@
                         for="owner-adjustment-date"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Adjustment Date
+                        <span data-i18n="owners.adjustment_date">Adjustment Date</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1809,9 +1817,9 @@
                         for="owner-adjustment-reference"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Reference
+                        <span data-i18n="owners.reference">Reference</span>
                         <span class="text-xs text-slate-400">
-                            (Optional)
+                            <span data-i18n="owners.optional">(Optional)</span>
                         </span>
                     </label>
 
@@ -1833,7 +1841,7 @@
                         for="owner-adjustment-reason"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        Reason
+                        <span data-i18n="owners.reason">Reason</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1842,7 +1850,7 @@
                         rows="4"
                         maxlength="1000"
                         required
-                        placeholder="Explain why this manual adjustment is necessary..."
+                        placeholder="Explain why this manual adjustment is necessary..." data-i18n-placeholder="owners.adjustment_reason_placeholder"
                         class="
                             w-full rounded-lg
                             border border-slate-200
@@ -1870,7 +1878,7 @@
                     text-sm font-medium text-slate-700
                 "
             >
-                Cancel
+                <span data-i18n="owners.cancel">Cancel</span>
             </button>
 
             <button
@@ -1884,7 +1892,7 @@
                     disabled:opacity-60
                 "
             >
-                Record Adjustment
+                <span data-i18n="owners.record_adjustment">Record Adjustment</span>
             </button>
         </div>
     </div>
