@@ -184,4 +184,101 @@ class BuildingApiTest extends TestCase
             'ownership_percentage' => 50.00,
         ]);
     }
+
+    /**
+     * Searching by Unit name returns the parent Building and its Units.
+     */
+    public function test_building_search_finds_unit_name(): void
+    {
+        $owner = $this->createOwner(
+            'Unit Search Owner'
+        );
+
+        $buildingResponse = $this->postJson(
+            '/api/buildings',
+            [
+                'name' => 'Search Parent Building',
+                'owners' => [
+                    [
+                        'party_id' => $owner->id,
+                        'ownership_percentage' => 100,
+                    ],
+                ],
+            ]
+        )->assertCreated();
+
+        $buildingId =
+            $buildingResponse->json('id');
+
+        $this->postJson(
+            '/api/units',
+            [
+                'building_id' => $buildingId,
+                'name' => 'Penthouse Sapphire',
+                'description' => 'Top floor residence',
+            ]
+        )->assertCreated();
+
+        $this->getJson(
+            '/api/buildings?search=Sapphire'
+        )
+            ->assertOk()
+            ->assertJsonPath(
+                'data.0.id',
+                $buildingId
+            )
+            ->assertJsonPath(
+                'data.0.units.0.name',
+                'Penthouse Sapphire'
+            );
+    }
+
+    /**
+     * Searching by Unit description returns the parent Building.
+     */
+    public function test_building_search_finds_unit_description(): void
+    {
+        $owner = $this->createOwner(
+            'Description Search Owner'
+        );
+
+        $buildingResponse = $this->postJson(
+            '/api/buildings',
+            [
+                'name' => 'Description Parent Building',
+                'owners' => [
+                    [
+                        'party_id' => $owner->id,
+                        'ownership_percentage' => 100,
+                    ],
+                ],
+            ]
+        )->assertCreated();
+
+        $buildingId =
+            $buildingResponse->json('id');
+
+        $this->postJson(
+            '/api/units',
+            [
+                'building_id' => $buildingId,
+                'name' => 'Unit 4B',
+                'description' => 'Private rooftop terrace',
+            ]
+        )->assertCreated();
+
+        $this->getJson(
+            '/api/buildings?search=rooftop'
+        )
+            ->assertOk()
+            ->assertJsonPath(
+                'data.0.id',
+                $buildingId
+            )
+            ->assertJsonPath(
+                'data.0.units.0.name',
+                'Unit 4B'
+            );
+    }
+
 }

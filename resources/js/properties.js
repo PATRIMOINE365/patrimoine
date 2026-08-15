@@ -219,7 +219,8 @@ async function loadProperties(
             );
 
         renderProperties(
-            payload
+            payload,
+            search
         );
 
         renderPropertiesPagination(
@@ -246,9 +247,17 @@ async function loadProperties(
 /**
  * Render Buildings and attach interactions to generated controls.
  *
+ * When a search matches one or more Units, the parent Building remains
+ * the normal search result but its Unit panel is automatically expanded
+ * so the matching Unit is immediately visible.
+ *
  * @param {object} payload
+ * @param {string} search
  */
-function renderProperties(payload) {
+function renderProperties(
+    payload,
+    search = ''
+) {
     const container =
         document.getElementById(
             'properties-list'
@@ -342,7 +351,8 @@ function renderProperties(payload) {
             .map(
                 (building) =>
                     propertyCard(
-                        building
+                        building,
+                        search
                     )
             )
             .join('');
@@ -537,16 +547,51 @@ function updatePropertyMetrics(
 /**
  * Generate the HTML representation of a Building.
  *
+ * A Unit match automatically expands the Unit panel. Building-only
+ * matches retain the normal collapsed presentation.
+ *
  * @param {object} building
+ * @param {string} search
  * @returns {string}
  */
-function propertyCard(building) {
+function propertyCard(
+    building,
+    search = ''
+) {
     const units =
         Array.isArray(
             building.units
         )
             ? building.units
             : [];
+
+    const normalizedSearch =
+        normalizePropertySearch(
+            search
+        );
+
+    const matchingUnitIds =
+        new Set(
+            normalizedSearch === ''
+                ? []
+                : units
+                    .filter(
+                        (unit) =>
+                            propertyUnitMatchesSearch(
+                                unit,
+                                normalizedSearch
+                            )
+                    )
+                    .map(
+                        (unit) =>
+                            String(
+                                unit.id
+                            )
+                    )
+        );
+
+    const expandUnits =
+        matchingUnitIds.size > 0;
 
     const ownerships =
         Array.isArray(
@@ -573,7 +618,8 @@ function propertyCard(building) {
         renderPropertyUnits(
             building,
             units,
-            buildingName
+            buildingName,
+            matchingUnitIds
         );
 
     return `
@@ -747,7 +793,11 @@ function propertyCard(building) {
                         data-building-id="${escapeHtml(
                             building.id
                         )}"
-                        aria-expanded="false"
+                        aria-expanded="${
+                            expandUnits
+                                ? 'true'
+                                : 'false'
+                        }"
                         class="
                             inline-flex items-center
                             gap-2 rounded-lg
@@ -762,7 +812,11 @@ function propertyCard(building) {
                         <span
                             data-property-toggle-label
                         >
-                            View Units
+                            ${
+                                expandUnits
+                                    ? 'Hide Units'
+                                    : 'View Units'
+                            }
                         </span>
 
                         <svg
@@ -770,6 +824,11 @@ function propertyCard(building) {
                             class="
                                 h-4 w-4
                                 transition-transform
+                                ${
+                                    expandUnits
+                                        ? 'rotate-180'
+                                        : ''
+                                }
                             "
                             viewBox="0 0 24 24"
                             fill="none"
@@ -787,7 +846,11 @@ function propertyCard(building) {
                     building.id
                 )}"
                 class="
-                    hidden
+                    ${
+                        expandUnits
+                            ? ''
+                            : 'hidden'
+                    }
                     border-t border-slate-100
                     bg-slate-50/60
                     px-5 py-4
@@ -890,12 +953,14 @@ function renderPropertyOwners(
  * @param {object} building
  * @param {Array} units
  * @param {string} buildingName
+ * @param {Set<string>} matchingUnitIds
  * @returns {string}
  */
 function renderPropertyUnits(
     building,
     units,
-    buildingName
+    buildingName,
+    matchingUnitIds = new Set()
 ) {
     if (
         units.length === 0
@@ -914,13 +979,29 @@ function renderPropertyUnits(
 
     return units
         .map(
-            (unit) => `
+            (unit) => {
+                const matchesSearch =
+                    matchingUnitIds.has(
+                        String(
+                            unit.id
+                        )
+                    );
+
+                return `
                 <div
+                    data-property-unit-id="${escapeHtml(
+                        unit.id
+                    )}"
                     class="
                         flex items-center
                         justify-between gap-4
                         border-b border-slate-100
-                        py-3 last:border-b-0
+                        px-3 py-3 last:border-b-0
+                        ${
+                            matchesSearch
+                                ? 'rounded-lg bg-patrimoine-50 ring-1 ring-inset ring-patrimoine-200'
+                                : ''
+                        }
                     "
                 >
                     <div
@@ -1002,9 +1083,55 @@ function renderPropertyUnits(
                         </button>
                     </div>
                 </div>
-            `
+            `;
+            }
         )
         .join('');
+}
+
+/**
+ * Normalize text used by the Properties Unit-match UI.
+ *
+ * @param {unknown} value
+ * @returns {string}
+ */
+function normalizePropertySearch(value) {
+    return String(
+        value ?? ''
+    )
+        .trim()
+        .toLocaleLowerCase();
+}
+
+/**
+ * Determine whether a Unit matches the active Properties search.
+ *
+ * BuildingController searches Unit name and description, so the browser
+ * mirrors those same fields when deciding which Unit row to highlight.
+ *
+ * @param {object} unit
+ * @param {string} normalizedSearch
+ * @returns {boolean}
+ */
+function propertyUnitMatchesSearch(
+    unit,
+    normalizedSearch
+) {
+    if (normalizedSearch === '') {
+        return false;
+    }
+
+    return [
+        unit?.name,
+        unit?.description,
+    ].some(
+        (value) =>
+            normalizePropertySearch(
+                value
+            ).includes(
+                normalizedSearch
+            )
+    );
 }
 
 /**
