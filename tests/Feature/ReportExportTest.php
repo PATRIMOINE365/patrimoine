@@ -317,13 +317,26 @@ class ReportExportTest extends TestCase
         );
 
         /*
-         * IDs/counts must remain plain numbers rather than becoming money.
-         *
-         * The tenant section is exported as Field/Value rows, therefore
-         * the semantic field appears as "Id" rather than "Tenant Id".
+         * Export structure and labels follow the selected French language.
          */
         $this->assertStringContainsString(
-            'Id,2',
+            'Locataire',
+            $contents
+        );
+
+        $this->assertStringContainsString(
+            'Champ,Valeur',
+            $contents
+        );
+
+        /*
+         * IDs/counts must remain plain numbers rather than becoming money.
+         *
+         * The tenant section is exported as localised Field/Value rows.
+         * The semantic ID field remains an identifier rather than money.
+         */
+        $this->assertStringContainsString(
+            'ID,2',
             $contents
         );
 

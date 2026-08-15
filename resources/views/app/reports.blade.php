@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Reports — Patrimoine')
+@section('title-i18n', 'reports.title')
 
 @section('content')
 
@@ -23,7 +24,7 @@
                     text-patrimoine-700
                 "
             >
-                Finance
+                <span data-i18n="reports.finance">Finance</span>
             </p>
 
             <h1
@@ -32,12 +33,11 @@
                     tracking-tight text-slate-950
                 "
             >
-                Reports
+                <span data-i18n="reports.heading">Reports</span>
             </h1>
 
             <p class="mt-2 text-sm text-slate-500">
-                Review financial and operational reports across owners,
-                tenants and properties.
+                <span data-i18n="reports.page_description">Review financial and operational reports across owners, tenants and properties.</span>
             </p>
         </div>
     </div>
@@ -84,11 +84,11 @@
                         text-slate-950
                     "
                 >
-                    Report Type
+                    <span data-i18n="reports.report_type">Report Type</span>
                 </h2>
 
                 <p class="mt-1 text-xs text-slate-500">
-                    Select the report you want to review.
+                    <span data-i18n="reports.report_type_description">Select the report you want to review.</span>
                 </p>
             </div>
 
@@ -109,7 +109,7 @@
                 >
                     <div class="min-w-0">
                         <div class="text-sm font-semibold">
-                            Managing Organisation
+                            <span data-i18n="reports.managing_organisation">Managing Organisation</span>
                         </div>
 
                         <div
@@ -118,7 +118,7 @@
                                 text-slate-500
                             "
                         >
-                            Portfolio-wide operational and financial summary.
+                            <span data-i18n="reports.managing_organisation_summary">Portfolio-wide operational and financial summary.</span>
                         </div>
                     </div>
                 </button>
@@ -137,7 +137,7 @@
                 >
                     <div class="min-w-0">
                         <div class="text-sm font-semibold">
-                            Owner Report
+                            <span data-i18n="reports.owner_report">Owner Report</span>
                         </div>
 
                         <div
@@ -146,7 +146,7 @@
                                 text-slate-500
                             "
                         >
-                            Owner balance, credits, debits and ledger history.
+                            <span data-i18n="reports.owner_report_summary">Owner balance, credits, debits and ledger history.</span>
                         </div>
                     </div>
                 </button>
@@ -165,7 +165,7 @@
                 >
                     <div class="min-w-0">
                         <div class="text-sm font-semibold">
-                            Building Report
+                            <span data-i18n="reports.building_report">Building Report</span>
                         </div>
 
                         <div
@@ -174,7 +174,7 @@
                                 text-slate-500
                             "
                         >
-                            Billing, collections, expenses and ownership.
+                            <span data-i18n="reports.building_report_summary">Billing, collections, expenses and ownership.</span>
                         </div>
                     </div>
                 </button>
@@ -193,7 +193,7 @@
                 >
                     <div class="min-w-0">
                         <div class="text-sm font-semibold">
-                            Unit Report
+                            <span data-i18n="reports.unit_report">Unit Report</span>
                         </div>
 
                         <div
@@ -202,7 +202,7 @@
                                 text-slate-500
                             "
                         >
-                            Lease, billing and collection history for one Unit.
+                            <span data-i18n="reports.unit_report_summary">Lease, billing and collection history for one Unit.</span>
                         </div>
                     </div>
                 </button>
@@ -221,7 +221,7 @@
                 >
                     <div class="min-w-0">
                         <div class="text-sm font-semibold">
-                            Tenant Statement
+                            <span data-i18n="reports.tenant_statement">Tenant Statement</span>
                         </div>
 
                         <div
@@ -230,7 +230,7 @@
                                 text-slate-500
                             "
                         >
-                            Tenant billing, payments and held funds.
+                            <span data-i18n="reports.tenant_statement_summary">Tenant billing, payments and held funds.</span>
                         </div>
                     </div>
                 </button>
@@ -258,7 +258,7 @@
                         text-slate-700
                     "
                 >
-                    Search
+                    <span data-i18n="reports.search">Search</span>
                 </label>
 
                 <div class="relative">
@@ -268,6 +268,7 @@
                         type="search"
                         autocomplete="off"
                         placeholder="Search..."
+                        data-i18n-placeholder="reports.search_placeholder"
                         class="
                             w-full rounded-lg
                             border border-slate-200
@@ -343,7 +344,7 @@
                                 hover:text-patrimoine-950
                             "
                         >
-                            Change
+                            <span data-i18n="reports.change">Change</span>
                         </button>
                     </div>
                 </div>
@@ -360,11 +361,11 @@
                 "
             >
                 <div class="text-sm font-medium text-slate-700">
-                    Reporting Period
+                    <span data-i18n="reports.reporting_period">Reporting Period</span>
                 </div>
 
                 <p class="mt-1 text-xs text-slate-500">
-                    Leave dates empty to include all available history.
+                    <span data-i18n="reports.period_description">Leave dates empty to include all available history.</span>
                 </p>
 
                 <div class="mt-4 space-y-3">
@@ -378,7 +379,7 @@
                                 text-slate-600
                             "
                         >
-                            From
+                            <span data-i18n="reports.from">From</span>
                         </label>
 
                         <input
@@ -405,7 +406,7 @@
                                 text-slate-600
                             "
                         >
-                            To
+                            <span data-i18n="reports.to">To</span>
                         </label>
 
                         <input
@@ -440,7 +441,7 @@
                         disabled:opacity-50
                     "
                 >
-                    Run Report
+                    <span data-i18n="reports.run_report">Run Report</span>
                 </button>
             </div>
         </aside>
@@ -477,7 +478,7 @@
                             text-slate-950
                         "
                     >
-                        Managing Organisation Report
+                        <span data-i18n="reports.managing_organisation_report">Managing Organisation Report</span>
                     </h2>
 
                     <div
@@ -487,7 +488,7 @@
                             text-slate-500
                         "
                     >
-                        Portfolio-wide financial and operational report.
+                        <span data-i18n="reports.managing_organisation_description">Portfolio-wide financial and operational report.</span>
                     </div>
                 </div>
 
@@ -510,7 +511,7 @@
                             hover:bg-slate-50
                         "
                     >
-                        PDF
+                        <span data-i18n="reports.pdf">PDF</span>
                     </button>
 
                     <button
@@ -526,7 +527,7 @@
                             hover:bg-slate-50
                         "
                     >
-                        CSV
+                        <span data-i18n="reports.csv">CSV</span>
                     </button>
                 </div>
             </div>
@@ -547,7 +548,7 @@
                                 text-sm text-slate-500
                             "
                         >
-                            Select a report type and run the report.
+                            <span data-i18n="reports.initial_prompt">Select a report type and run the report.</span>
                         </div>
                     </div>
                 </div>

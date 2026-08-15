@@ -2,7 +2,9 @@ import {
     apiRequest,
     formatCurrency,
     formatDate,
+    formatNumber,
     parseJsonResponse,
+    translate,
 } from './core.js';
 
 /*
@@ -150,7 +152,7 @@ async function initializeReportDeepLink() {
 
         if (! isTenant) {
             throw new Error(
-                'The selected Party is not a Tenant.'
+                translate('reports.not_tenant')
             );
         }
 
@@ -177,7 +179,7 @@ async function initializeReportDeepLink() {
         showReportsError(
             error instanceof Error
                 ? error.message
-                : 'Unable to open the Tenant Statement.'
+                : translate('reports.unable_to_open_tenant_statement')
         );
 
         renderReportError();
@@ -304,46 +306,46 @@ function updateSubjectLabels() {
     ) {
         case 'owner':
             label.textContent =
-                'Property Owner';
+                translate('reports.property_owner');
 
             input.placeholder =
-                'Search owner by name, phone or email...';
+                translate('reports.search_owner_placeholder');
 
             break;
 
         case 'tenant':
             label.textContent =
-                'Tenant';
+                translate('reports.tenant');
 
             input.placeholder =
-                'Search tenant by name, phone or email...';
+                translate('reports.search_tenant_placeholder');
 
             break;
 
         case 'building':
             label.textContent =
-                'Building';
+                translate('reports.building');
 
             input.placeholder =
-                'Search building...';
+                translate('reports.search_building_placeholder');
 
             break;
 
         case 'unit':
             label.textContent =
-                'Unit';
+                translate('reports.unit');
 
             input.placeholder =
-                'Search unit...';
+                translate('reports.search_unit_placeholder');
 
             break;
 
         default:
             label.textContent =
-                'Search';
+                translate('reports.search');
 
             input.placeholder =
-                'Search...';
+                translate('reports.search_placeholder');
     }
 }
 
@@ -368,42 +370,42 @@ function updateReportHeader() {
     const definitions = {
         'managing-organisation': {
             title:
-                'Managing Organisation Report',
+                translate('reports.managing_organisation_report'),
 
             subtitle:
-                'Portfolio-wide financial and operational report.',
+                translate('reports.managing_organisation_description'),
         },
 
         owner: {
             title:
-                'Owner Report',
+                translate('reports.owner_report'),
 
             subtitle:
-                'Consolidated owner financial statement and ledger.',
+                translate('reports.owner_report_description'),
         },
 
         building: {
             title:
-                'Building Report',
+                translate('reports.building_report'),
 
             subtitle:
-                'Billing, collections, expenses and ownership for one Building.',
+                translate('reports.building_report_description'),
         },
 
         unit: {
             title:
-                'Unit Report',
+                translate('reports.unit_report'),
 
             subtitle:
-                'Lease and financial history for one Unit.',
+                translate('reports.unit_report_description'),
         },
 
         tenant: {
             title:
-                'Tenant Statement',
+                translate('reports.tenant_statement'),
 
             subtitle:
-                'Billing, payments and held funds for one Tenant.',
+                translate('reports.tenant_statement_description'),
         },
     };
 
@@ -414,7 +416,7 @@ function updateReportHeader() {
 
     title.textContent =
         definition?.title
-        ?? 'Report';
+        ?? translate('reports.report');
 
     subtitle.textContent =
         definition?.subtitle
@@ -509,7 +511,7 @@ async function searchSubjects(
                 text-sm text-slate-400
             "
         >
-            Searching…
+            ${escapeHtml(translate('reports.searching'))}
         </div>
     `;
 
@@ -552,7 +554,7 @@ async function searchSubjects(
                 ${escapeHtml(
                     error instanceof Error
                         ? error.message
-                        : 'Unable to search.'
+                        : translate('reports.unable_to_search')
                 )}
             </div>
         `;
@@ -597,7 +599,7 @@ function subjectSearchEndpoint(
 
         default:
             throw new Error(
-                'This report does not require a subject.'
+                translate('reports.subject_not_required')
             );
     }
 }
@@ -676,7 +678,13 @@ function normalizeSearchResults(
 
                     name:
                         building.name
-                        ?? `Building #${building.id}`,
+                        ?? translate(
+                            'reports.building_number',
+                            {
+                                number:
+                                    building.id,
+                            }
+                        ),
 
                     meta:
                         [
@@ -699,7 +707,13 @@ function normalizeSearchResults(
 
                     name:
                         unit.name
-                        ?? `Unit #${unit.id}`,
+                        ?? translate(
+                            'reports.unit_number',
+                            {
+                                number:
+                                    unit.id,
+                            }
+                        ),
 
                     meta:
                         unit?.building?.name
@@ -991,7 +1005,7 @@ async function runReport() {
         && from > to
     ) {
         showReportsError(
-            'The report end date must be on or after the start date.'
+            translate('reports.invalid_period')
         );
 
         return;
@@ -1003,7 +1017,7 @@ async function runReport() {
         && ! selectedSubject
     ) {
         showReportsError(
-            'Select a report subject first.'
+            translate('reports.select_subject_first')
         );
 
         return;
@@ -1048,7 +1062,7 @@ async function runReport() {
         showReportsError(
             error instanceof Error
                 ? error.message
-                : 'Unable to generate report.'
+                : translate('reports.unable_to_generate')
         );
 
         renderReportError();
@@ -1204,25 +1218,25 @@ function renderManagingOrganisationReport(
 
         ${metricGrid([
             [
-                'Buildings',
+                translate('reports.buildings'),
                 numberFormat(
                     portfolio.buildings
                 ),
             ],
             [
-                'Units',
+                translate('reports.units'),
                 numberFormat(
                     portfolio.units
                 ),
             ],
             [
-                'Owner Accounts',
+                translate('reports.owner_accounts'),
                 numberFormat(
                     portfolio.owner_accounts
                 ),
             ],
             [
-                'Cash Received',
+                translate('reports.cash_received'),
                 formatCurrency(
                     billing.cash_received
                     ?? 0
@@ -1231,52 +1245,52 @@ function renderManagingOrganisationReport(
         ])}
 
         ${reportSection(
-            'Billing',
+            translate('reports.billing'),
             pairGrid([
                 [
-                    'Total Invoiced',
+                    translate('reports.total_invoiced'),
                     formatCurrency(
                         billing.invoiced
                         ?? 0
                     ),
                 ],
                 [
-                    'Rent Invoiced',
+                    translate('reports.rent_invoiced'),
                     formatCurrency(
                         billing.rent_invoiced
                         ?? 0
                     ),
                 ],
                 [
-                    'Security Deposit Debt Invoiced',
+                    translate('reports.security_deposit_debt_invoiced'),
                     formatCurrency(
                         billing.security_deposit_debt_invoiced
                         ?? 0
                     ),
                 ],
                 [
-                    'Settled',
+                    translate('reports.settled'),
                     formatCurrency(
                         billing.settled
                         ?? 0
                     ),
                 ],
                 [
-                    'Rent Outstanding',
+                    translate('reports.rent_outstanding'),
                     formatCurrency(
                         billing.rent_outstanding
                         ?? 0
                     ),
                 ],
                 [
-                    'Security Deposit Debt Outstanding',
+                    translate('reports.security_deposit_debt_outstanding'),
                     formatCurrency(
                         billing.security_deposit_debt_outstanding
                         ?? 0
                     ),
                 ],
                 [
-                    'Total Outstanding',
+                    translate('reports.total_outstanding'),
                     formatCurrency(
                         billing.total_outstanding
                         ?? billing.outstanding
@@ -1284,7 +1298,7 @@ function renderManagingOrganisationReport(
                     ),
                 ],
                 [
-                    'Cash Received',
+                    translate('reports.cash_received'),
                     formatCurrency(
                         billing.cash_received
                         ?? 0
@@ -1294,45 +1308,45 @@ function renderManagingOrganisationReport(
         )}
 
         ${reportSection(
-            'Owner Accounting',
+            translate('reports.owner_accounting'),
             pairGrid([
                 [
-                    'Rent Entitlement',
+                    translate('reports.rent_entitlement'),
                     formatCurrency(
                         owner.rent_entitlement
                         ?? 0
                     ),
                 ],
                 [
-                    'Management Fees',
+                    translate('reports.management_fees'),
                     formatCurrency(
                         owner.management_fees
                         ?? 0
                     ),
                 ],
                 [
-                    'Agent Commissions',
+                    translate('reports.agent_commissions'),
                     formatCurrency(
                         owner.agent_commissions
                         ?? 0
                     ),
                 ],
                 [
-                    'Owner Expenses',
+                    translate('reports.owner_expenses'),
                     formatCurrency(
                         owner.owner_expenses
                         ?? 0
                     ),
                 ],
                 [
-                    'Owner Payouts',
+                    translate('reports.owner_payouts'),
                     formatCurrency(
                         owner.owner_payouts
                         ?? 0
                     ),
                 ],
                 [
-                    'Owner Funds Held',
+                    translate('reports.owner_funds_held'),
                     formatCurrency(
                         owner.owner_funds_held
                         ?? 0
@@ -1342,24 +1356,24 @@ function renderManagingOrganisationReport(
         )}
 
         ${reportSection(
-            'Tenant Funds',
+            translate('reports.tenant_funds'),
             pairGrid([
                 [
-                    'Rent Reserve',
+                    translate('reports.rent_reserve'),
                     formatCurrency(
                         funds.rent_reserve
                         ?? 0
                     ),
                 ],
                 [
-                    'Consumable Advance',
+                    translate('reports.consumable_advance'),
                     formatCurrency(
                         funds.consumable_advance
                         ?? 0
                     ),
                 ],
                 [
-                    'Security Deposit',
+                    translate('reports.security_deposit'),
                     formatCurrency(
                         funds.security_deposit
                         ?? 0
@@ -1397,7 +1411,7 @@ function renderOwnerReport(
     renderReportHtml(`
         ${identityCard(
             owner.name
-            ?? 'Property Owner',
+            ?? translate('reports.property_owner'),
             [
                 owner.phone,
                 owner.email,
@@ -1410,28 +1424,28 @@ function renderOwnerReport(
 
         ${metricGrid([
             [
-                'Opening Balance',
+                translate('reports.opening_balance'),
                 formatCurrency(
                     summary.opening_balance
                     ?? 0
                 ),
             ],
             [
-                'Credits',
+                translate('reports.credits'),
                 formatCurrency(
                     summary.credits
                     ?? 0
                 ),
             ],
             [
-                'Debits',
+                translate('reports.debits'),
                 formatCurrency(
                     summary.debits
                     ?? 0
                 ),
             ],
             [
-                'Closing Balance',
+                translate('reports.closing_balance'),
                 formatCurrency(
                     summary.closing_balance
                     ?? 0
@@ -1440,59 +1454,59 @@ function renderOwnerReport(
         ])}
 
         ${reportSection(
-            'Financial Summary',
+            translate('reports.financial_summary'),
             pairGrid([
                 [
-                    'Rent Collected',
+                    translate('reports.rent_collected'),
                     formatCurrency(
                         summary.rent_entitlement
                         ?? 0
                     ),
                 ],
                 [
-                    'Owner Deposits',
+                    translate('reports.owner_deposits'),
                     formatCurrency(
                         summary.owner_deposits
                         ?? 0
                     ),
                 ],
                 [
-                    'Management Fees',
+                    translate('reports.management_fees'),
                     formatCurrency(
                         summary.management_fees
                         ?? 0
                     ),
                 ],
                 [
-                    'Agent Commissions',
+                    translate('reports.agent_commissions'),
                     formatCurrency(
                         summary.agent_commissions
                         ?? 0
                     ),
                 ],
                 [
-                    'Property Expenses',
+                    translate('reports.property_expenses'),
                     formatCurrency(
                         summary.expenses
                         ?? 0
                     ),
                 ],
                 [
-                    'Payouts',
+                    translate('reports.payouts'),
                     formatCurrency(
                         summary.payouts
                         ?? 0
                     ),
                 ],
                 [
-                    'Adjustments Credit',
+                    translate('reports.adjustments_credit'),
                     formatCurrency(
                         summary.adjustments_credit
                         ?? 0
                     ),
                 ],
                 [
-                    'Adjustments Debit',
+                    translate('reports.adjustments_debit'),
                     formatCurrency(
                         summary.adjustments_debit
                         ?? 0
@@ -1502,7 +1516,7 @@ function renderOwnerReport(
         )}
 
         ${reportSection(
-            'Transactions',
+            translate('reports.transactions'),
             ownerTransactionsTable(
                 transactions
             )
@@ -1544,7 +1558,7 @@ function renderBuildingReport(
     renderReportHtml(`
         ${identityCard(
             building.name
-            ?? 'Building',
+            ?? translate('reports.building'),
             [
                 building.location,
                 building.address,
@@ -1557,26 +1571,26 @@ function renderBuildingReport(
 
         ${metricGrid([
             [
-                'Units',
+                translate('reports.units'),
                 numberFormat(
                     summary.units
                 ),
             ],
             [
-                'Leases',
+                translate('reports.leases'),
                 numberFormat(
                     summary.leases
                 ),
             ],
             [
-                'Rent Outstanding',
+                translate('reports.rent_outstanding'),
                 formatCurrency(
                     summary.rent_outstanding
                     ?? 0
                 ),
             ],
             [
-                'Security Deposit Debt',
+                translate('reports.security_deposit_debt'),
                 formatCurrency(
                     summary.security_deposit_debt_outstanding
                     ?? 0
@@ -1585,52 +1599,52 @@ function renderBuildingReport(
         ])}
 
         ${reportSection(
-            'Financial Summary',
+            translate('reports.financial_summary'),
             pairGrid([
                 [
-                    'Total Invoiced',
+                    translate('reports.total_invoiced'),
                     formatCurrency(
                         summary.invoiced
                         ?? 0
                     ),
                 ],
                 [
-                    'Rent Invoiced',
+                    translate('reports.rent_invoiced'),
                     formatCurrency(
                         summary.rent_invoiced
                         ?? 0
                     ),
                 ],
                 [
-                    'Security Deposit Debt Invoiced',
+                    translate('reports.security_deposit_debt_invoiced'),
                     formatCurrency(
                         summary.security_deposit_debt_invoiced
                         ?? 0
                     ),
                 ],
                 [
-                    'Invoice Settled',
+                    translate('reports.invoice_settled'),
                     formatCurrency(
                         summary.invoice_settled
                         ?? 0
                     ),
                 ],
                 [
-                    'Rent Outstanding',
+                    translate('reports.rent_outstanding'),
                     formatCurrency(
                         summary.rent_outstanding
                         ?? 0
                     ),
                 ],
                 [
-                    'Security Deposit Debt Outstanding',
+                    translate('reports.security_deposit_debt_outstanding'),
                     formatCurrency(
                         summary.security_deposit_debt_outstanding
                         ?? 0
                     ),
                 ],
                 [
-                    'Total Outstanding',
+                    translate('reports.total_outstanding'),
                     formatCurrency(
                         summary.total_outstanding
                         ?? summary.outstanding
@@ -1638,35 +1652,35 @@ function renderBuildingReport(
                     ),
                 ],
                 [
-                    'Cash Received',
+                    translate('reports.cash_received'),
                     formatCurrency(
                         summary.cash_received
                         ?? 0
                     ),
                 ],
                 [
-                    'Property Expenses',
+                    translate('reports.property_expenses'),
                     formatCurrency(
                         summary.property_expenses
                         ?? 0
                     ),
                 ],
                 [
-                    'Owner Rent Entitlement',
+                    translate('reports.owner_rent_entitlement'),
                     formatCurrency(
                         summary.owner_rent_entitlement
                         ?? 0
                     ),
                 ],
                 [
-                    'Management Fees',
+                    translate('reports.management_fees'),
                     formatCurrency(
                         summary.management_fees
                         ?? 0
                     ),
                 ],
                 [
-                    'Agent Commissions',
+                    translate('reports.agent_commissions'),
                     formatCurrency(
                         summary.agent_commissions
                         ?? 0
@@ -1676,14 +1690,14 @@ function renderBuildingReport(
         )}
 
         ${reportSection(
-            'Ownership',
+            translate('reports.ownership'),
             ownershipTable(
                 ownership
             )
         )}
 
         ${reportSection(
-            'Property Expenses',
+            translate('reports.property_expenses'),
             expenseTable(
                 expenses
             )
@@ -1725,7 +1739,7 @@ function renderUnitReport(
     renderReportHtml(`
         ${identityCard(
             unit.name
-            ?? 'Unit',
+            ?? translate('reports.unit'),
             unit?.building?.name
             ?? ''
         )}
@@ -1734,27 +1748,27 @@ function renderUnitReport(
 
         ${metricGrid([
             [
-                'Leases',
+                translate('reports.leases'),
                 numberFormat(
                     summary.leases
                 ),
             ],
             [
-                'Rent Outstanding',
+                translate('reports.rent_outstanding'),
                 formatCurrency(
                     summary.rent_outstanding
                     ?? 0
                 ),
             ],
             [
-                'Security Deposit Debt',
+                translate('reports.security_deposit_debt'),
                 formatCurrency(
                     summary.security_deposit_debt_outstanding
                     ?? 0
                 ),
             ],
             [
-                'Total Outstanding',
+                translate('reports.total_outstanding'),
                 formatCurrency(
                     summary.total_outstanding
                     ?? summary.outstanding
@@ -1764,52 +1778,52 @@ function renderUnitReport(
         ])}
 
         ${reportSection(
-            'Financial Summary',
+            translate('reports.financial_summary'),
             pairGrid([
                 [
-                    'Total Invoiced',
+                    translate('reports.total_invoiced'),
                     formatCurrency(
                         summary.invoiced
                         ?? 0
                     ),
                 ],
                 [
-                    'Rent Invoiced',
+                    translate('reports.rent_invoiced'),
                     formatCurrency(
                         summary.rent_invoiced
                         ?? 0
                     ),
                 ],
                 [
-                    'Security Deposit Debt Invoiced',
+                    translate('reports.security_deposit_debt_invoiced'),
                     formatCurrency(
                         summary.security_deposit_debt_invoiced
                         ?? 0
                     ),
                 ],
                 [
-                    'Settled',
+                    translate('reports.settled'),
                     formatCurrency(
                         summary.settled
                         ?? 0
                     ),
                 ],
                 [
-                    'Rent Outstanding',
+                    translate('reports.rent_outstanding'),
                     formatCurrency(
                         summary.rent_outstanding
                         ?? 0
                     ),
                 ],
                 [
-                    'Security Deposit Debt Outstanding',
+                    translate('reports.security_deposit_debt_outstanding'),
                     formatCurrency(
                         summary.security_deposit_debt_outstanding
                         ?? 0
                     ),
                 ],
                 [
-                    'Total Outstanding',
+                    translate('reports.total_outstanding'),
                     formatCurrency(
                         summary.total_outstanding
                         ?? summary.outstanding
@@ -1817,14 +1831,14 @@ function renderUnitReport(
                     ),
                 ],
                 [
-                    'Cash Received',
+                    translate('reports.cash_received'),
                     formatCurrency(
                         summary.cash_received
                         ?? 0
                     ),
                 ],
                 [
-                    'Expenses',
+                    translate('reports.expenses'),
                     formatCurrency(
                         summary.expenses
                         ?? 0
@@ -1834,14 +1848,14 @@ function renderUnitReport(
         )}
 
         ${reportSection(
-            'Lease History',
+            translate('reports.lease_history'),
             leaseTable(
                 leases
             )
         )}
 
         ${reportSection(
-            'Invoices',
+            translate('reports.invoices'),
             invoiceTable(
                 invoices
             )
@@ -1890,7 +1904,7 @@ function renderTenantReport(
     renderReportHtml(`
         ${identityCard(
             tenant.name
-            ?? 'Tenant',
+            ?? translate('reports.tenant'),
             [
                 tenant.phone,
                 tenant.email,
@@ -1903,21 +1917,21 @@ function renderTenantReport(
 
         ${metricGrid([
             [
-                'Rent Outstanding',
+                translate('reports.rent_outstanding'),
                 formatCurrency(
                     summary.rent_outstanding
                     ?? 0
                 ),
             ],
             [
-                'Security Deposit Debt',
+                translate('reports.security_deposit_debt'),
                 formatCurrency(
                     summary.security_deposit_debt_outstanding
                     ?? 0
                 ),
             ],
             [
-                'Total Outstanding',
+                translate('reports.total_outstanding'),
                 formatCurrency(
                     summary.total_outstanding
                     ?? summary.outstanding
@@ -1925,7 +1939,7 @@ function renderTenantReport(
                 ),
             ],
             [
-                'Cash Received',
+                translate('reports.cash_received'),
                 formatCurrency(
                     summary.cash_received
                     ?? 0
@@ -1934,38 +1948,38 @@ function renderTenantReport(
         ])}
 
         ${reportSection(
-            'Receivables',
+            translate('reports.receivables'),
             pairGrid([
                 [
-                    'Total Invoiced',
+                    translate('reports.total_invoiced'),
                     formatCurrency(
                         summary.invoiced
                         ?? 0
                     ),
                 ],
                 [
-                    'Settled',
+                    translate('reports.settled'),
                     formatCurrency(
                         summary.settled
                         ?? 0
                     ),
                 ],
                 [
-                    'Rent Outstanding',
+                    translate('reports.rent_outstanding'),
                     formatCurrency(
                         summary.rent_outstanding
                         ?? 0
                     ),
                 ],
                 [
-                    'Security Deposit Debt Outstanding',
+                    translate('reports.security_deposit_debt_outstanding'),
                     formatCurrency(
                         summary.security_deposit_debt_outstanding
                         ?? 0
                     ),
                 ],
                 [
-                    'Total Outstanding',
+                    translate('reports.total_outstanding'),
                     formatCurrency(
                         summary.total_outstanding
                         ?? summary.outstanding
@@ -1976,24 +1990,24 @@ function renderTenantReport(
         )}
 
         ${reportSection(
-            'Held Funds',
+            translate('reports.held_funds'),
             pairGrid([
                 [
-                    'Rent Reserve',
+                    translate('reports.rent_reserve'),
                     formatCurrency(
                         summary.rent_reserve_balance
                         ?? 0
                     ),
                 ],
                 [
-                    'Consumable Advance',
+                    translate('reports.consumable_advance'),
                     formatCurrency(
                         summary.consumable_advance_balance
                         ?? 0
                     ),
                 ],
                 [
-                    'Security Deposit',
+                    translate('reports.security_deposit'),
                     formatCurrency(
                         summary.security_deposit_balance
                         ?? 0
@@ -2003,21 +2017,21 @@ function renderTenantReport(
         )}
 
         ${reportSection(
-            'Leases',
+            translate('reports.leases'),
             tenantLeaseTable(
                 leases
             )
         )}
 
         ${reportSection(
-            'Invoices',
+            translate('reports.invoices'),
             tenantInvoiceTable(
                 invoices
             )
         )}
 
         ${reportSection(
-            'Payments',
+            translate('reports.payments'),
             tenantPaymentTable(
                 payments
             )
@@ -2094,8 +2108,11 @@ function periodHtml(
                     text-slate-500
                 "
             >
-                Reporting Period:
-                All available history
+                ${escapeHtml(
+                    translate(
+                        'reports.reporting_period_all_history'
+                    )
+                )}
             </div>
         `;
     }
@@ -2107,17 +2124,25 @@ function periodHtml(
                 text-slate-500
             "
         >
-            Reporting Period:
+            ${escapeHtml(
+                translate(
+                    'reports.reporting_period'
+                )
+            )}:
             ${escapeHtml(
                 from
                     ? formatDate(from)
-                    : 'Beginning'
+                    : translate(
+                        'reports.beginning'
+                    )
             )}
             —
             ${escapeHtml(
                 to
                     ? formatDate(to)
-                    : 'Present'
+                    : translate(
+                        'reports.present'
+                    )
             )}
         </div>
     `;
@@ -2274,7 +2299,7 @@ function tableHtml(
                     text-sm text-slate-500
                 "
             >
-                No records for this section.
+                ${escapeHtml(translate('reports.no_records_section'))}
             </div>
         `;
     }
@@ -2371,24 +2396,26 @@ function ownerTransactionsTable(
 ) {
     return tableHtml(
         [
-            'Date',
-            'Direction',
-            'Category',
-            'Amount',
-            'Building',
-            'Unit',
-            'Invoice',
-            'Reference',
+            translate('reports.date'),
+            translate('reports.direction'),
+            translate('reports.category'),
+            translate('reports.amount'),
+            translate('reports.building'),
+            translate('reports.unit'),
+            translate('reports.invoice'),
+            translate('reports.reference'),
         ],
         rows.map(
             (row) => [
                 formatDate(
                     row.date
                 ),
-                capitalizeWords(
+                translatedDomainValue(
+                    'direction',
                     row.direction
                 ),
-                capitalizeWords(
+                translatedDomainValue(
+                    'category',
                     row.category
                 ),
                 formatCurrency(
@@ -2413,8 +2440,8 @@ function ownershipTable(
 ) {
     return tableHtml(
         [
-            'Owner',
-            'Ownership',
+            translate('reports.owner'),
+            translate('reports.ownership'),
         ],
         rows.map(
             (row) => [
@@ -2431,11 +2458,11 @@ function expenseTable(
 ) {
     return tableHtml(
         [
-            'Date',
-            'Description',
-            'Amount',
-            'Unit',
-            'Reference',
+            translate('reports.date'),
+            translate('reports.description'),
+            translate('reports.amount'),
+            translate('reports.unit'),
+            translate('reports.reference'),
         ],
         rows.map(
             (row) => [
@@ -2449,7 +2476,13 @@ function expenseTable(
                     ?? 0
                 ),
                 row.unit_id
-                    ? `Unit #${row.unit_id}`
+                    ? translate(
+                        'reports.unit_number',
+                        {
+                            number:
+                                row.unit_id,
+                        }
+                    )
                     : '',
                 row.reference
                     ?? '',
@@ -2463,12 +2496,12 @@ function leaseTable(
 ) {
     return tableHtml(
         [
-            'Tenant',
-            'Start',
-            'End',
-            'Status',
-            'Rent',
-            'Frequency',
+            translate('reports.tenant'),
+            translate('reports.start'),
+            translate('reports.end'),
+            translate('reports.status'),
+            translate('reports.rent'),
+            translate('reports.frequency'),
         ],
         rows.map(
             (row) => [
@@ -2482,14 +2515,16 @@ function leaseTable(
                         row.end_date
                     )
                     : '',
-                capitalizeWords(
+                translatedDomainValue(
+                    'status',
                     row.status
                 ),
                 formatCurrency(
                     row.rent_amount
                     ?? 0
                 ),
-                capitalizeWords(
+                translatedDomainValue(
+                    'frequency',
                     row.payment_frequency
                 ),
             ]
@@ -2502,20 +2537,21 @@ function invoiceTable(
 ) {
     return tableHtml(
         [
-            'Invoice',
-            'Type',
-            'Issue Date',
-            'Due Date',
-            'Amount',
-            'Paid',
-            'Outstanding',
-            'Status',
+            translate('reports.invoice'),
+            translate('reports.type'),
+            translate('reports.issue_date'),
+            translate('reports.due_date'),
+            translate('reports.amount'),
+            translate('reports.paid'),
+            translate('reports.outstanding'),
+            translate('reports.status'),
         ],
         rows.map(
             (row) => [
                 row.invoice_number
                     ?? '',
-                capitalizeWords(
+                translatedDomainValue(
+                    'invoice_type',
                     row.type
                 ),
                 formatDate(
@@ -2536,7 +2572,8 @@ function invoiceTable(
                     row.outstanding_amount
                     ?? 0
                 ),
-                capitalizeWords(
+                translatedDomainValue(
+                    'status',
                     row.status
                 ),
             ]
@@ -2549,12 +2586,12 @@ function tenantLeaseTable(
 ) {
     return tableHtml(
         [
-            'Building',
-            'Unit',
-            'Status',
-            'Start',
-            'End',
-            'Rent',
+            translate('reports.building'),
+            translate('reports.unit'),
+            translate('reports.status'),
+            translate('reports.start'),
+            translate('reports.end'),
+            translate('reports.rent'),
         ],
         rows.map(
             (row) => [
@@ -2562,7 +2599,8 @@ function tenantLeaseTable(
                     ?? '',
                 row.unit
                     ?? '',
-                capitalizeWords(
+                translatedDomainValue(
+                    'status',
                     row.status
                 ),
                 formatDate(
@@ -2587,20 +2625,21 @@ function tenantInvoiceTable(
 ) {
     return tableHtml(
         [
-            'Invoice',
-            'Type',
-            'Date',
-            'Due Date',
-            'Amount',
-            'Paid',
-            'Outstanding',
-            'Status',
+            translate('reports.invoice'),
+            translate('reports.type'),
+            translate('reports.date'),
+            translate('reports.due_date'),
+            translate('reports.amount'),
+            translate('reports.paid'),
+            translate('reports.outstanding'),
+            translate('reports.status'),
         ],
         rows.map(
             (row) => [
                 row.invoice_number
                     ?? '',
-                capitalizeWords(
+                translatedDomainValue(
+                    'invoice_type',
                     row.type
                 ),
                 formatDate(
@@ -2621,7 +2660,8 @@ function tenantInvoiceTable(
                     row.outstanding
                     ?? 0
                 ),
-                capitalizeWords(
+                translatedDomainValue(
+                    'status',
                     row.status
                 ),
             ]
@@ -2634,12 +2674,12 @@ function tenantPaymentTable(
 ) {
     return tableHtml(
         [
-            'Date',
-            'Amount',
-            'Method',
-            'Reference',
-            'Allocated',
-            'Unallocated',
+            translate('reports.date'),
+            translate('reports.amount'),
+            translate('reports.method'),
+            translate('reports.reference'),
+            translate('reports.allocated'),
+            translate('reports.unallocated'),
         ],
         rows.map(
             (row) => [
@@ -2650,7 +2690,8 @@ function tenantPaymentTable(
                     row.amount
                     ?? 0
                 ),
-                capitalizeWords(
+                translatedDomainValue(
+                    'payment_method',
                     row.method
                 ),
                 row.reference
@@ -2732,7 +2773,7 @@ async function openAuthenticatedDocument(
 
         if (! response.ok) {
             throw new Error(
-                'Unable to open report.'
+                translate('reports.unable_to_open')
             );
         }
 
@@ -2762,7 +2803,7 @@ async function openAuthenticatedDocument(
         showReportsError(
             error instanceof Error
                 ? error.message
-                : 'Unable to open report.'
+                : translate('reports.unable_to_open')
         );
     }
 }
@@ -2787,7 +2828,7 @@ async function downloadAuthenticatedDocument(
 
         if (! response.ok) {
             throw new Error(
-                'Unable to download report.'
+                translate('reports.unable_to_download')
             );
         }
 
@@ -2836,7 +2877,7 @@ async function downloadAuthenticatedDocument(
         showReportsError(
             error instanceof Error
                 ? error.message
-                : 'Unable to download report.'
+                : translate('reports.unable_to_download')
         );
     }
 }
@@ -2925,7 +2966,7 @@ function showReportLoading() {
                 text-sm text-slate-400
             "
         >
-            Generating report…
+            ${escapeHtml(translate('reports.generating'))}
         </div>
     `);
 }
@@ -2939,7 +2980,7 @@ function renderReportError() {
                 text-sm text-slate-500
             "
         >
-            The report could not be generated.
+            ${escapeHtml(translate('reports.could_not_generate'))}
         </div>
     `);
 }
@@ -2969,7 +3010,7 @@ function clearReportOutput() {
                     text-sm text-slate-500
                 "
             >
-                Select the required report criteria and run the report.
+                ${escapeHtml(translate('reports.select_criteria'))}
             </div>
         </div>
     `);
@@ -3029,7 +3070,7 @@ function partyDisplayName(
 ) {
     return party?.name
         || party?.legal_name
-        || 'Unnamed Party';
+        || translate('reports.unnamed_party');
 }
 
 function contactSummary(
@@ -3046,33 +3087,59 @@ function contactSummary(
 function numberFormat(
     value
 ) {
-    return Number(
+    return formatNumber(
         value
-        ?? 0
-    ).toLocaleString();
+    );
 }
 
-function capitalizeWords(
+function translatedDomainValue(
+    group,
     value
 ) {
-    return String(
-        value
-        ?? ''
-    )
-        .replaceAll(
-            '_',
-            ' '
-        )
-        .split(' ')
-        .filter(Boolean)
-        .map(
-            (word) =>
-                word
-                    .charAt(0)
-                    .toUpperCase()
-                + word.slice(1)
-        )
-        .join(' ');
+    const normalized =
+        String(
+            value
+            ?? ''
+        ).trim();
+
+    if (! normalized) {
+        return '';
+    }
+
+    const key =
+        `reports.${group}.${normalized}`;
+
+    const translated =
+        translate(
+            key
+        );
+
+    /*
+     * Unknown future API values remain readable instead of exposing a
+     * translation key. Persisted/API values themselves are never modified.
+     */
+    if (
+        translated
+        === key
+    ) {
+        return normalized
+            .replaceAll(
+                '_',
+                ' '
+            )
+            .split(' ')
+            .filter(Boolean)
+            .map(
+                (word) =>
+                    word
+                        .charAt(0)
+                        .toUpperCase()
+                    + word.slice(1)
+            )
+            .join(' ');
+    }
+
+    return translated;
 }
 
 /*

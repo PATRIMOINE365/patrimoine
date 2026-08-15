@@ -95,8 +95,8 @@ class ReportExportService
                 fputcsv(
                     $stream,
                     [
-                        'Field',
-                        'Value',
+                        __('reports.field'),
+                        __('reports.value'),
                     ]
                 );
 
@@ -286,7 +286,7 @@ class ReportExportService
                 'title' => $this->humanize($key),
                 'type' => 'table',
                 'headers' => [
-                    'Value',
+                    __('reports.value'),
                 ],
                 'rows' => array_map(
                     fn ($value): array => [
@@ -351,8 +351,8 @@ class ReportExportService
 
         if (is_bool($value)) {
             return $value
-                ? 'Yes'
-                : 'No';
+                ? __('reports.yes')
+                : __('reports.no');
         }
 
         if (is_array($value)) {
@@ -491,10 +491,22 @@ class ReportExportService
     }
 
     /**
-     * Convert snake_case report keys to human-facing labels.
+     * Convert stable report keys to localised human-facing labels.
+     *
+     * Report/API keys remain unchanged. Only export presentation is
+     * translated here so PDF and CSV localisation cannot alter report
+     * calculations or the JSON contract.
      */
     private function humanize(string $value): string
     {
+        $translationKey = 'reports.labels.' . $value;
+
+        $translated = __($translationKey);
+
+        if ($translated !== $translationKey) {
+            return $translated;
+        }
+
         return ucwords(
             str_replace(
                 [
