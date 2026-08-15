@@ -163,6 +163,18 @@ function populateManagingOrganisationForm(
     );
 
     setFormValue(
+        'organisation-language',
+        organisation.language
+        ?? 'en'
+    );
+
+    setFormValue(
+        'organisation-currency',
+        organisation.currency
+        ?? 'GHS'
+    );
+
+    setFormValue(
         'organisation-bank-name',
         organisation.bank_name
     );
@@ -304,6 +316,16 @@ async function submitManagingOrganisation(
                 formValue(
                     'organisation-default-vat-rate'
                 )
+            ),
+
+        language:
+            formValue(
+                'organisation-language'
+            ),
+
+        currency:
+            formValue(
+                'organisation-currency'
             ),
 
         bank_name:

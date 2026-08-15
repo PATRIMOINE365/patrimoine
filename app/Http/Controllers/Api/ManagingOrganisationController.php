@@ -85,8 +85,22 @@ class ManagingOrganisationController extends Controller
                 $defaultVatRate =
                     $validated['default_vat_rate'];
 
+                $language =
+                    $validated['language'];
+
+                $currency =
+                    $validated['currency'];
+
                 unset(
-                    $validated['default_vat_rate']
+                    $validated[
+                        'default_vat_rate'
+                    ],
+                    $validated[
+                        'language'
+                    ],
+                    $validated[
+                        'currency'
+                    ]
                 );
 
                 /*
@@ -138,6 +152,12 @@ class ManagingOrganisationController extends Controller
                 $settings->update([
                     'default_vat_rate' =>
                         $defaultVatRate,
+
+                    'language' =>
+                        $language,
+
+                    'currency' =>
+                        $currency,
                 ]);
 
                 /*
@@ -187,6 +207,20 @@ class ManagingOrganisationController extends Controller
                 'default_vat_rate' =>
                     $settings
                         ->default_vat_rate,
+
+                'language' =>
+                    $settings->language
+                    ?? config(
+                        'patrimoine.defaults.language',
+                        'en'
+                    ),
+
+                'currency' =>
+                    $settings->currency
+                    ?? config(
+                        'patrimoine.defaults.currency',
+                        'GHS'
+                    ),
             ]
         );
     }

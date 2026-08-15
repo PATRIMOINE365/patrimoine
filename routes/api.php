@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ApplicationPresentationController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ManagingOrganisationController;
 use App\Http\Controllers\Api\BuildingController;
@@ -35,6 +36,21 @@ use App\Http\Controllers\Api\OwnerAccountController;
 | operations require an authenticated Property Manager.
 |
 */
+
+/*
+|--------------------------------------------------------------------------
+| Application Presentation Configuration
+|--------------------------------------------------------------------------
+|
+| Public by design so the login screen can resolve the organisation
+| language and currency before authentication.
+|
+*/
+
+Route::get(
+    'presentation-config',
+    ApplicationPresentationController::class
+);
 
 /*
 |--------------------------------------------------------------------------

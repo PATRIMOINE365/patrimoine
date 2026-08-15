@@ -451,6 +451,121 @@
                     </div>
                 </section>
 
+                {{-- Language and currency --}}
+                <section
+                    class="
+                        border-t border-slate-100
+                        pt-7
+                    "
+                >
+                    <h3
+                        class="
+                            mb-1 text-sm font-semibold
+                            text-slate-950
+                        "
+                    >
+                        Language & Currency
+                    </h3>
+
+                    <p class="mb-4 text-xs text-slate-500">
+                        These settings apply to the entire Managing Organisation.
+                        Language and currency are independent.
+                    </p>
+
+                    <div
+                        class="
+                            grid gap-4
+                            md:grid-cols-2
+                        "
+                    >
+                        <div>
+                            <label
+                                for="organisation-language"
+                                class="
+                                    mb-1.5 block
+                                    text-sm font-medium
+                                    text-slate-700
+                                "
+                            >
+                                Language
+                                <span class="text-red-500">*</span>
+                            </label>
+
+                            <select
+                                id="organisation-language"
+                                required
+                                class="
+                                    w-full rounded-lg
+                                    border border-slate-200
+                                    bg-white px-3.5 py-2.5
+                                    text-sm outline-none
+                                    transition
+                                    focus:border-patrimoine-500
+                                    focus:ring-2
+                                    focus:ring-patrimoine-100
+                                "
+                            >
+                                @foreach(
+                                    config('patrimoine.languages', [])
+                                    as $code => $definition
+                                )
+                                    <option value="{{ $code }}">
+                                        {{ $definition['name'] ?? $code }}
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            <p class="mt-1.5 text-xs text-slate-500">
+                                Controls normal user-facing Patrimoine content.
+                            </p>
+                        </div>
+
+                        <div>
+                            <label
+                                for="organisation-currency"
+                                class="
+                                    mb-1.5 block
+                                    text-sm font-medium
+                                    text-slate-700
+                                "
+                            >
+                                Currency
+                                <span class="text-red-500">*</span>
+                            </label>
+
+                            <select
+                                id="organisation-currency"
+                                required
+                                class="
+                                    w-full rounded-lg
+                                    border border-slate-200
+                                    bg-white px-3.5 py-2.5
+                                    text-sm outline-none
+                                    transition
+                                    focus:border-patrimoine-500
+                                    focus:ring-2
+                                    focus:ring-patrimoine-100
+                                "
+                            >
+                                @foreach(
+                                    config('patrimoine.currencies', [])
+                                    as $code => $definition
+                                )
+                                    <option value="{{ $code }}">
+                                        {{ $definition['name'] ?? $code }}
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            <p class="mt-1.5 text-xs text-slate-500">
+                                Changes presentation only. Stored monetary
+                                values are never converted.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+
                 {{-- Financial defaults --}}
                 <section
                     class="
