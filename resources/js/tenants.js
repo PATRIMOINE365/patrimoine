@@ -111,7 +111,7 @@ async function loadTenants(
 
         params.set(
             'per_page',
-            '25'
+            '50'
         );
 
         const search =
@@ -768,6 +768,7 @@ function renderTenantDetail(
         </div>
     `;
 
+    initializeTenantInvoiceActions();
     initializeTenantReceiptActions();
 }
 
@@ -943,6 +944,7 @@ function renderTenantInvoices(
                                         ${tableHeading('Paid', true)}
                                         ${tableHeading('Outstanding', true)}
                                         ${tableHeading('Status')}
+                                        ${tableHeading('Actions')}
                                     </tr>
                                 </thead>
 
@@ -1034,8 +1036,293 @@ function renderTenantInvoiceRow(
                     ?? 'unknown'
                 )
             )}
+
+            ${invoiceActionCell(
+                invoice?.id
+            )}
         </tr>
     `;
+}
+
+
+/**
+ * Render document actions for one persisted Tenant Invoice.
+ *
+ * Existing authenticated Invoice PDF and email endpoints are reused.
+ * The Tenant workspace remains read-oriented and introduces no duplicate
+ * billing workflow.
+ *
+ * @param {number|string|null} invoiceId
+ * @returns {string}
+ */
+function invoiceActionCell(
+    invoiceId
+) {
+    if (! invoiceId) {
+        return tableCell(
+            '—'
+        );
+    }
+
+    const safeId =
+        escapeHtml(
+            invoiceId
+        );
+
+    return `
+        <td
+            class="
+                whitespace-nowrap
+                px-4 py-3 text-left
+            "
+        >
+            <div
+                class="
+                    flex items-center gap-2
+                "
+            >
+                <button
+                    type="button"
+                    data-open-invoice="${safeId}"
+                    class="
+                        inline-flex items-center
+                        rounded-lg border
+                        border-slate-200
+                        bg-white px-3 py-2
+                        text-xs font-medium
+                        text-slate-700
+                        shadow-sm transition
+                        hover:border-slate-300
+                        hover:bg-slate-50
+                        disabled:cursor-not-allowed
+                        disabled:opacity-60
+                    "
+                >
+                    Invoice
+                </button>
+
+                <button
+                    type="button"
+                    data-resend-invoice="${safeId}"
+                    class="
+                        inline-flex items-center
+                        rounded-lg border
+                        border-slate-200
+                        bg-white px-3 py-2
+                        text-xs font-medium
+                        text-slate-700
+                        shadow-sm transition
+                        hover:border-slate-300
+                        hover:bg-slate-50
+                        disabled:cursor-not-allowed
+                        disabled:opacity-60
+                    "
+                >
+                    Resend
+                </button>
+            </div>
+        </td>
+    `;
+}
+
+
+/**
+ * Wire Invoice document actions after Tenant detail rendering.
+ */
+function initializeTenantInvoiceActions() {
+    document
+        .querySelectorAll(
+            '[data-open-invoice]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        await openTenantInvoice(
+                            button
+                        );
+                    }
+                );
+            }
+        );
+
+    document
+        .querySelectorAll(
+            '[data-resend-invoice]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        await resendTenantInvoice(
+                            button
+                        );
+                    }
+                );
+            }
+        );
+}
+
+
+/**
+ * Fetch and open an authenticated Tenant Invoice PDF.
+ *
+ * Direct browser navigation cannot carry the API Bearer token, so the PDF
+ * is retrieved through apiRequest() and opened through a temporary blob URL.
+ *
+ * @param {HTMLButtonElement} button
+ */
+async function openTenantInvoice(
+    button
+) {
+    const invoiceId =
+        button.dataset.openInvoice;
+
+    if (! invoiceId) {
+        return;
+    }
+
+    const originalLabel =
+        button.textContent;
+
+    button.disabled = true;
+    button.textContent =
+        'Opening…';
+
+    hideTenantError();
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/invoices/${encodeURIComponent(
+                    invoiceId
+                )}/pdf`
+            );
+
+        if (! response.ok) {
+            throw new Error(
+                'Unable to open invoice.'
+            );
+        }
+
+        const blob =
+            await response.blob();
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        window.open(
+            url,
+            '_blank',
+            'noopener,noreferrer'
+        );
+
+        window.setTimeout(
+            () => {
+                URL.revokeObjectURL(
+                    url
+                );
+            },
+            60000
+        );
+    } catch (error) {
+        showTenantError(
+            error instanceof Error
+                ? error.message
+                : 'Unable to open invoice.'
+        );
+    } finally {
+        if (
+            document.body.contains(
+                button
+            )
+        ) {
+            button.textContent =
+                originalLabel;
+
+            button.disabled =
+                false;
+        }
+    }
+}
+
+
+/**
+ * Resend an existing Tenant Invoice using the established email workflow.
+ *
+ * @param {HTMLButtonElement} button
+ */
+async function resendTenantInvoice(
+    button
+) {
+    const invoiceId =
+        button.dataset.resendInvoice;
+
+    if (! invoiceId) {
+        return;
+    }
+
+    const originalLabel =
+        button.textContent;
+
+    button.disabled = true;
+    button.textContent =
+        'Sending…';
+
+    hideTenantError();
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/invoices/${encodeURIComponent(
+                    invoiceId
+                )}/send-email`,
+                {
+                    method:
+                        'POST',
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        button.textContent =
+            'Sent';
+
+        window.setTimeout(
+            () => {
+                if (
+                    document.body.contains(
+                        button
+                    )
+                ) {
+                    button.textContent =
+                        originalLabel;
+
+                    button.disabled =
+                        false;
+                }
+            },
+            1800
+        );
+    } catch (error) {
+        button.textContent =
+            originalLabel;
+
+        button.disabled =
+            false;
+
+        showTenantError(
+            error instanceof Error
+                ? error.message
+                : 'Unable to resend invoice.'
+        );
+    }
 }
 
 
