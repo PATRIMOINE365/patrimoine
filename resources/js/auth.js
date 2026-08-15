@@ -24,6 +24,7 @@ import {
     parseJsonResponse,
     saveToken,
     token,
+    translate,
 } from './core.js';
 
 /*
@@ -118,7 +119,9 @@ export async function initializeLogin() {
                 true;
 
             button.textContent =
-                'Signing in…';
+                translate(
+                    'login.signing_in'
+                );
 
             try {
                 /*
@@ -195,7 +198,9 @@ export async function initializeLogin() {
                 errorBox.textContent =
                     error instanceof Error
                         ? error.message
-                        : 'Unable to sign in.';
+                        : translate(
+                            'login.unable_to_sign_in'
+                        );
 
                 errorBox.classList.remove(
                     'hidden'
@@ -205,7 +210,9 @@ export async function initializeLogin() {
                     false;
 
                 button.textContent =
-                    'Sign in';
+                    translate(
+                        'login.sign_in'
+                    );
             }
         }
     );
@@ -291,7 +298,9 @@ function renderCurrentUser(user) {
     if (nameElement) {
         nameElement.textContent =
             user.name
-            || 'Property Manager';
+            || translate(
+                'user.property_manager'
+            );
     }
 
     if (roleElement) {

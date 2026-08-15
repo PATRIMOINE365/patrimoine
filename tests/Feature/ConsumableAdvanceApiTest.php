@@ -14,6 +14,7 @@ use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
+use App\Models\ApplicationSetting;
 
 /**
  * Verifies the Patrimoine Consumable Advance transactional API.
@@ -287,4 +288,37 @@ class ConsumableAdvanceApiTest extends TestCase
                 'consumable_advance',
             ]);
     }
+
+    /**
+     * Consumable Advance service failures are returned in French.
+     */
+    public function test_consumable_advance_business_error_renders_in_french(): void
+    {
+        ApplicationSetting::create([
+            'language' => 'fr',
+            'currency' => 'GHS',
+        ]);
+
+        $context = $this->createContext();
+
+        $context['account']->update([
+            'status' => 'closed',
+        ]);
+
+        $this
+            ->postJson(
+                "/api/tenant-funds/{$context['account']->id}/consume-advance",
+                [
+                    'invoice_id' => $context['invoice']->id,
+                    'amount' => 100,
+                    'transaction_date' => now()->toDateString(),
+                ]
+            )
+            ->assertUnprocessable()
+            ->assertJsonPath(
+                'errors.consumable_advance.0',
+                'Le compte d’avance consommable est fermé.'
+            );
+    }
+
 }

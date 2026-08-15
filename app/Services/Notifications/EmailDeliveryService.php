@@ -10,6 +10,8 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\RentIncrement;
 use App\Services\ApplicationIdentityService;
+use App\Services\ApplicationLocaleService;
+use App\Services\ApplicationPresentationFormatter;
 use App\Services\Documents\InvoiceDocumentService;
 use App\Services\Documents\ReceiptDocumentService;
 use Illuminate\Support\Facades\Mail;
@@ -34,7 +36,9 @@ class EmailDeliveryService
     public function __construct(
         private InvoiceDocumentService $invoiceDocuments,
         private ReceiptDocumentService $receiptDocuments,
-        private ApplicationIdentityService $identity
+        private ApplicationIdentityService $identity,
+        private ApplicationPresentationFormatter $formatter,
+        private ApplicationLocaleService $locale
     ) {
     }
 
@@ -68,17 +72,24 @@ class EmailDeliveryService
 
         Mail::to(
             $email
-        )->send(
-            new InvoiceMail(
-                invoice: $invoice,
-                pdfContents: $contents,
-                pdfFilename: $filename,
-                managingOrganisation:
-                    $this
-                        ->identity
-                        ->managingOrganisation()
+        )
+            ->locale(
+                $this->locale->language()
             )
-        );
+            ->send(
+                new InvoiceMail(
+                    invoice: $invoice,
+                    pdfContents: $contents,
+                    pdfFilename: $filename,
+                    managingOrganisation:
+                        $this
+                            ->identity
+                            ->managingOrganisation(),
+
+                    formatter:
+                        $this->formatter
+                )
+            );
     }
 
     /**
@@ -111,17 +122,24 @@ class EmailDeliveryService
 
         Mail::to(
             $email
-        )->send(
-            new ReceiptMail(
-                payment: $payment,
-                pdfContents: $contents,
-                pdfFilename: $filename,
-                managingOrganisation:
-                    $this
-                        ->identity
-                        ->managingOrganisation()
+        )
+            ->locale(
+                $this->locale->language()
             )
-        );
+            ->send(
+                new ReceiptMail(
+                    payment: $payment,
+                    pdfContents: $contents,
+                    pdfFilename: $filename,
+                    managingOrganisation:
+                        $this
+                            ->identity
+                            ->managingOrganisation(),
+
+                    formatter:
+                        $this->formatter
+                )
+            );
     }
 
     /**
@@ -164,17 +182,24 @@ class EmailDeliveryService
 
         Mail::to(
             $email
-        )->send(
-            new RentReminderMail(
-                invoice: $invoice,
-                pdfContents: $contents,
-                pdfFilename: $filename,
-                managingOrganisation:
-                    $this
-                        ->identity
-                        ->managingOrganisation()
+        )
+            ->locale(
+                $this->locale->language()
             )
-        );
+            ->send(
+                new RentReminderMail(
+                    invoice: $invoice,
+                    pdfContents: $contents,
+                    pdfFilename: $filename,
+                    managingOrganisation:
+                        $this
+                            ->identity
+                            ->managingOrganisation(),
+
+                    formatter:
+                        $this->formatter
+                )
+            );
     }
 
     /**
@@ -208,17 +233,24 @@ class EmailDeliveryService
 
         Mail::to(
             $email
-        )->send(
-            new RentIncrementNoticeMail(
-                rentIncrement:
-                    $rentIncrement,
-
-                managingOrganisation:
-                    $this
-                        ->identity
-                        ->managingOrganisation()
+        )
+            ->locale(
+                $this->locale->language()
             )
-        );
+            ->send(
+                new RentIncrementNoticeMail(
+                    rentIncrement:
+                        $rentIncrement,
+
+                    managingOrganisation:
+                        $this
+                            ->identity
+                            ->managingOrganisation(),
+
+                    formatter:
+                        $this->formatter
+                )
+            );
     }
 
     /**
@@ -238,7 +270,7 @@ class EmailDeliveryService
 
         if ($email === '') {
             throw new RuntimeException(
-                'Tenant does not have an email address.'
+                __('business.email.tenant_email_missing')
             );
         }
 
@@ -262,7 +294,7 @@ class EmailDeliveryService
 
         if ($email === '') {
             throw new RuntimeException(
-                'Tenant does not have an email address.'
+                __('business.email.tenant_email_missing')
             );
         }
 
@@ -286,7 +318,7 @@ class EmailDeliveryService
 
         if ($email === '') {
             throw new RuntimeException(
-                'Tenant does not have an email address.'
+                __('business.email.tenant_email_missing')
             );
         }
 

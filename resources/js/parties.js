@@ -38,6 +38,7 @@ import {
     nullableFormValue,
     parseJsonResponse,
     setText,
+    translate,
 } from './core.js';
 
 /*
@@ -265,7 +266,11 @@ async function loadParties(
                 text-sm text-slate-400
             "
         >
-            Loading parties…
+            ${escapeHtml(
+                translate(
+                    'parties.loading'
+                )
+            )}
         </div>
     `;
 
@@ -299,7 +304,9 @@ async function loadParties(
             errorBox.textContent =
                 error instanceof Error
                     ? error.message
-                    : 'Unable to load parties.';
+                    : translate(
+                        'parties.unable_to_load'
+                    );
 
             errorBox.classList.remove(
                 'hidden'
@@ -383,7 +390,11 @@ function renderParties(payload) {
                         text-slate-900
                     "
                 >
-                    No parties found
+                    ${escapeHtml(
+                        translate(
+                            'parties.no_parties_found'
+                        )
+                    )}
                 </div>
 
                 <div
@@ -392,7 +403,11 @@ function renderParties(payload) {
                         text-slate-500
                     "
                 >
-                    Add a Party or change the current filters.
+                    ${escapeHtml(
+                        translate(
+                            'parties.empty_description'
+                        )
+                    )}
                 </div>
             </div>
         `;
@@ -501,7 +516,9 @@ function partyRoles(party) {
 function partyDisplayName(party) {
     return party?.name
         || party?.legal_name
-        || `Party #${party?.id ?? ''}`;
+        || `${translate(
+            'parties.party'
+        )} #${party?.id ?? ''}`;
 }
 
 /**
@@ -510,16 +527,24 @@ function partyDisplayName(party) {
 function partyTypeLabel(type) {
     switch (type) {
         case 'person':
-            return 'Person';
+            return translate(
+                'parties.person'
+            );
 
         case 'organisation':
-            return 'Organisation';
+            return translate(
+                'parties.organisation'
+            );
 
         case 'association':
-            return 'Association';
+            return translate(
+                'parties.association'
+            );
 
         default:
-            return 'Party';
+            return translate(
+                'parties.party'
+            );
     }
 }
 
@@ -529,16 +554,24 @@ function partyTypeLabel(type) {
 function partyRoleLabel(role) {
     switch (role) {
         case 'tenant':
-            return 'Tenant';
+            return translate(
+                'parties.tenant'
+            );
 
         case 'owner':
-            return 'Owner';
+            return translate(
+                'parties.owner'
+            );
 
         case 'agent':
-            return 'Agent';
+            return translate(
+                'parties.agent'
+            );
 
         case 'managing_organisation':
-            return 'Managing Organisation';
+            return translate(
+                'parties.managing_organisation'
+            );
 
         default:
             return String(role || '');
@@ -604,7 +637,11 @@ function partyCard(party) {
                         text-xs text-slate-400
                     "
                 >
-                    No assigned role
+                    ${escapeHtml(
+                        translate(
+                            'parties.no_assigned_role'
+                        )
+                    )}
                 </span>
             `;
 
@@ -671,7 +708,11 @@ function partyCard(party) {
                                         text-slate-600
                                     "
                                 >
-                                    Contact:
+                                    ${escapeHtml(
+                                        translate(
+                                            'parties.contact'
+                                        )
+                                    )}:
                                     <span class="font-medium">
                                         ${escapeHtml(
                                             contactName
@@ -758,7 +799,11 @@ function partyCard(party) {
                             hover:bg-slate-50
                         "
                     >
-                        Edit
+                        ${escapeHtml(
+                            translate(
+                                'parties.edit'
+                            )
+                        )}
                     </button>
 
                     <button
@@ -780,7 +825,11 @@ function partyCard(party) {
                             hover:bg-red-50
                         "
                     >
-                        Delete
+                        ${escapeHtml(
+                            translate(
+                                'parties.delete'
+                            )
+                        )}
                     </button>
                 </div>
             </div>
@@ -893,8 +942,16 @@ function renderPartyPagination(
                     text-sm text-slate-500
                 "
             >
-                Page ${currentPage}
-                of ${lastPage}
+                ${escapeHtml(
+                    translate(
+                        'parties.page'
+                    )
+                )} ${currentPage}
+                ${escapeHtml(
+                    translate(
+                        'parties.of'
+                    )
+                )} ${lastPage}
             </div>
 
             <div class="flex gap-2">
@@ -917,7 +974,11 @@ function renderPartyPagination(
                         disabled:opacity-40
                     "
                 >
-                    Previous
+                    ${escapeHtml(
+                        translate(
+                            'parties.previous'
+                        )
+                    )}
                 </button>
 
                 <button
@@ -938,7 +999,11 @@ function renderPartyPagination(
                         disabled:opacity-40
                     "
                 >
-                    Next
+                    ${escapeHtml(
+                        translate(
+                            'parties.next'
+                        )
+                    )}
                 </button>
 
             </div>
@@ -1171,7 +1236,9 @@ async function openEditPartyModal(
         showPartyFormError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load Party.'
+                : translate(
+                    'parties.unable_to_load_party'
+                )
         );
     }
 }
@@ -1186,22 +1253,34 @@ function configurePartyModal() {
     setText(
         'party-modal-title',
         editing
-            ? 'Edit Party'
-            : 'Add Party'
+            ? translate(
+                'parties.edit_party'
+            )
+            : translate(
+                'parties.add_party'
+            )
     );
 
     setText(
         'party-modal-description',
         editing
-            ? 'Update Party identity, contact details and roles.'
-            : 'Create a person, organisation or association.'
+            ? translate(
+                'parties.edit_party_description'
+            )
+            : translate(
+                'parties.add_party_description'
+            )
     );
 
     setText(
         'party-submit-button',
         editing
-            ? 'Save Changes'
-            : 'Create Party'
+            ? translate(
+                'parties.save_changes'
+            )
+            : translate(
+                'parties.create_party'
+            )
     );
 }
 
@@ -1795,8 +1874,12 @@ async function submitPartyForm(event) {
 
         submitButton.textContent =
             editing
-                ? 'Saving Changes…'
-                : 'Creating Party…';
+                ? translate(
+                    'parties.saving_changes'
+                )
+                : translate(
+                    'parties.creating_party'
+                );
 
         const payload =
             buildPartyPayload();
@@ -1837,8 +1920,12 @@ async function submitPartyForm(event) {
                 ? error.message
                 : (
                     editing
-                        ? 'Unable to update Party.'
-                        : 'Unable to create Party.'
+                        ? translate(
+                            'parties.unable_to_update_party'
+                        )
+                        : translate(
+                            'parties.unable_to_create_party'
+                        )
                 )
         );
     } finally {
@@ -1847,8 +1934,12 @@ async function submitPartyForm(event) {
 
         submitButton.textContent =
             editing
-                ? 'Save Changes'
-                : 'Create Party';
+                ? translate(
+                    'parties.save_changes'
+                )
+                : translate(
+                    'parties.create_party'
+                );
     }
 }
 
@@ -1884,8 +1975,18 @@ async function deleteParty(
 
     const confirmed =
         window.confirm(
-            `Delete "${partyName || 'this Party'}"?\n\n`
-            + 'A Party referenced by leases, ownership or financial records cannot be deleted.'
+            `${translate(
+                'parties.delete'
+            )} "${
+                partyName
+                || translate(
+                    'parties.this_party'
+                )
+            }"?`
+            + '\n\n'
+            + translate(
+                'parties.delete_restriction'
+            )
         );
 
     if (! confirmed) {
@@ -1922,7 +2023,9 @@ async function deleteParty(
         showPageError(
             error instanceof Error
                 ? error.message
-                : 'Unable to delete Party.'
+                : translate(
+                    'parties.unable_to_delete_party'
+                )
         );
     }
 }

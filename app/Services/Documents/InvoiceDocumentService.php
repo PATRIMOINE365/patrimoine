@@ -4,6 +4,7 @@ namespace App\Services\Documents;
 
 use App\Models\Invoice;
 use App\Services\ApplicationIdentityService;
+use App\Services\ApplicationPresentationFormatter;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 /**
@@ -23,7 +24,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class InvoiceDocumentService
 {
     public function __construct(
-        private ApplicationIdentityService $identity
+        private ApplicationIdentityService $identity,
+        private ApplicationPresentationFormatter $formatter
     ) {
     }
 
@@ -47,6 +49,7 @@ class InvoiceDocumentService
             'documents.invoice',
             [
                 'invoice' => $invoice,
+                'formatter' => $this->formatter,
                 'managingOrganisation' =>
                     $this->identity->managingOrganisation(),
             ]

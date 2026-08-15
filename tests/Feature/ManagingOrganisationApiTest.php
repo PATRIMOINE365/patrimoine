@@ -387,4 +387,124 @@ public function test_managing_organisation_rejects_invalid_default_vat_rate(): v
                 'Primary Patrimoine managing organisation.',
         ];
     }
+
+
+    public function test_missing_language_and_currency_use_compatibility_defaults(): void
+    {
+        $response =
+            $this->putJson(
+                '/api/managing-organisation',
+                $this->validPayload()
+            );
+
+        $response
+            ->assertOk()
+            ->assertJsonPath(
+                'language',
+                'en'
+            )
+            ->assertJsonPath(
+                'currency',
+                'GHS'
+            );
+
+        $settings =
+            ApplicationSetting::query()
+                ->firstOrFail();
+
+        $this->assertSame(
+            'en',
+            $settings->language
+        );
+
+        $this->assertSame(
+            'GHS',
+            $settings->currency
+        );
+    }
+
+    public function test_managing_organisation_rejects_unsupported_language_and_currency(): void
+    {
+        $payload =
+            array_merge(
+                $this->validPayload(),
+                [
+                    'language' => 'xx',
+                    'currency' => 'XYZ',
+                ]
+            );
+
+        $this
+            ->putJson(
+                '/api/managing-organisation',
+                $payload
+            )
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'language',
+                'currency',
+            ]);
+    }
+
+
+
+    public function test_language_and_currency_can_be_updated_independently(): void
+    {
+        $payload =
+            array_merge(
+                $this->validPayload(),
+                [
+                    'language' => 'fr',
+                    'currency' => 'GHS',
+                ]
+            );
+
+        $this
+            ->putJson(
+                '/api/managing-organisation',
+                $payload
+            )
+            ->assertOk()
+            ->assertJsonPath(
+                'language',
+                'fr'
+            )
+            ->assertJsonPath(
+                'currency',
+                'GHS'
+            );
+
+        $payload['language'] = 'en';
+        $payload['currency'] = 'FCFA';
+
+        $this
+            ->putJson(
+                '/api/managing-organisation',
+                $payload
+            )
+            ->assertOk()
+            ->assertJsonPath(
+                'language',
+                'en'
+            )
+            ->assertJsonPath(
+                'currency',
+                'FCFA'
+            );
+
+        $settings =
+            ApplicationSetting::query()
+                ->firstOrFail();
+
+        $this->assertSame(
+            'en',
+            $settings->language
+        );
+
+        $this->assertSame(
+            'FCFA',
+            $settings->currency
+        );
+    }
+
 }

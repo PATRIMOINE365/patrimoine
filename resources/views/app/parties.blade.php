@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Parties — Patrimoine')
+@section('title-i18n', 'parties.title')
 
 @section('content')
 
@@ -20,7 +21,7 @@
                     text-patrimoine-700
                 "
             >
-                Contacts & Stakeholders
+                <span data-i18n="parties.contacts_stakeholders">Contacts & Stakeholders</span>
             </p>
 
             <h1
@@ -29,11 +30,11 @@
                     tracking-tight text-slate-950
                 "
             >
-                Parties
+                <span data-i18n="parties.heading">Parties</span>
             </h1>
 
             <p class="mt-2 text-sm text-slate-500">
-                Manage owners, tenants, agents, organisations and associations.
+                <span data-i18n="parties.page_description">Manage owners, tenants, agents, organisations and associations.</span>
             </p>
         </div>
 
@@ -60,7 +61,7 @@
                 <path d="M5 12h14"/>
             </svg>
 
-            Add Party
+            <span data-i18n="parties.add_party">Add Party</span>
         </button>
     </div>
 
@@ -89,7 +90,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Total Parties
+                <span data-i18n="parties.total_parties">Total Parties</span>
             </div>
 
             <div
@@ -110,7 +111,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                People
+                <span data-i18n="parties.people">People</span>
             </div>
 
             <div
@@ -131,7 +132,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Organisations
+                <span data-i18n="parties.organisations">Organisations</span>
             </div>
 
             <div
@@ -152,7 +153,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Multiple Roles
+                <span data-i18n="parties.multiple_roles">Multiple Roles</span>
             </div>
 
             <div
@@ -197,11 +198,11 @@
                             text-slate-950
                         "
                     >
-                        Party Directory
+                        <span data-i18n="parties.directory">Party Directory</span>
                     </h2>
 
                     <p class="mt-1 text-xs text-slate-500">
-                        People and entities participating in property operations.
+                        <span data-i18n="parties.directory_description">People and entities participating in property operations.</span>
                     </p>
                 </div>
 
@@ -219,7 +220,7 @@
                             for="party-search"
                             class="sr-only"
                         >
-                            Search Parties
+                            <span data-i18n="parties.search">Search Parties</span>
                         </label>
 
                         <div class="relative">
@@ -243,6 +244,7 @@
                             <input
                                 id="party-search"
                                 type="search"
+                                data-i18n-placeholder="parties.search_placeholder"
                                 placeholder="Search name, email, phone..."
                                 class="
                                     w-full rounded-lg
@@ -266,7 +268,7 @@
                             for="party-type-filter"
                             class="sr-only"
                         >
-                            Party Type
+                            <span data-i18n="parties.party_type">Party Type</span>
                         </label>
 
                         <select
@@ -282,19 +284,31 @@
                                 focus:ring-patrimoine-100
                             "
                         >
-                            <option value="">
+                            <option
+                                value=""
+                                data-i18n="parties.all_types"
+                            >
                                 All Types
                             </option>
 
-                            <option value="person">
+                            <option
+                                value="person"
+                                data-i18n="parties.people"
+                            >
                                 People
                             </option>
 
-                            <option value="organisation">
+                            <option
+                                value="organisation"
+                                data-i18n="parties.organisations"
+                            >
                                 Organisations
                             </option>
 
-                            <option value="association">
+                            <option
+                                value="association"
+                                data-i18n="parties.associations"
+                            >
                                 Associations
                             </option>
                         </select>
@@ -306,7 +320,7 @@
                             for="party-role-filter"
                             class="sr-only"
                         >
-                            Party Role
+                            <span data-i18n="parties.party_role">Party Role</span>
                         </label>
 
                         <select
@@ -322,23 +336,38 @@
                                 focus:ring-patrimoine-100
                             "
                         >
-                            <option value="">
+                            <option
+                                value=""
+                                data-i18n="parties.all_roles"
+                            >
                                 All Roles
                             </option>
 
-                            <option value="owner">
+                            <option
+                                value="owner"
+                                data-i18n="parties.owners"
+                            >
                                 Owners
                             </option>
 
-                            <option value="tenant">
+                            <option
+                                value="tenant"
+                                data-i18n="parties.tenants"
+                            >
                                 Tenants
                             </option>
 
-                            <option value="agent">
+                            <option
+                                value="agent"
+                                data-i18n="parties.agents"
+                            >
                                 Agents
                             </option>
 
-                            <option value="managing_organisation">
+                            <option
+                                value="managing_organisation"
+                                data-i18n="parties.managing_organisation"
+                            >
                                 Managing Organisation
                             </option>
                         </select>
@@ -354,7 +383,7 @@
             class="p-5"
         >
             <div class="text-sm text-slate-400">
-                Loading parties…
+                <span data-i18n="parties.loading">Loading parties…</span>
             </div>
         </div>
 
@@ -424,14 +453,14 @@
                             tracking-tight text-slate-950
                         "
                     >
-                        Add Party
+                        <span data-i18n="parties.add_party">Add Party</span>
                     </h2>
 
                     <p
                         id="party-modal-description"
                         class="mt-1 text-sm text-slate-500"
                     >
-                        Create a person, organisation or association.
+                        <span data-i18n="parties.add_party_description">Create a person, organisation or association.</span>
                     </p>
                 </div>
 
@@ -439,6 +468,7 @@
                     id="party-modal-close"
                     type="button"
                     aria-label="Close"
+                    data-i18n-aria-label="parties.close"
                     class="
                         inline-flex h-9 w-9
                         shrink-0 items-center
@@ -492,11 +522,11 @@
                                     text-slate-950
                                 "
                             >
-                                Party Type
+                                <span data-i18n="parties.party_type">Party Type</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                Select the legal nature of this Party.
+                                <span data-i18n="parties.party_type_description">Select the legal nature of this Party.</span>
                             </p>
                         </div>
 
@@ -514,15 +544,24 @@
                                 focus:ring-patrimoine-100
                             "
                         >
-                            <option value="person">
+                            <option
+                                value="person"
+                                data-i18n="parties.person"
+                            >
                                 Person
                             </option>
 
-                            <option value="organisation">
+                            <option
+                                value="organisation"
+                                data-i18n="parties.organisation"
+                            >
                                 Organisation
                             </option>
 
-                            <option value="association">
+                            <option
+                                value="association"
+                                data-i18n="parties.association"
+                            >
                                 Association
                             </option>
                         </select>
@@ -546,7 +585,7 @@
                                     text-slate-950
                                 "
                             >
-                                Personal Details
+                                <span data-i18n="parties.personal_details">Personal Details</span>
                             </h3>
                         </div>
 
@@ -565,7 +604,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Full Name
+                                    <span data-i18n="parties.full_name">Full Name</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -595,7 +634,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Phone
+                                    <span data-i18n="parties.phone">Phone</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -625,7 +664,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Email
+                                    <span data-i18n="parties.email">Email</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -667,7 +706,7 @@
                                     text-slate-950
                                 "
                             >
-                                Organisation Details
+                                <span data-i18n="parties.organisation_details">Organisation Details</span>
                             </h3>
                         </div>
 
@@ -686,7 +725,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Legal Name
+                                    <span data-i18n="parties.legal_name">Legal Name</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -716,7 +755,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Contact Person
+                                    <span data-i18n="parties.contact_person">Contact Person</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -746,7 +785,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Contact Phone
+                                    <span data-i18n="parties.contact_phone">Contact Phone</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -776,7 +815,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Contact Email
+                                    <span data-i18n="parties.contact_email">Contact Email</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -816,11 +855,11 @@
                                     text-slate-950
                                 "
                             >
-                                Contact & Identification
+                                <span data-i18n="parties.contact_identification">Contact & Identification</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                Optional secondary contact and identification information.
+                                <span data-i18n="parties.contact_identification_description">Optional secondary contact and identification information.</span>
                             </p>
                         </div>
 
@@ -839,7 +878,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Alternate Phone
+                                    <span data-i18n="parties.alternate_phone">Alternate Phone</span>
                                 </label>
 
                                 <input
@@ -868,7 +907,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    ID Number
+                                    <span data-i18n="parties.id_number">ID Number</span>
                                 </label>
 
                                 <input
@@ -897,7 +936,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Registration Number
+                                    <span data-i18n="parties.registration_number">Registration Number</span>
                                 </label>
 
                                 <input
@@ -926,7 +965,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    VAT / TIN
+                                    <span data-i18n="parties.vat_tin">VAT / TIN</span>
                                 </label>
 
                                 <input
@@ -955,7 +994,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Address
+                                    <span data-i18n="parties.address">Address</span>
                                 </label>
 
                                 <textarea
@@ -993,11 +1032,11 @@
                                     text-slate-950
                                 "
                             >
-                                Roles
+                                <span data-i18n="parties.roles">Roles</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                A Party may perform several functions at the same time.
+                                <span data-i18n="parties.roles_description">A Party may perform several functions at the same time.</span>
                             </p>
                         </div>
 
@@ -1033,7 +1072,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Owner
+                                    <span data-i18n="parties.owner">Owner</span>
                                 </span>
                             </label>
 
@@ -1063,7 +1102,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Tenant
+                                    <span data-i18n="parties.tenant">Tenant</span>
                                 </span>
                             </label>
 
@@ -1093,7 +1132,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Agent
+                                    <span data-i18n="parties.agent">Agent</span>
                                 </span>
                             </label>
                         </div>
@@ -1116,11 +1155,11 @@
                                     text-slate-950
                                 "
                             >
-                                Banking Details
+                                <span data-i18n="parties.banking_details">Banking Details</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                Optional. Primarily used for Owners and Agents.
+                                <span data-i18n="parties.banking_description">Optional. Primarily used for Owners and Agents.</span>
                             </p>
                         </div>
 
@@ -1139,7 +1178,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Bank Name
+                                    <span data-i18n="parties.bank_name">Bank Name</span>
                                 </label>
 
                                 <input
@@ -1168,7 +1207,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Bank Branch
+                                    <span data-i18n="parties.bank_branch">Bank Branch</span>
                                 </label>
 
                                 <input
@@ -1197,7 +1236,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Account Name
+                                    <span data-i18n="parties.account_name">Account Name</span>
                                 </label>
 
                                 <input
@@ -1226,7 +1265,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Account Number
+                                    <span data-i18n="parties.account_number">Account Number</span>
                                 </label>
 
                                 <input
@@ -1263,12 +1302,13 @@
                                 text-slate-700
                             "
                         >
-                            Notes
+                            <span data-i18n="parties.notes">Notes</span>
                         </label>
 
                         <textarea
                             id="party-notes"
                             rows="4"
+                            data-i18n-placeholder="parties.notes_placeholder"
                             placeholder="Optional internal notes"
                             class="
                                 w-full resize-y rounded-lg
@@ -1308,7 +1348,7 @@
                             hover:bg-slate-50
                         "
                     >
-                        Cancel
+                        <span data-i18n="parties.cancel">Cancel</span>
                     </button>
 
                     <button
@@ -1326,7 +1366,7 @@
                             disabled:opacity-60
                         "
                     >
-                        Create Party
+                        <span data-i18n="parties.create_party">Create Party</span>
                     </button>
                 </div>
 

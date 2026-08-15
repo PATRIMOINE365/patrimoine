@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
 
     <title>
-        Receipt {{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}
+        {{ __('documents.receipt.title') }}
+        {{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}
     </title>
 
     <style>
@@ -245,6 +246,28 @@ $allocatedAmount =
     $accountedAmount =
         $allocatedAmount
         + $classifiedFundAmount;
+
+    /*
+     * Translate only the user-facing payment-method label.
+     * Persisted payment_method values remain unchanged.
+     */
+    $paymentMethodKey =
+        'documents.common.payment_method.'
+        . $payment->payment_method;
+
+    $paymentMethodLabel =
+        __($paymentMethodKey);
+
+    if ($paymentMethodLabel === $paymentMethodKey) {
+        $paymentMethodLabel =
+            ucwords(
+                str_replace(
+                    '_',
+                    ' ',
+                    (string) $payment->payment_method
+                )
+            );
+    }
 @endphp
 
 <table>
@@ -257,7 +280,7 @@ $allocatedAmount =
             </div>
 
             <div class="muted">
-                Property Management
+                {{ __('documents.common.property_management') }}
             </div>
 
             @if($managingOrganisation)
@@ -281,7 +304,8 @@ $allocatedAmount =
 
                 @if($managingOrganisation->vat_tin)
                     <div class="muted">
-                        VAT/TIN: {{ $managingOrganisation->vat_tin }}
+                        {{ __('documents.common.vat_tin') }}:
+                        {{ $managingOrganisation->vat_tin }}
                     </div>
                 @endif
             @endif
@@ -289,7 +313,7 @@ $allocatedAmount =
 
         <td>
             <div class="document-title">
-                RECEIPT
+                {{ __('documents.receipt.heading') }}
             </div>
         </td>
     </tr>
@@ -300,7 +324,7 @@ $allocatedAmount =
         <tr>
             <td>
                 <div class="section-title">
-                    Received From
+                    {{ __('documents.receipt.received_from') }}
                 </div>
 
                 <strong>
@@ -320,26 +344,36 @@ $allocatedAmount =
             </td>
 
             <td>
-                <strong>Receipt No:</strong>
+                <strong>
+                    {{ __('documents.receipt.receipt_number') }}:
+                </strong>
                 RCT-{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}
                 <br>
 
-                <strong>Payment Date:</strong>
-                {{ $payment->payment_date->format('d M Y') }}
+                <strong>
+                    {{ __('documents.receipt.payment_date') }}:
+                </strong>
+                {{ $formatter->date($payment->payment_date) }}
                 <br>
 
-                <strong>Method:</strong>
-                {{ ucwords(str_replace('_', ' ', $payment->payment_method)) }}
+                <strong>
+                    {{ __('documents.receipt.method') }}:
+                </strong>
+                {{ $paymentMethodLabel }}
 
                 @if($payment->reference)
                     <br>
-                    <strong>Reference:</strong>
+                    <strong>
+                        {{ __('documents.receipt.reference') }}:
+                    </strong>
                     {{ $payment->reference }}
                 @endif
 
                 @if($payment->collector_name)
                     <br>
-                    <strong>Collector:</strong>
+                    <strong>
+                        {{ __('documents.receipt.collector') }}:
+                    </strong>
                     {{ $payment->collector_name }}
                 @endif
             </td>
@@ -349,50 +383,52 @@ $allocatedAmount =
 
 <div class="payment-box">
     <div class="muted" style="text-align:center;">
-        Amount Received
+        {{ __('documents.receipt.amount_received') }}
     </div>
 
     <div class="payment-amount">
-        GHS {{ number_format($payment->amount, 0) }}
+        {{ $formatter->money($payment->amount) }}
     </div>
 </div>
 
 <div class="section">
     <div class="section-title">
-        Property
+        {{ __('documents.receipt.property') }}
     </div>
 
-    <strong>Building:</strong>
+    <strong>{{ __('documents.receipt.building') }}:</strong>
     {{ $payment->lease->unit->building->name }}
 
     <br>
 
-    <strong>Unit:</strong>
+    <strong>{{ __('documents.receipt.unit') }}:</strong>
     {{ $payment->lease->unit->name }}
 
     <br>
 
-    <strong>Lease #:</strong>
+    <strong>{{ __('documents.receipt.lease_number') }}:</strong>
     {{ $payment->lease_id }}
 </div>
 
 <div class="section">
     <div class="section-title">
-        Payment Allocation
+        {{ __('documents.receipt.payment_allocation') }}
     </div>
 
 @if($payment->allocations->isEmpty())
     <p>
-        No portion of this payment has been applied directly to an outstanding receivable.
+        {{ __('documents.receipt.no_direct_allocation') }}
     </p>
     @else
         <table class="allocation-table">
 <thead>
     <tr>
-        <th>Invoice</th>
-        <th>Purpose</th>
-        <th>Period</th>
-        <th class="numeric">Allocated</th>
+        <th>{{ __('documents.receipt.invoice') }}</th>
+        <th>{{ __('documents.receipt.purpose') }}</th>
+        <th>{{ __('documents.receipt.period') }}</th>
+        <th class="numeric">
+            {{ __('documents.receipt.allocated') }}
+        </th>
     </tr>
 </thead>
 
@@ -405,24 +441,24 @@ $allocatedAmount =
 
             <td>
                 @if($allocation->invoice->isSecurityDepositDebtInvoice())
-                    Security Deposit Debt
+                    {{ __('documents.receipt.security_deposit_debt') }}
                 @else
-                    Rent
+                    {{ __('documents.receipt.rent') }}
                 @endif
             </td>
 
             <td>
                 @if($allocation->invoice->isSecurityDepositDebtInvoice())
-                    Close-out
+                    {{ __('documents.receipt.close_out') }}
                 @else
-                    {{ $allocation->invoice->period_start->format('d M Y') }}
+                    {{ $formatter->date($allocation->invoice->period_start) }}
                     -
-                    {{ $allocation->invoice->period_end->format('d M Y') }}
+                    {{ $formatter->date($allocation->invoice->period_end) }}
                 @endif
             </td>
 
             <td class="numeric">
-                GHS {{ number_format($allocation->amount, 0) }}
+                {{ $formatter->money($allocation->amount) }}
             </td>
         </tr>
     @endforeach
@@ -433,28 +469,28 @@ $allocatedAmount =
 
 <div class="section">
     <div class="section-title">
-        Payment Summary
+        {{ __('documents.receipt.payment_summary') }}
     </div>
 
     <table class="summary-table">
         <tr>
             <td class="summary-label">
-                Amount Received
+                {{ __('documents.receipt.amount_received') }}
             </td>
 
             <td class="summary-amount">
-                GHS {{ number_format($payment->amount, 0) }}
+                {{ $formatter->money($payment->amount) }}
             </td>
         </tr>
 
 @if($rentAllocatedAmount > 0)
     <tr>
         <td class="summary-detail">
-            Applied to Rent
+            {{ __('documents.receipt.applied_to_rent') }}
         </td>
 
         <td class="summary-amount">
-            GHS {{ number_format($rentAllocatedAmount, 0) }}
+            {{ $formatter->money($rentAllocatedAmount) }}
         </td>
     </tr>
 @endif
@@ -462,11 +498,11 @@ $allocatedAmount =
 @if($securityDepositDebtAllocatedAmount > 0)
     <tr>
         <td class="summary-detail">
-            Applied to Security Deposit Debt
+            {{ __('documents.receipt.applied_to_security_deposit_debt') }}
         </td>
 
         <td class="summary-amount">
-            GHS {{ number_format($securityDepositDebtAllocatedAmount, 0) }}
+            {{ $formatter->money($securityDepositDebtAllocatedAmount) }}
         </td>
     </tr>
 @endif
@@ -474,11 +510,11 @@ $allocatedAmount =
         @if($rentReserveAmount > 0)
             <tr>
                 <td class="summary-detail">
-                    Held as Rent Reserve
+                    {{ __('documents.receipt.held_as_rent_reserve') }}
                 </td>
 
                 <td class="summary-amount">
-                    GHS {{ number_format($rentReserveAmount, 0) }}
+                    {{ $formatter->money($rentReserveAmount) }}
                 </td>
             </tr>
         @endif
@@ -486,11 +522,11 @@ $allocatedAmount =
         @if($consumableAdvanceAmount > 0)
             <tr>
                 <td class="summary-detail">
-                    Held as Consumable Advance
+                    {{ __('documents.receipt.held_as_consumable_advance') }}
                 </td>
 
                 <td class="summary-amount">
-                    GHS {{ number_format($consumableAdvanceAmount, 0) }}
+                    {{ $formatter->money($consumableAdvanceAmount) }}
                 </td>
             </tr>
         @endif
@@ -498,11 +534,11 @@ $allocatedAmount =
         @if($securityDepositAmount > 0)
             <tr>
                 <td class="summary-detail">
-                    Held as Security Deposit
+                    {{ __('documents.receipt.held_as_security_deposit') }}
                 </td>
 
                 <td class="summary-amount">
-                    GHS {{ number_format($securityDepositAmount, 0) }}
+                    {{ $formatter->money($securityDepositAmount) }}
                 </td>
             </tr>
         @endif
@@ -510,22 +546,22 @@ $allocatedAmount =
         @if($unclassifiedAmount > 0)
             <tr>
                 <td class="summary-detail">
-                    Unclassified Balance
+                    {{ __('documents.receipt.unclassified_balance') }}
                 </td>
 
                 <td class="summary-amount">
-                    GHS {{ number_format($unclassifiedAmount, 0) }}
+                    {{ $formatter->money($unclassifiedAmount) }}
                 </td>
             </tr>
         @endif
 
         <tr class="total-row">
             <td>
-                Accounted For
+                {{ __('documents.receipt.accounted_for') }}
             </td>
 
             <td class="summary-amount">
-                GHS {{ number_format($accountedAmount, 0) }}
+                {{ $formatter->money($accountedAmount) }}
             </td>
         </tr>
     </table>
@@ -534,7 +570,7 @@ $allocatedAmount =
 @if($payment->notes)
     <div class="section">
         <div class="section-title">
-            Notes
+            {{ __('documents.receipt.notes') }}
         </div>
 
         {{ $payment->notes }}
@@ -542,7 +578,7 @@ $allocatedAmount =
 @endif
 
 <div class="footer">
-    Thank you. This receipt confirms payment recorded by
+    {{ __('documents.receipt.footer_prefix') }}
     {{ $managingOrganisation?->legal_name
         ?? $managingOrganisation?->name
         ?? 'Patrimoine' }}.

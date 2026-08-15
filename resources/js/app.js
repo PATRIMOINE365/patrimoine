@@ -1,3 +1,4 @@
+import './setup';
 /*
 |--------------------------------------------------------------------------
 | Patrimoine Browser Application Bootstrap
@@ -24,6 +25,11 @@ import {
     initializeAuthenticatedShell,
     initializeLogin,
 } from './auth.js';
+
+import {
+    applyTranslations,
+    loadPresentationConfiguration,
+} from './core.js';
 
 import {
     initializeDashboard,
@@ -70,6 +76,21 @@ import {
 document.addEventListener(
     'DOMContentLoaded',
     async () => {
+        /*
+         * Presentation configuration is public and must be available before
+         * either login or authenticated application UI is initialized.
+         *
+         * The loader falls back safely to compatibility defaults when the
+         * endpoint cannot be reached.
+         */
+        await loadPresentationConfiguration();
+
+        /*
+         * Apply organisation-wide language before Login or protected
+         * application modules initialize.
+         */
+        applyTranslations();
+
         /*
          * Login and authenticated application screens are mutually
          * exclusive.

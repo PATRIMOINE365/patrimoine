@@ -42,7 +42,7 @@ public function recordDeposit(
 ): OwnerTransaction {
     if ($amount <= 0) {
         throw new RuntimeException(
-            'Owner deposit amount must be greater than zero.'
+            __('business.owner.deposit_positive')
         );
     }
 
@@ -58,7 +58,7 @@ public function recordDeposit(
         )
     ) {
         throw new RuntimeException(
-            'Unsupported owner deposit payment method.'
+            __('business.owner.deposit_payment_method')
         );
     }
 
@@ -75,7 +75,7 @@ public function recordDeposit(
         )
     ) {
         throw new RuntimeException(
-            'Unsupported owner deposit purpose.'
+            __('business.owner.deposit_purpose')
         );
     }
 
@@ -84,7 +84,7 @@ public function recordDeposit(
         && trim((string) $collectorName) === ''
     ) {
         throw new RuntimeException(
-            'Cash owner deposits require a collector.'
+            __('business.owner.cash_collector_required')
         );
     }
 
@@ -167,13 +167,13 @@ public function recordDeposit(
     ): OwnerTransaction {
         if (! in_array($direction, ['credit', 'debit'], true)) {
             throw new RuntimeException(
-                'Owner adjustment direction must be credit or debit.'
+                __('business.owner.adjustment_direction')
             );
         }
 
         if ($amount <= 0) {
             throw new RuntimeException(
-                'Owner adjustment amount must be greater than zero.'
+                __('business.owner.adjustment_positive')
             );
         }
 
@@ -181,7 +181,7 @@ public function recordDeposit(
 
         if ($reason === '') {
             throw new RuntimeException(
-                'Owner adjustment reason is required.'
+                __('business.owner.adjustment_reason')
             );
         }
 

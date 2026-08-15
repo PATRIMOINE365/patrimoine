@@ -21,6 +21,11 @@ Route::get(
 );
 
 Route::view(
+    '/setup',
+    'auth.setup'
+)->name('setup');
+
+Route::view(
     '/login',
     'auth.login'
 )->name('login');

@@ -57,13 +57,13 @@ class ConsumableAdvanceService
 
             if ($account->type !== 'consumable_advance') {
                 throw new RuntimeException(
-                    'Only a Consumable Advance account can be consumed by this service.'
+                    __('business.consumable_advance.wrong_account_type')
                 );
             }
 
             if ($account->status !== 'active') {
                 throw new RuntimeException(
-                    'Consumable Advance account is closed.'
+                    __('business.consumable_advance.account_closed')
                 );
             }
 
@@ -77,14 +77,14 @@ class ConsumableAdvanceService
              */
             if ($lease->status === 'draft') {
                 throw new RuntimeException(
-                    'Consumable Advance cannot be used for a draft Lease.'
+                    __('business.consumable_advance.draft_lease')
                 );
             }
 
 
 if ($invoice->lease_id !== $lease->id) {
     throw new RuntimeException(
-        'The Invoice does not belong to the Consumable Advance Lease.'
+        __('business.consumable_advance.wrong_invoice_lease')
     );
 }
 
@@ -96,13 +96,13 @@ if ($invoice->lease_id !== $lease->id) {
  */
 if (! $invoice->isRentInvoice()) {
     throw new RuntimeException(
-        'Consumable Advance can only settle rent invoices.'
+        __('business.consumable_advance.rent_only')
     );
 }
 
 if ($amount <= 0) {
     throw new RuntimeException(
-        'Consumable Advance amount must be greater than zero.'
+        __('business.consumable_advance.amount_positive')
     );
 }
 
@@ -110,13 +110,13 @@ if ($amount <= 0) {
 
             if ($amount > $account->balance()) {
                 throw new RuntimeException(
-                    'Consumable Advance balance is insufficient.'
+                    __('business.consumable_advance.insufficient_balance')
                 );
             }
 
             if ($amount > $invoice->outstandingAmount()) {
                 throw new RuntimeException(
-                    'Consumable Advance exceeds the Invoice outstanding amount.'
+                    __('business.consumable_advance.exceeds_invoice')
                 );
             }
 
@@ -185,7 +185,7 @@ if ($amount <= 0) {
 
         if ($ownerships->isEmpty()) {
             throw new RuntimeException(
-                'Building has no ownership allocations.'
+                __('business.consumable_advance.no_ownership')
             );
         }
 
@@ -196,7 +196,7 @@ if ($amount <= 0) {
 
         if (abs($ownershipTotal - 100.0) > 0.001) {
             throw new RuntimeException(
-                'Building ownership percentages must total 100%.'
+                __('business.consumable_advance.ownership_total')
             );
         }
 

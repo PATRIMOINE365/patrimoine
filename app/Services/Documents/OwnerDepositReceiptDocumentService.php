@@ -4,6 +4,7 @@ namespace App\Services\Documents;
 
 use App\Models\OwnerTransaction;
 use App\Services\ApplicationIdentityService;
+use App\Services\ApplicationPresentationFormatter;
 use Barryvdh\DomPDF\Facade\Pdf;
 use RuntimeException;
 
@@ -23,7 +24,8 @@ use RuntimeException;
 class OwnerDepositReceiptDocumentService
 {
     public function __construct(
-        private ApplicationIdentityService $identity
+        private ApplicationIdentityService $identity,
+        private ApplicationPresentationFormatter $formatter
     ) {
     }
 
@@ -51,6 +53,7 @@ class OwnerDepositReceiptDocumentService
                 'transaction' =>
                     $transaction,
 
+                'formatter' => $this->formatter,
                 'managingOrganisation' =>
                     $this->identity
                         ->managingOrganisation(),
@@ -98,7 +101,7 @@ class OwnerDepositReceiptDocumentService
             || $transaction->category !== 'owner_deposit'
         ) {
             throw new RuntimeException(
-                'Only Owner deposits may generate an Owner deposit receipt.'
+                __('business.owner.deposit_receipt_only')
             );
         }
     }

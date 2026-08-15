@@ -4,6 +4,7 @@ namespace App\Services\Documents;
 
 use App\Models\SecurityDepositSettlement;
 use App\Services\ApplicationIdentityService;
+use App\Services\ApplicationPresentationFormatter;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 /**
@@ -15,7 +16,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class SecurityDepositVoucherDocumentService
 {
     public function __construct(
-        private ApplicationIdentityService $identity
+        private ApplicationIdentityService $identity,
+        private ApplicationPresentationFormatter $formatter
     ) {
     }
 
@@ -52,6 +54,7 @@ class SecurityDepositVoucherDocumentService
                             ],
                         ]),
 
+                'formatter' => $this->formatter,
                 'managingOrganisation' =>
                     $this->identity
                         ->managingOrganisation(),

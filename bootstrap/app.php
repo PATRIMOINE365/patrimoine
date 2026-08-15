@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Http\Middleware\ApplyApplicationLocale;
 use Illuminate\Http\Request;
 use App\Http\Middleware\EnsureUserHasRole;
 
@@ -14,6 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        /*
+         * Patrimoine uses one Managing Organisation language for both
+         * browser and API presentation. Apply it early to every request.
+         */
+        $middleware->append(
+            ApplyApplicationLocale::class
+        );
         /*
         * Patrimoine currently authenticates through API endpoints rather
         * than a traditional server-rendered login page.

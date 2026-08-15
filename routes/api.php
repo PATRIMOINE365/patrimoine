@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ApplicationPresentationController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ManagingOrganisationController;
 use App\Http\Controllers\Api\BuildingController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Api\UnitController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PaymentRegisterController;
 use App\Http\Controllers\Api\OwnerAccountController;
+use App\Http\Controllers\Api\InitialSetupController;
 
 
 /*
@@ -35,6 +37,44 @@ use App\Http\Controllers\Api\OwnerAccountController;
 | operations require an authenticated Property Manager.
 |
 */
+
+/*
+|--------------------------------------------------------------------------
+| Application Presentation Configuration
+|--------------------------------------------------------------------------
+|
+| Public by design so the login screen can resolve the organisation
+| language and currency before authentication.
+|
+*/
+
+Route::get(
+    'presentation-config',
+    ApplicationPresentationController::class
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| Initial Installation
+|--------------------------------------------------------------------------
+|
+| A fresh Patrimoine installation has no authenticated user yet.
+|
+| These two endpoints are therefore public, but the POST operation becomes
+| permanently unavailable as soon as an application user or configured
+| Managing Organisation exists.
+|
+*/
+Route::get(
+    'setup/status',
+    [InitialSetupController::class, 'status']
+);
+
+Route::post(
+    'setup',
+    [InitialSetupController::class, 'store']
+)->middleware('throttle:5,1');
 
 /*
 |--------------------------------------------------------------------------

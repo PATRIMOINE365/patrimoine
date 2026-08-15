@@ -297,7 +297,7 @@ class StoreLeaseRequest extends FormRequest
         ) {
             $validator->errors()->add(
                 'tenant_id',
-                'Selected Party must have the tenant role.'
+                __('api.validation.tenant_role_required')
             );
         }
     }
@@ -319,7 +319,7 @@ class StoreLeaseRequest extends FormRequest
         ) {
             $validator->errors()->add(
                 'agent_id',
-                'Selected Party must have the agent role.'
+                __('api.validation.agent_role_required')
             );
         }
     }
@@ -335,7 +335,7 @@ class StoreLeaseRequest extends FormRequest
         ) {
             $validator->errors()->add(
                 'termination_notice_date',
-                'Termination notice date is required when Lease status is notice.'
+                __('api.validation.notice_date_required')
             );
         }
     }
@@ -351,14 +351,14 @@ class StoreLeaseRequest extends FormRequest
         if ($type === 'none' && $value !== 0.0) {
             $validator->errors()->add(
                 'management_fee_value',
-                'Management fee value must be zero when management fee type is none.'
+                __('api.validation.management_fee_none_zero')
             );
         }
 
         if ($type === 'percentage' && $value > 100) {
             $validator->errors()->add(
                 'management_fee_value',
-                'Percentage management fee cannot exceed 100%.'
+                __('api.validation.management_fee_percentage_max')
             );
         }
     }
@@ -374,7 +374,7 @@ class StoreLeaseRequest extends FormRequest
         ) {
             $validator->errors()->add(
                 'agent_id',
-                'An Agent is required when an agent commission is configured.'
+                __('api.validation.agent_required_for_commission')
             );
         }
     }
@@ -398,7 +398,7 @@ class StoreLeaseRequest extends FormRequest
         if ($exists) {
             $validator->errors()->add(
                 'unit_id',
-                'This Unit already has an active Lease.'
+                __('api.validation.unit_active_lease')
             );
         }
     }
@@ -422,7 +422,7 @@ private function validateAdvanceTerms($validator): void
     if ($rentReserve > $advancePayment) {
         $validator->errors()->add(
             'rent_reserve_amount',
-            'Rent Reserve cannot exceed the total Advance Payment.'
+            __('api.validation.rent_reserve_exceeds_advance')
         );
     }
 }
@@ -454,7 +454,7 @@ private function validateRentIncrement($validator): void
     ) {
         $validator->errors()->add(
             'rent_increment_value',
-            'Rent increment value must be zero when no rent increment is configured.'
+            __('api.validation.rent_increment_none_zero')
         );
     }
 
@@ -464,7 +464,7 @@ private function validateRentIncrement($validator): void
     ) {
         $validator->errors()->add(
             'next_rent_increment_date',
-            'Next rent increment date must be empty when no rent increment is configured.'
+            __('api.validation.rent_increment_none_date')
         );
     }
 
@@ -474,7 +474,7 @@ private function validateRentIncrement($validator): void
     ) {
         $validator->errors()->add(
             'rent_increment_value',
-            'Enter a rent increment value when a rent increment is configured.'
+            __('api.validation.rent_increment_value_required')
         );
     }
 
@@ -484,7 +484,7 @@ private function validateRentIncrement($validator): void
     ) {
         $validator->errors()->add(
             'next_rent_increment_date',
-            'Next rent increment date is required when a rent increment is configured.'
+            __('api.validation.rent_increment_date_required')
         );
     }
 
@@ -494,7 +494,7 @@ private function validateRentIncrement($validator): void
     ) {
         $validator->errors()->add(
             'rent_increment_value',
-            'Percentage rent increment cannot exceed 100%.'
+            __('api.validation.rent_increment_percentage_max')
         );
     }
 }
@@ -516,7 +516,7 @@ private function validateReceivedAdvance($validator): void
     if ($advanceAmount <= 0) {
         $validator->errors()->add(
             'advance_payment_amount',
-            'Advance Payment must be greater than zero when Advance already received is selected.'
+            __('api.validation.advance_received_positive')
         );
     }
 
@@ -532,7 +532,7 @@ private function validateReceivedAdvance($validator): void
     ) {
         $validator->errors()->add(
             'advance_received_date',
-            'Advance received date cannot be before the Lease start date.'
+            __('api.validation.advance_received_before_lease')
         );
     }
 }

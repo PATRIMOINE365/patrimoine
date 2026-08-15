@@ -146,7 +146,7 @@ class StoreOwnerDepositRequest extends FormRequest
         if (! $this->filled('building_id')) {
             $validator->errors()->add(
                 'building_id',
-                'A Building is required when a Unit is selected.'
+                __('api.validation.building_required_for_unit')
             );
 
             return;
@@ -163,7 +163,7 @@ class StoreOwnerDepositRequest extends FormRequest
         ) {
             $validator->errors()->add(
                 'unit_id',
-                'Selected Unit does not belong to the selected Building.'
+                __('api.validation.unit_not_in_building')
             );
         }
     }

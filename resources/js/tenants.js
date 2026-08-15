@@ -2,7 +2,9 @@ import {
     apiRequest,
     escapeHtml,
     formatCurrency,
+    formatNumber,
     parseJsonResponse,
+    translate,
 } from './core.js';
 
 /*
@@ -168,7 +170,7 @@ async function loadTenants(
             selectedTenantId = null;
 
             renderTenantDetailEmpty(
-                'No Tenant is available to display.'
+                translate('tenants.no_tenant_available')
             );
 
             return;
@@ -196,11 +198,11 @@ async function loadTenants(
         showTenantError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load Tenants.'
+                : translate('tenants.unable_to_load')
         );
 
         renderTenantDirectoryEmpty(
-            'Unable to load Tenants.'
+            translate('tenants.unable_to_load')
         );
     }
 }
@@ -243,16 +245,26 @@ function renderTenantDirectory(
 
     if (count) {
         count.textContent =
-            `${total.toLocaleString()} tenant${total === 1 ? '' : 's'}`;
+            translate(
+                total === 1
+                    ? 'tenants.pagination_tenant'
+                    : 'tenants.pagination_tenants',
+                {
+                    total:
+                        formatNumber(
+                            total
+                        ),
+                }
+            );
     }
 
     if (tenants.length === 0) {
         renderTenantDirectoryEmpty(
-            'No Tenants match your search.'
+            translate('tenants.no_search_results')
         );
 
         renderTenantDetailEmpty(
-            'No Tenant is available to display.'
+            translate('tenants.no_tenant_available')
         );
 
         return;
@@ -401,7 +413,7 @@ async function selectTenant(
             )
         ) {
             throw new Error(
-                'The selected Party is not a Tenant.'
+                translate('tenants.not_tenant')
             );
         }
 
@@ -470,11 +482,11 @@ async function selectTenant(
         showTenantError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load Tenant details.'
+                : translate('tenants.unable_to_load_details')
         );
 
         renderTenantDetailEmpty(
-            'Unable to load this Tenant.'
+            translate('tenants.unable_to_load_tenant')
         );
     }
 }
@@ -583,7 +595,7 @@ function renderTenantDetail(
                             contactSummary(
                                 tenant
                             )
-                            || 'No contact information available.'
+                            || translate('tenants.no_contact_information')
                         )}
                     </div>
                 </div>
@@ -603,7 +615,11 @@ function renderTenantDetail(
                         hover:bg-slate-50
                     "
                 >
-                    Tenant Statement
+                    ${escapeHtml(
+                        translate(
+                            'tenants.tenant_statement'
+                        )
+                    )}
                 </a>
             </div>
         </div>
@@ -618,17 +634,17 @@ function renderTenantDetail(
             "
         >
             ${summaryMetric(
-                'Total Leases',
+                translate('tenants.total_leases'),
                 leases.length
             )}
 
             ${summaryMetric(
-                'Current Leases',
+                translate('tenants.current_leases'),
                 activeLeases.length
             )}
 
             ${summaryMetric(
-                'Historical Leases',
+                translate('tenants.historical_leases'),
                 Math.max(
                     0,
                     leases.length
@@ -649,7 +665,11 @@ function renderTenantDetail(
                     text-slate-950
                 "
             >
-                Tenant Details
+                ${escapeHtml(
+                    translate(
+                        'tenants.tenant_details'
+                    )
+                )}
             </h3>
 
             <div
@@ -660,34 +680,34 @@ function renderTenantDetail(
                 "
             >
                 ${detailItem(
-                    'Party Type',
+                    translate('tenants.party_type'),
                     capitalizeWords(
                         tenant.type
                     )
                 )}
 
                 ${detailItem(
-                    'Phone',
+                    translate('tenants.phone'),
                     tenant.phone
                 )}
 
                 ${detailItem(
-                    'Alternate Phone',
+                    translate('tenants.alternate_phone'),
                     tenant.alternate_phone
                 )}
 
                 ${detailItem(
-                    'Email',
+                    translate('tenants.email'),
                     tenant.email
                 )}
 
                 ${detailItem(
-                    'Address',
+                    translate('tenants.address'),
                     tenant.address
                 )}
 
                 ${detailItem(
-                    'ID / Registration',
+                    translate('tenants.id_registration'),
                     tenant.id_number
                     || tenant.registration_number
                 )}
@@ -702,7 +722,11 @@ function renderTenantDetail(
                         text-slate-950
                     "
                 >
-                    Leases
+                    ${escapeHtml(
+                        translate(
+                            'tenants.leases'
+                        )
+                    )}
                 </h3>
 
                 <p
@@ -711,7 +735,11 @@ function renderTenantDetail(
                         text-slate-500
                     "
                 >
-                    Current and historical lease relationships for this Tenant.
+                    ${escapeHtml(
+                        translate(
+                            'tenants.leases_description'
+                        )
+                    )}
                 </p>
             </div>
 
@@ -797,7 +825,11 @@ function renderTenantFinancialPosition(
                     text-slate-950
                 "
             >
-                Financial Position
+                ${escapeHtml(
+                    translate(
+                        'tenants.financial_position'
+                    )
+                )}
             </h3>
 
             <p
@@ -806,7 +838,11 @@ function renderTenantFinancialPosition(
                     text-slate-500
                 "
             >
-                Outstanding receivables and tenant-held funds across all leases.
+                ${escapeHtml(
+                    translate(
+                        'tenants.financial_position_description'
+                    )
+                )}
             </p>
         </div>
 
@@ -818,17 +854,17 @@ function renderTenantFinancialPosition(
             "
         >
             ${financialMetric(
-                'Rent Outstanding',
+                translate('tenants.rent_outstanding'),
                 summary.rent_outstanding
             )}
 
             ${financialMetric(
-                'Security Deposit Debt',
+                translate('tenants.security_deposit_debt'),
                 summary.security_deposit_debt_outstanding
             )}
 
             ${financialMetric(
-                'Total Outstanding',
+                translate('tenants.total_outstanding'),
                 summary.total_outstanding
             )}
         </div>
@@ -846,7 +882,11 @@ function renderTenantFinancialPosition(
                     text-slate-900
                 "
             >
-                Held Funds
+                ${escapeHtml(
+                    translate(
+                        'tenants.held_funds'
+                    )
+                )}
             </h4>
 
             <div
@@ -857,17 +897,17 @@ function renderTenantFinancialPosition(
                 "
             >
                 ${financialMetric(
-                    'Rent Reserve',
+                    translate('tenants.rent_reserve'),
                     summary.rent_reserve_balance
                 )}
 
                 ${financialMetric(
-                    'Consumable Advance',
+                    translate('tenants.consumable_advance'),
                     summary.consumable_advance_balance
                 )}
 
                 ${financialMetric(
-                    'Security Deposit',
+                    translate('tenants.security_deposit'),
                     summary.security_deposit_balance
                 )}
             </div>
@@ -900,7 +940,11 @@ function renderTenantInvoices(
                     text-slate-950
                 "
             >
-                Invoices
+                ${escapeHtml(
+                    translate(
+                        'tenants.invoices'
+                    )
+                )}
             </h3>
 
             <p
@@ -909,7 +953,11 @@ function renderTenantInvoices(
                     text-slate-500
                 "
             >
-                Billing history across this Tenant's leases.
+                ${escapeHtml(
+                    translate(
+                        'tenants.invoices_description'
+                    )
+                )}
             </p>
         </div>
 
@@ -917,7 +965,7 @@ function renderTenantInvoices(
             ${
                 rows.length === 0
                     ? financialEmptyState(
-                        'No invoices have been recorded for this Tenant.'
+                        translate('tenants.no_invoices')
                     )
                     : `
                         <div
@@ -936,15 +984,15 @@ function renderTenantInvoices(
                             >
                                 <thead class="bg-slate-50">
                                     <tr>
-                                        ${tableHeading('Invoice')}
-                                        ${tableHeading('Type')}
-                                        ${tableHeading('Date')}
-                                        ${tableHeading('Due Date')}
-                                        ${tableHeading('Amount', true)}
-                                        ${tableHeading('Paid', true)}
-                                        ${tableHeading('Outstanding', true)}
-                                        ${tableHeading('Status')}
-                                        ${tableHeading('Actions')}
+                                        ${tableHeading(translate('tenants.invoice'))}
+                                        ${tableHeading(translate('tenants.type'))}
+                                        ${tableHeading(translate('tenants.date'))}
+                                        ${tableHeading(translate('tenants.due_date'))}
+                                        ${tableHeading(translate('tenants.amount'), true)}
+                                        ${tableHeading(translate('tenants.paid'), true)}
+                                        ${tableHeading(translate('tenants.outstanding'), true)}
+                                        ${tableHeading(translate('tenants.status'))}
+                                        ${tableHeading(translate('tenants.actions'))}
                                     </tr>
                                 </thead>
 
@@ -1098,7 +1146,11 @@ function invoiceActionCell(
                         disabled:opacity-60
                     "
                 >
-                    Invoice
+                    ${escapeHtml(
+                        translate(
+                            'tenants.invoice'
+                        )
+                    )}
                 </button>
 
                 <button
@@ -1118,7 +1170,11 @@ function invoiceActionCell(
                         disabled:opacity-60
                     "
                 >
-                    Resend
+                    ${escapeHtml(
+                        translate(
+                            'tenants.resend'
+                        )
+                    )}
                 </button>
             </div>
         </td>
@@ -1189,7 +1245,7 @@ async function openTenantInvoice(
 
     button.disabled = true;
     button.textContent =
-        'Opening…';
+        translate('tenants.opening');
 
     hideTenantError();
 
@@ -1203,7 +1259,7 @@ async function openTenantInvoice(
 
         if (! response.ok) {
             throw new Error(
-                'Unable to open invoice.'
+                translate('tenants.unable_to_open_invoice')
             );
         }
 
@@ -1233,7 +1289,7 @@ async function openTenantInvoice(
         showTenantError(
             error instanceof Error
                 ? error.message
-                : 'Unable to open invoice.'
+                : translate('tenants.unable_to_open_invoice')
         );
     } finally {
         if (
@@ -1271,7 +1327,7 @@ async function resendTenantInvoice(
 
     button.disabled = true;
     button.textContent =
-        'Sending…';
+        translate('tenants.sending');
 
     hideTenantError();
 
@@ -1292,7 +1348,7 @@ async function resendTenantInvoice(
         );
 
         button.textContent =
-            'Sent';
+            translate('tenants.sent');
 
         window.setTimeout(
             () => {
@@ -1320,7 +1376,7 @@ async function resendTenantInvoice(
         showTenantError(
             error instanceof Error
                 ? error.message
-                : 'Unable to resend invoice.'
+                : translate('tenants.unable_to_resend_invoice')
         );
     }
 }
@@ -1356,7 +1412,11 @@ function renderTenantPayments(
                     text-slate-950
                 "
             >
-                Payments
+                ${escapeHtml(
+                    translate(
+                        'tenants.payments'
+                    )
+                )}
             </h3>
 
             <p
@@ -1365,7 +1425,11 @@ function renderTenantPayments(
                     text-slate-500
                 "
             >
-                Cash received and allocation history across this Tenant's leases.
+                ${escapeHtml(
+                    translate(
+                        'tenants.payments_description'
+                    )
+                )}
             </p>
         </div>
 
@@ -1373,7 +1437,7 @@ function renderTenantPayments(
             ${
                 rows.length === 0
                     ? financialEmptyState(
-                        'No payments have been recorded for this Tenant.'
+                        translate('tenants.no_payments')
                     )
                     : `
                         <div
@@ -1392,13 +1456,13 @@ function renderTenantPayments(
                             >
                                 <thead class="bg-slate-50">
                                     <tr>
-                                        ${tableHeading('Date')}
-                                        ${tableHeading('Amount', true)}
-                                        ${tableHeading('Method')}
-                                        ${tableHeading('Reference')}
-                                        ${tableHeading('Allocated', true)}
-                                        ${tableHeading('Unallocated', true)}
-                                        ${tableHeading('Receipt')}
+                                        ${tableHeading(translate('tenants.date'))}
+                                        ${tableHeading(translate('tenants.amount'), true)}
+                                        ${tableHeading(translate('tenants.method'))}
+                                        ${tableHeading(translate('tenants.reference'))}
+                                        ${tableHeading(translate('tenants.allocated'), true)}
+                                        ${tableHeading(translate('tenants.unallocated'), true)}
+                                        ${tableHeading(translate('tenants.receipt'))}
                                     </tr>
                                 </thead>
 
@@ -1813,7 +1877,11 @@ function receiptActionCell(
                         disabled:opacity-60
                     "
                 >
-                    Receipt
+                    ${escapeHtml(
+                        translate(
+                            'tenants.receipt'
+                        )
+                    )}
                 </button>
 
                 <button
@@ -1833,7 +1901,11 @@ function receiptActionCell(
                         disabled:opacity-60
                     "
                 >
-                    Resend
+                    ${escapeHtml(
+                        translate(
+                            'tenants.resend'
+                        )
+                    )}
                 </button>
             </div>
         </td>
@@ -1905,7 +1977,7 @@ async function openTenantReceipt(
 
     button.disabled = true;
     button.textContent =
-        'Opening…';
+        translate('tenants.opening');
 
     hideTenantError();
 
@@ -1919,7 +1991,7 @@ async function openTenantReceipt(
 
         if (! response.ok) {
             throw new Error(
-                'Unable to open receipt.'
+                translate('tenants.unable_to_open_receipt')
             );
         }
 
@@ -1949,7 +2021,7 @@ async function openTenantReceipt(
         showTenantError(
             error instanceof Error
                 ? error.message
-                : 'Unable to open receipt.'
+                : translate('tenants.unable_to_open_receipt')
         );
     } finally {
         if (
@@ -1987,7 +2059,7 @@ async function resendTenantReceipt(
 
     button.disabled = true;
     button.textContent =
-        'Sending…';
+        translate('tenants.sending');
 
     hideTenantError();
 
@@ -2008,7 +2080,7 @@ async function resendTenantReceipt(
         );
 
         button.textContent =
-            'Sent';
+            translate('tenants.sent');
 
         window.setTimeout(
             () => {
@@ -2034,7 +2106,7 @@ async function resendTenantReceipt(
         showTenantError(
             error instanceof Error
                 ? error.message
-                : 'Unable to resend receipt.'
+                : translate('tenants.unable_to_resend_receipt')
         );
     }
 }
@@ -2064,7 +2136,11 @@ function renderTenantFundHistory(
                     text-slate-950
                 "
             >
-                Fund History
+                ${escapeHtml(
+                    translate(
+                        'tenants.fund_history'
+                    )
+                )}
             </h3>
 
             <p
@@ -2073,7 +2149,11 @@ function renderTenantFundHistory(
                     text-slate-500
                 "
             >
-                Transaction history for Rent Reserve, Consumable Advance and Security Deposit.
+                ${escapeHtml(
+                    translate(
+                        'tenants.fund_history_description'
+                    )
+                )}
             </p>
         </div>
 
@@ -2081,7 +2161,7 @@ function renderTenantFundHistory(
             ${
                 rows.length === 0
                     ? financialEmptyState(
-                        'No tenant fund transactions have been recorded for this Tenant.'
+                        translate('tenants.no_fund_transactions')
                     )
                     : `
                         <div
@@ -2100,13 +2180,13 @@ function renderTenantFundHistory(
                             >
                                 <thead class="bg-slate-50">
                                     <tr>
-                                        ${tableHeading('Date')}
-                                        ${tableHeading('Fund')}
-                                        ${tableHeading('Direction')}
-                                        ${tableHeading('Category')}
-                                        ${tableHeading('Amount', true)}
-                                        ${tableHeading('Reference')}
-                                        ${tableHeading('Source')}
+                                        ${tableHeading(translate('tenants.date'))}
+                                        ${tableHeading(translate('tenants.fund'))}
+                                        ${tableHeading(translate('tenants.direction'))}
+                                        ${tableHeading(translate('tenants.category'))}
+                                        ${tableHeading(translate('tenants.amount'), true)}
+                                        ${tableHeading(translate('tenants.reference'))}
+                                        ${tableHeading(translate('tenants.source'))}
                                     </tr>
                                 </thead>
 
@@ -2209,14 +2289,28 @@ function tenantFundSource(
     transaction
 ) {
     if (transaction?.payment_id) {
-        return `Payment #${transaction.payment_id}`;
+        return translate(
+            'tenants.payment_number',
+            {
+                number:
+                    transaction.payment_id,
+            }
+        );
     }
 
     if (transaction?.invoice_id) {
-        return `Invoice #${transaction.invoice_id}`;
+        return translate(
+            'tenants.invoice_number',
+            {
+                number:
+                    transaction.invoice_id,
+            }
+        );
     }
 
-    return 'Ledger';
+    return translate(
+        'tenants.ledger'
+    );
 }
 
 
@@ -2374,7 +2468,11 @@ function renderTenantLeases(
                     text-sm text-slate-500
                 "
             >
-                No leases have been recorded for this Tenant.
+                ${escapeHtml(
+                    translate(
+                        'tenants.no_leases'
+                    )
+                )}
             </div>
         `;
     }
@@ -2384,11 +2482,11 @@ function renderTenantLeases(
             (lease) => {
                 const building =
                     lease?.unit?.building?.name
-                    ?? 'Building';
+                    ?? translate('tenants.building');
 
                 const unit =
                     lease?.unit?.name
-                    ?? 'Unit';
+                    ?? translate('tenants.unit');
 
                 return `
                     <article
@@ -2550,7 +2648,7 @@ function tenantDisplayName(
 ) {
     return tenant?.name
         || tenant?.legal_name
-        || 'Unnamed Tenant';
+        || translate('tenants.unnamed_tenant');
 }
 
 
@@ -2598,10 +2696,17 @@ function formatLeasePeriod(
     }
 
     if (start) {
-        return `${start} → ongoing`;
+        return translate(
+            'tenants.lease_ongoing',
+            {
+                start,
+            }
+        );
     }
 
-    return 'Lease dates unavailable';
+    return translate(
+        'tenants.lease_dates_unavailable'
+    );
 }
 
 
@@ -2664,8 +2769,19 @@ function renderTenantPagination(
                     text-xs text-slate-500
                 "
             >
-                ${total.toLocaleString()}
-                tenant${total === 1 ? '' : 's'}
+                ${escapeHtml(
+                    translate(
+                        total === 1
+                            ? 'tenants.pagination_tenant'
+                            : 'tenants.pagination_tenants',
+                        {
+                            total:
+                                formatNumber(
+                                    total
+                                ),
+                        }
+                    )
+                )}
             </div>
 
             <div class="flex gap-2">
@@ -2682,7 +2798,11 @@ function renderTenantPagination(
                         disabled:opacity-40
                     "
                 >
-                    Previous
+                    ${escapeHtml(
+                        translate(
+                            'tenants.previous'
+                        )
+                    )}
                 </button>
 
                 <button
@@ -2698,7 +2818,11 @@ function renderTenantPagination(
                         disabled:opacity-40
                     "
                 >
-                    Next
+                    ${escapeHtml(
+                        translate(
+                            'tenants.next'
+                        )
+                    )}
                 </button>
             </div>
         </div>
@@ -2760,7 +2884,11 @@ function showTenantLoading() {
                 text-sm text-slate-400
             "
         >
-            Loading tenants…
+            ${escapeHtml(
+                translate(
+                    'tenants.loading'
+                )
+            )}
         </div>
     `;
 }
@@ -2819,7 +2947,11 @@ function renderTenantDetailLoading() {
                     text-sm text-slate-400
                 "
             >
-                Loading Tenant details…
+                ${escapeHtml(
+                    translate(
+                        'tenants.loading_details'
+                    )
+                )}
             </div>
         </div>
     `;

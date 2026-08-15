@@ -97,7 +97,7 @@ class StoreOwnerExpenseRequest extends FormRequest
                 if (! $belongsToBuilding) {
                     $validator->errors()->add(
                         'unit_id',
-                        'Selected Unit does not belong to the selected Building.'
+                        __('api.validation.unit_not_in_building')
                     );
                 }
             },

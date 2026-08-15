@@ -73,7 +73,7 @@ class OwnerPayoutService
 
             if ($amount <= 0) {
                 throw new RuntimeException(
-                    'Owner payout amount must be greater than zero.'
+                    __('business.owner.payout_positive')
                 );
             }
 
@@ -100,13 +100,13 @@ class OwnerPayoutService
 
             if ($availableBalance <= 0) {
                 throw new RuntimeException(
-                    'Owner has no funds available for payout.'
+                    __('business.owner.payout_no_funds')
                 );
             }
 
             if ($amount > $availableBalance) {
                 throw new RuntimeException(
-                    'Owner payout exceeds available balance.'
+                    __('business.owner.payout_exceeds_balance')
                 );
             }
 
@@ -243,7 +243,7 @@ class OwnerPayoutService
              */
             if ($remaining !== 0) {
                 throw new RuntimeException(
-                    'Unable to fully allocate owner payout to net available credits.'
+                    __('business.owner.payout_allocation_failed')
                 );
             }
 

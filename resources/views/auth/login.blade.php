@@ -8,7 +8,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Sign in — Patrimoine</title>
+    <title data-i18n-title="login.title">Sign in — Patrimoine</title>
 
     @vite([
         'resources/css/app.css',
@@ -70,7 +70,7 @@
                         tracking-[0.24em] text-patrimoine-300
                     "
                 >
-                    Property Management
+                    <span data-i18n="product.property_management">Property Management</span>
                 </p>
 
                 <h1
@@ -79,8 +79,10 @@
                         tracking-tight text-white
                     "
                 >
-                    Your property portfolio,
-                    finances and tenants in one place.
+                    <span data-i18n="login.hero_title">
+                        Your property portfolio,
+                        finances and tenants in one place.
+                    </span>
                 </h1>
 
                 <p
@@ -89,9 +91,11 @@
                         text-patrimoine-200
                     "
                 >
-                    Manage buildings, leases, rent collections,
-                    owner funds and financial reporting from a
-                    single workspace.
+                    <span data-i18n="login.hero_description">
+                        Manage buildings, leases, rent collections,
+                        owner funds and financial reporting from a
+                        single workspace.
+                    </span>
                 </p>
             </div>
 
@@ -101,7 +105,9 @@
                     text-patrimoine-300
                 "
             >
-                Patrimoine Property Management
+                <span data-i18n="login.product_name">
+                    Patrimoine Property Management
+                </span>
             </div>
         </section>
 
@@ -138,11 +144,11 @@
                             text-slate-950
                         "
                     >
-                        Welcome back
+                        <span data-i18n="login.welcome">Welcome back</span>
                     </h2>
 
                     <p class="mt-2 text-sm leading-6 text-slate-500">
-                        Sign in to access the property management workspace.
+                        <span data-i18n="login.description">Sign in to access the property management workspace.</span>
                     </p>
                 </div>
 
@@ -167,7 +173,7 @@
                                 text-slate-700
                             "
                         >
-                            Email address
+                            <span data-i18n="login.email">Email address</span>
                         </label>
 
                         <input
@@ -189,7 +195,7 @@
                                 focus:ring-3
                                 focus:ring-patrimoine-600/10
                             "
-                            placeholder="name@example.com"
+                            data-i18n-placeholder="login.email_placeholder" placeholder="name@example.com"
                         >
                     </div>
 
@@ -206,7 +212,7 @@
                                     text-slate-700
                                 "
                             >
-                                Password
+                                <span data-i18n="login.password">Password</span>
                             </label>
                         </div>
 
@@ -228,7 +234,7 @@
                                 focus:ring-3
                                 focus:ring-patrimoine-600/10
                             "
-                            placeholder="Enter your password"
+                            data-i18n-placeholder="login.password_placeholder" placeholder="Enter your password"
                         >
                     </div>
 
@@ -249,7 +255,9 @@
                             disabled:opacity-60
                         "
                     >
-                        Sign in
+                        <span data-i18n="login.sign_in">
+                            Sign in
+                        </span>
                     </button>
                 </form>
 
@@ -259,7 +267,9 @@
                         leading-5 text-slate-400
                     "
                 >
-                    Secure access to Patrimoine Property Management.
+                    <span data-i18n="login.secure_access">
+                        Secure access to Patrimoine Property Management.
+                    </span>
                 </p>
             </div>
         </section>

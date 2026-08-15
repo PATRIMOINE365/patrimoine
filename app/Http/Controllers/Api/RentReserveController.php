@@ -35,7 +35,7 @@ class RentReserveController extends Controller
         if ($tenantFundAccount->type !== 'rent_reserve') {
             throw ValidationException::withMessages([
                 'tenant_fund_account' => [
-                    'The selected tenant fund account is not a Rent Reserve account.',
+                    __('business.fund_accounts.not_rent_reserve'),
                 ],
             ]);
         }

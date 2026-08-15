@@ -44,7 +44,7 @@ class OwnerAccountingService
 
             if ($ownerships->isEmpty()) {
                 throw new RuntimeException(
-                    'Building has no ownership allocations.'
+                    __('business.owner.no_ownership')
                 );
             }
 
@@ -58,7 +58,7 @@ class OwnerAccountingService
              */
             if (abs($ownershipTotal - 100.0) > 0.001) {
                 throw new RuntimeException(
-                    'Building ownership percentages must total 100%.'
+                    __('business.owner.ownership_total')
                 );
             }
 
@@ -158,7 +158,7 @@ class OwnerAccountingService
 
             if ($ownerships->isEmpty()) {
                 throw new RuntimeException(
-                    'Building has no ownership allocations.'
+                    __('business.owner.no_ownership')
                 );
             }
 
@@ -169,7 +169,7 @@ class OwnerAccountingService
 
             if (abs($ownershipTotal - 100.0) > 0.001) {
                 throw new RuntimeException(
-                    'Building ownership percentages must total 100%.'
+                    __('business.owner.ownership_total')
                 );
             }
 
@@ -442,7 +442,7 @@ class OwnerAccountingService
 
         if ($ownerships->isEmpty()) {
             throw new RuntimeException(
-                'Building has no ownership allocations.'
+                __('business.owner.no_ownership')
             );
         }
 
@@ -452,7 +452,7 @@ class OwnerAccountingService
 
         if (abs($ownershipTotal - 100.0) > 0.001) {
             throw new RuntimeException(
-                'Building ownership percentages must total 100%.'
+                __('business.owner.ownership_total')
             );
         }
 

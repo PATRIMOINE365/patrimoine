@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
 
@@ -8,7 +8,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Notice of Rent Increment</title>
+    <title>{{ __('emails.rent_increment.title') }}</title>
 </head>
 
 <body
@@ -47,7 +47,7 @@
         $tenantName =
             $tenant?->name
             ?? $tenant?->legal_name
-            ?? 'Tenant';
+            ?? __('emails.common.tenant');
 
         $propertyName =
             collect([
@@ -117,7 +117,7 @@
                                         color: #0f172a;
                                     "
                                 >
-                                    Notice of Rent Increment
+                                    {{ __('emails.rent_increment.title') }}
                                 </h1>
                             </div>
 
@@ -131,7 +131,7 @@
                                     line-height: 1.7;
                                 "
                             >
-                                Dear {{ $tenantName }},
+                                {{ __('emails.common.dear') }} {{ $tenantName }},
                             </p>
 
                             <p
@@ -144,15 +144,14 @@
                                     line-height: 1.7;
                                 "
                             >
-                                This is to formally notify you that the
-                                monthly rent applicable to your tenancy
+                                {{ __('emails.rent_increment.intro_before_property') }}
                                 @if($propertyName !== '')
-                                    at
+                                    {{ __('emails.rent_increment.at') }}
                                     <strong>{{ $propertyName }}</strong>
                                 @endif
-                                is scheduled to change with effect from
+                                {{ __('emails.rent_increment.intro_before_date') }}
                                 <strong>
-                                    {{ $increment->effective_date->format('j F Y') }}
+                                    {{ $formatter->date($increment->effective_date) }}
                                 </strong>.
                             </p>
 
@@ -179,7 +178,7 @@
                                             color: #64748b;
                                         "
                                     >
-                                        Current Monthly Rent
+                                        {{ __('emails.rent_increment.current_rent') }}
                                     </td>
 
                                     <td
@@ -191,10 +190,8 @@
                                             text-align: right;
                                         "
                                     >
-                                        GHS
-                                        {{ number_format(
-                                            $increment->old_rent_amount,
-                                            0
+                                        {{ $formatter->money(
+                                            $increment->old_rent_amount
                                         ) }}
                                     </td>
                                 </tr>
@@ -209,7 +206,7 @@
                                             color: #64748b;
                                         "
                                     >
-                                        Rent Increment
+                                        {{ __('emails.rent_increment.increment') }}
                                     </td>
 
                                     <td
@@ -230,10 +227,8 @@
                                                 2
                                             ) }}%
                                         @else
-                                            GHS
-                                            {{ number_format(
-                                                (float) $increment->increment_value,
-                                                0
+                                            {{ $formatter->money(
+                                                $increment->increment_value
                                             ) }}
                                         @endif
                                     </td>
@@ -249,7 +244,7 @@
                                             color: #64748b;
                                         "
                                     >
-                                        New Monthly Rent
+                                        {{ __('emails.rent_increment.new_rent') }}
                                     </td>
 
                                     <td
@@ -261,10 +256,8 @@
                                             text-align: right;
                                         "
                                     >
-                                        GHS
-                                        {{ number_format(
-                                            $increment->new_rent_amount,
-                                            0
+                                        {{ $formatter->money(
+                                            $increment->new_rent_amount
                                         ) }}
                                     </td>
                                 </tr>
@@ -279,7 +272,7 @@
                                             color: #64748b;
                                         "
                                     >
-                                        Effective Date
+                                        {{ __('emails.rent_increment.effective_date') }}
                                     </td>
 
                                     <td
@@ -291,7 +284,7 @@
                                             text-align: right;
                                         "
                                     >
-                                        {{ $increment->effective_date->format('j F Y') }}
+                                        {{ $formatter->date($increment->effective_date) }}
                                     </td>
                                 </tr>
                             </table>
@@ -306,8 +299,7 @@
                                     line-height: 1.7;
                                 "
                             >
-                                Your current rent will remain unchanged
-                                until the effective date stated above.
+                                {{ __('emails.rent_increment.unchanged_until') }}
                             </p>
 
                             <p
@@ -320,10 +312,9 @@
                                     line-height: 1.7;
                                 "
                             >
-                                Please contact
+                                {{ __('emails.rent_increment.contact_before') }}
                                 {{ $organisationName }}
-                                if you require any clarification regarding
-                                this notice.
+                                {{ __('emails.rent_increment.contact_after') }}
                             </p>
 
                             <p
@@ -336,7 +327,7 @@
                                     line-height: 1.7;
                                 "
                             >
-                                Regards,<br>
+                                {{ __('emails.common.regards') }},<br>
 
                                 <strong>
                                     {{ $organisationName }}

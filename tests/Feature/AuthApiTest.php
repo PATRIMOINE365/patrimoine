@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Models\ApplicationSetting;
 
 /**
  * Verify Patrimoine API authentication through Laravel Sanctum.
@@ -262,4 +263,55 @@ class AuthApiTest extends TestCase
             ->postJson('/api/auth/logout')
             ->assertUnauthorized();
     }
+
+    /**
+     * Authentication messages follow the configured French language.
+     */
+    public function test_authentication_messages_render_in_french(): void
+    {
+        ApplicationSetting::create([
+            'language' => 'fr',
+            'currency' => 'GHS',
+        ]);
+
+        $user = User::factory()->create([
+            'email' => 'french-auth@example.test',
+            'password' => 'correct-password',
+        ]);
+
+        $this->postJson('/api/auth/login', [
+            'email' => 'french-auth@example.test',
+            'password' => 'wrong-password',
+        ])
+            ->assertUnprocessable()
+            ->assertJsonPath(
+                'errors.email.0',
+                'Les identifiants fournis sont incorrects.'
+            );
+
+        $this->postJson('/api/auth/login', [])
+            ->assertUnprocessable()
+            ->assertJsonPath(
+                'errors.email.0',
+                'Le champ email est obligatoire.'
+            )
+            ->assertJsonPath(
+                'errors.password.0',
+                'Le champ password est obligatoire.'
+            );
+
+        $token = $user
+            ->createToken('French Client')
+            ->plainTextToken;
+
+        $this
+            ->withToken($token)
+            ->postJson('/api/auth/logout')
+            ->assertOk()
+            ->assertJsonPath(
+                'message',
+                'Déconnexion effectuée avec succès.'
+            );
+    }
+
 }

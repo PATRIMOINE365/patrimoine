@@ -260,4 +260,224 @@ class EmailDeliveryTest extends TestCase
             }
         );
     }
+
+
+    public function test_invoice_email_renders_french_date_and_fcfa_currency(): void
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+
+        $context =
+            $this->createContext();
+
+        ApplicationSetting::query()
+            ->firstOrFail()
+            ->update([
+                'language' => 'fr',
+                'currency' => 'FCFA',
+            ]);
+
+        app(
+            \App\Services\Notifications\EmailDeliveryService::class
+        )->sendInvoice(
+            $context['invoice']
+        );
+
+        \Illuminate\Support\Facades\Mail::assertSent(
+            \App\Mail\InvoiceMail::class,
+            function ($mail): bool {
+                $previousLocale =
+                    app()->getLocale();
+
+                app()->setLocale('fr');
+
+                try {
+                    $html =
+                        $mail->render();
+
+                    $subject =
+                        $mail->envelope()->subject;
+                } finally {
+                    app()->setLocale(
+                        $previousLocale
+                    );
+                }
+
+                return str_contains(
+                    $subject,
+                    'Facture INV-EMAIL-000001'
+                )
+
+                    && str_contains(
+                        $html,
+                        'Veuillez trouver ci-joint votre facture de loyer'
+                    )
+                    && str_contains(
+                        $html,
+                        'Montant de la facture'
+                    )
+                    && str_contains(
+                        $html,
+                        'Solde à payer'
+                    )
+                    && str_contains(
+                        $html,
+                        '11 800 FCFA'
+                    )
+                    && str_contains(
+                        $html,
+                        '15 août 2026'
+                    );
+            }
+        );
+    }
+
+
+    /**
+     * Receipt email localises prose and persisted payment-method codes.
+     */
+    public function test_receipt_email_renders_french_content(): void
+    {
+        Mail::fake();
+
+        $context =
+            $this->createContext();
+
+        ApplicationSetting::query()
+            ->firstOrFail()
+            ->update([
+                'language' => 'fr',
+                'currency' => 'FCFA',
+            ]);
+
+        app(
+            EmailDeliveryService::class
+        )->sendReceipt(
+            $context['payment']
+        );
+
+        Mail::assertSent(
+            ReceiptMail::class,
+            function (ReceiptMail $mail): bool {
+                $previousLocale =
+                    app()->getLocale();
+
+                app()->setLocale('fr');
+
+                try {
+                    $html =
+                        $mail->render();
+
+                    $subject =
+                        $mail->envelope()->subject;
+                } finally {
+                    app()->setLocale(
+                        $previousLocale
+                    );
+                }
+
+                return str_contains(
+                    $subject,
+                    'Reçu de paiement'
+                )
+
+                    && str_contains(
+                        $html,
+                        'Nous confirmons la réception de votre paiement'
+                    )
+                    && str_contains(
+                        $html,
+                        'Montant reçu'
+                    )
+                    && str_contains(
+                        $html,
+                        'Mode de paiement'
+                    )
+                    && str_contains(
+                        $html,
+                        'Virement bancaire'
+                    )
+                    && str_contains(
+                        $html,
+                        '5 000 FCFA'
+                    )
+                    && str_contains(
+                        $html,
+                        '5 août 2026'
+                    );
+            }
+        );
+    }
+
+    /**
+     * Rent reminder localises its subject and tenant-facing prose.
+     */
+    public function test_rent_reminder_renders_french_content(): void
+    {
+        Mail::fake();
+
+        $context =
+            $this->createContext();
+
+        ApplicationSetting::query()
+            ->firstOrFail()
+            ->update([
+                'language' => 'fr',
+                'currency' => 'FCFA',
+            ]);
+
+        app(
+            EmailDeliveryService::class
+        )->sendRentReminder(
+            $context['invoice']
+        );
+
+        Mail::assertSent(
+            RentReminderMail::class,
+            function (RentReminderMail $mail): bool {
+                $previousLocale =
+                    app()->getLocale();
+
+                app()->setLocale('fr');
+
+                try {
+                    $html =
+                        $mail->render();
+
+                    $subject =
+                        $mail->envelope()->subject;
+                } finally {
+                    app()->setLocale(
+                        $previousLocale
+                    );
+                }
+
+                return str_contains(
+                    $subject,
+                    'Rappel de loyer'
+                )
+
+                    && str_contains(
+                        $html,
+                        'Ceci est un rappel concernant la facture de loyer'
+                    )
+                    && str_contains(
+                        $html,
+                        'Solde à payer'
+                    )
+                    && str_contains(
+                        $html,
+                        'Selon nos registres'
+                    )
+                    && str_contains(
+                        $html,
+                        '6 800 FCFA'
+                    )
+                    && str_contains(
+                        $html,
+                        '15 août 2026'
+                    );
+            }
+        );
+    }
+
 }

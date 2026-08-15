@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Settings — Patrimoine')
+@section('title-i18n', 'settings.title')
 
 @section('content')
 
@@ -14,7 +15,7 @@
                 text-patrimoine-700
             "
         >
-            Administration
+            <span data-i18n="settings.administration">Administration</span>
         </p>
 
         <h1
@@ -23,11 +24,13 @@
                 tracking-tight text-slate-950
             "
         >
-            Settings
+            <span data-i18n="settings.heading">
+                Settings
+            </span>
         </h1>
 
         <p class="mt-2 text-sm text-slate-500">
-            Configure the organisation operating this Patrimoine installation.
+            <span data-i18n="settings.description">Configure the organisation operating this Patrimoine installation.</span>
         </p>
     </div>
 
@@ -72,12 +75,12 @@
                     text-slate-950
                 "
             >
-                Managing Organisation
+                <span data-i18n="settings.managing_organisation">Managing Organisation</span>
             </h2>
 
             <p class="mt-1 text-sm text-slate-500">
-                This organisation represents the company or entity managing
-                the property portfolio in this Patrimoine installation.
+                <span data-i18n="settings.managing_organisation_description">This organisation represents the company or entity managing
+                the property portfolio in this Patrimoine installation.</span>
             </p>
         </div>
 
@@ -93,7 +96,7 @@
                             text-slate-950
                         "
                     >
-                        Organisation Details
+                        <span data-i18n="settings.organisation_details">Organisation Details</span>
                     </h3>
 
                     <div
@@ -111,7 +114,7 @@
                                     text-slate-700
                                 "
                             >
-                                Legal Name
+                                <span data-i18n="settings.legal_name">Legal Name</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -120,6 +123,7 @@
                                 type="text"
                                 required
                                 maxlength="255"
+                                data-i18n-placeholder="settings.legal_name_placeholder"
                                 placeholder="e.g. Apotica Company Limited"
                                 class="
                                     w-full rounded-lg
@@ -143,7 +147,7 @@
                                     text-slate-700
                                 "
                             >
-                                Address
+                                <span data-i18n="settings.address">Address</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -151,6 +155,7 @@
                                 id="organisation-address"
                                 rows="2"
                                 required
+                                data-i18n-placeholder="settings.address_placeholder"
                                 placeholder="Organisation address"
                                 class="
                                     w-full resize-y rounded-lg
@@ -174,7 +179,7 @@
                                     text-slate-700
                                 "
                             >
-                                Phone
+                                <span data-i18n="settings.phone">Phone</span>
                             </label>
 
                             <input
@@ -203,7 +208,7 @@
                                     text-slate-700
                                 "
                             >
-                                Alternate Phone
+                                <span data-i18n="settings.alternate_phone">Alternate Phone</span>
                             </label>
 
                             <input
@@ -232,7 +237,7 @@
                                     text-slate-700
                                 "
                             >
-                                General Email
+                                <span data-i18n="settings.general_email">General Email</span>
                             </label>
 
                             <input
@@ -267,7 +272,7 @@
                             text-slate-950
                         "
                     >
-                        Primary Contact
+                        <span data-i18n="settings.primary_contact">Primary Contact</span>
                     </h3>
 
                     <div
@@ -285,7 +290,7 @@
                                     text-slate-700
                                 "
                             >
-                                Contact Person
+                                <span data-i18n="settings.contact_person">Contact Person</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -316,7 +321,7 @@
                                     text-slate-700
                                 "
                             >
-                                Contact Phone
+                                <span data-i18n="settings.contact_phone">Contact Phone</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -347,7 +352,7 @@
                                     text-slate-700
                                 "
                             >
-                                Contact Email
+                                <span data-i18n="settings.contact_email">Contact Email</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -384,7 +389,9 @@
                             text-slate-950
                         "
                     >
-                        Registration
+                        <span data-i18n="settings.registration">
+                            Registration
+                        </span>
                     </h3>
 
                     <div
@@ -402,7 +409,7 @@
                                     text-slate-700
                                 "
                             >
-                                Registration Number
+                                <span data-i18n="settings.registration_number">Registration Number</span>
                             </label>
 
                             <input
@@ -430,7 +437,7 @@
                                     text-slate-700
                                 "
                             >
-                                VAT / TIN
+                                <span data-i18n="settings.vat_tin">VAT / TIN</span>
                             </label>
 
                             <input
@@ -451,6 +458,128 @@
                     </div>
                 </section>
 
+                {{-- Language and currency --}}
+                <section
+                    class="
+                        border-t border-slate-100
+                        pt-7
+                    "
+                >
+                    <h3
+                        class="
+                            mb-1 text-sm font-semibold
+                            text-slate-950
+                        "
+                    >
+                        <span data-i18n="settings.language_currency">Language & Currency</span>
+                    </h3>
+
+                    <p class="mb-4 text-xs text-slate-500">
+                        <span data-i18n="settings.language_currency_description">These settings apply to the entire Managing Organisation.
+                        Language and currency are independent.</span>
+                    </p>
+
+                    <div
+                        class="
+                            grid gap-4
+                            md:grid-cols-2
+                        "
+                    >
+                        <div>
+                            <label
+                                for="organisation-language"
+                                class="
+                                    mb-1.5 block
+                                    text-sm font-medium
+                                    text-slate-700
+                                "
+                            >
+                                <span data-i18n="settings.language">
+                                    Language
+                                </span>
+                                <span class="text-red-500">*</span>
+                            </label>
+
+                            <select
+                                id="organisation-language"
+                                required
+                                class="
+                                    w-full rounded-lg
+                                    border border-slate-200
+                                    bg-white px-3.5 py-2.5
+                                    text-sm outline-none
+                                    transition
+                                    focus:border-patrimoine-500
+                                    focus:ring-2
+                                    focus:ring-patrimoine-100
+                                "
+                            >
+                                @foreach(
+                                    config('patrimoine.languages', [])
+                                    as $code => $definition
+                                )
+                                    <option
+                                        value="{{ $code }}"
+                                        data-i18n="language.{{ $code }}"
+                                    >
+                                        {{ $definition['name'] ?? $code }}
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            <p class="mt-1.5 text-xs text-slate-500">
+                                <span data-i18n="settings.language_help">Controls normal user-facing Patrimoine content.</span>
+                            </p>
+                        </div>
+
+                        <div>
+                            <label
+                                for="organisation-currency"
+                                class="
+                                    mb-1.5 block
+                                    text-sm font-medium
+                                    text-slate-700
+                                "
+                            >
+                                <span data-i18n="settings.currency">
+                                    Currency
+                                </span>
+                                <span class="text-red-500">*</span>
+                            </label>
+
+                            <select
+                                id="organisation-currency"
+                                required
+                                class="
+                                    w-full rounded-lg
+                                    border border-slate-200
+                                    bg-white px-3.5 py-2.5
+                                    text-sm outline-none
+                                    transition
+                                    focus:border-patrimoine-500
+                                    focus:ring-2
+                                    focus:ring-patrimoine-100
+                                "
+                            >
+                                @foreach(
+                                    config('patrimoine.currencies', [])
+                                    as $code => $definition
+                                )
+                                    <option value="{{ $code }}">
+                                        {{ $definition['name'] ?? $code }}
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            <p class="mt-1.5 text-xs text-slate-500">
+                                <span data-i18n="settings.currency_help">Changes presentation only. Stored monetary
+                                values are never converted.</span>
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+
                 {{-- Financial defaults --}}
                 <section
                     class="
@@ -464,12 +593,12 @@
                             text-slate-950
                         "
                     >
-                        Financial Defaults
+                        <span data-i18n="settings.financial_defaults">Financial Defaults</span>
                     </h3>
 
                     <p class="mb-4 text-xs text-slate-500">
-                        Defaults apply to newly created records only.
-                        Existing leases and invoices keep their stored values.
+                        <span data-i18n="settings.financial_defaults_description">Defaults apply to newly created records only.
+                        Existing leases and invoices keep their stored values.</span>
                     </p>
 
                     <div
@@ -487,9 +616,13 @@
                                     text-slate-700
                                 "
                             >
-                                Default VAT Rate %
+                                <span data-i18n="settings.default_vat_rate">Default VAT Rate %</span>
 
-                                <x-field-help label="About Default VAT Rate">
+                                <x-field-help
+                                    label="About Default VAT Rate"
+                                    label-key="settings.vat_help_label"
+                                    text-key="settings.vat_help_text"
+                                >
                                     This rate is pre-filled when creating a new Lease.
                                     Individual Leases may still override the value,
                                     including using 0% where applicable.
@@ -526,7 +659,7 @@
                                     text-slate-500
                                 "
                             >
-                                Used as the starting VAT rate for new Leases.
+                                <span data-i18n="settings.vat_starting_rate">Used as the starting VAT rate for new Leases.</span>
                             </p>
                         </div>
                     </div>
@@ -549,11 +682,11 @@
                             text-slate-950
                         "
                     >
-                        Banking Details
+                        <span data-i18n="settings.banking_details">Banking Details</span>
                     </h3>
 
                     <p class="mb-4 text-xs text-slate-500">
-                        Optional.
+                        <span data-i18n="settings.optional">Optional.</span>
                     </p>
 
                     <div
@@ -571,7 +704,7 @@
                                     text-slate-700
                                 "
                             >
-                                Bank Name
+                                <span data-i18n="settings.bank_name">Bank Name</span>
                             </label>
 
                             <input
@@ -599,7 +732,7 @@
                                     text-slate-700
                                 "
                             >
-                                Bank Branch
+                                <span data-i18n="settings.bank_branch">Bank Branch</span>
                             </label>
 
                             <input
@@ -627,7 +760,7 @@
                                     text-slate-700
                                 "
                             >
-                                Account Name
+                                <span data-i18n="settings.account_name">Account Name</span>
                             </label>
 
                             <input
@@ -655,7 +788,7 @@
                                     text-slate-700
                                 "
                             >
-                                Account Number
+                                <span data-i18n="settings.account_number">Account Number</span>
                             </label>
 
                             <input
@@ -691,7 +824,9 @@
                             text-slate-700
                         "
                     >
-                        Notes
+                        <span data-i18n="settings.notes">
+                            Notes
+                        </span>
                     </label>
 
                     <textarea
@@ -733,7 +868,9 @@
                         disabled:opacity-60
                     "
                 >
-                    Save Organisation
+                    <span data-i18n="settings.save">
+                        Save Organisation
+                    </span>
                 </button>
             </div>
 

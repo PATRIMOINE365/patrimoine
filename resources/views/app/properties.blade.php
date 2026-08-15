@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Properties — Patrimoine')
+@section('title-i18n', 'properties.title')
 
 @section('content')
 
@@ -20,7 +21,7 @@
                     text-patrimoine-700
                 "
             >
-                Portfolio
+                <span data-i18n="properties.portfolio">Portfolio</span>
             </p>
 
             <h1
@@ -29,11 +30,11 @@
                     tracking-tight text-slate-950
                 "
             >
-                Properties
+                <span data-i18n="properties.heading">Properties</span>
             </h1>
 
             <p class="mt-2 text-sm text-slate-500">
-                Manage buildings, ownership and individual units.
+                <span data-i18n="properties.page_description">Manage buildings, ownership and individual units.</span>
             </p>
         </div>
 
@@ -61,7 +62,7 @@
                     <path d="M5 12h14"/>
                 </svg>
 
-                Add Property
+                <span data-i18n="properties.add_property">Add Property</span>
             </button>
         </div>
     </div>
@@ -91,7 +92,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Buildings
+                <span data-i18n="properties.buildings">Buildings</span>
             </div>
 
             <div
@@ -112,7 +113,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Total Units
+                <span data-i18n="properties.total_units">Total Units</span>
             </div>
 
             <div
@@ -133,7 +134,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Single-Unit Properties
+                <span data-i18n="properties.single_unit_properties">Single-Unit Properties</span>
             </div>
 
             <div
@@ -154,7 +155,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Multi-Unit Properties
+                <span data-i18n="properties.multi_unit_properties">Multi-Unit Properties</span>
             </div>
 
             <div
@@ -192,11 +193,11 @@
                         text-slate-950
                     "
                 >
-                    Property Portfolio
+                    <span data-i18n="properties.property_portfolio">Property Portfolio</span>
                 </h2>
 
                 <p class="mt-1 text-xs text-slate-500">
-                    Buildings and their associated units.
+                    <span data-i18n="properties.portfolio_description">Buildings and their associated units.</span>
                 </p>
             </div>
 
@@ -205,7 +206,7 @@
                     for="property-search"
                     class="sr-only"
                 >
-                    Search properties
+                    <span data-i18n="properties.search">Search properties</span>
                 </label>
 
                 <div class="relative">
@@ -228,6 +229,7 @@
                     <input
                         id="property-search"
                         type="search"
+                        data-i18n-placeholder="properties.search_placeholder"
                         placeholder="Search buildings or units..."
                         class="
                             w-full rounded-lg
@@ -251,7 +253,7 @@
             class="p-5"
         >
             <div class="text-sm text-slate-400">
-                Loading properties…
+                <span data-i18n="properties.loading">Loading properties…</span>
             </div>
         </div>
 
@@ -318,7 +320,7 @@
                             tracking-tight text-slate-950
                         "
                     >
-                        Add Property
+                        <span data-i18n="properties.add_property">Add Property</span>
                     </h2>
 
                     <p
@@ -328,7 +330,7 @@
                             text-slate-500
                         "
                     >
-                        Create a building, define its ownership and add its units.
+                        <span data-i18n="properties.add_property_description">Create a building, define its ownership and add its units.</span>
                     </p>
                 </div>
 
@@ -345,6 +347,7 @@
                         hover:text-slate-700
                     "
                     aria-label="Close"
+                    data-i18n-aria-label="properties.close"
                 >
                     <svg
                         class="h-5 w-5"
@@ -387,11 +390,11 @@
                                     text-slate-950
                                 "
                             >
-                                Property Details
+                                <span data-i18n="properties.property_details">Property Details</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                Basic information identifying the building.
+                                <span data-i18n="properties.property_details_description">Basic information identifying the building.</span>
                             </p>
                         </div>
 
@@ -410,7 +413,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Property Name
+                                    <span data-i18n="properties.property_name">Property Name</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -420,6 +423,7 @@
                                     type="text"
                                     required
                                     maxlength="255"
+                                    data-i18n-placeholder="properties.property_name_placeholder"
                                     placeholder="e.g. Airport Residential Apartments"
                                     class="
                                         w-full rounded-lg
@@ -443,7 +447,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Location
+                                    <span data-i18n="properties.location">Location</span>
                                 </label>
 
                                 <input
@@ -451,6 +455,7 @@
                                     name="location"
                                     type="text"
                                     maxlength="255"
+                                    data-i18n-placeholder="properties.location_placeholder"
                                     placeholder="e.g. Airport Residential, Accra"
                                     class="
                                         w-full rounded-lg
@@ -474,13 +479,14 @@
                                         text-slate-700
                                     "
                                 >
-                                    Address
+                                    <span data-i18n="properties.address">Address</span>
                                 </label>
 
                                 <input
                                     id="property-address"
                                     name="address"
                                     type="text"
+                                    data-i18n-placeholder="properties.address_placeholder"
                                     placeholder="Street or property address"
                                     class="
                                         w-full rounded-lg
@@ -504,13 +510,14 @@
                                         text-slate-700
                                     "
                                 >
-                                    Description
+                                    <span data-i18n="properties.description">Description</span>
                                 </label>
 
                                 <textarea
                                     id="property-description"
                                     name="description"
                                     rows="3"
+                                    data-i18n-placeholder="properties.optional_property_description"
                                     placeholder="Optional property description"
                                     class="
                                         w-full resize-y rounded-lg
@@ -549,11 +556,11 @@
                                         text-slate-950
                                     "
                                 >
-                                    Ownership
+                                    <span data-i18n="properties.ownership">Ownership</span>
                                 </h3>
 
                                 <p class="mt-1 text-xs text-slate-500">
-                                    Ownership must total exactly 100%.
+                                    <span data-i18n="properties.ownership_description">Ownership must total exactly 100%.</span>
                                 </p>
                             </div>
 
@@ -573,7 +580,7 @@
                                         text-slate-600
                                     "
                                 >
-                                    Total: 0%
+                                    <span data-i18n="properties.total">Total</span>: 0%
                                 </div>
 
                                 <button
@@ -589,7 +596,7 @@
                                         hover:bg-slate-50
                                     "
                                 >
-                                    + Add Owner
+                                    <span data-i18n="properties.add_owner">+ Add Owner</span>
                                 </button>
                             </div>
                         </div>
@@ -630,11 +637,11 @@
                                         text-slate-950
                                     "
                                 >
-                                    Units
+                                    <span data-i18n="properties.units">Units</span>
                                 </h3>
 
                                 <p class="mt-1 text-xs text-slate-500">
-                                    Every property must contain at least one leasable unit.
+                                    <span data-i18n="properties.units_description">Every property must contain at least one leasable unit.</span>
                                 </p>
                             </div>
 
@@ -651,7 +658,7 @@
                                     hover:bg-slate-50
                                 "
                             >
-                                + Add Unit
+                                <span data-i18n="properties.add_unit">+ Add Unit</span>
                             </button>
                         </div>
 
@@ -685,7 +692,7 @@
                             hover:bg-slate-50
                         "
                     >
-                        Cancel
+                        <span data-i18n="properties.cancel">Cancel</span>
                     </button>
 
                     <button
@@ -703,7 +710,7 @@
                             disabled:opacity-60
                         "
                     >
-                        Create Property
+                        <span data-i18n="properties.create_property">Create Property</span>
                     </button>
                 </div>
             </form>
@@ -763,7 +770,7 @@
                             tracking-tight text-slate-950
                         "
                     >
-                        Create Owner
+                        <span data-i18n="properties.create_owner">Create Owner</span>
                     </h2>
 
                     <p
@@ -772,7 +779,7 @@
                             text-slate-500
                         "
                     >
-                        Create an Owner Party and assign it to this property.
+                        <span data-i18n="properties.create_owner_description">Create an Owner Party and assign it to this property.</span>
                     </p>
                 </div>
 
@@ -788,6 +795,7 @@
                         hover:text-slate-700
                     "
                     aria-label="Close"
+                    data-i18n-aria-label="properties.close"
                 >
                     <svg
                         class="h-5 w-5"
@@ -826,7 +834,7 @@
                                 text-slate-700
                             "
                         >
-                            Owner Type
+                            <span data-i18n="properties.owner_type">Owner Type</span>
                             <span class="text-red-500">*</span>
                         </label>
 
@@ -843,15 +851,24 @@
                                 focus:ring-patrimoine-100
                             "
                         >
-                            <option value="person">
+                            <option
+                                value="person"
+                                data-i18n="properties.person"
+                            >
                                 Person
                             </option>
 
-                            <option value="organisation">
+                            <option
+                                value="organisation"
+                                data-i18n="properties.organisation"
+                            >
                                 Organisation
                             </option>
 
-                            <option value="association">
+                            <option
+                                value="association"
+                                data-i18n="properties.association"
+                            >
                                 Association
                             </option>
                         </select>
@@ -871,7 +888,7 @@
                                     text-slate-700
                                 "
                             >
-                                Full Name
+                                <span data-i18n="properties.full_name">Full Name</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -906,7 +923,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Phone
+                                    <span data-i18n="properties.phone">Phone</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -935,7 +952,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Email
+                                    <span data-i18n="properties.email">Email</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -971,7 +988,7 @@
                                     text-slate-700
                                 "
                             >
-                                Legal Name
+                                <span data-i18n="properties.legal_name">Legal Name</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -1000,7 +1017,7 @@
                                     text-slate-700
                                 "
                             >
-                                Contact Person
+                                <span data-i18n="properties.contact_person">Contact Person</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -1035,7 +1052,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Contact Phone
+                                    <span data-i18n="properties.contact_phone">Contact Phone</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -1064,7 +1081,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Contact Email
+                                    <span data-i18n="properties.contact_email">Contact Email</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -1096,7 +1113,7 @@
                                 text-slate-700
                             "
                         >
-                            Address
+                            <span data-i18n="properties.address">Address</span>
                         </label>
 
                         <input
@@ -1138,7 +1155,7 @@
                             hover:bg-slate-50
                         "
                     >
-                        Cancel
+                        <span data-i18n="properties.cancel">Cancel</span>
                     </button>
 
                     <button
@@ -1156,7 +1173,7 @@
                             disabled:opacity-60
                         "
                     >
-                        Create Owner
+                        <span data-i18n="properties.create_owner">Create Owner</span>
                     </button>
                 </div>
             </form>
@@ -1217,7 +1234,7 @@
                             tracking-tight text-slate-950
                         "
                     >
-                        Add Unit
+                        <span data-i18n="properties.add_unit">Add Unit</span>
                     </h2>
 
                     <p
@@ -1227,7 +1244,7 @@
                             text-slate-500
                         "
                     >
-                        Add a leasable unit to an existing property.
+                        <span data-i18n="properties.add_unit_description">Add a leasable unit to an existing property.</span>
                     </p>
                 </div>
 
@@ -1243,6 +1260,7 @@
                         hover:text-slate-700
                     "
                     aria-label="Close"
+                    data-i18n-aria-label="properties.close"
                 >
                     <svg
                         class="h-5 w-5"
@@ -1286,7 +1304,7 @@
                                 text-patrimoine-600
                             "
                         >
-                            Property
+                            <span data-i18n="properties.property">Property</span>
                         </div>
 
                         <div
@@ -1315,7 +1333,7 @@
                                 text-slate-700
                             "
                         >
-                            Unit Name / Number
+                            <span data-i18n="properties.unit_name_number">Unit Name / Number</span>
                             <span class="text-red-500">*</span>
                         </label>
 
@@ -1324,6 +1342,7 @@
                             type="text"
                             required
                             maxlength="255"
+                            data-i18n-placeholder="properties.existing_unit_name_placeholder"
                             placeholder="e.g. Apartment A2"
                             class="
                                 w-full rounded-lg
@@ -1348,12 +1367,13 @@
                                 text-slate-700
                             "
                         >
-                            Description
+                            <span data-i18n="properties.description">Description</span>
                         </label>
 
                         <textarea
                             id="existing-unit-description"
                             rows="3"
+                            data-i18n-placeholder="properties.optional_unit_description"
                             placeholder="Optional unit description"
                             class="
                                 w-full resize-y rounded-lg
@@ -1392,7 +1412,7 @@
                             hover:bg-slate-50
                         "
                     >
-                        Cancel
+                        <span data-i18n="properties.cancel">Cancel</span>
                     </button>
 
                     <button
@@ -1410,7 +1430,7 @@
                             disabled:opacity-60
                         "
                     >
-                        Add Unit
+                        <span data-i18n="properties.add_unit">Add Unit</span>
                     </button>
                 </div>
             </form>

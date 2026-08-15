@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
 
     <title>
-        Payment Receipt
+        {{ __('emails.receipt.title') }}
     </title>
 </head>
 
@@ -52,11 +52,11 @@
                                 font-size:13px;
                                 margin-bottom:28px;
                             ">
-                                Property Management
+                                {{ __('emails.common.property_management') }}
                             </div>
 
                             <p>
-                                Dear
+                                {{ __('emails.common.dear') }}
                                 <strong>
                                     {{ $payment->lease->tenant->name
                                         ?? $payment->lease->tenant->legal_name }}
@@ -64,7 +64,7 @@
                             </p>
 
                             <p>
-                                We confirm receipt of your payment for
+                                {{ __('emails.receipt.confirm_before_property') }}
                                 <strong>
                                     {{ $payment->lease->unit->building->name }}
                                     /
@@ -82,7 +82,7 @@
                                     color:#666666;
                                     font-size:13px;
                                 ">
-                                    Amount Received
+                                    {{ __('emails.receipt.amount_received') }}
                                 </div>
 
                                 <div style="
@@ -90,7 +90,7 @@
                                     font-weight:bold;
                                     margin-top:8px;
                                 ">
-                                    GHS {{ number_format($payment->amount, 0) }}
+                                    {{ $formatter->money($payment->amount) }}
                                 </div>
                             </div>
 
@@ -102,7 +102,7 @@
                             >
                                 <tr>
                                     <td>
-                                        Receipt
+                                        {{ __('emails.receipt.receipt') }}
                                     </td>
 
                                     <td align="right">
@@ -117,26 +117,23 @@
 
                                 <tr>
                                     <td>
-                                        Payment Date
+                                        {{ __('emails.receipt.payment_date') }}
                                     </td>
 
                                     <td align="right">
-                                        {{ $payment->payment_date->format('d M Y') }}
+                                        {{ $formatter->date($payment->payment_date) }}
                                     </td>
                                 </tr>
 
                                 <tr>
                                     <td>
-                                        Payment Method
+                                        {{ __('emails.receipt.payment_method') }}
                                     </td>
 
                                     <td align="right">
-                                        {{ ucwords(
-                                            str_replace(
-                                                '_',
-                                                ' ',
-                                                $payment->payment_method
-                                            )
+                                        {{ __(
+                                            'emails.payment_methods.'
+                                            . $payment->payment_method
                                         ) }}
                                     </td>
                                 </tr>
@@ -144,7 +141,7 @@
                                 @if($payment->reference)
                                     <tr>
                                         <td>
-                                            Reference
+                                            {{ __('emails.receipt.reference') }}
                                         </td>
 
                                         <td align="right">
@@ -155,11 +152,11 @@
                             </table>
 
                             <p style="margin-top:24px;">
-                                Your official receipt is attached as a PDF.
+                                {{ __('emails.receipt.pdf_attached') }}
                             </p>
 
                             <p style="margin-top:28px;">
-                                Regards,<br>
+                                {{ __('emails.common.regards') }},<br>
 
 <strong>
     {{ $managingOrganisation?->legal_name
@@ -187,7 +184,7 @@
                                 color:#888888;
                                 font-size:11px;
                             ">
-                                This message was generated by Patrimoine.
+                                {{ __('emails.common.generated_by') }}
                             </div>
                         </td>
                     </tr>

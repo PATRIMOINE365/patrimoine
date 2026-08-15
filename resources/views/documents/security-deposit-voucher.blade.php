@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
 
     <title>
-        Security Deposit Settlement Voucher
+        {{ __('documents.security_deposit_voucher.title') }}
     </title>
 
     <style>
@@ -148,8 +148,6 @@
             ?? $managingOrganisation?->name
             ?? 'Patrimoine';
 
-        $money = static fn (int $amount): string =>
-            number_format($amount, 0);
     @endphp
 
     <div class="header">
@@ -163,11 +161,11 @@
 
                 <td>
                     <div class="document-title">
-                        Security Deposit Settlement Voucher
+                        {{ __('documents.security_deposit_voucher.heading') }}
                     </div>
 
                     <div class="voucher-number">
-                        Voucher:
+                        {{ __('documents.security_deposit_voucher.voucher') }}:
                         {{ $settlement->refund_voucher_number }}
                     </div>
                 </td>
@@ -176,14 +174,14 @@
     </div>
 
     <div class="section-title">
-        Settlement Details
+        {{ __('documents.security_deposit_voucher.settlement_details') }}
     </div>
 
     <table class="details-table">
         <tr>
             <td>
                 <div class="label">
-                    Tenant
+                    {{ __('documents.security_deposit_voucher.tenant') }}
                 </div>
 
                 <div class="value">
@@ -193,11 +191,11 @@
 
             <td>
                 <div class="label">
-                    Settlement Date
+                    {{ __('documents.security_deposit_voucher.settlement_date') }}
                 </div>
 
                 <div class="value">
-                    {{ $settlement->settlement_date->format('d M Y') }}
+                    {{ $formatter->date($settlement->settlement_date) }}
                 </div>
             </td>
         </tr>
@@ -205,7 +203,7 @@
         <tr>
             <td>
                 <div class="label">
-                    Property
+                    {{ __('documents.security_deposit_voucher.property') }}
                 </div>
 
                 <div class="value">
@@ -215,7 +213,7 @@
 
             <td>
                 <div class="label">
-                    Unit
+                    {{ __('documents.security_deposit_voucher.unit') }}
                 </div>
 
                 <div class="value">
@@ -226,29 +224,29 @@
     </table>
 
     <div class="section-title">
-        Itemized Deductions
+        {{ __('documents.security_deposit_voucher.itemized_deductions') }}
     </div>
 
     <table class="deductions-table">
         <thead>
             <tr>
                 <th style="width: 15%;">
-                    Date
+                    {{ __('documents.security_deposit_voucher.date') }}
                 </th>
 
                 <th>
-                    Description
+                    {{ __('documents.security_deposit_voucher.description') }}
                 </th>
 
                 <th style="width: 20%;">
-                    Reference
+                    {{ __('documents.security_deposit_voucher.reference') }}
                 </th>
 
                 <th
                     class="amount"
                     style="width: 18%;"
                 >
-                    Amount
+                    {{ __('documents.security_deposit_voucher.amount') }}
                 </th>
             </tr>
         </thead>
@@ -257,7 +255,7 @@
             @forelse ($deductions as $deduction)
                 <tr>
                     <td>
-                        {{ $deduction->deduction_date->format('d M Y') }}
+                        {{ $formatter->date($deduction->deduction_date) }}
                     </td>
 
                     <td>
@@ -275,7 +273,7 @@
                     </td>
 
                     <td class="amount">
-                        {{ $money($deduction->amount) }}
+                        {{ $formatter->money($deduction->amount) }}
                     </td>
                 </tr>
             @empty
@@ -284,7 +282,7 @@
                         colspan="4"
                         style="text-align: center; color: #64748b;"
                     >
-                        No deductions were recorded.
+                        {{ __('documents.security_deposit_voucher.no_deductions') }}
                     </td>
                 </tr>
             @endforelse
@@ -295,41 +293,41 @@
         <table class="summary-table">
             <tr>
                 <td>
-                    Security Deposit Held
+                    {{ __('documents.security_deposit_voucher.security_deposit_held') }}
                 </td>
 
                 <td class="amount">
-                    {{ $money($settlement->deposit_amount) }}
+                    {{ $formatter->money($settlement->deposit_amount) }}
                 </td>
             </tr>
 
             <tr>
                 <td>
-                    Total Deductions
+                    {{ __('documents.security_deposit_voucher.total_deductions') }}
                 </td>
 
                 <td class="amount">
-                    {{ $money($settlement->deduction_amount) }}
+                    {{ $formatter->money($settlement->deduction_amount) }}
                 </td>
             </tr>
 
             <tr class="total">
                 <td>
-                    Refund Due
+                    {{ __('documents.security_deposit_voucher.refund_due') }}
                 </td>
 
                 <td class="amount">
-                    {{ $money($settlement->refund_amount) }}
+                    {{ $formatter->money($settlement->refund_amount) }}
                 </td>
             </tr>
 
             <tr>
                 <td>
-                    Tenant Debt
+                    {{ __('documents.security_deposit_voucher.tenant_debt') }}
                 </td>
 
                 <td class="amount">
-                    {{ $money($settlement->tenant_debt_amount) }}
+                    {{ $formatter->money($settlement->tenant_debt_amount) }}
                 </td>
             </tr>
         </table>
@@ -337,29 +335,26 @@
 
     <div class="result-box">
         @if ($settlement->refund_amount > 0)
-            The tenant is due a Security Deposit refund of
-            <strong>{{ $money($settlement->refund_amount) }}</strong>.
+            {{ __('documents.security_deposit_voucher.refund_result_before') }}
+            <strong>{{ $formatter->money($settlement->refund_amount) }}</strong>.
         @elseif ($settlement->tenant_debt_amount > 0)
-            The Security Deposit has been fully applied and an outstanding
-            tenant debt of
-            <strong>{{ $money($settlement->tenant_debt_amount) }}</strong>
-            remains.
+            {{ __('documents.security_deposit_voucher.debt_result_before') }}
+            <strong>{{ $formatter->money($settlement->tenant_debt_amount) }}</strong>
+            {{ __('documents.security_deposit_voucher.debt_result_after') }}
         @else
-            The Security Deposit has been fully settled with no refund and
-            no remaining tenant debt.
+            {{ __('documents.security_deposit_voucher.settled_result') }}
         @endif
     </div>
 
     @if ($settlement->notes)
         <div class="notes">
-            <strong>Settlement Notes</strong><br>
+            <strong>{{ __('documents.security_deposit_voucher.settlement_notes') }}</strong><br>
             {{ $settlement->notes }}
         </div>
     @endif
 
     <div class="footer">
-        This document records the final Security Deposit close-out retained
-        by Patrimoine under voucher
+        {{ __('documents.security_deposit_voucher.footer_before') }}
         {{ $settlement->refund_voucher_number }}.
     </div>
 </body>

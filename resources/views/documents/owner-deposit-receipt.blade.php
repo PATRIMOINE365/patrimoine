@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
 
     <title>
-        Owner Deposit Receipt
+        {{ __('documents.owner_deposit_receipt.title') }}
         {{ str_pad($transaction->id, 6, '0', STR_PAD_LEFT) }}
     </title>
 
@@ -109,42 +109,47 @@
     $ownerName =
         $owner->name
         ?? $owner->legal_name
-        ?? 'Property Owner';
+        ?? __('documents.owner_deposit_receipt.property_owner');
 
-    $purposeLabels = [
-        'general_funding' =>
-            'General Funding',
-
-        'property_expense' =>
-            'Property Expense',
-
-        'repair_maintenance' =>
-            'Repair & Maintenance',
-
-        'other' =>
-            'Other',
-    ];
+    /*
+     * Persisted purpose and payment-method codes remain unchanged.
+     * Only their document presentation is translated.
+     */
+    $purposeKey =
+        'documents.owner_deposit_receipt.purpose.'
+        . $transaction->deposit_purpose;
 
     $purposeLabel =
-        $purposeLabels[
-            $transaction->deposit_purpose
-        ]
-        ?? ucwords(
-            str_replace(
-                '_',
-                ' ',
-                (string) $transaction->deposit_purpose
-            )
-        );
+        __($purposeKey);
 
-    $paymentMethod =
-        ucwords(
-            str_replace(
-                '_',
-                ' ',
-                (string) $transaction->payment_method
-            )
-        );
+    if ($purposeLabel === $purposeKey) {
+        $purposeLabel =
+            ucwords(
+                str_replace(
+                    '_',
+                    ' ',
+                    (string) $transaction->deposit_purpose
+                )
+            );
+    }
+
+    $paymentMethodKey =
+        'documents.common.payment_method.'
+        . $transaction->payment_method;
+
+    $paymentMethodLabel =
+        __($paymentMethodKey);
+
+    if ($paymentMethodLabel === $paymentMethodKey) {
+        $paymentMethodLabel =
+            ucwords(
+                str_replace(
+                    '_',
+                    ' ',
+                    (string) $transaction->payment_method
+                )
+            );
+    }
 @endphp
 
 <table>
@@ -157,7 +162,7 @@
             </div>
 
             <div class="muted">
-                Property Management
+                {{ __('documents.common.property_management') }}
             </div>
 
             @if($managingOrganisation)
@@ -181,7 +186,7 @@
 
                 @if($managingOrganisation->vat_tin)
                     <div class="muted">
-                        VAT/TIN:
+                        {{ __('documents.common.vat_tin') }}:
                         {{ $managingOrganisation->vat_tin }}
                     </div>
                 @endif
@@ -190,7 +195,7 @@
 
         <td>
             <div class="document-title">
-                OWNER DEPOSIT RECEIPT
+                {{ __('documents.owner_deposit_receipt.heading') }}
             </div>
         </td>
     </tr>
@@ -201,7 +206,7 @@
         <tr>
             <td>
                 <div class="section-title">
-                    Received From
+                    {{ __('documents.owner_deposit_receipt.received_from') }}
                 </div>
 
                 <strong>
@@ -220,7 +225,9 @@
             </td>
 
             <td>
-                <strong>Receipt No:</strong>
+                <strong>
+                    {{ __('documents.owner_deposit_receipt.receipt_number') }}:
+                </strong>
 
                 ODR-{{ str_pad(
                     $transaction->id,
@@ -231,22 +238,28 @@
 
                 <br>
 
-                <strong>Payment Date:</strong>
+                <strong>
+                    {{ __('documents.owner_deposit_receipt.payment_date') }}:
+                </strong>
 
-                {{ $transaction
-                    ->transaction_date
-                    ->format('d M Y') }}
+                {{ $formatter->date(
+                    $transaction->transaction_date
+                ) }}
 
                 <br>
 
-                <strong>Method:</strong>
+                <strong>
+                    {{ __('documents.owner_deposit_receipt.method') }}:
+                </strong>
 
-                {{ $paymentMethod }}
+                {{ $paymentMethodLabel }}
 
                 @if($transaction->reference)
                     <br>
 
-                    <strong>Reference:</strong>
+                    <strong>
+                        {{ __('documents.owner_deposit_receipt.reference') }}:
+                    </strong>
 
                     {{ $transaction->reference }}
                 @endif
@@ -254,7 +267,9 @@
                 @if($transaction->collector_name)
                     <br>
 
-                    <strong>Collector:</strong>
+                    <strong>
+                        {{ __('documents.owner_deposit_receipt.collector') }}:
+                    </strong>
 
                     {{ $transaction->collector_name }}
                 @endif
@@ -268,26 +283,25 @@
         class="muted"
         style="text-align:center;"
     >
-        Amount Received
+        {{ __('documents.owner_deposit_receipt.amount_received') }}
     </div>
 
     <div class="payment-amount">
-        GHS {{ number_format(
-            $transaction->amount,
-            0
+        {{ $formatter->money(
+            $transaction->amount
         ) }}
     </div>
 </div>
 
 <div class="section">
     <div class="section-title">
-        Deposit Details
+        {{ __('documents.owner_deposit_receipt.deposit_details') }}
     </div>
 
     <table class="summary-table">
         <tr>
             <td class="summary-label">
-                Purpose
+                {{ __('documents.owner_deposit_receipt.purpose_label') }}
             </td>
 
             <td class="summary-value">
@@ -298,7 +312,7 @@
         @if($transaction->building)
             <tr>
                 <td class="summary-label">
-                    Building
+                    {{ __('documents.owner_deposit_receipt.building') }}
                 </td>
 
                 <td class="summary-value">
@@ -310,7 +324,7 @@
         @if($transaction->unit)
             <tr>
                 <td class="summary-label">
-                    Unit
+                    {{ __('documents.owner_deposit_receipt.unit') }}
                 </td>
 
                 <td class="summary-value">
@@ -325,11 +339,11 @@
         )
             <tr>
                 <td class="summary-label">
-                    Property Allocation
+                    {{ __('documents.owner_deposit_receipt.property_allocation') }}
                 </td>
 
                 <td class="summary-value">
-                    General Owner Account
+                    {{ __('documents.owner_deposit_receipt.general_owner_account') }}
                 </td>
             </tr>
         @endif
@@ -338,34 +352,32 @@
 
 <div class="section">
     <div class="section-title">
-        Owner Account
+        {{ __('documents.owner_deposit_receipt.owner_account') }}
     </div>
 
     <table class="summary-table">
         <tr>
             <td class="summary-label">
-                Current Balance
+                {{ __('documents.owner_deposit_receipt.current_balance') }}
             </td>
 
             <td class="summary-value">
-                GHS {{ number_format(
-                    $ownerBalance,
-                    0
+                {{ $formatter->money(
+                    $ownerBalance
                 ) }}
             </td>
         </tr>
     </table>
 
     <div class="muted" style="margin-top:6px;">
-        The Owner account balance is derived from all Owner ledger
-        credits and debits recorded in Patrimoine.
+        {{ __('documents.owner_deposit_receipt.balance_explanation') }}
     </div>
 </div>
 
 @if($transaction->notes)
     <div class="section">
         <div class="section-title">
-            Notes
+            {{ __('documents.owner_deposit_receipt.notes') }}
         </div>
 
         {{ $transaction->notes }}
@@ -373,9 +385,9 @@
 @endif
 
 <div class="footer">
-    This receipt confirms money received from
+    {{ __('documents.owner_deposit_receipt.footer_received_from') }}
     {{ $ownerName }}
-    and recorded by
+    {{ __('documents.owner_deposit_receipt.footer_recorded_by') }}
     {{ $managingOrganisation?->legal_name
         ?? $managingOrganisation?->name
         ?? 'Patrimoine' }}.

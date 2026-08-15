@@ -40,7 +40,7 @@ class ReportExportController extends Controller
 
         return $this->pdfResponse(
             $exports->pdf(
-                'Owner Report',
+                __('reports.owner_report'),
                 $report
             ),
             "owner-report-{$party->id}.pdf"
@@ -77,7 +77,7 @@ class ReportExportController extends Controller
 
         return $this->pdfResponse(
             $exports->pdf(
-                'Building Report',
+                __('reports.building_report'),
                 $reports->generate(
                     $building,
                     $from,
@@ -118,7 +118,7 @@ class ReportExportController extends Controller
 
         return $this->pdfResponse(
             $exports->pdf(
-                'Unit Report',
+                __('reports.unit_report'),
                 $reports->generate(
                     $unit,
                     $from,
@@ -159,7 +159,7 @@ class ReportExportController extends Controller
 
         return $this->pdfResponse(
             $exports->pdf(
-                'Tenant Statement',
+                __('reports.tenant_statement'),
                 $reports->generate(
                     $party,
                     $from,
@@ -199,7 +199,7 @@ class ReportExportController extends Controller
 
         return $this->pdfResponse(
             $exports->pdf(
-                'Managing Organisation Report',
+                __('reports.managing_organisation_report'),
                 $reports->generate(
                     $from,
                     $to

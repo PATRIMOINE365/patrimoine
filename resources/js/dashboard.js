@@ -19,8 +19,11 @@ import {
     apiRequest,
     escapeHtml,
     formatCurrency,
+    formatDate,
+    formatLongDate,
     parseJsonResponse,
     setText,
+    translate,
 } from './core.js';
 
 /**
@@ -52,15 +55,7 @@ export async function initializeDashboard() {
 
     if (dateElement) {
         dateElement.textContent =
-            new Intl.DateTimeFormat(
-                'en-GH',
-                {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                }
-            ).format(
+            formatLongDate(
                 new Date()
             );
     }
@@ -129,7 +124,9 @@ export async function initializeDashboard() {
         errorBox.textContent =
             error instanceof Error
                 ? error.message
-                : 'Unable to load dashboard information.';
+                : translate(
+                    'dashboard.unable_to_load'
+                );
 
         errorBox.classList.remove(
             'hidden'
@@ -373,7 +370,11 @@ function renderInvoiceList(
                     text-sm text-slate-400
                 "
             >
-                No records to display.
+                ${escapeHtml(
+                    translate(
+                        'dashboard.no_records'
+                    )
+                )}
             </div>
         `;
 
@@ -390,7 +391,9 @@ function renderInvoiceList(
                         || item.tenant
                             ?.legal_name
                         || item.tenant_name
-                        || 'Tenant';
+                        || translate(
+                            'dashboard.tenant'
+                        );
 
                     const property =
                         item.building?.name
@@ -493,8 +496,15 @@ function renderInvoiceList(
                                                     text-slate-400
                                                 "
                                             >
-                                                Due ${escapeHtml(
-                                                    date
+                                                ${escapeHtml(
+                                                    translate(
+                                                        'dashboard.due'
+                                                    )
+                                                )}
+                                                ${escapeHtml(
+                                                    formatDate(
+                                                        date
+                                                    )
                                                 )}
                                             </div>
                                         `

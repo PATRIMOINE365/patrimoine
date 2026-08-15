@@ -25,6 +25,8 @@ class ApplicationSetting extends Model
     protected $fillable = [
         'managing_organisation_party_id',
         'default_vat_rate',
+        'language',
+        'currency',
     ];
 
     /**
