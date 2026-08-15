@@ -17,8 +17,10 @@
 import {
     apiRequest,
     formValue,
+    getPresentationConfiguration,
     nullableFormValue,
     parseJsonResponse,
+    translate,
 } from './core.js';
 
 /*
@@ -88,7 +90,9 @@ async function loadManagingOrganisationSettings() {
         showSettingsError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load Managing Organisation.'
+                : translate(
+                    'settings.unable_to_load'
+                )
         );
     }
 }
@@ -259,6 +263,9 @@ async function submitManagingOrganisation(
         return;
     }
 
+    const currentPresentation =
+        getPresentationConfiguration();
+
     const payload = {
         legal_name:
             formValue(
@@ -359,7 +366,9 @@ async function submitManagingOrganisation(
             true;
 
         submitButton.textContent =
-            'Saving…';
+            translate(
+                'settings.saving'
+            );
 
         const response =
             await apiRequest(
@@ -403,21 +412,44 @@ async function submitManagingOrganisation(
                 || 'Patrimoine';
         }
 
+        const presentationChanged =
+            organisation.language
+                !== currentPresentation.language
+            || organisation.currency
+                !== currentPresentation.currency;
+
+        if (presentationChanged) {
+            /*
+             * Browser presentation configuration is cached for this page.
+             * Reload once so every static and dynamic surface adopts the
+             * newly persisted organisation language/currency consistently.
+             */
+            window.location.reload();
+
+            return;
+        }
+
         showSettingsSuccess(
-            'Managing Organisation saved successfully.'
+            translate(
+                'settings.saved'
+            )
         );
     } catch (error) {
         showSettingsError(
             error instanceof Error
                 ? error.message
-                : 'Unable to save Managing Organisation.'
+                : translate(
+                    'settings.unable_to_save'
+                )
         );
     } finally {
         submitButton.disabled =
             false;
 
         submitButton.textContent =
-            'Save Organisation';
+            translate(
+                'settings.save'
+            );
     }
 }
 

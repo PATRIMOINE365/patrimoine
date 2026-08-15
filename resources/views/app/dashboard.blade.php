@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Dashboard — Patrimoine')
+@section('title-i18n', 'dashboard.title')
 
 @section('content')
 
@@ -19,7 +20,9 @@
                     text-patrimoine-700
                 "
             >
-                Overview
+                <span data-i18n="dashboard.overview">
+                    Overview
+                </span>
             </p>
 
             <h1
@@ -28,11 +31,15 @@
                     tracking-tight text-slate-950
                 "
             >
-                Dashboard
+                <span data-i18n="dashboard.heading">
+                    Dashboard
+                </span>
             </h1>
 
             <p class="mt-2 text-sm text-slate-500">
-                Current portfolio and financial position.
+                <span data-i18n="dashboard.description">
+                    Current portfolio and financial position.
+                </span>
             </p>
         </div>
 
@@ -70,7 +77,9 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Buildings
+                <span data-i18n="dashboard.buildings">
+                    Buildings
+                </span>
             </div>
 
             <div
@@ -91,7 +100,9 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Total Units
+                <span data-i18n="dashboard.total_units">
+                    Total Units
+                </span>
             </div>
 
             <div
@@ -112,7 +123,9 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Occupied Units
+                <span data-i18n="dashboard.occupied_units">
+                    Occupied Units
+                </span>
             </div>
 
             <div
@@ -133,7 +146,9 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Vacant Units
+                <span data-i18n="dashboard.vacant_units">
+                    Vacant Units
+                </span>
             </div>
 
             <div
@@ -163,7 +178,9 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Rent Due
+                <span data-i18n="dashboard.rent_due">
+                    Rent Due
+                </span>
             </div>
 
             <div
@@ -184,7 +201,9 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Rent Overdue
+                <span data-i18n="dashboard.rent_overdue">
+                    Rent Overdue
+                </span>
             </div>
 
             <div
@@ -205,7 +224,9 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Collected This Month
+                <span data-i18n="dashboard.collected_this_month">
+                    Collected This Month
+                </span>
             </div>
 
             <div
@@ -226,7 +247,9 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Owner Funds Held
+                <span data-i18n="dashboard.owner_funds_held">
+                    Owner Funds Held
+                </span>
             </div>
 
             <div
@@ -265,11 +288,15 @@
                         text-slate-950
                     "
                 >
-                    Overdue Rent
+                    <span data-i18n="dashboard.overdue_rent">
+                        Overdue Rent
+                    </span>
                 </h2>
 
                 <p class="mt-1 text-xs text-slate-500">
-                    Outstanding obligations requiring attention.
+                    <span data-i18n="dashboard.overdue_description">
+                        Outstanding obligations requiring attention.
+                    </span>
                 </p>
             </div>
 
@@ -278,7 +305,9 @@
                 class="p-5"
             >
                 <div class="text-sm text-slate-400">
-                    Loading…
+                    <span data-i18n="dashboard.loading">
+                        Loading…
+                    </span>
                 </div>
             </div>
         </section>
@@ -301,11 +330,15 @@
                         text-slate-950
                     "
                 >
-                    Upcoming Rent
+                    <span data-i18n="dashboard.upcoming_rent">
+                        Upcoming Rent
+                    </span>
                 </h2>
 
                 <p class="mt-1 text-xs text-slate-500">
-                    Rent obligations becoming due soon.
+                    <span data-i18n="dashboard.upcoming_description">
+                        Rent obligations becoming due soon.
+                    </span>
                 </p>
             </div>
 
@@ -314,7 +347,9 @@
                 class="p-5"
             >
                 <div class="text-sm text-slate-400">
-                    Loading…
+                    <span data-i18n="dashboard.loading">
+                        Loading…
+                    </span>
                 </div>
             </div>
         </section>

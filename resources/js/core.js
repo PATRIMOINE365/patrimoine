@@ -429,6 +429,48 @@ export function applyTranslations() {
             }
         );
 
+    document
+        .querySelectorAll(
+            '[data-i18n-aria-label]'
+        )
+        .forEach(
+            (element) => {
+                const key =
+                    element.dataset
+                        .i18nAriaLabel;
+
+                if (key) {
+                    element.setAttribute(
+                        'aria-label',
+                        translate(
+                            key
+                        )
+                    );
+                }
+            }
+        );
+
+    document
+        .querySelectorAll(
+            '[data-i18n-field-help]'
+        )
+        .forEach(
+            (element) => {
+                const key =
+                    element.dataset
+                        .i18nFieldHelp;
+
+                if (key) {
+                    element.setAttribute(
+                        'data-field-help-text',
+                        translate(
+                            key
+                        )
+                    );
+                }
+            }
+        );
+
     const titleElement =
         document.querySelector(
             '[data-i18n-title]'

@@ -62,4 +62,76 @@ class BrowserLocalisationTest extends TestCase
                 'Sign out'
             );
     }
+
+
+    public function test_dashboard_exposes_translation_hooks(): void
+    {
+        $this
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee(
+                'data-i18n="dashboard.overview"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="dashboard.heading"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="dashboard.rent_due"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="dashboard.overdue_rent"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="dashboard.upcoming_rent"',
+                false
+            )
+            ->assertSeeText(
+                'Current portfolio and financial position.'
+            );
+    }
+
+
+
+    public function test_settings_exposes_translation_hooks(): void
+    {
+        $this
+            ->get('/settings')
+            ->assertOk()
+            ->assertSee(
+                'data-i18n-title="settings.title"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="settings.heading"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="settings.language"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="settings.currency"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="settings.save"',
+                false
+            )
+            ->assertSee(
+                'data-i18n-field-help="settings.vat_help_text"',
+                false
+            )
+            ->assertSee(
+                'data-i18n-aria-label="settings.vat_help_label"',
+                false
+            )
+            ->assertSeeText(
+                'Save Organisation'
+            );
+    }
+
 }

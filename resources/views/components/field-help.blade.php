@@ -1,6 +1,8 @@
 @props([
     'text' => null,
     'label' => 'More information',
+    'textKey' => null,
+    'labelKey' => null,
 ])
 
 {{--
@@ -61,7 +63,13 @@
     "
     data-field-help
     data-field-help-text="{{ $helpText }}"
+    @if($textKey)
+        data-i18n-field-help="{{ $textKey }}"
+    @endif
     aria-label="{{ $label }}"
+    @if($labelKey)
+        data-i18n-aria-label="{{ $labelKey }}"
+    @endif
     aria-haspopup="true"
 >
     ?

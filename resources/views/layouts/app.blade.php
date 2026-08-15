@@ -8,7 +8,11 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
+    <title
+        @hasSection('title-i18n')
+            data-i18n-title="@yield('title-i18n')"
+        @endif
+    >
         @yield('title', 'Patrimoine')
     </title>
 
