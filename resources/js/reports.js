@@ -65,7 +65,122 @@ export async function initializeReports() {
 
     updateReportTypeUi();
 
+    /*
+     * Internal workspaces may link directly to a specific report subject.
+     * Resolve that context only after all Report controls are initialized.
+     */
+    await initializeReportDeepLink();
+
     return true;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Internal Report Deep Links
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * Resolve supported report context supplied in the page URL.
+ *
+ * V1.0.1 Tenant Management uses this to open a selected Tenant's statement
+ * directly rather than forcing the Property Manager to search for the same
+ * Tenant again in Reports.
+ */
+async function initializeReportDeepLink() {
+    const parameters =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const type =
+        parameters.get(
+            'type'
+        );
+
+    const tenantId =
+        Number(
+            parameters.get(
+                'tenant_id'
+            )
+        );
+
+    if (
+        type !== 'tenant'
+        || ! Number.isInteger(
+            tenantId
+        )
+        || tenantId <= 0
+    ) {
+        return;
+    }
+
+    selectedReportType =
+        'tenant';
+
+    selectedSubject =
+        null;
+
+    clearSubjectSelection();
+
+    clearReportOutput();
+
+    updateReportTypeUi();
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/parties/${tenantId}`
+            );
+
+        const tenant =
+            await parseJsonResponse(
+                response
+            );
+
+        const isTenant =
+            Array.isArray(
+                tenant.roles
+            )
+            && tenant.roles.some(
+                (role) =>
+                    role.role === 'tenant'
+            );
+
+        if (! isTenant) {
+            throw new Error(
+                'The selected Party is not a Tenant.'
+            );
+        }
+
+        selectSubject({
+            id:
+                tenant.id,
+
+            apiId:
+                tenant.id,
+
+            name:
+                partyDisplayName(
+                    tenant
+                ),
+
+            meta:
+                contactSummary(
+                    tenant
+                ),
+        });
+
+        await runReport();
+    } catch (error) {
+        showReportsError(
+            error instanceof Error
+                ? error.message
+                : 'Unable to open the Tenant Statement.'
+        );
+
+        renderReportError();
+    }
 }
 
 /*

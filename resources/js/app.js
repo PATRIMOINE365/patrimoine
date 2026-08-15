@@ -50,6 +50,10 @@ import {
 } from './owners.js';
 
 import {
+    initializeTenants,
+} from './tenants.js';
+
+import {
     initializeReports,
 } from './reports.js';
 
@@ -105,6 +109,8 @@ document.addEventListener(
         await initializePayments();
 
         await initializeOwners();
+
+        await initializeTenants();
 
         await initializeReports();
 
