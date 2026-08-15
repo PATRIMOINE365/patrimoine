@@ -1,3 +1,4 @@
+import './setup';
 /*
 |--------------------------------------------------------------------------
 | Patrimoine Browser Application Bootstrap
