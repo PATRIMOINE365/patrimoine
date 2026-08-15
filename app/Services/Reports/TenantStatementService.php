@@ -82,43 +82,73 @@ class TenantStatementService
                 'to' => $to,
             ],
 
-            'summary' => [
-                'invoiced' =>
-                    (int) $invoices->sum('total_amount'),
+'summary' => [
+    /*
+     * Preserve the existing generic totals as the complete tenant
+     * receivable position for backward compatibility.
+     */
+    'invoiced' =>
+        (int) $invoices->sum('total_amount'),
 
-                'settled' =>
-                    (int) $invoices->sum(
-                        fn (Invoice $invoice): int =>
-                            $invoice->paidAmount()
-                    ),
+    'settled' =>
+        (int) $invoices->sum(
+            fn (Invoice $invoice): int =>
+                $invoice->paidAmount()
+        ),
 
-                'outstanding' =>
-                    (int) $invoices->sum(
-                        fn (Invoice $invoice): int =>
-                            $invoice->outstandingAmount()
-                    ),
+    'outstanding' =>
+        (int) $invoices->sum(
+            fn (Invoice $invoice): int =>
+                $invoice->outstandingAmount()
+        ),
 
-                'cash_received' =>
-                    (int) $payments->sum('amount'),
+    /*
+     * V1.0.1 explicitly separates contractual rent from Security Deposit
+     * close-out debt so non-rent receivables are never presented as rent.
+     */
+    'rent_outstanding' =>
+        (int) $invoices
+            ->where('type', 'rent')
+            ->sum(
+                fn (Invoice $invoice): int =>
+                    $invoice->outstandingAmount()
+            ),
 
-                'rent_reserve_balance' =>
-                    $this->fundBalance(
-                        $fundAccounts,
-                        'rent_reserve'
-                    ),
+    'security_deposit_debt_outstanding' =>
+        (int) $invoices
+            ->where('type', 'security_deposit_debt')
+            ->sum(
+                fn (Invoice $invoice): int =>
+                    $invoice->outstandingAmount()
+            ),
 
-                'consumable_advance_balance' =>
-                    $this->fundBalance(
-                        $fundAccounts,
-                        'consumable_advance'
-                    ),
+    'total_outstanding' =>
+        (int) $invoices->sum(
+            fn (Invoice $invoice): int =>
+                $invoice->outstandingAmount()
+        ),
 
-                'security_deposit_balance' =>
-                    $this->fundBalance(
-                        $fundAccounts,
-                        'security_deposit'
-                    ),
-            ],
+    'cash_received' =>
+        (int) $payments->sum('amount'),
+
+    'rent_reserve_balance' =>
+        $this->fundBalance(
+            $fundAccounts,
+            'rent_reserve'
+        ),
+
+    'consumable_advance_balance' =>
+        $this->fundBalance(
+            $fundAccounts,
+            'consumable_advance'
+        ),
+
+    'security_deposit_balance' =>
+        $this->fundBalance(
+            $fundAccounts,
+            'security_deposit'
+        ),
+],
 
             'leases' => $tenant->tenantLeases
                 ->map(fn ($lease): array => [
@@ -136,25 +166,25 @@ class TenantStatementService
                 ])
                 ->values()
                 ->all(),
-
-            'invoices' => $invoices
-                ->map(fn (Invoice $invoice): array => [
-                    'id' => $invoice->id,
-                    'lease_id' => $invoice->lease_id,
-                    'invoice_number' =>
-                        $invoice->invoice_number,
-                    'date' =>
-                        $invoice->issue_date->toDateString(),
-                    'due_date' =>
-                        $invoice->due_date->toDateString(),
-                    'amount' =>
-                        $invoice->total_amount,
-                    'paid' =>
-                        $invoice->paidAmount(),
-                    'outstanding' =>
-                        $invoice->outstandingAmount(),
-                    'status' => $invoice->status,
-                ])
+'invoices' => $invoices
+    ->map(fn (Invoice $invoice): array => [
+        'id' => $invoice->id,
+        'lease_id' => $invoice->lease_id,
+        'invoice_number' =>
+            $invoice->invoice_number,
+        'type' => $invoice->type,
+        'date' =>
+            $invoice->issue_date->toDateString(),
+        'due_date' =>
+            $invoice->due_date->toDateString(),
+        'amount' =>
+            $invoice->total_amount,
+        'paid' =>
+            $invoice->paidAmount(),
+        'outstanding' =>
+            $invoice->outstandingAmount(),
+        'status' => $invoice->status,
+    ])
                 ->values()
                 ->all(),
 

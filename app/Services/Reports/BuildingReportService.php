@@ -103,52 +103,92 @@ class BuildingReportService
                 'to' => $to,
             ],
 
-            'summary' => [
-                'units' => $building->units->count(),
-                'leases' => $leaseIds->count(),
+'summary' => [
+    'units' => $building->units->count(),
+    'leases' => $leaseIds->count(),
 
-                'invoiced' =>
-                    (int) $invoices->sum('total_amount'),
+    /*
+     * Preserve the existing generic totals as the complete Building
+     * receivable position for backward compatibility.
+     */
+    'invoiced' =>
+        (int) $invoices->sum('total_amount'),
 
-                'invoice_settled' =>
-                    (int) $invoices->sum(
-                        fn (Invoice $invoice): int =>
-                            $invoice->paidAmount()
-                    ),
+    'invoice_settled' =>
+        (int) $invoices->sum(
+            fn (Invoice $invoice): int =>
+                $invoice->paidAmount()
+        ),
 
-                'outstanding' =>
-                    (int) $invoices->sum(
-                        fn (Invoice $invoice): int =>
-                            $invoice->outstandingAmount()
-                    ),
+    'outstanding' =>
+        (int) $invoices->sum(
+            fn (Invoice $invoice): int =>
+                $invoice->outstandingAmount()
+        ),
 
-                'cash_received' =>
-                    (int) $payments->sum('amount'),
+    /*
+     * V1.0.1 explicitly separates contractual rent from Security Deposit
+     * close-out debt.
+     */
+    'rent_invoiced' =>
+        (int) $invoices
+            ->where('type', 'rent')
+            ->sum('total_amount'),
 
-                'property_expenses' =>
-                    (int) $expenses->sum('amount'),
+    'security_deposit_debt_invoiced' =>
+        (int) $invoices
+            ->where('type', 'security_deposit_debt')
+            ->sum('total_amount'),
 
-                'owner_rent_entitlement' =>
-                    $this->ledgerCategory(
-                        $ownerTransactions,
-                        'rent_entitlement',
-                        'credit'
-                    ),
+    'rent_outstanding' =>
+        (int) $invoices
+            ->where('type', 'rent')
+            ->sum(
+                fn (Invoice $invoice): int =>
+                    $invoice->outstandingAmount()
+            ),
 
-                'management_fees' =>
-                    $this->ledgerCategory(
-                        $ownerTransactions,
-                        'management_fee',
-                        'debit'
-                    ),
+    'security_deposit_debt_outstanding' =>
+        (int) $invoices
+            ->where('type', 'security_deposit_debt')
+            ->sum(
+                fn (Invoice $invoice): int =>
+                    $invoice->outstandingAmount()
+            ),
 
-                'agent_commissions' =>
-                    $this->ledgerCategory(
-                        $ownerTransactions,
-                        'agent_commission',
-                        'debit'
-                    ),
-            ],
+    'total_outstanding' =>
+        (int) $invoices->sum(
+            fn (Invoice $invoice): int =>
+                $invoice->outstandingAmount()
+        ),
+
+    'cash_received' =>
+        (int) $payments->sum('amount'),
+
+    'property_expenses' =>
+        (int) $expenses->sum('amount'),
+
+    'owner_rent_entitlement' =>
+        $this->ledgerCategory(
+            $ownerTransactions,
+            'rent_entitlement',
+            'credit'
+        ),
+
+    'management_fees' =>
+        $this->ledgerCategory(
+            $ownerTransactions,
+            'management_fee',
+            'debit'
+        ),
+
+    'agent_commissions' =>
+        $this->ledgerCategory(
+            $ownerTransactions,
+            'agent_commission',
+            'debit'
+        ),
+],
 
             'ownership' => $building->ownerships
                 ->map(fn ($ownership): array => [

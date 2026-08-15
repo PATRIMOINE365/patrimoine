@@ -89,31 +89,70 @@ class UnitReportService
                 'from' => $from,
                 'to' => $to,
             ],
+'summary' => [
+    'leases' => $unit->leases->count(),
 
-            'summary' => [
-                'leases' => $unit->leases->count(),
+    /*
+     * Preserve the existing generic totals as the complete Unit
+     * receivable position for backward compatibility.
+     */
+    'invoiced' =>
+        (int) $invoices->sum('total_amount'),
 
-                'invoiced' =>
-                    (int) $invoices->sum('total_amount'),
+    'settled' =>
+        (int) $invoices->sum(
+            fn (Invoice $invoice): int =>
+                $invoice->paidAmount()
+        ),
 
-                'settled' =>
-                    (int) $invoices->sum(
-                        fn (Invoice $invoice): int =>
-                            $invoice->paidAmount()
-                    ),
+    'outstanding' =>
+        (int) $invoices->sum(
+            fn (Invoice $invoice): int =>
+                $invoice->outstandingAmount()
+        ),
 
-                'outstanding' =>
-                    (int) $invoices->sum(
-                        fn (Invoice $invoice): int =>
-                            $invoice->outstandingAmount()
-                    ),
+    /*
+     * V1.0.1 explicitly separates contractual rent from Security Deposit
+     * close-out debt.
+     */
+    'rent_invoiced' =>
+        (int) $invoices
+            ->where('type', 'rent')
+            ->sum('total_amount'),
 
-                'cash_received' =>
-                    (int) $payments->sum('amount'),
+    'security_deposit_debt_invoiced' =>
+        (int) $invoices
+            ->where('type', 'security_deposit_debt')
+            ->sum('total_amount'),
 
-                'expenses' =>
-                    (int) $expenses->sum('amount'),
-            ],
+    'rent_outstanding' =>
+        (int) $invoices
+            ->where('type', 'rent')
+            ->sum(
+                fn (Invoice $invoice): int =>
+                    $invoice->outstandingAmount()
+            ),
+
+    'security_deposit_debt_outstanding' =>
+        (int) $invoices
+            ->where('type', 'security_deposit_debt')
+            ->sum(
+                fn (Invoice $invoice): int =>
+                    $invoice->outstandingAmount()
+            ),
+
+    'total_outstanding' =>
+        (int) $invoices->sum(
+            fn (Invoice $invoice): int =>
+                $invoice->outstandingAmount()
+        ),
+
+    'cash_received' =>
+        (int) $payments->sum('amount'),
+
+    'expenses' =>
+        (int) $expenses->sum('amount'),
+],
 
             'leases' => $unit->leases
                 ->map(fn ($lease): array => [
@@ -134,23 +173,24 @@ class UnitReportService
                 ->values()
                 ->all(),
 
-            'invoices' => $invoices
-                ->map(fn (Invoice $invoice): array => [
-                    'id' => $invoice->id,
-                    'invoice_number' =>
-                        $invoice->invoice_number,
-                    'issue_date' =>
-                        $invoice->issue_date->toDateString(),
-                    'due_date' =>
-                        $invoice->due_date->toDateString(),
-                    'total_amount' =>
-                        $invoice->total_amount,
-                    'paid_amount' =>
-                        $invoice->paidAmount(),
-                    'outstanding_amount' =>
-                        $invoice->outstandingAmount(),
-                    'status' => $invoice->status,
-                ])
+'invoices' => $invoices
+    ->map(fn (Invoice $invoice): array => [
+        'id' => $invoice->id,
+        'invoice_number' =>
+            $invoice->invoice_number,
+        'type' => $invoice->type,
+        'issue_date' =>
+            $invoice->issue_date->toDateString(),
+        'due_date' =>
+            $invoice->due_date->toDateString(),
+        'total_amount' =>
+            $invoice->total_amount,
+        'paid_amount' =>
+            $invoice->paidAmount(),
+        'outstanding_amount' =>
+            $invoice->outstandingAmount(),
+        'status' => $invoice->status,
+    ])
                 ->values()
                 ->all(),
         ];

@@ -209,57 +209,115 @@ class ReportApiTest extends TestCase
             );
     }
 
-    public function test_tenant_statement_can_be_retrieved(): void
-    {
-        $context = $this->createContext();
+public function test_tenant_statement_can_be_retrieved(): void
+{
+    $context = $this->createContext();
 
-        $this->getJson(
-            "/api/reports/tenants/{$context['tenant']->id}"
+    Invoice::create([
+        'lease_id' => $context['lease']->id,
+        'invoice_number' => 'SDD-API-TENANT-001',
+        'type' => 'security_deposit_debt',
+        'period_start' => '2026-08-10',
+        'period_end' => '2026-08-10',
+        'issue_date' => '2026-08-10',
+        'due_date' => '2026-08-10',
+        'status' => 'issued',
+        'total_amount' => 2000,
+        'vat_rate' => 0,
+        'net_amount' => 2000,
+        'vat_amount' => 0,
+    ]);
+
+    $this->getJson(
+        "/api/reports/tenants/{$context['tenant']->id}"
+    )
+        ->assertOk()
+        ->assertJsonPath(
+            'tenant.id',
+            $context['tenant']->id
         )
-            ->assertOk()
-            ->assertJsonPath(
-                'tenant.id',
-                $context['tenant']->id
-            )
-            ->assertJsonPath(
-                'summary.invoiced',
-                10000
-            )
-            ->assertJsonPath(
-                'summary.cash_received',
-                6000
-            )
-            ->assertJsonPath(
-                'summary.outstanding',
-                4000
-            );
-    }
-
-    public function test_managing_organisation_report_can_be_retrieved(): void
-    {
-        $this->createContext();
-
-        $this->getJson(
-            '/api/reports/managing-organisation'
+        ->assertJsonPath(
+            'summary.invoiced',
+            12000
         )
-            ->assertOk()
-            ->assertJsonPath(
-                'portfolio.buildings',
-                1
-            )
-            ->assertJsonPath(
-                'portfolio.units',
-                1
-            )
-            ->assertJsonPath(
-                'billing.invoiced',
-                10000
-            )
-            ->assertJsonPath(
-                'billing.cash_received',
-                6000
-            );
-    }
+        ->assertJsonPath(
+            'summary.cash_received',
+            6000
+        )
+        ->assertJsonPath(
+            'summary.rent_outstanding',
+            4000
+        )
+        ->assertJsonPath(
+            'summary.security_deposit_debt_outstanding',
+            2000
+        )
+        ->assertJsonPath(
+            'summary.total_outstanding',
+            6000
+        )
+        ->assertJsonPath(
+            'invoices.1.type',
+            'security_deposit_debt'
+        );
+}
+
+ public function test_managing_organisation_report_can_be_retrieved(): void
+{
+    $context = $this->createContext();
+
+    Invoice::create([
+        'lease_id' => $context['lease']->id,
+        'invoice_number' => 'SDD-API-MGT-001',
+        'type' => 'security_deposit_debt',
+        'period_start' => '2026-08-10',
+        'period_end' => '2026-08-10',
+        'issue_date' => '2026-08-10',
+        'due_date' => '2026-08-10',
+        'status' => 'issued',
+        'total_amount' => 2000,
+        'vat_rate' => 0,
+        'net_amount' => 2000,
+        'vat_amount' => 0,
+    ]);
+
+    $this->getJson(
+        '/api/reports/managing-organisation'
+    )
+        ->assertOk()
+        ->assertJsonPath(
+            'portfolio.buildings',
+            1
+        )
+        ->assertJsonPath(
+            'portfolio.units',
+            1
+        )
+        ->assertJsonPath(
+            'billing.invoiced',
+            12000
+        )
+        ->assertJsonPath(
+            'billing.rent_invoiced',
+            10000
+        )
+        ->assertJsonPath(
+            'billing.security_deposit_debt_invoiced',
+            2000
+        )
+        ->assertJsonPath(
+            'billing.rent_outstanding',
+            4000
+        )
+        ->assertJsonPath(
+            'billing.security_deposit_debt_outstanding',
+            2000
+        )
+        ->assertJsonPath(
+            'billing.total_outstanding',
+            6000
+        );
+}
 
     public function test_report_date_range_is_applied(): void
     {

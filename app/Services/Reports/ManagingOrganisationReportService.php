@@ -93,26 +93,65 @@ class ManagingOrganisationReportService
                 'owner_accounts' =>
                     OwnerAccount::count(),
             ],
+'billing' => [
+    /*
+     * Preserve the existing generic totals as the complete receivable
+     * position for backward compatibility.
+     */
+    'invoiced' =>
+        (int) $invoices->sum('total_amount'),
 
-            'billing' => [
-                'invoiced' =>
-                    (int) $invoices->sum('total_amount'),
+    'settled' =>
+        (int) $invoices->sum(
+            fn (Invoice $invoice): int =>
+                $invoice->paidAmount()
+        ),
 
-                'settled' =>
-                    (int) $invoices->sum(
-                        fn (Invoice $invoice): int =>
-                            $invoice->paidAmount()
-                    ),
+    'outstanding' =>
+        (int) $invoices->sum(
+            fn (Invoice $invoice): int =>
+                $invoice->outstandingAmount()
+        ),
 
-                'outstanding' =>
-                    (int) $invoices->sum(
-                        fn (Invoice $invoice): int =>
-                            $invoice->outstandingAmount()
-                    ),
+    /*
+     * V1.0.1 explicitly separates contractual rent from Security Deposit
+     * close-out debt.
+     */
+    'rent_invoiced' =>
+        (int) $invoices
+            ->where('type', 'rent')
+            ->sum('total_amount'),
 
-                'cash_received' =>
-                    (int) $payments->sum('amount'),
-            ],
+    'security_deposit_debt_invoiced' =>
+        (int) $invoices
+            ->where('type', 'security_deposit_debt')
+            ->sum('total_amount'),
+
+    'rent_outstanding' =>
+        (int) $invoices
+            ->where('type', 'rent')
+            ->sum(
+                fn (Invoice $invoice): int =>
+                    $invoice->outstandingAmount()
+            ),
+
+    'security_deposit_debt_outstanding' =>
+        (int) $invoices
+            ->where('type', 'security_deposit_debt')
+            ->sum(
+                fn (Invoice $invoice): int =>
+                    $invoice->outstandingAmount()
+            ),
+
+    'total_outstanding' =>
+        (int) $invoices->sum(
+            fn (Invoice $invoice): int =>
+                $invoice->outstandingAmount()
+        ),
+
+    'cash_received' =>
+        (int) $payments->sum('amount'),
+],
 
             'owner_accounting' => [
                 'rent_entitlement' =>
