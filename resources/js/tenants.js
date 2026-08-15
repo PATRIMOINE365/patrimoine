@@ -10,9 +10,10 @@ import {
 | Patrimoine Tenant Workspace
 |--------------------------------------------------------------------------
 |
-| V1.0.1 C1 provides a dedicated read-only tenant directory and basic
-| tenant/lease detail. Financial history and tenant-held funds are added in
-| later C slices so accounting logic remains centralized.
+| V1.0.1 provides a dedicated read-only tenant directory with tenant
+| identity, lease history and financial information. Financial values are
+| sourced from the existing Tenant Statement report so accounting logic
+| remains centralized in the reporting service.
 |
 */
 
@@ -428,9 +429,29 @@ async function selectTenant(
                 ? leasePayload.data
                 : [];
 
+        /*
+         * Reuse the existing Tenant Statement report as the authoritative
+         * source for tenant financial information.
+         *
+         * This deliberately avoids reproducing invoice settlement, held-fund
+         * or receivable calculations in the browser.
+         */
+        const statementResponse =
+            await apiRequest(
+                `/api/reports/tenants/${encodeURIComponent(
+                    tenant.id
+                )}`
+            );
+
+        const statement =
+            await parseJsonResponse(
+                statementResponse
+            );
+
         renderTenantDetail(
             tenant,
-            leases
+            leases,
+            statement
         );
     } catch (error) {
         showTenantError(
@@ -482,10 +503,12 @@ function updateTenantDirectorySelection() {
  *
  * @param {object} tenant
  * @param {Array<object>} leases
+ * @param {object} statement
  */
 function renderTenantDetail(
     tenant,
-    leases
+    leases,
+    statement
 ) {
     const container =
         document.getElementById(
@@ -683,6 +706,590 @@ function renderTenantDetail(
                     leases
                 )}
             </div>
+        </div>
+
+        <div
+            class="
+                border-t border-slate-100
+                px-6 py-6
+            "
+        >
+            ${renderTenantFinancialPosition(
+                statement
+            )}
+        </div>
+
+        <div
+            class="
+                border-t border-slate-100
+                px-6 py-6
+            "
+        >
+            ${renderTenantInvoices(
+                statement?.invoices
+            )}
+        </div>
+
+        <div
+            class="
+                border-t border-slate-100
+                px-6 py-6
+            "
+        >
+            ${renderTenantPayments(
+                statement?.payments
+            )}
+        </div>
+    `;
+}
+
+
+/**
+ * Render the Tenant's current financial position.
+ *
+ * Values come directly from TenantStatementService. The browser performs
+ * formatting only and does not recalculate accounting balances.
+ *
+ * @param {object} statement
+ * @returns {string}
+ */
+function renderTenantFinancialPosition(
+    statement
+) {
+    const summary =
+        statement?.summary
+        ?? {};
+
+    return `
+        <div>
+            <h3
+                class="
+                    text-base font-semibold
+                    text-slate-950
+                "
+            >
+                Financial Position
+            </h3>
+
+            <p
+                class="
+                    mt-1 text-xs
+                    text-slate-500
+                "
+            >
+                Outstanding receivables and tenant-held funds across all leases.
+            </p>
+        </div>
+
+        <div
+            class="
+                mt-4 grid gap-3
+                sm:grid-cols-2
+                xl:grid-cols-3
+            "
+        >
+            ${financialMetric(
+                'Rent Outstanding',
+                summary.rent_outstanding
+            )}
+
+            ${financialMetric(
+                'Security Deposit Debt',
+                summary.security_deposit_debt_outstanding
+            )}
+
+            ${financialMetric(
+                'Total Outstanding',
+                summary.total_outstanding
+            )}
+        </div>
+
+        <div
+            class="
+                mt-6
+                border-t border-slate-100
+                pt-5
+            "
+        >
+            <h4
+                class="
+                    text-sm font-semibold
+                    text-slate-900
+                "
+            >
+                Held Funds
+            </h4>
+
+            <div
+                class="
+                    mt-3 grid gap-3
+                    sm:grid-cols-2
+                    xl:grid-cols-3
+                "
+            >
+                ${financialMetric(
+                    'Rent Reserve',
+                    summary.rent_reserve_balance
+                )}
+
+                ${financialMetric(
+                    'Consumable Advance',
+                    summary.consumable_advance_balance
+                )}
+
+                ${financialMetric(
+                    'Security Deposit',
+                    summary.security_deposit_balance
+                )}
+            </div>
+        </div>
+    `;
+}
+
+
+/**
+ * Render Tenant invoices from the Tenant Statement.
+ *
+ * @param {Array<object>} invoices
+ * @returns {string}
+ */
+function renderTenantInvoices(
+    invoices
+) {
+    const rows =
+        Array.isArray(
+            invoices
+        )
+            ? invoices
+            : [];
+
+    return `
+        <div>
+            <h3
+                class="
+                    text-base font-semibold
+                    text-slate-950
+                "
+            >
+                Invoices
+            </h3>
+
+            <p
+                class="
+                    mt-1 text-xs
+                    text-slate-500
+                "
+            >
+                Billing history across this Tenant's leases.
+            </p>
+        </div>
+
+        <div class="mt-4">
+            ${
+                rows.length === 0
+                    ? financialEmptyState(
+                        'No invoices have been recorded for this Tenant.'
+                    )
+                    : `
+                        <div
+                            class="
+                                overflow-x-auto
+                                rounded-xl border
+                                border-slate-200
+                            "
+                        >
+                            <table
+                                class="
+                                    min-w-full
+                                    divide-y divide-slate-200
+                                    text-sm
+                                "
+                            >
+                                <thead class="bg-slate-50">
+                                    <tr>
+                                        ${tableHeading('Invoice')}
+                                        ${tableHeading('Type')}
+                                        ${tableHeading('Date')}
+                                        ${tableHeading('Due Date')}
+                                        ${tableHeading('Amount', true)}
+                                        ${tableHeading('Paid', true)}
+                                        ${tableHeading('Outstanding', true)}
+                                        ${tableHeading('Status')}
+                                    </tr>
+                                </thead>
+
+                                <tbody
+                                    class="
+                                        divide-y divide-slate-100
+                                        bg-white
+                                    "
+                                >
+                                    ${rows
+                                        .map(
+                                            renderTenantInvoiceRow
+                                        )
+                                        .join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `
+            }
+        </div>
+    `;
+}
+
+
+/**
+ * Render one Tenant invoice row.
+ *
+ * @param {object} invoice
+ * @returns {string}
+ */
+function renderTenantInvoiceRow(
+    invoice
+) {
+    return `
+        <tr>
+            ${tableCell(
+                invoice?.invoice_number
+                || `#${invoice?.id ?? '—'}`,
+                true
+            )}
+
+            ${tableCell(
+                capitalizeWords(
+                    invoice?.type
+                    ?? 'unknown'
+                )
+            )}
+
+            ${tableCell(
+                invoice?.date
+                || '—'
+            )}
+
+            ${tableCell(
+                invoice?.due_date
+                || '—'
+            )}
+
+            ${tableCell(
+                formatCurrency(
+                    invoice?.amount
+                    ?? 0
+                ),
+                false,
+                true
+            )}
+
+            ${tableCell(
+                formatCurrency(
+                    invoice?.paid
+                    ?? 0
+                ),
+                false,
+                true
+            )}
+
+            ${tableCell(
+                formatCurrency(
+                    invoice?.outstanding
+                    ?? 0
+                ),
+                true,
+                true
+            )}
+
+            ${tableCell(
+                capitalizeWords(
+                    invoice?.status
+                    ?? 'unknown'
+                )
+            )}
+        </tr>
+    `;
+}
+
+
+/**
+ * Render Tenant payment history from the Tenant Statement.
+ *
+ * @param {Array<object>} payments
+ * @returns {string}
+ */
+function renderTenantPayments(
+    payments
+) {
+    const rows =
+        Array.isArray(
+            payments
+        )
+            ? payments
+            : [];
+
+    return `
+        <div>
+            <h3
+                class="
+                    text-base font-semibold
+                    text-slate-950
+                "
+            >
+                Payments
+            </h3>
+
+            <p
+                class="
+                    mt-1 text-xs
+                    text-slate-500
+                "
+            >
+                Cash received and allocation history across this Tenant's leases.
+            </p>
+        </div>
+
+        <div class="mt-4">
+            ${
+                rows.length === 0
+                    ? financialEmptyState(
+                        'No payments have been recorded for this Tenant.'
+                    )
+                    : `
+                        <div
+                            class="
+                                overflow-x-auto
+                                rounded-xl border
+                                border-slate-200
+                            "
+                        >
+                            <table
+                                class="
+                                    min-w-full
+                                    divide-y divide-slate-200
+                                    text-sm
+                                "
+                            >
+                                <thead class="bg-slate-50">
+                                    <tr>
+                                        ${tableHeading('Date')}
+                                        ${tableHeading('Amount', true)}
+                                        ${tableHeading('Method')}
+                                        ${tableHeading('Reference')}
+                                        ${tableHeading('Allocated', true)}
+                                        ${tableHeading('Unallocated', true)}
+                                    </tr>
+                                </thead>
+
+                                <tbody
+                                    class="
+                                        divide-y divide-slate-100
+                                        bg-white
+                                    "
+                                >
+                                    ${rows
+                                        .map(
+                                            renderTenantPaymentRow
+                                        )
+                                        .join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `
+            }
+        </div>
+    `;
+}
+
+
+/**
+ * Render one Tenant payment row.
+ *
+ * @param {object} payment
+ * @returns {string}
+ */
+function renderTenantPaymentRow(
+    payment
+) {
+    return `
+        <tr>
+            ${tableCell(
+                payment?.date
+                || '—'
+            )}
+
+            ${tableCell(
+                formatCurrency(
+                    payment?.amount
+                    ?? 0
+                ),
+                true,
+                true
+            )}
+
+            ${tableCell(
+                capitalizeWords(
+                    payment?.method
+                    ?? 'unknown'
+                )
+            )}
+
+            ${tableCell(
+                payment?.reference
+                || '—'
+            )}
+
+            ${tableCell(
+                formatCurrency(
+                    payment?.allocated
+                    ?? 0
+                ),
+                false,
+                true
+            )}
+
+            ${tableCell(
+                formatCurrency(
+                    payment?.unallocated
+                    ?? 0
+                ),
+                false,
+                true
+            )}
+        </tr>
+    `;
+}
+
+
+/**
+ * Render one financial summary card.
+ *
+ * @param {string} label
+ * @param {number|string|null} value
+ * @returns {string}
+ */
+function financialMetric(
+    label,
+    value
+) {
+    return `
+        <div
+            class="
+                rounded-xl border
+                border-slate-200
+                bg-slate-50/50
+                px-4 py-4
+            "
+        >
+            <div
+                class="
+                    text-xs font-medium
+                    text-slate-500
+                "
+            >
+                ${escapeHtml(label)}
+            </div>
+
+            <div
+                class="
+                    mt-1 text-lg font-semibold
+                    text-slate-950
+                "
+            >
+                ${escapeHtml(
+                    formatCurrency(
+                        value
+                        ?? 0
+                    )
+                )}
+            </div>
+        </div>
+    `;
+}
+
+
+/**
+ * Render a table heading.
+ *
+ * @param {string} label
+ * @param {boolean} numeric
+ * @returns {string}
+ */
+function tableHeading(
+    label,
+    numeric = false
+) {
+    return `
+        <th
+            scope="col"
+            class="
+                whitespace-nowrap
+                px-4 py-3
+                text-xs font-medium
+                uppercase tracking-wide
+                text-slate-500
+                ${numeric ? 'text-right' : 'text-left'}
+            "
+        >
+            ${escapeHtml(label)}
+        </th>
+    `;
+}
+
+
+/**
+ * Render a table cell.
+ *
+ * @param {string|number} value
+ * @param {boolean} strong
+ * @param {boolean} numeric
+ * @returns {string}
+ */
+function tableCell(
+    value,
+    strong = false,
+    numeric = false
+) {
+    return `
+        <td
+            class="
+                whitespace-nowrap
+                px-4 py-3
+                ${numeric ? 'text-right' : 'text-left'}
+                ${
+                    strong
+                        ? 'font-semibold text-slate-900'
+                        : 'text-slate-600'
+                }
+            "
+        >
+            ${escapeHtml(
+                value
+                ?? '—'
+            )}
+        </td>
+    `;
+}
+
+
+/**
+ * Render an empty financial-history state.
+ *
+ * @param {string} message
+ * @returns {string}
+ */
+function financialEmptyState(
+    message
+) {
+    return `
+        <div
+            class="
+                rounded-xl border
+                border-dashed border-slate-200
+                px-5 py-8 text-center
+                text-sm text-slate-500
+            "
+        >
+            ${escapeHtml(message)}
         </div>
     `;
 }
