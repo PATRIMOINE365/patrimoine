@@ -81,21 +81,30 @@ class RentReserveService
                     'Rent Reserve cannot be consumed before termination notice.'
                 );
             }
+if ($invoice->lease_id !== $lease->id) {
+    throw new RuntimeException(
+        'The Invoice does not belong to the Rent Reserve Lease.'
+    );
+}
 
-            /*
-             * Prevent use of one Lease's reserve against another Lease.
-             */
-            if ($invoice->lease_id !== $lease->id) {
-                throw new RuntimeException(
-                    'The Invoice does not belong to the Rent Reserve Lease.'
-                );
-            }
+/*
+ * Rent Reserve exists specifically to cover contractual rent during the
+ * termination-notice period.
+ *
+ * Non-rent receivables, such as Security Deposit close-out debt, must not
+ * consume Rent Reserve or enter the owner rent-entitlement pipeline.
+ */
+if (! $invoice->isRentInvoice()) {
+    throw new RuntimeException(
+        'Rent Reserve can only settle rent invoices.'
+    );
+}
 
-            if ($amount <= 0) {
-                throw new RuntimeException(
-                    'Rent Reserve consumption amount must be greater than zero.'
-                );
-            }
+if ($amount <= 0) {
+    throw new RuntimeException(
+        'Rent Reserve consumption amount must be greater than zero.'
+    );
+}
 
             if ($amount > $account->balance()) {
                 throw new RuntimeException(

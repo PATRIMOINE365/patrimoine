@@ -40,16 +40,17 @@ class SendRentReminders extends Command
         $sent = 0;
         $failed = 0;
 
-        Invoice::query()
-            ->whereIn('status', [
-                'issued',
-                'partial',
-            ])
-            ->whereDate(
-                'due_date',
-                '<=',
-                $asOf->toDateString()
-            )
+Invoice::query()
+    ->where('type', 'rent')
+    ->whereIn('status', [
+        'issued',
+        'partial',
+    ])
+    ->whereDate(
+        'due_date',
+        '<=',
+        $asOf->toDateString()
+    )
             ->orderBy('id')
             ->chunkById(
                 100,

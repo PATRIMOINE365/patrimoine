@@ -316,4 +316,30 @@ class ConsumableAdvanceServiceTest extends TestCase
                 '2026-08-01'
             );
     }
+    /**
+ * Consumable Advance may settle contractual rent only.
+ *
+ * Security Deposit debt must remain collectible through the ordinary
+ * tenant Payment workflow and must not be converted into owner rent.
+ */
+public function test_advance_cannot_settle_security_deposit_debt_invoice(): void
+{
+    $context = $this->createContext();
+
+    $context['invoice']->update([
+        'type' => 'security_deposit_debt',
+    ]);
+
+    $this->expectException(RuntimeException::class);
+    $this->expectExceptionMessage(
+        'Consumable Advance can only settle rent invoices.'
+    );
+
+    app(ConsumableAdvanceService::class)->consume(
+        $context['account'],
+        $context['invoice'],
+        1000,
+        '2026-08-01'
+    );
+}
 }

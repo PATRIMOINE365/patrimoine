@@ -237,7 +237,31 @@ class EmailWorkflowTest extends TestCase
             }
         );
     }
+/**
+ * Rent reminder command must ignore Security Deposit debt invoices.
+ *
+ * Security Deposit close-out debt is collectible through the ordinary
+ * tenant payment workflow but must never be presented as overdue rent.
+ */
+public function test_reminder_command_skips_security_deposit_debt_invoice(): void
+{
+    Mail::fake();
 
+    $context = $this->createContext();
+
+    $context['invoice']->update([
+        'type' => 'security_deposit_debt',
+    ]);
+
+    $this->artisan(
+        'patrimoine:send-rent-reminders',
+        [
+            '--as-of' => '2026-08-11',
+        ]
+    )->assertExitCode(0);
+
+    Mail::assertNothingSent();
+}
     /**
      * Reminder command ignores invoices not yet due.
      */

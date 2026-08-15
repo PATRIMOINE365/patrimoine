@@ -108,17 +108,18 @@ class DashboardService
      *
      * Only the outstanding portion of each Invoice is counted.
      */
-    public function rentDueAmount(Carbon $asOfDate): int
-    {
-        return Invoice::query()
-            ->whereIn('status', ['issued', 'partial'])
-            ->whereDate('due_date', '<=', $asOfDate->toDateString())
-            ->get()
-            ->sum(
-                fn (Invoice $invoice): int =>
-                    $invoice->outstandingAmount()
-            );
-    }
+public function rentDueAmount(Carbon $asOfDate): int
+{
+    return Invoice::query()
+        ->where('type', 'rent')
+        ->whereIn('status', ['issued', 'partial'])
+        ->whereDate('due_date', '<=', $asOfDate->toDateString())
+        ->get()
+        ->sum(
+            fn (Invoice $invoice): int =>
+                $invoice->outstandingAmount()
+        );
+}
 
     /**
      * Return the amount that is overdue as of the requested date.
@@ -127,17 +128,18 @@ class DashboardService
      * Invoices due exactly on the as-of date belong to rent_due but are
      * not yet included in rent_overdue.
      */
-    public function rentOverdueAmount(Carbon $asOfDate): int
-    {
-        return Invoice::query()
-            ->whereIn('status', ['issued', 'partial'])
-            ->whereDate('due_date', '<', $asOfDate->toDateString())
-            ->get()
-            ->sum(
-                fn (Invoice $invoice): int =>
-                    $invoice->outstandingAmount()
-            );
-    }
+public function rentOverdueAmount(Carbon $asOfDate): int
+{
+    return Invoice::query()
+        ->where('type', 'rent')
+        ->whereIn('status', ['issued', 'partial'])
+        ->whereDate('due_date', '<', $asOfDate->toDateString())
+        ->get()
+        ->sum(
+            fn (Invoice $invoice): int =>
+                $invoice->outstandingAmount()
+        );
+}
 
     /**
      * Return tenant money actually received during a date range.
@@ -209,13 +211,14 @@ class DashboardService
      */
     public function overdueInvoices(Carbon $asOfDate)
     {
-        return Invoice::query()
-            ->with([
-                'lease.tenant',
-                'lease.unit.building',
-            ])
-            ->whereIn('status', ['issued', 'partial'])
-            ->whereDate('due_date', '<', $asOfDate->toDateString())
+return Invoice::query()
+    ->with([
+        'lease.tenant',
+        'lease.unit.building',
+    ])
+    ->where('type', 'rent')
+    ->whereIn('status', ['issued', 'partial'])
+    ->whereDate('due_date', '<', $asOfDate->toDateString())
             ->orderBy('due_date')
             ->orderBy('id')
             ->get();
@@ -235,13 +238,14 @@ class DashboardService
     ) {
         $endDate = $asOfDate->copy()->addDays($days);
 
-        return Invoice::query()
-            ->with([
-                'lease.tenant',
-                'lease.unit.building',
-            ])
-            ->whereIn('status', ['issued', 'partial'])
-            ->whereDate('due_date', '>=', $asOfDate->toDateString())
+return Invoice::query()
+    ->with([
+        'lease.tenant',
+        'lease.unit.building',
+    ])
+    ->where('type', 'rent')
+    ->whereIn('status', ['issued', 'partial'])
+    ->whereDate('due_date', '>=', $asOfDate->toDateString())
             ->whereDate('due_date', '<=', $endDate->toDateString())
             ->orderBy('due_date')
             ->orderBy('id')
