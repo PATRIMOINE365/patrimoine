@@ -399,4 +399,40 @@ class BrowserLocalisationTest extends TestCase
             );
     }
 
+
+    public function test_tenants_exposes_translation_hooks(): void
+    {
+        $response = $this->get('/tenants');
+
+        $response
+            ->assertOk()
+            ->assertSee(
+                'data-i18n="tenants.heading"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="tenants.directory"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="tenants.search"',
+                false
+            )
+            ->assertSee(
+                'data-i18n-placeholder="tenants.search_placeholder"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="tenants.loading"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="tenants.select_tenant"',
+                false
+            )
+            ->assertSeeText(
+                'Tenants'
+            );
+    }
+
 }

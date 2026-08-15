@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Tenants — Patrimoine')
+@section('title-i18n', 'tenants.title')
 
 @section('content')
 
@@ -21,7 +22,7 @@
                     text-patrimoine-700
                 "
             >
-                Finance
+                <span data-i18n="tenants.finance">Finance</span>
             </p>
 
             <h1
@@ -30,11 +31,11 @@
                     tracking-tight text-slate-950
                 "
             >
-                Tenants
+                <span data-i18n="tenants.heading">Tenants</span>
             </h1>
 
             <p class="mt-2 text-sm text-slate-500">
-                Review tenant identity, contact information and lease history.
+                <span data-i18n="tenants.page_description">Review tenant identity, contact information and lease history.</span>
             </p>
         </div>
     </div>
@@ -74,14 +75,14 @@
                         text-slate-950
                     "
                 >
-                    Tenants
+                    <span data-i18n="tenants.directory">Tenants</span>
                 </h2>
 
                 <p
                     id="tenant-result-count"
                     class="mt-1 text-xs text-slate-500"
                 >
-                    Search by tenant name, phone or email.
+                    <span data-i18n="tenants.search_description">Search by tenant name, phone or email.</span>
                 </p>
 
                 <div class="mt-4">
@@ -89,7 +90,7 @@
                         for="tenant-search"
                         class="sr-only"
                     >
-                        Search Tenants
+                        <span data-i18n="tenants.search">Search Tenants</span>
                     </label>
 
                     <input
@@ -97,6 +98,7 @@
                         type="search"
                         autocomplete="off"
                         placeholder="Search tenants..."
+                        data-i18n-placeholder="tenants.search_placeholder"
                         class="
                             w-full rounded-lg
                             border border-slate-200
@@ -125,7 +127,7 @@
                         text-sm text-slate-400
                     "
                 >
-                    Loading tenants…
+                    <span data-i18n="tenants.loading">Loading tenants…</span>
                 </div>
             </div>
 
@@ -183,7 +185,7 @@
                             text-slate-900
                         "
                     >
-                        Select a Tenant
+                        <span data-i18n="tenants.select_tenant">Select a Tenant</span>
                     </h2>
 
                     <p
@@ -192,7 +194,7 @@
                             text-slate-500
                         "
                     >
-                        Choose a tenant to review their details and leases.
+                        <span data-i18n="tenants.select_tenant_description">Choose a tenant to review their details and leases.</span>
                     </p>
                 </div>
             </div>
