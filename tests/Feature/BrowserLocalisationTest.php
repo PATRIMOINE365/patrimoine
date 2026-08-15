@@ -435,4 +435,151 @@ class BrowserLocalisationTest extends TestCase
             );
     }
 
+
+    /**
+     * Protect against accidentally placing French application-page keys
+     * inside the English browser catalogue.
+     */
+    public function test_browser_translation_catalogues_keep_languages_separate(): void
+    {
+        $source =
+            file_get_contents(
+                resource_path(
+                    'js/translations.js'
+                )
+            );
+
+        $this->assertIsString(
+            $source
+        );
+
+        $englishStart =
+            strpos(
+                $source,
+                "    en: {\n"
+            );
+
+        $frenchStart =
+            strpos(
+                $source,
+                "    fr: {\n"
+            );
+
+        $this->assertNotFalse(
+            $englishStart
+        );
+
+        $this->assertNotFalse(
+            $frenchStart
+        );
+
+        $this->assertLessThan(
+            $frenchStart,
+            $englishStart
+        );
+
+        $english =
+            substr(
+                $source,
+                $englishStart,
+                $frenchStart
+                - $englishStart
+            );
+
+        $french =
+            substr(
+                $source,
+                $frenchStart
+            );
+
+        foreach (
+            [
+                "'parties.heading': 'Parties'",
+                "'leases.heading': 'Leases'",
+                "'payments.heading': 'Payments'",
+                "'owners.heading': 'Owners'",
+                "'tenants.heading': 'Tenants'",
+                "'reports.heading': 'Reports'",
+            ]
+            as $expected
+        ) {
+            $this->assertStringContainsString(
+                $expected,
+                $english
+            );
+        }
+
+        foreach (
+            [
+                "'leases.heading': 'Baux'",
+                "'payments.heading': 'Paiements'",
+                "'owners.heading': 'Propriétaires'",
+                "'tenants.heading': 'Locataires'",
+                "'reports.heading': 'Rapports'",
+            ]
+            as $expected
+        ) {
+            $this->assertStringNotContainsString(
+                $expected,
+                $english
+            );
+
+            $this->assertStringContainsString(
+                $expected,
+                $french
+            );
+        }
+    }
+
+    /**
+     * Browser interpolation supports the Laravel-style placeholders already
+     * used throughout the Patrimoine translation catalogue.
+     */
+    public function test_browser_translation_interpolates_laravel_style_placeholders(): void
+    {
+        $source =
+            file_get_contents(
+                resource_path(
+                    'js/translations.js'
+                )
+            );
+
+        $this->assertIsString(
+            $source
+        );
+
+        /*
+         * translationFor() must support both the original brace-style
+         * placeholders and Laravel-style colon placeholders used by the
+         * existing browser catalogue.
+         */
+        $this->assertStringContainsString(
+            '`{${name}}`',
+            $source
+        );
+
+        $this->assertStringContainsString(
+            '`:${name}`',
+            $source
+        );
+
+        $this->assertGreaterThanOrEqual(
+            2,
+            substr_count(
+                $source,
+                '.replaceAll('
+            )
+        );
+
+        $this->assertStringContainsString(
+            "'tenants.pagination_tenants': ':total tenants'",
+            $source
+        );
+
+        $this->assertStringContainsString(
+            "'tenants.pagination_tenants': ':total locataires'",
+            $source
+        );
+    }
+
 }
