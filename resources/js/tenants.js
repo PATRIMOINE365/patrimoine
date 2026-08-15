@@ -448,10 +448,23 @@ async function selectTenant(
                 statementResponse
             );
 
+        /*
+         * C3 operational history.
+         *
+         * The Tenant Statement remains authoritative for financial totals.
+         * Existing Lease/Payment APIs provide ledger and receipt identifiers
+         * without duplicating accounting calculations in the browser.
+         */
+        const operationalHistory =
+            await loadTenantOperationalHistory(
+                leases
+            );
+
         renderTenantDetail(
             tenant,
             leases,
-            statement
+            statement,
+            operationalHistory
         );
     } catch (error) {
         showTenantError(
@@ -508,7 +521,8 @@ function updateTenantDirectorySelection() {
 function renderTenantDetail(
     tenant,
     leases,
-    statement
+    statement,
+    operationalHistory = {}
 ) {
     const container =
         document.getElementById(
@@ -737,10 +751,24 @@ function renderTenantDetail(
             "
         >
             ${renderTenantPayments(
-                statement?.payments
+                statement?.payments,
+                operationalHistory?.payments
+            )}
+        </div>
+
+        <div
+            class="
+                border-t border-slate-100
+                px-6 py-6
+            "
+        >
+            ${renderTenantFundHistory(
+                operationalHistory?.fundTransactions
             )}
         </div>
     `;
+
+    initializeTenantReceiptActions();
 }
 
 
@@ -1018,7 +1046,8 @@ function renderTenantInvoiceRow(
  * @returns {string}
  */
 function renderTenantPayments(
-    payments
+    payments,
+    operationalPayments = []
 ) {
     const rows =
         Array.isArray(
@@ -1026,6 +1055,11 @@ function renderTenantPayments(
         )
             ? payments
             : [];
+
+    const paymentLookup =
+        buildPaymentLookup(
+            operationalPayments
+        );
 
     return `
         <div>
@@ -1077,6 +1111,7 @@ function renderTenantPayments(
                                         ${tableHeading('Reference')}
                                         ${tableHeading('Allocated', true)}
                                         ${tableHeading('Unallocated', true)}
+                                        ${tableHeading('Receipt')}
                                     </tr>
                                 </thead>
 
@@ -1088,7 +1123,11 @@ function renderTenantPayments(
                                 >
                                     ${rows
                                         .map(
-                                            renderTenantPaymentRow
+                                            (payment) =>
+                                                renderTenantPaymentRow(
+                                                    payment,
+                                                    paymentLookup
+                                                )
                                         )
                                         .join('')}
                                 </tbody>
@@ -1108,8 +1147,15 @@ function renderTenantPayments(
  * @returns {string}
  */
 function renderTenantPaymentRow(
-    payment
+    payment,
+    paymentLookup
 ) {
+    const operationalPayment =
+        findOperationalPayment(
+            payment,
+            paymentLookup
+        );
+
     return `
         <tr>
             ${tableCell(
@@ -1155,8 +1201,735 @@ function renderTenantPaymentRow(
                 false,
                 true
             )}
+
+            ${receiptActionCell(
+                operationalPayment?.id
+            )}
         </tr>
     `;
+}
+
+
+/**
+ * Load existing operational records required by the Tenant workspace.
+ *
+ * Financial totals remain sourced from TenantStatementService. These records
+ * provide only receipt identifiers and the underlying tenant-fund ledger.
+ *
+ * @param {Array<object>} leases
+ * @returns {Promise<object>}
+ */
+async function loadTenantOperationalHistory(
+    leases
+) {
+    const payments = [];
+    const fundTransactions = [];
+
+    for (const lease of leases) {
+        /*
+         * Lease index responses may already include tenant-fund accounts.
+         * When they do, consume that ledger directly.
+         */
+        collectFundTransactions(
+            lease,
+            fundTransactions
+        );
+
+        /*
+         * Payment IDs are required for receipt download/resend. The existing
+         * Payment API supports Lease filtering, so no new receipt endpoint or
+         * financial read model is introduced for C3.
+         */
+        const paymentResponse =
+            await apiRequest(
+                `/api/payments?lease_id=${encodeURIComponent(
+                    lease.id
+                )}&per_page=100`
+            );
+
+        const paymentPayload =
+            await parseJsonResponse(
+                paymentResponse
+            );
+
+        const leasePayments =
+            Array.isArray(
+                paymentPayload?.data
+            )
+                ? paymentPayload.data
+                : [];
+
+        payments.push(
+            ...leasePayments
+        );
+
+        /*
+         * If the Lease index did not contain fund accounts, retrieve the
+         * existing Lease detail representation. LeaseController already
+         * exposes tenantFundAccounts.transactions.
+         */
+        if (
+            ! Array.isArray(
+                lease?.tenant_fund_accounts
+            )
+        ) {
+            const leaseResponse =
+                await apiRequest(
+                    `/api/leases/${encodeURIComponent(
+                        lease.id
+                    )}`
+                );
+
+            const leaseDetail =
+                await parseJsonResponse(
+                    leaseResponse
+                );
+
+            collectFundTransactions(
+                leaseDetail,
+                fundTransactions
+            );
+        }
+    }
+
+    fundTransactions.sort(
+        (left, right) => {
+            const dateCompare =
+                String(
+                    right?.transaction_date
+                    ?? ''
+                ).localeCompare(
+                    String(
+                        left?.transaction_date
+                        ?? ''
+                    )
+                );
+
+            if (dateCompare !== 0) {
+                return dateCompare;
+            }
+
+            return Number(
+                right?.id
+                ?? 0
+            ) - Number(
+                left?.id
+                ?? 0
+            );
+        }
+    );
+
+    return {
+        payments,
+        fundTransactions,
+    };
+}
+
+
+/**
+ * Collect tenant-fund ledger entries from one Lease representation.
+ *
+ * @param {object} lease
+ * @param {Array<object>} target
+ */
+function collectFundTransactions(
+    lease,
+    target
+) {
+    const accounts =
+        Array.isArray(
+            lease?.tenant_fund_accounts
+        )
+            ? lease.tenant_fund_accounts
+            : [];
+
+    accounts.forEach(
+        (account) => {
+            const transactions =
+                Array.isArray(
+                    account?.transactions
+                )
+                    ? account.transactions
+                    : [];
+
+            transactions.forEach(
+                (transaction) => {
+                    target.push({
+                        ...transaction,
+                        fund_type:
+                            account.type,
+                        lease_id:
+                            lease.id,
+                    });
+                }
+            );
+        }
+    );
+}
+
+
+/**
+ * Build candidate Payment lookup keys for matching Tenant Statement rows.
+ *
+ * The Statement and Payment APIs represent the same persisted Payment but
+ * expose slightly different field names.
+ *
+ * @param {Array<object>} payments
+ * @returns {Map<string, Array<object>>}
+ */
+function buildPaymentLookup(
+    payments
+) {
+    const lookup =
+        new Map();
+
+    payments.forEach(
+        (payment) => {
+            const key =
+                paymentMatchKey({
+                    date:
+                        payment?.payment_date,
+                    amount:
+                        payment?.amount,
+                    method:
+                        payment?.payment_method,
+                    reference:
+                        payment?.reference,
+                });
+
+            if (! lookup.has(key)) {
+                lookup.set(
+                    key,
+                    []
+                );
+            }
+
+            lookup
+                .get(key)
+                .push(
+                    payment
+                );
+        }
+    );
+
+    return lookup;
+}
+
+
+/**
+ * Match one Tenant Statement payment to its persisted Payment record.
+ *
+ * @param {object} payment
+ * @param {Map<string, Array<object>>} lookup
+ * @returns {object|null}
+ */
+function findOperationalPayment(
+    payment,
+    lookup
+) {
+    const key =
+        paymentMatchKey(
+            payment
+        );
+
+    const candidates =
+        lookup.get(
+            key
+        )
+        ?? [];
+
+    return candidates.length === 1
+        ? candidates[0]
+        : null;
+}
+
+
+/**
+ * Stable matching key shared by Statement and Payment API representations.
+ *
+ * @param {object} payment
+ * @returns {string}
+ */
+function paymentMatchKey(
+    payment
+) {
+    return [
+        String(
+            payment?.date
+            ?? ''
+        ).slice(
+            0,
+            10
+        ),
+        Number(
+            payment?.amount
+            ?? 0
+        ),
+        String(
+            payment?.method
+            ?? ''
+        ),
+        String(
+            payment?.reference
+            ?? ''
+        ),
+    ].join('|');
+}
+
+
+/**
+ * Render receipt actions for one persisted tenant Payment.
+ *
+ * @param {number|string|null} paymentId
+ * @returns {string}
+ */
+function receiptActionCell(
+    paymentId
+) {
+    if (! paymentId) {
+        return tableCell(
+            '—'
+        );
+    }
+
+    const safeId =
+        escapeHtml(
+            paymentId
+        );
+
+    return `
+        <td
+            class="
+                whitespace-nowrap
+                px-4 py-3 text-left
+            "
+        >
+            <div
+                class="
+                    flex items-center gap-2
+                "
+            >
+                <button
+                    type="button"
+                    data-open-receipt="${safeId}"
+                    class="
+                        inline-flex items-center
+                        rounded-lg border
+                        border-slate-200
+                        bg-white px-3 py-2
+                        text-xs font-medium
+                        text-slate-700
+                        shadow-sm transition
+                        hover:border-slate-300
+                        hover:bg-slate-50
+                        disabled:cursor-not-allowed
+                        disabled:opacity-60
+                    "
+                >
+                    Receipt
+                </button>
+
+                <button
+                    type="button"
+                    data-resend-receipt="${safeId}"
+                    class="
+                        inline-flex items-center
+                        rounded-lg border
+                        border-slate-200
+                        bg-white px-3 py-2
+                        text-xs font-medium
+                        text-slate-700
+                        shadow-sm transition
+                        hover:border-slate-300
+                        hover:bg-slate-50
+                        disabled:cursor-not-allowed
+                        disabled:opacity-60
+                    "
+                >
+                    Resend
+                </button>
+            </div>
+        </td>
+    `;
+}
+
+
+/**
+ * Wire receipt resend buttons after Tenant detail rendering.
+ */
+function initializeTenantReceiptActions() {
+    document
+        .querySelectorAll(
+            '[data-open-receipt]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        await openTenantReceipt(
+                            button
+                        );
+                    }
+                );
+            }
+        );
+
+    document
+        .querySelectorAll(
+            '[data-resend-receipt]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        await resendTenantReceipt(
+                            button
+                        );
+                    }
+                );
+            }
+        );
+}
+
+
+/**
+ * Fetch and open an authenticated Tenant Payment receipt.
+ *
+ * Receipt document endpoints require the Sanctum Bearer token maintained
+ * by apiRequest(), so they must not be opened through direct browser
+ * navigation.
+ *
+ * @param {HTMLButtonElement} button
+ */
+async function openTenantReceipt(
+    button
+) {
+    const paymentId =
+        button.dataset.openReceipt;
+
+    if (! paymentId) {
+        return;
+    }
+
+    const originalLabel =
+        button.textContent;
+
+    button.disabled = true;
+    button.textContent =
+        'Opening…';
+
+    hideTenantError();
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/payments/${encodeURIComponent(
+                    paymentId
+                )}/receipt`
+            );
+
+        if (! response.ok) {
+            throw new Error(
+                'Unable to open receipt.'
+            );
+        }
+
+        const blob =
+            await response.blob();
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        window.open(
+            url,
+            '_blank',
+            'noopener,noreferrer'
+        );
+
+        window.setTimeout(
+            () => {
+                URL.revokeObjectURL(
+                    url
+                );
+            },
+            60000
+        );
+    } catch (error) {
+        showTenantError(
+            error instanceof Error
+                ? error.message
+                : 'Unable to open receipt.'
+        );
+    } finally {
+        if (
+            document.body.contains(
+                button
+            )
+        ) {
+            button.textContent =
+                originalLabel;
+
+            button.disabled =
+                false;
+        }
+    }
+}
+
+
+/**
+ * Resend an existing tenant Payment receipt.
+ *
+ * @param {HTMLButtonElement} button
+ */
+async function resendTenantReceipt(
+    button
+) {
+    const paymentId =
+        button.dataset.resendReceipt;
+
+    if (! paymentId) {
+        return;
+    }
+
+    const originalLabel =
+        button.textContent;
+
+    button.disabled = true;
+    button.textContent =
+        'Sending…';
+
+    hideTenantError();
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/payments/${encodeURIComponent(
+                    paymentId
+                )}/send-receipt`,
+                {
+                    method:
+                        'POST',
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        button.textContent =
+            'Sent';
+
+        window.setTimeout(
+            () => {
+                if (
+                    document.body.contains(
+                        button
+                    )
+                ) {
+                    button.textContent =
+                        originalLabel;
+                    button.disabled =
+                        false;
+                }
+            },
+            1800
+        );
+    } catch (error) {
+        button.textContent =
+            originalLabel;
+        button.disabled =
+            false;
+
+        showTenantError(
+            error instanceof Error
+                ? error.message
+                : 'Unable to resend receipt.'
+        );
+    }
+}
+
+
+/**
+ * Render the complete tenant-held fund ledger.
+ *
+ * @param {Array<object>} transactions
+ * @returns {string}
+ */
+function renderTenantFundHistory(
+    transactions
+) {
+    const rows =
+        Array.isArray(
+            transactions
+        )
+            ? transactions
+            : [];
+
+    return `
+        <div>
+            <h3
+                class="
+                    text-base font-semibold
+                    text-slate-950
+                "
+            >
+                Fund History
+            </h3>
+
+            <p
+                class="
+                    mt-1 text-xs
+                    text-slate-500
+                "
+            >
+                Transaction history for Rent Reserve, Consumable Advance and Security Deposit.
+            </p>
+        </div>
+
+        <div class="mt-4">
+            ${
+                rows.length === 0
+                    ? financialEmptyState(
+                        'No tenant fund transactions have been recorded for this Tenant.'
+                    )
+                    : `
+                        <div
+                            class="
+                                overflow-x-auto
+                                rounded-xl border
+                                border-slate-200
+                            "
+                        >
+                            <table
+                                class="
+                                    min-w-full
+                                    divide-y divide-slate-200
+                                    text-sm
+                                "
+                            >
+                                <thead class="bg-slate-50">
+                                    <tr>
+                                        ${tableHeading('Date')}
+                                        ${tableHeading('Fund')}
+                                        ${tableHeading('Direction')}
+                                        ${tableHeading('Category')}
+                                        ${tableHeading('Amount', true)}
+                                        ${tableHeading('Reference')}
+                                        ${tableHeading('Source')}
+                                    </tr>
+                                </thead>
+
+                                <tbody
+                                    class="
+                                        divide-y divide-slate-100
+                                        bg-white
+                                    "
+                                >
+                                    ${rows
+                                        .map(
+                                            renderTenantFundTransactionRow
+                                        )
+                                        .join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `
+            }
+        </div>
+    `;
+}
+
+
+/**
+ * Render one tenant-held fund transaction.
+ *
+ * @param {object} transaction
+ * @returns {string}
+ */
+function renderTenantFundTransactionRow(
+    transaction
+) {
+    return `
+        <tr>
+            ${tableCell(
+                String(
+                    transaction?.transaction_date
+                    ?? ''
+                ).slice(
+                    0,
+                    10
+                )
+                || '—'
+            )}
+
+            ${tableCell(
+                capitalizeWords(
+                    transaction?.fund_type
+                    ?? 'unknown'
+                ),
+                true
+            )}
+
+            ${tableCell(
+                capitalizeWords(
+                    transaction?.direction
+                    ?? 'unknown'
+                )
+            )}
+
+            ${tableCell(
+                capitalizeWords(
+                    transaction?.category
+                    ?? 'unknown'
+                )
+            )}
+
+            ${tableCell(
+                formatCurrency(
+                    transaction?.amount
+                    ?? 0
+                ),
+                true,
+                true
+            )}
+
+            ${tableCell(
+                transaction?.reference
+                || '—'
+            )}
+
+            ${tableCell(
+                tenantFundSource(
+                    transaction
+                )
+            )}
+        </tr>
+    `;
+}
+
+
+/**
+ * Human-readable source for a tenant-fund ledger movement.
+ *
+ * @param {object} transaction
+ * @returns {string}
+ */
+function tenantFundSource(
+    transaction
+) {
+    if (transaction?.payment_id) {
+        return `Payment #${transaction.payment_id}`;
+    }
+
+    if (transaction?.invoice_id) {
+        return `Invoice #${transaction.invoice_id}`;
+    }
+
+    return 'Ledger';
 }
 
 
