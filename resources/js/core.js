@@ -364,12 +364,14 @@ export function getPresentationConfiguration() {
  * @returns {string}
  */
 export function translate(
-    key
+    key,
+    replacements = {}
 ) {
     return translationFor(
         presentationConfiguration.language
         || 'en',
-        key
+        key,
+        replacements
     );
 }
 
@@ -495,6 +497,42 @@ export function applyTranslations() {
 | Display Helpers
 |--------------------------------------------------------------------------
 */
+
+/**
+ * Format a plain numeric value using the organisation language locale.
+ *
+ * This is for counts and other non-monetary numbers. Money must continue
+ * to use formatCurrency() because currency presentation is independent
+ * from language.
+ *
+ * @param {number|string|null} value
+ * @param {Intl.NumberFormatOptions} options
+ * @returns {string}
+ */
+export function formatNumber(
+    value,
+    options = {}
+) {
+    const numericValue =
+        Number(
+            value
+        );
+
+    const number =
+        Number.isFinite(
+            numericValue
+        )
+            ? numericValue
+            : 0;
+
+    return new Intl.NumberFormat(
+        presentationConfiguration.browser_locale
+        || 'en-GB',
+        options
+    ).format(
+        number
+    );
+}
 
 /**
  * Format a whole-number Patrimoine monetary amount.

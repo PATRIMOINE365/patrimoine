@@ -2,7 +2,9 @@ import {
     apiRequest,
     formatCurrency,
     formatDate,
+    formatNumber,
     parseJsonResponse,
+    translate,
 } from './core.js';
 
 /*
@@ -121,11 +123,11 @@ async function loadPaymentRegister(
         showPaymentError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load payments.'
+                : translate('payments.unable_to_load')
         );
 
         renderEmptyRegister(
-            'Unable to load payments.'
+            translate('payments.unable_to_load')
         );
     }
 }
@@ -279,10 +281,10 @@ function renderPaymentSummary(
 
     setText(
         'payments-transaction-count',
-        Number(
+        formatNumber(
             summary?.transactions
             ?? 0
-        ).toLocaleString()
+        )
     );
 }
 
@@ -320,7 +322,9 @@ function renderPaymentRegister(
 
     if (transactions.length === 0) {
         renderEmptyRegister(
-            'No payments match the selected filters.'
+            translate(
+                'payments.no_matching_payments'
+            )
         );
 
         return;
@@ -361,7 +365,11 @@ function renderPaymentRow(
                         text-blue-700
                     "
                 >
-                    Tenant Payment
+                    ${escapeHtml(
+                        translate(
+                            'payments.tenant_payment'
+                        )
+                    )}
                 </span>
             `
             : `
@@ -374,7 +382,11 @@ function renderPaymentRow(
                         text-emerald-700
                     "
                 >
-                    Owner Deposit
+                    ${escapeHtml(
+                        translate(
+                            'payments.owner_deposit'
+                        )
+                    )}
                 </span>
             `;
 
@@ -416,7 +428,11 @@ function renderPaymentRow(
                         hover:bg-slate-50
                     "
                 >
-                    Manage Funds
+                    ${escapeHtml(
+                        translate(
+                            'payments.manage_funds'
+                        )
+                    )}
                 </button>
             `
             : '';
@@ -440,7 +456,11 @@ function renderPaymentRow(
                         hover:bg-slate-50
                     "
                 >
-                    Receipt
+                    ${escapeHtml(
+                        translate(
+                            'payments.receipt'
+                        )
+                    )}
                 </button>
             `
             : '';
@@ -495,8 +515,12 @@ function renderPaymentRow(
                                 transaction.payer_name
                                 ?? (
                                     tenantPayment
-                                        ? 'Tenant'
-                                        : 'Owner'
+                                        ? translate(
+                                            'payments.tenant'
+                                        )
+                                        : translate(
+                                            'payments.owner'
+                                        )
                                 )
                             )}
                         </span>
@@ -552,7 +576,11 @@ function renderPaymentRow(
                             transaction.reference
                                 ? `
                                     <span>
-                                        Ref:
+                                        ${escapeHtml(
+                                            translate(
+                                                'payments.reference'
+                                            )
+                                        )}:
                                         ${escapeHtml(
                                             transaction.reference
                                         )}
@@ -567,7 +595,11 @@ function renderPaymentRow(
                             transaction.collector_name
                                 ? `
                                     <span>
-                                        Collector:
+                                        ${escapeHtml(
+                                            translate(
+                                                'payments.collector'
+                                            )
+                                        )}:
                                         ${escapeHtml(
                                             transaction.collector_name
                                         )}
@@ -658,7 +690,13 @@ function buildPropertyLabel(
         transaction.source === 'tenant'
         && transaction.lease_id
     ) {
-        return `Lease #${transaction.lease_id}`;
+        return translate(
+            'payments.lease_number',
+            {
+                id:
+                    transaction.lease_id,
+            }
+        );
     }
 
     /*
@@ -670,7 +708,9 @@ function buildPropertyLabel(
     if (
         transaction.source === 'owner'
     ) {
-        return 'General Owner Account';
+        return translate(
+            'payments.general_owner_account'
+        );
     }
 
     return '';
@@ -745,10 +785,21 @@ function renderPagination(
                     text-xs text-slate-500
                 "
             >
-                Page ${current} of ${last}
-                ·
-                ${total.toLocaleString()}
-                transaction${total === 1 ? '' : 's'}
+                ${escapeHtml(
+                    translate(
+                        total === 1
+                            ? 'payments.pagination_single'
+                            : 'payments.pagination_plural',
+                        {
+                            current,
+                            last,
+                            total:
+                                formatNumber(
+                                    total
+                                ),
+                        }
+                    )
+                )}
             </div>
 
             <div class="flex gap-2">
@@ -768,7 +819,11 @@ function renderPagination(
                         disabled:opacity-40
                     "
                 >
-                    Previous
+                    ${escapeHtml(
+                        translate(
+                            'payments.previous'
+                        )
+                    )}
                 </button>
 
                 <button
@@ -787,7 +842,11 @@ function renderPagination(
                         disabled:opacity-40
                     "
                 >
-                    Next
+                    ${escapeHtml(
+                        translate(
+                            'payments.next'
+                        )
+                    )}
                 </button>
             </div>
         </div>
@@ -888,7 +947,7 @@ async function openAuthenticatedPdf(
 
         if (! response.ok) {
             throw new Error(
-                'Unable to open receipt.'
+                translate('payments.unable_to_open_receipt')
             );
         }
 
@@ -918,7 +977,7 @@ async function openAuthenticatedPdf(
         showPaymentError(
             error instanceof Error
                 ? error.message
-                : 'Unable to open receipt.'
+                : translate('payments.unable_to_open_receipt')
         );
     }
 }
@@ -1369,7 +1428,11 @@ async function searchTenants(
                 text-sm text-slate-400
             "
         >
-            Searching…
+            ${escapeHtml(
+                translate(
+                    'payments.searching'
+                )
+            )}
         </div>
     `;
 
@@ -1416,7 +1479,9 @@ async function searchTenants(
                 ${escapeHtml(
                     error instanceof Error
                         ? error.message
-                        : 'Unable to search Tenants.'
+                        : translate(
+                            'payments.unable_to_search_tenants'
+                        )
                 )}
             </div>
         `;
@@ -1448,7 +1513,11 @@ function renderTenantSearchResults(
                     text-sm text-slate-500
                 "
             >
-                No matching Tenants found.
+                ${escapeHtml(
+                    translate(
+                        'payments.no_matching_tenants'
+                    )
+                )}
             </div>
         `;
 
@@ -1620,7 +1689,11 @@ async function loadTenantLeases(
 
     select.innerHTML = `
         <option value="">
-            Loading Leases…
+            ${escapeHtml(
+                translate(
+                    'payments.loading_leases'
+                )
+            )}
         </option>
     `;
 
@@ -1660,7 +1733,11 @@ async function loadTenantLeases(
         if (leases.length === 0) {
             select.innerHTML = `
                 <option value="">
-                    No payable Lease found
+                    ${escapeHtml(
+                        translate(
+                            'payments.no_payable_lease'
+                        )
+                    )}
                 </option>
             `;
 
@@ -1668,7 +1745,9 @@ async function loadTenantLeases(
 
             setText(
                 'tenant-payment-lease-help',
-                'This Tenant has no non-draft Lease against which a payment can be recorded.'
+                translate(
+                    'payments.no_payable_lease_help'
+                )
             );
 
             return;
@@ -1676,7 +1755,11 @@ async function loadTenantLeases(
 
         select.innerHTML = `
             <option value="">
-                Select Lease / Property
+                ${escapeHtml(
+                    translate(
+                        'payments.select_lease_property'
+                    )
+                )}
             </option>
 
             ${leases
@@ -1702,7 +1785,9 @@ async function loadTenantLeases(
 
         setText(
             'tenant-payment-lease-help',
-            'Payments are recorded against the applicable Lease so outstanding rent can be allocated FIFO.'
+            translate(
+                'payments.lease_fifo_outstanding_help'
+            )
         );
 
         /*
@@ -1718,7 +1803,11 @@ async function loadTenantLeases(
     } catch (error) {
         select.innerHTML = `
             <option value="">
-                Unable to load Leases
+                ${escapeHtml(
+                    translate(
+                        'payments.unable_to_load_leases'
+                    )
+                )}
             </option>
         `;
 
@@ -1727,7 +1816,9 @@ async function loadTenantLeases(
         showPaymentFormError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load Tenant Leases.'
+                : translate(
+                    'payments.unable_to_load_tenant_leases'
+                )
         );
     }
 }
@@ -1772,14 +1863,20 @@ function clearTenantSelection(
 
         leaseSelect.innerHTML = `
             <option value="">
-                Search and select a Tenant first
+                ${escapeHtml(
+                    translate(
+                        'payments.search_select_tenant_first'
+                    )
+                )}
             </option>
         `;
     }
 
     setText(
         'tenant-payment-lease-help',
-        'Payments are recorded against the applicable Lease so rent can be allocated FIFO.'
+        translate(
+            'payments.lease_fifo_help'
+        )
     );
 }
 
@@ -1880,7 +1977,11 @@ async function searchOwners(
                 text-sm text-slate-400
             "
         >
-            Searching…
+            ${escapeHtml(
+                translate(
+                    'payments.searching'
+                )
+            )}
         </div>
     `;
 
@@ -1927,7 +2028,9 @@ async function searchOwners(
                 ${escapeHtml(
                     error instanceof Error
                         ? error.message
-                        : 'Unable to search Owners.'
+                        : translate(
+                            'payments.unable_to_search_owners'
+                        )
                 )}
             </div>
         `;
@@ -1959,7 +2062,11 @@ function renderOwnerSearchResults(
                     text-sm text-slate-500
                 "
             >
-                No matching Property Owners found.
+                ${escapeHtml(
+                    translate(
+                        'payments.no_matching_owners'
+                    )
+                )}
             </div>
         `;
 
@@ -2157,7 +2264,9 @@ async function selectOwner(
         showPaymentFormError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load Owner details.'
+                : translate(
+                    'payments.unable_to_load_owner'
+                )
         );
     }
 }
@@ -2238,7 +2347,11 @@ function populateOwnerBuildings() {
 
     select.innerHTML = `
         <option value="">
-            No specific Building
+            ${escapeHtml(
+                translate(
+                    'payments.no_specific_building'
+                )
+            )}
         </option>
     `;
 
@@ -2263,7 +2376,13 @@ function populateOwnerBuildings() {
 
             option.textContent =
                 building.name
-                ?? `Building #${building.id}`;
+                ?? translate(
+                    'payments.building_number',
+                    {
+                        id:
+                            building.id,
+                    }
+                );
 
             select.appendChild(
                 option
@@ -2317,7 +2436,11 @@ function populateOwnerUnits() {
 
     unitSelect.innerHTML = `
         <option value="">
-            No specific Unit
+            ${escapeHtml(
+                translate(
+                    'payments.no_specific_unit'
+                )
+            )}
         </option>
     `;
 
@@ -2335,7 +2458,13 @@ function populateOwnerUnits() {
 
             option.textContent =
                 unit.name
-                ?? `Unit #${unit.id}`;
+                ?? translate(
+                    'payments.unit_number',
+                    {
+                        id:
+                            unit.id,
+                    }
+                );
 
             unitSelect.appendChild(
                 option
@@ -2366,7 +2495,11 @@ function resetOwnerBuildingSelector() {
 
     select.innerHTML = `
         <option value="">
-            No specific Building
+            ${escapeHtml(
+                translate(
+                    'payments.no_specific_building'
+                )
+            )}
         </option>
     `;
 }
@@ -2386,7 +2519,11 @@ function resetOwnerUnitSelector() {
 
     select.innerHTML = `
         <option value="">
-            Select a Building first
+            ${escapeHtml(
+                translate(
+                    'payments.select_building_first'
+                )
+            )}
         </option>
     `;
 
@@ -2503,7 +2640,7 @@ async function submitPayment() {
         || amount <= 0
     ) {
         showPaymentFormError(
-            'Enter a valid Payment amount greater than zero.'
+            translate('payments.validation_amount')
         );
 
         return;
@@ -2511,7 +2648,7 @@ async function submitPayment() {
 
     if (! paymentDate) {
         showPaymentFormError(
-            'Payment Date is required.'
+            translate('payments.validation_date')
         );
 
         return;
@@ -2527,7 +2664,7 @@ async function submitPayment() {
         )
     ) {
         showPaymentFormError(
-            'Select a valid Payment Method.'
+            translate('payments.validation_method')
         );
 
         return;
@@ -2538,7 +2675,7 @@ async function submitPayment() {
         && collector === ''
     ) {
         showPaymentFormError(
-            'Collector is required for cash payments.'
+            translate('payments.validation_collector')
         );
 
         return;
@@ -2596,7 +2733,9 @@ async function submitPayment() {
         showPaymentFormError(
             error instanceof Error
                 ? error.message
-                : 'Unable to record payment.'
+                : translate(
+                    'payments.unable_to_record'
+                )
         );
     } finally {
         setSubmitting(
@@ -2621,13 +2760,17 @@ async function submitTenantPayment(
 
     if (! selectedTenant) {
         throw new Error(
-            'Search for and select a Tenant.'
+            translate(
+                'payments.select_tenant_required'
+            )
         );
     }
 
     if (! leaseId) {
         throw new Error(
-            'Select the Lease / Property against which the Tenant payment was received.'
+            translate(
+                'payments.select_lease_required'
+            )
         );
     }
 
@@ -2679,7 +2822,9 @@ async function submitTenantPayment(
 
     if (! payment?.id) {
         throw new Error(
-            'Payment was recorded but its receipt could not be resolved.'
+            translate(
+                'payments.payment_receipt_unresolved'
+            )
         );
     }
 
@@ -2714,7 +2859,9 @@ async function submitOwnerDeposit(
         || ! accountId
     ) {
         throw new Error(
-            'Search for and select a Property Owner.'
+            translate(
+                'payments.select_owner_required'
+            )
         );
     }
 
@@ -2794,7 +2941,9 @@ async function submitOwnerDeposit(
 
     if (! transactionId) {
         throw new Error(
-            'Owner deposit was recorded but its receipt could not be resolved.'
+            translate(
+                'payments.owner_receipt_unresolved'
+            )
         );
     }
 
@@ -2823,8 +2972,12 @@ function setSubmitting(
 
     button.textContent =
         submitting
-            ? 'Recording…'
-            : 'Record Payment';
+            ? translate(
+                'payments.recording'
+            )
+            : translate(
+                'payments.record_payment'
+            );
 }
 
 /*
@@ -2838,13 +2991,19 @@ function paymentMethodLabel(
 ) {
     switch (method) {
         case 'cash':
-            return 'Cash';
+            return translate(
+                'payments.cash'
+            );
 
         case 'bank_transfer':
-            return 'Bank Transfer';
+            return translate(
+                'payments.bank_transfer'
+            );
 
         case 'momo':
-            return 'MoMo';
+            return translate(
+                'payments.momo'
+            );
 
         default:
             return String(
@@ -2861,16 +3020,24 @@ function depositPurposeLabel(
 ) {
     switch (purpose) {
         case 'general_funding':
-            return 'General Funding';
+            return translate(
+                'payments.general_funding'
+            );
 
         case 'property_expense':
-            return 'Property Expense';
+            return translate(
+                'payments.property_expense'
+            );
 
         case 'repair_maintenance':
-            return 'Repair / Maintenance';
+            return translate(
+                'payments.repair_maintenance'
+            );
 
         case 'other':
-            return 'Other';
+            return translate(
+                'payments.other'
+            );
 
         default:
             return String(
@@ -2893,7 +3060,9 @@ function partyDisplayName(
 ) {
     return party?.name
         || party?.legal_name
-        || 'Unnamed Party';
+        || translate(
+            'payments.unnamed_party'
+        );
 }
 
 /**
@@ -2924,11 +3093,20 @@ function leaseOptionLabel(
 ) {
     const building =
         lease?.unit?.building?.name
-        ?? 'Property';
+        ?? translate(
+            'payments.property'
+        );
 
     const unit =
         lease?.unit?.name
-        ?? `Unit #${lease?.unit_id ?? ''}`;
+        ?? translate(
+            'payments.unit_number',
+            {
+                id:
+                    lease?.unit_id
+                    ?? '',
+            }
+        );
 
     const status =
         String(
@@ -2938,11 +3116,8 @@ function leaseOptionLabel(
 
     const statusLabel =
         status
-            ? (
+            ? leaseStatusLabel(
                 status
-                    .charAt(0)
-                    .toUpperCase()
-                + status.slice(1)
             )
             : '';
 
@@ -2955,13 +3130,61 @@ function leaseOptionLabel(
         `${building} / ${unit}`,
         statusLabel,
         startDate
-            ? `From ${startDate}`
+            ? translate(
+                'payments.from_date',
+                {
+                    date:
+                        startDate,
+                }
+            )
             : '',
     ]
         .filter(Boolean)
         .join(' — ');
 }
 
+
+
+
+/**
+ * Human-readable localized Lease status.
+ *
+ * @param {string} status
+ * @returns {string}
+ */
+function leaseStatusLabel(
+    status
+) {
+    switch (status) {
+        case 'draft':
+            return translate(
+                'payments.status_draft'
+            );
+
+        case 'active':
+            return translate(
+                'payments.status_active'
+            );
+
+        case 'notice':
+            return translate(
+                'payments.status_notice'
+            );
+
+        case 'terminated':
+            return translate(
+                'payments.status_terminated'
+            );
+
+        default:
+            return String(
+                status
+            ).replaceAll(
+                '_',
+                ' '
+            );
+    }
+}
 
 /**
  * Return today's date in local browser time as YYYY-MM-DD.
@@ -3144,7 +3367,11 @@ function showLoadingState() {
                 text-sm text-slate-400
             "
         >
-            Loading payments…
+            ${escapeHtml(
+                translate(
+                    'payments.loading'
+                )
+            )}
         </div>
     `;
 }
@@ -3495,7 +3722,9 @@ async function loadTenantFundPayment() {
         showTenantFundError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load Payment funds.'
+                : translate(
+                    'payments.unable_to_load_funds'
+                )
         );
     } finally {
         document
@@ -3598,7 +3827,9 @@ function renderTenantFundPayment(
     const tenant =
         payment?.lease?.tenant?.name
         || payment?.lease?.tenant?.legal_name
-        || 'Tenant';
+        || translate(
+            'payments.tenant'
+        );
 
     setText(
         'tenant-fund-modal-description',
@@ -3651,7 +3882,15 @@ function renderTenantFundPayment(
 
     setText(
         'tenant-fund-amount-help',
-        `Maximum available: ${formatCurrency(remaining)}`
+        translate(
+            'payments.maximum_available',
+            {
+                amount:
+                    formatCurrency(
+                        remaining
+                    ),
+            }
+        )
     );
 
     /*
@@ -3807,7 +4046,9 @@ async function submitTenantFundAllocation(
         showTenantFundError(
             error instanceof Error
                 ? error.message
-                : 'Unable to classify tenant funds.'
+                : translate(
+                    'payments.unable_to_classify_funds'
+                )
         );
     } finally {
         if (button) {
@@ -3815,7 +4056,9 @@ async function submitTenantFundAllocation(
                 false;
 
             button.textContent =
-                'Allocate Funds';
+                translate(
+                    'payments.allocate_funds'
+                );
         }
     }
 }

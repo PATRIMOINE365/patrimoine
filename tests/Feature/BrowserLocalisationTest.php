@@ -279,4 +279,64 @@ class BrowserLocalisationTest extends TestCase
             );
     }
 
+
+    public function test_payments_exposes_translation_hooks(): void
+    {
+        $response = $this->get('/payments');
+
+        $response
+            ->assertOk()
+            ->assertSee(
+                'data-i18n="payments.heading"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="payments.received_this_month"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="payments.register"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="payments.payment_source"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="payments.record_payment"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="payments.payment_details"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="payments.manage_funds"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="payments.classify_remaining_money"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="payments.allocate_funds"',
+                false
+            )
+            ->assertSee(
+                'data-i18n-placeholder="payments.search_party_placeholder"',
+                false
+            )
+            ->assertSee(
+                'data-i18n-aria-label="payments.close"',
+                false
+            )
+            ->assertSee(
+                'data-currency-display',
+                false
+            )
+            ->assertSeeText(
+                'Payment Register'
+            );
+    }
+
 }
