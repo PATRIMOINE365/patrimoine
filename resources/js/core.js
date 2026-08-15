@@ -1,3 +1,7 @@
+import {
+    translationFor,
+} from './translations.js';
+
 /*
 |--------------------------------------------------------------------------
 | Patrimoine Core Utilities
@@ -342,6 +346,106 @@ export async function loadPresentationConfiguration() {
  */
 export function getPresentationConfiguration() {
     return presentationConfiguration;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Translation Helpers
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * Translate one stable browser presentation key.
+ *
+ * Missing translations fall back to English. Translation remains completely
+ * independent from the configured currency.
+ *
+ * @param {string} key
+ * @returns {string}
+ */
+export function translate(
+    key
+) {
+    return translationFor(
+        presentationConfiguration.language
+        || 'en',
+        key
+    );
+}
+
+/**
+ * Apply translations to server-rendered DOM elements.
+ *
+ * Supported attributes:
+ *
+ * data-i18n              Replace element textContent.
+ * data-i18n-placeholder  Replace form-control placeholder.
+ * data-i18n-title        Set the browser document title.
+ */
+export function applyTranslations() {
+    const language =
+        presentationConfiguration.language
+        || 'en';
+
+    document.documentElement.lang =
+        language;
+
+    document
+        .querySelectorAll(
+            '[data-i18n]'
+        )
+        .forEach(
+            (element) => {
+                const key =
+                    element.dataset.i18n;
+
+                if (key) {
+                    element.textContent =
+                        translate(
+                            key
+                        );
+                }
+            }
+        );
+
+    document
+        .querySelectorAll(
+            '[data-i18n-placeholder]'
+        )
+        .forEach(
+            (element) => {
+                const key =
+                    element.dataset
+                        .i18nPlaceholder;
+
+                if (key) {
+                    element.setAttribute(
+                        'placeholder',
+                        translate(
+                            key
+                        )
+                    );
+                }
+            }
+        );
+
+    const titleElement =
+        document.querySelector(
+            '[data-i18n-title]'
+        );
+
+    if (titleElement) {
+        const key =
+            titleElement.dataset
+                .i18nTitle;
+
+        if (key) {
+            document.title =
+                translate(
+                    key
+                );
+        }
+    }
 }
 
 /*

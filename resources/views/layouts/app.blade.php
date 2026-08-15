@@ -85,7 +85,9 @@
                             text-patrimoine-300
                         "
                     >
-                        Property Management
+                        <span data-i18n="product.property_management">
+                            Property Management
+                        </span>
                     </div>
                 </div>
             </a>
@@ -105,7 +107,7 @@
                     text-patrimoine-400
                 "
             >
-                Workspace
+                <span data-i18n="navigation.workspace">Workspace</span>
             </p>
 
             <div class="space-y-1">
@@ -136,7 +138,7 @@
                         <rect x="14" y="14" width="7" height="7" rx="1"/>
                     </svg>
 
-                    Dashboard
+                    <span data-i18n="navigation.dashboard">Dashboard</span>
                 </a>
 
                 <a
@@ -167,7 +169,7 @@
                         <path d="M15 13h.01"/>
                     </svg>
 
-                    Properties
+                    <span data-i18n="navigation.properties">Properties</span>
                 </a>
 
                 <a
@@ -196,7 +198,7 @@
                         <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                     </svg>
 
-                    Parties
+                    <span data-i18n="navigation.parties">Parties</span>
                 </a>
 
 
@@ -226,7 +228,7 @@
                         <line x1="8" y1="17" x2="16" y2="17"/>
                     </svg>
 
-                    Leases
+                    <span data-i18n="navigation.leases">Leases</span>
                 </a>
 
 
@@ -257,7 +259,7 @@
                         <line x1="2" y1="10" x2="22" y2="10"/>
                     </svg>
 
-                    Payments
+                    <span data-i18n="navigation.payments">Payments</span>
                 </a>
             </div>
 
@@ -269,7 +271,7 @@
                     text-patrimoine-400
                 "
             >
-                Finance
+                <span data-i18n="navigation.finance">Finance</span>
             </p>
 
 
@@ -306,7 +308,7 @@
                         <path d="M17 11h4"/>
                     </svg>
 
-                    Tenants
+                    <span data-i18n="navigation.tenants">Tenants</span>
                 </a>
 
 
@@ -337,7 +339,7 @@
                         <path d="M19 6v4"/>
                     </svg>
 
-                    Owners
+                    <span data-i18n="navigation.owners">Owners</span>
                 </a>
 
 
@@ -366,7 +368,7 @@
                         <path d="m7 16 4-5 4 3 5-7"/>
                     </svg>
 
-                    Reports
+                    <span data-i18n="navigation.reports">Reports</span>
                 </a>
 
 
@@ -404,7 +406,7 @@
                         <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.1A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.1A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.2.37.5.7.9.9.3.16.7.2 1.1.2h.1v4h-.1a1.7 1.7 0 0 0-2 .9Z"/>
                     </svg>
 
-                    Settings
+                    <span data-i18n="navigation.settings">Settings</span>
                 </a>
             </div>
         </nav>
@@ -525,7 +527,7 @@
                         hover:bg-slate-50
                     "
                 >
-                    Sign out
+                    <span data-i18n="navigation.sign_out">Sign out</span>
                 </button>
             </div>
         </header>

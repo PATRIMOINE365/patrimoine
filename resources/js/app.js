@@ -26,6 +26,7 @@ import {
 } from './auth.js';
 
 import {
+    applyTranslations,
     loadPresentationConfiguration,
 } from './core.js';
 
@@ -82,6 +83,12 @@ document.addEventListener(
          * endpoint cannot be reached.
          */
         await loadPresentationConfiguration();
+
+        /*
+         * Apply organisation-wide language before Login or protected
+         * application modules initialize.
+         */
+        applyTranslations();
 
         /*
          * Login and authenticated application screens are mutually
