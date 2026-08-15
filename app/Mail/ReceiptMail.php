@@ -34,11 +34,10 @@ class ReceiptMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: sprintf(
-                'Payment Receipt RCT-%06d - %s',
-                $this->payment->id,
-                $this->organisationName()
-            )
+            subject: __('emails.receipt.subject', [
+                'number' => sprintf('RCT-%06d', $this->payment->id),
+                'organisation' => $this->organisationName(),
+            ])
         );
     }
 

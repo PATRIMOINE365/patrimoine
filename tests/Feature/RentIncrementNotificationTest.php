@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Mail\RentIncrementNoticeMail;
+use App\Models\ApplicationSetting;
 use App\Models\Building;
 use App\Models\Lease;
 use App\Models\Party;
@@ -579,6 +580,97 @@ class RentIncrementNotificationTest extends TestCase
             $secondIncrement
                 ->fresh()
                 ->notification_sent_at
+        );
+    }
+
+
+    /**
+     * Rent increment notice localises its subject and tenant-facing body.
+     */
+    public function test_notice_renders_french_content(): void
+    {
+        Mail::fake();
+
+        ApplicationSetting::create([
+            'language' => 'fr',
+            'currency' => 'FCFA',
+        ]);
+
+        $lease =
+            $this->createLease(
+                'french-notice@example.test'
+            );
+
+        $increment =
+            $this->scheduleIncrement(
+                $lease,
+                '2027-08-15'
+            );
+
+        $this->artisan(
+            'patrimoine:send-rent-increment-notices',
+            [
+                '--as-of' =>
+                    '2027-05-15',
+            ]
+        )->assertSuccessful();
+
+        Mail::assertSent(
+            RentIncrementNoticeMail::class,
+            function (
+                RentIncrementNoticeMail $mail
+            ): bool {
+                $previousLocale =
+                    app()->getLocale();
+
+                app()->setLocale('fr');
+
+                try {
+                    $html =
+                        $mail->render();
+
+                    $subject =
+                        $mail->envelope()->subject;
+                } finally {
+                    app()->setLocale(
+                        $previousLocale
+                    );
+                }
+
+                return str_contains(
+                    $subject,
+                    'Avis d’augmentation de loyer'
+                )
+
+                    && str_contains(
+                        $html,
+                        'Avis d’augmentation de loyer'
+                    )
+                    && str_contains(
+                        $html,
+                        'Nous vous informons officiellement'
+                    )
+                    && str_contains(
+                        $html,
+                        'Loyer mensuel actuel'
+                    )
+                    && str_contains(
+                        $html,
+                        'Augmentation du loyer'
+                    )
+                    && str_contains(
+                        $html,
+                        'Nouveau loyer mensuel'
+                    )
+                    && str_contains(
+                        $html,
+                        'Date d’effet'
+                    )
+                    && str_contains(
+                        $html,
+                        '15 août 2027'
+                    );
+            }
         );
     }
 

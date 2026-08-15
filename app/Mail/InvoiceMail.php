@@ -37,11 +37,10 @@ class InvoiceMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: sprintf(
-                'Invoice %s - %s',
-                $this->invoice->invoice_number,
-                $this->organisationName()
-            )
+            subject: __('emails.invoice.subject', [
+                'number' => $this->invoice->invoice_number,
+                'organisation' => $this->organisationName(),
+            ])
         );
     }
 

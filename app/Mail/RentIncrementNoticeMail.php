@@ -38,10 +38,9 @@ class RentIncrementNoticeMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: sprintf(
-                'Notice of Rent Increment - %s',
-                $this->organisationName()
-            )
+            subject: __('emails.rent_increment.subject', [
+                'organisation' => $this->organisationName(),
+            ])
         );
     }
 

@@ -34,11 +34,10 @@ class RentReminderMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: sprintf(
-                'Rent Reminder - Invoice %s - %s',
-                $this->invoice->invoice_number,
-                $this->organisationName()
-            )
+            subject: __('emails.reminder.subject', [
+                'number' => $this->invoice->invoice_number,
+                'organisation' => $this->organisationName(),
+            ])
         );
     }
 
