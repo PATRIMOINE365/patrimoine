@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
 
     <title>
-        Invoice {{ $invoice->invoice_number }}
+        {{ __('documents.invoice.title') }}
+        {{ $invoice->invoice_number }}
     </title>
 
     <style>
@@ -144,6 +145,63 @@
 
 <body>
 
+@php
+    /*
+     * Keep persisted Invoice codes unchanged and translate only their
+     * user-facing presentation.
+     */
+    $statusKey =
+        'documents.invoice.status.'
+        . $invoice->status;
+
+    $statusLabel =
+        __($statusKey);
+
+    if ($statusLabel === $statusKey) {
+        $statusLabel =
+            ucwords(
+                str_replace(
+                    '_',
+                    ' ',
+                    (string) $invoice->status
+                )
+            );
+    }
+
+    $invoiceTypeKey =
+        'documents.invoice.type.'
+        . $invoice->type;
+
+    $invoiceTypeLabel =
+        __($invoiceTypeKey);
+
+    if ($invoiceTypeLabel === $invoiceTypeKey) {
+        $invoiceTypeLabel =
+            ucwords(
+                str_replace(
+                    '_',
+                    ' ',
+                    (string) $invoice->type
+                )
+            );
+    }
+
+    /*
+     * VAT rates are percentages rather than monetary values.
+     * Use the active language's decimal separator without altering
+     * the underlying stored VAT rate.
+     */
+    $vatRate =
+        number_format(
+            (float) $invoice->vat_rate,
+            2,
+            app()->getLocale() === 'fr'
+                ? ','
+                : '.',
+            ''
+        );
+@endphp
+
 <table class="header-table">
     <tr>
         <td>
@@ -154,7 +212,7 @@
             </div>
 
             <div class="muted">
-                Property Management
+                {{ __('documents.common.property_management') }}
             </div>
 
             @if($managingOrganisation)
@@ -178,14 +236,17 @@
 
                 @if($managingOrganisation->vat_tin)
                     <div class="muted">
-                        VAT/TIN: {{ $managingOrganisation->vat_tin }}
+                        {{ __('documents.common.vat_tin') }}:
+                        {{ $managingOrganisation->vat_tin }}
                     </div>
                 @endif
             @endif
         </td>
 
         <td>
-            <div class="document-title">INVOICE</div>
+            <div class="document-title">
+                {{ __('documents.invoice.heading') }}
+            </div>
         </td>
     </tr>
 </table>
@@ -195,7 +256,7 @@
         <tr>
             <td>
                 <div class="section-title">
-                    Billed To
+                    {{ __('documents.invoice.billed_to') }}
                 </div>
 
                 <strong>
@@ -222,7 +283,7 @@
                 <table class="meta-table">
                     <tr>
                         <td class="meta-label">
-                            Invoice:
+                            {{ __('documents.invoice.invoice_number') }}:
                         </td>
                         <td class="meta-value">
                             {{ $invoice->invoice_number }}
@@ -231,7 +292,7 @@
 
                     <tr>
                         <td class="meta-label">
-                            Issue Date:
+                            {{ __('documents.invoice.issue_date') }}:
                         </td>
                         <td class="meta-value">
                             {{ $formatter->date($invoice->issue_date) }}
@@ -240,7 +301,7 @@
 
                     <tr>
                         <td class="meta-label">
-                            Due Date:
+                            {{ __('documents.invoice.due_date') }}:
                         </td>
                         <td class="meta-value">
                             {{ $formatter->date($invoice->due_date) }}
@@ -249,11 +310,11 @@
 
                     <tr>
                         <td class="meta-label">
-                            Status:
+                            {{ __('documents.invoice.status_label') }}:
                         </td>
                         <td class="meta-value">
                             <span class="status">
-                                {{ $invoice->status }}
+                                {{ $statusLabel }}
                             </span>
                         </td>
                     </tr>
@@ -265,32 +326,40 @@
 
 <div class="section">
     <div class="section-title">
-        Property
+        {{ __('documents.invoice.property') }}
     </div>
 
     <table class="details-table">
         <tr>
             <td>
-                <strong>Building:</strong>
+                <strong>
+                    {{ __('documents.invoice.building') }}:
+                </strong>
                 {{ $invoice->lease->unit->building->name }}
             </td>
 
             <td>
-                <strong>Unit:</strong>
+                <strong>
+                    {{ __('documents.invoice.unit') }}:
+                </strong>
                 {{ $invoice->lease->unit->name }}
             </td>
         </tr>
 
         <tr>
             <td>
-                <strong>Billing Period:</strong>
+                <strong>
+                    {{ __('documents.invoice.billing_period') }}:
+                </strong>
                 {{ $formatter->date($invoice->period_start) }}
                 -
                 {{ $formatter->date($invoice->period_end) }}
             </td>
 
             <td>
-                <strong>Lease #:</strong>
+                <strong>
+                    {{ __('documents.invoice.lease_number') }}:
+                </strong>
                 {{ $invoice->lease_id }}
             </td>
         </tr>
@@ -300,18 +369,26 @@
 <table class="amount-table">
     <thead>
         <tr>
-            <th>Description</th>
-            <th class="numeric">Amount</th>
+            <th>
+                {{ __('documents.invoice.description') }}
+            </th>
+            <th class="numeric">
+                {{ __('documents.invoice.amount') }}
+            </th>
         </tr>
     </thead>
 
     <tbody>
         <tr>
             <td>
-                Rent —
-                {{ $formatter->date($invoice->period_start) }}
-                to
-                {{ $formatter->date($invoice->period_end) }}
+                {{ $invoiceTypeLabel }}
+
+                @if($invoice->isRentInvoice())
+                    —
+                    {{ $formatter->date($invoice->period_start) }}
+                    {{ __('documents.invoice.to') }}
+                    {{ $formatter->date($invoice->period_end) }}
+                @endif
             </td>
 
             <td class="numeric">
@@ -324,7 +401,9 @@
 <div class="summary-wrapper">
     <table class="summary-table">
         <tr>
-            <td>Net Amount</td>
+            <td>
+                {{ __('documents.invoice.net_amount') }}
+            </td>
             <td class="numeric">
                 {{ $formatter->money($invoice->net_amount) }}
             </td>
@@ -332,7 +411,8 @@
 
         <tr>
             <td>
-                VAT ({{ number_format((float) $invoice->vat_rate, 2) }}%)
+                {{ __('documents.invoice.vat') }}
+                ({{ $vatRate }}%)
             </td>
 
             <td class="numeric">
@@ -341,21 +421,27 @@
         </tr>
 
         <tr class="total">
-            <td>Total</td>
+            <td>
+                {{ __('documents.invoice.total') }}
+            </td>
             <td class="numeric">
                 {{ $formatter->money($invoice->total_amount) }}
             </td>
         </tr>
 
         <tr>
-            <td>Paid</td>
+            <td>
+                {{ __('documents.invoice.paid') }}
+            </td>
             <td class="numeric">
                 {{ $formatter->money($invoice->paidAmount()) }}
             </td>
         </tr>
 
         <tr class="total">
-            <td>Balance Due</td>
+            <td>
+                {{ __('documents.invoice.balance_due') }}
+            </td>
             <td class="numeric">
                 {{ $formatter->money($invoice->outstandingAmount()) }}
             </td>
@@ -365,18 +451,20 @@
 
 @if($invoice->notes)
     <div class="section">
-        <div class="section-title">Notes</div>
+        <div class="section-title">
+            {{ __('documents.invoice.notes') }}
+        </div>
         {{ $invoice->notes }}
     </div>
 @endif
 
 <div class="footer">
-    Issued by
+    {{ __('documents.invoice.issued_by') }}
     {{ $managingOrganisation?->legal_name
         ?? $managingOrganisation?->name
         ?? 'Patrimoine' }}.
 
-    This document reflects the accounting records available at the time of generation.
+    {{ __('documents.invoice.accounting_record_notice') }}
 </div>
 
 </body>
