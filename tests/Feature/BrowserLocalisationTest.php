@@ -222,4 +222,61 @@ class BrowserLocalisationTest extends TestCase
             );
     }
 
+
+
+    public function test_leases_exposes_translation_hooks(): void
+    {
+        $user =
+            \App\Models\User::factory()
+                ->create();
+
+        $this
+            ->actingAs($user)
+            ->get('/leases')
+            ->assertOk()
+            ->assertSee(
+                'data-i18n-title="leases.title"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="leases.heading"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="leases.register"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="leases.property_unit"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="leases.monthly_rent"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="leases.advance_payment"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="leases.rent_increment"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="leases.security_closeout"',
+                false
+            )
+            ->assertSee(
+                'data-i18n="leases.tenant_money"',
+                false
+            )
+            ->assertSee(
+                'data-i18n-aria-label="leases.close"',
+                false
+            )
+            ->assertSeeText(
+                'Lease Register'
+            );
+    }
+
 }

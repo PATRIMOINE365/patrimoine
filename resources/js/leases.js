@@ -35,6 +35,7 @@ import {
     nullableFormValue,
     parseJsonResponse,
     setText,
+    translate,
 } from './core.js';
 
 /*
@@ -121,7 +122,9 @@ export async function initializeLeases() {
         showLeasePageError(
             error instanceof Error
                 ? error.message
-                : 'Unable to initialize Leases.'
+                : translate(
+                    'leases.unable_initialize'
+                )
         );
     }
 }
@@ -297,19 +300,25 @@ function populateLeaseReferenceControls() {
     populatePartySelect(
         'lease-tenant-filter',
         availableTenants,
-        'All Tenants'
+        translate(
+            'leases.all_tenants'
+        )
     );
 
     populatePartySelect(
         'lease-tenant',
         availableTenants,
-        'Select tenant…'
+        translate(
+            'leases.select_tenant'
+        )
     );
 
     populatePartySelect(
         'lease-agent',
         availableAgents,
-        'No Agent'
+        translate(
+            'leases.no_agent'
+        )
     );
 
     /*
@@ -610,7 +619,11 @@ function renderUnitSearchResults(
                     text-slate-500
                 "
             >
-                No matching units found.
+                ${escapeHtml(
+                    translate(
+                        'leases.no_matching_units'
+                    )
+                )}
             </div>
         `;
 
@@ -660,11 +673,15 @@ function renderUnitSearchResults(
 function unitSearchResult(unit) {
     const building =
         unit?.building?.name
-        || 'Property';
+        || translate(
+            'leases.property'
+        );
 
     const unitName =
         unit?.name
-        || `Unit #${unit?.id ?? ''}`;
+        || `${translate(
+            'leases.unit'
+        )} #${unit?.id ?? ''}`;
 
     const location =
         unit?.building?.location
@@ -743,7 +760,11 @@ function unitSearchResult(unit) {
                                 text-patrimoine-700
                             "
                         >
-                            Owner:
+                            ${escapeHtml(
+                                translate(
+                                    'leases.owner'
+                                )
+                            )}:
                             ${escapeHtml(
                                 owners.join(
                                     ', '
@@ -917,7 +938,11 @@ function renderSelectedUnit(unit) {
                         text-sm text-slate-400
                     "
                 >
-                    No ownership information available.
+                    ${escapeHtml(
+                        translate(
+                            'leases.no_ownership_information'
+                        )
+                    )}
                 </span>
             `;
         } else {
@@ -1098,7 +1123,11 @@ async function loadLeases(
                 text-sm text-slate-400
             "
         >
-            Loading leases…
+            ${escapeHtml(
+                translate(
+                    'leases.loading'
+                )
+            )}
         </div>
     `;
 
@@ -1131,7 +1160,9 @@ async function loadLeases(
         showLeasePageError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load Leases.'
+                : translate(
+                    'leases.unable_load'
+                )
         );
     }
 }
@@ -1185,7 +1216,11 @@ function renderLeases(payload) {
                         text-slate-900
                     "
                 >
-                    No leases found
+                    ${escapeHtml(
+                        translate(
+                            'leases.none_found'
+                        )
+                    )}
                 </div>
 
                 <div
@@ -1194,7 +1229,11 @@ function renderLeases(payload) {
                         text-slate-500
                     "
                 >
-                    Create a Lease or change the current filters.
+                    ${escapeHtml(
+                        translate(
+                            'leases.none_found_description'
+                        )
+                    )}
                 </div>
             </div>
         `;
@@ -1252,11 +1291,15 @@ function updateLeaseMetrics(
 function leaseCard(lease) {
     const building =
         lease.unit?.building?.name
-        || 'Property';
+        || translate(
+            'leases.property'
+        );
 
     const unit =
         lease.unit?.name
-        || 'Unit';
+        || translate(
+            'leases.unit'
+        );
 
     const tenant =
         partyDisplayName(
@@ -1321,7 +1364,11 @@ function leaseCard(lease) {
                             text-slate-600
                         "
                     >
-                        Tenant:
+                        ${escapeHtml(
+                            translate(
+                                'leases.tenant'
+                            )
+                        )}:
                         <span class="font-medium">
                             ${escapeHtml(
                                 tenant
@@ -1338,7 +1385,11 @@ function leaseCard(lease) {
                                         text-slate-500
                                     "
                                 >
-                                    Agent:
+                                    ${escapeHtml(
+                                        translate(
+                                            'leases.agent'
+                                        )
+                                    )}:
                                     ${escapeHtml(
                                         agent
                                     )}
@@ -1369,7 +1420,11 @@ function leaseCard(lease) {
                         </span>
 
                         <span>
-                            Start:
+                            ${escapeHtml(
+                                translate(
+                                    'leases.start'
+                                )
+                            )}:
                             ${escapeHtml(
                                 formatDate(
                                     lease.start_date
@@ -1381,7 +1436,11 @@ function leaseCard(lease) {
                             lease.end_date
                                 ? `
                                     <span>
-                                        End:
+                                        ${escapeHtml(
+                                            translate(
+                                                'leases.end'
+                                            )
+                                        )}:
                                         ${escapeHtml(
                                             formatDate(
                                                 lease.end_date
@@ -1393,7 +1452,11 @@ function leaseCard(lease) {
                         }
 
                         <span>
-                            VAT:
+                            ${escapeHtml(
+                                translate(
+                                    'leases.vat'
+                                )
+                            )}:
                             ${escapeHtml(
                                 Number(
                                     lease.vat_rate
@@ -1427,7 +1490,11 @@ function leaseCard(lease) {
                             hover:bg-slate-50
                         "
                     >
-                        Tenant Funds
+                        ${escapeHtml(
+                            translate(
+                                'leases.tenant_funds'
+                            )
+                        )}
                     </button>
 
                     <button
@@ -1446,7 +1513,11 @@ function leaseCard(lease) {
                             hover:bg-slate-50
                         "
                     >
-                        Edit
+                        ${escapeHtml(
+                            translate(
+                                'leases.edit'
+                            )
+                        )}
                     </button>
 
                     <button
@@ -1465,7 +1536,11 @@ function leaseCard(lease) {
                             hover:bg-red-50
                         "
                     >
-                        Delete
+                        ${escapeHtml(
+                            translate(
+                                'leases.delete'
+                            )
+                        )}
                     </button>
                 </div>
             </div>
@@ -1516,16 +1591,24 @@ function leaseStatusBadge(status) {
 function statusLabel(status) {
     switch (status) {
         case 'draft':
-            return 'Draft';
+            return translate(
+                'leases.status_draft'
+            );
 
         case 'active':
-            return 'Active';
+            return translate(
+                'leases.status_active'
+            );
 
         case 'notice':
-            return 'Notice';
+            return translate(
+                'leases.status_notice'
+            );
 
         case 'terminated':
-            return 'Terminated';
+            return translate(
+                'leases.status_terminated'
+            );
 
         default:
             return String(
@@ -1537,16 +1620,24 @@ function statusLabel(status) {
 function frequencyLabel(frequency) {
     switch (frequency) {
         case 'monthly':
-            return 'month';
+            return translate(
+                'leases.frequency_month'
+            );
 
         case 'quarterly':
-            return 'quarter';
+            return translate(
+                'leases.frequency_quarter'
+            );
 
         case 'bi_yearly':
-            return 'six months';
+            return translate(
+                'leases.frequency_six_months'
+            );
 
         case 'yearly':
-            return 'year';
+            return translate(
+                'leases.frequency_year'
+            );
 
         default:
             return String(
@@ -1665,8 +1756,16 @@ function renderLeasePagination(
             "
         >
             <div class="text-sm text-slate-500">
-                Page ${currentPage}
-                of ${lastPage}
+                ${escapeHtml(
+                    translate(
+                        'leases.page'
+                    )
+                )} ${currentPage}
+                ${escapeHtml(
+                    translate(
+                        'leases.of'
+                    )
+                )} ${lastPage}
             </div>
 
             <div class="flex gap-2">
@@ -1687,7 +1786,11 @@ function renderLeasePagination(
                         disabled:opacity-40
                     "
                 >
-                    Previous
+                    ${escapeHtml(
+                        translate(
+                            'leases.previous'
+                        )
+                    )}
                 </button>
 
                 <button
@@ -1707,7 +1810,11 @@ function renderLeasePagination(
                         disabled:opacity-40
                     "
                 >
-                    Next
+                    ${escapeHtml(
+                        translate(
+                            'leases.next'
+                        )
+                    )}
                 </button>
             </div>
         </div>
@@ -2224,7 +2331,9 @@ async function openEditLeaseModal(
         showLeaseFormError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load Lease.'
+                : translate(
+                    'leases.unable_load_one'
+                )
         );
     }
 }
@@ -2236,22 +2345,34 @@ function configureLeaseModal() {
     setText(
         'lease-modal-title',
         editing
-            ? 'Edit Lease'
-            : 'Add Lease'
+            ? translate(
+                'leases.edit_lease'
+            )
+            : translate(
+                'leases.add_lease'
+            )
     );
 
     setText(
         'lease-modal-description',
         editing
-            ? 'Update the tenancy agreement and contractual terms.'
-            : 'Create a tenancy agreement for a property unit.'
+            ? translate(
+                'leases.edit_description'
+            )
+            : translate(
+                'leases.add_description'
+            )
     );
 
     setText(
         'lease-submit-button',
         editing
-            ? 'Save Changes'
-            : 'Create Lease'
+            ? translate(
+                'leases.save_changes'
+            )
+            : translate(
+                'leases.create_lease'
+            )
     );
 }
 
@@ -2994,7 +3115,9 @@ async function submitLeaseForm(
             || payload.unit_id <= 0
         ) {
             showLeaseFormError(
-                'Select a valid Property / Unit.'
+                translate(
+                    'leases.select_valid_unit'
+                )
             );
 
             return;
@@ -3005,7 +3128,9 @@ async function submitLeaseForm(
             > payload.advance_payment_amount
         ) {
             showLeaseFormError(
-                'Rent Reserve cannot exceed Total Advance Payment.'
+                translate(
+                    'leases.reserve_exceeds_advance'
+                )
             );
 
             return;
@@ -3017,8 +3142,12 @@ async function submitLeaseForm(
 
         submitButton.textContent =
             editing
-                ? 'Saving Changes…'
-                : 'Creating Lease…';
+                ? translate(
+                    'leases.saving_changes'
+                )
+                : translate(
+                    'leases.creating'
+                );
 
         const endpoint =
             editing
@@ -3056,8 +3185,12 @@ async function submitLeaseForm(
                 ? error.message
                 : (
                     editing
-                        ? 'Unable to update Lease.'
-                        : 'Unable to create Lease.'
+                        ? translate(
+                            'leases.unable_update'
+                        )
+                        : translate(
+                            'leases.unable_create'
+                        )
                 )
         );
     } finally {
@@ -3066,8 +3199,12 @@ async function submitLeaseForm(
 
         submitButton.textContent =
             editing
-                ? 'Save Changes'
-                : 'Create Lease';
+                ? translate(
+                    'leases.save_changes'
+                )
+                : translate(
+                    'leases.create_lease'
+                );
     }
 }
 
@@ -3312,8 +3449,18 @@ async function deleteLease(
 
     const confirmed =
         window.confirm(
-            `Delete ${label || 'this Lease'}?\n\n`
-            + 'Leases with financial history may not be deleted.'
+            `${translate(
+                'leases.delete'
+            )} ${
+                label
+                || translate(
+                    'leases.this_lease'
+                )
+            }?`
+            + '\n\n'
+            + translate(
+                'leases.delete_financial_history_warning'
+            )
         );
 
     if (! confirmed) {
@@ -3347,7 +3494,9 @@ async function deleteLease(
         showLeasePageError(
             error instanceof Error
                 ? error.message
-                : 'Unable to delete Lease.'
+                : translate(
+                    'leases.unable_delete'
+                )
         );
     }
 }
@@ -3575,7 +3724,9 @@ async function openSecurityDepositModal(
         ]
             .filter(Boolean)
             .join(' · ')
-            || 'Review held funds, deductions and final settlement.'
+            || translate(
+                'leases.security_review_description'
+            )
     );
 
     const modal =
@@ -3723,7 +3874,9 @@ async function loadSecurityDepositPosition() {
         showSecurityDepositError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load Security Deposit.'
+                : translate(
+                    'leases.unable_load_security_deposit'
+                )
         );
     } finally {
         document
@@ -3862,7 +4015,9 @@ function renderSecurityDepositPosition(
 
         setText(
             'security-deposit-voucher-number',
-            `Voucher ${settlement.refund_voucher_number}`
+            `${translate(
+                'leases.voucher'
+            )} ${settlement.refund_voucher_number}`
         );
 
 
@@ -3893,7 +4048,9 @@ function renderSecurityDepositPosition(
     if (! terminated) {
         if (lifecycle) {
             lifecycle.textContent =
-                'Final Security Deposit deductions and settlement become available once the Lease is terminated.';
+                translate(
+                    'leases.security_available_after_termination'
+                );
 
             lifecycle.classList.remove(
                 'hidden'
@@ -3982,7 +4139,11 @@ function renderSecurityDepositDeductions(
                     text-sm text-slate-500
                 "
             >
-                No deductions recorded.
+                ${escapeHtml(
+                    translate(
+                        'leases.no_deductions'
+                    )
+                )}
             </div>
         `;
 
@@ -4006,15 +4167,27 @@ function renderSecurityDepositDeductions(
                         "
                     >
                         <th class="px-3 py-2">
-                            Date
+                            ${escapeHtml(
+                                translate(
+                                    'leases.date'
+                                )
+                            )}
                         </th>
 
                         <th class="px-3 py-2">
-                            Description
+                            ${escapeHtml(
+                                translate(
+                                    'leases.description'
+                                )
+                            )}
                         </th>
 
                         <th class="px-3 py-2">
-                            Reference
+                            ${escapeHtml(
+                                translate(
+                                    'leases.reference'
+                                )
+                            )}
                         </th>
 
                         <th
@@ -4023,7 +4196,11 @@ function renderSecurityDepositDeductions(
                                 text-right
                             "
                         >
-                            Amount
+                            ${escapeHtml(
+                                translate(
+                                    'leases.amount'
+                                )
+                            )}
                         </th>
                     </tr>
                 </thead>
@@ -4166,7 +4343,9 @@ async function openSecurityDepositVoucher() {
 
     if (! viewer) {
         showSecurityDepositError(
-            'The voucher could not be opened because the browser blocked the new tab.'
+            translate(
+                'leases.voucher_popup_blocked'
+            )
         );
 
         return;
@@ -4180,7 +4359,9 @@ async function openSecurityDepositVoucher() {
             true;
 
         button.textContent =
-            'Opening…';
+            translate(
+                'leases.opening'
+            );
 
         const response =
             await apiRequest(
@@ -4195,7 +4376,9 @@ async function openSecurityDepositVoucher() {
 
         if (! response.ok) {
             throw new Error(
-                'Unable to open Security Deposit voucher.'
+                translate(
+                    'leases.unable_open_voucher'
+                )
             );
         }
 
@@ -4231,7 +4414,9 @@ async function openSecurityDepositVoucher() {
         showSecurityDepositError(
             error instanceof Error
                 ? error.message
-                : 'Unable to open Security Deposit voucher.'
+                : translate(
+                    'leases.unable_open_voucher'
+                )
         );
     } finally {
         button.disabled =
@@ -4239,7 +4424,9 @@ async function openSecurityDepositVoucher() {
 
         button.textContent =
             originalLabel
-            || 'Download Voucher';
+            || translate(
+                'leases.download_voucher'
+            );
     }
 }
 
@@ -4270,7 +4457,9 @@ async function submitSecurityDepositDeduction(
                 true;
 
             button.textContent =
-                'Adding…';
+                translate(
+                    'leases.adding'
+                );
         }
 
         const response =
@@ -4327,7 +4516,9 @@ async function submitSecurityDepositDeduction(
         showSecurityDepositError(
             error instanceof Error
                 ? error.message
-                : 'Unable to add Security Deposit deduction.'
+                : translate(
+                    'leases.unable_add_deduction'
+                )
         );
     } finally {
         if (button) {
@@ -4335,7 +4526,9 @@ async function submitSecurityDepositDeduction(
                 false;
 
             button.textContent =
-                'Add Deduction';
+                translate(
+                    'leases.add_deduction'
+                );
         }
     }
 }
@@ -4354,8 +4547,13 @@ async function submitSecurityDepositSettlement(
 
     const confirmed =
         window.confirm(
-            'Finalize this Security Deposit settlement?\n\n'
-            + 'This action is permanent. No further deductions can be added afterward.'
+            translate(
+                'leases.finalize_security_confirmation'
+            )
+            + '\n\n'
+            + translate(
+                'leases.finalize_security_warning'
+            )
         );
 
     if (! confirmed) {
@@ -4375,7 +4573,9 @@ async function submitSecurityDepositSettlement(
                 true;
 
             button.textContent =
-                'Finalizing…';
+                translate(
+                    'leases.finalizing'
+                );
         }
 
         const response =
@@ -4409,7 +4609,9 @@ async function submitSecurityDepositSettlement(
         showSecurityDepositError(
             error instanceof Error
                 ? error.message
-                : 'Unable to finalize Security Deposit.'
+                : translate(
+                    'leases.unable_finalize_security'
+                )
         );
     } finally {
         if (button) {
@@ -4417,7 +4619,9 @@ async function submitSecurityDepositSettlement(
                 false;
 
             button.textContent =
-                'Finalize Settlement';
+                translate(
+                    'leases.finalize_settlement'
+                );
         }
     }
 }
@@ -4609,7 +4813,9 @@ async function openTenantFundsModal(
         ]
             .filter(Boolean)
             .join(' · ')
-            || 'Review actual tenant-held funds.'
+            || translate(
+                'leases.tenant_funds_description'
+            )
     );
 
     const modal =
@@ -4659,7 +4865,9 @@ async function loadTenantFundsLease() {
         showTenantFundsError(
             error instanceof Error
                 ? error.message
-                : 'Unable to load Tenant Funds.'
+                : translate(
+                    'leases.unable_load_tenant_funds'
+                )
         );
     } finally {
         document
@@ -4818,7 +5026,11 @@ function renderTenantFundInvoiceSelect(
     if (outstanding.length === 0) {
         select.innerHTML = `
             <option value="">
-                No outstanding Invoice
+                ${escapeHtml(
+                    translate(
+                        'leases.no_outstanding_invoice'
+                    )
+                )}
             </option>
         `;
 
@@ -4833,7 +5045,11 @@ function renderTenantFundInvoiceSelect(
 
     select.innerHTML = `
         <option value="">
-            Select Invoice…
+            ${escapeHtml(
+                translate(
+                    'leases.select_invoice'
+                )
+            )}
         </option>
 
         ${outstanding
@@ -4846,7 +5062,9 @@ function renderTenantFundInvoiceSelect(
                     >
                         ${escapeHtml(
                             invoice.invoice_number
-                            || `Invoice #${invoice.id}`
+                            || `${translate(
+                                'leases.invoice'
+                            )} #${invoice.id}`
                         )}
                         ·
                         ${escapeHtml(
@@ -4857,7 +5075,11 @@ function renderTenantFundInvoiceSelect(
                                 )
                             )
                         )}
-                        outstanding
+                        ${escapeHtml(
+                            translate(
+                                'leases.outstanding'
+                            )
+                        )}
                     </option>
                 `
             )
@@ -4908,7 +5130,9 @@ function configureRentReserveOperation(
 
         if (unavailable) {
             unavailable.textContent =
-                'No Rent Reserve balance is currently available.';
+                translate(
+                    'leases.no_rent_reserve'
+                );
 
             unavailable.classList.remove(
                 'hidden'
@@ -4925,7 +5149,9 @@ function configureRentReserveOperation(
 
         if (unavailable) {
             unavailable.textContent =
-                'Rent Reserve remains protected until termination notice has been recorded.';
+                translate(
+                    'leases.reserve_protected'
+                );
 
             unavailable.classList.remove(
                 'hidden'
@@ -4937,7 +5163,9 @@ function configureRentReserveOperation(
 
     setText(
         'tenant-funds-reserve-help',
-        'Termination notice has been recorded. Available Reserve may now be applied to outstanding rent.'
+        translate(
+            'leases.reserve_available'
+        )
     );
 }
 
@@ -4978,7 +5206,9 @@ function configureConsumableAdvanceOperation(
 
         if (unavailable) {
             unavailable.textContent =
-                'No Consumable Advance balance is currently available.';
+                translate(
+                    'leases.no_consumable_advance'
+                );
 
             unavailable.classList.remove(
                 'hidden'
@@ -5017,7 +5247,9 @@ async function submitRentReserveConsumption(
                 true;
 
             button.textContent =
-                'Applying…';
+                translate(
+                    'leases.applying'
+                );
         }
 
         const response =
@@ -5066,7 +5298,9 @@ async function submitRentReserveConsumption(
         showTenantFundsError(
             error instanceof Error
                 ? error.message
-                : 'Unable to apply Rent Reserve.'
+                : translate(
+                    'leases.unable_apply_reserve'
+                )
         );
     } finally {
         if (button) {
@@ -5074,7 +5308,9 @@ async function submitRentReserveConsumption(
                 false;
 
             button.textContent =
-                'Apply Rent Reserve';
+                translate(
+                    'leases.apply_rent_reserve'
+                );
         }
     }
 }
@@ -5109,7 +5345,9 @@ async function submitConsumableAdvanceConsumption(
                 true;
 
             button.textContent =
-                'Applying…';
+                translate(
+                    'leases.applying'
+                );
         }
 
         const response =
@@ -5158,7 +5396,9 @@ async function submitConsumableAdvanceConsumption(
         showTenantFundsError(
             error instanceof Error
                 ? error.message
-                : 'Unable to apply Consumable Advance.'
+                : translate(
+                    'leases.unable_apply_advance'
+                )
         );
     } finally {
         if (button) {
@@ -5166,7 +5406,9 @@ async function submitConsumableAdvanceConsumption(
                 false;
 
             button.textContent =
-                'Apply Consumable Advance';
+                translate(
+                    'leases.apply_consumable_advance'
+                );
         }
     }
 }

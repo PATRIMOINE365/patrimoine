@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Leases — Patrimoine')
+@section('title-i18n', 'leases.title')
 
 @section('content')
 
@@ -23,7 +24,7 @@
                     text-patrimoine-700
                 "
             >
-                Tenancy
+                <span data-i18n="leases.tenancy">Tenancy</span>
             </p>
 
             <h1
@@ -32,11 +33,11 @@
                     tracking-tight text-slate-950
                 "
             >
-                Leases
+                <span data-i18n="leases.heading">Leases</span>
             </h1>
 
             <p class="mt-2 text-sm text-slate-500">
-                Manage tenancy agreements, rent terms and lease lifecycle.
+                <span data-i18n="leases.page_description">Manage tenancy agreements, rent terms and lease lifecycle.</span>
             </p>
         </div>
 
@@ -63,7 +64,7 @@
                 <path d="M5 12h14"/>
             </svg>
 
-            Add Lease
+            <span data-i18n="leases.add_lease">Add Lease</span>
         </button>
     </div>
 
@@ -96,7 +97,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Total Leases
+                <span data-i18n="leases.total_leases">Total Leases</span>
             </div>
 
             <div
@@ -117,7 +118,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Active
+                <span data-i18n="leases.status_active">Active</span>
             </div>
 
             <div
@@ -138,7 +139,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                In Notice
+                <span data-i18n="leases.in_notice">In Notice</span>
             </div>
 
             <div
@@ -159,7 +160,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                Draft
+                <span data-i18n="leases.status_draft">Draft</span>
             </div>
 
             <div
@@ -205,11 +206,11 @@
                             text-slate-950
                         "
                     >
-                        Lease Register
+                        <span data-i18n="leases.register">Lease Register</span>
                     </h2>
 
                     <p class="mt-1 text-xs text-slate-500">
-                        Current and historical tenancy agreements.
+                        <span data-i18n="leases.register_description">Current and historical tenancy agreements.</span>
                     </p>
                 </div>
 
@@ -225,7 +226,7 @@
                             for="lease-status-filter"
                             class="sr-only"
                         >
-                            Lease Status
+                            <span data-i18n="leases.lease_status">Lease Status</span>
                         </label>
 
                         <select
@@ -241,25 +242,40 @@
                                 focus:ring-patrimoine-100
                             "
                         >
-                            <option value="">
-                                All Statuses
-                            </option>
+                            <option
+                                        value=""
+                                        data-i18n="leases.all_statuses"
+                                    >
+                                        All Statuses
+                                    </option>
 
-                            <option value="draft">
-                                Draft
-                            </option>
+                            <option
+                                        value="draft"
+                                        data-i18n="leases.status_draft"
+                                    >
+                                        Draft
+                                    </option>
 
-                            <option value="active">
-                                Active
-                            </option>
+                            <option
+                                        value="active"
+                                        data-i18n="leases.status_active"
+                                    >
+                                        Active
+                                    </option>
 
-                            <option value="notice">
-                                Notice
-                            </option>
+                            <option
+                                        value="notice"
+                                        data-i18n="leases.status_notice"
+                                    >
+                                        Notice
+                                    </option>
 
-                            <option value="terminated">
-                                Terminated
-                            </option>
+                            <option
+                                        value="terminated"
+                                        data-i18n="leases.status_terminated"
+                                    >
+                                        Terminated
+                                    </option>
                         </select>
                     </div>
 
@@ -268,7 +284,7 @@
                             for="lease-tenant-filter"
                             class="sr-only"
                         >
-                            Tenant
+                            <span data-i18n="leases.tenant">Tenant</span>
                         </label>
 
                         <select
@@ -284,9 +300,12 @@
                                 focus:ring-patrimoine-100
                             "
                         >
-                            <option value="">
-                                All Tenants
-                            </option>
+                            <option
+                                        value=""
+                                        data-i18n="leases.all_tenants"
+                                    >
+                                        All Tenants
+                                    </option>
                         </select>
                     </div>
                 </div>
@@ -298,7 +317,7 @@
             class="p-5"
         >
             <div class="text-sm text-slate-400">
-                Loading leases…
+                <span data-i18n="leases.loading">Loading leases…</span>
             </div>
         </div>
 
@@ -368,7 +387,7 @@
                             tracking-tight text-slate-950
                         "
                     >
-                        Add Lease
+                        <span data-i18n="leases.add_lease">Add Lease</span>
                     </h2>
 
                     <p
@@ -378,7 +397,7 @@
                             text-slate-500
                         "
                     >
-                        Create a tenancy agreement for a property unit.
+                        <span data-i18n="leases.add_description">Create a tenancy agreement for a property unit.</span>
                     </p>
                 </div>
 
@@ -395,7 +414,8 @@
                         hover:bg-slate-100
                         hover:text-slate-700
                     "
-                >
+
+                    data-i18n-aria-label="leases.close">
                     <svg
                         class="h-5 w-5"
                         viewBox="0 0 24 24"
@@ -441,11 +461,11 @@
                                     text-slate-950
                                 "
                             >
-                                Property & Tenant
+                                <span data-i18n="leases.property_tenant">Property & Tenant</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                Select the leased unit and parties to the agreement.
+                                <span data-i18n="leases.property_tenant_description">Select the leased unit and parties to the agreement.</span>
                             </p>
                         </div>
 
@@ -468,9 +488,13 @@
             text-slate-700
         "
     >
-        Property / Unit
+        <span data-i18n="leases.property_unit">Property / Unit</span>
 
-        <x-field-help label="About Property and Unit">
+        <x-field-help
+                                        label="About Property and Unit"
+                                        data-i18n-field-help="leases.property_unit_help_text"
+                                        data-i18n-aria-label="leases.property_unit_help_label"
+                                    >
             Search for the specific leasable Unit covered by this agreement.
             A Unit inherits the ownership of its Building and cannot have
             more than one Active or Notice Lease at the same time.
@@ -511,6 +535,7 @@
                 id="lease-unit-search"
                 type="search"
                 autocomplete="off"
+                data-i18n-placeholder="leases.unit_search_placeholder"
                 placeholder="Search property, location, unit or owner…"
                 class="
                     w-full rounded-lg
@@ -540,7 +565,8 @@
                     hover:bg-slate-100
                     hover:text-slate-700
                 "
-            >
+
+                    data-i18n-aria-label="leases.clear_selected_unit">
                 <svg
                     class="h-4 w-4"
                     viewBox="0 0 24 24"
@@ -586,7 +612,7 @@
                 text-patrimoine-700
             "
         >
-            Selected Unit
+            <span data-i18n="leases.selected_unit">Selected Unit</span>
         </div>
 
         <div
@@ -613,7 +639,7 @@
                 text-slate-500
             "
         >
-            Ownership
+            <span data-i18n="leases.ownership">Ownership</span>
         </div>
 
         <div
@@ -640,9 +666,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Tenant
+                                    <span data-i18n="leases.tenant">Tenant</span>
 
-                                    <x-field-help label="About Tenant">
+                                    <x-field-help
+                                        label="About Tenant"
+                                        data-i18n-field-help="leases.tenant_help_text"
+                                        data-i18n-aria-label="leases.tenant_help_label"
+                                    >
                                         The Party renting this unit. Patrimoine V1 supports exactly one
                                         tenant per lease. The selected Party must have the Tenant role.
                                     </x-field-help>
@@ -664,7 +694,10 @@
                                         focus:ring-patrimoine-100
                                     "
                                 >
-                                    <option value="">
+                                    <option
+                                        value=""
+                                        data-i18n="leases.select_tenant"
+                                    >
                                         Select tenant…
                                     </option>
                                 </select>
@@ -679,9 +712,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Agent
+                                    <span data-i18n="leases.agent">Agent</span>
 
-                                    <x-field-help label="About Agent">
+                                    <x-field-help
+                                        label="About Agent"
+                                        data-i18n-field-help="leases.agent_help_text"
+                                        data-i18n-aria-label="leases.agent_help_label"
+                                    >
                                         Optional Party that facilitated or manages this lease transaction.
                                         If an Agent Commission is greater than zero, an Agent must be selected.
                                         The selected Party must have the Agent role.
@@ -701,7 +738,10 @@
                                         focus:ring-patrimoine-100
                                     "
                                 >
-                                    <option value="">
+                                    <option
+                                        value=""
+                                        data-i18n="leases.no_agent"
+                                    >
                                         No Agent
                                     </option>
                                 </select>
@@ -726,11 +766,11 @@
                                     text-slate-950
                                 "
                             >
-                                Lease Period
+                                <span data-i18n="leases.lease_period">Lease Period</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                Define when the agreement takes effect and its current lifecycle state.
+                                <span data-i18n="leases.lease_period_description">Define when the agreement takes effect and its current lifecycle state.</span>
                             </p>
                         </div>
 
@@ -749,9 +789,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Start Date
+                                    <span data-i18n="leases.start_date">Start Date</span>
 
-                                    <x-field-help label="About Start Date">
+                                    <x-field-help
+                                        label="About Start Date"
+                                        data-i18n-field-help="leases.start_date_help_text"
+                                        data-i18n-aria-label="leases.start_date_help_label"
+                                    >
                                         The date the lease begins. Unless a Due Day Override is specified,
                                         Patrimoine uses the day of this date as the recurring rent due day.
                                     </x-field-help>
@@ -784,9 +828,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    End Date
+                                    <span data-i18n="leases.end_date">End Date</span>
 
-                                    <x-field-help label="About End Date">
+                                    <x-field-help
+                                        label="About End Date"
+                                        data-i18n-field-help="leases.end_date_help_text"
+                                        data-i18n-aria-label="leases.end_date_help_label"
+                                    >
                                         Optional contractual end date. Leave this blank for a lease without
                                         a predetermined termination date.
                                     </x-field-help>
@@ -816,9 +864,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Status
+                                    <span data-i18n="leases.status">Status</span>
 
-                                    <x-field-help label="About Lease Status">
+                                    <x-field-help
+                                        label="About Lease Status"
+                                        data-i18n-field-help="leases.status_help_text"
+                                        data-i18n-aria-label="leases.status_help_label"
+                                    >
                                         Draft means the lease is prepared but not yet in force.
                                         Active means the tenancy is currently running.
                                         Notice means termination notice has been recorded.
@@ -841,19 +893,31 @@
                                         focus:ring-patrimoine-100
                                     "
                                 >
-                                    <option value="draft">
+                                    <option
+                                        value="draft"
+                                        data-i18n="leases.status_draft"
+                                    >
                                         Draft
                                     </option>
 
-                                    <option value="active">
+                                    <option
+                                        value="active"
+                                        data-i18n="leases.status_active"
+                                    >
                                         Active
                                     </option>
 
-                                    <option value="notice">
+                                    <option
+                                        value="notice"
+                                        data-i18n="leases.status_notice"
+                                    >
                                         Notice
                                     </option>
 
-                                    <option value="terminated">
+                                    <option
+                                        value="terminated"
+                                        data-i18n="leases.status_terminated"
+                                    >
                                         Terminated
                                     </option>
                                 </select>
@@ -868,9 +932,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Notice Date
+                                    <span data-i18n="leases.notice_date">Notice Date</span>
 
-                                    <x-field-help label="About Notice Date">
+                                    <x-field-help
+                                        label="About Notice Date"
+                                        data-i18n-field-help="leases.notice_date_help_text"
+                                        data-i18n-aria-label="leases.notice_date_help_label"
+                                    >
                                         The date termination notice was received or issued.
                                         This field becomes required when the Lease Status is Notice and
                                         will later control when Rent Reserve consumption begins.
@@ -911,11 +979,11 @@
                                     text-slate-950
                                 "
                             >
-                                Rent Terms
+                                <span data-i18n="leases.rent_terms">Rent Terms</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                Amounts are VAT inclusive and stored as whole Ghana cedis.
+                                <span data-i18n="leases.rent_terms_description">Amounts are VAT inclusive and stored as whole currency units.</span>
                             </p>
                         </div>
 
@@ -934,13 +1002,17 @@
                                         text-slate-700
                                     "
                                 >
-                                    Monthly Rent
+                                    <span data-i18n="leases.monthly_rent">Monthly Rent</span>
 
-                                    <x-field-help label="About Monthly Rent">
+                                    <x-field-help
+                                        label="About Monthly Rent"
+                                        data-i18n-field-help="leases.monthly_rent_help_text"
+                                        data-i18n-aria-label="leases.monthly_rent_help_label"
+                                    >
                                     The VAT-inclusive monthly contractual rent for the Unit.
                                     Payment Frequency determines how many months are invoiced together.
-                                    For example, GHS 5,000 Monthly Rent with Quarterly frequency creates
-                                    a GHS 15,000 rent obligation for each quarterly billing period.
+                                    For example, a Monthly Rent of 5,000 with Quarterly frequency creates
+                                    a 15,000 rent obligation for each quarterly billing period.
                                     </x-field-help>
 
                                     <span class="text-red-500">*</span>
@@ -973,9 +1045,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Payment Frequency
+                                    <span data-i18n="leases.payment_frequency">Payment Frequency</span>
 
-                                    <x-field-help label="About Payment Frequency">
+                                    <x-field-help
+                                        label="About Payment Frequency"
+                                        data-i18n-field-help="leases.payment_frequency_help_text"
+                                        data-i18n-aria-label="leases.payment_frequency_help_label"
+                                    >
                                         Controls how often the Monthly Rent becomes due:
                                         Monthly, Quarterly, every six months, or Yearly.
                                         The Monthly Rent represents one complete period of the selected frequency.
@@ -997,19 +1073,31 @@
                                         focus:ring-patrimoine-100
                                     "
                                 >
-                                    <option value="monthly">
+                                    <option
+                                        value="monthly"
+                                        data-i18n="leases.monthly"
+                                    >
                                         Monthly
                                     </option>
 
-                                    <option value="quarterly">
+                                    <option
+                                        value="quarterly"
+                                        data-i18n="leases.quarterly"
+                                    >
                                         Quarterly
                                     </option>
 
-                                    <option value="bi_yearly">
+                                    <option
+                                        value="bi_yearly"
+                                        data-i18n="leases.bi_yearly"
+                                    >
                                         Bi-Yearly
                                     </option>
 
-                                    <option value="yearly">
+                                    <option
+                                        value="yearly"
+                                        data-i18n="leases.yearly"
+                                    >
                                         Yearly
                                     </option>
                                 </select>
@@ -1024,9 +1112,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Due Day Override
+                                    <span data-i18n="leases.due_day_override">Due Day Override</span>
 
-                                    <x-field-help label="About Due Day Override">
+                                    <x-field-help
+                                        label="About Due Day Override"
+                                        data-i18n-field-help="leases.due_day_help_text"
+                                        data-i18n-aria-label="leases.due_day_help_label"
+                                    >
                                         Leave blank to use the day of the Lease Start Date as the rent due day.
                                         For example, a lease starting on the 15th will normally be due on
                                         the 15th. Enter another day here to override that rule.
@@ -1039,6 +1131,7 @@
                                     min="1"
                                     max="31"
                                     step="1"
+                                    data-i18n-placeholder="leases.from_start_date"
                                     placeholder="From start date"
                                     class="
                                         w-full rounded-lg
@@ -1061,9 +1154,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    VAT Rate %
+                                    <span data-i18n="leases.vat_rate">VAT Rate %</span>
 
-                                    <x-field-help label="About VAT Rate">
+                                    <x-field-help
+                                        label="About VAT Rate"
+                                        data-i18n-field-help="leases.vat_rate_help_text"
+                                        data-i18n-aria-label="leases.vat_rate_help_label"
+                                    >
                                         Patrimoine treats configured Monthly Rent as VAT inclusive.
                                         The default rate is 18%, but this lease may use another rate,
                                         including 0% where applicable.
@@ -1101,9 +1198,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Proration Override
+                                    <span data-i18n="leases.proration_override">Proration Override</span>
 
-                                    <x-field-help label="About Proration Override">
+                                    <x-field-help
+                                        label="About Proration Override"
+                                        data-i18n-field-help="leases.proration_help_text"
+                                        data-i18n-aria-label="leases.proration_help_label"
+                                    >
                                         Leave blank to let Patrimoine calculate the prorated amount
                                         automatically for a partial billing period.
                                         Enter 0 to deliberately charge no proration.
@@ -1116,6 +1217,7 @@
                                     type="number"
                                     min="0"
                                     step="1"
+                                    data-i18n-placeholder="leases.automatic"
                                     placeholder="Automatic"
                                     class="
                                         w-full rounded-lg
@@ -1138,9 +1240,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Security Deposit
+                                    <span data-i18n="leases.security_deposit">Security Deposit</span>
 
-                                    <x-field-help label="About Security Deposit">
+                                    <x-field-help
+                                        label="About Security Deposit"
+                                        data-i18n-field-help="leases.security_deposit_help_text"
+                                        data-i18n-aria-label="leases.security_deposit_help_label"
+                                    >
                                         The contractual security deposit required from the tenant.
                                         It is held separately from rent and may later be reduced by
                                         itemized deductions before any remaining balance is refunded.
@@ -1188,11 +1294,11 @@
                                     text-slate-950
                                 "
                             >
-                                Advance Payment
+                                <span data-i18n="leases.advance_payment">Advance Payment</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                Record the contractual advance and how much should remain protected as Rent Reserve.
+                                <span data-i18n="leases.advance_payment_description">Record the contractual advance and how much should remain protected as Rent Reserve.</span>
                             </p>
                         </div>
 
@@ -1211,9 +1317,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Total Advance Payment
+                                    <span data-i18n="leases.total_advance_payment">Total Advance Payment</span>
 
-                                    <x-field-help label="About Advance Payment">
+                                    <x-field-help
+                                        label="About Advance Payment"
+                                        data-i18n-field-help="leases.advance_payment_help_text"
+                                        data-i18n-aria-label="leases.advance_payment_help_label"
+                                    >
                                         Total advance rent contractually expected from the Tenant.
                                         This records the Lease agreement only. It does not mean
                                         Patrimoine has actually received the money. Actual funds
@@ -1249,9 +1359,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Rent Reserve
+                                    <span data-i18n="leases.rent_reserve">Rent Reserve</span>
 
-                                    <x-field-help label="About Rent Reserve">
+                                    <x-field-help
+                                        label="About Rent Reserve"
+                                        data-i18n-field-help="leases.rent_reserve_help_text"
+                                        data-i18n-aria-label="leases.rent_reserve_help_label"
+                                    >
                                         Portion of the contractual Advance Payment that should
                                         remain protected while the Lease is running. After
                                         termination notice, Rent Reserve may be consumed against
@@ -1286,9 +1400,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Consumable Advance
+                                    <span data-i18n="leases.consumable_advance">Consumable Advance</span>
 
-                                    <x-field-help label="About Consumable Advance">
+                                    <x-field-help
+                                        label="About Consumable Advance"
+                                        data-i18n-field-help="leases.consumable_advance_help_text"
+                                        data-i18n-aria-label="leases.consumable_advance_help_label"
+                                    >
                                         The contractual portion of Advance Payment that is not
                                         reserved. Patrimoine calculates this as Total Advance
                                         Payment minus Rent Reserve. Actual available money still
@@ -1312,7 +1430,7 @@
                                             text-slate-800
                                         "
                                     >
-                                        GHS 0
+                                        —
                                     </span>
                                 </div>
                             </div>
@@ -1350,9 +1468,13 @@
                                             text-slate-900
                                         "
                                     >
-                                        Advance already received
+                                        <span data-i18n="leases.advance_already_received">Advance already received</span>
 
-                                        <x-field-help label="About Advance already received">
+                                        <x-field-help
+                                        label="About Advance already received"
+                                        data-i18n-field-help="leases.advance_received_help_text"
+                                        data-i18n-aria-label="leases.advance_received_help_label"
+                                    >
                                             Select this only when the contractual Advance Payment
                                             was actually received before this Lease was entered into
                                             Patrimoine. Patrimoine will reconstruct the historical
@@ -1368,8 +1490,8 @@
                                             leading-5 text-slate-500
                                         "
                                     >
-                                        Use this when entering an existing or backdated Lease
-                                        for which the tenant already paid the advance.
+                                        <span data-i18n="leases.advance_received_description">Use this when entering an existing or backdated Lease
+                                        for which the tenant already paid the advance.</span>
                                     </span>
                                 </span>
                             </label>
@@ -1392,7 +1514,7 @@
                                             text-slate-700
                                         "
                                     >
-                                        Date Received
+                                        <span data-i18n="leases.date_received">Date Received</span>
                                         <span class="text-red-500">*</span>
                                     </label>
 
@@ -1420,7 +1542,7 @@
                                             text-slate-700
                                         "
                                     >
-                                        Payment Method
+                                        <span data-i18n="leases.payment_method">Payment Method</span>
                                         <span class="text-red-500">*</span>
                                     </label>
 
@@ -1436,21 +1558,33 @@
                                             focus:ring-patrimoine-100
                                         "
                                     >
-                                        <option value="">
-                                            Select method...
-                                        </option>
+                                        <option
+                                        value=""
+                                        data-i18n="leases.select_method"
+                                    >
+                                        Select method...
+                                    </option>
 
-                                        <option value="bank_transfer">
-                                            Bank Transfer
-                                        </option>
+                                        <option
+                                        value="bank_transfer"
+                                        data-i18n="leases.bank_transfer"
+                                    >
+                                        Bank Transfer
+                                    </option>
 
-                                        <option value="momo">
-                                            Mobile Money
-                                        </option>
+                                        <option
+                                        value="momo"
+                                        data-i18n="leases.mobile_money"
+                                    >
+                                        Mobile Money
+                                    </option>
 
-                                        <option value="cash">
-                                            Cash
-                                        </option>
+                                        <option
+                                        value="cash"
+                                        data-i18n="leases.cash"
+                                    >
+                                        Cash
+                                    </option>
                                     </select>
                                 </div>
 
@@ -1463,13 +1597,14 @@
                                             text-slate-700
                                         "
                                     >
-                                        Reference
+                                        <span data-i18n="leases.reference">Reference</span>
                                     </label>
 
                                     <input
                                         id="lease-advance-received-reference"
                                         type="text"
                                         maxlength="255"
+                                        data-i18n-placeholder="leases.optional"
                                         placeholder="Optional"
                                         class="
                                             w-full rounded-lg
@@ -1495,7 +1630,7 @@
                                             text-slate-700
                                         "
                                     >
-                                        Cash Collector
+                                        <span data-i18n="leases.cash_collector">Cash Collector</span>
                                         <span class="text-red-500">*</span>
                                     </label>
 
@@ -1503,6 +1638,7 @@
                                         id="lease-advance-received-collector"
                                         type="text"
                                         maxlength="255"
+                                        data-i18n-placeholder="leases.cash_collector_placeholder"
                                         placeholder="Person who received the cash"
                                         class="
                                             w-full rounded-lg
@@ -1537,11 +1673,11 @@
                                     text-slate-950
                                 "
                             >
-                                Rent Increment
+                                <span data-i18n="leases.rent_increment">Rent Increment</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                Configure the next contractual rent increase where applicable.
+                                <span data-i18n="leases.rent_increment_description">Configure the next contractual rent increase where applicable.</span>
                             </p>
                         </div>
 
@@ -1560,12 +1696,16 @@
                                         text-slate-700
                                     "
                                 >
-                                    Increment Type
+                                    <span data-i18n="leases.increment_type">Increment Type</span>
 
-                                    <x-field-help label="About Rent Increment Type">
+                                    <x-field-help
+                                        label="About Rent Increment Type"
+                                        data-i18n-field-help="leases.increment_type_help_text"
+                                        data-i18n-aria-label="leases.increment_type_help_label"
+                                    >
                                         Choose how the next rent increase is defined.
                                         Percentage increases the existing Monthly Rent by a rate.
-                                        Fixed Amount adds a specific Ghana cedi amount.
+                                        Fixed Amount adds a specific monetary amount.
                                         Choose None when no increase has been agreed.
                                     </x-field-help>
                                 </label>
@@ -1583,15 +1723,24 @@
                                         focus:ring-patrimoine-100
                                     "
                                 >
-                                    <option value="none">
+                                    <option
+                                        value="none"
+                                        data-i18n="leases.none"
+                                    >
                                         None
                                     </option>
 
-                                    <option value="percentage">
+                                    <option
+                                        value="percentage"
+                                        data-i18n="leases.percentage"
+                                    >
                                         Percentage
                                     </option>
 
-                                    <option value="fixed">
+                                    <option
+                                        value="fixed"
+                                        data-i18n="leases.fixed_amount"
+                                    >
                                         Fixed Amount
                                     </option>
                                 </select>
@@ -1606,9 +1755,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Increment Value
+                                    <span data-i18n="leases.increment_value">Increment Value</span>
 
-                                    <x-field-help label="About Rent Increment Value">
+                                    <x-field-help
+                                        label="About Rent Increment Value"
+                                        data-i18n-field-help="leases.increment_value_help_text"
+                                        data-i18n-aria-label="leases.increment_value_help_label"
+                                    >
                                         Enter the rate or amount of the next rent increase.
                                         Its meaning depends on the selected Increment Type.
                                     </x-field-help>
@@ -1660,9 +1813,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Next Increment Date
+                                    <span data-i18n="leases.next_increment_date">Next Increment Date</span>
 
-                                    <x-field-help label="About Next Rent Increment Date">
+                                    <x-field-help
+                                        label="About Next Rent Increment Date"
+                                        data-i18n-field-help="leases.increment_date_help_text"
+                                        data-i18n-aria-label="leases.increment_date_help_label"
+                                    >
                                         Date on which the configured increase should first take
                                         effect. Patrimoine V1 stores this contractual date but
                                         does not infer future recurring increases beyond it.
@@ -1714,11 +1871,11 @@
                                     text-slate-950
                                 "
                             >
-                                Fees & Commission
+                                <span data-i18n="leases.fees_commission">Fees & Commission</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                Configure the managing organisation fee and one-time Agent commission applicable to this Lease.
+                                <span data-i18n="leases.fees_commission_description">Configure the managing organisation fee and one-time Agent commission applicable to this Lease.</span>
                             </p>
                         </div>
 
@@ -1737,9 +1894,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Managing Organisation Fee
+                                    <span data-i18n="leases.management_fee">Managing Organisation Fee</span>
 
-                                <x-field-help label="About Managing Organisation Fee">
+                                <x-field-help
+                                        label="About Managing Organisation Fee"
+                                        data-i18n-field-help="leases.management_fee_help_text"
+                                        data-i18n-aria-label="leases.management_fee_help_label"
+                                    >
                                     Defines the fee earned by the Managing Organisation for managing
                                     rent under this Lease. Choose None, Percentage of rent, or Fixed Amount.
                                     The amount is ultimately deducted from Owner entitlement.
@@ -1759,15 +1920,24 @@
                                         focus:ring-patrimoine-100
                                     "
                                 >
-                                    <option value="none">
+                                    <option
+                                        value="none"
+                                        data-i18n="leases.none"
+                                    >
                                         None
                                     </option>
 
-                                    <option value="percentage">
+                                    <option
+                                        value="percentage"
+                                        data-i18n="leases.percentage"
+                                    >
                                         Percentage
                                     </option>
 
-                                    <option value="fixed">
+                                    <option
+                                        value="fixed"
+                                        data-i18n="leases.fixed_amount"
+                                    >
                                         Fixed Amount
                                     </option>
                                 </select>
@@ -1782,9 +1952,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    Fee Value
+                                    <span data-i18n="leases.fee_value">Fee Value</span>
 
-                                    <x-field-help label="About Managing Organisation Fee Value">
+                                    <x-field-help
+                                        label="About Managing Organisation Fee Value"
+                                        data-i18n-field-help="leases.management_fee_value_help_text"
+                                        data-i18n-aria-label="leases.management_fee_value_help_label"
+                                    >
                                         The meaning depends on the Managing Organisation Fee type.
                                         For Percentage, enter the percentage rate.
                                         For Fixed Amount, enter the monetary amount.
@@ -1834,11 +2008,15 @@
                                         text-slate-700
                                     "
                                 >
-                                    Agent Commission
+                                    <span data-i18n="leases.agent_commission">Agent Commission</span>
 
-                                    <x-field-help label="About Agent Commission">
+                                    <x-field-help
+                                        label="About Agent Commission"
+                                        data-i18n-field-help="leases.agent_commission_help_text"
+                                        data-i18n-aria-label="leases.agent_commission_help_label"
+                                    >
                                         One-time commission agreed with the Agent for this lease.
-                                        Enter the total commission amount in whole Ghana cedis.
+                                        Enter the total commission amount in whole currency units.
                                         A non-zero commission requires an Agent to be selected.
                                     </x-field-help>
                                 </label>
@@ -1882,9 +2060,13 @@
                                 text-slate-700
                             "
                         >
-                            Notes
+                            <span data-i18n="leases.notes">Notes</span>
 
-                            <x-field-help label="About Lease Notes">
+                            <x-field-help
+                                        label="About Lease Notes"
+                                        data-i18n-field-help="leases.notes_help_text"
+                                        data-i18n-aria-label="leases.notes_help_label"
+                                    >
                                 Optional internal information about the agreement that does not
                                 form part of Patrimoine's automated financial calculations.
                             </x-field-help>
@@ -1893,6 +2075,7 @@
                         <textarea
                             id="lease-notes"
                             rows="4"
+                            data-i18n-placeholder="leases.notes_placeholder"
                             placeholder="Optional lease notes"
                             class="
                                 w-full resize-y rounded-lg
@@ -1931,7 +2114,7 @@
                             hover:bg-slate-50
                         "
                     >
-                        Cancel
+                        <span data-i18n="leases.cancel">Cancel</span>
                     </button>
 
                     <button
@@ -1949,7 +2132,7 @@
                             disabled:opacity-60
                         "
                     >
-                        Create Lease
+                        <span data-i18n="leases.create_lease">Create Lease</span>
                     </button>
                 </div>
 
@@ -2028,7 +2211,7 @@
                             tracking-wide text-patrimoine-700
                         "
                     >
-                        Lease Close-out
+                        <span data-i18n="leases.security_closeout">Lease Close-out</span>
                     </div>
 
                     <h2
@@ -2037,14 +2220,14 @@
                             tracking-tight text-slate-950
                         "
                     >
-                        Security Deposit
+                        <span data-i18n="leases.security_deposit">Security Deposit</span>
                     </h2>
 
                     <p
                         id="security-deposit-modal-description"
                         class="mt-1 text-sm text-slate-500"
                     >
-                        Review held funds, itemized deductions and final settlement.
+                        <span data-i18n="leases.security_modal_description">Review held funds, itemized deductions and final settlement.</span>
                     </p>
                 </div>
 
@@ -2060,7 +2243,8 @@
                         hover:bg-slate-100
                         hover:text-slate-700
                     "
-                >
+
+                    data-i18n-aria-label="leases.close">
                     <svg
                         class="h-5 w-5"
                         viewBox="0 0 24 24"
@@ -2098,7 +2282,7 @@
                         text-sm text-slate-400
                     "
                 >
-                    Loading Security Deposit…
+                    <span data-i18n="leases.loading_security_deposit">Loading Security Deposit…</span>
                 </div>
 
                 <div
@@ -2122,7 +2306,7 @@
                                 "
                             >
                                 <div class="text-xs text-slate-500">
-                                    Contractual Deposit
+                                    <span data-i18n="leases.contractual_deposit">Contractual Deposit</span>
                                 </div>
 
                                 <div
@@ -2143,7 +2327,7 @@
                                 "
                             >
                                 <div class="text-xs text-slate-500">
-                                    Held Balance
+                                    <span data-i18n="leases.held_balance">Held Balance</span>
                                 </div>
 
                                 <div
@@ -2164,7 +2348,7 @@
                                 "
                             >
                                 <div class="text-xs text-slate-500">
-                                    Deductions
+                                    <span data-i18n="leases.deductions">Deductions</span>
                                 </div>
 
                                 <div
@@ -2185,7 +2369,7 @@
                                 "
                             >
                                 <div class="text-xs text-green-700">
-                                    Refund
+                                    <span data-i18n="leases.refund">Refund</span>
                                 </div>
 
                                 <div
@@ -2206,7 +2390,7 @@
                                 "
                             >
                                 <div class="text-xs text-red-700">
-                                    Tenant Debt
+                                    <span data-i18n="leases.tenant_debt">Tenant Debt</span>
                                 </div>
 
                                 <div
@@ -2257,11 +2441,11 @@
                                         text-slate-950
                                     "
                                 >
-                                    Itemized Deductions
+                                    <span data-i18n="leases.itemized_deductions">Itemized Deductions</span>
                                 </h3>
 
                                 <p class="mt-1 text-xs text-slate-500">
-                                    Charges retained from the tenant's Security Deposit.
+                                    <span data-i18n="leases.itemized_deductions_description">Charges retained from the tenant's Security Deposit.</span>
                                 </p>
                             </div>
                         </div>
@@ -2294,7 +2478,7 @@
                                             text-slate-700
                                         "
                                     >
-                                        Description
+                                        <span data-i18n="leases.description">Description</span>
                                         <span class="text-red-500">*</span>
                                     </label>
 
@@ -2303,6 +2487,7 @@
                                         type="text"
                                         maxlength="255"
                                         required
+                                        data-i18n-placeholder="leases.deduction_description_placeholder"
                                         placeholder="e.g. Damaged lock"
                                         class="
                                             w-full rounded-lg
@@ -2325,7 +2510,7 @@
                                             text-slate-700
                                         "
                                     >
-                                        Amount
+                                        <span data-i18n="leases.amount">Amount</span>
                                         <span class="text-red-500">*</span>
                                     </label>
 
@@ -2356,7 +2541,7 @@
                                             text-slate-700
                                         "
                                     >
-                                        Deduction Date
+                                        <span data-i18n="leases.deduction_date">Deduction Date</span>
                                         <span class="text-red-500">*</span>
                                     </label>
 
@@ -2385,13 +2570,14 @@
                                             text-slate-700
                                         "
                                     >
-                                        Reference
+                                        <span data-i18n="leases.reference">Reference</span>
                                     </label>
 
                                     <input
                                         id="security-deduction-reference"
                                         type="text"
                                         maxlength="255"
+                                        data-i18n-placeholder="leases.deduction_reference_placeholder"
                                         placeholder="Inspection / work order reference"
                                         class="
                                             w-full rounded-lg
@@ -2414,12 +2600,13 @@
                                             text-slate-700
                                         "
                                     >
-                                        Notes
+                                        <span data-i18n="leases.notes">Notes</span>
                                     </label>
 
                                     <input
                                         id="security-deduction-notes"
                                         type="text"
+                                        data-i18n-placeholder="leases.optional_details"
                                         placeholder="Optional details"
                                         class="
                                             w-full rounded-lg
@@ -2450,7 +2637,7 @@
                                         hover:bg-slate-800
                                     "
                                 >
-                                    Add Deduction
+                                    <span data-i18n="leases.add_deduction">Add Deduction</span>
                                 </button>
                             </div>
                         </form>
@@ -2472,11 +2659,11 @@
                                     text-slate-950
                                 "
                             >
-                                Final Settlement
+                                <span data-i18n="leases.final_settlement">Final Settlement</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                Finalize the Security Deposit and create the formal settlement voucher.
+                                <span data-i18n="leases.final_settlement_description">Finalize the Security Deposit and create the formal settlement voucher.</span>
                             </p>
                         </div>
 
@@ -2503,7 +2690,7 @@
                                             text-slate-700
                                         "
                                     >
-                                        Settlement Date
+                                        <span data-i18n="leases.settlement_date">Settlement Date</span>
                                         <span class="text-red-500">*</span>
                                     </label>
 
@@ -2532,12 +2719,13 @@
                                             text-slate-700
                                         "
                                     >
-                                        Notes
+                                        <span data-i18n="leases.notes">Notes</span>
                                     </label>
 
                                     <input
                                         id="security-settlement-notes"
                                         type="text"
+                                        data-i18n-placeholder="leases.closeout_notes_placeholder"
                                         placeholder="Optional close-out notes"
                                         class="
                                             w-full rounded-lg
@@ -2561,8 +2749,8 @@
                                     text-amber-800
                                 "
                             >
-                                Final settlement is irreversible. Once confirmed,
-                                no additional Security Deposit deductions can be added.
+                                <span data-i18n="leases.final_settlement_warning">Final settlement is irreversible. Once confirmed,
+                                no additional Security Deposit deductions can be added.</span>
                             </div>
 
                             <div
@@ -2581,7 +2769,7 @@
                                         hover:bg-patrimoine-900
                                     "
                                 >
-                                    Finalize Settlement
+                                    <span data-i18n="leases.finalize_settlement">Finalize Settlement</span>
                                 </button>
                             </div>
                         </form>
@@ -2609,7 +2797,7 @@
                                             text-green-900
                                         "
                                     >
-                                        Security Deposit Settled
+                                        <span data-i18n="leases.security_deposit_settled">Security Deposit Settled</span>
                                     </div>
 
                                     <div
@@ -2639,7 +2827,7 @@
                                         disabled:opacity-60
                                     "
                                 >
-                                    Download Voucher
+                                    <span data-i18n="leases.download_voucher">Download Voucher</span>
                                 </button>
                             </div>
                         </div>
@@ -2701,7 +2889,7 @@
                             tracking-wide text-patrimoine-700
                         "
                     >
-                        Tenant Money
+                        <span data-i18n="leases.tenant_money">Tenant Money</span>
                     </div>
 
                     <h2
@@ -2710,14 +2898,14 @@
                             tracking-tight text-slate-950
                         "
                     >
-                        Tenant Funds
+                        <span data-i18n="leases.tenant_funds">Tenant Funds</span>
                     </h2>
 
                     <p
                         id="tenant-funds-modal-description"
                         class="mt-1 text-sm text-slate-500"
                     >
-                        Review actual held balances and apply eligible funds to rent.
+                        <span data-i18n="leases.tenant_funds_modal_description">Review actual held balances and apply eligible funds to rent.</span>
                     </p>
                 </div>
 
@@ -2733,7 +2921,8 @@
                         hover:bg-slate-100
                         hover:text-slate-700
                     "
-                >
+
+                    data-i18n-aria-label="leases.close">
                     <svg
                         class="h-5 w-5"
                         viewBox="0 0 24 24"
@@ -2771,7 +2960,7 @@
                         text-sm text-slate-400
                     "
                 >
-                    Loading tenant funds…
+                    <span data-i18n="leases.loading_tenant_funds">Loading tenant funds…</span>
                 </div>
 
                 <div
@@ -2795,7 +2984,7 @@
                                 "
                             >
                                 <div class="text-xs text-slate-500">
-                                    Rent Reserve
+                                    <span data-i18n="leases.rent_reserve">Rent Reserve</span>
                                 </div>
 
                                 <div
@@ -2815,7 +3004,7 @@
                                         leading-5 text-slate-500
                                     "
                                 >
-                                    Protected until termination notice.
+                                    <span data-i18n="leases.reserve_protected_short">Protected until termination notice.</span>
                                 </p>
                             </div>
 
@@ -2827,7 +3016,7 @@
                                 "
                             >
                                 <div class="text-xs text-slate-500">
-                                    Consumable Advance
+                                    <span data-i18n="leases.consumable_advance">Consumable Advance</span>
                                 </div>
 
                                 <div
@@ -2846,7 +3035,7 @@
                                         leading-5 text-slate-500
                                     "
                                 >
-                                    Available tenant advance that may be applied to rent.
+                                    <span data-i18n="leases.consumable_advance_description">Available tenant advance that may be applied to rent.</span>
                                 </p>
                             </div>
 
@@ -2858,7 +3047,7 @@
                                 "
                             >
                                 <div class="text-xs text-slate-500">
-                                    Security Deposit
+                                    <span data-i18n="leases.security_deposit">Security Deposit</span>
                                 </div>
 
                                 <div
@@ -2880,7 +3069,7 @@
                                         hover:text-patrimoine-950
                                     "
                                 >
-                                    Manage Security Deposit →
+                                    <span data-i18n="leases.manage_security_deposit">Manage Security Deposit →</span>
                                 </button>
                             </div>
                         </div>
@@ -2901,11 +3090,11 @@
                                     text-slate-950
                                 "
                             >
-                                Apply Rent Reserve
+                                <span data-i18n="leases.apply_rent_reserve">Apply Rent Reserve</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                Rent Reserve becomes consumable after termination notice and may settle an outstanding Invoice.
+                                <span data-i18n="leases.apply_reserve_description">Rent Reserve becomes consumable after termination notice and may settle an outstanding Invoice.</span>
                             </p>
                         </div>
 
@@ -2935,7 +3124,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Outstanding Invoice
+                                    <span data-i18n="leases.outstanding_invoice">Outstanding Invoice</span>
                                 </label>
 
                                 <select
@@ -2959,7 +3148,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Amount
+                                    <span data-i18n="leases.amount">Amount</span>
                                 </label>
 
                                 <input
@@ -2986,7 +3175,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Date
+                                    <span data-i18n="leases.date">Date</span>
                                 </label>
 
                                 <input
@@ -3014,7 +3203,7 @@
                                         disabled:opacity-50
                                     "
                                 >
-                                    Apply Rent Reserve
+                                    <span data-i18n="leases.apply_rent_reserve">Apply Rent Reserve</span>
                                 </button>
                             </div>
                         </form>
@@ -3035,11 +3224,11 @@
                                     text-slate-950
                                 "
                             >
-                                Apply Consumable Advance
+                                <span data-i18n="leases.apply_consumable_advance">Apply Consumable Advance</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                Apply available Consumable Advance against an outstanding rent Invoice.
+                                <span data-i18n="leases.apply_advance_description">Apply available Consumable Advance against an outstanding rent Invoice.</span>
                             </p>
                         </div>
 
@@ -3069,7 +3258,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Outstanding Invoice
+                                    <span data-i18n="leases.outstanding_invoice">Outstanding Invoice</span>
                                 </label>
 
                                 <select
@@ -3093,7 +3282,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Amount
+                                    <span data-i18n="leases.amount">Amount</span>
                                 </label>
 
                                 <input
@@ -3120,7 +3309,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    Date
+                                    <span data-i18n="leases.date">Date</span>
                                 </label>
 
                                 <input
@@ -3148,7 +3337,7 @@
                                         disabled:opacity-50
                                     "
                                 >
-                                    Apply Consumable Advance
+                                    <span data-i18n="leases.apply_consumable_advance">Apply Consumable Advance</span>
                                 </button>
                             </div>
                         </form>
