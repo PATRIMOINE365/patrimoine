@@ -63,7 +63,7 @@ class AuthController extends Controller
         ) {
             throw ValidationException::withMessages([
                 'email' => [
-                    'The provided credentials are incorrect.',
+                    __('api.auth.invalid_credentials'),
                 ],
             ]);
         }
@@ -113,7 +113,7 @@ class AuthController extends Controller
         $user->currentAccessToken()?->delete();
 
         return response()->json([
-            'message' => 'Logged out successfully.',
+            'message' => __('api.auth.logged_out'),
         ]);
     }
 

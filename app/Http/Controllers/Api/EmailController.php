@@ -33,7 +33,7 @@ class EmailController extends Controller
         }
 
         return response()->json([
-            'message' => 'Invoice email sent successfully.',
+            'message' => __('api.email.invoice_sent'),
             'invoice_id' => $invoice->id,
         ]);
     }
@@ -56,7 +56,7 @@ class EmailController extends Controller
         }
 
         return response()->json([
-            'message' => 'Receipt email sent successfully.',
+            'message' => __('api.email.receipt_sent'),
             'payment_id' => $payment->id,
         ]);
     }

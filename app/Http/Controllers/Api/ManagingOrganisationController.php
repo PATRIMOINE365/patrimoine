@@ -38,7 +38,7 @@ class ManagingOrganisationController extends Controller
             return response()->json(
                 [
                     'message' =>
-                        'Managing organisation has not been configured.',
+                        __('api.managing_organisation.not_configured'),
                 ],
                 404
             );

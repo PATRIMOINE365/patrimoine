@@ -161,7 +161,7 @@ class PartyController extends Controller
                 ) {
                     throw ValidationException::withMessages([
                         'roles' => [
-                            'The configured managing organisation cannot lose the managing_organisation role.',
+                            __('api.managing_organisation.cannot_remove_role'),
                         ],
                     ]);
                 }
@@ -204,7 +204,7 @@ class PartyController extends Controller
             return response()->json(
                 [
                     'message' =>
-                        'The configured managing organisation cannot be deleted.',
+                        __('api.managing_organisation.cannot_delete'),
                 ],
                 409
             );

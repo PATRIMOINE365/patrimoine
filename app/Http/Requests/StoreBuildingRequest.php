@@ -116,7 +116,7 @@ class StoreBuildingRequest extends FormRequest
                 if (abs($total - 100.0) > 0.001) {
                     $validator->errors()->add(
                         'owners',
-                        'Building ownership percentages must total 100%.'
+                        __('api.validation.building_ownership_total')
                     );
                 }
             },

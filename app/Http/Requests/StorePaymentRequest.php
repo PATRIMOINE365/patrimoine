@@ -124,7 +124,7 @@ class StorePaymentRequest extends FormRequest
                 if ($lease->status === 'draft') {
                     $validator->errors()->add(
                         'lease_id',
-                        'Payments cannot be recorded against a draft Lease.'
+                        __('api.validation.payment_draft_lease')
                     );
                 }
             },

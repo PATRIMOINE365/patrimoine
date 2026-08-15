@@ -170,7 +170,7 @@ export async function apiRequest(
         }
 
         throw new Error(
-            'Your session has expired. Please sign in again.'
+            translationFor('core.session_expired')
         );
     }
 
@@ -211,7 +211,7 @@ export async function parseJsonResponse(
         const message =
             validationMessage
             || data.message
-            || 'The request could not be completed.';
+            || translationFor('core.request_failed');
 
         throw new Error(
             message

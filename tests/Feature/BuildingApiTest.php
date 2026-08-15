@@ -6,6 +6,7 @@ use App\Models\Party;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
+use App\Models\ApplicationSetting;
 
 /**
  * Verifies the Patrimoine Building REST API.
@@ -278,6 +279,41 @@ class BuildingApiTest extends TestCase
             ->assertJsonPath(
                 'data.0.units.0.name',
                 'Unit 4B'
+            );
+    }
+
+
+    /**
+     * Custom FormRequest validation follows French.
+     */
+    public function test_building_ownership_validation_renders_in_french(): void
+    {
+        ApplicationSetting::create([
+            'language' => 'fr',
+            'currency' => 'GHS',
+        ]);
+
+        $owner = \App\Models\Party::create([
+            'type' => 'person',
+            'name' => 'Propriétaire Test',
+            'phone' => '0200000888',
+            'email' => 'owner-fr@example.test',
+        ]);
+
+        $this
+            ->postJson('/api/buildings', [
+                'name' => 'Immeuble Test',
+                'owners' => [
+                    [
+                        'party_id' => $owner->id,
+                        'ownership_percentage' => 50,
+                    ],
+                ],
+            ])
+            ->assertUnprocessable()
+            ->assertJsonPath(
+                'errors.owners.0',
+                'La somme des pourcentages de propriété de l’immeuble doit être égale à 100 %.'
             );
     }
 

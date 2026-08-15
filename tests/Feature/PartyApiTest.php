@@ -7,6 +7,7 @@ use App\Models\PartyRole;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
+use App\Models\ApplicationSetting;
 
 /**
  * Verifies the Patrimoine Party REST API.
@@ -274,4 +275,41 @@ class PartyApiTest extends TestCase
             'id' => $party->id,
         ]);
     }
+
+    /**
+     * Managing organisation protection messages follow French.
+     */
+    public function test_managing_organisation_protection_message_renders_in_french(): void
+    {
+        $settings = ApplicationSetting::create([
+            'language' => 'fr',
+            'currency' => 'GHS',
+        ]);
+
+        $party = Party::create([
+            'type' => 'organisation',
+            'legal_name' => 'Organisation Gestionnaire',
+            'address' => 'Accra',
+            'contact_person_name' => 'Gestionnaire',
+            'contact_person_phone' => '0200000999',
+            'contact_person_email' => 'gestion@example.test',
+        ]);
+
+        $party->roles()->create([
+            'role' => 'managing_organisation',
+        ]);
+
+        $settings->update([
+            'managing_organisation_party_id' => $party->id,
+        ]);
+
+        $this
+            ->deleteJson("/api/parties/{$party->id}")
+            ->assertStatus(409)
+            ->assertJsonPath(
+                'message',
+                'L’organisation gestionnaire configurée ne peut pas être supprimée.'
+            );
+    }
+
 }

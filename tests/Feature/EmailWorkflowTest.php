@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 use App\Models\BuildingOwner;
 use Tests\Concerns\AuthenticatesApiUser;
+use App\Models\ApplicationSetting;
 
 /**
  * Verifies application-level email workflows.
@@ -305,4 +306,30 @@ public function test_reminder_command_skips_security_deposit_debt_invoice(): voi
 
         Mail::assertNothingSent();
     }
+
+    /**
+     * Email resend success messages follow French.
+     */
+    public function test_email_resend_success_message_renders_in_french(): void
+    {
+        Mail::fake();
+
+        ApplicationSetting::create([
+            'language' => 'fr',
+            'currency' => 'GHS',
+        ]);
+
+        $context = $this->createContext();
+
+        $this
+            ->postJson(
+                "/api/invoices/{$context['invoice']->id}/send-email"
+            )
+            ->assertOk()
+            ->assertJsonPath(
+                'message',
+                'L’e-mail de la facture a été envoyé avec succès.'
+            );
+    }
+
 }

@@ -2330,6 +2330,11 @@ export const translations = {
 
         'properties.optional_unit_description':
             'Optional unit description',
+        'core.session_expired':
+            'Your session has expired. Please sign in again.',
+        'core.request_failed':
+            'The request could not be completed.',
+
     },
 
     fr: {
@@ -2947,6 +2952,11 @@ export const translations = {
 
         'properties.optional_unit_description':
             'Description facultative de l’unité',
+        'core.session_expired':
+            'Votre session a expiré. Veuillez vous reconnecter.',
+        'core.request_failed':
+            'La requête n’a pas pu être traitée.',
+
     },
 };
 
