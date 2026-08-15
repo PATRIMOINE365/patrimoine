@@ -1118,9 +1118,23 @@ function renderManagingOrganisationReport(
             'Billing',
             pairGrid([
                 [
-                    'Invoiced',
+                    'Total Invoiced',
                     formatCurrency(
                         billing.invoiced
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Rent Invoiced',
+                    formatCurrency(
+                        billing.rent_invoiced
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Security Deposit Debt Invoiced',
+                    formatCurrency(
+                        billing.security_deposit_debt_invoiced
                         ?? 0
                     ),
                 ],
@@ -1132,9 +1146,24 @@ function renderManagingOrganisationReport(
                     ),
                 ],
                 [
-                    'Outstanding',
+                    'Rent Outstanding',
                     formatCurrency(
-                        billing.outstanding
+                        billing.rent_outstanding
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Security Deposit Debt Outstanding',
+                    formatCurrency(
+                        billing.security_deposit_debt_outstanding
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Total Outstanding',
+                    formatCurrency(
+                        billing.total_outstanding
+                        ?? billing.outstanding
                         ?? 0
                     ),
                 ],
@@ -1424,16 +1453,16 @@ function renderBuildingReport(
                 ),
             ],
             [
-                'Invoiced',
+                'Rent Outstanding',
                 formatCurrency(
-                    summary.invoiced
+                    summary.rent_outstanding
                     ?? 0
                 ),
             ],
             [
-                'Outstanding',
+                'Security Deposit Debt',
                 formatCurrency(
-                    summary.outstanding
+                    summary.security_deposit_debt_outstanding
                     ?? 0
                 ),
             ],
@@ -1443,9 +1472,52 @@ function renderBuildingReport(
             'Financial Summary',
             pairGrid([
                 [
+                    'Total Invoiced',
+                    formatCurrency(
+                        summary.invoiced
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Rent Invoiced',
+                    formatCurrency(
+                        summary.rent_invoiced
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Security Deposit Debt Invoiced',
+                    formatCurrency(
+                        summary.security_deposit_debt_invoiced
+                        ?? 0
+                    ),
+                ],
+                [
                     'Invoice Settled',
                     formatCurrency(
                         summary.invoice_settled
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Rent Outstanding',
+                    formatCurrency(
+                        summary.rent_outstanding
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Security Deposit Debt Outstanding',
+                    formatCurrency(
+                        summary.security_deposit_debt_outstanding
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Total Outstanding',
+                    formatCurrency(
+                        summary.total_outstanding
+                        ?? summary.outstanding
                         ?? 0
                     ),
                 ],
@@ -1552,23 +1624,24 @@ function renderUnitReport(
                 ),
             ],
             [
-                'Invoiced',
+                'Rent Outstanding',
                 formatCurrency(
-                    summary.invoiced
+                    summary.rent_outstanding
                     ?? 0
                 ),
             ],
             [
-                'Settled',
+                'Security Deposit Debt',
                 formatCurrency(
-                    summary.settled
+                    summary.security_deposit_debt_outstanding
                     ?? 0
                 ),
             ],
             [
-                'Outstanding',
+                'Total Outstanding',
                 formatCurrency(
-                    summary.outstanding
+                    summary.total_outstanding
+                    ?? summary.outstanding
                     ?? 0
                 ),
             ],
@@ -1577,6 +1650,56 @@ function renderUnitReport(
         ${reportSection(
             'Financial Summary',
             pairGrid([
+                [
+                    'Total Invoiced',
+                    formatCurrency(
+                        summary.invoiced
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Rent Invoiced',
+                    formatCurrency(
+                        summary.rent_invoiced
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Security Deposit Debt Invoiced',
+                    formatCurrency(
+                        summary.security_deposit_debt_invoiced
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Settled',
+                    formatCurrency(
+                        summary.settled
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Rent Outstanding',
+                    formatCurrency(
+                        summary.rent_outstanding
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Security Deposit Debt Outstanding',
+                    formatCurrency(
+                        summary.security_deposit_debt_outstanding
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Total Outstanding',
+                    formatCurrency(
+                        summary.total_outstanding
+                        ?? summary.outstanding
+                        ?? 0
+                    ),
+                ],
                 [
                     'Cash Received',
                     formatCurrency(
@@ -1664,23 +1787,24 @@ function renderTenantReport(
 
         ${metricGrid([
             [
-                'Invoiced',
+                'Rent Outstanding',
                 formatCurrency(
-                    summary.invoiced
+                    summary.rent_outstanding
                     ?? 0
                 ),
             ],
             [
-                'Settled',
+                'Security Deposit Debt',
                 formatCurrency(
-                    summary.settled
+                    summary.security_deposit_debt_outstanding
                     ?? 0
                 ),
             ],
             [
-                'Outstanding',
+                'Total Outstanding',
                 formatCurrency(
-                    summary.outstanding
+                    summary.total_outstanding
+                    ?? summary.outstanding
                     ?? 0
                 ),
             ],
@@ -1692,6 +1816,48 @@ function renderTenantReport(
                 ),
             ],
         ])}
+
+        ${reportSection(
+            'Receivables',
+            pairGrid([
+                [
+                    'Total Invoiced',
+                    formatCurrency(
+                        summary.invoiced
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Settled',
+                    formatCurrency(
+                        summary.settled
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Rent Outstanding',
+                    formatCurrency(
+                        summary.rent_outstanding
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Security Deposit Debt Outstanding',
+                    formatCurrency(
+                        summary.security_deposit_debt_outstanding
+                        ?? 0
+                    ),
+                ],
+                [
+                    'Total Outstanding',
+                    formatCurrency(
+                        summary.total_outstanding
+                        ?? summary.outstanding
+                        ?? 0
+                    ),
+                ],
+            ])
+        )}
 
         ${reportSection(
             'Held Funds',
@@ -2221,6 +2387,7 @@ function invoiceTable(
     return tableHtml(
         [
             'Invoice',
+            'Type',
             'Issue Date',
             'Due Date',
             'Amount',
@@ -2232,6 +2399,9 @@ function invoiceTable(
             (row) => [
                 row.invoice_number
                     ?? '',
+                capitalizeWords(
+                    row.type
+                ),
                 formatDate(
                     row.issue_date
                 ),
@@ -2302,6 +2472,7 @@ function tenantInvoiceTable(
     return tableHtml(
         [
             'Invoice',
+            'Type',
             'Date',
             'Due Date',
             'Amount',
@@ -2313,6 +2484,9 @@ function tenantInvoiceTable(
             (row) => [
                 row.invoice_number
                     ?? '',
+                capitalizeWords(
+                    row.type
+                ),
                 formatDate(
                     row.date
                 ),
