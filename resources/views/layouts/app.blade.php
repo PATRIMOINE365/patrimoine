@@ -387,6 +387,41 @@
 
 
                     <a
+                        href="/activity-log"
+                        data-requires-capability="view_activity_log"
+                        class="
+                            rbac-hidden
+                            {{ request()->is('activity-log')
+                                ? 'bg-white/10 text-white'
+                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                            }}
+                            flex items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-sm font-medium
+                            transition
+                        "
+                    >
+                        <svg
+                            class="h-5 w-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <path d="M9 5h10"/>
+                            <path d="M9 12h10"/>
+                            <path d="M9 19h10"/>
+                            <circle cx="5" cy="5" r="1"/>
+                            <circle cx="5" cy="12" r="1"/>
+                            <circle cx="5" cy="19" r="1"/>
+                        </svg>
+
+                        <span data-i18n="navigation.activity_log">
+                            Activity Log
+                        </span>
+                    </a>
+
+                    <a
                         href="/users"
                         data-requires-capability="manage_users"
                         class="

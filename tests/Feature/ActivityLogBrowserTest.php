@@ -1,0 +1,250 @@
+<?php
+
+namespace Tests\Feature;
+
+use Tests\TestCase;
+
+/**
+ * Freeze the Activity Q browser integration surface.
+ *
+ * Server-side authorization and filtering are covered by ActivityLogApiTest.
+ * These assertions protect the UI route, navigation, JavaScript and i18n
+ * wiring without introducing write behavior into Activity Log.
+ */
+class ActivityLogBrowserTest extends TestCase
+{
+    public function test_activity_log_page_is_available(): void
+    {
+        $this
+            ->get('/activity-log')
+            ->assertOk()
+            ->assertSee(
+                'id="activity-log-workspace"',
+                false
+            )
+            ->assertSee(
+                'data-requires-capability="view_activity_log"',
+                false
+            )
+            ->assertSee(
+                'id="activity-log-search"',
+                false
+            )
+            ->assertSee(
+                'id="activity-log-list"',
+                false
+            )
+            ->assertSee(
+                'id="activity-log-modal"',
+                false
+            );
+    }
+
+    public function test_layout_contains_hidden_activity_log_navigation(): void
+    {
+        $view =
+            file_get_contents(
+                resource_path(
+                    'views/layouts/app.blade.php'
+                )
+            );
+
+        $this->assertStringContainsString(
+            'href="/activity-log"',
+            $view
+        );
+
+        $this->assertStringContainsString(
+            'data-requires-capability="view_activity_log"',
+            $view
+        );
+
+        $this->assertStringContainsString(
+            'data-i18n="navigation.activity_log"',
+            $view
+        );
+
+        $this->assertStringContainsString(
+            'rbac-hidden',
+            $view
+        );
+    }
+
+    public function test_activity_log_module_is_wired_into_browser_bundle(): void
+    {
+        $app =
+            file_get_contents(
+                resource_path(
+                    'js/app.js'
+                )
+            );
+
+        $activity =
+            file_get_contents(
+                resource_path(
+                    'js/activity-log.js'
+                )
+            );
+
+        $this->assertStringContainsString(
+            "from './activity-log.js'",
+            $app
+        );
+
+        $this->assertStringContainsString(
+            'await initializeActivityLog();',
+            $app
+        );
+
+        $this->assertStringContainsString(
+            '/api/activity-log',
+            $activity
+        );
+
+        $this->assertStringContainsString(
+            '/api/users?per_page=100',
+            $activity
+        );
+
+        $this->assertStringContainsString(
+            'getPresentationConfiguration',
+            $activity
+        );
+
+        $this->assertStringContainsString(
+            'Intl.DateTimeFormat',
+            $activity
+        );
+    }
+
+    public function test_activity_log_ui_exposes_frozen_q_filters(): void
+    {
+        $view =
+            file_get_contents(
+                resource_path(
+                    'views/app/activity-log.blade.php'
+                )
+            );
+
+        foreach (
+            [
+                'activity-log-search',
+                'activity-log-from',
+                'activity-log-to',
+                'activity-log-user',
+                'activity-log-role',
+                'activity-log-action',
+                'activity-log-entity-type',
+            ] as $id
+        ) {
+            $this->assertStringContainsString(
+                'id="'.$id.'"',
+                $view
+            );
+        }
+    }
+
+    public function test_activity_log_ui_is_read_only(): void
+    {
+        $view =
+            file_get_contents(
+                resource_path(
+                    'views/app/activity-log.blade.php'
+                )
+            );
+
+        $javascript =
+            file_get_contents(
+                resource_path(
+                    'js/activity-log.js'
+                )
+            );
+
+        $this->assertStringNotContainsString(
+            'data-delete-activity',
+            $view
+        );
+
+        $this->assertStringNotContainsString(
+            'data-edit-activity',
+            $view
+        );
+
+        $this->assertStringNotContainsString(
+            'postJson',
+            $javascript
+        );
+
+        $this->assertStringNotContainsString(
+            'patchJson',
+            $javascript
+        );
+
+        $this->assertStringNotContainsString(
+            'deleteJson',
+            $javascript
+        );
+    }
+
+    public function test_activity_log_exports_are_not_introduced_before_activity_r(): void
+    {
+        $view =
+            file_get_contents(
+                resource_path(
+                    'views/app/activity-log.blade.php'
+                )
+            );
+
+        $this->assertStringNotContainsString(
+            'activity-log-export-pdf',
+            $view
+        );
+
+        $this->assertStringNotContainsString(
+            'activity-log-export-csv',
+            $view
+        );
+    }
+
+    public function test_activity_log_translations_exist_in_both_languages(): void
+    {
+        $translations =
+            file_get_contents(
+                resource_path(
+                    'js/translations.js'
+                )
+            );
+
+        foreach (
+            [
+                "'navigation.activity_log':",
+                "'activity_log.title':",
+                "'activity_log.heading':",
+                "'activity_log.search':",
+                "'activity_log.view_details':",
+                "'activity_log.before_values':",
+                "'activity_log.after_values':",
+                "'activity_log.metadata':",
+            ] as $key
+        ) {
+            $this->assertSame(
+                2,
+                substr_count(
+                    $translations,
+                    $key
+                ),
+                "Expected {$key} in both browser catalogues."
+            );
+        }
+
+        $this->assertStringContainsString(
+            "'Activity Log'",
+            $translations
+        );
+
+        $this->assertStringContainsString(
+            "'Journal d’activité'",
+            $translations
+        );
+    }
+}

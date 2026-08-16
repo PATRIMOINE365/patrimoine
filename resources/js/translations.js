@@ -169,6 +169,9 @@ export const translations = {
         'language.fr':
             'French',
 
+        'navigation.activity_log':
+            'Activity Log',
+
         'navigation.users':
             'Users',
 
@@ -178,6 +181,91 @@ export const translations = {
             'Property Manager',
         'roles.viewer':
             'Viewer',
+
+        'activity_log.title':
+            'Activity Log — Patrimoine',
+        'activity_log.administration':
+            'Administration',
+        'activity_log.heading':
+            'Activity Log',
+        'activity_log.description':
+            'Review meaningful human actions recorded by Patrimoine.',
+        'activity_log.search':
+            'Search',
+        'activity_log.search_placeholder':
+            'Search actor, action, record, IP or historical context...',
+        'activity_log.from':
+            'From',
+        'activity_log.to':
+            'To',
+        'activity_log.user':
+            'User',
+        'activity_log.all_users':
+            'All users',
+        'activity_log.role':
+            'Role',
+        'activity_log.all_roles':
+            'All roles',
+        'activity_log.action':
+            'Action',
+        'activity_log.action_placeholder':
+            'e.g. payment.recorded',
+        'activity_log.entity_type':
+            'Record Type',
+        'activity_log.entity_type_placeholder':
+            'e.g. payment',
+        'activity_log.clear_filters':
+            'Clear Filters',
+        'activity_log.loading':
+            'Loading activity...',
+        'activity_log.none_found':
+            'No activity found',
+        'activity_log.none_found_description':
+            'No recorded activity matches the current filters.',
+        'activity_log.view_details':
+            'View Details',
+        'activity_log.page_of':
+            'Page :current of :last',
+        'activity_log.previous':
+            'Previous',
+        'activity_log.next':
+            'Next',
+        'activity_log.detail_heading':
+            'Activity Details',
+        'activity_log.detail_description':
+            'Immutable historical information recorded for this action.',
+        'activity_log.loading_detail':
+            'Loading activity details...',
+        'activity_log.unable_load':
+            'Unable to load Activity Log.',
+        'activity_log.unable_load_detail':
+            'Unable to load activity details.',
+        'activity_log.close':
+            'Close',
+        'activity_log.event':
+            'Event',
+        'activity_log.timestamp':
+            'Timestamp',
+        'activity_log.actor':
+            'Actor',
+        'activity_log.email':
+            'Email',
+        'activity_log.ip_address':
+            'IP Address',
+        'activity_log.entity':
+            'Record',
+        'activity_log.before_values':
+            'Before',
+        'activity_log.after_values':
+            'After',
+        'activity_log.snapshot':
+            'Snapshot',
+        'activity_log.metadata':
+            'Additional Context',
+        'activity_log.not_available':
+            'Not available',
+        'activity_log.unknown_actor':
+            'Unknown actor',
 
         'users.title':
             'Users — Patrimoine',
@@ -1757,6 +1845,9 @@ export const translations = {
         'language.fr':
             'Français',
 
+        'navigation.activity_log':
+            'Journal d’activité',
+
         'navigation.users':
             'Utilisateurs',
 
@@ -1766,6 +1857,91 @@ export const translations = {
             'Gestionnaire immobilier',
         'roles.viewer':
             'Consultation',
+
+        'activity_log.title':
+            'Journal d’activité — Patrimoine',
+        'activity_log.administration':
+            'Administration',
+        'activity_log.heading':
+            'Journal d’activité',
+        'activity_log.description':
+            'Consultez les actions humaines significatives enregistrées par Patrimoine.',
+        'activity_log.search':
+            'Rechercher',
+        'activity_log.search_placeholder':
+            'Rechercher un utilisateur, une action, un enregistrement, une adresse IP ou un contexte historique...',
+        'activity_log.from':
+            'Du',
+        'activity_log.to':
+            'Au',
+        'activity_log.user':
+            'Utilisateur',
+        'activity_log.all_users':
+            'Tous les utilisateurs',
+        'activity_log.role':
+            'Rôle',
+        'activity_log.all_roles':
+            'Tous les rôles',
+        'activity_log.action':
+            'Action',
+        'activity_log.action_placeholder':
+            'ex. payment.recorded',
+        'activity_log.entity_type':
+            'Type d’enregistrement',
+        'activity_log.entity_type_placeholder':
+            'ex. payment',
+        'activity_log.clear_filters':
+            'Effacer les filtres',
+        'activity_log.loading':
+            'Chargement du journal d’activité...',
+        'activity_log.none_found':
+            'Aucune activité trouvée',
+        'activity_log.none_found_description':
+            'Aucune activité enregistrée ne correspond aux filtres actuels.',
+        'activity_log.view_details':
+            'Voir les détails',
+        'activity_log.page_of':
+            'Page :current sur :last',
+        'activity_log.previous':
+            'Précédent',
+        'activity_log.next':
+            'Suivant',
+        'activity_log.detail_heading':
+            'Détails de l’activité',
+        'activity_log.detail_description':
+            'Informations historiques immuables enregistrées pour cette action.',
+        'activity_log.loading_detail':
+            'Chargement des détails...',
+        'activity_log.unable_load':
+            'Impossible de charger le journal d’activité.',
+        'activity_log.unable_load_detail':
+            'Impossible de charger les détails de l’activité.',
+        'activity_log.close':
+            'Fermer',
+        'activity_log.event':
+            'Événement',
+        'activity_log.timestamp':
+            'Horodatage',
+        'activity_log.actor':
+            'Utilisateur',
+        'activity_log.email':
+            'E-mail',
+        'activity_log.ip_address':
+            'Adresse IP',
+        'activity_log.entity':
+            'Enregistrement',
+        'activity_log.before_values':
+            'Avant',
+        'activity_log.after_values':
+            'Après',
+        'activity_log.snapshot':
+            'Instantané',
+        'activity_log.metadata':
+            'Contexte complémentaire',
+        'activity_log.not_available':
+            'Non disponible',
+        'activity_log.unknown_actor':
+            'Utilisateur inconnu',
 
         'users.title':
             'Utilisateurs — Patrimoine',

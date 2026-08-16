@@ -213,6 +213,11 @@ class RoleAwareApplicationUiTest extends TestCase
             'data-requires-capability="manage_settings"',
             $layout
         );
+
+        $this->assertStringContainsString(
+            'data-requires-capability="view_activity_log"',
+            $layout
+        );
     }
 
     public function test_rbac_visibility_cannot_be_overridden_by_normal_hidden_state(): void

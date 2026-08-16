@@ -71,6 +71,10 @@ import {
     initializeUsers,
 } from './users.js';
 
+import {
+    initializeActivityLog,
+} from './activity-log.js';
+
 
 /*
 |--------------------------------------------------------------------------
@@ -143,5 +147,7 @@ document.addEventListener(
         await initializeSettings();
 
         await initializeUsers();
+
+        await initializeActivityLog();
     }
 );

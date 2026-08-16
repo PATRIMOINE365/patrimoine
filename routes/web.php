@@ -71,6 +71,11 @@ Route::view(
 )->name('reports');
 
 Route::view(
+    '/activity-log',
+    'app.activity-log'
+)->name('activity-log');
+
+Route::view(
     '/users',
     'app.users'
 )->name('users');
