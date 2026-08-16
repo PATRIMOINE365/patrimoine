@@ -6,21 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLeaseRequest;
 use App\Http\Requests\UpdateLeaseRequest;
 use App\Models\Lease;
+use App\Services\ActivityLogService;
+use App\Services\BusinessActivitySnapshotService;
 use App\Services\BusinessRecordDeletionService;
+use App\Services\LeaseInitializationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Services\LeaseInitializationService;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
-    /**
-     * REST API controller for Patrimoine Leases.
-     *
-     * Business validation remains in Form Requests and financial services so
-     * this controller stays focused on HTTP/application orchestration.
-     */
-    class LeaseController extends Controller
-    {
+/**
+ * REST API controller for Patrimoine Leases.
+ *
+ * Business validation remains in Form Requests and financial services so
+ * this controller stays focused on HTTP/application orchestration.
+ */
+class LeaseController extends Controller
+{
     /**
      * Return Leases with their Unit, Building, Tenant and Agent.
      *
@@ -161,6 +163,7 @@ use Illuminate\Support\Arr;
                 )
         );
     }
+
     /**
      * Create a Lease and initialize all operational records that should
      * already exist as of today.
@@ -171,83 +174,106 @@ use Illuminate\Support\Arr;
      * The entire operation is transactional so Patrimoine never leaves behind
      * a partially initialized Lease if billing initialization fails.
      */
-/**
- * Create a Lease and reconstruct all records that should already exist.
- *
- * Contractual Lease attributes and historical opening-financial instructions
- * are deliberately separated because payment metadata does not belong to the
- * leases table.
- */
-
-public function store(
-    StoreLeaseRequest $request,
-    LeaseInitializationService $initializer
-): JsonResponse {
-    $validated =
-        $request->validated();
-
-    /*
-     * These fields describe an historical financial event rather than
-     * contractual Lease attributes.
+    /**
+     * Create a Lease and reconstruct all records that should already exist.
+     *
+     * Contractual Lease attributes and historical opening-financial instructions
+     * are deliberately separated because payment metadata does not belong to the
+     * leases table.
      */
-    $openingFinancialData =
-        Arr::only(
-            $validated,
-            [
-                'advance_received',
-                'advance_received_date',
-                'advance_received_method',
-                'advance_received_reference',
-                'advance_received_collector',
-            ]
-        );
+    public function store(
+        StoreLeaseRequest $request,
+        LeaseInitializationService $initializer,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
+    ): JsonResponse {
+        $validated =
+            $request->validated();
 
-    $leaseAttributes =
-        Arr::except(
-            $validated,
-            [
-                'advance_received',
-                'advance_received_date',
-                'advance_received_method',
-                'advance_received_reference',
-                'advance_received_collector',
-            ]
-        );
-
-    $lease = DB::transaction(
-        function () use (
-            $leaseAttributes,
-            $openingFinancialData,
-            $initializer
-        ): Lease {
-            $lease = Lease::create(
-                $leaseAttributes
+        /*
+         * These fields describe an historical financial event rather than
+         * contractual Lease attributes.
+         */
+        $openingFinancialData =
+            Arr::only(
+                $validated,
+                [
+                    'advance_received',
+                    'advance_received_date',
+                    'advance_received_method',
+                    'advance_received_reference',
+                    'advance_received_collector',
+                ]
             );
 
-            $initializer->initialize(
-                lease: $lease,
-                openingFinancialData:
-                    $openingFinancialData
+        $leaseAttributes =
+            Arr::except(
+                $validated,
+                [
+                    'advance_received',
+                    'advance_received_date',
+                    'advance_received_method',
+                    'advance_received_reference',
+                    'advance_received_collector',
+                ]
             );
 
-            return $lease->refresh();
-        }
-    );
+        $lease = DB::transaction(
+            function () use (
+                $leaseAttributes,
+                $openingFinancialData,
+                $initializer,
+                $activityLog,
+                $request,
+                $snapshots
+            ): Lease {
+                $lease = Lease::create(
+                    $leaseAttributes
+                );
 
-    return response()->json(
-        data: $lease->load([
-            'unit.building.ownerships.party',
-            'tenant',
-            'agent',
-            'invoices',
-            'payments.allocations.invoice',
-            'tenantFundAccounts.transactions',
-        ]),
-        status: 201
-    );
-}
+                $initializer->initialize(
+                    lease: $lease,
+                    openingFinancialData: $openingFinancialData
+                );
 
+                $lease = $lease
+                    ->refresh()
+                    ->load([
+                        'unit.building',
+                        'tenant',
+                        'agent',
+                    ]);
 
+                /*
+                 * Lease initialization can create financial records. Those are
+                 * automatic consequences of this one human Lease action and are
+                 * deliberately not logged here as separate human events.
+                 */
+                $activityLog->record(
+                    action: 'lease.created',
+                    request: $request,
+                    entityType: 'lease',
+                    entityId: $lease->id,
+                    entityLabel: $snapshots->leaseLabel($lease),
+                    snapshot: $snapshots->lease($lease),
+                );
+
+                return $lease;
+            }
+        );
+
+        return response()->json(
+            data: $lease->load([
+                'unit.building.ownerships.party',
+                'tenant',
+                'agent',
+                'invoices',
+                'payments.allocations.invoice',
+                'tenantFundAccounts.transactions',
+            ]),
+            status: 201
+        );
+    }
 
     /**
      * Return one Lease with its operational financial relationships.
@@ -298,7 +324,6 @@ public function store(
         );
     }
 
-
     /**
      * Update a Lease and initialize any historical operational records requested.
      *
@@ -308,7 +333,9 @@ public function store(
     public function update(
         UpdateLeaseRequest $request,
         Lease $lease,
-        LeaseInitializationService $initializer
+        LeaseInitializationService $initializer,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
     ): JsonResponse {
         $validated =
             $request->validated();
@@ -346,8 +373,22 @@ public function store(
                 $lease,
                 $leaseAttributes,
                 $openingFinancialData,
-                $initializer
+                $initializer,
+                $activityLog,
+                $request,
+                $snapshots
             ): Lease {
+                $beforeSnapshot =
+                    $snapshots->lease(
+                        $lease
+                            ->fresh()
+                            ->load([
+                                'unit.building',
+                                'tenant',
+                                'agent',
+                            ])
+                    );
+
                 /*
                 * First persist the contractual state.
                 */
@@ -369,11 +410,39 @@ public function store(
                 */
                 $initializer->initialize(
                     lease: $lease->refresh(),
-                    openingFinancialData:
-                        $openingFinancialData
+                    openingFinancialData: $openingFinancialData
                 );
 
-                return $lease->refresh();
+                $lease = $lease
+                    ->refresh()
+                    ->load([
+                        'unit.building',
+                        'tenant',
+                        'agent',
+                    ]);
+
+                $afterSnapshot =
+                    $snapshots->lease($lease);
+
+                [$before, $after] =
+                    $snapshots->changes(
+                        $beforeSnapshot,
+                        $afterSnapshot
+                    );
+
+                if ($before !== []) {
+                    $activityLog->record(
+                        action: 'lease.updated',
+                        request: $request,
+                        entityType: 'lease',
+                        entityId: $lease->id,
+                        entityLabel: $snapshots->leaseLabel($lease),
+                        before: $before,
+                        after: $after,
+                    );
+                }
+
+                return $lease;
             }
         );
 
@@ -396,9 +465,18 @@ public function store(
      * history from being removed accidentally.
      */
     public function destroy(
+        Request $request,
         Lease $lease,
-        BusinessRecordDeletionService $deletions
+        BusinessRecordDeletionService $deletions,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
     ): JsonResponse {
+        $targetId = $lease->id;
+        $targetLabel =
+            $snapshots->leaseLabel($lease);
+        $snapshot =
+            $snapshots->lease($lease);
+
         $message =
             $deletions->deleteLease(
                 $lease
@@ -412,6 +490,15 @@ public function store(
                 409
             );
         }
+
+        $activityLog->record(
+            action: 'lease.deleted',
+            request: $request,
+            entityType: 'lease',
+            entityId: $targetId,
+            entityLabel: $targetLabel,
+            snapshot: $snapshot,
+        );
 
         return response()->json(
             data: null,
