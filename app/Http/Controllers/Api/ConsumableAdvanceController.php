@@ -10,6 +10,8 @@ use App\Services\ConsumableAdvanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
+use App\Services\ActivityLogService;
+use App\Services\FinancialActivitySnapshotService;
 
 /**
  * Transactional API controller for Consumable Advance usage.
@@ -27,7 +29,9 @@ class ConsumableAdvanceController extends Controller
     public function consume(
         ConsumeAdvanceRequest $request,
         TenantFundAccount $tenantFundAccount,
-        ConsumableAdvanceService $service
+        ConsumableAdvanceService $service,
+        ActivityLogService $activityLog,
+        FinancialActivitySnapshotService $activitySnapshots
     ): JsonResponse {
         /*
          * Protect this workflow from accidentally receiving another fund
@@ -64,6 +68,17 @@ class ConsumableAdvanceController extends Controller
 
         $tenantFundAccount->refresh();
         $invoice->refresh();
+
+        $activityLog->record(
+            action: 'consumable_advance.consumed',
+            request: $request,
+            entityType: 'tenant_fund_transaction',
+            entityId: $transaction->id,
+            entityLabel: 'Consumable Advance transaction #'.$transaction->id,
+            snapshot: $activitySnapshots->tenantFundTransaction(
+                $transaction
+            ),
+        );
 
         return response()->json(
             data: [

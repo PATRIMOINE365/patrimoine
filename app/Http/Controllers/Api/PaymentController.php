@@ -7,6 +7,8 @@ use App\Http\Requests\StorePaymentRequest;
 use App\Models\Payment;
 use App\Models\TenantFundTransaction;
 use App\Services\PaymentAllocationService;
+use App\Services\ActivityLogService;
+use App\Services\FinancialActivitySnapshotService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -96,7 +98,9 @@ class PaymentController extends Controller
     public function store(
         StorePaymentRequest $request,
         PaymentAllocationService $allocationService,
-        EmailDeliveryService $emailDeliveryService
+        EmailDeliveryService $emailDeliveryService,
+        ActivityLogService $activityLog,
+        FinancialActivitySnapshotService $activitySnapshots
     ): JsonResponse {
         $payment = DB::transaction(
             function () use (
@@ -124,6 +128,15 @@ class PaymentController extends Controller
                     'allocations.invoice',
                 ]);
             }
+        );
+
+        $activityLog->record(
+            action: 'payment.recorded',
+            request: $request,
+            entityType: 'payment',
+            entityId: $payment->id,
+            entityLabel: 'Payment #'.$payment->id,
+            snapshot: $activitySnapshots->payment($payment),
         );
 
         /*
