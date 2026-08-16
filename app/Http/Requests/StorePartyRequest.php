@@ -19,8 +19,7 @@ use Illuminate\Validation\Rule;
 class StorePartyRequest extends FormRequest
 {
     /**
-     * Authorization will later be enforced through the application
-     * authentication/permission layer.
+     * Authorization is enforced centrally by Patrimoine capability middleware.
      *
      * For now, API access is allowed while the core application is
      * under development.

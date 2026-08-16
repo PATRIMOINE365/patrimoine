@@ -33,3 +33,19 @@ body {
 [x-cloak] {
     display: none !important;
 }
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.3 Role-Aware Application UI
+|--------------------------------------------------------------------------
+|
+| Keep authorization visibility separate from Tailwind's normal `hidden`
+| utility. Feature JavaScript may legitimately add/remove `hidden` for
+| modals and conditional sections, but it must never reveal an action that
+| RBAC has hidden.
+|
+*/
+
+.rbac-hidden {
+    display: none !important;
+}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InitialSetupRequest;
 use App\Models\ApplicationSetting;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\DB;
  * This controller is intentionally narrow. It exists only to bootstrap a
  * fresh installation with:
  *
- * - the first Property Manager;
+ * - the first Administrator;
  * - the Managing Organisation;
  * - organisation-wide language/currency and VAT defaults.
  *
@@ -109,9 +110,26 @@ class InitialSetupController extends Controller
                                 'administrator_password'
                             ],
 
+                        /*
+                         * A fresh V1.0.3 installation always creates the
+                         * first application User as Administrator.
+                         */
                         'role' =>
-                            'property_manager',
+                            UserRole::Administrator,
                     ]);
+
+                /*
+                 * The first Administrator chooses their own password during
+                 * trusted Initial Setup and therefore does not use the later
+                 * invitation workflow.
+                 *
+                 * Verification is set explicitly rather than making
+                 * email_verified_at generally mass assignable on User.
+                 */
+                $user->forceFill([
+                    'email_verified_at' =>
+                        now(),
+                ])->save();
 
                 /*
                  * Managing Organisation remains a normal Organisation Party.

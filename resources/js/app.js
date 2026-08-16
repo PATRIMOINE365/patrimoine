@@ -67,6 +67,22 @@ import {
     initializeSettings,
 } from './settings.js';
 
+import {
+    initializeUsers,
+} from './users.js';
+
+import {
+    initializeActivityLog,
+} from './activity-log.js';
+
+import {
+    initializeChangePassword,
+    initializeForgotPassword,
+    initializeInvitation,
+    initializeResetPassword,
+} from './password.js';
+
+
 /*
 |--------------------------------------------------------------------------
 | Application Bootstrap
@@ -99,6 +115,17 @@ document.addEventListener(
             await initializeLogin();
 
         if (loginPage) {
+            return;
+        }
+
+        /*
+         * Public password ownership screens do not require an API token.
+         */
+        if (
+            initializeForgotPassword()
+            || initializeResetPassword()
+            || initializeInvitation()
+        ) {
             return;
         }
 
@@ -136,5 +163,11 @@ document.addEventListener(
         await initializeReports();
 
         await initializeSettings();
+
+        await initializeUsers();
+
+        await initializeActivityLog();
+
+        initializeChangePassword();
     }
 );

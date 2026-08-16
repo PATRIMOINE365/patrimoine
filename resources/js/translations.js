@@ -61,6 +61,67 @@ export const translations = {
         'login.secure_access':
             'Secure access to Patrimoine Property Management.',
 
+        'password.forgot_link':
+            'Forgot password?',
+        'password.forgot_title':
+            'Forgot password — Patrimoine',
+        'password.forgot_heading':
+            'Forgot your password?',
+        'password.forgot_description':
+            'Enter your email address and we will send you a password reset link.',
+        'password.send_reset':
+            'Send reset link',
+        'password.sending':
+            'Sending…',
+        'password.reset_requested':
+            'If the account is eligible, a password reset link has been sent.',
+        'password.back_to_login':
+            'Back to sign in',
+        'password.reset_title':
+            'Reset password — Patrimoine',
+        'password.reset_heading':
+            'Reset your password',
+        'password.reset_description':
+            'Choose a new password for your Patrimoine account.',
+        'password.new_password':
+            'New password',
+        'password.confirm_password':
+            'Confirm password',
+        'password.reset_action':
+            'Reset password',
+        'password.resetting':
+            'Resetting…',
+        'password.reset_complete':
+            'Your password has been reset successfully.',
+        'password.invitation_title':
+            'Set password — Patrimoine',
+        'password.invitation_heading':
+            'Set your password',
+        'password.invitation_description':
+            'Create a password to activate your Patrimoine account.',
+        'password.set_password':
+            'Set password',
+        'password.setting_password':
+            'Setting password…',
+        'password.invitation_complete':
+            'Your password has been set successfully.',
+        'password.current_password':
+            'Current password',
+        'password.change_action':
+            'Change password',
+        'password.change_heading':
+            'Change password',
+        'password.change_description':
+            'Update the password for your account.',
+        'password.changing':
+            'Changing…',
+        'password.confirmation_mismatch':
+            'The password confirmation does not match.',
+        'password.request_failed':
+            'Unable to complete the password request.',
+        'login.missing_api_token':
+            'Authentication succeeded but no API token was returned.',
+
         'navigation.workspace':
             'Workspace',
 
@@ -168,6 +229,217 @@ export const translations = {
 
         'language.fr':
             'French',
+
+        'navigation.activity_log':
+            'Activity Log',
+
+        'navigation.users':
+            'Users',
+
+        'roles.administrator':
+            'Administrator',
+        'roles.property_manager':
+            'Property Manager',
+        'roles.viewer':
+            'Viewer',
+
+        'activity_log.title':
+            'Activity Log — Patrimoine',
+        'activity_log.administration':
+            'Administration',
+        'activity_log.heading':
+            'Activity Log',
+        'activity_log.description':
+            'Review meaningful human actions recorded by Patrimoine.',
+        'activity_log.search':
+            'Search',
+        'activity_log.search_placeholder':
+            'Search actor, action, record, IP or historical context...',
+        'activity_log.from':
+            'From',
+        'activity_log.to':
+            'To',
+        'activity_log.user':
+            'User',
+        'activity_log.all_users':
+            'All users',
+        'activity_log.role':
+            'Role',
+        'activity_log.all_roles':
+            'All roles',
+        'activity_log.action':
+            'Action',
+        'activity_log.action_placeholder':
+            'e.g. payment.recorded',
+        'activity_log.entity_type':
+            'Record Type',
+        'activity_log.entity_type_placeholder':
+            'e.g. payment',
+        'activity_log.clear_filters':
+            'Clear Filters',
+        'activity_log.export_pdf':
+            'Export PDF',
+        'activity_log.export_csv':
+            'Export CSV',
+        'activity_log.exporting':
+            'Exporting...',
+        'activity_log.unable_export':
+            'Unable to export Activity Log.',
+        'activity_log.loading':
+            'Loading activity...',
+        'activity_log.none_found':
+            'No activity found',
+        'activity_log.none_found_description':
+            'No recorded activity matches the current filters.',
+        'activity_log.view_details':
+            'View Details',
+        'activity_log.page_of':
+            'Page :current of :last',
+        'activity_log.previous':
+            'Previous',
+        'activity_log.next':
+            'Next',
+        'activity_log.detail_heading':
+            'Activity Details',
+        'activity_log.detail_description':
+            'Immutable historical information recorded for this action.',
+        'activity_log.loading_detail':
+            'Loading activity details...',
+        'activity_log.unable_load':
+            'Unable to load Activity Log.',
+        'activity_log.unable_load_detail':
+            'Unable to load activity details.',
+        'activity_log.close':
+            'Close',
+        'activity_log.event':
+            'Event',
+        'activity_log.timestamp':
+            'Timestamp',
+        'activity_log.actor':
+            'Actor',
+        'activity_log.email':
+            'Email',
+        'activity_log.ip_address':
+            'IP Address',
+        'activity_log.entity':
+            'Record',
+        'activity_log.before_values':
+            'Before',
+        'activity_log.after_values':
+            'After',
+        'activity_log.snapshot':
+            'Snapshot',
+        'activity_log.metadata':
+            'Additional Context',
+        'activity_log.not_available':
+            'Not available',
+        'activity_log.unknown_actor':
+            'Unknown actor',
+
+        'users.title':
+            'Users — Patrimoine',
+        'users.administration':
+            'Administration',
+        'users.heading':
+            'User Management',
+        'users.description':
+            'Manage application users, roles and account access.',
+        'users.add_user':
+            'Add User',
+        'users.edit_user':
+            'Edit User',
+        'users.create_user':
+            'Create User',
+        'users.create_description':
+            'Create an application user and send a secure password-setup invitation.',
+        'users.edit_description':
+            'Update this application user’s identity, role or account status.',
+        'users.name':
+            'Name',
+        'users.email':
+            'Email',
+        'users.phone':
+            'Phone',
+        'users.role':
+            'Role',
+        'users.status':
+            'Status',
+        'users.search':
+            'Search',
+        'users.search_placeholder':
+            'Search name, email or phone...',
+        'users.all_roles':
+            'All roles',
+        'users.all_statuses':
+            'All statuses',
+        'users.active':
+            'Active',
+        'users.inactive':
+            'Inactive',
+        'users.active_account':
+            'Active account',
+        'users.active_account_help':
+            'Inactive users cannot sign in.',
+        'users.invitation_pending':
+            'Invitation pending',
+        'users.you':
+            'You',
+        'users.loading':
+            'Loading users...',
+        'users.none_found':
+            'No users found',
+        'users.none_found_description':
+            'Create a user or change the current filters.',
+        'users.edit':
+            'Edit',
+        'users.delete':
+            'Delete',
+        'users.resend_invitation':
+            'Resend invitation',
+        'users.send_password_reset':
+            'Send password reset',
+        'users.cancel':
+            'Cancel',
+        'users.close':
+            'Close',
+        'users.save_changes':
+            'Save Changes',
+        'users.saving':
+            'Saving...',
+        'users.creating':
+            'Creating...',
+        'users.created':
+            'User created and invitation sent successfully.',
+        'users.updated':
+            'User updated successfully.',
+        'users.deleted':
+            'User deleted successfully.',
+        'users.invitation_resent':
+            'A new invitation has been sent. Previous invitation links are no longer valid.',
+        'users.reset_sent':
+            'The password reset workflow has been initiated.',
+        'users.resend_confirmation':
+            'Send a new invitation to :name? Previous invitation links will stop working.',
+        'users.reset_confirmation':
+            'Send a password reset link to :name?',
+        'users.delete_confirmation':
+            'Delete :name? This cannot be undone.',
+        'users.unable_load':
+            'Unable to load users.',
+        'users.unable_create':
+            'Unable to create user.',
+        'users.unable_update':
+            'Unable to update user.',
+        'users.unable_delete':
+            'Unable to delete user.',
+        'users.action_failed':
+            'Unable to complete this user action.',
+        'users.page_of':
+            'Page :current of :last',
+        'users.previous':
+            'Previous',
+        'users.next':
+            'Next',
 
         'settings.title':
             'Settings — Patrimoine',
@@ -380,7 +652,7 @@ export const translations = {
         'leases.unable_update': 'Unable to update Lease.',
         'leases.unable_create': 'Unable to create Lease.',
         'leases.this_lease': 'this Lease',
-        'leases.delete_financial_history_warning': 'Leases with financial history may not be deleted.',
+        'leases.delete_financial_history_warning': 'Only an unused draft Lease can be deleted. Active or notice Leases must use termination, and terminated Leases remain as history.',
         'leases.unable_delete': 'Unable to delete Lease.',
         'leases.security_review_description': 'Review held funds, deductions and final settlement.',
         'leases.unable_load_security_deposit': 'Unable to load Security Deposit.',
@@ -1102,7 +1374,7 @@ export const translations = {
         'parties.unable_to_create_party': 'Unable to create Party.',
         'parties.delete_confirmation': 'Delete "{{name}}"?',
         'parties.this_party': 'this Party',
-        'parties.delete_restriction': 'A Party referenced by leases, ownership or financial records cannot be deleted.',
+        'parties.delete_restriction': 'Only an unreferenced Party can be deleted. Parties used by leases, ownership, agency or financial history must be retained.',
         'parties.unable_to_delete_party': 'Unable to delete Party.',
 
         'parties.title': 'Parties — Patrimoine',
@@ -1534,6 +1806,67 @@ export const translations = {
         'login.secure_access':
             'Accès sécurisé à Patrimoine Gestion immobilière.',
 
+        'password.forgot_link':
+            'Mot de passe oublié ?',
+        'password.forgot_title':
+            'Mot de passe oublié — Patrimoine',
+        'password.forgot_heading':
+            'Mot de passe oublié ?',
+        'password.forgot_description':
+            'Saisissez votre adresse e-mail et nous vous enverrons un lien de réinitialisation.',
+        'password.send_reset':
+            'Envoyer le lien',
+        'password.sending':
+            'Envoi…',
+        'password.reset_requested':
+            'Si le compte est éligible, un lien de réinitialisation a été envoyé.',
+        'password.back_to_login':
+            'Retour à la connexion',
+        'password.reset_title':
+            'Réinitialiser le mot de passe — Patrimoine',
+        'password.reset_heading':
+            'Réinitialisez votre mot de passe',
+        'password.reset_description':
+            'Choisissez un nouveau mot de passe pour votre compte Patrimoine.',
+        'password.new_password':
+            'Nouveau mot de passe',
+        'password.confirm_password':
+            'Confirmer le mot de passe',
+        'password.reset_action':
+            'Réinitialiser le mot de passe',
+        'password.resetting':
+            'Réinitialisation…',
+        'password.reset_complete':
+            'Votre mot de passe a été réinitialisé avec succès.',
+        'password.invitation_title':
+            'Définir le mot de passe — Patrimoine',
+        'password.invitation_heading':
+            'Définissez votre mot de passe',
+        'password.invitation_description':
+            'Créez un mot de passe pour activer votre compte Patrimoine.',
+        'password.set_password':
+            'Définir le mot de passe',
+        'password.setting_password':
+            'Définition du mot de passe…',
+        'password.invitation_complete':
+            'Votre mot de passe a été défini avec succès.',
+        'password.current_password':
+            'Mot de passe actuel',
+        'password.change_action':
+            'Modifier le mot de passe',
+        'password.change_heading':
+            'Modifier le mot de passe',
+        'password.change_description':
+            'Modifiez le mot de passe de votre compte.',
+        'password.changing':
+            'Modification…',
+        'password.confirmation_mismatch':
+            'La confirmation du mot de passe ne correspond pas.',
+        'password.request_failed':
+            'Impossible d’effectuer la demande de mot de passe.',
+        'login.missing_api_token':
+            'La connexion a réussi, mais aucun jeton API n’a été retourné.',
+
         'navigation.workspace':
             'Espace de travail',
 
@@ -1641,6 +1974,217 @@ export const translations = {
 
         'language.fr':
             'Français',
+
+        'navigation.activity_log':
+            'Journal d’activité',
+
+        'navigation.users':
+            'Utilisateurs',
+
+        'roles.administrator':
+            'Administrateur',
+        'roles.property_manager':
+            'Gestionnaire immobilier',
+        'roles.viewer':
+            'Consultation',
+
+        'activity_log.title':
+            'Journal d’activité — Patrimoine',
+        'activity_log.administration':
+            'Administration',
+        'activity_log.heading':
+            'Journal d’activité',
+        'activity_log.description':
+            'Consultez les actions humaines significatives enregistrées par Patrimoine.',
+        'activity_log.search':
+            'Rechercher',
+        'activity_log.search_placeholder':
+            'Rechercher un utilisateur, une action, un enregistrement, une adresse IP ou un contexte historique...',
+        'activity_log.from':
+            'Du',
+        'activity_log.to':
+            'Au',
+        'activity_log.user':
+            'Utilisateur',
+        'activity_log.all_users':
+            'Tous les utilisateurs',
+        'activity_log.role':
+            'Rôle',
+        'activity_log.all_roles':
+            'Tous les rôles',
+        'activity_log.action':
+            'Action',
+        'activity_log.action_placeholder':
+            'ex. payment.recorded',
+        'activity_log.entity_type':
+            'Type d’enregistrement',
+        'activity_log.entity_type_placeholder':
+            'ex. payment',
+        'activity_log.clear_filters':
+            'Effacer les filtres',
+        'activity_log.export_pdf':
+            'Exporter en PDF',
+        'activity_log.export_csv':
+            'Exporter en CSV',
+        'activity_log.exporting':
+            'Export en cours...',
+        'activity_log.unable_export':
+            'Impossible d’exporter le journal d’activité.',
+        'activity_log.loading':
+            'Chargement du journal d’activité...',
+        'activity_log.none_found':
+            'Aucune activité trouvée',
+        'activity_log.none_found_description':
+            'Aucune activité enregistrée ne correspond aux filtres actuels.',
+        'activity_log.view_details':
+            'Voir les détails',
+        'activity_log.page_of':
+            'Page :current sur :last',
+        'activity_log.previous':
+            'Précédent',
+        'activity_log.next':
+            'Suivant',
+        'activity_log.detail_heading':
+            'Détails de l’activité',
+        'activity_log.detail_description':
+            'Informations historiques immuables enregistrées pour cette action.',
+        'activity_log.loading_detail':
+            'Chargement des détails...',
+        'activity_log.unable_load':
+            'Impossible de charger le journal d’activité.',
+        'activity_log.unable_load_detail':
+            'Impossible de charger les détails de l’activité.',
+        'activity_log.close':
+            'Fermer',
+        'activity_log.event':
+            'Événement',
+        'activity_log.timestamp':
+            'Horodatage',
+        'activity_log.actor':
+            'Utilisateur',
+        'activity_log.email':
+            'E-mail',
+        'activity_log.ip_address':
+            'Adresse IP',
+        'activity_log.entity':
+            'Enregistrement',
+        'activity_log.before_values':
+            'Avant',
+        'activity_log.after_values':
+            'Après',
+        'activity_log.snapshot':
+            'Instantané',
+        'activity_log.metadata':
+            'Contexte complémentaire',
+        'activity_log.not_available':
+            'Non disponible',
+        'activity_log.unknown_actor':
+            'Utilisateur inconnu',
+
+        'users.title':
+            'Utilisateurs — Patrimoine',
+        'users.administration':
+            'Administration',
+        'users.heading':
+            'Gestion des utilisateurs',
+        'users.description':
+            'Gérez les utilisateurs de l’application, leurs rôles et l’accès à leur compte.',
+        'users.add_user':
+            'Ajouter un utilisateur',
+        'users.edit_user':
+            'Modifier l’utilisateur',
+        'users.create_user':
+            'Créer l’utilisateur',
+        'users.create_description':
+            'Créez un utilisateur de l’application et envoyez-lui une invitation sécurisée pour définir son mot de passe.',
+        'users.edit_description':
+            'Modifiez l’identité, le rôle ou l’état du compte de cet utilisateur.',
+        'users.name':
+            'Nom',
+        'users.email':
+            'E-mail',
+        'users.phone':
+            'Téléphone',
+        'users.role':
+            'Rôle',
+        'users.status':
+            'État',
+        'users.search':
+            'Rechercher',
+        'users.search_placeholder':
+            'Rechercher par nom, e-mail ou téléphone...',
+        'users.all_roles':
+            'Tous les rôles',
+        'users.all_statuses':
+            'Tous les états',
+        'users.active':
+            'Actif',
+        'users.inactive':
+            'Inactif',
+        'users.active_account':
+            'Compte actif',
+        'users.active_account_help':
+            'Les utilisateurs inactifs ne peuvent pas se connecter.',
+        'users.invitation_pending':
+            'Invitation en attente',
+        'users.you':
+            'Vous',
+        'users.loading':
+            'Chargement des utilisateurs...',
+        'users.none_found':
+            'Aucun utilisateur trouvé',
+        'users.none_found_description':
+            'Créez un utilisateur ou modifiez les filtres actuels.',
+        'users.edit':
+            'Modifier',
+        'users.delete':
+            'Supprimer',
+        'users.resend_invitation':
+            'Renvoyer l’invitation',
+        'users.send_password_reset':
+            'Envoyer la réinitialisation',
+        'users.cancel':
+            'Annuler',
+        'users.close':
+            'Fermer',
+        'users.save_changes':
+            'Enregistrer les modifications',
+        'users.saving':
+            'Enregistrement...',
+        'users.creating':
+            'Création...',
+        'users.created':
+            'Utilisateur créé et invitation envoyée avec succès.',
+        'users.updated':
+            'Utilisateur mis à jour avec succès.',
+        'users.deleted':
+            'Utilisateur supprimé avec succès.',
+        'users.invitation_resent':
+            'Une nouvelle invitation a été envoyée. Les anciens liens d’invitation ne sont plus valides.',
+        'users.reset_sent':
+            'La procédure de réinitialisation du mot de passe a été lancée.',
+        'users.resend_confirmation':
+            'Envoyer une nouvelle invitation à :name ? Les anciens liens d’invitation cesseront de fonctionner.',
+        'users.reset_confirmation':
+            'Envoyer un lien de réinitialisation du mot de passe à :name ?',
+        'users.delete_confirmation':
+            'Supprimer :name ? Cette action est irréversible.',
+        'users.unable_load':
+            'Impossible de charger les utilisateurs.',
+        'users.unable_create':
+            'Impossible de créer l’utilisateur.',
+        'users.unable_update':
+            'Impossible de mettre à jour l’utilisateur.',
+        'users.unable_delete':
+            'Impossible de supprimer l’utilisateur.',
+        'users.action_failed':
+            'Impossible d’effectuer cette action sur l’utilisateur.',
+        'users.page_of':
+            'Page :current sur :last',
+        'users.previous':
+            'Précédent',
+        'users.next':
+            'Suivant',
 
         'settings.title':
             'Paramètres — Patrimoine',
@@ -2183,7 +2727,7 @@ export const translations = {
         'leases.unable_update': 'Impossible de mettre à jour le bail.',
         'leases.unable_create': 'Impossible de créer le bail.',
         'leases.this_lease': 'ce bail',
-        'leases.delete_financial_history_warning': 'Les baux ayant un historique financier ne peuvent pas être supprimés.',
+        'leases.delete_financial_history_warning': 'Seul un bail brouillon inutilisé peut être supprimé. Les baux actifs ou en préavis doivent être résiliés, et les baux résiliés restent conservés comme historique.',
         'leases.unable_delete': 'Impossible de supprimer le bail.',
         'leases.security_review_description': 'Consultez les fonds détenus, les déductions et le règlement final.',
         'leases.unable_load_security_deposit': 'Impossible de charger le dépôt de garantie.',
@@ -2905,7 +3449,7 @@ export const translations = {
         'parties.unable_to_create_party': 'Impossible de créer la partie.',
         'parties.delete_confirmation': 'Supprimer « {{name}} » ?',
         'parties.this_party': 'cette partie',
-        'parties.delete_restriction': 'Une partie référencée par des baux, des propriétés ou des opérations financières ne peut pas être supprimée.',
+        'parties.delete_restriction': 'Seule une partie sans référence peut être supprimée. Les parties utilisées par des baux, des propriétés, des mandats d’agence ou un historique financier doivent être conservées.',
         'parties.unable_to_delete_party': 'Impossible de supprimer la partie.',
 
         'parties.title': 'Parties — Patrimoine',

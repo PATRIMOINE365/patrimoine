@@ -19,7 +19,7 @@ use Illuminate\Validation\Rule;
 class AllocateTenantFundRequest extends FormRequest
 {
     /**
-     * Authorization will later be enforced through Patrimoine permissions.
+     * Authorization is enforced centrally by Patrimoine capability middleware.
      */
     public function authorize(): bool
     {

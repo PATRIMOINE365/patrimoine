@@ -10,7 +10,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class ConsumeAdvanceRequest extends FormRequest
 {
     /**
-     * Authorization will later be enforced through Patrimoine permissions.
+     * Authorization is enforced centrally by Patrimoine capability middleware.
      */
     public function authorize(): bool
     {

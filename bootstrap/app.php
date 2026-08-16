@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\ApplyApplicationLocale;
 use Illuminate\Http\Request;
+use App\Http\Middleware\EnsureUserHasCapability;
 use App\Http\Middleware\EnsureUserHasRole;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -40,6 +41,14 @@ return Application::configure(basePath: dirname(__DIR__))
         *     ->middleware('role:property_manager')
         */
         $middleware->alias([
+            /*
+             * Capability authorization is authoritative from V1.0.3
+             * Activity C onward.
+             *
+             * The legacy role alias remains temporarily registered only for
+             * compatibility with code outside the migrated business routes.
+             */
+            'capability' => EnsureUserHasCapability::class,
             'role' => EnsureUserHasRole::class,
         ]);
     })

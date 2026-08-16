@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Services\ActivityLogService;
+use App\Services\FinancialActivitySnapshotService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOwnerPayoutRequest;
 use App\Models\OwnerAccount;
@@ -22,7 +24,9 @@ class OwnerPayoutController extends Controller
     public function store(
         StoreOwnerPayoutRequest $request,
         OwnerAccount $ownerAccount,
-        OwnerPayoutService $service
+        OwnerPayoutService $service,
+        ActivityLogService $activityLog,
+        FinancialActivitySnapshotService $activitySnapshots
     ): JsonResponse {
         $validated = $request->validated();
 
@@ -47,6 +51,17 @@ class OwnerPayoutController extends Controller
             'ownerAccount.party',
             'allocations.ownerTransaction',
         ]);
+
+        $activityLog->record(
+            action: 'owner_payout.recorded',
+            request: $request,
+            entityType: 'owner_payout',
+            entityId: $payout->id,
+            entityLabel: 'Owner payout #'.$payout->id,
+            snapshot: collect($payout->getAttributes())
+                ->except(['created_at', 'updated_at'])
+                ->all(),
+        );
 
         return response()->json(
             data: [

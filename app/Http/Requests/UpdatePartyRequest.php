@@ -14,7 +14,7 @@ use Illuminate\Validation\Rule;
 class UpdatePartyRequest extends FormRequest
 {
     /**
-     * Authorization will later be delegated to Patrimoine permissions.
+     * Authorization is enforced centrally by Patrimoine capability middleware.
      */
     public function authorize(): bool
     {

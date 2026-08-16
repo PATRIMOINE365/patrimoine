@@ -12,6 +12,8 @@ use App\Services\SecurityDepositService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
+use App\Services\ActivityLogService;
+use App\Services\FinancialActivitySnapshotService;
 
 /**
  * Operational API controller for Security Deposit close-out.
@@ -123,7 +125,9 @@ class SecurityDepositController extends Controller
      */
     public function addDeduction(
         StoreSecurityDepositDeductionRequest $request,
-        Lease $lease
+        Lease $lease,
+        ActivityLogService $activityLog,
+        FinancialActivitySnapshotService $activitySnapshots
     ): JsonResponse {
         if (
             $lease
@@ -205,6 +209,17 @@ class SecurityDepositController extends Controller
                     ),
             ]);
 
+        $activityLog->record(
+            action: 'security_deposit.deduction_added',
+            request: $request,
+            entityType: 'security_deposit_deduction',
+            entityId: $deduction->id,
+            entityLabel: 'Security Deposit deduction #'.$deduction->id,
+            snapshot: $activitySnapshots->securityDepositDeduction(
+                $deduction
+            ),
+        );
+
         return response()->json(
             data: $deduction,
             status: 201
@@ -222,7 +237,9 @@ class SecurityDepositController extends Controller
     public function settle(
         SettleSecurityDepositRequest $request,
         Lease $lease,
-        SecurityDepositService $service
+        SecurityDepositService $service,
+        ActivityLogService $activityLog,
+        FinancialActivitySnapshotService $activitySnapshots
     ): JsonResponse {
         $validated =
             $request->validated();
@@ -250,6 +267,17 @@ class SecurityDepositController extends Controller
                 ],
             ]);
         }
+
+        $activityLog->record(
+            action: 'security_deposit.settled',
+            request: $request,
+            entityType: 'security_deposit_settlement',
+            entityId: $settlement->id,
+            entityLabel: 'Security Deposit settlement #'.$settlement->id,
+            snapshot: $activitySnapshots->securityDepositSettlement(
+                $settlement
+            ),
+        );
 
         return response()->json(
             data:

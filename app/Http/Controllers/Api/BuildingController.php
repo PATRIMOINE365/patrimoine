@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBuildingRequest;
 use App\Http\Requests\UpdateBuildingRequest;
 use App\Models\Building;
+use App\Services\ActivityLogService;
+use App\Services\BusinessActivitySnapshotService;
+use App\Services\BusinessRecordDeletionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,8 +28,6 @@ class BuildingController extends Controller
                 'ownerships.party',
                 'units',
             ]);
-
-
 
         /*
         |--------------------------------------------------------------------------
@@ -96,10 +97,6 @@ class BuildingController extends Controller
             );
         }
 
-
-
-
-
         return response()->json(
             $query
                 ->orderBy('name')
@@ -116,10 +113,16 @@ class BuildingController extends Controller
      * Create a Building and its complete ownership allocation.
      */
     public function store(
-        StoreBuildingRequest $request
+        StoreBuildingRequest $request,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
     ): JsonResponse {
         $building = DB::transaction(
-            function () use ($request): Building {
+            function () use (
+                $request,
+                $activityLog,
+                $snapshots
+            ): Building {
                 $validated = $request->validated();
 
                 $owners = $validated['owners'];
@@ -131,15 +134,25 @@ class BuildingController extends Controller
                 foreach ($owners as $owner) {
                     $building->ownerships()->create([
                         'party_id' => $owner['party_id'],
-                        'ownership_percentage' =>
-                            $owner['ownership_percentage'],
+                        'ownership_percentage' => $owner['ownership_percentage'],
                     ]);
                 }
 
-                return $building->load([
+                $building->load([
                     'ownerships.party',
                     'units',
                 ]);
+
+                $activityLog->record(
+                    action: 'building.created',
+                    request: $request,
+                    entityType: 'building',
+                    entityId: $building->id,
+                    entityLabel: $building->name,
+                    snapshot: $snapshots->building($building),
+                );
+
+                return $building;
             }
         );
 
@@ -167,10 +180,24 @@ class BuildingController extends Controller
      */
     public function update(
         UpdateBuildingRequest $request,
-        Building $building
+        Building $building,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
     ): JsonResponse {
         $building = DB::transaction(
-            function () use ($request, $building): Building {
+            function () use (
+                $request,
+                $building,
+                $activityLog,
+                $snapshots
+            ): Building {
+                $beforeSnapshot =
+                    $snapshots->building(
+                        $building
+                            ->fresh()
+                            ->load('ownerships.party')
+                    );
+
                 $validated = $request->validated();
 
                 $owners = $validated['owners'];
@@ -179,25 +206,44 @@ class BuildingController extends Controller
 
                 $building->update($validated);
 
-                /*
-                 * Patrimoine V1 does not preserve historical ownership
-                 * percentage changes. The current allocation is therefore
-                 * replaced as one complete set.
-                 */
                 $building->ownerships()->delete();
 
                 foreach ($owners as $owner) {
                     $building->ownerships()->create([
                         'party_id' => $owner['party_id'],
-                        'ownership_percentage' =>
-                            $owner['ownership_percentage'],
+                        'ownership_percentage' => $owner['ownership_percentage'],
                     ]);
                 }
 
-                return $building->refresh()->load([
-                    'ownerships.party',
-                    'units',
-                ]);
+                $building = $building
+                    ->refresh()
+                    ->load([
+                        'ownerships.party',
+                        'units',
+                    ]);
+
+                $afterSnapshot =
+                    $snapshots->building($building);
+
+                [$before, $after] =
+                    $snapshots->changes(
+                        $beforeSnapshot,
+                        $afterSnapshot
+                    );
+
+                if ($before !== []) {
+                    $activityLog->record(
+                        action: 'building.updated',
+                        request: $request,
+                        entityType: 'building',
+                        entityId: $building->id,
+                        entityLabel: $building->name,
+                        before: $before,
+                        after: $after,
+                    );
+                }
+
+                return $building;
             }
         );
 
@@ -209,9 +255,40 @@ class BuildingController extends Controller
      *
      * Foreign-key restrictions protect contractual and financial history.
      */
-    public function destroy(Building $building): JsonResponse
-    {
-        $building->delete();
+    public function destroy(
+        Request $request,
+        Building $building,
+        BusinessRecordDeletionService $deletions,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
+    ): JsonResponse {
+        $targetId = $building->id;
+        $targetLabel = $building->name;
+        $snapshot =
+            $snapshots->building($building);
+
+        $message =
+            $deletions->deleteBuilding(
+                $building
+            );
+
+        if ($message !== null) {
+            return response()->json(
+                [
+                    'message' => $message,
+                ],
+                409
+            );
+        }
+
+        $activityLog->record(
+            action: 'building.deleted',
+            request: $request,
+            entityType: 'building',
+            entityId: $targetId,
+            entityLabel: $targetLabel,
+            snapshot: $snapshot,
+        );
 
         return response()->json(
             data: null,

@@ -31,6 +31,21 @@ Route::view(
 )->name('login');
 
 Route::view(
+    '/forgot-password',
+    'auth.forgot-password'
+)->name('forgot-password');
+
+Route::view(
+    '/reset-password',
+    'auth.reset-password'
+)->name('reset-password');
+
+Route::view(
+    '/invitation',
+    'auth.invitation'
+)->name('invitation');
+
+Route::view(
     '/dashboard',
     'app.dashboard'
 )->name('dashboard');
@@ -69,6 +84,16 @@ Route::view(
     '/reports',
     'app.reports'
 )->name('reports');
+
+Route::view(
+    '/activity-log',
+    'app.activity-log'
+)->name('activity-log');
+
+Route::view(
+    '/users',
+    'app.users'
+)->name('users');
 
 Route::view(
     '/settings',

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateManagingOrganisationRequest;
 use App\Models\ApplicationSetting;
 use App\Models\Party;
+use App\Services\ActivityLogService;
+use App\Services\BusinessActivitySnapshotService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -37,8 +39,7 @@ class ManagingOrganisationController extends Controller
         ) {
             return response()->json(
                 [
-                    'message' =>
-                        __('api.managing_organisation.not_configured'),
+                    'message' => __('api.managing_organisation.not_configured'),
                 ],
                 404
             );
@@ -56,13 +57,36 @@ class ManagingOrganisationController extends Controller
      * application-wide defaults.
      */
     public function update(
-        UpdateManagingOrganisationRequest $request
+        UpdateManagingOrganisationRequest $request,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
     ): JsonResponse {
         $settings = DB::transaction(
-            function () use ($request): ApplicationSetting {
+            function () use (
+                $request,
+                $activityLog,
+                $snapshots
+            ): ApplicationSetting {
                 $settings = ApplicationSetting::query()
                     ->lockForUpdate()
                     ->first();
+
+                $existed =
+                    $settings !== null
+                    && $settings
+                        ->managing_organisation_party_id
+                        !== null;
+
+                $beforeSnapshot = [];
+
+                if ($existed) {
+                    $beforeSnapshot =
+                        $snapshots->managingOrganisation(
+                            $settings->load(
+                                'managingOrganisation.roles'
+                            )
+                        );
+                }
 
                 /*
                  * The configuration row is created lazily so a fresh install
@@ -111,8 +135,7 @@ class ManagingOrganisationController extends Controller
                     array_merge(
                         $validated,
                         [
-                            'type' =>
-                                'organisation',
+                            'type' => 'organisation',
                         ]
                     );
 
@@ -127,8 +150,7 @@ class ManagingOrganisationController extends Controller
                         );
 
                     $settings->update([
-                        'managing_organisation_party_id' =>
-                            $party->id,
+                        'managing_organisation_party_id' => $party->id,
                     ]);
                 } else {
                     $party =
@@ -150,14 +172,11 @@ class ManagingOrganisationController extends Controller
                  * this value applies only when creating future records.
                  */
                 $settings->update([
-                    'default_vat_rate' =>
-                        $defaultVatRate,
+                    'default_vat_rate' => $defaultVatRate,
 
-                    'language' =>
-                        $language,
+                    'language' => $language,
 
-                    'currency' =>
-                        $currency,
+                    'currency' => $currency,
                 ]);
 
                 /*
@@ -167,15 +186,58 @@ class ManagingOrganisationController extends Controller
                 $party
                     ->roles()
                     ->firstOrCreate([
-                        'role' =>
-                            'managing_organisation',
+                        'role' => 'managing_organisation',
                     ]);
 
-                return $settings
+                $settings = $settings
                     ->refresh()
                     ->load(
                         'managingOrganisation.roles'
                     );
+
+                $afterSnapshot =
+                    $snapshots->managingOrganisation(
+                        $settings
+                    );
+
+                if (! $existed) {
+                    $activityLog->record(
+                        action: 'managing_organisation.created',
+                        request: $request,
+                        entityType: 'managing_organisation',
+                        entityId: $settings
+                            ->managing_organisation_party_id,
+                        entityLabel: $snapshots->partyLabel(
+                            $settings
+                                ->managingOrganisation
+                        ),
+                        snapshot: $afterSnapshot,
+                    );
+                } else {
+                    [$before, $after] =
+                        $snapshots->changes(
+                            $beforeSnapshot,
+                            $afterSnapshot
+                        );
+
+                    if ($before !== []) {
+                        $activityLog->record(
+                            action: 'managing_organisation.updated',
+                            request: $request,
+                            entityType: 'managing_organisation',
+                            entityId: $settings
+                                ->managing_organisation_party_id,
+                            entityLabel: $snapshots->partyLabel(
+                                $settings
+                                    ->managingOrganisation
+                            ),
+                            before: $before,
+                            after: $after,
+                        );
+                    }
+                }
+
+                return $settings;
             }
         );
 
@@ -204,19 +266,16 @@ class ManagingOrganisationController extends Controller
         return array_merge(
             $party->toArray(),
             [
-                'default_vat_rate' =>
-                    $settings
-                        ->default_vat_rate,
+                'default_vat_rate' => $settings
+                    ->default_vat_rate,
 
-                'language' =>
-                    $settings->language
+                'language' => $settings->language
                     ?? config(
                         'patrimoine.defaults.language',
                         'en'
                     ),
 
-                'currency' =>
-                    $settings->currency
+                'currency' => $settings->currency
                     ?? config(
                         'patrimoine.defaults.currency',
                         'GHS'

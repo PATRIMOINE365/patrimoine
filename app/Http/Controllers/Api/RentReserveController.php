@@ -10,6 +10,8 @@ use App\Services\RentReserveService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
+use App\Services\ActivityLogService;
+use App\Services\FinancialActivitySnapshotService;
 
 /**
  * Transactional API controller for Rent Reserve consumption.
@@ -26,7 +28,9 @@ class RentReserveController extends Controller
     public function consume(
         ConsumeRentReserveRequest $request,
         TenantFundAccount $tenantFundAccount,
-        RentReserveService $service
+        RentReserveService $service,
+        ActivityLogService $activityLog,
+        FinancialActivitySnapshotService $activitySnapshots
     ): JsonResponse {
         /*
          * Route-level protection prevents another fund-account type from
@@ -67,6 +71,17 @@ class RentReserveController extends Controller
 
         $tenantFundAccount->refresh();
         $invoice->refresh();
+
+        $activityLog->record(
+            action: 'rent_reserve.consumed',
+            request: $request,
+            entityType: 'tenant_fund_transaction',
+            entityId: $transaction->id,
+            entityLabel: 'Rent Reserve transaction #'.$transaction->id,
+            snapshot: $activitySnapshots->tenantFundTransaction(
+                $transaction
+            ),
+        );
 
         return response()->json(
             data: [

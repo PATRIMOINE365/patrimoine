@@ -20,12 +20,15 @@
 import {
     apiRequest,
     clearToken,
+    getPresentationConfiguration,
     initials,
     parseJsonResponse,
     saveToken,
     token,
     translate,
 } from './core.js';
+
+import { initializeBrowserAuthorization } from './permissions.js';
 
 /*
 |--------------------------------------------------------------------------
@@ -183,7 +186,9 @@ export async function initializeLogin() {
                     === ''
                 ) {
                     throw new Error(
-                        'Authentication succeeded but no API token was returned.'
+                        translate(
+                            'login.missing_api_token'
+                        )
                     );
                 }
 
@@ -262,6 +267,32 @@ export async function initializeAuthenticatedShell() {
         renderCurrentUser(
             user
         );
+
+        /*
+         * Store the authenticated application role for page modules and
+         * reveal only navigation/actions explicitly assigned to that role.
+         *
+         * Server-side capability middleware remains authoritative.
+         */
+        document.body.dataset.currentUserRole =
+            String(
+                user.role
+                || ''
+            );
+
+        /*
+         * Activity H applies the fixed browser capability matrix after the
+         * authenticated User has been resolved.
+         *
+         * Server-side API authorization remains authoritative.
+         */
+        if (
+            ! initializeBrowserAuthorization(
+                user
+            )
+        ) {
+            return false;
+        }
     } catch {
         return false;
     }
@@ -304,21 +335,16 @@ function renderCurrentUser(user) {
     }
 
     if (roleElement) {
-        roleElement.textContent =
+        const role =
             String(
                 user.role
                 || 'property_manager'
-            )
-                .replaceAll(
-                    '_',
-                    ' '
-                )
-                .replace(
-                    /\b\w/g,
-                    (character) =>
-                        character
-                            .toUpperCase()
-                );
+            );
+
+        roleElement.textContent =
+            translate(
+                `roles.${role}`
+            );
     }
 
     if (avatarElement) {
@@ -328,6 +354,8 @@ function renderCurrentUser(user) {
             );
     }
 }
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -489,32 +517,16 @@ async function loadManagingOrganisation() {
         return;
     }
 
-    try {
-        const response =
-            await apiRequest(
-                '/api/managing-organisation'
-            );
+    /*
+     * Presentation configuration is already loaded before authentication.
+     * It includes only non-sensitive display metadata and therefore avoids
+     * calling the Administrator-only Settings endpoint.
+     */
+    const configuration =
+        getPresentationConfiguration();
 
-        if (
-            response.status === 404
-        ) {
-            element.textContent =
-                'Patrimoine';
-
-            return;
-        }
-
-        const organisation =
-            await parseJsonResponse(
-                response
-            );
-
-        element.textContent =
-            organisation.legal_name
-            || organisation.name
-            || 'Patrimoine';
-    } catch {
-        element.textContent =
-            'Patrimoine';
-    }
+    element.textContent =
+        configuration
+            .organisation_name
+        || 'Patrimoine';
 }

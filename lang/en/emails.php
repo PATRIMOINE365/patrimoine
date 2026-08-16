@@ -66,4 +66,33 @@ return [
         'cheque' => 'Cheque',
         'check' => 'Cheque',
     ],
+
+    'user_invitation' => [
+        'subject' => 'Set up your :organisation account',
+        'title' => 'Set up your account',
+        'greeting' => 'Hello :name,',
+        'introduction' => 'You have been invited to use :organisation.',
+        'action' => 'Set my password',
+        'expiry' => 'This link expires in 24 hours.',
+        'ignore' => 'If you were not expecting this invitation, you can ignore this email.',
+    ],
+
+
+
+    'password_reset' => [
+        'subject' =>
+            'Reset your :organisation password',
+        'title' =>
+            'Reset your password',
+        'greeting' =>
+            'Hello :name,',
+        'introduction' =>
+            'A password reset was requested for your :organisation account.',
+        'action' =>
+            'Reset my password',
+        'expiry' =>
+            'This link expires in 24 hours.',
+        'ignore' =>
+            'If you did not request this reset, you can ignore this email.',
+    ],
 ];

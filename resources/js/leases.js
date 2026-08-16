@@ -137,12 +137,10 @@ export async function initializeLeases() {
 /**
  * Load application-wide Lease defaults.
  *
- * Patrimoine currently exposes financial defaults through the existing
- * Managing Organisation endpoint because ApplicationSetting belongs to
- * the single Patrimoine installation.
- *
- * A fresh installation may not yet have a Managing Organisation.
- * In that case the historical Patrimoine default of 18% remains active.
+ * Lease defaults are presentation/operational configuration rather than
+ * Administrator-only Managing Organisation data. Reading them from the
+ * presentation endpoint keeps Property Manager and Viewer Lease access
+ * independent from the manage_settings capability.
  */
 async function loadLeaseDefaults() {
     defaultVatRate =
@@ -150,26 +148,17 @@ async function loadLeaseDefaults() {
 
     const response =
         await apiRequest(
-            '/api/managing-organisation'
+            '/api/presentation-config'
         );
 
-    /*
-     * A fresh installation can legitimately have no configured managing
-     * organisation yet. Preserve the built-in fallback rather than blocking
-     * Lease creation.
-     */
-    if (response.status === 404) {
-        return;
-    }
-
-    const organisation =
+    const configuration =
         await parseJsonResponse(
             response
         );
 
     const configuredRate =
         Number(
-            organisation
+            configuration
                 ?.default_vat_rate
         );
 

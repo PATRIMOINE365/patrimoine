@@ -11,7 +11,7 @@ use Illuminate\Validation\Rules\Password;
  *
  * This request deliberately covers only the bootstrap data required to:
  *
- * - create the first Property Manager;
+ * - create the first Administrator;
  * - create the Managing Organisation;
  * - select the organisation-wide language and currency.
  *
@@ -40,7 +40,7 @@ class InitialSetupRequest extends FormRequest
     {
         return [
             /*
-             * First Property Manager.
+             * First Administrator.
              */
             'administrator_name' => [
                 'required',

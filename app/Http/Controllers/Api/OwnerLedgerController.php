@@ -10,6 +10,8 @@ use App\Services\OwnerLedgerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
+use App\Services\ActivityLogService;
+use App\Services\FinancialActivitySnapshotService;
 
 /**
  * Transactional API controller for direct owner-ledger operations.
@@ -26,7 +28,9 @@ class OwnerLedgerController extends Controller
     public function deposit(
         StoreOwnerDepositRequest $request,
         OwnerAccount $ownerAccount,
-        OwnerLedgerService $service
+        OwnerLedgerService $service,
+        ActivityLogService $activityLog,
+        FinancialActivitySnapshotService $activitySnapshots
     ): JsonResponse {
         $validated = $request->validated();
 
@@ -59,6 +63,15 @@ class OwnerLedgerController extends Controller
             ]);
         }
 
+        $activityLog->record(
+            action: 'owner_deposit.recorded',
+            request: $request,
+            entityType: 'owner_transaction',
+            entityId: $transaction->id,
+            entityLabel: 'Owner deposit #'.$transaction->id,
+            snapshot: $activitySnapshots->ownerTransaction($transaction),
+        );
+
         return response()->json(
             data: [
                 'transaction' =>
@@ -88,7 +101,9 @@ class OwnerLedgerController extends Controller
     public function adjustment(
         StoreOwnerAdjustmentRequest $request,
         OwnerAccount $ownerAccount,
-        OwnerLedgerService $service
+        OwnerLedgerService $service,
+        ActivityLogService $activityLog,
+        FinancialActivitySnapshotService $activitySnapshots
     ): JsonResponse {
         $validated = $request->validated();
 
@@ -108,6 +123,15 @@ class OwnerLedgerController extends Controller
                 ],
             ]);
         }
+
+        $activityLog->record(
+            action: 'owner_adjustment.recorded',
+            request: $request,
+            entityType: 'owner_transaction',
+            entityId: $transaction->id,
+            entityLabel: 'Owner adjustment #'.$transaction->id,
+            snapshot: $activitySnapshots->ownerTransaction($transaction),
+        );
 
         return response()->json(
             data: [

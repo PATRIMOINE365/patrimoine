@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\UserRole;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +37,34 @@ class EnsureUserHasRole
             );
         }
 
-        if ($user->role !== $role) {
+        $requiredRole =
+            UserRole::tryFrom($role);
+
+        /*
+         * Unknown configured roles fail closed.
+         */
+        if ($requiredRole === null) {
+            abort(
+                Response::HTTP_FORBIDDEN,
+                'You are not authorized to perform this action.'
+            );
+        }
+
+        /*
+         * Temporary compatibility rule for Activity B.
+         *
+         * Administrator inherits the old Property Manager route access until
+         * Activity C replaces this legacy role middleware with centralized
+         * capability authorization.
+         */
+        $authorized =
+            $user->hasRole($requiredRole)
+            || (
+                $requiredRole === UserRole::PropertyManager
+                && $user->hasRole(UserRole::Administrator)
+            );
+
+        if (! $authorized) {
             abort(
                 Response::HTTP_FORBIDDEN,
                 'You are not authorized to perform this action.'

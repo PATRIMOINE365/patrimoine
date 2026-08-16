@@ -10,6 +10,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
+use App\Services\ActivityLogService;
+use App\Services\FinancialActivitySnapshotService;
 
 /**
  * Transactional API controller for owner-funded property expenses.
@@ -21,7 +23,9 @@ class OwnerExpenseController extends Controller
      */
     public function store(
         StoreOwnerExpenseRequest $request,
-        OwnerAccountingService $service
+        OwnerAccountingService $service,
+        ActivityLogService $activityLog,
+        FinancialActivitySnapshotService $activitySnapshots
     ): JsonResponse {
         $result = DB::transaction(
             function () use ($request, $service): array {
@@ -49,6 +53,17 @@ class OwnerExpenseController extends Controller
                     'owner_transactions' => $transactions,
                 ];
             }
+        );
+
+        $expense = $result['expense'];
+
+        $activityLog->record(
+            action: 'owner_expense.recorded',
+            request: $request,
+            entityType: 'owner_expense',
+            entityId: $expense->id,
+            entityLabel: 'Owner expense #'.$expense->id,
+            snapshot: $activitySnapshots->ownerExpense($expense),
         );
 
         return response()->json(

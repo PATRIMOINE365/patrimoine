@@ -9,6 +9,7 @@ use App\Models\Lease;
 use App\Models\Party;
 use App\Models\RentIncrement;
 use App\Models\Unit;
+use App\Services\Notifications\EmailDeliveryService;
 use App\Services\RentIncrementService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -55,59 +56,41 @@ class RentIncrementNotificationTest extends TestCase
         return Lease::create(
             array_merge(
                 [
-                    'unit_id' =>
-                        $unit->id,
+                    'unit_id' => $unit->id,
 
-                    'tenant_id' =>
-                        $tenant->id,
+                    'tenant_id' => $tenant->id,
 
-                    'start_date' =>
-                        '2025-01-01',
+                    'start_date' => '2025-01-01',
 
-                    'status' =>
-                        'active',
+                    'status' => 'active',
 
-                    'rent_amount' =>
-                        10000,
+                    'rent_amount' => 10000,
 
-                    'payment_frequency' =>
-                        'monthly',
+                    'payment_frequency' => 'monthly',
 
-                    'due_day' =>
-                        1,
+                    'due_day' => 1,
 
-                    'vat_rate' =>
-                        18,
+                    'vat_rate' => 18,
 
-                    'proration_amount' =>
-                        null,
+                    'proration_amount' => null,
 
-                    'security_deposit_amount' =>
-                        0,
+                    'security_deposit_amount' => 0,
 
-                    'advance_payment_amount' =>
-                        0,
+                    'advance_payment_amount' => 0,
 
-                    'rent_reserve_amount' =>
-                        0,
+                    'rent_reserve_amount' => 0,
 
-                    'rent_increment_type' =>
-                        'none',
+                    'rent_increment_type' => 'none',
 
-                    'rent_increment_value' =>
-                        0,
+                    'rent_increment_value' => 0,
 
-                    'next_rent_increment_date' =>
-                        null,
+                    'next_rent_increment_date' => null,
 
-                    'management_fee_type' =>
-                        'none',
+                    'management_fee_type' => 'none',
 
-                    'management_fee_value' =>
-                        0,
+                    'management_fee_value' => 0,
 
-                    'agent_commission_amount' =>
-                        0,
+                    'agent_commission_amount' => 0,
                 ],
                 $overrides
             )
@@ -125,12 +108,9 @@ class RentIncrementNotificationTest extends TestCase
             RentIncrementService::class
         )->schedule(
             lease: $lease,
-            incrementType:
-                'percentage',
-            incrementValue:
-                10,
-            effectiveDate:
-                $effectiveDate
+            incrementType: 'percentage',
+            incrementValue: 10,
+            effectiveDate: $effectiveDate
         );
     }
 
@@ -155,8 +135,7 @@ class RentIncrementNotificationTest extends TestCase
         $this->artisan(
             'patrimoine:send-rent-increment-notices',
             [
-                '--as-of' =>
-                    '2027-05-15',
+                '--as-of' => '2027-05-15',
             ]
         )->assertSuccessful();
 
@@ -175,6 +154,17 @@ class RentIncrementNotificationTest extends TestCase
             $increment
                 ->fresh()
                 ->notification_sent_at
+        );
+
+        /*
+         * Background Activity Log exclusion: test_notice_is_sent_three_months_before_effective_date
+         *
+         * Scheduled rent-increment notices must not be represented as human Activity Log events.
+         * Activity Log records meaningful human actions only.
+         */
+        $this->assertDatabaseCount(
+            'activity_logs',
+            0
         );
     }
 
@@ -203,8 +193,7 @@ class RentIncrementNotificationTest extends TestCase
         $this->artisan(
             'patrimoine:send-rent-increment-notices',
             [
-                '--as-of' =>
-                    '2027-06-01',
+                '--as-of' => '2027-06-01',
             ]
         )->assertSuccessful();
 
@@ -245,8 +234,7 @@ class RentIncrementNotificationTest extends TestCase
         $this->artisan(
             'patrimoine:send-rent-increment-notices',
             [
-                '--as-of' =>
-                    '2027-05-14',
+                '--as-of' => '2027-05-14',
             ]
         )->assertSuccessful();
 
@@ -284,8 +272,7 @@ class RentIncrementNotificationTest extends TestCase
         $this->artisan(
             'patrimoine:send-rent-increment-notices',
             [
-                '--as-of' =>
-                    '2027-05-15',
+                '--as-of' => '2027-05-15',
             ]
         )->assertSuccessful();
 
@@ -317,8 +304,7 @@ class RentIncrementNotificationTest extends TestCase
         $this->artisan(
             'patrimoine:send-rent-increment-notices',
             [
-                '--as-of' =>
-                    '2027-05-15',
+                '--as-of' => '2027-05-15',
             ]
         )->assertSuccessful();
 
@@ -350,8 +336,7 @@ class RentIncrementNotificationTest extends TestCase
         $this->artisan(
             'patrimoine:send-rent-increment-notices',
             [
-                '--as-of' =>
-                    '2027-08-15',
+                '--as-of' => '2027-08-15',
             ]
         )->assertSuccessful();
 
@@ -385,8 +370,7 @@ class RentIncrementNotificationTest extends TestCase
         $this->artisan(
             'patrimoine:send-rent-increment-notices',
             [
-                '--as-of' =>
-                    '2027-08-14',
+                '--as-of' => '2027-08-14',
             ]
         )->assertSuccessful();
 
@@ -440,8 +424,7 @@ class RentIncrementNotificationTest extends TestCase
         $this->artisan(
             'patrimoine:send-rent-increment-notices',
             [
-                '--as-of' =>
-                    '2027-05-20',
+                '--as-of' => '2027-05-20',
             ]
         )->assertSuccessful();
 
@@ -473,8 +456,7 @@ class RentIncrementNotificationTest extends TestCase
         $this->artisan(
             'patrimoine:send-rent-increment-notices',
             [
-                '--as-of' =>
-                    '2027-02-30',
+                '--as-of' => '2027-02-30',
             ]
         )
             ->expectsOutput(
@@ -521,7 +503,7 @@ class RentIncrementNotificationTest extends TestCase
          */
         $delivery =
             \Mockery::mock(
-                \App\Services\Notifications\EmailDeliveryService::class
+                EmailDeliveryService::class
             );
 
         $attempt =
@@ -547,7 +529,7 @@ class RentIncrementNotificationTest extends TestCase
             );
 
         $this->app->instance(
-            \App\Services\Notifications\EmailDeliveryService::class,
+            EmailDeliveryService::class,
             $delivery
         );
 
@@ -558,8 +540,7 @@ class RentIncrementNotificationTest extends TestCase
         $this->artisan(
             'patrimoine:send-rent-increment-notices',
             [
-                '--as-of' =>
-                    '2027-05-15',
+                '--as-of' => '2027-05-15',
             ]
         )->assertFailed();
 
@@ -582,7 +563,6 @@ class RentIncrementNotificationTest extends TestCase
                 ->notification_sent_at
         );
     }
-
 
     /**
      * Rent increment notice localises its subject and tenant-facing body.
@@ -610,8 +590,7 @@ class RentIncrementNotificationTest extends TestCase
         $this->artisan(
             'patrimoine:send-rent-increment-notices',
             [
-                '--as-of' =>
-                    '2027-05-15',
+                '--as-of' => '2027-05-15',
             ]
         )->assertSuccessful();
 
@@ -673,5 +652,4 @@ class RentIncrementNotificationTest extends TestCase
             }
         );
     }
-
 }

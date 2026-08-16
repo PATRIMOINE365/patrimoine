@@ -7,6 +7,9 @@ use App\Http\Requests\StorePartyRequest;
 use App\Http\Requests\UpdatePartyRequest;
 use App\Models\ApplicationSetting;
 use App\Models\Party;
+use App\Services\ActivityLogService;
+use App\Services\BusinessActivitySnapshotService;
+use App\Services\BusinessRecordDeletionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,8 +45,7 @@ class PartyController extends Controller
 
             $query->whereHas(
                 'roles',
-                fn ($query) =>
-                    $query->where('role', $role)
+                fn ($query) => $query->where('role', $role)
             );
         }
 
@@ -82,29 +84,44 @@ class PartyController extends Controller
      * Create a new Party and any supplied Party roles.
      */
     public function store(
-        StorePartyRequest $request
+        StorePartyRequest $request,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
     ): JsonResponse {
-        $party = DB::transaction(function () use ($request): Party {
-            $validated = $request->validated();
+        $party = DB::transaction(
+            function () use (
+                $request,
+                $activityLog,
+                $snapshots
+            ): Party {
+                $validated = $request->validated();
 
-            $roles = $validated['roles'] ?? [];
+                $roles = $validated['roles'] ?? [];
 
-            /*
-             * Roles live in their own table and must not be passed into
-             * Party::create().
-             */
-            unset($validated['roles']);
+                unset($validated['roles']);
 
-            $party = Party::create($validated);
+                $party = Party::create($validated);
 
-            foreach ($roles as $role) {
-                $party->roles()->create([
-                    'role' => $role,
-                ]);
+                foreach ($roles as $role) {
+                    $party->roles()->create([
+                        'role' => $role,
+                    ]);
+                }
+
+                $party->load('roles');
+
+                $activityLog->record(
+                    action: 'party.created',
+                    request: $request,
+                    entityType: 'party',
+                    entityId: $party->id,
+                    entityLabel: $snapshots->partyLabel($party),
+                    snapshot: $snapshots->party($party),
+                );
+
+                return $party;
             }
-
-            return $party->load('roles');
-        });
+        );
 
         return response()->json(
             data: $party,
@@ -133,10 +150,22 @@ class PartyController extends Controller
      */
     public function update(
         UpdatePartyRequest $request,
-        Party $party
+        Party $party,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
     ): JsonResponse {
         $party = DB::transaction(
-            function () use ($request, $party): Party {
+            function () use (
+                $request,
+                $party,
+                $activityLog,
+                $snapshots
+            ): Party {
+                $beforeSnapshot =
+                    $snapshots->party(
+                        $party->fresh()->load('roles')
+                    );
+
                 $validated = $request->validated();
 
                 $rolesSupplied = array_key_exists(
@@ -146,10 +175,6 @@ class PartyController extends Controller
 
                 $roles = $validated['roles'] ?? [];
 
-                /*
-                 * The Party designated as Patrimoine's application-wide
-                 * managing organisation must retain that role.
-                 */
                 if (
                     $rolesSupplied
                     && $this->isConfiguredManagingOrganisation($party)
@@ -180,9 +205,32 @@ class PartyController extends Controller
                     }
                 }
 
-                return $party
+                $party = $party
                     ->refresh()
                     ->load('roles');
+
+                $afterSnapshot =
+                    $snapshots->party($party);
+
+                [$before, $after] =
+                    $snapshots->changes(
+                        $beforeSnapshot,
+                        $afterSnapshot
+                    );
+
+                if ($before !== []) {
+                    $activityLog->record(
+                        action: 'party.updated',
+                        request: $request,
+                        entityType: 'party',
+                        entityId: $party->id,
+                        entityLabel: $snapshots->partyLabel($party),
+                        before: $before,
+                        after: $after,
+                    );
+                }
+
+                return $party;
             }
         );
 
@@ -198,19 +246,41 @@ class PartyController extends Controller
      * Foreign-key restrictions continue to protect other contractual and
      * financial Party relationships from accidental deletion.
      */
-    public function destroy(Party $party): JsonResponse
-    {
-        if ($this->isConfiguredManagingOrganisation($party)) {
+    public function destroy(
+        Request $request,
+        Party $party,
+        BusinessRecordDeletionService $deletions,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
+    ): JsonResponse {
+        $targetId = $party->id;
+        $targetLabel =
+            $snapshots->partyLabel($party);
+        $snapshot =
+            $snapshots->party($party);
+
+        $message =
+            $deletions->deleteParty(
+                $party
+            );
+
+        if ($message !== null) {
             return response()->json(
                 [
-                    'message' =>
-                        __('api.managing_organisation.cannot_delete'),
+                    'message' => $message,
                 ],
                 409
             );
         }
 
-        $party->delete();
+        $activityLog->record(
+            action: 'party.deleted',
+            request: $request,
+            entityType: 'party',
+            entityId: $targetId,
+            entityLabel: $targetLabel,
+            snapshot: $snapshot,
+        );
 
         return response()->json(
             data: null,

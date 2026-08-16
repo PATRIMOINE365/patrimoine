@@ -6,8 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUnitRequest;
 use App\Http\Requests\UpdateUnitRequest;
 use App\Models\Unit;
+use App\Services\ActivityLogService;
+use App\Services\BusinessActivitySnapshotService;
+use App\Services\BusinessRecordDeletionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * REST API controller for individually leasable Units.
@@ -58,14 +62,35 @@ class UnitController extends Controller
      * Create a Unit.
      */
     public function store(
-        StoreUnitRequest $request
+        StoreUnitRequest $request,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
     ): JsonResponse {
-        $unit = Unit::create(
-            $request->validated()
+        $unit = DB::transaction(
+            function () use (
+                $request,
+                $activityLog,
+                $snapshots
+            ): Unit {
+                $unit = Unit::create(
+                    $request->validated()
+                )->load('building');
+
+                $activityLog->record(
+                    action: 'unit.created',
+                    request: $request,
+                    entityType: 'unit',
+                    entityId: $unit->id,
+                    entityLabel: $unit->name,
+                    snapshot: $snapshots->unit($unit),
+                );
+
+                return $unit;
+            }
         );
 
         return response()->json(
-            data: $unit->load('building'),
+            data: $unit,
             status: 201
         );
     }
@@ -88,23 +113,95 @@ class UnitController extends Controller
      */
     public function update(
         UpdateUnitRequest $request,
-        Unit $unit
+        Unit $unit,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
     ): JsonResponse {
-        $unit->update(
-            $request->validated()
+        $unit = DB::transaction(
+            function () use (
+                $request,
+                $unit,
+                $activityLog,
+                $snapshots
+            ): Unit {
+                $beforeSnapshot =
+                    $snapshots->unit(
+                        $unit->fresh()->load('building')
+                    );
+
+                $unit->update(
+                    $request->validated()
+                );
+
+                $unit = $unit
+                    ->refresh()
+                    ->load('building');
+
+                $afterSnapshot =
+                    $snapshots->unit($unit);
+
+                [$before, $after] =
+                    $snapshots->changes(
+                        $beforeSnapshot,
+                        $afterSnapshot
+                    );
+
+                if ($before !== []) {
+                    $activityLog->record(
+                        action: 'unit.updated',
+                        request: $request,
+                        entityType: 'unit',
+                        entityId: $unit->id,
+                        entityLabel: $unit->name,
+                        before: $before,
+                        after: $after,
+                    );
+                }
+
+                return $unit;
+            }
         );
 
-        return response()->json(
-            $unit->refresh()->load('building')
-        );
+        return response()->json($unit);
     }
 
     /**
      * Delete a Unit if no protected Lease history references it.
      */
-    public function destroy(Unit $unit): JsonResponse
-    {
-        $unit->delete();
+    public function destroy(
+        Request $request,
+        Unit $unit,
+        BusinessRecordDeletionService $deletions,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
+    ): JsonResponse {
+        $targetId = $unit->id;
+        $targetLabel = $unit->name;
+        $snapshot =
+            $snapshots->unit($unit);
+
+        $message =
+            $deletions->deleteUnit(
+                $unit
+            );
+
+        if ($message !== null) {
+            return response()->json(
+                [
+                    'message' => $message,
+                ],
+                409
+            );
+        }
+
+        $activityLog->record(
+            action: 'unit.deleted',
+            request: $request,
+            entityType: 'unit',
+            entityId: $targetId,
+            entityLabel: $targetLabel,
+            snapshot: $snapshot,
+        );
 
         return response()->json(
             data: null,

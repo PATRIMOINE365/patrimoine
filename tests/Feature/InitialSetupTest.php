@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Enums\UserRole;
 use App\Models\ApplicationSetting;
 use App\Models\Party;
+use App\Models\PartyRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Routing\Middleware\ThrottleRequests;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
@@ -16,7 +19,7 @@ use Tests\TestCase;
  * V1.0.2 requirements:
  *
  * - a fresh installation starts in English;
- * - the first Property Manager and Managing Organisation are created together;
+ * - the first Administrator and Managing Organisation are created together;
  * - language and currency are selected during initial setup;
  * - language/currency belong to ApplicationSetting, not User;
  * - all four supported language/currency combinations are valid;
@@ -81,6 +84,18 @@ class InitialSetupTest extends TestCase
                 'Administrator'
             )
             ->assertSee(
+                'Create the first Administrator and configure the'
+            )
+            ->assertSee(
+                'This account will be the first Patrimoine Administrator.'
+            )
+            ->assertDontSee(
+                'Create the first Property Manager'
+            )
+            ->assertDontSee(
+                'This account will be the first Patrimoine Property Manager.'
+            )
+            ->assertSee(
                 'Managing Organisation'
             )
             ->assertSee(
@@ -106,8 +121,7 @@ class InitialSetupTest extends TestCase
     public function test_setup_accepts_all_supported_language_currency_combinations(): void
     {
         foreach (
-            self::supportedPresentationCombinations()
-            as $combination
+            self::supportedPresentationCombinations() as $combination
         ) {
             [$language, $currency] =
                 $combination;
@@ -117,14 +131,14 @@ class InitialSetupTest extends TestCase
              * iteration, so explicitly clear the bootstrap records before
              * exercising the next independent combination.
              */
-            \Illuminate\Support\Facades\DB::table(
+            DB::table(
                 'personal_access_tokens'
             )->delete();
 
             ApplicationSetting::query()
                 ->delete();
 
-            \App\Models\PartyRole::query()
+            PartyRole::query()
                 ->delete();
 
             Party::query()
@@ -215,37 +229,28 @@ class InitialSetupTest extends TestCase
         $this->assertDatabaseHas(
             'users',
             [
-                'name' =>
-                    'Initial Administrator',
+                'name' => 'Initial Administrator',
 
-                'email' =>
-                    'admin@example.test',
+                'email' => 'admin@example.test',
 
-                'role' =>
-                    'property_manager',
+                'role' => UserRole::Administrator->value,
             ]
         );
 
         $this->assertDatabaseHas(
             'parties',
             [
-                'type' =>
-                    'organisation',
+                'type' => 'organisation',
 
-                'legal_name' =>
-                    'Example Property Management Ltd',
+                'legal_name' => 'Example Property Management Ltd',
 
-                'address' =>
-                    '1 Example Street, Accra',
+                'address' => '1 Example Street, Accra',
 
-                'contact_person_name' =>
-                    'Initial Administrator',
+                'contact_person_name' => 'Initial Administrator',
 
-                'contact_person_phone' =>
-                    '0200000000',
+                'contact_person_phone' => '0200000000',
 
-                'contact_person_email' =>
-                    'admin@example.test',
+                'contact_person_email' => 'admin@example.test',
             ]
         );
 
@@ -260,11 +265,9 @@ class InitialSetupTest extends TestCase
         $this->assertDatabaseHas(
             'party_roles',
             [
-                'party_id' =>
-                    $organisation->id,
+                'party_id' => $organisation->id,
 
-                'role' =>
-                    'managing_organisation',
+                'role' => 'managing_organisation',
             ]
         );
 
@@ -334,14 +337,11 @@ class InitialSetupTest extends TestCase
             ->postJson(
                 '/api/auth/login',
                 [
-                    'email' =>
-                        'admin@example.test',
+                    'email' => 'admin@example.test',
 
-                    'password' =>
-                        $plainPassword,
+                    'password' => $plainPassword,
 
-                    'device_name' =>
-                        'initial-setup-test',
+                    'device_name' => 'initial-setup-test',
                 ]
             )
             ->assertOk()
@@ -351,7 +351,7 @@ class InitialSetupTest extends TestCase
             )
             ->assertJsonPath(
                 'user.role',
-                'property_manager'
+                UserRole::Administrator->value
             );
     }
 
@@ -407,8 +407,7 @@ class InitialSetupTest extends TestCase
             ->postJson(
                 '/api/setup',
                 $this->validPayload(
-                    administratorEmail:
-                        'second@example.test'
+                    administratorEmail: 'second@example.test'
                 )
             )
             ->assertStatus(409)
@@ -464,44 +463,33 @@ class InitialSetupTest extends TestCase
     {
         $organisation =
             Party::create([
-                'type' =>
-                    'organisation',
+                'type' => 'organisation',
 
-                'legal_name' =>
-                    'Existing Organisation',
+                'legal_name' => 'Existing Organisation',
 
-                'address' =>
-                    'Existing Address',
+                'address' => 'Existing Address',
 
-                'contact_person_name' =>
-                    'Existing Contact',
+                'contact_person_name' => 'Existing Contact',
 
-                'contact_person_phone' =>
-                    '0200000001',
+                'contact_person_phone' => '0200000001',
 
-                'contact_person_email' =>
-                    'existing@example.test',
+                'contact_person_email' => 'existing@example.test',
             ]);
 
         $organisation
             ->roles()
             ->create([
-                'role' =>
-                    'managing_organisation',
+                'role' => 'managing_organisation',
             ]);
 
         ApplicationSetting::create([
-            'managing_organisation_party_id' =>
-                $organisation->id,
+            'managing_organisation_party_id' => $organisation->id,
 
-            'default_vat_rate' =>
-                18,
+            'default_vat_rate' => 18,
 
-            'language' =>
-                'en',
+            'language' => 'en',
 
-            'currency' =>
-                'GHS',
+            'currency' => 'GHS',
         ]);
 
         $this
@@ -569,8 +557,7 @@ class InitialSetupTest extends TestCase
             ->postJson(
                 '/api/setup',
                 $this->validPayload(
-                    password:
-                        'weakpassword'
+                    password: 'weakpassword'
                 )
             )
             ->assertUnprocessable()
@@ -624,47 +611,33 @@ class InitialSetupTest extends TestCase
         string $password = 'SecureSetup#123'
     ): array {
         return [
-            'administrator_name' =>
-                'Initial Administrator',
+            'administrator_name' => 'Initial Administrator',
 
-            'administrator_email' =>
-                $administratorEmail,
+            'administrator_email' => $administratorEmail,
 
-            'administrator_password' =>
-                $password,
+            'administrator_password' => $password,
 
-            'administrator_password_confirmation' =>
-                $password,
+            'administrator_password_confirmation' => $password,
 
-            'legal_name' =>
-                'Example Property Management Ltd',
+            'legal_name' => 'Example Property Management Ltd',
 
-            'address' =>
-                '1 Example Street, Accra',
+            'address' => '1 Example Street, Accra',
 
-            'phone' =>
-                '0302000000',
+            'phone' => '0302000000',
 
-            'email' =>
-                'office@example.test',
+            'email' => 'office@example.test',
 
-            'contact_person_name' =>
-                'Initial Administrator',
+            'contact_person_name' => 'Initial Administrator',
 
-            'contact_person_phone' =>
-                '0200000000',
+            'contact_person_phone' => '0200000000',
 
-            'contact_person_email' =>
-                'admin@example.test',
+            'contact_person_email' => 'admin@example.test',
 
-            'default_vat_rate' =>
-                18,
+            'default_vat_rate' => 18,
 
-            'language' =>
-                $language,
+            'language' => $language,
 
-            'currency' =>
-                $currency,
+            'currency' => $currency,
         ];
     }
 }

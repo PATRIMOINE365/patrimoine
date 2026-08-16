@@ -214,6 +214,18 @@
                             >
                                 <span data-i18n="login.password">Password</span>
                             </label>
+
+                            <a
+                                href="/forgot-password"
+                                class="
+                                    text-xs font-medium
+                                    text-patrimoine-800
+                                    hover:text-patrimoine-950
+                                "
+                                data-i18n="password.forgot_link"
+                            >
+                                Forgot password?
+                            </a>
                         </div>
 
                         <input

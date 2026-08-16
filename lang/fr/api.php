@@ -2,10 +2,32 @@
 
 return [
     'auth' => [
+        'account_disabled' => 'Ce compte a été désactivé.',
+        'setup_required' => 'Terminez la configuration de votre compte avant de vous connecter.',
         'invalid_credentials' =>
             'Les identifiants fournis sont incorrects.',
         'logged_out' =>
             'Déconnexion effectuée avec succès.',
+
+        'unauthenticated' => 'Vous devez être authentifié pour effectuer cette action.',
+        'forbidden' => 'Vous n’êtes pas autorisé à effectuer cette action.',
+    ],
+
+    'user_management' => [
+        'cannot_change_own_role' =>
+            'Vous ne pouvez pas modifier votre propre rôle d’administrateur.',
+        'cannot_disable_self' =>
+            'Vous ne pouvez pas désactiver votre propre compte.',
+        'cannot_delete_self' =>
+            'Vous ne pouvez pas supprimer votre propre compte.',
+        'last_active_administrator' =>
+            'Cette action ne peut pas être effectuée, car Patrimoine doit conserver au moins un administrateur actif.',
+        'created' =>
+            'Utilisateur créé avec succès.',
+        'updated' =>
+            'Utilisateur mis à jour avec succès.',
+        'deleted' =>
+            'Utilisateur supprimé avec succès.',
     ],
 
     'managing_organisation' => [
@@ -82,4 +104,49 @@ return [
         'advance_received_before_lease' =>
             'La date de réception de l’avance ne peut pas être antérieure à la date de début du bail.',
     ],
+
+    'user_invitation' => [
+        'accepted' =>
+            'La configuration de votre compte est terminée. Vous pouvez maintenant vous connecter.',
+        'resent' =>
+            'Une nouvelle invitation a été envoyée.',
+        'inactive_user' => 'Une invitation ne peut pas être envoyée à un utilisateur inactif.',
+        'invalid' => 'Ce lien d’invitation est invalide ou a expiré.',
+    ],
+
+
+    'password' => [
+        'reset_requested' =>
+            'Si le compte est admissible, un lien de réinitialisation du mot de passe a été envoyé.',
+        'administrator_reset_requested' =>
+            'La procédure de réinitialisation du mot de passe a été lancée.',
+        'reset_complete' =>
+            'Votre mot de passe a été réinitialisé avec succès.',
+        'changed' =>
+            'Votre mot de passe a été modifié avec succès.',
+        'invalid_reset' =>
+            'Ce lien de réinitialisation du mot de passe est invalide ou a expiré.',
+        'current_incorrect' =>
+            'Le mot de passe actuel est incorrect.',
+        'account_disabled' =>
+            'Ce compte a été désactivé.',
+    ],
+
+    'deletion' => [
+        'party_managing_organisation' =>
+            'L’organisation gestionnaire configurée ne peut pas être supprimée. Modifiez plutôt la configuration de l’organisation gestionnaire.',
+        'party_referenced' =>
+            'Cette partie ne peut pas être supprimée car elle est référencée par un bail, une propriété, un mandat d’agence ou un historique financier. Conservez-la afin que les données historiques restent compréhensibles.',
+        'building_has_units' =>
+            'Cet immeuble ne peut pas être supprimé tant qu’il contient des unités. Supprimez d’abord uniquement les unités sans référence ; les unités ayant un bail ou un historique financier doivent être conservées.',
+        'building_referenced' =>
+            'Cet immeuble ne peut pas être supprimé car des données financières ou historiques y font référence. Conservez-le pour préserver la traçabilité.',
+        'unit_referenced' =>
+            'Cette unité ne peut pas être supprimée car un bail ou un historique financier y fait référence. Conservez l’unité et résiliez plutôt le bail lorsque cela s’applique.',
+        'lease_not_draft' =>
+            'Seul un bail brouillon inutilisé peut être supprimé. Utilisez la procédure de résiliation pour un bail actif ou en préavis ; les baux résiliés sont conservés comme historique.',
+        'lease_referenced' =>
+            'Ce bail brouillon ne peut pas être supprimé car des données contractuelles ou financières y font référence. Conservez le bail.',
+    ],
+
 ];

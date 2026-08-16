@@ -10,6 +10,8 @@ use App\Models\TenantFundTransaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Services\ActivityLogService;
+use App\Services\FinancialActivitySnapshotService;
 
 /**
  * Transactional API controller for tenant-held funds.
@@ -35,7 +37,9 @@ class TenantFundController extends Controller
      */
     public function allocate(
         AllocateTenantFundRequest $request,
-        Payment $payment
+        Payment $payment,
+        ActivityLogService $activityLog,
+        FinancialActivitySnapshotService $activitySnapshots
     ): JsonResponse {
         $transaction = DB::transaction(
             function () use ($request, $payment): TenantFundTransaction {
@@ -141,6 +145,17 @@ class TenantFundController extends Controller
         ]);
 
         $payment->refresh();
+
+        $activityLog->record(
+            action: 'tenant_fund.classified',
+            request: $request,
+            entityType: 'tenant_fund_transaction',
+            entityId: $transaction->id,
+            entityLabel: 'Tenant fund transaction #'.$transaction->id,
+            snapshot: $activitySnapshots->tenantFundTransaction(
+                $transaction
+            ),
+        );
 
         return response()->json(
             data: [
