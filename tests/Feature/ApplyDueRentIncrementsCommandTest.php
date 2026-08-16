@@ -21,100 +21,74 @@ class ApplyDueRentIncrementsCommandTest extends TestCase
     /**
      * Create an active Lease suitable for automatic increment processing.
      *
-     * @param array<string, mixed> $overrides
+     * @param  array<string, mixed>  $overrides
      */
     private function createLease(
         string $suffix,
         array $overrides = []
     ): Lease {
         $tenant = Party::create([
-            'type' =>
-                'person',
+            'type' => 'person',
 
-            'name' =>
-                'Automatic Increment Tenant '.$suffix,
+            'name' => 'Automatic Increment Tenant '.$suffix,
 
-            'phone' =>
-                '0200092'.$suffix,
+            'phone' => '0200092'.$suffix,
 
-            'email' =>
-                'automatic-increment-'.$suffix.'@example.test',
+            'email' => 'automatic-increment-'.$suffix.'@example.test',
         ]);
 
         $tenant->roles()->create([
-            'role' =>
-                'tenant',
+            'role' => 'tenant',
         ]);
 
         $building = Building::create([
-            'name' =>
-                'Automatic Increment Building '.$suffix,
+            'name' => 'Automatic Increment Building '.$suffix,
         ]);
 
         $unit = Unit::create([
-            'building_id' =>
-                $building->id,
+            'building_id' => $building->id,
 
-            'name' =>
-                'Automatic Increment Unit '.$suffix,
+            'name' => 'Automatic Increment Unit '.$suffix,
         ]);
 
         return Lease::create(
             array_merge(
                 [
-                    'unit_id' =>
-                        $unit->id,
+                    'unit_id' => $unit->id,
 
-                    'tenant_id' =>
-                        $tenant->id,
+                    'tenant_id' => $tenant->id,
 
-                    'start_date' =>
-                        '2025-01-01',
+                    'start_date' => '2025-01-01',
 
-                    'status' =>
-                        'active',
+                    'status' => 'active',
 
-                    'rent_amount' =>
-                        10000,
+                    'rent_amount' => 10000,
 
-                    'payment_frequency' =>
-                        'monthly',
+                    'payment_frequency' => 'monthly',
 
-                    'due_day' =>
-                        1,
+                    'due_day' => 1,
 
-                    'vat_rate' =>
-                        18,
+                    'vat_rate' => 18,
 
-                    'proration_amount' =>
-                        null,
+                    'proration_amount' => null,
 
-                    'security_deposit_amount' =>
-                        0,
+                    'security_deposit_amount' => 0,
 
-                    'advance_payment_amount' =>
-                        0,
+                    'advance_payment_amount' => 0,
 
-                    'rent_reserve_amount' =>
-                        0,
+                    'rent_reserve_amount' => 0,
 
-                    'rent_increment_type' =>
-                        'none',
+                    'rent_increment_type' => 'none',
 
-                    'rent_increment_value' =>
-                        0,
+                    'rent_increment_value' => 0,
 
-                    'next_rent_increment_date' =>
-                        null,
+                    'next_rent_increment_date' => null,
 
-                    'management_fee_type' =>
-                        'none',
+                    'management_fee_type' => 'none',
 
-                    'management_fee_value' =>
-                        0,
+                    'management_fee_value' => 0,
 
-                    'agent_commission_amount' =>
-                        0,
+                    'agent_commission_amount' => 0,
                 ],
                 $overrides
             )
@@ -131,17 +105,13 @@ class ApplyDueRentIncrementsCommandTest extends TestCase
         return app(
             RentIncrementService::class
         )->schedule(
-            lease:
-                $lease,
+            lease: $lease,
 
-            incrementType:
-                'percentage',
+            incrementType: 'percentage',
 
-            incrementValue:
-                10,
+            incrementValue: 10,
 
-            effectiveDate:
-                $effectiveDate
+            effectiveDate: $effectiveDate
         );
     }
 
@@ -164,8 +134,7 @@ class ApplyDueRentIncrementsCommandTest extends TestCase
         $this->artisan(
             'patrimoine:apply-due-rent-increments',
             [
-                '--as-of' =>
-                    '2026-08-15',
+                '--as-of' => '2026-08-15',
             ]
         )
             ->expectsOutput(
@@ -196,6 +165,17 @@ class ApplyDueRentIncrementsCommandTest extends TestCase
         $this->assertNotNull(
             $increment->applied_at
         );
+
+        /*
+         * Background Activity Log exclusion: test_command_applies_due_increment
+         *
+         * Automatic rent-increment application must not be represented as a human Activity Log event.
+         * Activity Log records meaningful human actions only.
+         */
+        $this->assertDatabaseCount(
+            'activity_logs',
+            0
+        );
     }
 
     /**
@@ -216,8 +196,7 @@ class ApplyDueRentIncrementsCommandTest extends TestCase
         $this->artisan(
             'patrimoine:apply-due-rent-increments',
             [
-                '--as-of' =>
-                    '2026-08-15',
+                '--as-of' => '2026-08-15',
             ]
         )->assertSuccessful();
 
@@ -249,8 +228,7 @@ class ApplyDueRentIncrementsCommandTest extends TestCase
         $this->artisan(
             'patrimoine:apply-due-rent-increments',
             [
-                '--as-of' =>
-                    '2026-08-14',
+                '--as-of' => '2026-08-14',
             ]
         )->assertSuccessful();
 
@@ -288,8 +266,7 @@ class ApplyDueRentIncrementsCommandTest extends TestCase
         $this->artisan(
             'patrimoine:apply-due-rent-increments',
             [
-                '--as-of' =>
-                    '2026-08-20',
+                '--as-of' => '2026-08-20',
             ]
         )->assertSuccessful();
 
@@ -326,16 +303,14 @@ class ApplyDueRentIncrementsCommandTest extends TestCase
         $this->artisan(
             'patrimoine:apply-due-rent-increments',
             [
-                '--as-of' =>
-                    '2026-08-15',
+                '--as-of' => '2026-08-15',
             ]
         )->assertSuccessful();
 
         $this->artisan(
             'patrimoine:apply-due-rent-increments',
             [
-                '--as-of' =>
-                    '2026-08-16',
+                '--as-of' => '2026-08-16',
             ]
         )->assertSuccessful();
 
@@ -377,8 +352,7 @@ class ApplyDueRentIncrementsCommandTest extends TestCase
         $this->artisan(
             'patrimoine:apply-due-rent-increments',
             [
-                '--as-of' =>
-                    '2026-08-15',
+                '--as-of' => '2026-08-15',
             ]
         )->assertSuccessful();
 
@@ -429,15 +403,13 @@ class ApplyDueRentIncrementsCommandTest extends TestCase
          * was approved. The service must refuse to overwrite that newer rent.
          */
         $failedLease->update([
-            'rent_amount' =>
-                12000,
+            'rent_amount' => 12000,
         ]);
 
         $this->artisan(
             'patrimoine:apply-due-rent-increments',
             [
-                '--as-of' =>
-                    '2026-08-15',
+                '--as-of' => '2026-08-15',
             ]
         )->assertFailed();
 
@@ -488,8 +460,7 @@ class ApplyDueRentIncrementsCommandTest extends TestCase
         $this->artisan(
             'patrimoine:apply-due-rent-increments',
             [
-                '--as-of' =>
-                    '2026-02-30',
+                '--as-of' => '2026-02-30',
             ]
         )
             ->expectsOutput(

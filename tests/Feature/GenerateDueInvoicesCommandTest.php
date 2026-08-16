@@ -20,7 +20,7 @@ class GenerateDueInvoicesCommandTest extends TestCase
     /**
      * Create an active Lease suitable for command testing.
      *
-     * @param array<string, mixed> $overrides
+     * @param  array<string, mixed>  $overrides
      */
     private function createLease(
         array $overrides = []
@@ -93,10 +93,20 @@ class GenerateDueInvoicesCommandTest extends TestCase
                 ->orderBy('period_start')
                 ->get()
                 ->map(
-                    fn (Invoice $invoice): string =>
-                        $invoice->period_start->toDateString()
+                    fn (Invoice $invoice): string => $invoice->period_start->toDateString()
                 )
                 ->all()
+        );
+
+        /*
+         * Background Activity Log exclusion: test_command_generates_due_invoices
+         *
+         * Automatic invoice generation must not be represented as a human Activity Log event.
+         * Activity Log records meaningful human actions only.
+         */
+        $this->assertDatabaseCount(
+            'activity_logs',
+            0
         );
     }
 

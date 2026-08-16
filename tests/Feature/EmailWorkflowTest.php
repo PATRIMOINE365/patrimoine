@@ -5,25 +5,25 @@ namespace Tests\Feature;
 use App\Mail\InvoiceMail;
 use App\Mail\ReceiptMail;
 use App\Mail\RentReminderMail;
+use App\Models\ApplicationSetting;
 use App\Models\Building;
+use App\Models\BuildingOwner;
 use App\Models\Invoice;
 use App\Models\Lease;
 use App\Models\Party;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
-use Tests\TestCase;
-use App\Models\BuildingOwner;
 use Tests\Concerns\AuthenticatesApiUser;
-use App\Models\ApplicationSetting;
+use Tests\TestCase;
 
 /**
  * Verifies application-level email workflows.
  */
 class EmailWorkflowTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -237,32 +237,45 @@ class EmailWorkflowTest extends TestCase
                     );
             }
         );
+
+        /*
+         * Background Activity Log exclusion: test_reminder_command_sends_due_invoice
+         *
+         * Scheduled rent reminders must not be represented as human Activity Log events.
+         * Activity Log records meaningful human actions only.
+         */
+        $this->assertDatabaseCount(
+            'activity_logs',
+            0
+        );
     }
-/**
- * Rent reminder command must ignore Security Deposit debt invoices.
- *
- * Security Deposit close-out debt is collectible through the ordinary
- * tenant payment workflow but must never be presented as overdue rent.
- */
-public function test_reminder_command_skips_security_deposit_debt_invoice(): void
-{
-    Mail::fake();
 
-    $context = $this->createContext();
+    /**
+     * Rent reminder command must ignore Security Deposit debt invoices.
+     *
+     * Security Deposit close-out debt is collectible through the ordinary
+     * tenant payment workflow but must never be presented as overdue rent.
+     */
+    public function test_reminder_command_skips_security_deposit_debt_invoice(): void
+    {
+        Mail::fake();
 
-    $context['invoice']->update([
-        'type' => 'security_deposit_debt',
-    ]);
+        $context = $this->createContext();
 
-    $this->artisan(
-        'patrimoine:send-rent-reminders',
-        [
-            '--as-of' => '2026-08-11',
-        ]
-    )->assertExitCode(0);
+        $context['invoice']->update([
+            'type' => 'security_deposit_debt',
+        ]);
 
-    Mail::assertNothingSent();
-}
+        $this->artisan(
+            'patrimoine:send-rent-reminders',
+            [
+                '--as-of' => '2026-08-11',
+            ]
+        )->assertExitCode(0);
+
+        Mail::assertNothingSent();
+    }
+
     /**
      * Reminder command ignores invoices not yet due.
      */
@@ -332,7 +345,6 @@ public function test_reminder_command_skips_security_deposit_debt_invoice(): voi
             );
     }
 
-
     /**
      * Email delivery business-rule failures follow the configured language.
      */
@@ -361,5 +373,4 @@ public function test_reminder_command_skips_security_deposit_debt_invoice(): voi
                 'Le locataire ne possède pas d’adresse e-mail.'
             );
     }
-
 }
