@@ -124,6 +124,14 @@ class UserAdministrationService
                 $lockedTarget->is_active = $isActive;
                 $lockedTarget->save();
 
+                /*
+                 * Disabling an account takes effect immediately for bearer
+                 * authentication by revoking every outstanding Sanctum token.
+                 */
+                if (! $isActive) {
+                    $lockedTarget->tokens()->delete();
+                }
+
                 return $lockedTarget->refresh();
             }
         );

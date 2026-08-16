@@ -2,6 +2,8 @@
 
 return [
     'auth' => [
+        'account_disabled' => 'This account has been disabled.',
+        'setup_required' => 'Complete your account setup before signing in.',
         'invalid_credentials' =>
             'The provided credentials are incorrect.',
         'logged_out' =>
@@ -101,5 +103,32 @@ return [
 
         'advance_received_before_lease' =>
             'Advance received date cannot be before the Lease start date.',
+    ],
+
+    'user_invitation' => [
+        'accepted' =>
+            'Your account setup is complete. You can now sign in.',
+        'resent' =>
+            'A new invitation has been sent.',
+        'inactive_user' => 'An invitation cannot be sent to an inactive user.',
+        'invalid' => 'This invitation link is invalid or has expired.',
+    ],
+
+
+    'password' => [
+        'reset_requested' =>
+            'If the account is eligible, a password reset link has been sent.',
+        'administrator_reset_requested' =>
+            'The password reset workflow has been initiated.',
+        'reset_complete' =>
+            'Your password has been reset successfully.',
+        'changed' =>
+            'Your password has been changed successfully.',
+        'invalid_reset' =>
+            'This password reset link is invalid or has expired.',
+        'current_incorrect' =>
+            'The current password is incorrect.',
+        'account_disabled' =>
+            'This account has been disabled.',
     ],
 ];

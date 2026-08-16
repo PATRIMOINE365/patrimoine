@@ -2,6 +2,8 @@
 
 return [
     'auth' => [
+        'account_disabled' => 'Ce compte a été désactivé.',
+        'setup_required' => 'Terminez la configuration de votre compte avant de vous connecter.',
         'invalid_credentials' =>
             'Les identifiants fournis sont incorrects.',
         'logged_out' =>
@@ -101,5 +103,32 @@ return [
 
         'advance_received_before_lease' =>
             'La date de réception de l’avance ne peut pas être antérieure à la date de début du bail.',
+    ],
+
+    'user_invitation' => [
+        'accepted' =>
+            'La configuration de votre compte est terminée. Vous pouvez maintenant vous connecter.',
+        'resent' =>
+            'Une nouvelle invitation a été envoyée.',
+        'inactive_user' => 'Une invitation ne peut pas être envoyée à un utilisateur inactif.',
+        'invalid' => 'Ce lien d’invitation est invalide ou a expiré.',
+    ],
+
+
+    'password' => [
+        'reset_requested' =>
+            'Si le compte est admissible, un lien de réinitialisation du mot de passe a été envoyé.',
+        'administrator_reset_requested' =>
+            'La procédure de réinitialisation du mot de passe a été lancée.',
+        'reset_complete' =>
+            'Votre mot de passe a été réinitialisé avec succès.',
+        'changed' =>
+            'Votre mot de passe a été modifié avec succès.',
+        'invalid_reset' =>
+            'Ce lien de réinitialisation du mot de passe est invalide ou a expiré.',
+        'current_incorrect' =>
+            'Le mot de passe actuel est incorrect.',
+        'account_disabled' =>
+            'Ce compte a été désactivé.',
     ],
 ];

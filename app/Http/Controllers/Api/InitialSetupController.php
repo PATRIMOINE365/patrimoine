@@ -119,6 +119,19 @@ class InitialSetupController extends Controller
                     ]);
 
                 /*
+                 * The first Administrator chooses their own password during
+                 * trusted Initial Setup and therefore does not use the later
+                 * invitation workflow.
+                 *
+                 * Verification is set explicitly rather than making
+                 * email_verified_at generally mass assignable on User.
+                 */
+                $user->forceFill([
+                    'email_verified_at' =>
+                        now(),
+                ])->save();
+
+                /*
                  * Managing Organisation remains a normal Organisation Party.
                  */
                 $organisation =

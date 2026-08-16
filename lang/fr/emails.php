@@ -66,4 +66,33 @@ return [
         'cheque' => 'Chèque',
         'check' => 'Chèque',
     ],
+
+    'user_invitation' => [
+        'subject' => 'Configurez votre compte :organisation',
+        'title' => 'Configurez votre compte',
+        'greeting' => 'Bonjour :name,',
+        'introduction' => 'Vous avez été invité à utiliser :organisation.',
+        'action' => 'Définir mon mot de passe',
+        'expiry' => 'Ce lien expire dans 24 heures.',
+        'ignore' => 'Si vous n’attendiez pas cette invitation, vous pouvez ignorer cet e-mail.',
+    ],
+
+
+
+    'password_reset' => [
+        'subject' =>
+            'Réinitialisez votre mot de passe :organisation',
+        'title' =>
+            'Réinitialisez votre mot de passe',
+        'greeting' =>
+            'Bonjour :name,',
+        'introduction' =>
+            'Une réinitialisation du mot de passe a été demandée pour votre compte :organisation.',
+        'action' =>
+            'Réinitialiser mon mot de passe',
+        'expiry' =>
+            'Ce lien expire dans 24 heures.',
+        'ignore' =>
+            'Si vous n’avez pas demandé cette réinitialisation, vous pouvez ignorer cet e-mail.',
+    ],
 ];

@@ -8,6 +8,8 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use App\Services\UserAdministrationService;
+use App\Services\UserInvitationService;
+use App\Services\UserPasswordService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -117,7 +119,8 @@ class UserController extends Controller
      * password makes the account unusable with any known default credential.
      */
     public function store(
-        StoreUserRequest $request
+        StoreUserRequest $request,
+        UserInvitationService $invitations
     ): JsonResponse {
         $validated = $request->validated();
 
@@ -143,10 +146,55 @@ class UserController extends Controller
             'email_verified_at' => null,
         ]);
 
+        /*
+         * Creating a User starts the secure first-password ownership flow.
+         * No Administrator-selected or default password is disclosed.
+         */
+        $invitations->send($user);
+
         return response()->json(
             data: $user,
             status: 201
         );
+    }
+
+    /**
+     * Resend a User's password-setup invitation.
+     *
+     * UserInvitationService atomically invalidates every previous usable
+     * invitation before issuing the new 24-hour link.
+     */
+    public function resendInvitation(
+        User $user,
+        UserInvitationService $invitations
+    ): JsonResponse {
+        $invitations->send($user);
+
+        return response()->json([
+            'message' => __(
+                'api.user_invitation.resent'
+            ),
+        ]);
+    }
+
+    /**
+     * Initiate the normal password-reset workflow for another User.
+     *
+     * The Administrator never receives or chooses the User's password.
+     */
+    public function initiatePasswordReset(
+        User $user,
+        UserPasswordService $passwords
+    ): JsonResponse {
+        $passwords->sendResetLink(
+            $user->email
+        );
+
+        return response()->json([
+            'message' => __(
+                'api.password.administrator_reset_requested'
+            ),
+        ]);
     }
 
     /**

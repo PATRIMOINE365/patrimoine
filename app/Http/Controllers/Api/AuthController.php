@@ -69,6 +69,30 @@ class AuthController extends Controller
         }
 
         /*
+         * Disabled accounts cannot authenticate even when the supplied
+         * password is correct.
+         */
+        if (! $user->isActive()) {
+            throw ValidationException::withMessages([
+                'email' => [
+                    __('api.auth.account_disabled'),
+                ],
+            ]);
+        }
+
+        /*
+         * A newly invited User does not own the account until the invitation
+         * workflow establishes a password and verifies the email address.
+         */
+        if ($user->email_verified_at === null) {
+            throw ValidationException::withMessages([
+                'email' => [
+                    __('api.auth.setup_required'),
+                ],
+            ]);
+        }
+
+        /*
          * A descriptive device name makes individual tokens identifiable
          * should Patrimoine later expose active-session management.
          */

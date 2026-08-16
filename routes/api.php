@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\OwnerLedgerController;
 use App\Http\Controllers\Api\OwnerPayoutController;
 use App\Http\Controllers\Api\PartyController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\RentReserveController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReportExportController;
@@ -92,6 +93,24 @@ Route::post(
 )->middleware('throttle:5,1');
 
 /*
+ * First-time password setup and Forgot Password are public but rate-limited.
+ */
+Route::post(
+    'auth/invitations/accept',
+    [PasswordController::class, 'acceptInvitation']
+)->middleware('throttle:5,1');
+
+Route::post(
+    'auth/forgot-password',
+    [PasswordController::class, 'forgot']
+)->middleware('throttle:5,1');
+
+Route::post(
+    'auth/reset-password',
+    [PasswordController::class, 'reset']
+)->middleware('throttle:5,1');
+
+/*
  * Any authenticated Patrimoine user may inspect their identity
  * or revoke their current API token, regardless of application role.
  */
@@ -105,6 +124,11 @@ Route::middleware('auth:sanctum')->group(
         Route::post(
             'auth/logout',
             [AuthController::class, 'logout']
+        );
+
+        Route::post(
+            'auth/change-password',
+            [PasswordController::class, 'change']
         );
     }
 );
@@ -533,6 +557,16 @@ Route::middleware('auth:sanctum')->group(
                 Route::delete(
                     'users/{user}',
                     [UserController::class, 'destroy']
+                );
+
+                Route::post(
+                    'users/{user}/resend-invitation',
+                    [UserController::class, 'resendInvitation']
+                );
+
+                Route::post(
+                    'users/{user}/password-reset',
+                    [UserController::class, 'initiatePasswordReset']
                 );
             }
         );
