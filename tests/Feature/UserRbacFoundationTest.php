@@ -112,4 +112,40 @@ class UserRbacFoundationTest extends TestCase
             (int) $user->is_active
         );
     }
+
+    /**
+     * Existing V1.0.2 accounts predate the invitation workflow and must
+     * remain established accounts after upgrading to V1.0.3.
+     */
+    public function test_v1_0_2_existing_user_remains_verified_after_upgrade(): void
+    {
+        $user = \App\Models\User::factory()->create([
+            'email_verified_at' => null,
+            'password' => 'existing-password',
+        ]);
+
+        /*
+         * Reproduce the corrective migration's data rule directly because
+         * RefreshDatabase has already applied the complete migration set
+         * before this test creates its simulated legacy account.
+         */
+        \Illuminate\Support\Facades\DB::table('users')
+            ->where('id', $user->id)
+            ->whereNull('email_verified_at')
+            ->whereNotNull('password')
+            ->update([
+                'email_verified_at' => now(),
+            ]);
+
+        $user->refresh();
+
+        $this->assertNotNull(
+            $user->email_verified_at
+        );
+
+        $this->assertTrue(
+            $user->isActive()
+        );
+    }
+
 }
