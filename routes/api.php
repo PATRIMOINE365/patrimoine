@@ -1,20 +1,24 @@
 <?php
 
+use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\ApplicationPresentationController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\ManagingOrganisationController;
 use App\Http\Controllers\Api\BuildingController;
 use App\Http\Controllers\Api\ConsumableAdvanceController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\EmailController;
+use App\Http\Controllers\Api\InitialSetupController;
 use App\Http\Controllers\Api\LeaseController;
+use App\Http\Controllers\Api\ManagingOrganisationController;
+use App\Http\Controllers\Api\OwnerAccountController;
 use App\Http\Controllers\Api\OwnerExpenseController;
 use App\Http\Controllers\Api\OwnerLedgerController;
 use App\Http\Controllers\Api\OwnerPayoutController;
 use App\Http\Controllers\Api\PartyController;
-use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PasswordController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\PaymentRegisterController;
 use App\Http\Controllers\Api\RentReserveController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReportExportController;
@@ -23,10 +27,6 @@ use App\Http\Controllers\Api\TenantFundController;
 use App\Http\Controllers\Api\UnitController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\PaymentRegisterController;
-use App\Http\Controllers\Api\OwnerAccountController;
-use App\Http\Controllers\Api\InitialSetupController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -54,7 +54,6 @@ Route::get(
     'presentation-config',
     ApplicationPresentationController::class
 );
-
 
 /*
 |--------------------------------------------------------------------------
@@ -517,6 +516,33 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'reports/managing-organisation',
                     [ReportController::class, 'managingOrganisation']
+                );
+            }
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        |
+        | Administrator-only immutable historical audit access.
+        |
+        | Reading, searching and filtering Activity Log events are passive
+        | operations and therefore do not create additional Activity Log events.
+        | No write/delete routes exist.
+        |
+        */
+
+        Route::middleware('capability:view_activity_log')->group(
+            function (): void {
+                Route::get(
+                    'activity-log',
+                    [ActivityLogController::class, 'index']
+                );
+
+                Route::get(
+                    'activity-log/{activityLog}',
+                    [ActivityLogController::class, 'show']
                 );
             }
         );
