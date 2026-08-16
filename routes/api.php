@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ActivityLogController;
+use App\Http\Controllers\Api\ActivityLogExportController;
 use App\Http\Controllers\Api\ApplicationPresentationController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BuildingController;
@@ -538,6 +539,16 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'activity-log',
                     [ActivityLogController::class, 'index']
+                );
+
+                Route::get(
+                    'activity-log/pdf',
+                    [ActivityLogExportController::class, 'pdf']
+                );
+
+                Route::get(
+                    'activity-log/csv',
+                    [ActivityLogExportController::class, 'csv']
                 );
 
                 Route::get(

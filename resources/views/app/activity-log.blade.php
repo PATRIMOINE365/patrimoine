@@ -10,40 +10,96 @@
     data-requires-capability="view_activity_log"
     class="rbac-hidden"
 >
-    <div>
-        <div
-            class="
-                text-xs font-semibold uppercase
-                tracking-[0.14em]
-                text-patrimoine-700
-            "
-        >
-            <span data-i18n="activity_log.administration">
-                Administration
-            </span>
+    <div
+        class="
+            flex flex-col gap-5
+            sm:flex-row
+            sm:items-start
+            sm:justify-between
+        "
+    >
+        <div>
+            <div
+                class="
+                    text-xs font-semibold uppercase
+                    tracking-[0.14em]
+                    text-patrimoine-700
+                "
+            >
+                <span data-i18n="activity_log.administration">
+                    Administration
+                </span>
+            </div>
+
+            <h1
+                class="
+                    mt-2 text-2xl font-semibold
+                    tracking-tight text-slate-950
+                "
+            >
+                <span data-i18n="activity_log.heading">
+                    Activity Log
+                </span>
+            </h1>
+
+            <p
+                class="
+                    mt-2 max-w-3xl
+                    text-sm leading-6 text-slate-500
+                "
+            >
+                <span data-i18n="activity_log.description">
+                    Review meaningful human actions recorded by Patrimoine.
+                </span>
+            </p>
         </div>
 
-        <h1
+        <div
             class="
-                mt-2 text-2xl font-semibold
-                tracking-tight text-slate-950
+                flex shrink-0
+                flex-wrap gap-2
             "
         >
-            <span data-i18n="activity_log.heading">
-                Activity Log
-            </span>
-        </h1>
+            <button
+                id="activity-log-export-pdf"
+                type="button"
+                class="
+                    rounded-lg border
+                    border-slate-200
+                    bg-white px-4 py-2.5
+                    text-sm font-medium
+                    text-slate-700
+                    transition
+                    hover:bg-slate-50
+                    disabled:cursor-not-allowed
+                    disabled:opacity-50
+                "
+            >
+                <span data-i18n="activity_log.export_pdf">
+                    Export PDF
+                </span>
+            </button>
 
-        <p
-            class="
-                mt-2 max-w-3xl
-                text-sm leading-6 text-slate-500
-            "
-        >
-            <span data-i18n="activity_log.description">
-                Review meaningful human actions recorded by Patrimoine.
-            </span>
-        </p>
+            <button
+                id="activity-log-export-csv"
+                type="button"
+                class="
+                    rounded-lg
+                    bg-patrimoine-700
+                    px-4 py-2.5
+                    text-sm font-medium
+                    text-white
+                    transition
+                    hover:bg-patrimoine-800
+                    disabled:cursor-not-allowed
+                    disabled:opacity-50
+                "
+            >
+                <span data-i18n="activity_log.export_csv">
+                    Export CSV
+                </span>
+            </button>
+        </div>
     </div>
 
     <div

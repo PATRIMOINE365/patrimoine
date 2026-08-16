@@ -19,10 +19,10 @@ class ActivityLogService
     /**
      * Record one meaningful human action.
      *
-     * @param array<string, mixed>|null $before
-     * @param array<string, mixed>|null $after
-     * @param array<string, mixed>|null $snapshot
-     * @param array<string, mixed>|null $metadata
+     * @param  array<string, mixed>|null  $before
+     * @param  array<string, mixed>|null  $after
+     * @param  array<string, mixed>|null  $snapshot
+     * @param  array<string, mixed>|null  $metadata
      */
     public function record(
         string $action,
@@ -86,7 +86,7 @@ class ActivityLogService
     /**
      * Remove null entries while preserving meaningful false/zero values.
      *
-     * @param array<string, mixed>|null $values
+     * @param  array<string, mixed>|null  $values
      * @return array<string, mixed>|null
      */
     private function normalize(?array $values): ?array

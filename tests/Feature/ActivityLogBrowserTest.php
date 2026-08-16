@@ -186,7 +186,7 @@ class ActivityLogBrowserTest extends TestCase
         );
     }
 
-    public function test_activity_log_exports_are_not_introduced_before_activity_r(): void
+    public function test_activity_log_exposes_filtered_pdf_and_csv_exports(): void
     {
         $view =
             file_get_contents(
@@ -195,14 +195,115 @@ class ActivityLogBrowserTest extends TestCase
                 )
             );
 
-        $this->assertStringNotContainsString(
-            'activity-log-export-pdf',
+        $javascript =
+            file_get_contents(
+                resource_path(
+                    'js/activity-log.js'
+                )
+            );
+
+        $this->assertStringContainsString(
+            'id="activity-log-export-pdf"',
             $view
         );
 
-        $this->assertStringNotContainsString(
-            'activity-log-export-csv',
+        $this->assertStringContainsString(
+            'id="activity-log-export-csv"',
             $view
+        );
+
+        $this->assertStringContainsString(
+            'initializeExportActions();',
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            'function activityFilterParameters()',
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            '`/api/activity-log/${format}`',
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            'await response.blob();',
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            'Content-Disposition',
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            'activity-log.${format}',
+            $javascript
+        );
+    }
+
+    public function test_activity_log_exports_use_filters_without_browser_pagination(): void
+    {
+        $javascript =
+            file_get_contents(
+                resource_path(
+                    'js/activity-log.js'
+                )
+            );
+
+        $filterStart =
+            strpos(
+                $javascript,
+                'function activityFilterParameters()'
+            );
+
+        $paginationStart =
+            strpos(
+                $javascript,
+                'function activityQueryParameters('
+            );
+
+        $this->assertNotFalse(
+            $filterStart
+        );
+
+        $this->assertNotFalse(
+            $paginationStart
+        );
+
+        $filters =
+            substr(
+                $javascript,
+                $filterStart,
+                $paginationStart - $filterStart
+            );
+
+        foreach (
+            [
+                'search:',
+                'from:',
+                'to:',
+                'user_id:',
+                'role:',
+                'action:',
+                'entity_type:',
+            ] as $filter
+        ) {
+            $this->assertStringContainsString(
+                $filter,
+                $filters
+            );
+        }
+
+        $this->assertStringNotContainsString(
+            "'page'",
+            $filters
+        );
+
+        $this->assertStringNotContainsString(
+            "'per_page'",
+            $filters
         );
     }
 
@@ -225,6 +326,10 @@ class ActivityLogBrowserTest extends TestCase
                 "'activity_log.before_values':",
                 "'activity_log.after_values':",
                 "'activity_log.metadata':",
+                "'activity_log.export_pdf':",
+                "'activity_log.export_csv':",
+                "'activity_log.exporting':",
+                "'activity_log.unable_export':",
             ] as $key
         ) {
             $this->assertSame(

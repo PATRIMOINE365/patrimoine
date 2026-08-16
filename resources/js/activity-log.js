@@ -48,6 +48,7 @@ export async function initializeActivityLog() {
     }
 
     initializeFilters();
+    initializeExportActions();
     initializeDetailModal();
 
     await Promise.all([
@@ -132,21 +133,15 @@ function initializeFilters() {
         );
 }
 
-function activityQueryParameters(
-    page = 1
-) {
+/**
+ * Build the canonical browser filter query.
+ *
+ * Activity Log exports use this function directly so they contain every
+ * record matching the current filters rather than only the visible page.
+ */
+function activityFilterParameters() {
     const parameters =
         new URLSearchParams();
-
-    parameters.set(
-        'page',
-        String(page)
-    );
-
-    parameters.set(
-        'per_page',
-        '25'
-    );
 
     const values = {
         search:
@@ -201,6 +196,28 @@ function activityQueryParameters(
     return parameters;
 }
 
+/**
+ * Add list-only pagination to the canonical Activity Log filters.
+ */
+function activityQueryParameters(
+    page = 1
+) {
+    const parameters =
+        activityFilterParameters();
+
+    parameters.set(
+        'page',
+        String(page)
+    );
+
+    parameters.set(
+        'per_page',
+        '25'
+    );
+
+    return parameters;
+}
+
 function clearFilters() {
     [
         'activity-log-search',
@@ -224,6 +241,231 @@ function clearFilters() {
     );
 
     loadActivityLog(1);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Export
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * Wire Administrator-only Activity Log export controls.
+ *
+ * Server capability middleware remains the authoritative authorization
+ * boundary. This browser module only exposes controls inside the already
+ * restricted Activity Log workspace.
+ */
+function initializeExportActions() {
+    document
+        .getElementById(
+            'activity-log-export-pdf'
+        )
+        ?.addEventListener(
+            'click',
+            () => exportActivityLog(
+                'pdf'
+            )
+        );
+
+    document
+        .getElementById(
+            'activity-log-export-csv'
+        )
+        ?.addEventListener(
+            'click',
+            () => exportActivityLog(
+                'csv'
+            )
+        );
+}
+
+/**
+ * Export all Activity Log rows matching the current filters.
+ *
+ * Pagination is deliberately excluded.
+ *
+ * @param {'pdf'|'csv'} format
+ */
+async function exportActivityLog(
+    format
+) {
+    const button =
+        document.getElementById(
+            format === 'pdf'
+                ? 'activity-log-export-pdf'
+                : 'activity-log-export-csv'
+        );
+
+    const originalLabel =
+        button?.textContent
+            ?.trim()
+        || '';
+
+    hideError();
+
+    try {
+        if (button) {
+            button.disabled =
+                true;
+
+            button.textContent =
+                translate(
+                    'activity_log.exporting'
+                );
+        }
+
+        const parameters =
+            activityFilterParameters();
+
+        const query =
+            parameters.toString();
+
+        const endpoint =
+            `/api/activity-log/${format}`
+            + (
+                query !== ''
+                    ? `?${query}`
+                    : ''
+            );
+
+        const response =
+            await apiRequest(
+                endpoint,
+                {
+                    headers: {
+                        Accept:
+                            format === 'pdf'
+                                ? 'application/pdf'
+                                : 'text/csv',
+                    },
+                }
+            );
+
+        if (! response.ok) {
+            await parseJsonResponse(
+                response
+            );
+
+            return;
+        }
+
+        const blob =
+            await response.blob();
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        const link =
+            document.createElement(
+                'a'
+            );
+
+        link.href =
+            url;
+
+        link.download =
+            activityExportFilename(
+                response,
+                format
+            );
+
+        document.body.appendChild(
+            link
+        );
+
+        link.click();
+
+        link.remove();
+
+        /*
+         * Revocation is deferred briefly so the browser has finished
+         * consuming the object URL before it is released.
+         */
+        window.setTimeout(
+            () => {
+                URL.revokeObjectURL(
+                    url
+                );
+            },
+            1000
+        );
+    } catch (error) {
+        showError(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'activity_log.unable_export'
+                )
+        );
+    } finally {
+        if (button) {
+            button.disabled =
+                false;
+
+            button.textContent =
+                originalLabel
+                || translate(
+                    format === 'pdf'
+                        ? 'activity_log.export_pdf'
+                        : 'activity_log.export_csv'
+                );
+        }
+    }
+}
+
+/**
+ * Prefer the attachment filename supplied by Laravel.
+ *
+ * @param {Response} response
+ * @param {'pdf'|'csv'} format
+ * @returns {string}
+ */
+function activityExportFilename(
+    response,
+    format
+) {
+    const disposition =
+        response.headers.get(
+            'Content-Disposition'
+        )
+        || '';
+
+    const encoded =
+        disposition.match(
+            /filename\*=UTF-8''([^;]+)/i
+        );
+
+    if (encoded?.[1]) {
+        try {
+            return decodeURIComponent(
+                encoded[1]
+                    .trim()
+                    .replace(
+                        /^["']|["']$/g,
+                        ''
+                    )
+            );
+        } catch {
+            /*
+             * Fall through to the standard filename form.
+             */
+        }
+    }
+
+    const standard =
+        disposition.match(
+            /filename\s*=\s*"?([^";]+)"?/i
+        );
+
+    if (standard?.[1]) {
+        return standard[1]
+            .trim();
+    }
+
+    return `activity-log.${format}`;
 }
 
 /*

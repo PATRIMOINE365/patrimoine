@@ -216,6 +216,14 @@ export const translations = {
             'e.g. payment',
         'activity_log.clear_filters':
             'Clear Filters',
+        'activity_log.export_pdf':
+            'Export PDF',
+        'activity_log.export_csv':
+            'Export CSV',
+        'activity_log.exporting':
+            'Exporting...',
+        'activity_log.unable_export':
+            'Unable to export Activity Log.',
         'activity_log.loading':
             'Loading activity...',
         'activity_log.none_found':
@@ -1892,6 +1900,14 @@ export const translations = {
             'ex. payment',
         'activity_log.clear_filters':
             'Effacer les filtres',
+        'activity_log.export_pdf':
+            'Exporter en PDF',
+        'activity_log.export_csv':
+            'Exporter en CSV',
+        'activity_log.exporting':
+            'Export en cours...',
+        'activity_log.unable_export':
+            'Impossible d’exporter le journal d’activité.',
         'activity_log.loading':
             'Chargement du journal d’activité...',
         'activity_log.none_found':
