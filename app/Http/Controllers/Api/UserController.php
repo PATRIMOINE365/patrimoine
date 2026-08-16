@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use App\Services\ActivityLogService;
 use App\Services\UserAdministrationService;
 use App\Services\UserInvitationService;
 use App\Services\UserPasswordService;
@@ -120,7 +121,8 @@ class UserController extends Controller
      */
     public function store(
         StoreUserRequest $request,
-        UserInvitationService $invitations
+        UserInvitationService $invitations,
+        ActivityLogService $activityLog
     ): JsonResponse {
         $validated = $request->validated();
 
@@ -152,6 +154,22 @@ class UserController extends Controller
          */
         $invitations->send($user);
 
+        /*
+         * Account creation and its initial invitation are one human action.
+         * Internal password/token material is never included in the snapshot.
+         */
+        $activityLog->record(
+            action: 'user.created',
+            request: $request,
+            entityType: 'user',
+            entityId: $user->id,
+            entityLabel: $user->name,
+            snapshot: $this->activitySnapshot($user),
+            metadata: [
+                'invitation_sent' => true,
+            ],
+        );
+
         return response()->json(
             data: $user,
             status: 201
@@ -165,10 +183,21 @@ class UserController extends Controller
      * invitation before issuing the new 24-hour link.
      */
     public function resendInvitation(
+        Request $request,
         User $user,
-        UserInvitationService $invitations
+        UserInvitationService $invitations,
+        ActivityLogService $activityLog
     ): JsonResponse {
         $invitations->send($user);
+
+        $activityLog->record(
+            action: 'user.invitation_resent',
+            request: $request,
+            entityType: 'user',
+            entityId: $user->id,
+            entityLabel: $user->name,
+            snapshot: $this->activitySnapshot($user),
+        );
 
         return response()->json([
             'message' => __(
@@ -183,11 +212,26 @@ class UserController extends Controller
      * The Administrator never receives or chooses the User's password.
      */
     public function initiatePasswordReset(
+        Request $request,
         User $user,
-        UserPasswordService $passwords
+        UserPasswordService $passwords,
+        ActivityLogService $activityLog
     ): JsonResponse {
         $passwords->sendResetLink(
             $user->email
+        );
+
+        /*
+         * The meaningful event is the Administrator initiating the workflow.
+         * Password reset tokens and passwords are never logged.
+         */
+        $activityLog->record(
+            action: 'user.password_reset_requested',
+            request: $request,
+            entityType: 'user',
+            entityId: $user->id,
+            entityLabel: $user->name,
+            snapshot: $this->activitySnapshot($user),
         );
 
         return response()->json([
@@ -214,12 +258,22 @@ class UserController extends Controller
     public function update(
         UpdateUserRequest $request,
         User $user,
-        UserAdministrationService $administration
+        UserAdministrationService $administration,
+        ActivityLogService $activityLog
     ): JsonResponse {
         /** @var User $actor */
         $actor = $request->user();
 
         $validated = $request->validated();
+
+        /*
+         * Freeze the original public User state before any part of the
+         * compound update executes. One HTTP update produces at most one
+         * Activity Log event regardless of how many fields changed.
+         */
+        $beforeSnapshot = $this->activitySnapshot(
+            $user->fresh()
+        );
 
         $updated = DB::transaction(
             function () use (
@@ -279,6 +333,31 @@ class UserController extends Controller
             }
         );
 
+        $afterSnapshot = $this->activitySnapshot(
+            $updated
+        );
+
+        [$before, $after] = $this->activityChanges(
+            $beforeSnapshot,
+            $afterSnapshot
+        );
+
+        /*
+         * A no-op PATCH is not a meaningful human action and therefore does
+         * not create Activity Log noise.
+         */
+        if ($before !== []) {
+            $activityLog->record(
+                action: 'user.updated',
+                request: $request,
+                entityType: 'user',
+                entityId: $updated->id,
+                entityLabel: $updated->name,
+                before: $before,
+                after: $after,
+            );
+        }
+
         return response()->json($updated);
     }
 
@@ -288,19 +367,89 @@ class UserController extends Controller
     public function destroy(
         Request $request,
         User $user,
-        UserAdministrationService $administration
+        UserAdministrationService $administration,
+        ActivityLogService $activityLog
     ): JsonResponse {
         /** @var User $actor */
         $actor = $request->user();
+
+        /*
+         * Preserve the target identity before deletion. The Activity Log row
+         * intentionally has no foreign-key dependency on the deleted User.
+         */
+        $targetId = $user->id;
+        $targetLabel = $user->name;
+        $snapshot = $this->activitySnapshot($user);
 
         $administration->delete(
             $actor,
             $user
         );
 
+        $activityLog->record(
+            action: 'user.deleted',
+            actor: $actor,
+            request: $request,
+            entityType: 'user',
+            entityId: $targetId,
+            entityLabel: $targetLabel,
+            snapshot: $snapshot,
+        );
+
         return response()->json(
             data: null,
             status: 204
         );
+    }
+
+    /**
+     * Return the non-secret User state suitable for historical auditing.
+     *
+     * @return array<string, mixed>
+     */
+    private function activitySnapshot(User $user): array
+    {
+        return [
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'role' => $user->role->value,
+            'is_active' => $user->isActive(),
+            'email_verified' =>
+                $user->email_verified_at !== null,
+        ];
+    }
+
+    /**
+     * Return only fields whose values actually changed.
+     *
+     * @param array<string, mixed> $before
+     * @param array<string, mixed> $after
+     * @return array{
+     *     0: array<string, mixed>,
+     *     1: array<string, mixed>
+     * }
+     */
+    private function activityChanges(
+        array $before,
+        array $after
+    ): array {
+        $changedBefore = [];
+        $changedAfter = [];
+
+        foreach ($before as $field => $value) {
+            if (($after[$field] ?? null) === $value) {
+                continue;
+            }
+
+            $changedBefore[$field] = $value;
+            $changedAfter[$field] =
+                $after[$field] ?? null;
+        }
+
+        return [
+            $changedBefore,
+            $changedAfter,
+        ];
     }
 }

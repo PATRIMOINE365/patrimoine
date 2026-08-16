@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\ActivityLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -27,8 +28,11 @@ class AuthController extends Controller
      * The plain-text token is returned only at creation time. Sanctum
      * stores only the hashed representation in the database.
      */
-    public function login(Request $request): JsonResponse
-    {
+    public function login(
+        Request $request,
+        ActivityLogService $activityLog
+    ): JsonResponse {
+
         $credentials = $request->validate([
             'email' => [
                 'required',
@@ -61,6 +65,23 @@ class AuthController extends Controller
                 $user->password
             )
         ) {
+            /*
+             * Failed login attempts are the explicit exception to Activity
+             * Log's successful-action rule.
+             *
+             * Do not attach the resolved User as the actor: possession of an
+             * email address does not prove that the person attempting login
+             * is that User. When the account exists it is recorded only as
+             * affected entity context.
+             */
+            $this->recordFailedLogin(
+                activityLog: $activityLog,
+                request: $request,
+                email: $credentials['email'],
+                reason: 'invalid_credentials',
+                user: $user
+            );
+
             throw ValidationException::withMessages([
                 'email' => [
                     __('api.auth.invalid_credentials'),
@@ -73,6 +94,14 @@ class AuthController extends Controller
          * password is correct.
          */
         if (! $user->isActive()) {
+            $this->recordFailedLogin(
+                activityLog: $activityLog,
+                request: $request,
+                email: $credentials['email'],
+                reason: 'account_disabled',
+                user: $user
+            );
+
             throw ValidationException::withMessages([
                 'email' => [
                     __('api.auth.account_disabled'),
@@ -85,6 +114,14 @@ class AuthController extends Controller
          * workflow establishes a password and verifies the email address.
          */
         if ($user->email_verified_at === null) {
+            $this->recordFailedLogin(
+                activityLog: $activityLog,
+                request: $request,
+                email: $credentials['email'],
+                reason: 'setup_required',
+                user: $user
+            );
+
             throw ValidationException::withMessages([
                 'email' => [
                     __('api.auth.setup_required'),
@@ -100,6 +137,19 @@ class AuthController extends Controller
             ?? 'patrimoine-api';
 
         $token = $user->createToken($tokenName);
+
+        /*
+         * Successful authentication is one meaningful human action.
+         * The password and access token are deliberately excluded.
+         */
+        $activityLog->record(
+            action: 'auth.login',
+            actor: $user,
+            request: $request,
+            entityType: 'user',
+            entityId: $user->id,
+            entityLabel: $user->name,
+        );
 
         return response()->json([
             'token_type' => 'Bearer',
@@ -124,8 +174,11 @@ class AuthController extends Controller
     /**
      * Revoke the Sanctum token used for the current API request.
      */
-    public function logout(Request $request): JsonResponse
-    {
+    public function logout(
+        Request $request,
+        ActivityLogService $activityLog
+    ): JsonResponse {
+
         /** @var User $user */
         $user = $request->user();
 
@@ -136,9 +189,54 @@ class AuthController extends Controller
          */
         $user->currentAccessToken()?->delete();
 
+        /*
+         * Token revocation is the consequence of logout, not a separate
+         * Activity Log event.
+         */
+        $activityLog->record(
+            action: 'auth.logout',
+            actor: $user,
+            request: $request,
+            entityType: 'user',
+            entityId: $user->id,
+            entityLabel: $user->name,
+        );
+
         return response()->json([
             'message' => __('api.auth.logged_out'),
         ]);
+    }
+
+    /**
+     * Record one unsuccessful authentication attempt without attributing
+     * the attempt to an authenticated User.
+     *
+     * The submitted password is deliberately unavailable to this method and
+     * must never be written to Activity Log.
+     */
+    private function recordFailedLogin(
+        ActivityLogService $activityLog,
+        Request $request,
+        string $email,
+        string $reason,
+        ?User $user = null
+    ): void {
+        $activityLog->record(
+            action: 'auth.login_failed',
+            request: $request,
+            actorEmail: mb_strtolower(
+                trim($email)
+            ),
+            entityType:
+                $user === null
+                    ? null
+                    : 'user',
+            entityId: $user?->id,
+            entityLabel: $user?->name,
+            metadata: [
+                'reason' => $reason,
+            ],
+        );
     }
 
     /**

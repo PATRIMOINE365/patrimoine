@@ -8,6 +8,7 @@ use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
+use App\Services\ActivityLogService;
 use App\Services\UserInvitationService;
 use App\Services\UserPasswordService;
 use Illuminate\Http\JsonResponse;
@@ -23,14 +24,28 @@ class PasswordController extends Controller
      */
     public function acceptInvitation(
         AcceptUserInvitationRequest $request,
-        UserInvitationService $invitations
+        UserInvitationService $invitations,
+        ActivityLogService $activityLog
     ): JsonResponse {
         $validated = $request->validated();
 
-        $invitations->accept(
+        $user = $invitations->accept(
             email: $validated['email'],
             plainToken: $validated['token'],
             password: $validated['password']
+        );
+
+        /*
+         * Invitation acceptance is a successful account-ownership action.
+         * No invitation token or password is retained in Activity Log.
+         */
+        $activityLog->record(
+            action: 'auth.invitation_accepted',
+            actor: $user,
+            request: $request,
+            entityType: 'user',
+            entityId: $user->id,
+            entityLabel: $user->name,
         );
 
         return response()->json([
@@ -63,7 +78,8 @@ class PasswordController extends Controller
      */
     public function reset(
         ResetPasswordRequest $request,
-        UserPasswordService $passwords
+        UserPasswordService $passwords,
+        ActivityLogService $activityLog
     ): JsonResponse {
         $validated = $request->validated();
 
@@ -71,6 +87,23 @@ class PasswordController extends Controller
             email: $validated['email'],
             token: $validated['token'],
             password: $validated['password']
+        );
+
+        /*
+         * Resolve the successfully reset account only after the reset has
+         * completed. The password and reset token are never logged.
+         */
+        $user = User::query()
+            ->where('email', $validated['email'])
+            ->firstOrFail();
+
+        $activityLog->record(
+            action: 'auth.password_reset',
+            actor: $user,
+            request: $request,
+            entityType: 'user',
+            entityId: $user->id,
+            entityLabel: $user->name,
         );
 
         return response()->json([
@@ -85,7 +118,8 @@ class PasswordController extends Controller
      */
     public function change(
         ChangePasswordRequest $request,
-        UserPasswordService $passwords
+        UserPasswordService $passwords,
+        ActivityLogService $activityLog
     ): JsonResponse {
         /** @var User $user */
         $user = $request->user();
@@ -98,6 +132,15 @@ class PasswordController extends Controller
                 $validated['current_password'],
             newPassword:
                 $validated['password']
+        );
+
+        $activityLog->record(
+            action: 'auth.password_changed',
+            actor: $user,
+            request: $request,
+            entityType: 'user',
+            entityId: $user->id,
+            entityLabel: $user->name,
         );
 
         return response()->json([
