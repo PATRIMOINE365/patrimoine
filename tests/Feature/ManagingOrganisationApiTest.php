@@ -247,7 +247,7 @@ class ManagingOrganisationApiTest extends TestCase
             ->assertStatus(409)
             ->assertJsonPath(
                 'message',
-                'The configured managing organisation cannot be deleted.'
+                'The configured Managing Organisation cannot be deleted. Change the Managing Organisation configuration instead.'
             );
 
         $this->assertDatabaseHas(

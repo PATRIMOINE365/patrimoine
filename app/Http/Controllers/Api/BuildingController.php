@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBuildingRequest;
 use App\Http\Requests\UpdateBuildingRequest;
 use App\Models\Building;
+use App\Services\BusinessRecordDeletionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -209,9 +210,23 @@ class BuildingController extends Controller
      *
      * Foreign-key restrictions protect contractual and financial history.
      */
-    public function destroy(Building $building): JsonResponse
-    {
-        $building->delete();
+    public function destroy(
+        Building $building,
+        BusinessRecordDeletionService $deletions
+    ): JsonResponse {
+        $message =
+            $deletions->deleteBuilding(
+                $building
+            );
+
+        if ($message !== null) {
+            return response()->json(
+                [
+                    'message' => $message,
+                ],
+                409
+            );
+        }
 
         return response()->json(
             data: null,

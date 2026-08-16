@@ -310,7 +310,7 @@ class PartyApiTest extends TestCase
             ->assertStatus(409)
             ->assertJsonPath(
                 'message',
-                'L’organisation gestionnaire configurée ne peut pas être supprimée.'
+                'L’organisation gestionnaire configurée ne peut pas être supprimée. Modifiez plutôt la configuration de l’organisation gestionnaire.'
             );
     }
 

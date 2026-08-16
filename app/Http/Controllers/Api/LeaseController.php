@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLeaseRequest;
 use App\Http\Requests\UpdateLeaseRequest;
 use App\Models\Lease;
+use App\Services\BusinessRecordDeletionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Services\LeaseInitializationService;
@@ -394,9 +395,23 @@ public function store(
      * Database restrictions protect invoices, payments and financial
      * history from being removed accidentally.
      */
-    public function destroy(Lease $lease): JsonResponse
-    {
-        $lease->delete();
+    public function destroy(
+        Lease $lease,
+        BusinessRecordDeletionService $deletions
+    ): JsonResponse {
+        $message =
+            $deletions->deleteLease(
+                $lease
+            );
+
+        if ($message !== null) {
+            return response()->json(
+                [
+                    'message' => $message,
+                ],
+                409
+            );
+        }
 
         return response()->json(
             data: null,

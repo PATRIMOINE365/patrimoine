@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUnitRequest;
 use App\Http\Requests\UpdateUnitRequest;
 use App\Models\Unit;
+use App\Services\BusinessRecordDeletionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -102,9 +103,23 @@ class UnitController extends Controller
     /**
      * Delete a Unit if no protected Lease history references it.
      */
-    public function destroy(Unit $unit): JsonResponse
-    {
-        $unit->delete();
+    public function destroy(
+        Unit $unit,
+        BusinessRecordDeletionService $deletions
+    ): JsonResponse {
+        $message =
+            $deletions->deleteUnit(
+                $unit
+            );
+
+        if ($message !== null) {
+            return response()->json(
+                [
+                    'message' => $message,
+                ],
+                409
+            );
+        }
 
         return response()->json(
             data: null,

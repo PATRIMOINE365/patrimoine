@@ -7,6 +7,7 @@ use App\Http\Requests\StorePartyRequest;
 use App\Http\Requests\UpdatePartyRequest;
 use App\Models\ApplicationSetting;
 use App\Models\Party;
+use App\Services\BusinessRecordDeletionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -198,19 +199,23 @@ class PartyController extends Controller
      * Foreign-key restrictions continue to protect other contractual and
      * financial Party relationships from accidental deletion.
      */
-    public function destroy(Party $party): JsonResponse
-    {
-        if ($this->isConfiguredManagingOrganisation($party)) {
+    public function destroy(
+        Party $party,
+        BusinessRecordDeletionService $deletions
+    ): JsonResponse {
+        $message =
+            $deletions->deleteParty(
+                $party
+            );
+
+        if ($message !== null) {
             return response()->json(
                 [
-                    'message' =>
-                        __('api.managing_organisation.cannot_delete'),
+                    'message' => $message,
                 ],
                 409
             );
         }
-
-        $party->delete();
 
         return response()->json(
             data: null,

@@ -131,4 +131,22 @@ return [
         'account_disabled' =>
             'Ce compte a été désactivé.',
     ],
+
+    'deletion' => [
+        'party_managing_organisation' =>
+            'L’organisation gestionnaire configurée ne peut pas être supprimée. Modifiez plutôt la configuration de l’organisation gestionnaire.',
+        'party_referenced' =>
+            'Cette partie ne peut pas être supprimée car elle est référencée par un bail, une propriété, un mandat d’agence ou un historique financier. Conservez-la afin que les données historiques restent compréhensibles.',
+        'building_has_units' =>
+            'Cet immeuble ne peut pas être supprimé tant qu’il contient des unités. Supprimez d’abord uniquement les unités sans référence ; les unités ayant un bail ou un historique financier doivent être conservées.',
+        'building_referenced' =>
+            'Cet immeuble ne peut pas être supprimé car des données financières ou historiques y font référence. Conservez-le pour préserver la traçabilité.',
+        'unit_referenced' =>
+            'Cette unité ne peut pas être supprimée car un bail ou un historique financier y fait référence. Conservez l’unité et résiliez plutôt le bail lorsque cela s’applique.',
+        'lease_not_draft' =>
+            'Seul un bail brouillon inutilisé peut être supprimé. Utilisez la procédure de résiliation pour un bail actif ou en préavis ; les baux résiliés sont conservés comme historique.',
+        'lease_referenced' =>
+            'Ce bail brouillon ne peut pas être supprimé car des données contractuelles ou financières y font référence. Conservez le bail.',
+    ],
+
 ];

@@ -131,4 +131,22 @@ return [
         'account_disabled' =>
             'This account has been disabled.',
     ],
+
+    'deletion' => [
+        'party_managing_organisation' =>
+            'The configured Managing Organisation cannot be deleted. Change the Managing Organisation configuration instead.',
+        'party_referenced' =>
+            'This Party cannot be deleted because it is referenced by Lease, ownership, agency or financial history. Keep the Party so historical records remain understandable.',
+        'building_has_units' =>
+            'This Building cannot be deleted while it still contains Units. Delete only unreferenced Units first; Units with Lease or financial history must be retained.',
+        'building_referenced' =>
+            'This Building cannot be deleted because financial or historical records reference it. Keep the Building for historical accountability.',
+        'unit_referenced' =>
+            'This Unit cannot be deleted because Lease or financial history references it. Keep the Unit and terminate the Lease instead where applicable.',
+        'lease_not_draft' =>
+            'Only an unused draft Lease can be deleted. Use the termination workflow for an active or notice Lease; terminated Leases are retained as history.',
+        'lease_referenced' =>
+            'This draft Lease cannot be deleted because contractual or financial history references it. Keep the Lease record.',
+    ],
+
 ];
