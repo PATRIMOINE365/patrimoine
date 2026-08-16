@@ -280,4 +280,27 @@ class RoleAwareApplicationUiTest extends TestCase
         );
     }
 
+    public function test_lease_defaults_do_not_require_administrator_settings_access(): void
+    {
+        $javascript =
+            file_get_contents(
+                resource_path(
+                    'js/leases.js'
+                )
+            );
+
+        $this->assertIsString(
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            "'/api/presentation-config'",
+            $javascript
+        );
+
+        $this->assertStringNotContainsString(
+            "'/api/managing-organisation'",
+            $javascript
+        );
+    }
 }

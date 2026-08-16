@@ -89,4 +89,20 @@ class ApplicationPresentationApiTest extends TestCase
             ],
         ]);
     }
+
+    public function test_presentation_config_exposes_safe_default_vat_rate(): void
+    {
+        $response =
+            $this->getJson(
+                '/api/presentation-config'
+            )
+                ->assertOk();
+
+        $this->assertSame(
+            18.0,
+            (float) $response->json(
+                'default_vat_rate'
+            )
+        );
+    }
 }

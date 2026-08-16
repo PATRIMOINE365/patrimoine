@@ -242,8 +242,7 @@ class UserAuthorizationTest extends TestCase
                 'type' => 'person',
                 'name' => 'Delete Protection Test',
                 'phone' => '0200000000',
-                'email' =>
-                    strtolower($role->value)
+                'email' => strtolower($role->value)
                     .'@delete-test.example',
             ]);
 
@@ -399,5 +398,20 @@ class UserAuthorizationTest extends TestCase
                 'role',
                 UserRole::Viewer->value
             );
+    }
+
+    public function test_all_three_roles_can_read_lease_register(): void
+    {
+        foreach (UserRole::cases() as $role) {
+            Sanctum::actingAs(
+                User::factory()->create([
+                    'role' => $role,
+                ])
+            );
+
+            $this
+                ->getJson('/api/leases')
+                ->assertOk();
+        }
     }
 }

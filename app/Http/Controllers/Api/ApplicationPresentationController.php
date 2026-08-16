@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ApplicationSetting;
 use App\Services\ApplicationIdentityService;
 use App\Services\ApplicationLocaleService;
 use Illuminate\Http\JsonResponse;
@@ -39,6 +40,27 @@ class ApplicationPresentationController extends Controller
             $organisation?->legal_name
             ?? $organisation?->name
             ?? 'Patrimoine';
+
+        /*
+         * Lease creation needs the organisation-wide VAT default, but
+         * Property Manager and Viewer must not receive access to the full
+         * Administrator-only Managing Organisation settings endpoint.
+         *
+         * The VAT default is non-sensitive application presentation/
+         * operational configuration and is therefore exposed alongside the
+         * existing language and currency configuration.
+         */
+        $settings =
+            ApplicationSetting::query()
+                ->first();
+
+        $configuration[
+            'default_vat_rate'
+        ] =
+            (float) (
+                $settings?->default_vat_rate
+                ?? 18
+            );
 
         return response()->json(
             $configuration
