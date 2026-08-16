@@ -254,4 +254,30 @@ class RoleAwareApplicationUiTest extends TestCase
             $controller
         );
     }
+
+    public function test_administrator_users_workspace_is_not_permanently_hidden(): void
+    {
+        $view = file_get_contents(
+            resource_path('views/app/users.blade.php')
+        );
+
+        $this->assertIsString($view);
+
+        $this->assertStringContainsString(
+            'id="users-workspace"',
+            $view
+        );
+
+        /*
+         * Access to /users is controlled by Activity H's centralized
+         * Administrator capability authorization. The workspace itself
+         * must therefore not carry an unconditional Tailwind hidden class
+         * that would leave an authorized Administrator with a blank page.
+         */
+        $this->assertDoesNotMatchRegularExpression(
+            '/id="users-workspace"[\s\S]{0,150}class="hidden"/',
+            $view
+        );
+    }
+
 }

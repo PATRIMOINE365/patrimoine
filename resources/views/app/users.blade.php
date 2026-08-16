@@ -8,7 +8,6 @@
 <div
     id="users-workspace"
     data-requires-role="administrator"
-    class="hidden"
 >
     <div
         class="
