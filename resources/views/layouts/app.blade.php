@@ -530,6 +530,21 @@
                     </div>
                 </div>
             </div>
+
+            <button
+                id="change-password-open"
+                type="button"
+                class="
+                    mt-2 w-full rounded-lg
+                    px-3 py-2 text-left
+                    text-xs font-medium
+                    text-patrimoine-200
+                    hover:bg-white/5 hover:text-white
+                "
+                data-i18n="password.change_action"
+            >
+                Change password
+            </button>
         </div>
     </aside>
 
@@ -610,6 +625,179 @@
         </main>
 
     </div>
+
+
+<div
+    id="change-password-modal"
+    class="
+        fixed inset-0 z-[80]
+        hidden items-center justify-center
+        p-4
+    "
+    aria-hidden="true"
+>
+    <div
+        id="change-password-backdrop"
+        class="absolute inset-0 bg-slate-950/50 backdrop-blur-[1px]"
+    ></div>
+
+    <div
+        class="
+            relative z-10 w-full max-w-md
+            rounded-2xl bg-white shadow-2xl
+        "
+    >
+        <div
+            class="
+                flex items-start justify-between gap-5
+                border-b border-slate-200
+                px-6 py-5
+            "
+        >
+            <div>
+                <h2
+                    class="text-lg font-semibold text-slate-950"
+                    data-i18n="password.change_heading"
+                >
+                    Change password
+                </h2>
+
+                <p
+                    class="mt-1 text-sm text-slate-500"
+                    data-i18n="password.change_description"
+                >
+                    Update the password for your account.
+                </p>
+            </div>
+
+            <button
+                id="change-password-close"
+                type="button"
+                class="
+                    rounded-lg p-2 text-slate-400
+                    hover:bg-slate-100 hover:text-slate-700
+                "
+                data-i18n-aria-label="users.close"
+                aria-label="Close"
+            >
+                ✕
+            </button>
+        </div>
+
+        <form
+            id="change-password-form"
+            class="space-y-5 p-6"
+        >
+            <div
+                id="change-password-message"
+                class="
+                    hidden rounded-lg border
+                    px-4 py-3 text-sm
+                "
+                role="alert"
+            ></div>
+
+            <div>
+                <label
+                    for="current-password"
+                    class="mb-1.5 block text-sm font-medium text-slate-700"
+                    data-i18n="password.current_password"
+                >
+                    Current password
+                </label>
+
+                <input
+                    id="current-password"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                    class="
+                        w-full rounded-lg
+                        border border-slate-200
+                        px-3 py-2.5 text-sm
+                    "
+                >
+            </div>
+
+            <div>
+                <label
+                    for="change-new-password"
+                    class="mb-1.5 block text-sm font-medium text-slate-700"
+                    data-i18n="password.new_password"
+                >
+                    New password
+                </label>
+
+                <input
+                    id="change-new-password"
+                    type="password"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required
+                    class="
+                        w-full rounded-lg
+                        border border-slate-200
+                        px-3 py-2.5 text-sm
+                    "
+                >
+            </div>
+
+            <div>
+                <label
+                    for="change-password-confirmation"
+                    class="mb-1.5 block text-sm font-medium text-slate-700"
+                    data-i18n="password.confirm_password"
+                >
+                    Confirm password
+                </label>
+
+                <input
+                    id="change-password-confirmation"
+                    type="password"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required
+                    class="
+                        w-full rounded-lg
+                        border border-slate-200
+                        px-3 py-2.5 text-sm
+                    "
+                >
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button
+                    id="change-password-cancel"
+                    type="button"
+                    class="
+                        rounded-lg border border-slate-200
+                        bg-white px-4 py-2.5
+                        text-sm font-medium text-slate-700
+                        hover:bg-slate-50
+                    "
+                    data-i18n="users.cancel"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    id="change-password-submit"
+                    type="submit"
+                    class="
+                        rounded-lg bg-patrimoine-800
+                        px-4 py-2.5
+                        text-sm font-medium text-white
+                        hover:bg-patrimoine-900
+                        disabled:opacity-50
+                    "
+                    data-i18n="password.change_action"
+                >
+                    Change password
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 </body>
 </html>

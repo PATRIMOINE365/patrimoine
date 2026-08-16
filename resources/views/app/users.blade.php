@@ -283,6 +283,7 @@
                         text-lg font-semibold
                         text-slate-950
                     "
+                    data-i18n="users.add_user"
                 >
                     Add User
                 </h2>
@@ -293,8 +294,9 @@
                         mt-1 text-sm
                         text-slate-500
                     "
+                    data-i18n="users.create_description"
                 >
-                    Create an application user and send an invitation.
+                    Create an application user and send a secure password-setup invitation.
                 </p>
             </div>
 
@@ -528,6 +530,7 @@
                         hover:bg-patrimoine-900
                         disabled:opacity-50
                     "
+                    data-i18n="users.create_user"
                 >
                     Create User
                 </button>

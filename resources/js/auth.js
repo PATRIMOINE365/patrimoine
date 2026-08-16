@@ -186,7 +186,9 @@ export async function initializeLogin() {
                     === ''
                 ) {
                     throw new Error(
-                        'Authentication succeeded but no API token was returned.'
+                        translate(
+                            'login.missing_api_token'
+                        )
                     );
                 }
 

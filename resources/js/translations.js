@@ -61,6 +61,67 @@ export const translations = {
         'login.secure_access':
             'Secure access to Patrimoine Property Management.',
 
+        'password.forgot_link':
+            'Forgot password?',
+        'password.forgot_title':
+            'Forgot password — Patrimoine',
+        'password.forgot_heading':
+            'Forgot your password?',
+        'password.forgot_description':
+            'Enter your email address and we will send you a password reset link.',
+        'password.send_reset':
+            'Send reset link',
+        'password.sending':
+            'Sending…',
+        'password.reset_requested':
+            'If the account is eligible, a password reset link has been sent.',
+        'password.back_to_login':
+            'Back to sign in',
+        'password.reset_title':
+            'Reset password — Patrimoine',
+        'password.reset_heading':
+            'Reset your password',
+        'password.reset_description':
+            'Choose a new password for your Patrimoine account.',
+        'password.new_password':
+            'New password',
+        'password.confirm_password':
+            'Confirm password',
+        'password.reset_action':
+            'Reset password',
+        'password.resetting':
+            'Resetting…',
+        'password.reset_complete':
+            'Your password has been reset successfully.',
+        'password.invitation_title':
+            'Set password — Patrimoine',
+        'password.invitation_heading':
+            'Set your password',
+        'password.invitation_description':
+            'Create a password to activate your Patrimoine account.',
+        'password.set_password':
+            'Set password',
+        'password.setting_password':
+            'Setting password…',
+        'password.invitation_complete':
+            'Your password has been set successfully.',
+        'password.current_password':
+            'Current password',
+        'password.change_action':
+            'Change password',
+        'password.change_heading':
+            'Change password',
+        'password.change_description':
+            'Update the password for your account.',
+        'password.changing':
+            'Changing…',
+        'password.confirmation_mismatch':
+            'The password confirmation does not match.',
+        'password.request_failed':
+            'Unable to complete the password request.',
+        'login.missing_api_token':
+            'Authentication succeeded but no API token was returned.',
+
         'navigation.workspace':
             'Workspace',
 
@@ -1744,6 +1805,67 @@ export const translations = {
 
         'login.secure_access':
             'Accès sécurisé à Patrimoine Gestion immobilière.',
+
+        'password.forgot_link':
+            'Mot de passe oublié ?',
+        'password.forgot_title':
+            'Mot de passe oublié — Patrimoine',
+        'password.forgot_heading':
+            'Mot de passe oublié ?',
+        'password.forgot_description':
+            'Saisissez votre adresse e-mail et nous vous enverrons un lien de réinitialisation.',
+        'password.send_reset':
+            'Envoyer le lien',
+        'password.sending':
+            'Envoi…',
+        'password.reset_requested':
+            'Si le compte est éligible, un lien de réinitialisation a été envoyé.',
+        'password.back_to_login':
+            'Retour à la connexion',
+        'password.reset_title':
+            'Réinitialiser le mot de passe — Patrimoine',
+        'password.reset_heading':
+            'Réinitialisez votre mot de passe',
+        'password.reset_description':
+            'Choisissez un nouveau mot de passe pour votre compte Patrimoine.',
+        'password.new_password':
+            'Nouveau mot de passe',
+        'password.confirm_password':
+            'Confirmer le mot de passe',
+        'password.reset_action':
+            'Réinitialiser le mot de passe',
+        'password.resetting':
+            'Réinitialisation…',
+        'password.reset_complete':
+            'Votre mot de passe a été réinitialisé avec succès.',
+        'password.invitation_title':
+            'Définir le mot de passe — Patrimoine',
+        'password.invitation_heading':
+            'Définissez votre mot de passe',
+        'password.invitation_description':
+            'Créez un mot de passe pour activer votre compte Patrimoine.',
+        'password.set_password':
+            'Définir le mot de passe',
+        'password.setting_password':
+            'Définition du mot de passe…',
+        'password.invitation_complete':
+            'Votre mot de passe a été défini avec succès.',
+        'password.current_password':
+            'Mot de passe actuel',
+        'password.change_action':
+            'Modifier le mot de passe',
+        'password.change_heading':
+            'Modifier le mot de passe',
+        'password.change_description':
+            'Modifiez le mot de passe de votre compte.',
+        'password.changing':
+            'Modification…',
+        'password.confirmation_mismatch':
+            'La confirmation du mot de passe ne correspond pas.',
+        'password.request_failed':
+            'Impossible d’effectuer la demande de mot de passe.',
+        'login.missing_api_token':
+            'La connexion a réussi, mais aucun jeton API n’a été retourné.',
 
         'navigation.workspace':
             'Espace de travail',
