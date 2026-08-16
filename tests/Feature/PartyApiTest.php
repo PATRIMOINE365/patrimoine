@@ -261,6 +261,7 @@ class PartyApiTest extends TestCase
      */
     public function test_unreferenced_party_can_be_deleted(): void
     {
+        $this->authenticateApiUser('administrator');
         $party = Party::create([
             'type' => 'person',
             'name' => 'Delete Test',
@@ -281,6 +282,7 @@ class PartyApiTest extends TestCase
      */
     public function test_managing_organisation_protection_message_renders_in_french(): void
     {
+        $this->authenticateApiUser('administrator');
         $settings = ApplicationSetting::create([
             'language' => 'fr',
             'currency' => 'GHS',

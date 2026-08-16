@@ -6,6 +6,9 @@ return [
             'Les identifiants fournis sont incorrects.',
         'logged_out' =>
             'Déconnexion effectuée avec succès.',
+
+        'unauthenticated' => 'Vous devez être authentifié pour effectuer cette action.',
+        'forbidden' => 'Vous n’êtes pas autorisé à effectuer cette action.',
     ],
 
     'managing_organisation' => [

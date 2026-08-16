@@ -22,7 +22,7 @@ use Illuminate\Validation\Rule;
 class StoreLeaseRequest extends FormRequest
 {
     /**
-     * Authorization will later be enforced by Patrimoine permissions.
+     * Authorization is enforced centrally by Patrimoine capability middleware.
      */
     public function authorize(): bool
     {

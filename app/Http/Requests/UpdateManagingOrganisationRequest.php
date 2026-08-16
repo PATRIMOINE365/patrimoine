@@ -15,7 +15,7 @@ use Illuminate\Validation\Rule;
 class UpdateManagingOrganisationRequest extends FormRequest
 {
     /**
-     * Authorization is enforced by the Property Manager route middleware.
+     * Authorization is enforced centrally by capability middleware before validation.
      */
     public function authorize(): bool
     {

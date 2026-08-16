@@ -17,9 +17,16 @@ trait AuthenticatesApiUser
     /**
      * Authenticate a fresh application user through Sanctum.
      */
-    protected function authenticateApiUser(): User
-    {
-        $user = User::factory()->create();
+    protected function authenticateApiUser(
+        ?string $role = null
+    ): User {
+        $attributes = [];
+
+        if ($role !== null) {
+            $attributes['role'] = $role;
+        }
+
+        $user = User::factory()->create($attributes);
 
         Sanctum::actingAs($user);
 

@@ -20,7 +20,7 @@ class ManagingOrganisationApiTest extends TestCase
     {
         parent::setUp();
 
-        $this->authenticateApiUser();
+        $this->authenticateApiUser('administrator');
     }
 
     /**

@@ -110,378 +110,414 @@ Route::middleware('auth:sanctum')->group(
 
 /*
 |--------------------------------------------------------------------------
-| Property Manager API
+| Authenticated Business API
 |--------------------------------------------------------------------------
 |
-| Patrimoine 1.0 business operations are restricted to authenticated
-| users with the property_manager role.
+| V1.0.3 authorization is capability-based. Role names are mapped centrally
+| to fixed capabilities in UserRole; routes express only the capability
+| required for the operation.
 |
 */
 
-Route::middleware([
-    'auth:sanctum',
-    'role:property_manager',
-])->group(
+Route::middleware('auth:sanctum')->group(
     function (): void {
         /*
         |--------------------------------------------------------------------------
-        | Core Domain Resources
+        | Operational Read Access
         |--------------------------------------------------------------------------
+        |
+        | Administrator, Property Manager and Viewer.
+        |
         */
 
-        Route::apiResource(
-            'parties',
-            PartyController::class
-        );
+        Route::middleware('capability:view_operations')->group(
+            function (): void {
+                Route::get(
+                    'parties',
+                    [PartyController::class, 'index']
+                );
 
-        Route::apiResource(
-            'buildings',
-            BuildingController::class
-        );
+                Route::get(
+                    'parties/{party}',
+                    [PartyController::class, 'show']
+                );
 
-        Route::apiResource(
-            'units',
-            UnitController::class
-        );
+                Route::get(
+                    'buildings',
+                    [BuildingController::class, 'index']
+                );
 
-        Route::apiResource(
-            'leases',
-            LeaseController::class
-        );
+                Route::get(
+                    'buildings/{building}',
+                    [BuildingController::class, 'show']
+                );
 
+                Route::get(
+                    'units',
+                    [UnitController::class, 'index']
+                );
+
+                Route::get(
+                    'units/{unit}',
+                    [UnitController::class, 'show']
+                );
+
+                Route::get(
+                    'leases',
+                    [LeaseController::class, 'index']
+                );
+
+                Route::get(
+                    'leases/{lease}',
+                    [LeaseController::class, 'show']
+                );
+
+                Route::get(
+                    'dashboard',
+                    [DashboardController::class, 'summary']
+                );
+
+                Route::get(
+                    'dashboard/overdue',
+                    [DashboardController::class, 'overdue']
+                );
+
+                Route::get(
+                    'dashboard/upcoming',
+                    [DashboardController::class, 'upcoming']
+                );
+
+                Route::get(
+                    'payment-register',
+                    [PaymentRegisterController::class, 'index']
+                );
+
+                Route::get(
+                    'payments',
+                    [PaymentController::class, 'index']
+                );
+
+                Route::get(
+                    'payments/{payment}',
+                    [PaymentController::class, 'show']
+                );
+
+                Route::get(
+                    'leases/{lease}/security-deposit',
+                    [SecurityDepositController::class, 'show']
+                );
+
+                Route::get(
+                    'owner-accounts',
+                    [OwnerAccountController::class, 'index']
+                );
+
+                Route::get(
+                    'owner-accounts/{ownerAccount}',
+                    [OwnerAccountController::class, 'show']
+                );
+            }
+        );
 
         /*
         |--------------------------------------------------------------------------
-        | Managing Organisation
+        | Operational Create / Modify
         |--------------------------------------------------------------------------
         |
-        | Patrimoine 1.0 is single-tenant and therefore has one application-wide
-        | managing organisation used as the legal and administrative identity.
+        | Administrator and Property Manager.
         |
         */
 
-        Route::get(
-            'managing-organisation',
-            [ManagingOrganisationController::class, 'show']
-        );
+        Route::middleware('capability:manage_operations')->group(
+            function (): void {
+                Route::post(
+                    'parties',
+                    [PartyController::class, 'store']
+                );
 
-        Route::put(
-            'managing-organisation',
-            [ManagingOrganisationController::class, 'update']
-        );
+                Route::match(
+                    ['put', 'patch'],
+                    'parties/{party}',
+                    [PartyController::class, 'update']
+                );
 
+                Route::post(
+                    'buildings',
+                    [BuildingController::class, 'store']
+                );
 
+                Route::match(
+                    ['put', 'patch'],
+                    'buildings/{building}',
+                    [BuildingController::class, 'update']
+                );
 
+                Route::post(
+                    'units',
+                    [UnitController::class, 'store']
+                );
 
-        /*
-        |--------------------------------------------------------------------------
-        | Dashboard
-        |--------------------------------------------------------------------------
-        |
-        | Operational and financial dashboard metrics.
-        |
-        */
+                Route::match(
+                    ['put', 'patch'],
+                    'units/{unit}',
+                    [UnitController::class, 'update']
+                );
 
-        Route::get(
-            'dashboard',
-            [DashboardController::class, 'summary']
-        );
+                Route::post(
+                    'leases',
+                    [LeaseController::class, 'store']
+                );
 
-        Route::get(
-            'dashboard/overdue',
-            [DashboardController::class, 'overdue']
-        );
-
-        Route::get(
-            'dashboard/upcoming',
-            [DashboardController::class, 'upcoming']
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Financial Documents
-        |--------------------------------------------------------------------------
-        |
-        | PDFs are rendered on demand so document-generation services can also
-        | be reused for email attachments and future archival workflows.
-        |
-        */
-
-        Route::get(
-            'invoices/{invoice}/pdf',
-            [DocumentController::class, 'invoice']
-        );
-
-        Route::get(
-            'payments/{payment}/receipt',
-            [DocumentController::class, 'receipt']
-        );
-
-        Route::get(
-            'owner-deposits/{ownerTransaction}/receipt',
-            [DocumentController::class, 'ownerDepositReceipt']
-        );
-
-        Route::get(
-            'security-deposit-settlements/{settlement}/voucher',
-            [DocumentController::class, 'securityDepositVoucher']
-        );
+                Route::match(
+                    ['put', 'patch'],
+                    'leases/{lease}',
+                    [LeaseController::class, 'update']
+                );
 
                 /*
+                 * Resending an existing business document is an explicit
+                 * operational action and is therefore unavailable to Viewer.
+                 */
+                Route::post(
+                    'invoices/{invoice}/send-email',
+                    [EmailController::class, 'invoice']
+                );
+
+                Route::post(
+                    'payments/{payment}/send-receipt',
+                    [EmailController::class, 'receipt']
+                );
+            }
+        );
+
+        /*
         |--------------------------------------------------------------------------
-        | Unified Payment Register
+        | Administrator-Only Business Deletion
         |--------------------------------------------------------------------------
         |
-        | Read-only operational view combining tenant Payments and incoming
-        | Owner deposits without merging their underlying accounting models.
+        | Capability grants permission to attempt deletion. Existing database
+        | and business-integrity constraints remain authoritative.
         |
         */
 
-        Route::get(
-            'payment-register',
-            [PaymentRegisterController::class, 'index']
+        Route::middleware('capability:delete_records')->group(
+            function (): void {
+                Route::delete(
+                    'parties/{party}',
+                    [PartyController::class, 'destroy']
+                );
+
+                Route::delete(
+                    'buildings/{building}',
+                    [BuildingController::class, 'destroy']
+                );
+
+                Route::delete(
+                    'units/{unit}',
+                    [UnitController::class, 'destroy']
+                );
+
+                Route::delete(
+                    'leases/{lease}',
+                    [LeaseController::class, 'destroy']
+                );
+            }
         );
 
         /*
         |--------------------------------------------------------------------------
-        | Payments
+        | Manual Financial Operations
         |--------------------------------------------------------------------------
         |
-        | Payments are transactional financial records and intentionally do not
-        | expose generic update or delete operations.
-        |
-        */
-
-        Route::get(
-            'payments',
-            [PaymentController::class, 'index']
-        );
-
-        Route::post(
-            'payments',
-            [PaymentController::class, 'store']
-        );
-
-        Route::get(
-            'payments/{payment}',
-            [PaymentController::class, 'show']
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Tenant Funds
-        |--------------------------------------------------------------------------
-        |
-        | Unallocated tenant Payment money may be classified into dedicated held
-        | funds such as Rent Reserve, Consumable Advance and Security Deposit.
+        | Administrator and Property Manager. Viewer is strictly read-only.
         |
         */
 
-        Route::post(
-            'payments/{payment}/tenant-funds',
-            [TenantFundController::class, 'allocate']
-        );
+        Route::middleware('capability:manage_finance')->group(
+            function (): void {
+                Route::post(
+                    'payments',
+                    [PaymentController::class, 'store']
+                );
 
-        /*
-         * Rent Reserve may only be consumed when the Lease termination-notice
-         * workflow permits it.
-         */
-        Route::post(
-            'tenant-funds/{tenantFundAccount}/consume-rent',
-            [RentReserveController::class, 'consume']
-        );
+                Route::post(
+                    'payments/{payment}/tenant-funds',
+                    [TenantFundController::class, 'allocate']
+                );
 
-        /*
-         * Consumable Advance may be applied against rent during the normal
-         * Lease lifecycle.
-         */
-        Route::post(
-            'tenant-funds/{tenantFundAccount}/consume-advance',
-            [ConsumableAdvanceController::class, 'consume']
-        );
+                Route::post(
+                    'tenant-funds/{tenantFundAccount}/consume-rent',
+                    [RentReserveController::class, 'consume']
+                );
 
+                Route::post(
+                    'tenant-funds/{tenantFundAccount}/consume-advance',
+                    [ConsumableAdvanceController::class, 'consume']
+                );
 
-        /*
-        * Return the current Security Deposit position and settlement preview.
-        */
-        Route::get(
-            'leases/{lease}/security-deposit',
-            [SecurityDepositController::class, 'show']
-        );
+                Route::post(
+                    'leases/{lease}/security-deposit/deductions',
+                    [SecurityDepositController::class, 'addDeduction']
+                );
 
-        /*
-        * Record one itemized final Security Deposit deduction.
-        */
-        Route::post(
-            'leases/{lease}/security-deposit/deductions',
-            [SecurityDepositController::class, 'addDeduction']
-        );
+                Route::post(
+                    'leases/{lease}/security-deposit/settle',
+                    [SecurityDepositController::class, 'settle']
+                );
 
-        /*
-         * Finalize Security Deposit deductions, tenant debt and refund.
-         */
-        Route::post(
-            'leases/{lease}/security-deposit/settle',
-            [SecurityDepositController::class, 'settle']
-        );
-        /*
-        |--------------------------------------------------------------------------
-        | Owner Accounts
-        |--------------------------------------------------------------------------
-        |
-        | Read-only access used by the Payments workspace to resolve an Owner
-        | Party to the consolidated financial account used by owner deposits.
-        |
-        */
+                Route::post(
+                    'owner-expenses',
+                    [OwnerExpenseController::class, 'store']
+                );
 
-        Route::get(
-            'owner-accounts',
-            [OwnerAccountController::class, 'index']
-        );
+                Route::post(
+                    'owner-accounts/{ownerAccount}/deposits',
+                    [OwnerLedgerController::class, 'deposit']
+                );
 
-        Route::get(
-            'owner-accounts/{ownerAccount}',
-            [OwnerAccountController::class, 'show']
-        );
-        /*
-        |--------------------------------------------------------------------------
-        | Owner Financial Operations
-        |--------------------------------------------------------------------------
-        */
+                Route::post(
+                    'owner-accounts/{ownerAccount}/adjustments',
+                    [OwnerLedgerController::class, 'adjustment']
+                );
 
-        Route::post(
-            'owner-expenses',
-            [OwnerExpenseController::class, 'store']
-        );
-
-        Route::post(
-            'owner-accounts/{ownerAccount}/deposits',
-            [OwnerLedgerController::class, 'deposit']
-        );
-
-        Route::post(
-            'owner-accounts/{ownerAccount}/adjustments',
-            [OwnerLedgerController::class, 'adjustment']
-        );
-
-        Route::post(
-            'owner-accounts/{ownerAccount}/payouts',
-            [OwnerPayoutController::class, 'store']
+                Route::post(
+                    'owner-accounts/{ownerAccount}/payouts',
+                    [OwnerPayoutController::class, 'store']
+                );
+            }
         );
 
         /*
         |--------------------------------------------------------------------------
-        | Financial Email Delivery
+        | Reports, Statements, Documents and Exports
         |--------------------------------------------------------------------------
         |
-        | These endpoints allow administrators to resend previously generated
-        | invoices and receipts without recreating the financial records.
+        | All three roles may access applicable reports/statements and their
+        | existing PDF/CSV/document representations.
         |
         */
 
-        Route::post(
-            'invoices/{invoice}/send-email',
-            [EmailController::class, 'invoice']
-        );
+        Route::middleware('capability:export_reports')->group(
+            function (): void {
+                Route::get(
+                    'invoices/{invoice}/pdf',
+                    [DocumentController::class, 'invoice']
+                );
 
-        Route::post(
-            'payments/{payment}/send-receipt',
-            [EmailController::class, 'receipt']
+                Route::get(
+                    'payments/{payment}/receipt',
+                    [DocumentController::class, 'receipt']
+                );
+
+                Route::get(
+                    'owner-deposits/{ownerTransaction}/receipt',
+                    [DocumentController::class, 'ownerDepositReceipt']
+                );
+
+                Route::get(
+                    'security-deposit-settlements/{settlement}/voucher',
+                    [DocumentController::class, 'securityDepositVoucher']
+                );
+
+                Route::get(
+                    'reports/owners/{party}/pdf',
+                    [ReportExportController::class, 'ownerPdf']
+                );
+
+                Route::get(
+                    'reports/owners/{party}/csv',
+                    [ReportExportController::class, 'ownerCsv']
+                );
+
+                Route::get(
+                    'reports/buildings/{building}/pdf',
+                    [ReportExportController::class, 'buildingPdf']
+                );
+
+                Route::get(
+                    'reports/buildings/{building}/csv',
+                    [ReportExportController::class, 'buildingCsv']
+                );
+
+                Route::get(
+                    'reports/units/{unit}/pdf',
+                    [ReportExportController::class, 'unitPdf']
+                );
+
+                Route::get(
+                    'reports/units/{unit}/csv',
+                    [ReportExportController::class, 'unitCsv']
+                );
+
+                Route::get(
+                    'reports/tenants/{party}/pdf',
+                    [ReportExportController::class, 'tenantPdf']
+                );
+
+                Route::get(
+                    'reports/tenants/{party}/csv',
+                    [ReportExportController::class, 'tenantCsv']
+                );
+
+                Route::get(
+                    'reports/managing-organisation/pdf',
+                    [ReportExportController::class, 'managingOrganisationPdf']
+                );
+
+                Route::get(
+                    'reports/managing-organisation/csv',
+                    [ReportExportController::class, 'managingOrganisationCsv']
+                );
+
+                Route::get(
+                    'reports/owners/{party}',
+                    [ReportController::class, 'owner']
+                );
+
+                Route::get(
+                    'reports/buildings/{building}',
+                    [ReportController::class, 'building']
+                );
+
+                Route::get(
+                    'reports/units/{unit}',
+                    [ReportController::class, 'unit']
+                );
+
+                Route::get(
+                    'reports/tenants/{party}',
+                    [ReportController::class, 'tenant']
+                );
+
+                Route::get(
+                    'reports/managing-organisation',
+                    [ReportController::class, 'managingOrganisation']
+                );
+            }
         );
 
         /*
         |--------------------------------------------------------------------------
-        | Formal Report Exports
+        | Managing Organisation Settings
         |--------------------------------------------------------------------------
         |
-        | PDF and CSV representations reuse the same report-service calculations
-        | exposed through the JSON reporting API.
+        | Settings are Administrator-only, including reading the settings
+        | record itself.
         |
         */
 
-        Route::get(
-            'reports/owners/{party}/pdf',
-            [ReportExportController::class, 'ownerPdf']
-        );
+        Route::middleware('capability:manage_settings')->group(
+            function (): void {
+                Route::get(
+                    'managing-organisation',
+                    [ManagingOrganisationController::class, 'show']
+                );
 
-        Route::get(
-            'reports/owners/{party}/csv',
-            [ReportExportController::class, 'ownerCsv']
-        );
-
-        Route::get(
-            'reports/buildings/{building}/pdf',
-            [ReportExportController::class, 'buildingPdf']
-        );
-
-        Route::get(
-            'reports/buildings/{building}/csv',
-            [ReportExportController::class, 'buildingCsv']
-        );
-
-        Route::get(
-            'reports/units/{unit}/pdf',
-            [ReportExportController::class, 'unitPdf']
-        );
-
-        Route::get(
-            'reports/units/{unit}/csv',
-            [ReportExportController::class, 'unitCsv']
-        );
-
-        Route::get(
-            'reports/tenants/{party}/pdf',
-            [ReportExportController::class, 'tenantPdf']
-        );
-
-        Route::get(
-            'reports/tenants/{party}/csv',
-            [ReportExportController::class, 'tenantCsv']
-        );
-
-        Route::get(
-            'reports/managing-organisation/pdf',
-            [ReportExportController::class, 'managingOrganisationPdf']
-        );
-
-        Route::get(
-            'reports/managing-organisation/csv',
-            [ReportExportController::class, 'managingOrganisationCsv']
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Formal Report JSON API
-        |--------------------------------------------------------------------------
-        |
-        | These endpoints expose the read-only projections produced by the
-        | report service layer.
-        |
-        */
-
-        Route::get(
-            'reports/owners/{party}',
-            [ReportController::class, 'owner']
-        );
-
-        Route::get(
-            'reports/buildings/{building}',
-            [ReportController::class, 'building']
-        );
-
-        Route::get(
-            'reports/units/{unit}',
-            [ReportController::class, 'unit']
-        );
-
-        Route::get(
-            'reports/tenants/{party}',
-            [ReportController::class, 'tenant']
-        );
-
-        Route::get(
-            'reports/managing-organisation',
-            [ReportController::class, 'managingOrganisation']
+                Route::put(
+                    'managing-organisation',
+                    [ManagingOrganisationController::class, 'update']
+                );
+            }
         );
     }
 );

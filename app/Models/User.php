@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserCapability;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -60,6 +61,15 @@ class User extends Authenticatable
     public function hasRole(UserRole $role): bool
     {
         return $this->role === $role;
+    }
+
+    /**
+     * Determine whether this user may perform a central Patrimoine
+     * capability according to their fixed application role.
+     */
+    public function canPerform(UserCapability $capability): bool
+    {
+        return $this->role->allows($capability);
     }
 
     /**

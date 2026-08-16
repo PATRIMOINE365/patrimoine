@@ -6,6 +6,9 @@ return [
             'The provided credentials are incorrect.',
         'logged_out' =>
             'Logged out successfully.',
+
+        'unauthenticated' => 'Unauthenticated.',
+        'forbidden' => 'You are not authorized to perform this action.',
     ],
 
     'managing_organisation' => [
