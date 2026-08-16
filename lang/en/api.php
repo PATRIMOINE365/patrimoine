@@ -11,6 +11,17 @@ return [
         'forbidden' => 'You are not authorized to perform this action.',
     ],
 
+    'user_management' => [
+        'cannot_change_own_role' =>
+            'You cannot change your own Administrator role.',
+        'cannot_disable_self' =>
+            'You cannot disable your own account.',
+        'cannot_delete_self' =>
+            'You cannot delete your own account.',
+        'last_active_administrator' =>
+            'This action cannot be completed because Patrimoine must retain at least one active Administrator.',
+    ],
+
     'managing_organisation' => [
         'not_configured' =>
             'Managing organisation has not been configured.',

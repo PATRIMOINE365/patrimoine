@@ -11,6 +11,17 @@ return [
         'forbidden' => 'Vous n’êtes pas autorisé à effectuer cette action.',
     ],
 
+    'user_management' => [
+        'cannot_change_own_role' =>
+            'Vous ne pouvez pas modifier votre propre rôle d’administrateur.',
+        'cannot_disable_self' =>
+            'Vous ne pouvez pas désactiver votre propre compte.',
+        'cannot_delete_self' =>
+            'Vous ne pouvez pas supprimer votre propre compte.',
+        'last_active_administrator' =>
+            'Cette action ne peut pas être effectuée, car Patrimoine doit conserver au moins un administrateur actif.',
+    ],
+
     'managing_organisation' => [
         'not_configured' =>
             'L’organisation gestionnaire n’a pas encore été configurée.',
