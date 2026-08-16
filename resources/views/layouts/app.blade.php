@@ -388,9 +388,9 @@
 
                     <a
                         href="/users"
-                        data-requires-role="administrator"
+                        data-requires-capability="manage_users"
                         class="
-                            hidden
+                            rbac-hidden
                             {{ request()->is('users')
                                 ? 'bg-white/10 text-white'
                                 : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
@@ -421,7 +421,8 @@
 
                     <a
                         href="/settings"
-                        class="
+                        data-requires-capability="manage_settings"
+                        class="rbac-hidden
                             {{ request()->is('settings')
                                 ? 'bg-white/10 text-white'
                                 : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'

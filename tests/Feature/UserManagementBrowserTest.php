@@ -54,7 +54,7 @@ class UserManagementBrowserTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            'data-requires-role="administrator"',
+            'data-requires-capability="manage_users"',
             $view
         );
 
@@ -121,7 +121,7 @@ class UserManagementBrowserTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            '[data-requires-role]',
+            'initializeBrowserAuthorization',
             $auth
         );
 
