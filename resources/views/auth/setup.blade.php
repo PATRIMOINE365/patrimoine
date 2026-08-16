@@ -55,7 +55,7 @@
                 </h1>
 
                 <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-                    Create the first Property Manager and configure the
+                    Create the first Administrator and configure the
                     Managing Organisation. This setup can be completed only
                     once.
                 </p>
@@ -96,7 +96,7 @@
                     </h2>
 
                     <p class="mt-1 text-sm text-slate-500">
-                        This account will be the first Patrimoine Property Manager.
+                        This account will be the first Patrimoine Administrator.
                     </p>
 
                     <div class="mt-5 grid gap-4 md:grid-cols-2">
