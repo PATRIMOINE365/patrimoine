@@ -2,13 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 
 /**
- * Create a Patrimoine Property Manager account.
+ * Create a Patrimoine Administrator account.
  *
  * Patrimoine deliberately does not seed default production credentials.
  * This command provides a controlled bootstrap mechanism for creating the
@@ -36,7 +37,7 @@ class CreatePatrimoineAdmin extends Command
      * @var string
      */
     protected $description =
-        'Create a Patrimoine Property Manager account securely';
+        'Create a Patrimoine Administrator account securely';
 
     /**
      * Execute the command.
@@ -46,7 +47,7 @@ class CreatePatrimoineAdmin extends Command
         $this->newLine();
 
         $this->info(
-            'Create Patrimoine Property Manager'
+            'Create Patrimoine Administrator'
         );
 
         $this->line(
@@ -193,11 +194,11 @@ class CreatePatrimoineAdmin extends Command
                     $password,
 
                 /*
-                 * Patrimoine V1.0 currently supports one operational
-                 * application role.
+                 * This bootstrap command deliberately creates an
+                 * Administrator account.
                  */
                 'role' =>
-                    'property_manager',
+                    UserRole::Administrator,
 
                 /*
                  * Accounts are created deliberately by a trusted system

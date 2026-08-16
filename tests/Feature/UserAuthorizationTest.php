@@ -2,25 +2,25 @@
 
 namespace Tests\Feature;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 /**
- * Verify role-based authorization for Patrimoine application users.
+ * Verify the V1.0.3 User/RBAC foundation.
+ *
+ * Full capability authorization is introduced in Activity C.
  */
 class UserAuthorizationTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A Property Manager can access Patrimoine business endpoints.
-     */
-    public function test_property_manager_can_access_business_api(): void
+    public function test_property_manager_can_access_legacy_business_api(): void
     {
         $user = User::factory()->create([
-            'role' => 'property_manager',
+            'role' => UserRole::PropertyManager,
         ]);
 
         Sanctum::actingAs($user);
@@ -30,13 +30,23 @@ class UserAuthorizationTest extends TestCase
             ->assertOk();
     }
 
-    /**
-     * An authenticated user without the required application role is denied.
-     */
-    public function test_user_without_property_manager_role_is_forbidden(): void
+    public function test_administrator_can_access_legacy_business_api(): void
     {
         $user = User::factory()->create([
-            'role' => 'viewer',
+            'role' => UserRole::Administrator,
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $this
+            ->getJson('/api/dashboard')
+            ->assertOk();
+    }
+
+    public function test_viewer_is_forbidden_from_legacy_business_api(): void
+    {
+        $user = User::factory()->create([
+            'role' => UserRole::Viewer,
         ]);
 
         Sanctum::actingAs($user);
@@ -46,15 +56,10 @@ class UserAuthorizationTest extends TestCase
             ->assertForbidden();
     }
 
-    /**
-     * An unauthorized user may still retrieve their own authentication
-     * identity so clients can explain why application access was denied.
-     */
-    public function test_non_manager_can_still_access_me(): void
+    public function test_viewer_can_access_own_authentication_identity(): void
     {
         $user = User::factory()->create([
-            'name' => 'Restricted User',
-            'role' => 'viewer',
+            'role' => UserRole::Viewer,
         ]);
 
         Sanctum::actingAs($user);
@@ -63,53 +68,38 @@ class UserAuthorizationTest extends TestCase
             ->getJson('/api/auth/me')
             ->assertOk()
             ->assertJsonPath(
-                'name',
-                'Restricted User'
+                'role',
+                UserRole::Viewer->value
+            );
+    }
+
+    public function test_exactly_three_application_roles_exist(): void
+    {
+        $this->assertSame(
+            [
+                'administrator',
+                'property_manager',
+                'viewer',
+            ],
+            array_map(
+                static fn (UserRole $role): string =>
+                    $role->value,
+                UserRole::cases()
             )
-            ->assertJsonPath(
-                'role',
-                'viewer'
-            );
+        );
     }
 
-    /**
-     * The Property Manager role is returned through authentication APIs.
-     */
-    public function test_me_returns_property_manager_role(): void
-    {
-        $user = User::factory()->create([
-            'role' => 'property_manager',
-        ]);
-
-        Sanctum::actingAs($user);
-
-        $this
-            ->getJson('/api/auth/me')
-            ->assertOk()
-            ->assertJsonPath(
-                'role',
-                'property_manager'
-            );
-    }
-
-    /**
-     * Newly created Patrimoine users default to the Property Manager role.
-     */
-    public function test_user_factory_defaults_to_property_manager(): void
+    public function test_generic_user_factory_remains_property_manager(): void
     {
         $user = User::factory()->create();
 
         $this->assertSame(
-            'property_manager',
+            UserRole::PropertyManager,
             $user->role
         );
 
-        $this->assertDatabaseHas(
-            'users',
-            [
-                'id' => $user->id,
-                'role' => 'property_manager',
-            ]
+        $this->assertTrue(
+            $user->isActive()
         );
     }
 }

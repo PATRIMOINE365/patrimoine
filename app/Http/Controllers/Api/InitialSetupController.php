@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InitialSetupRequest;
 use App\Models\ApplicationSetting;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\DB;
  * This controller is intentionally narrow. It exists only to bootstrap a
  * fresh installation with:
  *
- * - the first Property Manager;
+ * - the first Administrator;
  * - the Managing Organisation;
  * - organisation-wide language/currency and VAT defaults.
  *
@@ -109,8 +110,12 @@ class InitialSetupController extends Controller
                                 'administrator_password'
                             ],
 
+                        /*
+                         * A fresh V1.0.3 installation always creates the
+                         * first application User as Administrator.
+                         */
                         'role' =>
-                            'property_manager',
+                            UserRole::Administrator,
                     ]);
 
                 /*

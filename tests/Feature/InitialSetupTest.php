@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\UserRole;
 use App\Models\ApplicationSetting;
 use App\Models\Party;
 use App\Models\User;
@@ -16,7 +17,7 @@ use Tests\TestCase;
  * V1.0.2 requirements:
  *
  * - a fresh installation starts in English;
- * - the first Property Manager and Managing Organisation are created together;
+ * - the first Administrator and Managing Organisation are created together;
  * - language and currency are selected during initial setup;
  * - language/currency belong to ApplicationSetting, not User;
  * - all four supported language/currency combinations are valid;
@@ -222,7 +223,7 @@ class InitialSetupTest extends TestCase
                     'admin@example.test',
 
                 'role' =>
-                    'property_manager',
+                    UserRole::Administrator->value,
             ]
         );
 
@@ -351,7 +352,7 @@ class InitialSetupTest extends TestCase
             )
             ->assertJsonPath(
                 'user.role',
-                'property_manager'
+                UserRole::Administrator->value
             );
     }
 
