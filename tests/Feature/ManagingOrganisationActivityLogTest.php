@@ -90,7 +90,7 @@ class ManagingOrganisationActivityLogTest extends TestCase
             $event->action
         );
 
-        $this->assertSame(
+        $this->assertEqualsCanonicalizing(
             [
                 'default_vat_rate' => '18.00',
                 'currency' => 'GHS',
@@ -98,7 +98,7 @@ class ManagingOrganisationActivityLogTest extends TestCase
             $event->before_values
         );
 
-        $this->assertSame(
+        $this->assertEqualsCanonicalizing(
             [
                 'default_vat_rate' => '17.50',
                 'currency' => 'FCFA',

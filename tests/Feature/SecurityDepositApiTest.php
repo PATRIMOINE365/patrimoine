@@ -364,7 +364,10 @@ class SecurityDepositApiTest extends TestCase
             )
             ->assertJsonPath(
                 'refund_voucher_number',
-                'SDV-000001'
+                sprintf(
+                    'SDV-%06d',
+                    $response->json('id')
+                )
             );
 
         $this->assertSame(
@@ -399,14 +402,16 @@ class SecurityDepositApiTest extends TestCase
                 '2026-08-10',
         ]);
 
-        $this->postJson(
+        $settlementResponse = $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/settle",
             [
                 'settlement_date' =>
                     '2026-08-11',
 
             ]
-        )->assertCreated();
+        );
+
+        $settlementResponse->assertCreated();
 
         $this->getJson(
             "/api/leases/{$context['lease']->id}/security-deposit"
@@ -434,7 +439,10 @@ class SecurityDepositApiTest extends TestCase
             )
             ->assertJsonPath(
                 'settlement.refund_voucher_number',
-                'SDV-000001'
+                sprintf(
+                    'SDV-%06d',
+                    $settlementResponse->json('id')
+                )
             )
             /*
              * Preview values become the historical settlement values after

@@ -336,12 +336,12 @@ class ReportExportTest extends TestCase
          * The semantic ID field remains an identifier rather than money.
          */
         $this->assertStringContainsString(
-            'ID,2',
+            'ID,' . $context['tenant']->id,
             $contents
         );
 
         $this->assertStringNotContainsString(
-            '2 FCFA',
+            $context['tenant']->id . ' FCFA',
             $contents
         );
     }

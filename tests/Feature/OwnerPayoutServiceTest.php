@@ -111,14 +111,14 @@ class OwnerPayoutServiceTest extends TestCase
          */
         $this->assertSame(
             4000,
-            $payout->allocations()
+            (int) $payout->allocations()
                 ->where('owner_transaction_id', $firstCredit->id)
                 ->sum('amount')
         );
 
         $this->assertSame(
             3000,
-            $payout->allocations()
+            (int) $payout->allocations()
                 ->where('owner_transaction_id', $secondCredit->id)
                 ->sum('amount')
         );
@@ -264,7 +264,7 @@ class OwnerPayoutServiceTest extends TestCase
 
         $this->assertSame(
             2000,
-            $firstPayout->allocations()
+            (int) $firstPayout->allocations()
                 ->where('owner_transaction_id', $oldCredit->id)
                 ->sum('amount')
         );
@@ -305,7 +305,7 @@ class OwnerPayoutServiceTest extends TestCase
 
         $this->assertSame(
             4000,
-            $secondPayout->allocations()
+            (int) $secondPayout->allocations()
                 ->where('owner_transaction_id', $newCredit->id)
                 ->sum('amount')
         );

@@ -609,7 +609,9 @@ public function test_security_deposit_voucher_can_be_downloaded_through_api(): v
         );
 
     $this->assertStringContainsString(
-        'Patrimoine-Security-Deposit-Voucher-SDV-000001.pdf',
+        'Patrimoine-Security-Deposit-Voucher-' .
+            $settlement->refund_voucher_number .
+            '.pdf',
         (string) $response
             ->headers
             ->get(

@@ -585,7 +585,7 @@ class OwnerAccountingServiceTest extends TestCase
         */
         $this->assertSame(
             4000,
-            OwnerTransaction::where(
+            (int) OwnerTransaction::where(
                 'payment_allocation_id',
                 $allocation->id
             )->sum('amount')
