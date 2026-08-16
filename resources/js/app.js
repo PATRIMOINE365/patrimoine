@@ -67,6 +67,11 @@ import {
     initializeSettings,
 } from './settings.js';
 
+import {
+    initializeUsers,
+} from './users.js';
+
+
 /*
 |--------------------------------------------------------------------------
 | Application Bootstrap
@@ -136,5 +141,7 @@ document.addEventListener(
         await initializeReports();
 
         await initializeSettings();
+
+        await initializeUsers();
     }
 );

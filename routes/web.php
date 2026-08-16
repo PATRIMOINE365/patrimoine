@@ -71,6 +71,11 @@ Route::view(
 )->name('reports');
 
 Route::view(
+    '/users',
+    'app.users'
+)->name('users');
+
+Route::view(
     '/settings',
     'app.settings'
 )->name('settings');

@@ -387,6 +387,39 @@
 
 
                     <a
+                        href="/users"
+                        data-requires-role="administrator"
+                        class="
+                            hidden
+                            {{ request()->is('users')
+                                ? 'bg-white/10 text-white'
+                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                            }}
+                            flex items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-sm font-medium
+                            transition
+                        "
+                    >
+                        <svg
+                            class="h-5 w-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M19 8v6"/>
+                            <path d="M16 11h6"/>
+                        </svg>
+
+                        <span data-i18n="navigation.users">
+                            Users
+                        </span>
+                    </a>
+
+                    <a
                         href="/settings"
                         class="
                             {{ request()->is('settings')

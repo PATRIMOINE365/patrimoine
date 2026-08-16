@@ -262,6 +262,22 @@ export async function initializeAuthenticatedShell() {
         renderCurrentUser(
             user
         );
+
+        /*
+         * Store the authenticated application role for page modules and
+         * reveal only navigation/actions explicitly assigned to that role.
+         *
+         * Server-side capability middleware remains authoritative.
+         */
+        document.body.dataset.currentUserRole =
+            String(
+                user.role
+                || ''
+            );
+
+        applyRoleVisibility(
+            user
+        );
     } catch {
         return false;
     }
@@ -304,21 +320,16 @@ function renderCurrentUser(user) {
     }
 
     if (roleElement) {
-        roleElement.textContent =
+        const role =
             String(
                 user.role
                 || 'property_manager'
-            )
-                .replaceAll(
-                    '_',
-                    ' '
-                )
-                .replace(
-                    /\b\w/g,
-                    (character) =>
-                        character
-                            .toUpperCase()
-                );
+            );
+
+        roleElement.textContent =
+            translate(
+                `roles.${role}`
+            );
     }
 
     if (avatarElement) {
@@ -327,6 +338,42 @@ function renderCurrentUser(user) {
                 user.name
             );
     }
+}
+
+/**
+ * Reveal elements explicitly restricted to the authenticated role.
+ *
+ * Elements start hidden in Blade so a slower API request never briefly
+ * exposes Administrator-only navigation to another role.
+ *
+ * @param {object} user
+ */
+function applyRoleVisibility(user) {
+    const role =
+        String(
+            user?.role
+            || ''
+        );
+
+    document
+        .querySelectorAll(
+            '[data-requires-role]'
+        )
+        .forEach(
+            (element) => {
+                const required =
+                    String(
+                        element.dataset
+                            .requiresRole
+                        || ''
+                    );
+
+                element.classList.toggle(
+                    'hidden',
+                    required !== role
+                );
+            }
+        );
 }
 
 /*

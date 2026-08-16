@@ -169,6 +169,121 @@ export const translations = {
         'language.fr':
             'French',
 
+        'navigation.users':
+            'Users',
+
+        'roles.administrator':
+            'Administrator',
+        'roles.property_manager':
+            'Property Manager',
+        'roles.viewer':
+            'Viewer',
+
+        'users.title':
+            'Users — Patrimoine',
+        'users.administration':
+            'Administration',
+        'users.heading':
+            'User Management',
+        'users.description':
+            'Manage application users, roles and account access.',
+        'users.add_user':
+            'Add User',
+        'users.edit_user':
+            'Edit User',
+        'users.create_user':
+            'Create User',
+        'users.create_description':
+            'Create an application user and send a secure password-setup invitation.',
+        'users.edit_description':
+            'Update this application user’s identity, role or account status.',
+        'users.name':
+            'Name',
+        'users.email':
+            'Email',
+        'users.phone':
+            'Phone',
+        'users.role':
+            'Role',
+        'users.status':
+            'Status',
+        'users.search':
+            'Search',
+        'users.search_placeholder':
+            'Search name, email or phone...',
+        'users.all_roles':
+            'All roles',
+        'users.all_statuses':
+            'All statuses',
+        'users.active':
+            'Active',
+        'users.inactive':
+            'Inactive',
+        'users.active_account':
+            'Active account',
+        'users.active_account_help':
+            'Inactive users cannot sign in.',
+        'users.invitation_pending':
+            'Invitation pending',
+        'users.you':
+            'You',
+        'users.loading':
+            'Loading users...',
+        'users.none_found':
+            'No users found',
+        'users.none_found_description':
+            'Create a user or change the current filters.',
+        'users.edit':
+            'Edit',
+        'users.delete':
+            'Delete',
+        'users.resend_invitation':
+            'Resend invitation',
+        'users.send_password_reset':
+            'Send password reset',
+        'users.cancel':
+            'Cancel',
+        'users.close':
+            'Close',
+        'users.save_changes':
+            'Save Changes',
+        'users.saving':
+            'Saving...',
+        'users.creating':
+            'Creating...',
+        'users.created':
+            'User created and invitation sent successfully.',
+        'users.updated':
+            'User updated successfully.',
+        'users.deleted':
+            'User deleted successfully.',
+        'users.invitation_resent':
+            'A new invitation has been sent. Previous invitation links are no longer valid.',
+        'users.reset_sent':
+            'The password reset workflow has been initiated.',
+        'users.resend_confirmation':
+            'Send a new invitation to :name? Previous invitation links will stop working.',
+        'users.reset_confirmation':
+            'Send a password reset link to :name?',
+        'users.delete_confirmation':
+            'Delete :name? This cannot be undone.',
+        'users.unable_load':
+            'Unable to load users.',
+        'users.unable_create':
+            'Unable to create user.',
+        'users.unable_update':
+            'Unable to update user.',
+        'users.unable_delete':
+            'Unable to delete user.',
+        'users.action_failed':
+            'Unable to complete this user action.',
+        'users.page_of':
+            'Page :current of :last',
+        'users.previous':
+            'Previous',
+        'users.next':
+            'Next',
+
         'settings.title':
             'Settings — Patrimoine',
 
@@ -1641,6 +1756,121 @@ export const translations = {
 
         'language.fr':
             'Français',
+
+        'navigation.users':
+            'Utilisateurs',
+
+        'roles.administrator':
+            'Administrateur',
+        'roles.property_manager':
+            'Gestionnaire immobilier',
+        'roles.viewer':
+            'Consultation',
+
+        'users.title':
+            'Utilisateurs — Patrimoine',
+        'users.administration':
+            'Administration',
+        'users.heading':
+            'Gestion des utilisateurs',
+        'users.description':
+            'Gérez les utilisateurs de l’application, leurs rôles et l’accès à leur compte.',
+        'users.add_user':
+            'Ajouter un utilisateur',
+        'users.edit_user':
+            'Modifier l’utilisateur',
+        'users.create_user':
+            'Créer l’utilisateur',
+        'users.create_description':
+            'Créez un utilisateur de l’application et envoyez-lui une invitation sécurisée pour définir son mot de passe.',
+        'users.edit_description':
+            'Modifiez l’identité, le rôle ou l’état du compte de cet utilisateur.',
+        'users.name':
+            'Nom',
+        'users.email':
+            'E-mail',
+        'users.phone':
+            'Téléphone',
+        'users.role':
+            'Rôle',
+        'users.status':
+            'État',
+        'users.search':
+            'Rechercher',
+        'users.search_placeholder':
+            'Rechercher par nom, e-mail ou téléphone...',
+        'users.all_roles':
+            'Tous les rôles',
+        'users.all_statuses':
+            'Tous les états',
+        'users.active':
+            'Actif',
+        'users.inactive':
+            'Inactif',
+        'users.active_account':
+            'Compte actif',
+        'users.active_account_help':
+            'Les utilisateurs inactifs ne peuvent pas se connecter.',
+        'users.invitation_pending':
+            'Invitation en attente',
+        'users.you':
+            'Vous',
+        'users.loading':
+            'Chargement des utilisateurs...',
+        'users.none_found':
+            'Aucun utilisateur trouvé',
+        'users.none_found_description':
+            'Créez un utilisateur ou modifiez les filtres actuels.',
+        'users.edit':
+            'Modifier',
+        'users.delete':
+            'Supprimer',
+        'users.resend_invitation':
+            'Renvoyer l’invitation',
+        'users.send_password_reset':
+            'Envoyer la réinitialisation',
+        'users.cancel':
+            'Annuler',
+        'users.close':
+            'Fermer',
+        'users.save_changes':
+            'Enregistrer les modifications',
+        'users.saving':
+            'Enregistrement...',
+        'users.creating':
+            'Création...',
+        'users.created':
+            'Utilisateur créé et invitation envoyée avec succès.',
+        'users.updated':
+            'Utilisateur mis à jour avec succès.',
+        'users.deleted':
+            'Utilisateur supprimé avec succès.',
+        'users.invitation_resent':
+            'Une nouvelle invitation a été envoyée. Les anciens liens d’invitation ne sont plus valides.',
+        'users.reset_sent':
+            'La procédure de réinitialisation du mot de passe a été lancée.',
+        'users.resend_confirmation':
+            'Envoyer une nouvelle invitation à :name ? Les anciens liens d’invitation cesseront de fonctionner.',
+        'users.reset_confirmation':
+            'Envoyer un lien de réinitialisation du mot de passe à :name ?',
+        'users.delete_confirmation':
+            'Supprimer :name ? Cette action est irréversible.',
+        'users.unable_load':
+            'Impossible de charger les utilisateurs.',
+        'users.unable_create':
+            'Impossible de créer l’utilisateur.',
+        'users.unable_update':
+            'Impossible de mettre à jour l’utilisateur.',
+        'users.unable_delete':
+            'Impossible de supprimer l’utilisateur.',
+        'users.action_failed':
+            'Impossible d’effectuer cette action sur l’utilisateur.',
+        'users.page_of':
+            'Page :current sur :last',
+        'users.previous':
+            'Précédent',
+        'users.next':
+            'Suivant',
 
         'settings.title':
             'Paramètres — Patrimoine',
