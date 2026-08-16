@@ -20,6 +20,12 @@ return [
             'Vous ne pouvez pas supprimer votre propre compte.',
         'last_active_administrator' =>
             'Cette action ne peut pas être effectuée, car Patrimoine doit conserver au moins un administrateur actif.',
+        'created' =>
+            'Utilisateur créé avec succès.',
+        'updated' =>
+            'Utilisateur mis à jour avec succès.',
+        'deleted' =>
+            'Utilisateur supprimé avec succès.',
     ],
 
     'managing_organisation' => [

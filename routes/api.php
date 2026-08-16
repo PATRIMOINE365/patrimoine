@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\ReportExportController;
 use App\Http\Controllers\Api\SecurityDepositController;
 use App\Http\Controllers\Api\TenantFundController;
 use App\Http\Controllers\Api\UnitController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PaymentRegisterController;
 use App\Http\Controllers\Api\OwnerAccountController;
@@ -492,6 +493,46 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'reports/managing-organisation',
                     [ReportController::class, 'managingOrganisation']
+                );
+            }
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | User Management
+        |--------------------------------------------------------------------------
+        |
+        | Administrator only. User administration is intentionally separate
+        | from domain Party management.
+        |
+        */
+
+        Route::middleware('capability:manage_users')->group(
+            function (): void {
+                Route::get(
+                    'users',
+                    [UserController::class, 'index']
+                );
+
+                Route::post(
+                    'users',
+                    [UserController::class, 'store']
+                );
+
+                Route::get(
+                    'users/{user}',
+                    [UserController::class, 'show']
+                );
+
+                Route::match(
+                    ['put', 'patch'],
+                    'users/{user}',
+                    [UserController::class, 'update']
+                );
+
+                Route::delete(
+                    'users/{user}',
+                    [UserController::class, 'destroy']
                 );
             }
         );

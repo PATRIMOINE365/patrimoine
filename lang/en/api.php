@@ -20,6 +20,12 @@ return [
             'You cannot delete your own account.',
         'last_active_administrator' =>
             'This action cannot be completed because Patrimoine must retain at least one active Administrator.',
+        'created' =>
+            'User created successfully.',
+        'updated' =>
+            'User updated successfully.',
+        'deleted' =>
+            'User deleted successfully.',
     ],
 
     'managing_organisation' => [
