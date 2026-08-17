@@ -684,22 +684,26 @@ export function formatDate(
         return String(value);
     }
 
-    return new Intl.DateTimeFormat(
-        presentationConfiguration.browser_locale
-        || 'en-GB',
-        {
-            day:
-                '2-digit',
+    const day =
+        String(
+            date.getDate()
+        ).padStart(
+            2,
+            '0'
+        );
 
-            month:
-                'short',
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(
+            2,
+            '0'
+        );
 
-            year:
-                'numeric',
-        }
-    ).format(
-        date
-    );
+    const year =
+        date.getFullYear();
+
+    return `${day}-${month}-${year}`;
 }
 
 /**
@@ -733,24 +737,33 @@ export function formatLongDate(
         return String(value);
     }
 
-    return new Intl.DateTimeFormat(
-        presentationConfiguration.browser_locale
-        || 'en-GB',
-        {
-            weekday:
-                'long',
+    const formattedDate =
+        new Intl.DateTimeFormat(
+            presentationConfiguration.browser_locale
+            || 'en-GB',
+            {
+                weekday:
+                    'long',
 
-            day:
-                'numeric',
+                day:
+                    'numeric',
 
-            month:
-                'long',
+                month:
+                    'long',
 
-            year:
-                'numeric',
-        }
-    ).format(
-        date
+                year:
+                    'numeric',
+            }
+        ).format(
+            date
+        );
+
+    return formattedDate.replace(
+        /(^|\s)(\p{L})/gu,
+        (match) => match.toLocaleUpperCase(
+            presentationConfiguration.browser_locale
+            || 'en-GB'
+        )
     );
 }
 

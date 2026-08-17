@@ -741,7 +741,7 @@ export const translations = {
         'leases.cash_collector': 'Cash Collector',
         'leases.select_method': 'Select method...',
         'leases.bank_transfer': 'Bank Transfer',
-        'leases.mobile_money': 'Mobile Money',
+        'leases.mobile_money': 'Mobile Payment',
         'leases.cash': 'Cash',
         'leases.optional': 'Optional',
         'leases.cash_collector_placeholder': 'Person who received the cash',
@@ -891,9 +891,10 @@ export const translations = {
         'payments.owner_receipt_unresolved': 'Owner deposit was recorded but its receipt could not be resolved.',
         'payments.recording': 'Recording…',
         'payments.record_payment': 'Record Payment',
+        'payments.save_payment': 'Save',
         'payments.cash': 'Cash',
         'payments.bank_transfer': 'Bank Transfer',
-        'payments.momo': 'MoMo',
+        'payments.momo': 'Mobile Payment',
         'payments.general_funding': 'General Funding',
         'payments.property_expense': 'Property Expense',
         'payments.repair_maintenance': 'Repair / Maintenance',
@@ -979,7 +980,7 @@ export const translations = {
         'owners.transaction': 'Transaction',
         'owners.cash': 'Cash',
         'owners.bank_transfer': 'Bank Transfer',
-        'owners.momo': 'MoMo',
+        'owners.momo': 'Mobile Payment',
         'owners.general_funding': 'General Funding',
         'owners.repair_maintenance': 'Repair / Maintenance',
         'owners.other': 'Other',
@@ -1161,7 +1162,7 @@ export const translations = {
 
         'reports.payment_method.cash': 'Cash',
         'reports.payment_method.bank_transfer': 'Bank Transfer',
-        'reports.payment_method.momo': 'MoMo',
+        'reports.payment_method.momo': 'Mobile Payment',
 
         'tenants.title': 'Tenants — Patrimoine',
         'tenants.finance': 'Finance',
@@ -1922,7 +1923,7 @@ export const translations = {
             'Immeubles',
 
         'dashboard.total_units':
-            'Total des unités',
+            'Unités totales',
 
         'dashboard.occupied_units':
             'Unités occupées',
@@ -2535,13 +2536,13 @@ export const translations = {
             'Propriétés',
 
         'properties.page_description':
-            'Gérez les immeubles, leur propriété et leurs différentes unités.',
+            'Gérez les immeubles et les unités.',
 
         'properties.buildings':
             'Immeubles',
 
         'properties.total_units':
-            'Total des unités',
+            'Unités totales',
 
         'properties.single_unit_properties':
             'Propriétés à une seule unité',
@@ -2701,7 +2702,7 @@ export const translations = {
         'leases.tenant_funds': 'Fonds du locataire',
         'leases.edit': 'Modifier',
         'leases.delete': 'Supprimer',
-        'leases.status_draft': 'Brouillon',
+        'leases.status_draft': 'En cours',
         'leases.status_active': 'Actif',
         'leases.status_notice': 'Préavis',
         'leases.status_terminated': 'Résilié',
@@ -2816,7 +2817,7 @@ export const translations = {
         'leases.cash_collector': 'Encaisseur',
         'leases.select_method': 'Sélectionner un mode...',
         'leases.bank_transfer': 'Virement bancaire',
-        'leases.mobile_money': 'Mobile Money',
+        'leases.mobile_money': 'Paiement mobile',
         'leases.cash': 'Espèces',
         'leases.optional': 'Facultatif',
         'leases.cash_collector_placeholder': 'Personne ayant reçu les espèces',
@@ -2848,7 +2849,7 @@ export const translations = {
         'leases.end_date_help_label': 'À propos de la date de fin',
         'leases.end_date_help_text': 'Date de fin contractuelle facultative. Laissez ce champ vide pour un bail sans date de fin prédéterminée.',
         'leases.status_help_label': 'À propos du statut du bail',
-        'leases.status_help_text': 'Brouillon signifie que le bail est préparé mais pas encore en vigueur. Actif signifie que la location est en cours. Préavis signifie qu’un préavis de résiliation a été enregistré. Résilié signifie que le bail a pris fin.',
+        'leases.status_help_text': 'En cours signifie que le bail est préparé mais pas encore en vigueur. Actif signifie que la location est en cours. Préavis signifie qu’un préavis de résiliation a été enregistré. Résilié signifie que le bail a pris fin.',
         'leases.notice_date_help_label': 'À propos de la date du préavis',
         'leases.notice_date_help_text': 'Date à laquelle le préavis de résiliation a été reçu ou émis. Ce champ devient obligatoire lorsque le statut du bail est Préavis et déterminera ensuite le début de la consommation de la réserve de loyer.',
         'leases.monthly_rent_help_label': 'À propos du loyer mensuel',
@@ -2965,17 +2966,18 @@ export const translations = {
         'payments.select_owner_required': 'Recherchez et sélectionnez un propriétaire.',
         'payments.owner_receipt_unresolved': 'Le dépôt du propriétaire a été enregistré mais son reçu n’a pas pu être identifié.',
         'payments.recording': 'Enregistrement…',
-        'payments.record_payment': 'Enregistrer le paiement',
+        'payments.record_payment': 'Enregistrer un paiement',
+        'payments.save_payment': 'Enregistrer',
         'payments.cash': 'Espèces',
         'payments.bank_transfer': 'Virement bancaire',
-        'payments.momo': 'MoMo',
+        'payments.momo': 'Paiement mobile',
         'payments.general_funding': 'Financement général',
         'payments.property_expense': 'Dépense immobilière',
         'payments.repair_maintenance': 'Réparation / Entretien',
         'payments.other': 'Autre',
         'payments.unnamed_party': 'Partie sans nom',
         'payments.property': 'Propriété',
-        'payments.status_draft': 'Brouillon',
+        'payments.status_draft': 'En cours',
         'payments.status_active': 'Actif',
         'payments.status_notice': 'Préavis',
         'payments.status_terminated': 'Résilié',
@@ -3054,7 +3056,7 @@ export const translations = {
         'owners.transaction': 'Transaction',
         'owners.cash': 'Espèces',
         'owners.bank_transfer': 'Virement bancaire',
-        'owners.momo': 'MoMo',
+        'owners.momo': 'Paiement mobile',
         'owners.general_funding': 'Financement général',
         'owners.repair_maintenance': 'Réparation / Entretien',
         'owners.other': 'Autre',
@@ -3213,7 +3215,7 @@ export const translations = {
         'reports.status.inactive': 'Inactif',
         'reports.status.ended': 'Terminé',
         'reports.status.terminated': 'Résilié',
-        'reports.status.draft': 'Brouillon',
+        'reports.status.draft': 'En cours',
         'reports.status.issued': 'Émise',
         'reports.status.pending': 'En attente',
         'reports.status.partial': 'Partiel',
@@ -3236,7 +3238,7 @@ export const translations = {
 
         'reports.payment_method.cash': 'Espèces',
         'reports.payment_method.bank_transfer': 'Virement bancaire',
-        'reports.payment_method.momo': 'MoMo',
+        'reports.payment_method.momo': 'Paiement mobile',
 
         'tenants.title': 'Locataires — Patrimoine',
         'tenants.finance': 'Finance',

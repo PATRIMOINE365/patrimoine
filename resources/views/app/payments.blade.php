@@ -1257,7 +1257,7 @@
                     disabled:opacity-60
                 "
             >
-                <span data-i18n="payments.record_payment">Record Payment</span>
+                <span data-i18n="payments.save_payment">Save</span>
             </button>
         </div>
     </div>
