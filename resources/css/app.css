@@ -567,3 +567,180 @@ select.pm-input {
     padding-inline: 1rem;
     font-size: 0.9375rem;
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.4 Settings Workspace
+|--------------------------------------------------------------------------
+*/
+
+.pm-settings-shell {
+    overflow: visible;
+}
+
+.pm-settings-intro {
+    margin-bottom: 1.25rem;
+    padding: 0 0.125rem;
+}
+
+.pm-settings-form-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+}
+
+.pm-settings-form-grid > section {
+    min-width: 0;
+    border: 1px solid var(--pm-border);
+    border-radius: 0.875rem;
+    background: var(--pm-surface);
+    padding: 1.25rem;
+}
+
+.pm-settings-form-grid > section > h3 {
+    color: var(--pm-text);
+}
+
+.pm-settings-form-grid > section > p {
+    color: var(--pm-text-muted);
+}
+
+/*
+ * The first major identity/contact areas deserve the full content width.
+ * Smaller configuration groups can sit side-by-side on larger screens.
+ */
+@media (min-width: 1024px) {
+    .pm-settings-form-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .pm-settings-form-grid > section:nth-child(1),
+    .pm-settings-form-grid > section:nth-child(2),
+    .pm-settings-form-grid > section:nth-child(6),
+    .pm-settings-form-grid > .pm-settings-notes-card {
+        grid-column: 1 / -1;
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Settings Form Controls
+|--------------------------------------------------------------------------
+|
+| Existing IDs and markup are intentionally preserved. These selectors
+| provide semantic-theme styling without rewriting Settings business logic.
+|
+*/
+
+.pm-settings-page label {
+    color: var(--pm-text-secondary);
+}
+
+.pm-settings-page input:not([type="checkbox"]):not([type="radio"]),
+.pm-settings-page select,
+.pm-settings-page textarea {
+    width: 100%;
+    border-color: var(--pm-border) !important;
+    background: var(--pm-input-background) !important;
+    color: var(--pm-text) !important;
+}
+
+.pm-settings-page input:not([type="checkbox"]):not([type="radio"]):hover,
+.pm-settings-page select:hover,
+.pm-settings-page textarea:hover {
+    border-color: var(--pm-border-strong) !important;
+}
+
+.pm-settings-page input:not([type="checkbox"]):not([type="radio"]):focus,
+.pm-settings-page select:focus,
+.pm-settings-page textarea:focus {
+    border-color: var(--color-patrimoine-500) !important;
+    box-shadow:
+        0 0 0 3px
+        color-mix(
+            in srgb,
+            var(--color-patrimoine-500) 16%,
+            transparent
+        ) !important;
+}
+
+.pm-settings-page input::placeholder,
+.pm-settings-page textarea::placeholder {
+    color: var(--pm-text-subtle);
+}
+
+.pm-settings-page .text-slate-950,
+.pm-settings-page .text-slate-900,
+.pm-settings-page .text-slate-800,
+.pm-settings-page .text-slate-700 {
+    color: var(--pm-text) !important;
+}
+
+.pm-settings-page .text-slate-600 {
+    color: var(--pm-text-secondary) !important;
+}
+
+.pm-settings-page .text-slate-500,
+.pm-settings-page .text-slate-400 {
+    color: var(--pm-text-muted) !important;
+}
+
+.pm-settings-page .border-slate-100,
+.pm-settings-page .border-slate-200 {
+    border-color: var(--pm-border) !important;
+}
+
+.pm-settings-page .bg-white {
+    background: var(--pm-surface) !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Settings Save Bar
+|--------------------------------------------------------------------------
+*/
+
+.pm-settings-save-bar {
+    position: sticky;
+    bottom: 1rem;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+    border: 1px solid var(--pm-border);
+    border-radius: 0.875rem;
+    background:
+        color-mix(
+            in srgb,
+            var(--pm-surface) 94%,
+            transparent
+        );
+    padding: 0.75rem 0.875rem 0.75rem 1.125rem;
+    box-shadow:
+        0 8px 30px rgb(15 23 42 / 0.08);
+    backdrop-filter: blur(12px);
+}
+
+@media (max-width: 639px) {
+    .pm-settings-intro,
+    .pm-settings-form-grid > section {
+        padding: 1rem;
+    }
+
+    .pm-settings-save-bar {
+        bottom: 0.75rem;
+        padding: 0.75rem;
+    }
+
+    .pm-settings-save-bar > div:first-child {
+        display: none;
+    }
+
+    .pm-settings-save-bar .pm-button-primary {
+        width: 100%;
+    }
+}

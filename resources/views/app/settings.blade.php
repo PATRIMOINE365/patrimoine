@@ -5,33 +5,56 @@
 
 @section('content')
 
-<div class="mx-auto max-w-5xl">
+<div
+    id="settings-workspace"
+    class="pm-settings-page mx-auto max-w-6xl"
+>
 
     {{-- Page heading --}}
-    <div class="mb-8">
-        <p
-            class="
-                text-sm font-medium
-                text-patrimoine-700
-            "
-        >
-            <span data-i18n="settings.administration">Administration</span>
-        </p>
+    <div
+        class="
+            mb-7 flex flex-col gap-4
+            sm:flex-row sm:items-end
+            sm:justify-between
+        "
+    >
+        <div>
+            <p
+                class="
+                    text-xs font-semibold uppercase
+                    tracking-[0.14em]
+                    text-patrimoine-700
+                "
+            >
+                <span data-i18n="settings.administration">
+                    Administration
+                </span>
+            </p>
 
-        <h1
-            class="
-                mt-1 text-3xl font-semibold
-                tracking-tight text-slate-950
-            "
-        >
-            <span data-i18n="settings.heading">
-                Settings
-            </span>
-        </h1>
+            <h1
+                class="
+                    mt-2 text-2xl font-semibold
+                    tracking-tight
+                    text-[var(--pm-text)]
+                "
+            >
+                <span data-i18n="settings.heading">
+                    Settings
+                </span>
+            </h1>
 
-        <p class="mt-2 text-sm text-slate-500">
-            <span data-i18n="settings.description">Configure the organisation operating this Patrimoine installation.</span>
-        </p>
+            <p
+                class="
+                    mt-2 max-w-3xl
+                    text-sm leading-6
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                <span data-i18n="settings.description">
+                    Configure the organisation operating this Patrimoine installation.
+                </span>
+            </p>
+        </div>
     </div>
 
     {{-- Page-level error --}}
@@ -39,9 +62,10 @@
         id="settings-error"
         class="
             mb-6 hidden rounded-xl
-            border border-red-200
-            bg-red-50 px-4 py-3
-            text-sm text-red-700
+            border px-4 py-3 text-sm
+            border-[var(--pm-danger-border)]
+            bg-[var(--pm-danger-background)]
+            text-[var(--pm-danger-text)]
         "
     ></div>
 
@@ -50,35 +74,25 @@
         id="settings-success"
         class="
             mb-6 hidden rounded-xl
-            border border-green-200
-            bg-green-50 px-4 py-3
-            text-sm text-green-700
+            border px-4 py-3 text-sm
+            border-[var(--pm-success-border)]
+            bg-[var(--pm-success-background)]
+            text-[var(--pm-success-text)]
         "
     ></div>
 
-    <section
-        class="
-            overflow-hidden rounded-xl
-            border border-slate-200
-            bg-white shadow-sm
-        "
-    >
-        <div
-            class="
-                border-b border-slate-100
-                px-6 py-5
-            "
-        >
+    <section class="pm-settings-shell">
+        <div class="pm-settings-intro">
             <h2
                 class="
                     text-base font-semibold
-                    text-slate-950
+                    text-[var(--pm-text)]
                 "
             >
                 <span data-i18n="settings.managing_organisation">Managing Organisation</span>
             </h2>
 
-            <p class="mt-1 text-sm text-slate-500">
+            <p class="mt-1 text-sm leading-6 text-[var(--pm-text-muted)]">
                 <span data-i18n="settings.managing_organisation_description">This organisation represents the company or entity managing
                 the property portfolio in this Patrimoine installation.</span>
             </p>
@@ -86,7 +100,7 @@
 
         <form id="managing-organisation-form">
 
-            <div class="space-y-7 px-6 py-6">
+            <div class="pm-settings-form-grid">
 
                 {{-- Organisation identity --}}
                 <section>
@@ -260,12 +274,7 @@
                 </section>
 
                 {{-- Contact person --}}
-                <section
-                    class="
-                        border-t border-slate-100
-                        pt-7
-                    "
-                >
+                <section>
                     <h3
                         class="
                             mb-4 text-sm font-semibold
@@ -377,12 +386,7 @@
                 </section>
 
                 {{-- Registration --}}
-                <section
-                    class="
-                        border-t border-slate-100
-                        pt-7
-                    "
-                >
+                <section>
                     <h3
                         class="
                             mb-4 text-sm font-semibold
@@ -459,12 +463,7 @@
                 </section>
 
                 {{-- Language and currency --}}
-                <section
-                    class="
-                        border-t border-slate-100
-                        pt-7
-                    "
-                >
+                <section>
                     <h3
                         class="
                             mb-1 text-sm font-semibold
@@ -581,12 +580,7 @@
 
 
                 {{-- Financial defaults --}}
-                <section
-                    class="
-                        border-t border-slate-100
-                        pt-7
-                    "
-                >
+                <section>
                     <h3
                         class="
                             mb-1 text-sm font-semibold
@@ -670,12 +664,7 @@
 
 
                 {{-- Banking --}}
-                <section
-                    class="
-                        border-t border-slate-100
-                        pt-7
-                    "
-                >
+                <section>
                     <h3
                         class="
                             mb-1 text-sm font-semibold
@@ -810,12 +799,7 @@
                 </section>
 
                 {{-- Notes --}}
-                <section
-                    class="
-                        border-t border-slate-100
-                        pt-7
-                    "
-                >
+                <section class="pm-settings-notes-card">
                     <label
                         for="organisation-notes"
                         class="
@@ -846,27 +830,22 @@
 
             </div>
 
-            <div
-                class="
-                    flex justify-end
-                    border-t border-slate-100
-                    bg-slate-50/70
-                    px-6 py-4
-                "
-            >
+            <div class="pm-settings-save-bar">
+                <div
+                    class="
+                        text-xs leading-5
+                        text-[var(--pm-text-muted)]
+                    "
+                >
+                    <span data-i18n="settings.managing_organisation">
+                        Managing Organisation
+                    </span>
+                </div>
+
                 <button
                     id="managing-organisation-submit-button"
                     type="submit"
-                    class="
-                        rounded-lg
-                        bg-patrimoine-950
-                        px-5 py-2.5
-                        text-sm font-medium text-white
-                        shadow-sm transition
-                        hover:bg-patrimoine-900
-                        disabled:cursor-not-allowed
-                        disabled:opacity-60
-                    "
+                    class="pm-button-primary"
                 >
                     <span data-i18n="settings.save">
                         Save Organisation
