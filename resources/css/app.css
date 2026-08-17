@@ -153,3 +153,69 @@ body {
 .rbac-hidden {
     display: none !important;
 }
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.4 Application Shell
+|--------------------------------------------------------------------------
+*/
+
+.shell-admin-only {
+    display: none !important;
+}
+
+/*
+ * A role cached from a previously verified /api/auth/me response may reveal
+ * the Administrator shell immediately on subsequent navigation.
+ *
+ * Browser authorization will still re-evaluate the capability after the
+ * current /api/auth/me request completes. Server authorization remains
+ * authoritative.
+ */
+html[data-shell-role="administrator"]
+.shell-admin-only {
+    display: block !important;
+}
+
+.shell-menu-item {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.625rem;
+    border-radius: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--pm-text-secondary);
+    transition:
+        background-color 150ms ease,
+        color 150ms ease;
+}
+
+.shell-menu-item:hover {
+    background: var(--pm-hover);
+    color: var(--pm-text);
+}
+
+.theme-option {
+    border-radius: 0.375rem;
+    padding: 0.4rem 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--pm-text-muted);
+    transition:
+        background-color 150ms ease,
+        color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+.theme-option:hover {
+    color: var(--pm-text);
+}
+
+.theme-option[data-selected="true"] {
+    background: var(--pm-surface-elevated);
+    color: var(--pm-text);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+}

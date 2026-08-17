@@ -34,6 +34,30 @@
         href="/branding/favicon/apple-touch-icon.png"
     >
 
+    <script>
+        (() => {
+            try {
+                const role =
+                    window.sessionStorage.getItem(
+                        'patrimoine.user_role'
+                    );
+
+                if (
+                    role === 'administrator'
+                    || role === 'property_manager'
+                    || role === 'viewer'
+                ) {
+                    document.documentElement.dataset.shellRole =
+                        role;
+                }
+            } catch (error) {
+                /*
+                 * Storage restrictions must never prevent page rendering.
+                 */
+            }
+        })();
+    </script>
+
     <x-theme-bootstrap />
 
     @vite([
@@ -410,11 +434,28 @@
 
 
 
+                <div
+                    data-requires-capability="view_activity_log"
+                    class="rbac-hidden shell-admin-only"
+                >
+                    <p
+                        class="
+                            mb-3 mt-8 px-3
+                            text-[10px] font-semibold uppercase
+                            tracking-[0.16em]
+                            text-patrimoine-400
+                        "
+                    >
+                        <span data-i18n="navigation.manage">Manage</span>
+                    </p>
+
+                    <div class="space-y-1">
+
                     <a
                         href="/activity-log"
                         data-requires-capability="view_activity_log"
                         class="
-                            rbac-hidden
+
                             {{ request()->is('activity-log')
                                 ? 'bg-white/10 text-white'
                                 : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
@@ -449,7 +490,7 @@
                         href="/users"
                         data-requires-capability="manage_users"
                         class="
-                            rbac-hidden
+
                             {{ request()->is('users')
                                 ? 'bg-white/10 text-white'
                                 : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
@@ -481,7 +522,7 @@
                     <a
                         href="/settings"
                         data-requires-capability="manage_settings"
-                        class="rbac-hidden
+                        class="
                             {{ request()->is('settings')
                                 ? 'bg-white/10 text-white'
                                 : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
@@ -505,6 +546,8 @@
 
                     <span data-i18n="navigation.settings">Settings</span>
                 </a>
+                    </div>
+                </div>
             </div>
         </nav>
 
@@ -555,20 +598,6 @@
                 </div>
             </div>
 
-            <button
-                id="change-password-open"
-                type="button"
-                class="
-                    mt-2 w-full rounded-lg
-                    px-3 py-2 text-left
-                    text-xs font-medium
-                    text-patrimoine-200
-                    hover:bg-white/5 hover:text-white
-                "
-                data-i18n="password.change_action"
-            >
-                Change password
-            </button>
         </div>
     </aside>
 
@@ -579,24 +608,28 @@
         <header
             class="
                 sticky top-0 z-30
-                flex h-20 items-center
-                border-b border-slate-200
-                bg-white/95 px-5
-                backdrop-blur
-                sm:px-7 lg:px-10
+                flex min-h-20 items-center
+                border-b border-[var(--pm-border)]
+                bg-[var(--pm-surface)]/95
+                px-4 backdrop-blur
+                sm:px-6 lg:px-8
             "
         >
             <button
                 id="sidebar-open"
                 type="button"
                 class="
-                    mr-4 inline-flex h-10 w-10
-                    items-center justify-center
-                    rounded-lg border border-slate-200
-                    text-slate-600
-                    hover:bg-slate-50
+                    mr-3 inline-flex h-10 w-10
+                    shrink-0 items-center justify-center
+                    rounded-lg
+                    border border-[var(--pm-border)]
+                    bg-[var(--pm-surface)]
+                    text-[var(--pm-text-secondary)]
+                    transition
+                    hover:bg-[var(--pm-hover)]
                     lg:hidden
                 "
+                aria-label="Open navigation"
             >
                 <svg
                     class="h-5 w-5"
@@ -615,32 +648,386 @@
                 <div
                     id="organisation-name"
                     class="
-                        truncate text-sm font-medium
-                        text-slate-900
+                        truncate text-sm font-semibold
+                        text-[var(--pm-text)]
                     "
                 >
                     Patrimoine
                 </div>
 
-                <div class="text-xs text-slate-500">
+                <div
+                    class="
+                        hidden text-xs
+                        text-[var(--pm-text-muted)]
+                        sm:block
+                    "
+                    data-i18n="product.property_management"
+                >
                     Property Management
                 </div>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div
+                class="
+                    ml-3 flex shrink-0
+                    items-center gap-1.5
+                    sm:gap-2
+                "
+            >
+                {{-- Current date --}}
+                <div
+                    id="shell-current-date"
+                    class="
+                        mr-1 hidden whitespace-nowrap
+                        text-sm font-medium
+                        text-[var(--pm-text-secondary)]
+                        xl:block
+                    "
+                ></div>
+
+                {{-- Refresh --}}
                 <button
-                    id="logout-button"
+                    id="shell-refresh"
                     type="button"
                     class="
-                        rounded-lg border border-slate-200
-                        bg-white px-4 py-2
-                        text-sm font-medium text-slate-700
-                        shadow-sm transition
-                        hover:bg-slate-50
+                        inline-flex h-10 w-10
+                        items-center justify-center
+                        rounded-lg
+                        text-[var(--pm-text-muted)]
+                        transition
+                        hover:bg-[var(--pm-hover)]
+                        hover:text-[var(--pm-text)]
                     "
+                    data-i18n-aria-label="shell.refresh"
+                    aria-label="Refresh"
+                    title="Refresh"
                 >
-                    <span data-i18n="navigation.sign_out">Sign out</span>
+                    <svg
+                        class="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
+                        <path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 4v5h5"/>
+                        <path d="M4 13a8.1 8.1 0 0 0 15.5 2M20 20v-5h-5"/>
+                    </svg>
                 </button>
+
+                {{-- Notifications / release information --}}
+                <div class="relative">
+                    <button
+                        id="notification-menu-toggle"
+                        type="button"
+                        class="
+                            relative inline-flex h-10 w-10
+                            items-center justify-center
+                            rounded-lg
+                            text-[var(--pm-text-muted)]
+                            transition
+                            hover:bg-[var(--pm-hover)]
+                            hover:text-[var(--pm-text)]
+                        "
+                        data-i18n-aria-label="shell.notifications"
+                        aria-label="Notifications"
+                        aria-expanded="false"
+                    >
+                        <svg
+                            class="h-5 w-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+
+                        <span
+                            class="
+                                absolute right-2 top-2
+                                h-2 w-2 rounded-full
+                                bg-patrimoine-600
+                                ring-2 ring-[var(--pm-surface)]
+                            "
+                        ></span>
+                    </button>
+
+                    <div
+                        id="notification-menu"
+                        class="
+                            absolute right-0 mt-2 hidden
+                            w-[min(22rem,calc(100vw-2rem))]
+                            overflow-hidden rounded-xl
+                            border border-[var(--pm-border)]
+                            bg-[var(--pm-surface-elevated)]
+                            shadow-xl
+                        "
+                    >
+                        <div
+                            class="
+                                border-b border-[var(--pm-border)]
+                                px-4 py-3
+                            "
+                        >
+                            <div
+                                class="
+                                    text-sm font-semibold
+                                    text-[var(--pm-text)]
+                                "
+                                data-i18n="shell.whats_new"
+                            >
+                                What's new
+                            </div>
+                        </div>
+
+                        <div class="p-4">
+                            <div
+                                class="
+                                    text-sm font-semibold
+                                    text-[var(--pm-text)]
+                                "
+                                data-i18n="release.v104_heading"
+                            >
+                                You are now on Patrimoine v1.0.4
+                            </div>
+
+                            <ul
+                                class="
+                                    mt-3 space-y-2
+                                    text-sm
+                                    text-[var(--pm-text-muted)]
+                                "
+                            >
+                                <li
+                                    class="flex gap-2"
+                                    data-i18n="release.v104_ui"
+                                >
+                                    Updated interface for a cleaner experience.
+                                </li>
+
+                                <li
+                                    class="flex gap-2"
+                                    data-i18n="release.v104_fixes"
+                                >
+                                    Usability and localisation fixes.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Current user --}}
+                <div class="relative">
+                    <button
+                        id="user-menu-toggle"
+                        type="button"
+                        class="
+                            flex items-center gap-2
+                            rounded-lg p-1.5
+                            text-left transition
+                            hover:bg-[var(--pm-hover)]
+                        "
+                        aria-expanded="false"
+                    >
+                        <div
+                            id="topbar-avatar"
+                            class="
+                                flex h-8 w-8 shrink-0
+                                items-center justify-center
+                                rounded-full
+                                bg-patrimoine-800
+                                text-xs font-semibold text-white
+                            "
+                        >
+                            PM
+                        </div>
+
+                        <div
+                            class="
+                                hidden min-w-0
+                                lg:block
+                            "
+                        >
+                            <div
+                                id="topbar-user-name"
+                                class="
+                                    max-w-36 truncate
+                                    text-xs font-semibold
+                                    text-[var(--pm-text)]
+                                "
+                            >
+                                Property Manager
+                            </div>
+
+                            <div
+                                id="topbar-user-role"
+                                class="
+                                    max-w-36 truncate
+                                    text-[11px]
+                                    text-[var(--pm-text-muted)]
+                                "
+                            >
+                                Property Manager
+                            </div>
+                        </div>
+
+                        <svg
+                            class="
+                                hidden h-4 w-4
+                                text-[var(--pm-text-subtle)]
+                                lg:block
+                            "
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path d="m6 9 6 6 6-6"/>
+                        </svg>
+                    </button>
+
+                    <div
+                        id="user-menu"
+                        class="
+                            absolute right-0 mt-2 hidden
+                            w-64 overflow-hidden
+                            rounded-xl
+                            border border-[var(--pm-border)]
+                            bg-[var(--pm-surface-elevated)]
+                            shadow-xl
+                        "
+                    >
+                        <div
+                            class="
+                                border-b border-[var(--pm-border)]
+                                px-4 py-3
+                            "
+                        >
+                            <div
+                                id="user-menu-name"
+                                class="
+                                    truncate text-sm font-semibold
+                                    text-[var(--pm-text)]
+                                "
+                            >
+                                Property Manager
+                            </div>
+
+                            <div
+                                id="user-menu-role"
+                                class="
+                                    mt-0.5 truncate text-xs
+                                    text-[var(--pm-text-muted)]
+                                "
+                            >
+                                Property Manager
+                            </div>
+                        </div>
+
+                        <div class="p-2">
+                            <div
+                                class="
+                                    px-2 pb-1 pt-1
+                                    text-[11px] font-semibold uppercase
+                                    tracking-wide
+                                    text-[var(--pm-text-subtle)]
+                                "
+                                data-i18n="shell.appearance"
+                            >
+                                Appearance
+                            </div>
+
+                            <div
+                                class="
+                                    grid grid-cols-3 gap-1
+                                    rounded-lg
+                                    bg-[var(--pm-surface-subtle)]
+                                    p-1
+                                "
+                                role="group"
+                                aria-label="Appearance"
+                            >
+                                <button
+                                    type="button"
+                                    data-theme-option="light"
+                                    class="theme-option"
+                                    data-i18n="shell.theme_light"
+                                >
+                                    Light
+                                </button>
+
+                                <button
+                                    type="button"
+                                    data-theme-option="dark"
+                                    class="theme-option"
+                                    data-i18n="shell.theme_dark"
+                                >
+                                    Dark
+                                </button>
+
+                                <button
+                                    type="button"
+                                    data-theme-option="system"
+                                    class="theme-option"
+                                    data-i18n="shell.theme_system"
+                                >
+                                    System
+                                </button>
+                            </div>
+                        </div>
+
+                        <div
+                            class="
+                                border-t border-[var(--pm-border)]
+                                p-2
+                            "
+                        >
+                            <button
+                                id="change-password-open"
+                                type="button"
+                                class="shell-menu-item"
+                            >
+                                <svg
+                                    class="h-4 w-4"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                >
+                                    <rect x="4" y="10" width="16" height="10" rx="2"/>
+                                    <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+                                </svg>
+
+                                <span data-i18n="password.change_action">
+                                    Change password
+                                </span>
+                            </button>
+
+                            <button
+                                id="logout-button"
+                                type="button"
+                                class="shell-menu-item"
+                            >
+                                <svg
+                                    class="h-4 w-4"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                >
+                                    <path d="M10 17l5-5-5-5"/>
+                                    <path d="M15 12H3"/>
+                                    <path d="M21 19V5a2 2 0 0 0-2-2h-6"/>
+                                </svg>
+
+                                <span data-i18n="navigation.sign_out">
+                                    Sign out
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
 

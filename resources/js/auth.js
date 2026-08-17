@@ -20,6 +20,7 @@
 import {
     apiRequest,
     clearToken,
+    formatLongDate,
     getPresentationConfiguration,
     initials,
     parseJsonResponse,
@@ -29,6 +30,58 @@ import {
 } from './core.js';
 
 import { initializeBrowserAuthorization } from './permissions.js';
+
+import {
+    getThemePreference,
+    setThemePreference,
+} from './theme.js';
+
+const USER_ROLE_STORAGE_KEY =
+    'patrimoine.user_role';
+
+function saveUserRole(role) {
+    const normalizedRole =
+        String(
+            role
+            || ''
+        );
+
+    if (
+        ! [
+            'administrator',
+            'property_manager',
+            'viewer',
+        ].includes(
+            normalizedRole
+        )
+    ) {
+        return;
+    }
+
+    try {
+        window.sessionStorage.setItem(
+            USER_ROLE_STORAGE_KEY,
+            normalizedRole
+        );
+    } catch {
+        // Storage restrictions do not affect authentication.
+    }
+
+    document.documentElement.dataset.shellRole =
+        normalizedRole;
+}
+
+function clearUserRole() {
+    try {
+        window.sessionStorage.removeItem(
+            USER_ROLE_STORAGE_KEY
+        );
+    } catch {
+        // Storage restrictions do not affect logout.
+    }
+
+    delete document.documentElement.dataset.shellRole;
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -196,6 +249,10 @@ export async function initializeLogin() {
                     data.access_token
                 );
 
+                saveUserRole(
+                    data.user?.role
+                );
+
                 window.location.replace(
                     '/dashboard'
                 );
@@ -268,6 +325,10 @@ export async function initializeAuthenticatedShell() {
             user
         );
 
+        saveUserRole(
+            user.role
+        );
+
         /*
          * Store the authenticated application role for page modules and
          * reveal only navigation/actions explicitly assigned to that role.
@@ -299,6 +360,7 @@ export async function initializeAuthenticatedShell() {
 
     initializeSidebar();
     initializeLogout();
+    initializeShellControls();
 
     await loadManagingOrganisation();
 
@@ -352,6 +414,75 @@ function renderCurrentUser(user) {
             initials(
                 user.name
             );
+    }
+
+    const topbarAvatar =
+        document.getElementById(
+            'topbar-avatar'
+        );
+
+    const topbarName =
+        document.getElementById(
+            'topbar-user-name'
+        );
+
+    const topbarRole =
+        document.getElementById(
+            'topbar-user-role'
+        );
+
+    const menuName =
+        document.getElementById(
+            'user-menu-name'
+        );
+
+    const menuRole =
+        document.getElementById(
+            'user-menu-role'
+        );
+
+    const displayName =
+        user.name
+        || translate(
+            'user.property_manager'
+        );
+
+    const role =
+        String(
+            user.role
+            || 'property_manager'
+        );
+
+    const translatedRole =
+        translate(
+            `roles.${role}`
+        );
+
+    if (topbarAvatar) {
+        topbarAvatar.textContent =
+            initials(
+                displayName
+            );
+    }
+
+    if (topbarName) {
+        topbarName.textContent =
+            displayName;
+    }
+
+    if (topbarRole) {
+        topbarRole.textContent =
+            translatedRole;
+    }
+
+    if (menuName) {
+        menuName.textContent =
+            displayName;
+    }
+
+    if (menuRole) {
+        menuRole.textContent =
+            translatedRole;
     }
 }
 
@@ -444,6 +575,207 @@ function initializeSidebar() {
 
 /*
 |--------------------------------------------------------------------------
+| V1.0.4 Application Shell Controls
+|--------------------------------------------------------------------------
+*/
+
+function initializeShellControls() {
+    const dateElement =
+        document.getElementById(
+            'shell-current-date'
+        );
+
+    if (dateElement) {
+        dateElement.textContent =
+            formatLongDate(
+                new Date()
+            );
+    }
+
+    const refreshButton =
+        document.getElementById(
+            'shell-refresh'
+        );
+
+    refreshButton?.addEventListener(
+        'click',
+        () => {
+            window.location.reload();
+        }
+    );
+
+    const userToggle =
+        document.getElementById(
+            'user-menu-toggle'
+        );
+
+    const userMenu =
+        document.getElementById(
+            'user-menu'
+        );
+
+    const notificationToggle =
+        document.getElementById(
+            'notification-menu-toggle'
+        );
+
+    const notificationMenu =
+        document.getElementById(
+            'notification-menu'
+        );
+
+    const closeUserMenu = () => {
+        userMenu?.classList.add(
+            'hidden'
+        );
+
+        userToggle?.setAttribute(
+            'aria-expanded',
+            'false'
+        );
+    };
+
+    const closeNotificationMenu = () => {
+        notificationMenu?.classList.add(
+            'hidden'
+        );
+
+        notificationToggle?.setAttribute(
+            'aria-expanded',
+            'false'
+        );
+    };
+
+    userToggle?.addEventListener(
+        'click',
+        (event) => {
+            event.stopPropagation();
+
+            closeNotificationMenu();
+
+            const opening =
+                userMenu?.classList.contains(
+                    'hidden'
+                );
+
+            userMenu?.classList.toggle(
+                'hidden'
+            );
+
+            userToggle.setAttribute(
+                'aria-expanded',
+                opening
+                    ? 'true'
+                    : 'false'
+            );
+        }
+    );
+
+    notificationToggle?.addEventListener(
+        'click',
+        (event) => {
+            event.stopPropagation();
+
+            closeUserMenu();
+
+            const opening =
+                notificationMenu?.classList.contains(
+                    'hidden'
+                );
+
+            notificationMenu?.classList.toggle(
+                'hidden'
+            );
+
+            notificationToggle.setAttribute(
+                'aria-expanded',
+                opening
+                    ? 'true'
+                    : 'false'
+            );
+        }
+    );
+
+    userMenu?.addEventListener(
+        'click',
+        (event) => {
+            event.stopPropagation();
+        }
+    );
+
+    notificationMenu?.addEventListener(
+        'click',
+        (event) => {
+            event.stopPropagation();
+        }
+    );
+
+    document.addEventListener(
+        'click',
+        () => {
+            closeUserMenu();
+            closeNotificationMenu();
+        }
+    );
+
+    document.addEventListener(
+        'keydown',
+        (event) => {
+            if (event.key === 'Escape') {
+                closeUserMenu();
+                closeNotificationMenu();
+            }
+        }
+    );
+
+    const syncThemeOptions = () => {
+        const preference =
+            getThemePreference();
+
+        document
+            .querySelectorAll(
+                '[data-theme-option]'
+            )
+            .forEach(
+                (button) => {
+                    button.dataset.selected =
+                        button.dataset.themeOption
+                        === preference
+                            ? 'true'
+                            : 'false';
+                }
+            );
+    };
+
+    document
+        .querySelectorAll(
+            '[data-theme-option]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        setThemePreference(
+                            button.dataset.themeOption
+                        );
+
+                        syncThemeOptions();
+                    }
+                );
+            }
+        );
+
+    document.addEventListener(
+        'patrimoine:theme-changed',
+        syncThemeOptions
+    );
+
+    syncThemeOptions();
+}
+
+/*
+|--------------------------------------------------------------------------
 | Logout
 |--------------------------------------------------------------------------
 */
@@ -486,6 +818,7 @@ function initializeLogout() {
                  */
             } finally {
                 clearToken();
+                clearUserRole();
 
                 window.location.replace(
                     '/login'

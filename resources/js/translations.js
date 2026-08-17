@@ -143,6 +143,39 @@ export const translations = {
         'navigation.finance':
             'Finance',
 
+        'navigation.manage':
+            'Manage',
+
+        'shell.refresh':
+            'Refresh',
+
+        'shell.notifications':
+            'Notifications',
+
+        'shell.whats_new':
+            "What's new",
+
+        'shell.appearance':
+            'Appearance',
+
+        'shell.theme_light':
+            'Light',
+
+        'shell.theme_dark':
+            'Dark',
+
+        'shell.theme_system':
+            'System',
+
+        'release.v104_heading':
+            'You are now on Patrimoine v1.0.4',
+
+        'release.v104_ui':
+            'Updated interface for a cleaner experience.',
+
+        'release.v104_fixes':
+            'Usability and localisation fixes.',
+
         'navigation.tenants':
             'Tenants',
 
@@ -1888,6 +1921,39 @@ export const translations = {
 
         'navigation.finance':
             'Finance',
+
+        'navigation.manage':
+            'Gestion',
+
+        'shell.refresh':
+            'Actualiser',
+
+        'shell.notifications':
+            'Notifications',
+
+        'shell.whats_new':
+            'Nouveautés',
+
+        'shell.appearance':
+            'Apparence',
+
+        'shell.theme_light':
+            'Clair',
+
+        'shell.theme_dark':
+            'Sombre',
+
+        'shell.theme_system':
+            'Système',
+
+        'release.v104_heading':
+            'Vous utilisez maintenant Patrimoine v1.0.4',
+
+        'release.v104_ui':
+            'Interface mise à jour pour une utilisation plus claire.',
+
+        'release.v104_fixes':
+            'Corrections d’ergonomie et de localisation.',
 
         'navigation.tenants':
             'Locataires',
