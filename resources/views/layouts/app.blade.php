@@ -16,6 +16,24 @@
         @yield('title', 'Patrimoine')
     </title>
 
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/branding/favicon/favicon-32.png"
+    >
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="/branding/favicon/favicon-16.png"
+    >
+    <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/branding/favicon/apple-touch-icon.png"
+    >
+
     <x-theme-bootstrap />
 
     @vite([
@@ -67,12 +85,16 @@
             >
                 <div
                     class="
-                        flex h-10 w-10 items-center justify-center
-                        rounded-xl bg-white
-                        font-semibold text-patrimoine-950
+                        flex h-10 w-10 shrink-0
+                        items-center justify-center
+                        overflow-hidden rounded-xl bg-white
                     "
                 >
-                    P
+                    <img
+                        src="/branding/patrimoine-logo.svg"
+                        alt="Patrimoine"
+                        class="h-9 w-9 object-contain"
+                    >
                 </div>
 
                 <div>
