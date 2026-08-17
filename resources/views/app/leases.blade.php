@@ -492,7 +492,7 @@
 
         <x-field-help
                                         label="About Property and Unit"
-                                        data-i18n-field-help="leases.property_unit_help_text"
+                                        text-key="leases.property_unit_help_text"
                                         data-i18n-aria-label="leases.property_unit_help_label"
                                     >
             Search for the specific leasable Unit covered by this agreement.
@@ -670,7 +670,7 @@
 
                                     <x-field-help
                                         label="About Tenant"
-                                        data-i18n-field-help="leases.tenant_help_text"
+                                        text-key="leases.tenant_help_text"
                                         data-i18n-aria-label="leases.tenant_help_label"
                                     >
                                         The Party renting this unit. Patrimoine V1 supports exactly one
@@ -716,7 +716,7 @@
 
                                     <x-field-help
                                         label="About Agent"
-                                        data-i18n-field-help="leases.agent_help_text"
+                                        text-key="leases.agent_help_text"
                                         data-i18n-aria-label="leases.agent_help_label"
                                     >
                                         Optional Party that facilitated or manages this lease transaction.
@@ -793,7 +793,7 @@
 
                                     <x-field-help
                                         label="About Start Date"
-                                        data-i18n-field-help="leases.start_date_help_text"
+                                        text-key="leases.start_date_help_text"
                                         data-i18n-aria-label="leases.start_date_help_label"
                                     >
                                         The date the lease begins. Unless a Due Day Override is specified,
@@ -832,7 +832,7 @@
 
                                     <x-field-help
                                         label="About End Date"
-                                        data-i18n-field-help="leases.end_date_help_text"
+                                        text-key="leases.end_date_help_text"
                                         data-i18n-aria-label="leases.end_date_help_label"
                                     >
                                         Optional contractual end date. Leave this blank for a lease without
@@ -868,7 +868,7 @@
 
                                     <x-field-help
                                         label="About Lease Status"
-                                        data-i18n-field-help="leases.status_help_text"
+                                        text-key="leases.status_help_text"
                                         data-i18n-aria-label="leases.status_help_label"
                                     >
                                         Draft means the lease is prepared but not yet in force.
@@ -936,7 +936,7 @@
 
                                     <x-field-help
                                         label="About Notice Date"
-                                        data-i18n-field-help="leases.notice_date_help_text"
+                                        text-key="leases.notice_date_help_text"
                                         data-i18n-aria-label="leases.notice_date_help_label"
                                     >
                                         The date termination notice was received or issued.
@@ -1006,7 +1006,7 @@
 
                                     <x-field-help
                                         label="About Monthly Rent"
-                                        data-i18n-field-help="leases.monthly_rent_help_text"
+                                        text-key="leases.monthly_rent_help_text"
                                         data-i18n-aria-label="leases.monthly_rent_help_label"
                                     >
                                     The VAT-inclusive monthly contractual rent for the Unit.
@@ -1049,7 +1049,7 @@
 
                                     <x-field-help
                                         label="About Payment Frequency"
-                                        data-i18n-field-help="leases.payment_frequency_help_text"
+                                        text-key="leases.payment_frequency_help_text"
                                         data-i18n-aria-label="leases.payment_frequency_help_label"
                                     >
                                         Controls how often the Monthly Rent becomes due:
@@ -1116,7 +1116,7 @@
 
                                     <x-field-help
                                         label="About Due Day Override"
-                                        data-i18n-field-help="leases.due_day_help_text"
+                                        text-key="leases.due_day_help_text"
                                         data-i18n-aria-label="leases.due_day_help_label"
                                     >
                                         Leave blank to use the day of the Lease Start Date as the rent due day.
@@ -1158,7 +1158,7 @@
 
                                     <x-field-help
                                         label="About VAT Rate"
-                                        data-i18n-field-help="leases.vat_rate_help_text"
+                                        text-key="leases.vat_rate_help_text"
                                         data-i18n-aria-label="leases.vat_rate_help_label"
                                     >
                                         Patrimoine treats configured Monthly Rent as VAT inclusive.
@@ -1202,7 +1202,7 @@
 
                                     <x-field-help
                                         label="About Proration Override"
-                                        data-i18n-field-help="leases.proration_help_text"
+                                        text-key="leases.proration_help_text"
                                         data-i18n-aria-label="leases.proration_help_label"
                                     >
                                         Leave blank to let Patrimoine calculate the prorated amount
@@ -1244,7 +1244,7 @@
 
                                     <x-field-help
                                         label="About Security Deposit"
-                                        data-i18n-field-help="leases.security_deposit_help_text"
+                                        text-key="leases.security_deposit_help_text"
                                         data-i18n-aria-label="leases.security_deposit_help_label"
                                     >
                                         The contractual security deposit required from the tenant.
@@ -1321,7 +1321,7 @@
 
                                     <x-field-help
                                         label="About Advance Payment"
-                                        data-i18n-field-help="leases.advance_payment_help_text"
+                                        text-key="leases.advance_payment_help_text"
                                         data-i18n-aria-label="leases.advance_payment_help_label"
                                     >
                                         Total advance rent contractually expected from the Tenant.
@@ -1363,7 +1363,7 @@
 
                                     <x-field-help
                                         label="About Rent Reserve"
-                                        data-i18n-field-help="leases.rent_reserve_help_text"
+                                        text-key="leases.rent_reserve_help_text"
                                         data-i18n-aria-label="leases.rent_reserve_help_label"
                                     >
                                         Portion of the contractual Advance Payment that should
@@ -1404,7 +1404,7 @@
 
                                     <x-field-help
                                         label="About Consumable Advance"
-                                        data-i18n-field-help="leases.consumable_advance_help_text"
+                                        text-key="leases.consumable_advance_help_text"
                                         data-i18n-aria-label="leases.consumable_advance_help_label"
                                     >
                                         The contractual portion of Advance Payment that is not
@@ -1472,7 +1472,7 @@
 
                                         <x-field-help
                                         label="About Advance already received"
-                                        data-i18n-field-help="leases.advance_received_help_text"
+                                        text-key="leases.advance_received_help_text"
                                         data-i18n-aria-label="leases.advance_received_help_label"
                                     >
                                             Select this only when the contractual Advance Payment
@@ -1700,7 +1700,7 @@
 
                                     <x-field-help
                                         label="About Rent Increment Type"
-                                        data-i18n-field-help="leases.increment_type_help_text"
+                                        text-key="leases.increment_type_help_text"
                                         data-i18n-aria-label="leases.increment_type_help_label"
                                     >
                                         Choose how the next rent increase is defined.
@@ -1759,7 +1759,7 @@
 
                                     <x-field-help
                                         label="About Rent Increment Value"
-                                        data-i18n-field-help="leases.increment_value_help_text"
+                                        text-key="leases.increment_value_help_text"
                                         data-i18n-aria-label="leases.increment_value_help_label"
                                     >
                                         Enter the rate or amount of the next rent increase.
@@ -1817,7 +1817,7 @@
 
                                     <x-field-help
                                         label="About Next Rent Increment Date"
-                                        data-i18n-field-help="leases.increment_date_help_text"
+                                        text-key="leases.increment_date_help_text"
                                         data-i18n-aria-label="leases.increment_date_help_label"
                                     >
                                         Date on which the configured increase should first take
@@ -1898,7 +1898,7 @@
 
                                 <x-field-help
                                         label="About Managing Organisation Fee"
-                                        data-i18n-field-help="leases.management_fee_help_text"
+                                        text-key="leases.management_fee_help_text"
                                         data-i18n-aria-label="leases.management_fee_help_label"
                                     >
                                     Defines the fee earned by the Managing Organisation for managing
@@ -1956,7 +1956,7 @@
 
                                     <x-field-help
                                         label="About Managing Organisation Fee Value"
-                                        data-i18n-field-help="leases.management_fee_value_help_text"
+                                        text-key="leases.management_fee_value_help_text"
                                         data-i18n-aria-label="leases.management_fee_value_help_label"
                                     >
                                         The meaning depends on the Managing Organisation Fee type.
@@ -2012,7 +2012,7 @@
 
                                     <x-field-help
                                         label="About Agent Commission"
-                                        data-i18n-field-help="leases.agent_commission_help_text"
+                                        text-key="leases.agent_commission_help_text"
                                         data-i18n-aria-label="leases.agent_commission_help_label"
                                     >
                                         One-time commission agreed with the Agent for this lease.
@@ -2064,7 +2064,7 @@
 
                             <x-field-help
                                         label="About Lease Notes"
-                                        data-i18n-field-help="leases.notes_help_text"
+                                        text-key="leases.notes_help_text"
                                         data-i18n-aria-label="leases.notes_help_label"
                                     >
                                 Optional internal information about the agreement that does not
