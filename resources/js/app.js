@@ -27,6 +27,10 @@ import {
 } from './auth.js';
 
 import {
+    initializeTheme,
+} from './theme.js';
+
+import {
     applyTranslations,
     loadPresentationConfiguration,
 } from './core.js';
@@ -92,6 +96,12 @@ import {
 document.addEventListener(
     'DOMContentLoaded',
     async () => {
+        /*
+         * Theme is personal browser presentation state and does not require
+         * authentication or organisation configuration.
+         */
+        initializeTheme();
+
         /*
          * Presentation configuration is public and must be available before
          * either login or authenticated application UI is initialized.

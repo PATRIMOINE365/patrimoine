@@ -12,6 +12,8 @@
         @yield('title_fallback')
     </title>
 
+    <x-theme-bootstrap />
+
     @vite([
         'resources/css/app.css',
         'resources/js/app.js',

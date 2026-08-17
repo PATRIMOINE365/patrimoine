@@ -16,6 +16,8 @@
         @yield('title', 'Patrimoine')
     </title>
 
+    <x-theme-bootstrap />
+
     @vite([
         'resources/css/app.css',
         'resources/js/app.js',

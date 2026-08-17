@@ -22,12 +22,116 @@
     --color-patrimoine-950: #12221b;
 }
 
+/*
+|--------------------------------------------------------------------------
+| Patrimoine Semantic Theme
+|--------------------------------------------------------------------------
+|
+| Application UI should consume these semantic colours rather than knowing
+| whether a surface is slate-50, white, slate-950, etc.
+|
+| This gives Patrimoine one visual vocabulary that can be switched between
+| Light and Dark presentation without changing business-page markup.
+|
+| data-theme is applied to <html> before the application paints.
+|
+*/
+
+:root,
+html[data-theme="light"] {
+    color-scheme: light;
+
+    --pm-page: #f7f8f7;
+    --pm-surface: #ffffff;
+    --pm-surface-subtle: #f8fafc;
+    --pm-surface-muted: #f1f5f9;
+    --pm-surface-elevated: #ffffff;
+
+    --pm-text: #0f172a;
+    --pm-text-secondary: #334155;
+    --pm-text-muted: #64748b;
+    --pm-text-subtle: #94a3b8;
+
+    --pm-border: #e2e8f0;
+    --pm-border-subtle: #f1f5f9;
+    --pm-border-strong: #cbd5e1;
+
+    --pm-hover: #f8fafc;
+    --pm-selected: #f4f8f6;
+
+    --pm-input-background: #ffffff;
+    --pm-input-disabled: #f8fafc;
+
+    --pm-overlay: rgb(2 6 23 / 0.50);
+
+    --pm-success-background: #f0fdf4;
+    --pm-success-border: #bbf7d0;
+    --pm-success-text: #15803d;
+
+    --pm-warning-background: #fffbeb;
+    --pm-warning-border: #fde68a;
+    --pm-warning-text: #92400e;
+
+    --pm-danger-background: #fef2f2;
+    --pm-danger-border: #fecaca;
+    --pm-danger-text: #b91c1c;
+
+    --pm-info-background: #eff6ff;
+    --pm-info-border: #bfdbfe;
+    --pm-info-text: #1d4ed8;
+}
+
+html[data-theme="dark"] {
+    color-scheme: dark;
+
+    --pm-page: #0f1412;
+    --pm-surface: #171d1a;
+    --pm-surface-subtle: #1c231f;
+    --pm-surface-muted: #222a26;
+    --pm-surface-elevated: #202722;
+
+    --pm-text: #f1f5f3;
+    --pm-text-secondary: #d3ddd7;
+    --pm-text-muted: #9eaca4;
+    --pm-text-subtle: #75847b;
+
+    --pm-border: #303a34;
+    --pm-border-subtle: #27302b;
+    --pm-border-strong: #465249;
+
+    --pm-hover: #202822;
+    --pm-selected: #25352c;
+
+    --pm-input-background: #171d1a;
+    --pm-input-disabled: #202722;
+
+    --pm-overlay: rgb(0 0 0 / 0.64);
+
+    --pm-success-background: #14251b;
+    --pm-success-border: #28543a;
+    --pm-success-text: #86d7a4;
+
+    --pm-warning-background: #292314;
+    --pm-warning-border: #5c4b20;
+    --pm-warning-text: #f1cf70;
+
+    --pm-danger-background: #2b1718;
+    --pm-danger-border: #603034;
+    --pm-danger-text: #f2a0a5;
+
+    --pm-info-background: #172331;
+    --pm-info-border: #294866;
+    --pm-info-text: #9cc9f2;
+}
+
 html {
-    background: #f8faf9;
+    background: var(--pm-page);
 }
 
 body {
     min-height: 100vh;
+    background: var(--pm-page);
+    color: var(--pm-text);
 }
 
 [x-cloak] {
