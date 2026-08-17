@@ -433,6 +433,9 @@ export const translations = {
             'Send password reset',
         'users.cancel':
             'Cancel',
+
+        'actions.save':
+            'Save',
         'users.close':
             'Close',
         'users.save_changes':
@@ -2212,6 +2215,9 @@ export const translations = {
             'Envoyer la réinitialisation',
         'users.cancel':
             'Annuler',
+
+        'actions.save':
+            'Enregistrer',
         'users.close':
             'Fermer',
         'users.save_changes':

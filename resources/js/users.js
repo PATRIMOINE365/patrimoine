@@ -1028,9 +1028,7 @@ function configureUserModal() {
     if (button) {
         button.textContent =
             translate(
-                editing
-                    ? 'users.save_changes'
-                    : 'users.create_user'
+                'actions.save'
             );
     }
 }
@@ -1045,8 +1043,15 @@ function showUserModal() {
         return;
     }
 
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+    modal.classList.remove(
+        'hidden',
+        'pm-drawer-closing'
+    );
+
+    modal.classList.add(
+        'flex'
+    );
+
     modal.setAttribute(
         'aria-hidden',
         'false'
@@ -1054,6 +1059,23 @@ function showUserModal() {
 
     document.body.classList.add(
         'overflow-hidden'
+    );
+
+    /*
+     * Wait until the visible drawer has painted once before switching
+     * to the open state. This gives the panel a real translateX
+     * transition instead of making it appear instantly.
+     */
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    modal.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
     );
 }
 
@@ -1063,12 +1085,23 @@ function closeUserModal() {
             'user-modal'
         );
 
-    if (! modal) {
+    if (
+        ! modal
+        || modal.classList.contains(
+            'hidden'
+        )
+    ) {
         return;
     }
 
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
+    modal.classList.remove(
+        'pm-drawer-open'
+    );
+
+    modal.classList.add(
+        'pm-drawer-closing'
+    );
+
     modal.setAttribute(
         'aria-hidden',
         'true'
@@ -1078,10 +1111,24 @@ function closeUserModal() {
         'overflow-hidden'
     );
 
-    userFormMode = 'create';
-    editingUserId = null;
+    window.setTimeout(
+        () => {
+            modal.classList.add(
+                'hidden'
+            );
 
-    resetUserForm();
+            modal.classList.remove(
+                'flex',
+                'pm-drawer-closing'
+            );
+
+            userFormMode = 'create';
+            editingUserId = null;
+
+            resetUserForm();
+        },
+        230
+    );
 }
 
 async function submitUserForm(
@@ -1220,9 +1267,7 @@ async function submitUserForm(
 
         button.textContent =
             translate(
-                editing
-                    ? 'users.save_changes'
-                    : 'users.create_user'
+                'actions.save'
             );
     }
 }

@@ -241,92 +241,52 @@
     </section>
 </div>
 
-{{-- User create/edit modal --}}
-<div
+{{-- User create/edit drawer --}}
+<x-drawer
     id="user-modal"
-    class="
-        fixed inset-0 z-[70]
-        hidden items-center justify-center
-        p-4
-    "
-    aria-hidden="true"
+    backdrop-id="user-modal-backdrop"
+    width="sm"
 >
-    <div
-        id="user-modal-backdrop"
-        class="
-            absolute inset-0
-            bg-slate-950/50
-            backdrop-blur-[1px]
-        "
-    ></div>
+    <x-drawer-header
+        title-id="user-modal-title"
+        description-id="user-modal-description"
+        close-id="user-modal-close"
+        close-label="Close"
+        close-label-key="users.close"
+    >
+        <x-slot:title>
+            <span data-i18n="users.add_user">
+                Add User
+            </span>
+        </x-slot:title>
 
-    <div
-        class="
-            relative z-10
-            w-full max-w-xl
-            rounded-2xl bg-white
-            shadow-2xl
-        "
+        <x-slot:description>
+            <span data-i18n="users.create_description">
+                Create an application user and send a secure password-setup invitation.
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="user-form"
+        class="flex min-h-0 flex-1 flex-col"
     >
         <div
             class="
-                flex items-start
-                justify-between gap-5
-                border-b border-slate-200
-                px-6 py-5
+                min-h-0 flex-1
+                overflow-y-auto
+                px-6 py-6
             "
-        >
-            <div>
-                <h2
-                    id="user-modal-title"
-                    class="
-                        text-lg font-semibold
-                        text-slate-950
-                    "
-                    data-i18n="users.add_user"
-                >
-                    Add User
-                </h2>
-
-                <p
-                    id="user-modal-description"
-                    class="
-                        mt-1 text-sm
-                        text-slate-500
-                    "
-                    data-i18n="users.create_description"
-                >
-                    Create an application user and send a secure password-setup invitation.
-                </p>
-            </div>
-
-            <button
-                id="user-modal-close"
-                type="button"
-                class="
-                    rounded-lg p-2
-                    text-slate-400
-                    hover:bg-slate-100
-                    hover:text-slate-700
-                "
-                data-i18n-aria-label="users.close"
-                aria-label="Close"
-            >
-                ✕
-            </button>
-        </div>
-
-        <form
-            id="user-form"
-            class="p-6"
         >
             <div
                 id="user-form-error"
                 class="
                     mb-5 hidden rounded-lg
-                    border border-red-200
-                    bg-red-50 px-4 py-3
-                    text-sm text-red-700
+                    border px-4 py-3
+                    text-sm
+                    border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)]
+                    text-[var(--pm-danger-text)]
                 "
                 role="alert"
             ></div>
@@ -335,11 +295,7 @@
                 <div class="sm:col-span-2">
                     <label
                         for="user-name"
-                        class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
-                        "
+                        class="pm-field-label"
                     >
                         <span data-i18n="users.name">
                             Name
@@ -351,23 +307,14 @@
                         type="text"
                         maxlength="255"
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3 py-2.5
-                            text-sm
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div class="sm:col-span-2">
                     <label
                         for="user-email"
-                        class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
-                        "
+                        class="pm-field-label"
                     >
                         <span data-i18n="users.email">
                             Email
@@ -379,23 +326,14 @@
                         type="email"
                         maxlength="255"
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3 py-2.5
-                            text-sm
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div>
                     <label
                         for="user-phone"
-                        class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
-                        "
+                        class="pm-field-label"
                     >
                         <span data-i18n="users.phone">
                             Phone
@@ -406,23 +344,14 @@
                         id="user-phone"
                         type="text"
                         maxlength="50"
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3 py-2.5
-                            text-sm
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div>
                     <label
                         for="user-role"
-                        class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
-                        "
+                        class="pm-field-label"
                     >
                         <span data-i18n="users.role">
                             Role
@@ -432,19 +361,16 @@
                     <select
                         id="user-role"
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            bg-white px-3 py-2.5
-                            text-sm
-                        "
+                        class="pm-input"
                     >
                         <option value="administrator" data-i18n="roles.administrator">
                             Administrator
                         </option>
+
                         <option value="property_manager" data-i18n="roles.property_manager">
                             Property Manager
                         </option>
+
                         <option value="viewer" data-i18n="roles.viewer">
                             Viewer
                         </option>
@@ -456,7 +382,8 @@
                         sm:col-span-2
                         flex items-center gap-3
                         rounded-lg border
-                        border-slate-200
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface-subtle)]
                         px-4 py-3
                     "
                 >
@@ -474,8 +401,8 @@
                     <span>
                         <span
                             class="
-                                block text-sm
-                                font-medium text-slate-800
+                                block text-sm font-medium
+                                text-[var(--pm-text)]
                             "
                             data-i18n="users.active_account"
                         >
@@ -484,8 +411,8 @@
 
                         <span
                             class="
-                                mt-0.5 block
-                                text-xs text-slate-500
+                                mt-0.5 block text-xs
+                                text-[var(--pm-text-muted)]
                             "
                             data-i18n="users.active_account_help"
                         >
@@ -494,49 +421,29 @@
                     </span>
                 </label>
             </div>
+        </div>
 
-            <div
-                class="
-                    mt-7 flex
-                    justify-end gap-3
-                "
+        <x-drawer-footer>
+            <button
+                id="user-cancel-button"
+                type="button"
+                class="pm-button-secondary"
             >
-                <button
-                    id="user-cancel-button"
-                    type="button"
-                    class="
-                        rounded-lg border
-                        border-slate-200
-                        bg-white px-4 py-2.5
-                        text-sm font-medium
-                        text-slate-700
-                        hover:bg-slate-50
-                    "
-                >
-                    <span data-i18n="users.cancel">
-                        Cancel
-                    </span>
-                </button>
+                <span data-i18n="users.cancel">
+                    Cancel
+                </span>
+            </button>
 
-                <button
-                    id="user-submit-button"
-                    type="submit"
-                    class="
-                        rounded-lg
-                        bg-patrimoine-800
-                        px-4 py-2.5
-                        text-sm font-medium
-                        text-white
-                        hover:bg-patrimoine-900
-                        disabled:opacity-50
-                    "
-                    data-i18n="users.create_user"
-                >
-                    Create User
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+            <button
+                id="user-submit-button"
+                type="submit"
+                class="pm-button-primary"
+                data-i18n="actions.save"
+            >
+                Save
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
 
 @endsection
