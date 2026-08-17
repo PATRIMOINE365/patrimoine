@@ -38,6 +38,8 @@ let editingUserId =
 /**
  * Initialize User Management only on its dedicated page.
  */
+let userDrawerCloseTimer = null;
+
 export async function initializeUsers() {
     const workspace =
         document.getElementById(
@@ -1043,13 +1045,29 @@ function showUserModal() {
         return;
     }
 
+    /*
+     * A drawer may be reopened before the previous close cleanup
+     * has fired. Cancel that old cleanup so it cannot interfere
+     * with this opening animation.
+     */
+    if (userDrawerCloseTimer !== null) {
+        window.clearTimeout(
+            userDrawerCloseTimer
+        );
+
+        userDrawerCloseTimer = null;
+    }
+
+    /*
+     * Start from the real closed position.
+     */
     modal.classList.remove(
-        'hidden',
+        'pm-drawer-open',
         'pm-drawer-closing'
     );
 
     modal.classList.add(
-        'flex'
+        'pm-drawer-active'
     );
 
     modal.setAttribute(
@@ -1061,11 +1079,19 @@ function showUserModal() {
         'overflow-hidden'
     );
 
+    const panel =
+        modal.querySelector(
+            '.pm-drawer-panel'
+        );
+
     /*
-     * Wait until the visible drawer has painted once before switching
-     * to the open state. This gives the panel a real translateX
-     * transition instead of making it appear instantly.
+     * Force translateX(100%) to be committed before
+     * beginning the opening transition.
      */
+    if (panel) {
+        void panel.getBoundingClientRect();
+    }
+
     window.requestAnimationFrame(
         () => {
             window.requestAnimationFrame(
@@ -1087,8 +1113,8 @@ function closeUserModal() {
 
     if (
         ! modal
-        || modal.classList.contains(
-            'hidden'
+        || ! modal.classList.contains(
+            'pm-drawer-active'
         )
     ) {
         return;
@@ -1107,27 +1133,30 @@ function closeUserModal() {
         'true'
     );
 
-    document.body.classList.remove(
-        'overflow-hidden'
-    );
+    if (userDrawerCloseTimer !== null) {
+        window.clearTimeout(
+            userDrawerCloseTimer
+        );
+    }
 
-    window.setTimeout(
+    userDrawerCloseTimer = window.setTimeout(
         () => {
-            modal.classList.add(
-                'hidden'
+            modal.classList.remove(
+                'pm-drawer-active',
+                'pm-drawer-closing'
             );
 
-            modal.classList.remove(
-                'flex',
-                'pm-drawer-closing'
+            document.body.classList.remove(
+                'overflow-hidden'
             );
 
             userFormMode = 'create';
             editingUserId = null;
 
             resetUserForm();
+            userDrawerCloseTimer = null;
         },
-        230
+        850
     );
 }
 

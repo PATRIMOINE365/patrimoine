@@ -18,7 +18,7 @@
     id="{{ $id }}"
     data-drawer-width="{{ $width }}"
     {{ $attributes->class([
-        'pm-drawer fixed inset-0 z-[70] hidden',
+        'pm-drawer fixed inset-0 z-[70] flex',
     ]) }}
     aria-hidden="true"
 >

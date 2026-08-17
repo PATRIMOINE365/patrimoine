@@ -25,6 +25,8 @@ let activitySearchTimer =
 /**
  * Initialize the Administrator Activity Log workspace.
  */
+let activityDrawerCloseTimer = null;
+
 export async function initializeActivityLog() {
     const workspace =
         document.getElementById(
@@ -552,7 +554,7 @@ async function loadActivityLog(
         <div
             class="
                 px-5 py-12 text-center
-                text-sm text-slate-400
+                text-sm text-[var(--pm-text-subtle)]
             "
         >
             ${escapeHtml(
@@ -628,7 +630,7 @@ function renderActivityLog(
                 <div
                     class="
                         text-sm font-medium
-                        text-slate-900
+                        text-[var(--pm-text)]
                     "
                 >
                     ${escapeHtml(
@@ -641,7 +643,7 @@ function renderActivityLog(
                 <div
                     class="
                         mt-1 text-sm
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                 >
                     ${escapeHtml(
@@ -697,9 +699,9 @@ function activityRow(event) {
     return `
         <article
             class="
-                px-5 py-5
+                px-5 py-4
                 transition
-                hover:bg-slate-50/70
+                hover:bg-[var(--pm-hover)]
             "
         >
             <div
@@ -739,10 +741,10 @@ function activityRow(event) {
                                     <span
                                         class="
                                             rounded-full
-                                            bg-slate-100
+                                            bg-[var(--pm-surface-muted)]
                                             px-2.5 py-1
                                             text-xs font-medium
-                                            text-slate-600
+                                            text-[var(--pm-text-secondary)]
                                         "
                                     >
                                         ${escapeHtml(
@@ -760,7 +762,7 @@ function activityRow(event) {
                         class="
                             mt-3 text-sm
                             font-semibold
-                            text-slate-950
+                            text-[var(--pm-text)]
                         "
                     >
                         ${escapeHtml(actor)}
@@ -770,7 +772,7 @@ function activityRow(event) {
                         class="
                             mt-1 flex flex-wrap
                             gap-x-5 gap-y-1
-                            text-xs text-slate-500
+                            text-xs text-[var(--pm-text-muted)]
                         "
                     >
                         <span>
@@ -810,11 +812,11 @@ function activityRow(event) {
                     data-activity-log-id="${escapeHtml(event.id)}"
                     class="
                         shrink-0 rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2
+                        border border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2
                         text-xs font-medium
-                        text-slate-700
-                        hover:bg-slate-50
+                        text-[var(--pm-text-secondary)]
+                        hover:bg-[var(--pm-hover)]
                     "
                 >
                     ${escapeHtml(
@@ -880,7 +882,7 @@ function renderPagination(
         >
             <div
                 class="
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -900,10 +902,8 @@ function renderPagination(
                     type="button"
                     ${current <= 1 ? 'disabled' : ''}
                     class="
-                        rounded-lg border
-                        border-slate-200
+                        pm-button-secondary
                         px-3 py-2
-                        text-sm text-slate-700
                         disabled:opacity-40
                     "
                 >
@@ -919,10 +919,8 @@ function renderPagination(
                     type="button"
                     ${current >= last ? 'disabled' : ''}
                     class="
-                        rounded-lg border
-                        border-slate-200
+                        pm-button-secondary
                         px-3 py-2
-                        text-sm text-slate-700
                         disabled:opacity-40
                     "
                 >
@@ -1020,7 +1018,7 @@ async function openActivityDetail(
         <div
             class="
                 py-12 text-center
-                text-sm text-slate-400
+                text-sm text-[var(--pm-text-subtle)]
             "
         >
             ${escapeHtml(
@@ -1053,9 +1051,9 @@ async function openActivityDetail(
             <div
                 class="
                     rounded-lg border
-                    border-red-200
-                    bg-red-50 px-4 py-3
-                    text-sm text-red-700
+                    border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
                 "
             >
                 ${escapeHtml(
@@ -1080,7 +1078,7 @@ function activityDetailMarkup(
                     class="
                         text-xs font-semibold
                         uppercase tracking-[0.12em]
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                 >
                     ${escapeHtml(
@@ -1092,8 +1090,7 @@ function activityDetailMarkup(
 
                 <dl
                     class="
-                        mt-3 grid gap-4
-                        sm:grid-cols-2
+                        mt-3 grid grid-cols-1 gap-3
                     "
                 >
                     ${detailItem(
@@ -1216,15 +1213,15 @@ function detailItem(
         <div
             class="
                 rounded-lg
-                border border-slate-200
-                bg-slate-50/50
+                border border-[var(--pm-border)]
+                bg-[var(--pm-surface-subtle)]
                 px-4 py-3
             "
         >
             <dt
                 class="
                     text-xs font-medium
-                    text-slate-500
+                    text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(label)}
@@ -1233,7 +1230,7 @@ function detailItem(
             <dd
                 class="
                     mt-1 break-words
-                    text-sm text-slate-900
+                    text-sm text-[var(--pm-text)]
                 "
             >
                 ${escapeHtml(displayed)}
@@ -1265,7 +1262,7 @@ function structuredSection(
                 class="
                     text-xs font-semibold
                     uppercase tracking-[0.12em]
-                    text-slate-500
+                    text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(title)}
@@ -1275,7 +1272,7 @@ function structuredSection(
                 class="
                     mt-3 overflow-hidden
                     rounded-lg border
-                    border-slate-200
+                    border-[var(--pm-border)]
                 "
             >
                 ${structuredRows(values)}
@@ -1333,7 +1330,7 @@ function detailStructuredRow(
         <div
             class="
                 grid gap-2
-                border-b border-slate-100
+                border-b border-[var(--pm-border-subtle)]
                 px-4 py-3
                 last:border-b-0
                 sm:grid-cols-[180px_minmax(0,1fr)]
@@ -1345,7 +1342,7 @@ function detailStructuredRow(
                         <div
                             class="
                                 text-xs font-medium
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             ${escapeHtml(label)}
@@ -1359,7 +1356,7 @@ function detailStructuredRow(
                     whitespace-pre-wrap
                     break-words
                     font-sans text-sm
-                    text-slate-900
+                    text-[var(--pm-text)]
                 "
             >${escapeHtml(display)}</pre>
         </div>
@@ -1376,12 +1373,29 @@ function showActivityModal() {
         return;
     }
 
+    /*
+     * A drawer may be reopened before the previous close cleanup
+     * has fired. Cancel that old cleanup so it cannot interfere
+     * with this opening animation.
+     */
+    if (activityDrawerCloseTimer !== null) {
+        window.clearTimeout(
+            activityDrawerCloseTimer
+        );
+
+        activityDrawerCloseTimer = null;
+    }
+
+    /*
+     * Start from the real closed position.
+     */
     modal.classList.remove(
-        'hidden'
+        'pm-drawer-open',
+        'pm-drawer-closing'
     );
 
     modal.classList.add(
-        'flex'
+        'pm-drawer-active'
     );
 
     modal.setAttribute(
@@ -1392,6 +1406,31 @@ function showActivityModal() {
     document.body.classList.add(
         'overflow-hidden'
     );
+
+    const panel =
+        modal.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    /*
+     * Commit translateX(100%) before starting
+     * the two-second opening transition.
+     */
+    if (panel) {
+        void panel.getBoundingClientRect();
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    modal.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
+    );
 }
 
 function closeActivityDetail() {
@@ -1400,16 +1439,21 @@ function closeActivityDetail() {
             'activity-log-modal'
         );
 
-    if (! modal) {
+    if (
+        ! modal
+        || ! modal.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
         return;
     }
 
-    modal.classList.add(
-        'hidden'
+    modal.classList.remove(
+        'pm-drawer-open'
     );
 
-    modal.classList.remove(
-        'flex'
+    modal.classList.add(
+        'pm-drawer-closing'
     );
 
     modal.setAttribute(
@@ -1417,8 +1461,25 @@ function closeActivityDetail() {
         'true'
     );
 
-    document.body.classList.remove(
-        'overflow-hidden'
+    if (activityDrawerCloseTimer !== null) {
+        window.clearTimeout(
+            activityDrawerCloseTimer
+        );
+    }
+
+    activityDrawerCloseTimer = window.setTimeout(
+        () => {
+            modal.classList.remove(
+                'pm-drawer-active',
+                'pm-drawer-closing'
+            );
+
+            document.body.classList.remove(
+                'overflow-hidden'
+            );
+            activityDrawerCloseTimer = null;
+        },
+        850
     );
 }
 
