@@ -38,6 +38,12 @@ import {
     translate,
 } from './core.js';
 
+import {
+    dateForApi,
+    dateForDisplay,
+    initializeDateInputs,
+} from './date-input.js';
+
 /*
 |--------------------------------------------------------------------------
 | Module State
@@ -64,6 +70,15 @@ let editingLeaseId =
 
 let defaultVatRate =
     '18.00';
+
+/*
+ * Pending Add/Edit Lease drawer close cleanup.
+ *
+ * Reopening before the 800ms closing transition completes must cancel
+ * this timer so stale cleanup cannot close a newly reopened drawer.
+ */
+let leaseDrawerCloseTimer =
+    null;
 /*
 |--------------------------------------------------------------------------
 | Public Initializer
@@ -1488,6 +1503,29 @@ function leaseCard(lease) {
 
                     <button
                         type="button"
+                        data-security-deposit
+                        data-lease-id="${escapeHtml(
+                            lease.id
+                        )}"
+                        class="
+                            rounded-lg
+                            border border-slate-200
+                            bg-white px-3.5 py-2
+                            text-sm font-medium
+                            text-slate-700
+                            transition
+                            hover:bg-slate-50
+                        "
+                    >
+                        ${escapeHtml(
+                            translate(
+                                'leases.manage_security_deposit'
+                            )
+                        )}
+                    </button>
+
+                    <button
+                        type="button"
                         data-edit-lease
                         data-lease-id="${escapeHtml(
                             lease.id
@@ -1648,6 +1686,42 @@ function attachLeaseActionListeners(
                     'click',
                     () => {
                         openTenantFundsModal(
+                            button.dataset
+                                .leaseId
+                        );
+                    }
+                );
+            }
+        );
+
+    container
+        .querySelectorAll(
+            '[data-security-deposit]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        openSecurityDepositModal(
+                            button.dataset
+                                .leaseId
+                        );
+                    }
+                );
+            }
+        );
+
+    container
+        .querySelectorAll(
+            '[data-security-deposit]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        openSecurityDepositModal(
                             button.dataset
                                 .leaseId
                         );
@@ -2179,6 +2253,133 @@ function positionLeaseFieldTooltip(
 |--------------------------------------------------------------------------
 */
 
+/**
+ * Initialise DD-MM-YYYY Lease date inputs while retaining a native
+ * calendar picker beside each field.
+ */
+function initializeLeaseDateInputs() {
+    initializeDateInputs(
+        '[data-lease-date-input]'
+    );
+
+    document
+        .querySelectorAll(
+            '[data-lease-date-picker]'
+        )
+        .forEach(
+            (button) => {
+                if (
+                    button.dataset
+                        .leaseDatePickerInitialized
+                    === 'true'
+                ) {
+                    return;
+                }
+
+                button.dataset
+                    .leaseDatePickerInitialized =
+                    'true';
+
+                const fieldId =
+                    button.dataset
+                        .leaseDatePicker;
+
+                const textInput =
+                    document.getElementById(
+                        fieldId
+                    );
+
+                const nativeInput =
+                    document.querySelector(
+                        `[data-lease-native-date-picker="${fieldId}"]`
+                    );
+
+                if (
+                    ! textInput
+                    || ! nativeInput
+                ) {
+                    return;
+                }
+
+                /*
+                 * Keep the hidden native picker synchronized when the
+                 * operator types DD-MM-YYYY manually.
+                 */
+                const syncNativeFromText =
+                    () => {
+                        const iso =
+                            dateForApi(
+                                textInput.value
+                            );
+
+                        nativeInput.value =
+                            /^\d{4}-\d{2}-\d{2}$/
+                                .test(
+                                    iso
+                                )
+                                ? iso
+                                : '';
+                    };
+
+                textInput.addEventListener(
+                    'change',
+                    syncNativeFromText
+                );
+
+                textInput.addEventListener(
+                    'blur',
+                    syncNativeFromText
+                );
+
+                /*
+                 * Calendar icon opens the browser's native date chooser.
+                 */
+                button.addEventListener(
+                    'click',
+                    () => {
+                        syncNativeFromText();
+
+                        if (
+                            typeof nativeInput
+                                .showPicker
+                            === 'function'
+                        ) {
+                            nativeInput.showPicker();
+
+                            return;
+                        }
+
+                        nativeInput.click();
+                    }
+                );
+
+                /*
+                 * Convert native YYYY-MM-DD selection back into the
+                 * Patrimoine DD-MM-YYYY presentation convention.
+                 */
+                nativeInput.addEventListener(
+                    'change',
+                    () => {
+                        textInput.value =
+                            dateForDisplay(
+                                nativeInput.value
+                            );
+
+                        textInput.dispatchEvent(
+                            new Event(
+                                'change',
+                                {
+                                    bubbles: true,
+                                }
+                            )
+                        );
+                    }
+                );
+            }
+        );
+}
+
+
 function initializeLeaseForm() {
     const modal =
         document.getElementById(
@@ -2206,6 +2407,8 @@ function initializeLeaseForm() {
     initializeUnitSearch();
 
     initializeLeaseFinancialControls();
+
+    initializeLeaseDateInputs();
 
     openButton.addEventListener(
         'click',
@@ -2249,8 +2452,8 @@ function initializeLeaseForm() {
         (event) => {
             if (
                 event.key === 'Escape'
-                && ! modal.classList.contains(
-                    'hidden'
+                && modal.classList.contains(
+                    'pm-drawer-active'
                 )
             ) {
                 closeLeaseModal();
@@ -2260,13 +2463,32 @@ function initializeLeaseForm() {
 }
 
 function openCreateLeaseModal() {
-    resetLeaseForm();
-
     leaseFormMode =
         'create';
 
     editingLeaseId =
         null;
+
+    resetLeaseForm();
+
+    /*
+     * V1.0.4 default for a newly created Lease:
+     * Advance Already Received starts checked.
+     *
+     * This is deliberately create-mode-only and therefore does not
+     * overwrite an existing Lease during editing.
+     */
+    const advanceReceivedCheckbox =
+        document.getElementById(
+            'lease-advance-received'
+        );
+
+    if (advanceReceivedCheckbox) {
+        advanceReceivedCheckbox.checked =
+            true;
+    }
+
+    updateAdvanceReceivedControls();
 
     configureLeaseModal();
 
@@ -2355,31 +2577,50 @@ function configureLeaseModal() {
 
     setText(
         'lease-submit-button',
-        editing
-            ? translate(
-                'leases.save_changes'
-            )
-            : translate(
-                'leases.create_lease'
-            )
+        translate(
+            'leases.save'
+        )
     );
 }
 
 function showLeaseModal() {
-    const modal =
+    const drawer =
         document.getElementById(
             'lease-modal'
         );
 
-    if (! modal) {
+    if (! drawer) {
         return;
     }
 
-    modal.classList.remove(
+    /*
+     * Cancel stale cleanup if the user reopens the drawer before the
+     * previous closing animation has completed.
+     */
+    if (leaseDrawerCloseTimer !== null) {
+        window.clearTimeout(
+            leaseDrawerCloseTimer
+        );
+
+        leaseDrawerCloseTimer =
+            null;
+    }
+
+    drawer.classList.remove(
+        'hidden',
+        'pm-drawer-open',
+        'pm-drawer-closing'
+    );
+
+    drawer.removeAttribute(
         'hidden'
     );
 
-    modal.setAttribute(
+    drawer.classList.add(
+        'pm-drawer-active'
+    );
+
+    drawer.setAttribute(
         'aria-hidden',
         'false'
     );
@@ -2387,40 +2628,101 @@ function showLeaseModal() {
     document.body.classList.add(
         'overflow-hidden'
     );
+
+    const panel =
+        drawer.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    /*
+     * Commit the off-screen translateX(100%) state before starting the
+     * 800ms opening transition.
+     */
+    if (panel) {
+        void panel.getBoundingClientRect();
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    drawer.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
+    );
 }
 
 function closeLeaseModal() {
-    const modal =
+    const drawer =
         document.getElementById(
             'lease-modal'
         );
 
-    if (! modal) {
+    if (
+        ! drawer
+        || ! drawer.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
         return;
     }
 
-    modal.classList.add(
-        'hidden'
+    drawer.classList.remove(
+        'pm-drawer-open'
     );
 
-    modal.setAttribute(
+    drawer.classList.add(
+        'pm-drawer-closing'
+    );
+
+    drawer.setAttribute(
         'aria-hidden',
         'true'
     );
 
-    document.body.classList.remove(
-        'overflow-hidden'
-    );
+    if (leaseDrawerCloseTimer !== null) {
+        window.clearTimeout(
+            leaseDrawerCloseTimer
+        );
+    }
 
-    leaseFormMode =
-        'create';
+    leaseDrawerCloseTimer =
+        window.setTimeout(
+            () => {
+                drawer.classList.remove(
+                    'pm-drawer-active',
+                    'pm-drawer-closing'
+                );
 
-    editingLeaseId =
-        null;
+                leaseDrawerCloseTimer =
+                    null;
 
-    resetLeaseForm();
+                const anotherDrawerOpen =
+                    document.querySelector(
+                        '.pm-drawer.pm-drawer-active'
+                    );
 
-    configureLeaseModal();
+                if (! anotherDrawerOpen) {
+                    document.body.classList.remove(
+                        'overflow-hidden'
+                    );
+                }
+
+                leaseFormMode =
+                    'create';
+
+                editingLeaseId =
+                    null;
+
+                resetLeaseForm();
+
+                configureLeaseModal();
+            },
+            850
+        );
 }
 
 function resetLeaseForm() {
@@ -2675,13 +2977,17 @@ function populateLeaseForm(
 }
 
 function dateInputValue(value) {
-    return value
-        ? String(value)
+    if (! value) {
+        return '';
+    }
+
+    return dateForDisplay(
+        String(value)
             .slice(
                 0,
                 10
             )
-        : '';
+    );
 }
 
 function setFormValue(
@@ -2871,13 +3177,17 @@ function updateAdvanceReceivedControls() {
         Number.isFinite(advance)
         && advance > 0;
 
+    /*
+     * V1.0.4:
+     * Advance Already Received is a create-form default and should not
+     * be cleared merely because the operator has not entered the
+     * contractual advance amount yet.
+     *
+     * Receipt-detail fields still become active only after a positive
+     * Advance Payment exists.
+     */
     checkbox.disabled =
-        ! hasAdvance;
-
-    if (! hasAdvance) {
-        checkbox.checked =
-            false;
-    }
+        false;
 
     const enabled =
         checkbox.checked
@@ -3187,13 +3497,9 @@ async function submitLeaseForm(
             false;
 
         submitButton.textContent =
-            editing
-                ? translate(
-                    'leases.save_changes'
-                )
-                : translate(
-                    'leases.create_lease'
-                );
+            translate(
+                'leases.save'
+            );
     }
 }
 
@@ -3219,12 +3525,14 @@ function buildLeasePayload() {
             ),
 
         start_date:
-            formValue(
-                'lease-start-date'
+            dateForApi(
+                formValue(
+                    'lease-start-date'
+                )
             ),
 
         end_date:
-            nullableFormValue(
+            nullableDateForApi(
                 'lease-end-date'
             ),
 
@@ -3234,7 +3542,7 @@ function buildLeasePayload() {
             ),
 
         termination_notice_date:
-            nullableFormValue(
+            nullableDateForApi(
                 'lease-notice-date'
             ),
 
@@ -3317,7 +3625,7 @@ function buildLeasePayload() {
             ),
 
         next_rent_increment_date:
-            nullableFormValue(
+            nullableDateForApi(
                 'lease-next-rent-increment-date'
             ),
 
@@ -3360,7 +3668,7 @@ function buildLeasePayload() {
             ?? false,
 
         advance_received_date:
-            nullableFormValue(
+            nullableDateForApi(
                 'lease-advance-received-date'
             ),
 
@@ -3383,6 +3691,30 @@ function buildLeasePayload() {
 
 
     };
+}
+
+/**
+ * Return an optional date in API YYYY-MM-DD format.
+ *
+ * Visible Lease date controls use DD-MM-YYYY. Empty optional dates must
+ * remain null rather than becoming an invalid or empty API date.
+ *
+ * @param {string} id
+ * @returns {string|null}
+ */
+function nullableDateForApi(id) {
+    const value =
+        nullableFormValue(
+            id
+        );
+
+    if (value === null) {
+        return null;
+    }
+
+    return dateForApi(
+        value
+    );
 }
 
 function nullableInteger(id) {
@@ -3590,10 +3922,146 @@ function hideLeasePageError() {
 let securityDepositLeaseId =
     null;
 
+/*
+ * Pending Security Deposit drawer close cleanup.
+ *
+ * Reopening during the 800ms close transition must cancel the previous
+ * cleanup so an old timer cannot close a newly reopened drawer.
+ */
+let securityDepositDrawerCloseTimer =
+    null;
+
 /**
  * Initialize Security Deposit modal controls.
  */
+/**
+ * Initialize Security Deposit DD-MM-YYYY controls while retaining
+ * the browser-native calendar picker.
+ */
+function initializeSecurityDepositDateInputs() {
+    document
+        .querySelectorAll(
+            '[data-security-date-input]'
+        )
+        .forEach(
+            (textInput) => {
+                if (
+                    textInput.dataset
+                        .securityDateInitialized
+                    === 'true'
+                ) {
+                    return;
+                }
+
+                textInput.dataset
+                    .securityDateInitialized =
+                    'true';
+
+                const fieldId =
+                    textInput.id;
+
+                const pickerButton =
+                    document.querySelector(
+                        `[data-security-date-picker="${fieldId}"]`
+                    );
+
+                const nativeInput =
+                    document.querySelector(
+                        `[data-security-native-date-picker="${fieldId}"]`
+                    );
+
+                if (
+                    ! pickerButton
+                    || ! nativeInput
+                ) {
+                    return;
+                }
+
+                const syncNative =
+                    () => {
+                        const iso =
+                            dateForApi(
+                                textInput.value
+                            );
+
+                        nativeInput.value =
+                            /^\d{4}-\d{2}-\d{2}$/
+                                .test(iso)
+                                ? iso
+                                : '';
+                    };
+
+                textInput.addEventListener(
+                    'blur',
+                    () => {
+                        const iso =
+                            dateForApi(
+                                textInput.value
+                            );
+
+                        if (
+                            /^\d{4}-\d{2}-\d{2}$/
+                                .test(iso)
+                        ) {
+                            textInput.value =
+                                dateForDisplay(
+                                    iso
+                                );
+                        }
+
+                        syncNative();
+                    }
+                );
+
+                pickerButton.addEventListener(
+                    'click',
+                    () => {
+                        syncNative();
+
+                        if (
+                            typeof nativeInput
+                                .showPicker
+                            === 'function'
+                        ) {
+                            nativeInput.showPicker();
+
+                            return;
+                        }
+
+                        nativeInput.click();
+                    }
+                );
+
+                nativeInput.addEventListener(
+                    'change',
+                    () => {
+                        if (! nativeInput.value) {
+                            return;
+                        }
+
+                        textInput.value =
+                            dateForDisplay(
+                                nativeInput.value
+                            );
+
+                        textInput.dispatchEvent(
+                            new Event(
+                                'change',
+                                {
+                                    bubbles: true,
+                                }
+                            )
+                        );
+                    }
+                );
+            }
+        );
+}
+
+
 function initializeSecurityDepositModal() {
+    initializeSecurityDepositDateInputs();
+
     document
         .getElementById(
             'security-deposit-modal-close'
@@ -3659,9 +4127,8 @@ function initializeSecurityDepositModal() {
 
             if (
                 event.key === 'Escape'
-                && modal
-                && ! modal.classList.contains(
-                    'hidden'
+                && modal?.classList.contains(
+                    'pm-drawer-active'
                 )
             ) {
                 closeSecurityDepositModal();
@@ -3718,22 +4185,69 @@ async function openSecurityDepositModal(
             )
     );
 
-    const modal =
+    const drawer =
         document.getElementById(
             'security-deposit-modal'
         );
 
-    modal?.classList.remove(
+    if (! drawer) {
+        return;
+    }
+
+    if (
+        securityDepositDrawerCloseTimer
+        !== null
+    ) {
+        window.clearTimeout(
+            securityDepositDrawerCloseTimer
+        );
+
+        securityDepositDrawerCloseTimer =
+            null;
+    }
+
+    drawer.classList.remove(
+        'hidden',
+        'pm-drawer-open',
+        'pm-drawer-closing'
+    );
+
+    drawer.removeAttribute(
         'hidden'
     );
 
-    modal?.setAttribute(
+    drawer.classList.add(
+        'pm-drawer-active'
+    );
+
+    drawer.setAttribute(
         'aria-hidden',
         'false'
     );
 
     document.body.classList.add(
         'overflow-hidden'
+    );
+
+    const panel =
+        drawer.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    if (panel) {
+        void panel.getBoundingClientRect();
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    drawer.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
     );
 
     await loadSecurityDepositPosition();
@@ -3743,29 +4257,73 @@ async function openSecurityDepositModal(
  * Close and reset the Security Deposit modal.
  */
 function closeSecurityDepositModal() {
-    const modal =
+    const drawer =
         document.getElementById(
             'security-deposit-modal'
         );
 
-    modal?.classList.add(
-        'hidden'
+    if (
+        ! drawer
+        || ! drawer.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
+        return;
+    }
+
+    drawer.classList.remove(
+        'pm-drawer-open'
     );
 
-    modal?.setAttribute(
+    drawer.classList.add(
+        'pm-drawer-closing'
+    );
+
+    drawer.setAttribute(
         'aria-hidden',
         'true'
     );
 
-    document.body.classList.remove(
-        'overflow-hidden'
-    );
+    if (
+        securityDepositDrawerCloseTimer
+        !== null
+    ) {
+        window.clearTimeout(
+            securityDepositDrawerCloseTimer
+        );
+    }
 
-    securityDepositLeaseId =
-        null;
+    securityDepositDrawerCloseTimer =
+        window.setTimeout(
+            () => {
+                drawer.classList.remove(
+                    'pm-drawer-active',
+                    'pm-drawer-closing'
+                );
 
-    resetSecurityDepositModal();
+                securityDepositDrawerCloseTimer =
+                    null;
+
+                const anotherDrawerOpen =
+                    document.querySelector(
+                        '.pm-drawer.pm-drawer-active'
+                    );
+
+                if (! anotherDrawerOpen) {
+                    document.body.classList.remove(
+                        'overflow-hidden'
+                    );
+                }
+
+                securityDepositLeaseId =
+                    null;
+
+                resetSecurityDepositModal();
+            },
+            850
+        );
 }
+
 
 /**
  * Restore modal controls to their initial loading state.
@@ -4069,6 +4627,11 @@ function renderSecurityDepositPosition(
                 10
             );
 
+    const todayDisplay =
+        dateForDisplay(
+            today
+        );
+
     const deductionDate =
         document.getElementById(
             'security-deduction-date'
@@ -4079,7 +4642,7 @@ function renderSecurityDepositPosition(
         && ! deductionDate.value
     ) {
         deductionDate.value =
-            today;
+            todayDisplay;
     }
 
     const settlementDate =
@@ -4092,7 +4655,7 @@ function renderSecurityDepositPosition(
         && ! settlementDate.value
     ) {
         settlementDate.value =
-            today;
+            todayDisplay;
     }
 }
 
@@ -4473,8 +5036,10 @@ async function submitSecurityDepositDeduction(
                                 ),
 
                             deduction_date:
-                                formValue(
-                                    'security-deduction-date'
+                                dateForApi(
+                                    formValue(
+                                        'security-deduction-date'
+                                    )
                                 ),
 
                             reference:
@@ -4577,8 +5142,10 @@ async function submitSecurityDepositSettlement(
                     body:
                         JSON.stringify({
                             settlement_date:
-                                formValue(
-                                    'security-settlement-date'
+                                dateForApi(
+                                    formValue(
+                                        'security-settlement-date'
+                                    )
                                 ),
 
                             notes:
@@ -4677,10 +5244,135 @@ let tenantFundsLeaseId =
 let tenantFundsLease =
     null;
 
+/*
+ * Pending Tenant Funds drawer close cleanup.
+ *
+ * Reopening during the 800ms closing animation cancels this cleanup so
+ * a stale timer cannot close the newly reopened drawer.
+ */
+let tenantFundsDrawerCloseTimer =
+    null;
+
 /**
  * Register Tenant Funds modal controls.
  */
+/**
+ * Initialize Tenant Funds DD-MM-YYYY date controls while retaining the
+ * browser's native date picker.
+ */
+function initializeTenantFundsDateInputs() {
+    initializeDateInputs(
+        '[data-tenant-funds-date-input]'
+    );
+
+    document
+        .querySelectorAll(
+            '[data-tenant-funds-date-picker]'
+        )
+        .forEach(
+            (button) => {
+                if (
+                    button.dataset
+                        .tenantFundsDateInitialized
+                    === 'true'
+                ) {
+                    return;
+                }
+
+                button.dataset
+                    .tenantFundsDateInitialized =
+                    'true';
+
+                const fieldId =
+                    button.dataset
+                        .tenantFundsDatePicker;
+
+                const textInput =
+                    document.getElementById(
+                        fieldId
+                    );
+
+                const nativeInput =
+                    document.querySelector(
+                        `[data-tenant-funds-native-date-picker="${fieldId}"]`
+                    );
+
+                if (
+                    ! textInput
+                    || ! nativeInput
+                ) {
+                    return;
+                }
+
+                const syncNative =
+                    () => {
+                        const iso =
+                            dateForApi(
+                                textInput.value
+                            );
+
+                        nativeInput.value =
+                            /^\d{4}-\d{2}-\d{2}$/
+                                .test(iso)
+                                ? iso
+                                : '';
+                    };
+
+                textInput.addEventListener(
+                    'change',
+                    syncNative
+                );
+
+                textInput.addEventListener(
+                    'blur',
+                    syncNative
+                );
+
+                button.addEventListener(
+                    'click',
+                    () => {
+                        syncNative();
+
+                        if (
+                            typeof nativeInput
+                                .showPicker
+                            === 'function'
+                        ) {
+                            nativeInput.showPicker();
+
+                            return;
+                        }
+
+                        nativeInput.click();
+                    }
+                );
+
+                nativeInput.addEventListener(
+                    'change',
+                    () => {
+                        textInput.value =
+                            dateForDisplay(
+                                nativeInput.value
+                            );
+
+                        textInput.dispatchEvent(
+                            new Event(
+                                'change',
+                                {
+                                    bubbles: true,
+                                }
+                            )
+                        );
+                    }
+                );
+            }
+        );
+}
+
+
 function initializeTenantFundsModal() {
+    initializeTenantFundsDateInputs();
+
     document
         .getElementById(
             'tenant-funds-modal-close'
@@ -4717,27 +5409,24 @@ function initializeTenantFundsModal() {
             submitConsumableAdvanceConsumption
         );
 
-    document
-        .getElementById(
-            'tenant-funds-security-manage'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                const leaseId =
-                    tenantFundsLeaseId;
-
-                if (! leaseId) {
-                    return;
-                }
-
-                closeTenantFundsModal();
-
-                openSecurityDepositModal(
-                    leaseId
+    document.addEventListener(
+        'keydown',
+        (event) => {
+            const drawer =
+                document.getElementById(
+                    'tenant-funds-modal'
                 );
+
+            if (
+                event.key === 'Escape'
+                && drawer?.classList.contains(
+                    'pm-drawer-active'
+                )
+            ) {
+                closeTenantFundsModal();
             }
-        );
+        }
+    );
 }
 
 /**
@@ -4807,22 +5496,70 @@ async function openTenantFundsModal(
             )
     );
 
-    const modal =
+    const drawer =
         document.getElementById(
             'tenant-funds-modal'
         );
 
-    modal?.classList.remove(
+    if (! drawer) {
+        return;
+    }
+
+    /*
+     * Cancel stale cleanup if the drawer is reopened before the previous
+     * closing transition completes.
+     */
+    if (tenantFundsDrawerCloseTimer !== null) {
+        window.clearTimeout(
+            tenantFundsDrawerCloseTimer
+        );
+
+        tenantFundsDrawerCloseTimer =
+            null;
+    }
+
+    drawer.classList.remove(
+        'hidden',
+        'pm-drawer-open',
+        'pm-drawer-closing'
+    );
+
+    drawer.removeAttribute(
         'hidden'
     );
 
-    modal?.setAttribute(
+    drawer.classList.add(
+        'pm-drawer-active'
+    );
+
+    drawer.setAttribute(
         'aria-hidden',
         'false'
     );
 
     document.body.classList.add(
         'overflow-hidden'
+    );
+
+    const panel =
+        drawer.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    if (panel) {
+        void panel.getBoundingClientRect();
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    drawer.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
     );
 
     await loadTenantFundsLease();
@@ -4968,14 +5705,19 @@ function renderTenantFunds() {
                 10
             );
 
+    const todayDisplay =
+        dateForDisplay(
+            today
+        );
+
     setFormValue(
         'tenant-funds-reserve-date',
-        today
+        todayDisplay
     );
 
     setFormValue(
         'tenant-funds-advance-date',
-        today
+        todayDisplay
     );
 }
 
@@ -5265,9 +6007,11 @@ async function submitRentReserveConsumption(
                                 ),
 
                             transaction_date:
-                                formValue(
+                                dateForApi(
+                formValue(
                                     'tenant-funds-reserve-date'
-                                ),
+                                )
+            ),
                         }),
                 }
             );
@@ -5363,9 +6107,11 @@ async function submitConsumableAdvanceConsumption(
                                 ),
 
                             transaction_date:
-                                formValue(
+                                dateForApi(
+                formValue(
                                     'tenant-funds-advance-date'
-                                ),
+                                )
+            ),
                         }),
                 }
             );
@@ -5428,32 +6174,87 @@ function tenantFundAccountByType(
 /**
  * Close the Tenant Funds workspace.
  */
-function closeTenantFundsModal() {
-    const modal =
+function closeTenantFundsModal(
+    afterClose = null
+) {
+    const drawer =
         document.getElementById(
             'tenant-funds-modal'
         );
 
-    modal?.classList.add(
-        'hidden'
+    if (
+        ! drawer
+        || ! drawer.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
+        return;
+    }
+
+    drawer.classList.remove(
+        'pm-drawer-open'
     );
 
-    modal?.setAttribute(
+    drawer.classList.add(
+        'pm-drawer-closing'
+    );
+
+    drawer.setAttribute(
         'aria-hidden',
         'true'
     );
 
-    document.body.classList.remove(
-        'overflow-hidden'
-    );
+    if (tenantFundsDrawerCloseTimer !== null) {
+        window.clearTimeout(
+            tenantFundsDrawerCloseTimer
+        );
+    }
 
-    tenantFundsLeaseId =
-        null;
+    tenantFundsDrawerCloseTimer =
+        window.setTimeout(
+            () => {
+                drawer.classList.remove(
+                    'pm-drawer-active',
+                    'pm-drawer-closing'
+                );
 
-    tenantFundsLease =
-        null;
+                tenantFundsDrawerCloseTimer =
+                    null;
 
-    hideTenantFundsError();
+                const anotherDrawerOpen =
+                    document.querySelector(
+                        '.pm-drawer.pm-drawer-active'
+                    );
+
+                if (! anotherDrawerOpen) {
+                    document.body.classList.remove(
+                        'overflow-hidden'
+                    );
+                }
+
+                tenantFundsLeaseId =
+                    null;
+
+                tenantFundsLease =
+                    null;
+
+                hideTenantFundsError();
+
+                /*
+                 * Used by the Security Deposit hand-off.
+                 *
+                 * Direct event-listener calls pass a MouseEvent here, so
+                 * execute only real callback functions.
+                 */
+                if (
+                    typeof afterClose
+                    === 'function'
+                ) {
+                    afterClose();
+                }
+            },
+            850
+        );
 }
 
 /**

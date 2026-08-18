@@ -70,7 +70,7 @@
                         tracking-[0.24em] text-patrimoine-300
                     "
                 >
-                    <span data-i18n="product.property_management">Property Management</span>
+                    <span data-i18n="product.property_management">{{ __('ui.product.property_management') }}</span>
                 </p>
 
                 <h1
@@ -106,7 +106,7 @@
                 "
             >
                 <span data-i18n="login.product_name">
-                    Patrimoine Property Management
+                    {{ __('ui.login.product_name') }}
                 </span>
             </div>
         </section>
@@ -280,7 +280,7 @@
                     "
                 >
                     <span data-i18n="login.secure_access">
-                        Secure access to Patrimoine Property Management.
+                        {{ __('ui.login.secure_access') }}
                     </span>
                 </p>
             </div>

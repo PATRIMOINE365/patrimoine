@@ -640,6 +640,7 @@ export const translations = {
         'parties.add_party_description': 'Create a person, organisation or association.',
         'parties.save_changes': 'Save Changes',
         'parties.create_party': 'Create Party',
+        'parties.save': 'Save',
 
         'leases.unable_initialize': 'Unable to initialize Leases.',
         'leases.all_tenants': 'All Tenants',
@@ -660,6 +661,7 @@ export const translations = {
         'leases.end': 'End',
         'leases.vat': 'VAT',
         'leases.tenant_funds': 'Tenant Funds',
+        'leases.manage_security_deposit': 'Security Deposit',
         'leases.edit': 'Edit',
         'leases.delete': 'Delete',
         'leases.status_draft': 'Draft',
@@ -681,6 +683,7 @@ export const translations = {
         'leases.add_description': 'Create a tenancy agreement for a property unit.',
         'leases.save_changes': 'Save Changes',
         'leases.create_lease': 'Create Lease',
+        'leases.save': 'Save',
         'leases.select_valid_unit': 'Select a valid Property / Unit.',
         'leases.reserve_exceeds_advance': 'Rent Reserve cannot exceed Total Advance Payment.',
         'leases.saving_changes': 'Saving Changes…',
@@ -873,7 +876,7 @@ export const translations = {
         'leases.loading_tenant_funds': 'Loading tenant funds…',
         'leases.reserve_protected_short': 'Protected until termination notice.',
         'leases.consumable_advance_description': 'Available tenant advance that may be applied to rent.',
-        'leases.manage_security_deposit': 'Manage Security Deposit →',
+        'leases.manage_security_deposit': 'Security Deposit',
         'leases.apply_reserve_description': 'Rent Reserve becomes consumable after termination notice and may settle an outstanding Invoice.',
         'leases.outstanding_invoice': 'Outstanding Invoice',
         'leases.apply_advance_description': 'Apply available Consumable Advance against an outstanding rent Invoice.',
@@ -1225,6 +1228,37 @@ export const translations = {
         'tenants.historical_leases': 'Historical Leases',
         'tenants.tenant_details': 'Tenant Details',
         'tenants.party_type': 'Party Type',
+        'tenants.party_type.person': 'Person',
+        'tenants.party_type.organisation': 'Organisation',
+        'tenants.party_type.organization': 'Organisation',
+        'tenants.party_type.association': 'Association',
+
+        'tenants.payment_method.cash': 'Cash',
+        'tenants.payment_method.bank_transfer': 'Bank Transfer',
+        'tenants.payment_method.momo': 'Mobile Payment',
+        'tenants.payment_method.mobile_payment': 'Mobile Payment',
+
+        'tenants.fund_type.rent_reserve': 'Rent Reserve',
+        'tenants.fund_type.consumable_advance': 'Consumable Advance',
+        'tenants.fund_type.security_deposit': 'Security Deposit',
+
+        'tenants.lease_status.draft': 'Draft',
+        'tenants.lease_status.active': 'Active',
+        'tenants.lease_status.notice': 'Notice',
+        'tenants.lease_status.terminated': 'Terminated',
+        'tenants.lease_status.expired': 'Expired',
+        'tenants.lease_status.cancelled': 'Cancelled',
+
+        'tenants.direction.credit': 'Credit',
+        'tenants.direction.debit': 'Debit',
+
+        'tenants.category.reserve_funding': 'Reserve Funding',
+        'tenants.category.advance_funding': 'Advance Funding',
+        'tenants.category.security_deposit_funding': 'Security Deposit Funding',
+        'tenants.category.rent_consumption': 'Rent Consumption',
+        'tenants.category.advance_consumption': 'Advance Consumption',
+        'tenants.category.security_deposit_deduction': 'Security Deposit Deduction',
+        'tenants.category.security_deposit_refund': 'Security Deposit Refund',
         'tenants.phone': 'Phone',
         'tenants.alternate_phone': 'Alternate Phone',
         'tenants.email': 'Email',
@@ -1748,6 +1782,9 @@ export const translations = {
 
         'properties.cancel':
             'Cancel',
+
+        'properties.save':
+            'Save',
 
         'properties.create_owner_description':
             'Create an Owner Party and assign it to this property.',
@@ -2679,6 +2716,9 @@ export const translations = {
         'properties.cancel':
             'Annuler',
 
+        'properties.save':
+            'Enregistrer',
+
         'properties.create_owner_description':
             'Créez une Partie propriétaire et affectez-la à cette propriété.',
 
@@ -2752,6 +2792,7 @@ export const translations = {
         'parties.add_party_description': 'Créez une personne, une organisation ou une association.',
         'parties.save_changes': 'Enregistrer les modifications',
         'parties.create_party': 'Créer la partie',
+        'parties.save': 'Enregistrer',
 
         'leases.unable_initialize': 'Impossible d’initialiser les baux.',
         'leases.all_tenants': 'Tous les locataires',
@@ -2772,6 +2813,7 @@ export const translations = {
         'leases.end': 'Fin',
         'leases.vat': 'TVA',
         'leases.tenant_funds': 'Fonds du locataire',
+        'leases.manage_security_deposit': 'Dépôt de garantie',
         'leases.edit': 'Modifier',
         'leases.delete': 'Supprimer',
         'leases.status_draft': 'En cours',
@@ -2793,6 +2835,7 @@ export const translations = {
         'leases.add_description': 'Créer un contrat de location pour une unité.',
         'leases.save_changes': 'Enregistrer les modifications',
         'leases.create_lease': 'Créer le bail',
+        'leases.save': 'Enregistrer',
         'leases.select_valid_unit': 'Sélectionnez une propriété / unité valide.',
         'leases.reserve_exceeds_advance': 'La réserve de loyer ne peut pas dépasser le paiement anticipé total.',
         'leases.saving_changes': 'Enregistrement des modifications…',
@@ -2897,13 +2940,13 @@ export const translations = {
         'leases.rent_increment_description': 'Configurez la prochaine augmentation contractuelle du loyer, le cas échéant.',
         'leases.increment_type': 'Type d’augmentation',
         'leases.increment_value': 'Valeur de l’augmentation',
-        'leases.next_increment_date': 'Date de la prochaine augmentation',
+        'leases.next_increment_date': 'Prochaine augmentation',
         'leases.none': 'Aucun',
         'leases.percentage': 'Pourcentage',
         'leases.fixed_amount': 'Montant fixe',
         'leases.fees_commission': 'Frais et commission',
-        'leases.fees_commission_description': 'Configurez les frais de l’organisation gestionnaire et la commission unique de l’agent applicables à ce bail.',
-        'leases.management_fee': 'Frais de l’organisation gestionnaire',
+        'leases.fees_commission_description': 'Configurez les frais de gestion et la commission unique de l’agent applicables à ce bail.',
+        'leases.management_fee': 'Frais de gestion',
         'leases.fee_value': 'Valeur des frais',
         'leases.agent_commission': 'Commission de l’agent',
         'leases.notes': 'Notes',
@@ -2985,7 +3028,7 @@ export const translations = {
         'leases.loading_tenant_funds': 'Chargement des fonds du locataire…',
         'leases.reserve_protected_short': 'Protégée jusqu’au préavis de résiliation.',
         'leases.consumable_advance_description': 'Avance disponible du locataire pouvant être appliquée au loyer.',
-        'leases.manage_security_deposit': 'Gérer le dépôt de garantie →',
+        'leases.manage_security_deposit': 'Dépôt de garantie',
         'leases.apply_reserve_description': 'La réserve de loyer devient consommable après le préavis de résiliation et peut régler une facture impayée.',
         'leases.outstanding_invoice': 'Facture impayée',
         'leases.apply_advance_description': 'Appliquez l’avance consommable disponible à une facture de loyer impayée.',
@@ -3337,6 +3380,37 @@ export const translations = {
         'tenants.historical_leases': 'Baux historiques',
         'tenants.tenant_details': 'Détails du locataire',
         'tenants.party_type': 'Type de partie',
+        'tenants.party_type.person': 'Personne',
+        'tenants.party_type.organisation': 'Organisation',
+        'tenants.party_type.organization': 'Organisation',
+        'tenants.party_type.association': 'Association',
+
+        'tenants.payment_method.cash': 'Espèces',
+        'tenants.payment_method.bank_transfer': 'Virement bancaire',
+        'tenants.payment_method.momo': 'Paiement mobile',
+        'tenants.payment_method.mobile_payment': 'Paiement mobile',
+
+        'tenants.fund_type.rent_reserve': 'Réserve de loyer',
+        'tenants.fund_type.consumable_advance': 'Avance consommable',
+        'tenants.fund_type.security_deposit': 'Dépôt de garantie',
+
+        'tenants.lease_status.draft': 'En cours',
+        'tenants.lease_status.active': 'Actif',
+        'tenants.lease_status.notice': 'Préavis',
+        'tenants.lease_status.terminated': 'Résilié',
+        'tenants.lease_status.expired': 'Expiré',
+        'tenants.lease_status.cancelled': 'Annulé',
+
+        'tenants.direction.credit': 'Crédit',
+        'tenants.direction.debit': 'Débit',
+
+        'tenants.category.reserve_funding': 'Alimentation de la réserve',
+        'tenants.category.advance_funding': "Alimentation de l’avance",
+        'tenants.category.security_deposit_funding': 'Alimentation du dépôt de garantie',
+        'tenants.category.rent_consumption': 'Consommation de la réserve de loyer',
+        'tenants.category.advance_consumption': "Consommation de l’avance",
+        'tenants.category.security_deposit_deduction': 'Déduction du dépôt de garantie',
+        'tenants.category.security_deposit_refund': 'Remboursement du dépôt de garantie',
         'tenants.phone': 'Téléphone',
         'tenants.alternate_phone': 'Téléphone secondaire',
         'tenants.email': 'E-mail',

@@ -79,6 +79,17 @@ let editingPartyId =
  */
 let editingPartyRecord =
     null;
+
+/*
+ * Keep track of the pending drawer-close cleanup.
+ *
+ * If the Party drawer is reopened before its closing transition finishes,
+ * the previous cleanup must be cancelled. Otherwise that stale timer can
+ * remove the active state from the newly reopened drawer.
+ */
+let partyDrawerCloseTimer =
+    null;
+
 /*
 |--------------------------------------------------------------------------
 | Public Initializer
@@ -612,16 +623,7 @@ function partyCard(party) {
             ? roles
                 .map(
                     (role) => `
-                        <span
-                            class="
-                                inline-flex items-center
-                                rounded-full
-                                bg-patrimoine-50
-                                px-2.5 py-1
-                                text-xs font-medium
-                                text-patrimoine-700
-                            "
-                        >
+                        <span class="pm-party-role-badge">
                             ${escapeHtml(
                                 partyRoleLabel(
                                     role
@@ -632,11 +634,7 @@ function partyCard(party) {
                 )
                 .join('')
             : `
-                <span
-                    class="
-                        text-xs text-slate-400
-                    "
-                >
+                <span class="pm-party-no-role">
                     ${escapeHtml(
                         translate(
                             'parties.no_assigned_role'
@@ -646,51 +644,17 @@ function partyCard(party) {
             `;
 
     return `
-        <article
-            class="
-                mb-4 overflow-hidden
-                rounded-xl border
-                border-slate-200 bg-white
-                last:mb-0
-            "
-        >
-            <div
-                class="
-                    flex flex-col gap-5
-                    px-5 py-5
-                    lg:flex-row
-                    lg:items-center
-                    lg:justify-between
-                "
-            >
+        <article class="pm-party-row">
+            <div class="pm-party-row-main">
                 <div class="min-w-0 flex-1">
-
-                    <div
-                        class="
-                            flex flex-wrap
-                            items-center gap-3
-                        "
-                    >
-                        <h3
-                            class="
-                                text-base font-semibold
-                                text-slate-950
-                            "
-                        >
+                    <div class="pm-party-title-line">
+                        <h3 class="pm-party-name">
                             ${escapeHtml(
                                 displayName
                             )}
                         </h3>
 
-                        <span
-                            class="
-                                rounded-full
-                                bg-slate-100
-                                px-2.5 py-1
-                                text-xs font-medium
-                                text-slate-600
-                            "
-                        >
+                        <span class="pm-party-type-badge">
                             ${escapeHtml(
                                 partyTypeLabel(
                                     party.type
@@ -702,12 +666,7 @@ function partyCard(party) {
                     ${
                         contactName
                             ? `
-                                <div
-                                    class="
-                                        mt-2 text-sm
-                                        text-slate-600
-                                    "
-                                >
+                                <div class="pm-party-contact">
                                     ${escapeHtml(
                                         translate(
                                             'parties.contact'
@@ -723,13 +682,7 @@ function partyCard(party) {
                             : ''
                     }
 
-                    <div
-                        class="
-                            mt-2 flex flex-wrap
-                            gap-x-5 gap-y-1
-                            text-sm text-slate-500
-                        "
-                    >
+                    <div class="pm-party-meta">
                         ${
                             phone
                                 ? `
@@ -745,7 +698,7 @@ function partyCard(party) {
                         ${
                             email
                                 ? `
-                                    <span>
+                                    <span class="break-all">
                                         ${escapeHtml(
                                             email
                                         )}
@@ -767,37 +720,19 @@ function partyCard(party) {
                         }
                     </div>
 
-                    <div
-                        class="
-                            mt-3 flex flex-wrap
-                            gap-2
-                        "
-                    >
+                    <div class="pm-party-roles">
                         ${roleBadges}
                     </div>
                 </div>
 
-                <div
-                    class="
-                        flex shrink-0
-                        flex-wrap items-center gap-2
-                    "
-                >
+                <div class="pm-party-actions">
                     <button
                         type="button"
                         data-edit-party
                         data-party-id="${escapeHtml(
                             party.id
                         )}"
-                        class="
-                            rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2
-                            text-sm font-medium
-                            text-slate-700
-                            transition
-                            hover:bg-slate-50
-                        "
+                        class="pm-button-secondary pm-party-action"
                     >
                         ${escapeHtml(
                             translate(
@@ -815,15 +750,7 @@ function partyCard(party) {
                         data-party-name="${escapeHtml(
                             displayName
                         )}"
-                        class="
-                            rounded-lg
-                            border border-red-200
-                            bg-white px-3.5 py-2
-                            text-sm font-medium
-                            text-red-600
-                            transition
-                            hover:bg-red-50
-                        "
+                        class="pm-button-danger-outline pm-party-action"
                     >
                         ${escapeHtml(
                             translate(
@@ -1127,8 +1054,8 @@ function initializePartyForm() {
         (event) => {
             if (
                 event.key === 'Escape'
-                && ! modal.classList.contains(
-                    'hidden'
+                && modal.classList.contains(
+                    'pm-drawer-active'
                 )
             ) {
                 closePartyModal();
@@ -1274,13 +1201,9 @@ function configurePartyModal() {
 
     setText(
         'party-submit-button',
-        editing
-            ? translate(
-                'parties.save_changes'
-            )
-            : translate(
-                'parties.create_party'
-            )
+        translate(
+            'parties.save'
+        )
     );
 }
 
@@ -1288,20 +1211,47 @@ function configurePartyModal() {
  * Display the Party modal.
  */
 function showPartyModal() {
-    const modal =
+    const drawer =
         document.getElementById(
             'party-modal'
         );
 
-    if (! modal) {
+    if (! drawer) {
         return;
     }
 
-    modal.classList.remove(
+    /*
+     * A previous close transition may still have a pending cleanup.
+     *
+     * Cancel it before reopening so an old timer cannot remove
+     * pm-drawer-active from this newly opened drawer.
+     */
+    if (partyDrawerCloseTimer) {
+        window.clearTimeout(
+            partyDrawerCloseTimer
+        );
+
+        partyDrawerCloseTimer =
+            null;
+    }
+
+    /*
+     * Start from the shared closed drawer state.
+     */
+    drawer.classList.remove(
+        'pm-drawer-open',
+        'pm-drawer-closing'
+    );
+
+    drawer.removeAttribute(
         'hidden'
     );
 
-    modal.setAttribute(
+    drawer.classList.add(
+        'pm-drawer-active'
+    );
+
+    drawer.setAttribute(
         'aria-hidden',
         'false'
     );
@@ -1311,45 +1261,114 @@ function showPartyModal() {
     );
 
     updatePartyTypeFields();
+
+    /*
+     * Render the off-screen active state before starting
+     * the 800ms slide transition.
+     */
+    const panel =
+        drawer.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    if (panel) {
+        void panel.getBoundingClientRect();
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    drawer.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
+    );
 }
 
 /**
  * Close and reset the Party modal.
  */
 function closePartyModal() {
-    const modal =
+    const drawer =
         document.getElementById(
             'party-modal'
         );
 
-    if (! modal) {
+    if (
+        ! drawer
+        || ! drawer.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
         return;
     }
 
-    modal.classList.add(
-        'hidden'
+    /*
+     * Slide the drawer out while immediately removing
+     * it from hit testing through pm-drawer-closing.
+     */
+    drawer.classList.remove(
+        'pm-drawer-open'
     );
 
-    modal.setAttribute(
+    drawer.classList.add(
+        'pm-drawer-closing'
+    );
+
+    drawer.setAttribute(
         'aria-hidden',
         'true'
     );
 
-    document.body.classList.remove(
-        'overflow-hidden'
+    /*
+     * Replace any previous pending cleanup with this close cycle.
+     */
+    if (partyDrawerCloseTimer) {
+        window.clearTimeout(
+            partyDrawerCloseTimer
+        );
+    }
+
+    partyDrawerCloseTimer =
+        window.setTimeout(
+        () => {
+            drawer.classList.remove(
+                'pm-drawer-active',
+                'pm-drawer-closing'
+            );
+
+            partyDrawerCloseTimer =
+                null;
+
+            const anotherDrawerOpen =
+                document.querySelector(
+                    '.pm-drawer.pm-drawer-active'
+                );
+
+            if (! anotherDrawerOpen) {
+                document.body.classList.remove(
+                    'overflow-hidden'
+                );
+            }
+
+            partyFormMode =
+                'create';
+
+            editingPartyId =
+                null;
+
+            editingPartyRecord =
+                null;
+
+            resetPartyForm();
+
+            configurePartyModal();
+        },
+        850
     );
-
-    partyFormMode =
-        'create';
-
-    editingPartyId =
-        null;
-    editingPartyRecord =
-    null;
-
-    resetPartyForm();
-
-    configurePartyModal();
 }
 
 /**

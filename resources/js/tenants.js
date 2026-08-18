@@ -2,6 +2,7 @@ import {
     apiRequest,
     escapeHtml,
     formatCurrency,
+    formatDate,
     formatNumber,
     parseJsonResponse,
     translate,
@@ -238,26 +239,6 @@ function renderTenantDirectory(
             ?? tenants.length
         );
 
-    const count =
-        document.getElementById(
-            'tenant-result-count'
-        );
-
-    if (count) {
-        count.textContent =
-            translate(
-                total === 1
-                    ? 'tenants.pagination_tenant'
-                    : 'tenants.pagination_tenants',
-                {
-                    total:
-                        formatNumber(
-                            total
-                        ),
-                }
-            );
-    }
-
     if (tenants.length === 0) {
         renderTenantDirectoryEmpty(
             translate('tenants.no_search_results')
@@ -318,13 +299,39 @@ function renderTenantDirectoryRow(
             tenant
         );
 
-    const contact =
-        [
-            tenant.phone,
-            tenant.email,
-        ]
+    const initials =
+        String(name)
+            .trim()
+            .split(/\s+/)
             .filter(Boolean)
-            .join(' · ');
+            .slice(0, 2)
+            .map(
+                (part) =>
+                    part.charAt(0)
+                        .toUpperCase()
+            )
+            .join('')
+        || 'T';
+
+    const primaryContact =
+        tenant.phone
+        || tenant.email
+        || translate(
+            'tenants.no_contact_information'
+        );
+
+    const secondaryContact =
+        tenant.phone
+        && tenant.email
+            ? tenant.email
+            : '';
+
+    const type =
+        tenantDynamicLabel(
+            'party_type',
+            tenant.type
+            ?? 'person'
+        );
 
     return `
         <button
@@ -333,41 +340,68 @@ function renderTenantDirectoryRow(
                 tenant.id
             )}"
             class="
-                block w-full
-                border-b border-slate-100
-                px-5 py-4 text-left
-                transition
-                last:border-b-0
+                pm-tenant-directory-row
                 ${
                     selected
-                        ? 'bg-patrimoine-50'
-                        : 'hover:bg-slate-50'
+                        ? 'pm-tenant-directory-row-selected'
+                        : ''
                 }
             "
+            aria-current="${selected ? 'true' : 'false'}"
         >
-            <div
-                class="
-                    truncate text-sm font-semibold
-                    text-slate-900
-                "
+            <span
+                class="pm-tenant-directory-avatar"
+                aria-hidden="true"
             >
-                ${escapeHtml(name)}
-            </div>
+                ${escapeHtml(initials)}
+            </span>
 
-            ${
-                contact
-                    ? `
-                        <div
-                            class="
-                                mt-1 truncate
-                                text-xs text-slate-500
-                            "
-                        >
-                            ${escapeHtml(contact)}
-                        </div>
-                    `
-                    : ''
-            }
+            <span class="pm-tenant-directory-content">
+                <span class="pm-tenant-directory-name">
+                    ${escapeHtml(name)}
+                </span>
+
+                <span class="pm-tenant-directory-contact">
+                    ${escapeHtml(primaryContact)}
+                </span>
+
+                ${
+                    secondaryContact
+                        ? `
+                            <span
+                                class="
+                                    pm-tenant-directory-secondary
+                                "
+                            >
+                                ${escapeHtml(
+                                    secondaryContact
+                                )}
+                            </span>
+                        `
+                        : ''
+                }
+            </span>
+
+            <span class="pm-tenant-directory-meta">
+                <span class="pm-tenant-directory-type">
+                    ${escapeHtml(type)}
+                </span>
+
+                <svg
+                    class="pm-tenant-directory-chevron"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="m7.5 5 5 5-5 5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                </svg>
+            </span>
         </button>
     `;
 }
@@ -510,13 +544,15 @@ function updateTenantDirectorySelection() {
                     );
 
                 button.classList.toggle(
-                    'bg-patrimoine-50',
+                    'pm-tenant-directory-row-selected',
                     selected
                 );
 
-                button.classList.toggle(
-                    'hover:bg-slate-50',
-                    ! selected
+                button.setAttribute(
+                    'aria-current',
+                    selected
+                        ? 'true'
+                        : 'false'
                 );
             }
         );
@@ -681,7 +717,8 @@ function renderTenantDetail(
             >
                 ${detailItem(
                     translate('tenants.party_type'),
-                    capitalizeWords(
+                    tenantDynamicLabel(
+                        'party_type',
                         tenant.type
                     )
                 )}
@@ -1043,12 +1080,18 @@ function renderTenantInvoiceRow(
 
             ${tableCell(
                 invoice?.date
-                || '—'
+                    ? formatDate(
+                        invoice.date
+                    )
+                    : '—'
             )}
 
             ${tableCell(
                 invoice?.due_date
-                || '—'
+                    ? formatDate(
+                        invoice.due_date
+                    )
+                    : '—'
             )}
 
             ${tableCell(
@@ -1510,8 +1553,9 @@ function renderTenantPaymentRow(
     return `
         <tr>
             ${tableCell(
-                payment?.date
-                || '—'
+                formatTenantDisplayDate(
+                    payment?.date
+                )
             )}
 
             ${tableCell(
@@ -1524,7 +1568,8 @@ function renderTenantPaymentRow(
             )}
 
             ${tableCell(
-                capitalizeWords(
+                tenantDynamicLabel(
+                    'payment_method',
                     payment?.method
                     ?? 'unknown'
                 )
@@ -2223,18 +2268,14 @@ function renderTenantFundTransactionRow(
     return `
         <tr>
             ${tableCell(
-                String(
+                formatTenantDisplayDate(
                     transaction?.transaction_date
-                    ?? ''
-                ).slice(
-                    0,
-                    10
                 )
-                || '—'
             )}
 
             ${tableCell(
-                capitalizeWords(
+                tenantDynamicLabel(
+                    'fund_type',
                     transaction?.fund_type
                     ?? 'unknown'
                 ),
@@ -2242,14 +2283,16 @@ function renderTenantFundTransactionRow(
             )}
 
             ${tableCell(
-                capitalizeWords(
+                tenantDynamicLabel(
+                    'direction',
                     transaction?.direction
                     ?? 'unknown'
                 )
             )}
 
             ${tableCell(
-                capitalizeWords(
+                tenantDynamicLabel(
+                    'category',
                     transaction?.category
                     ?? 'unknown'
                 )
@@ -2559,7 +2602,8 @@ function renderTenantLeases(
                                     "
                                 >
                                     ${escapeHtml(
-                                        capitalizeWords(
+                                        tenantDynamicLabel(
+                                            'lease_status',
                                             lease.status
                                             ?? 'unknown'
                                         )
@@ -2668,12 +2712,85 @@ function contactSummary(
 
 
 /**
+ * Translate backend enum values used by the Tenant workspace.
+ *
+ * Falls back to the existing human-readable capitalization when an
+ * unexpected value is returned by the API.
+ */
+function tenantDynamicLabel(
+    group,
+    value
+) {
+    const normalized =
+        String(
+            value
+            ?? ''
+        )
+            .trim()
+            .toLowerCase()
+            .replace(
+                /[\s-]+/g,
+                '_'
+            );
+
+    if (!normalized) {
+        return '—';
+    }
+
+    const key =
+        `tenants.${group}.${normalized}`;
+
+    const translated =
+        translate(
+            key
+        );
+
+    /*
+     * translate() returns the key when no translation exists.
+     */
+    if (
+        translated
+        && translated !== key
+    ) {
+        return translated;
+    }
+
+    return capitalizeWords(
+        normalized
+    );
+}
+
+
+/**
+ * Display a Tenant business date using the central Patrimoine
+ * presentation standard.
+ *
+ * French:  DD-MM-YYYY
+ * English: DD/MM/YYYY
+ */
+function formatTenantDisplayDate(
+    value
+) {
+    if (! value) {
+        return '—';
+    }
+
+    return formatDate(
+        String(value).slice(
+            0,
+            10
+        )
+    ) || '—';
+}
+
+
+/**
  * Lease date display.
  */
 function formatLeasePeriod(
     lease
 ) {
-    const start =
+    const rawStart =
         String(
             lease?.start_date
             ?? ''
@@ -2682,7 +2799,7 @@ function formatLeasePeriod(
             10
         );
 
-    const end =
+    const rawEnd =
         String(
             lease?.end_date
             ?? ''
@@ -2690,6 +2807,20 @@ function formatLeasePeriod(
             0,
             10
         );
+
+    const start =
+        rawStart
+            ? formatTenantDisplayDate(
+                rawStart
+            )
+            : '';
+
+    const end =
+        rawEnd
+            ? formatTenantDisplayDate(
+                rawEnd
+            )
+            : '';
 
     if (start && end) {
         return `${start} → ${end}`;

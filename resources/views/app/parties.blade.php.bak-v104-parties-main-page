@@ -1,0 +1,1281 @@
+@extends('layouts.app')
+
+@section('title', 'Parties — Patrimoine')
+@section('title-i18n', 'parties.title')
+
+@section('content')
+
+<div class="pm-page mx-auto max-w-[1600px]">
+
+    {{-- Page header --}}
+    <div
+        class="
+            mb-8 flex flex-col gap-5
+            lg:flex-row lg:items-end lg:justify-between
+        "
+    >
+        <div>
+            <p
+                class="
+                    text-sm font-medium
+                    text-patrimoine-700
+                "
+            >
+                <span data-i18n="parties.contacts_stakeholders">Contacts & Stakeholders</span>
+            </p>
+
+            <h1
+                class="
+                    mt-1 text-3xl font-semibold
+                    tracking-tight text-slate-950
+                "
+            >
+                <span data-i18n="parties.heading">Parties</span>
+            </h1>
+
+            <p class="mt-2 text-sm text-slate-500">
+                <span data-i18n="parties.page_description">Manage owners, tenants, agents, organisations and associations.</span>
+            </p>
+        </div>
+
+        <button
+            id="add-party-button"
+            type="button"
+            class="
+                inline-flex items-center gap-2
+                rounded-lg bg-patrimoine-950
+                px-4 py-2.5
+                text-sm font-medium text-white
+                shadow-sm transition
+                hover:bg-patrimoine-900
+            "
+        >
+            <svg
+                class="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path d="M12 5v14"/>
+                <path d="M5 12h14"/>
+            </svg>
+
+            <span data-i18n="parties.add_party">Add Party</span>
+        </button>
+    </div>
+
+    {{-- Page-level error --}}
+    <div
+        id="parties-error"
+        class="
+            mb-6 hidden rounded-xl
+            border border-red-200
+            bg-red-50 px-4 py-3
+            text-sm text-red-700
+        "
+    ></div>
+
+    {{-- Summary cards --}}
+    <div
+        class="
+            mb-6 grid gap-4
+            sm:grid-cols-2 xl:grid-cols-4
+        "
+    >
+        <div
+            class="
+                pm-surface-card
+                rounded-xl p-5
+            "
+        >
+            <div class="text-sm text-slate-500">
+                <span data-i18n="parties.total_parties">Total Parties</span>
+            </div>
+
+            <div
+                id="parties-total-count"
+                class="
+                    mt-3 text-3xl font-semibold
+                    tracking-tight text-slate-950
+                "
+            >
+                —
+            </div>
+        </div>
+
+        <div
+            class="
+                pm-surface-card
+                rounded-xl p-5
+            "
+        >
+            <div class="text-sm text-slate-500">
+                <span data-i18n="parties.people">People</span>
+            </div>
+
+            <div
+                id="parties-person-count"
+                class="
+                    mt-3 text-3xl font-semibold
+                    tracking-tight text-slate-950
+                "
+            >
+                —
+            </div>
+        </div>
+
+        <div
+            class="
+                pm-surface-card
+                rounded-xl p-5
+            "
+        >
+            <div class="text-sm text-slate-500">
+                <span data-i18n="parties.organisations">Organisations</span>
+            </div>
+
+            <div
+                id="parties-organisation-count"
+                class="
+                    mt-3 text-3xl font-semibold
+                    tracking-tight text-slate-950
+                "
+            >
+                —
+            </div>
+        </div>
+
+        <div
+            class="
+                pm-surface-card
+                rounded-xl p-5
+            "
+        >
+            <div class="text-sm text-slate-500">
+                <span data-i18n="parties.multiple_roles">Multiple Roles</span>
+            </div>
+
+            <div
+                id="parties-multi-role-count"
+                class="
+                    mt-3 text-3xl font-semibold
+                    tracking-tight text-slate-950
+                "
+            >
+                —
+            </div>
+        </div>
+    </div>
+
+    {{-- Party portfolio --}}
+    <section
+        class="
+            pm-surface-card
+            overflow-hidden rounded-xl
+        "
+    >
+
+        {{-- Filters --}}
+        <div
+            class="
+                border-b border-slate-100
+                px-5 py-4
+            "
+        >
+            <div
+                class="
+                    flex flex-col gap-4
+                    xl:flex-row
+                    xl:items-end
+                    xl:justify-between
+                "
+            >
+                <div>
+                    <h2
+                        class="
+                            text-base font-semibold
+                            text-slate-950
+                        "
+                    >
+                        <span data-i18n="parties.directory">Party Directory</span>
+                    </h2>
+
+                    <p class="mt-1 text-xs text-slate-500">
+                        <span data-i18n="parties.directory_description">People and entities participating in property operations.</span>
+                    </p>
+                </div>
+
+                <div
+                    class="
+                        grid w-full gap-3
+                        sm:grid-cols-3
+                        xl:w-auto
+                    "
+                >
+
+                    {{-- Search --}}
+                    <div class="sm:min-w-72">
+                        <label
+                            for="party-search"
+                            class="sr-only"
+                        >
+                            <span data-i18n="parties.search">Search Parties</span>
+                        </label>
+
+                        <div class="relative">
+                            <svg
+                                class="
+                                    pointer-events-none
+                                    absolute left-3 top-1/2
+                                    h-4 w-4
+                                    -translate-y-1/2
+                                    text-slate-400
+                                "
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+
+                            <input
+                                id="party-search"
+                                type="search"
+                                data-i18n-placeholder="parties.search_placeholder"
+                                placeholder="Search name, email, phone..."
+                                class="
+                                    w-full rounded-lg
+                                    border border-slate-200
+                                    bg-white py-2.5
+                                    pl-9 pr-3
+                                    text-sm
+                                    outline-none transition
+                                    placeholder:text-slate-400
+                                    focus:border-patrimoine-500
+                                    focus:ring-2
+                                    focus:ring-patrimoine-100
+                                "
+                            >
+                        </div>
+                    </div>
+
+                    {{-- Type --}}
+                    <div>
+                        <label
+                            for="party-type-filter"
+                            class="sr-only"
+                        >
+                            <span data-i18n="parties.party_type">Party Type</span>
+                        </label>
+
+                        <select
+                            id="party-type-filter"
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                bg-white px-3 py-2.5
+                                text-sm text-slate-700
+                                outline-none transition
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                            <option
+                                value=""
+                                data-i18n="parties.all_types"
+                            >
+                                All Types
+                            </option>
+
+                            <option
+                                value="person"
+                                data-i18n="parties.people"
+                            >
+                                People
+                            </option>
+
+                            <option
+                                value="organisation"
+                                data-i18n="parties.organisations"
+                            >
+                                Organisations
+                            </option>
+
+                            <option
+                                value="association"
+                                data-i18n="parties.associations"
+                            >
+                                Associations
+                            </option>
+                        </select>
+                    </div>
+
+                    {{-- Role --}}
+                    <div>
+                        <label
+                            for="party-role-filter"
+                            class="sr-only"
+                        >
+                            <span data-i18n="parties.party_role">Party Role</span>
+                        </label>
+
+                        <select
+                            id="party-role-filter"
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                bg-white px-3 py-2.5
+                                text-sm text-slate-700
+                                outline-none transition
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                            <option
+                                value=""
+                                data-i18n="parties.all_roles"
+                            >
+                                All Roles
+                            </option>
+
+                            <option
+                                value="owner"
+                                data-i18n="parties.owners"
+                            >
+                                Owners
+                            </option>
+
+                            <option
+                                value="tenant"
+                                data-i18n="parties.tenants"
+                            >
+                                Tenants
+                            </option>
+
+                            <option
+                                value="agent"
+                                data-i18n="parties.agents"
+                            >
+                                Agents
+                            </option>
+
+                            <option
+                                value="managing_organisation"
+                                data-i18n="parties.managing_organisation"
+                            >
+                                Managing Organisation
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {{-- Records --}}
+        <div
+            id="parties-list"
+            class="p-5"
+        >
+            <div class="text-sm text-slate-400">
+                <span data-i18n="parties.loading">Loading parties…</span>
+            </div>
+        </div>
+
+        {{-- Pagination --}}
+        <div
+            id="parties-pagination"
+            class="
+                hidden border-t
+                border-slate-100
+                px-5 py-4
+            "
+        ></div>
+
+    </section>
+</div>
+
+{-- ================================================================
+     Add / Edit Party Drawer
+================================================================ --}
+
+<x-drawer
+    id="party-modal"
+    backdrop-id="party-modal-backdrop"
+    width="lg"
+>
+    <x-drawer-header
+        title-id="party-modal-title"
+        description-id="party-modal-description"
+        close-id="party-modal-close"
+        close-label="Close"
+        close-label-key="parties.close"
+    >
+        <x-slot:title>
+            <span data-i18n="parties.add_party">Add Party</span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="parties.add_party_description">
+                Create a person, organisation or association.
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="party-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div class="pm-drawer-body">
+
+
+                    {{-- Validation errors --}}
+                    <div
+                        id="party-form-error"
+                        class="
+                            mb-5 hidden rounded-lg
+                            border border-red-200
+                            bg-red-50 px-4 py-3
+                            text-sm text-red-700
+                        "
+                    ></div>
+
+                    {{-- Type --}}
+                    <section>
+                        <div class="mb-4">
+                            <h3
+                                class="
+                                    text-sm font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                <span data-i18n="parties.party_type">Party Type</span>
+                            </h3>
+
+                            <p class="mt-1 text-xs text-slate-500">
+                                <span data-i18n="parties.party_type_description">Select the legal nature of this Party.</span>
+                            </p>
+                        </div>
+
+                        <select
+                            id="party-type"
+                            required
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                bg-white px-3.5 py-2.5
+                                text-sm
+                                outline-none transition
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                            <option
+                                value="person"
+                                data-i18n="parties.person"
+                            >
+                                Person
+                            </option>
+
+                            <option
+                                value="organisation"
+                                data-i18n="parties.organisation"
+                            >
+                                Organisation
+                            </option>
+
+                            <option
+                                value="association"
+                                data-i18n="parties.association"
+                            >
+                                Association
+                            </option>
+                        </select>
+                    </section>
+
+                    {{-- ===================================================
+                         Person fields
+                    ==================================================== --}}
+
+                    <section
+                        id="party-person-fields"
+                        class="
+                            mt-8 border-t
+                            border-slate-100 pt-7
+                        "
+                    >
+                        <div class="mb-4">
+                            <h3
+                                class="
+                                    text-sm font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                <span data-i18n="parties.personal_details">Personal Details</span>
+                            </h3>
+                        </div>
+
+                        <div
+                            class="
+                                grid gap-4
+                                md:grid-cols-2
+                            "
+                        >
+                            <div class="md:col-span-2">
+                                <label
+                                    for="party-name"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.full_name">Full Name</span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                <input
+                                    id="party-name"
+                                    type="text"
+                                    maxlength="255"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    for="party-phone"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.phone">Phone</span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                <input
+                                    id="party-phone"
+                                    type="text"
+                                    maxlength="50"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    for="party-email"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.email">Email</span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                <input
+                                    id="party-email"
+                                    type="email"
+                                    maxlength="255"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+                        </div>
+                    </section>
+
+                    {{-- ===================================================
+                         Organisation / Association
+                    ==================================================== --}}
+
+                    <section
+                        id="party-organisation-fields"
+                        class="
+                            mt-8 hidden
+                            border-t border-slate-100
+                            pt-7
+                        "
+                    >
+                        <div class="mb-4">
+                            <h3
+                                class="
+                                    text-sm font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                <span data-i18n="parties.organisation_details">Organisation Details</span>
+                            </h3>
+                        </div>
+
+                        <div
+                            class="
+                                grid gap-4
+                                md:grid-cols-2
+                            "
+                        >
+                            <div class="md:col-span-2">
+                                <label
+                                    for="party-legal-name"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.legal_name">Legal Name</span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                <input
+                                    id="party-legal-name"
+                                    type="text"
+                                    maxlength="255"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label
+                                    for="party-contact-name"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.contact_person">Contact Person</span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                <input
+                                    id="party-contact-name"
+                                    type="text"
+                                    maxlength="255"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    for="party-contact-phone"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.contact_phone">Contact Phone</span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                <input
+                                    id="party-contact-phone"
+                                    type="text"
+                                    maxlength="50"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    for="party-contact-email"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.contact_email">Contact Email</span>
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                <input
+                                    id="party-contact-email"
+                                    type="email"
+                                    maxlength="255"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+                        </div>
+                    </section>
+
+                    {{-- ===================================================
+                         Shared contact information
+                    ==================================================== --}}
+
+                    <section
+                        class="
+                            mt-8 border-t
+                            border-slate-100 pt-7
+                        "
+                    >
+                        <div class="mb-4">
+                            <h3
+                                class="
+                                    text-sm font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                <span data-i18n="parties.contact_identification">Contact & Identification</span>
+                            </h3>
+
+                            <p class="mt-1 text-xs text-slate-500">
+                                <span data-i18n="parties.contact_identification_description">Optional secondary contact and identification information.</span>
+                            </p>
+                        </div>
+
+                        <div
+                            class="
+                                grid gap-4
+                                md:grid-cols-2
+                            "
+                        >
+                            <div>
+                                <label
+                                    for="party-alternate-phone"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.alternate_phone">Alternate Phone</span>
+                                </label>
+
+                                <input
+                                    id="party-alternate-phone"
+                                    type="text"
+                                    maxlength="50"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    for="party-id-number"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.id_number">ID Number</span>
+                                </label>
+
+                                <input
+                                    id="party-id-number"
+                                    type="text"
+                                    maxlength="255"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    for="party-registration-number"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.registration_number">Registration Number</span>
+                                </label>
+
+                                <input
+                                    id="party-registration-number"
+                                    type="text"
+                                    maxlength="255"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    for="party-vat-tin"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.vat_tin">VAT / TIN</span>
+                                </label>
+
+                                <input
+                                    id="party-vat-tin"
+                                    type="text"
+                                    maxlength="255"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label
+                                    for="party-address"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.address">Address</span>
+                                </label>
+
+                                <textarea
+                                    id="party-address"
+                                    rows="2"
+                                    class="
+                                        w-full resize-y rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                ></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    {{-- ===================================================
+                         Roles
+                    ==================================================== --}}
+
+                    <section
+                        class="
+                            mt-8 border-t
+                            border-slate-100 pt-7
+                        "
+                    >
+                        <div class="mb-4">
+                            <h3
+                                class="
+                                    text-sm font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                <span data-i18n="parties.roles">Roles</span>
+                            </h3>
+
+                            <p class="mt-1 text-xs text-slate-500">
+                                <span data-i18n="parties.roles_description">A Party may perform several functions at the same time.</span>
+                            </p>
+                        </div>
+
+                        <div
+                            class="
+                                grid gap-3
+                                sm:grid-cols-3
+                            "
+                        >
+                            <label
+                                class="
+                                    flex cursor-pointer
+                                    items-center gap-3
+                                    rounded-xl border
+                                    border-slate-200
+                                    px-4 py-3
+                                "
+                            >
+                                <input
+                                    id="party-role-owner"
+                                    type="checkbox"
+                                    class="
+                                        h-4 w-4 rounded
+                                        border-slate-300
+                                        text-patrimoine-700
+                                        focus:ring-patrimoine-500
+                                    "
+                                >
+
+                                <span
+                                    class="
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.owner">Owner</span>
+                                </span>
+                            </label>
+
+                            <label
+                                class="
+                                    flex cursor-pointer
+                                    items-center gap-3
+                                    rounded-xl border
+                                    border-slate-200
+                                    px-4 py-3
+                                "
+                            >
+                                <input
+                                    id="party-role-tenant"
+                                    type="checkbox"
+                                    class="
+                                        h-4 w-4 rounded
+                                        border-slate-300
+                                        text-patrimoine-700
+                                        focus:ring-patrimoine-500
+                                    "
+                                >
+
+                                <span
+                                    class="
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.tenant">Tenant</span>
+                                </span>
+                            </label>
+
+                            <label
+                                class="
+                                    flex cursor-pointer
+                                    items-center gap-3
+                                    rounded-xl border
+                                    border-slate-200
+                                    px-4 py-3
+                                "
+                            >
+                                <input
+                                    id="party-role-agent"
+                                    type="checkbox"
+                                    class="
+                                        h-4 w-4 rounded
+                                        border-slate-300
+                                        text-patrimoine-700
+                                        focus:ring-patrimoine-500
+                                    "
+                                >
+
+                                <span
+                                    class="
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.agent">Agent</span>
+                                </span>
+                            </label>
+                        </div>
+                    </section>
+
+                    {{-- ===================================================
+                         Banking details
+                    ==================================================== --}}
+
+                    <section
+                        class="
+                            mt-8 border-t
+                            border-slate-100 pt-7
+                        "
+                    >
+                        <div class="mb-4">
+                            <h3
+                                class="
+                                    text-sm font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                <span data-i18n="parties.banking_details">Banking Details</span>
+                            </h3>
+
+                            <p class="mt-1 text-xs text-slate-500">
+                                <span data-i18n="parties.banking_description">Optional. Primarily used for Owners and Agents.</span>
+                            </p>
+                        </div>
+
+                        <div
+                            class="
+                                grid gap-4
+                                md:grid-cols-2
+                            "
+                        >
+                            <div>
+                                <label
+                                    for="party-bank-name"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.bank_name">Bank Name</span>
+                                </label>
+
+                                <input
+                                    id="party-bank-name"
+                                    type="text"
+                                    maxlength="255"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    for="party-bank-branch"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.bank_branch">Bank Branch</span>
+                                </label>
+
+                                <input
+                                    id="party-bank-branch"
+                                    type="text"
+                                    maxlength="255"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    for="party-bank-account-name"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.account_name">Account Name</span>
+                                </label>
+
+                                <input
+                                    id="party-bank-account-name"
+                                    type="text"
+                                    maxlength="255"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    for="party-bank-account-number"
+                                    class="
+                                        mb-1.5 block
+                                        text-sm font-medium
+                                        text-slate-700
+                                    "
+                                >
+                                    <span data-i18n="parties.account_number">Account Number</span>
+                                </label>
+
+                                <input
+                                    id="party-bank-account-number"
+                                    type="text"
+                                    maxlength="255"
+                                    class="
+                                        w-full rounded-lg
+                                        border border-slate-200
+                                        px-3.5 py-2.5
+                                        text-sm
+                                        outline-none transition
+                                        focus:border-patrimoine-500
+                                        focus:ring-2
+                                        focus:ring-patrimoine-100
+                                    "
+                                >
+                            </div>
+                        </div>
+                    </section>
+
+                    {{-- Notes --}}
+                    <section
+                        class="
+                            mt-8 border-t
+                            border-slate-100 pt-7
+                        "
+                    >
+                        <label
+                            for="party-notes"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="parties.notes">Notes</span>
+                        </label>
+
+                        <textarea
+                            id="party-notes"
+                            rows="4"
+                            data-i18n-placeholder="parties.notes_placeholder"
+                            placeholder="Optional internal notes"
+                            class="
+                                w-full resize-y rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm
+                                outline-none transition
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        ></textarea>
+                    </section>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                id="party-cancel-button"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="parties.cancel">Cancel</span>
+            </button>
+
+            <button
+                id="party-submit-button"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="parties.save">
+                    Save
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+@endsection

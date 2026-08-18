@@ -319,7 +319,7 @@ class BrowserLocalisationTest extends TestCase
                 false
             )
             ->assertSee(
-                'data-i18n="payments.allocate_funds"',
+                'data-i18n="actions.save"',
                 false
             )
             ->assertSee(

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Users — Patrimoine')
+@section('title', __('ui.users.title'))
 @section('title-i18n', 'users.title')
 
 @section('content')
@@ -25,31 +25,25 @@
                     text-patrimoine-700
                 "
             >
-                <span data-i18n="users.administration">
-                    Administration
-                </span>
+                <span data-i18n="users.administration">{{ __('ui.users.administration') }}</span>
             </div>
 
             <h1
                 class="
                     mt-2 text-2xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
-                <span data-i18n="users.heading">
-                    User Management
-                </span>
+                <span data-i18n="users.heading">{{ __('ui.users.heading') }}</span>
             </h1>
 
             <p
                 class="
                     mt-2 max-w-3xl
-                    text-sm leading-6 text-slate-500
+                    text-sm leading-6 text-[var(--pm-text-muted)]
                 "
             >
-                <span data-i18n="users.description">
-                    Manage application users, roles and account access.
-                </span>
+                <span data-i18n="users.description">{{ __('ui.users.description') }}</span>
             </p>
         </div>
 
@@ -65,9 +59,7 @@
                 hover:bg-patrimoine-900
             "
         >
-            <span data-i18n="users.add_user">
-                Add User
-            </span>
+            <span data-i18n="users.add_user">{{ __('ui.users.add_user') }}</span>
         </button>
     </div>
 
@@ -96,14 +88,14 @@
     <section
         class="
             mt-7 rounded-xl
-            border border-slate-200
-            bg-white
+            border border-[var(--pm-border)]
+            bg-[var(--pm-surface)]
         "
     >
         <div
             class="
                 grid gap-4 border-b
-                border-slate-200
+                border-[var(--pm-border)]
                 p-5
                 md:grid-cols-3
             "
@@ -114,24 +106,22 @@
                     class="
                         mb-1.5 block
                         text-xs font-medium
-                        text-slate-600
+                        text-[var(--pm-text-muted)]
                     "
                 >
-                    <span data-i18n="users.search">
-                        Search
-                    </span>
+                    <span data-i18n="users.search">{{ __('ui.users.search') }}</span>
                 </label>
 
                 <input
                     id="users-search"
                     type="search"
                     data-i18n-placeholder="users.search_placeholder"
-                    placeholder="Search name, email or phone..."
+                    placeholder="{{ __('ui.users.search_placeholder') }}"
                     class="
                         w-full rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2.5
-                        text-sm text-slate-900
+                        border border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2.5
+                        text-sm text-[var(--pm-text)]
                         outline-none transition
                         focus:border-patrimoine-500
                         focus:ring-2
@@ -146,35 +136,25 @@
                     class="
                         mb-1.5 block
                         text-xs font-medium
-                        text-slate-600
+                        text-[var(--pm-text-muted)]
                     "
                 >
-                    <span data-i18n="users.role">
-                        Role
-                    </span>
+                    <span data-i18n="users.role">{{ __('ui.users.role') }}</span>
                 </label>
 
                 <select
                     id="users-role-filter"
                     class="
                         w-full rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2.5
-                        text-sm text-slate-900
+                        border border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2.5
+                        text-sm text-[var(--pm-text)]
                     "
                 >
-                    <option value="" data-i18n="users.all_roles">
-                        All roles
-                    </option>
-                    <option value="administrator" data-i18n="roles.administrator">
-                        Administrator
-                    </option>
-                    <option value="property_manager" data-i18n="roles.property_manager">
-                        Property Manager
-                    </option>
-                    <option value="viewer" data-i18n="roles.viewer">
-                        Viewer
-                    </option>
+                    <option value="" data-i18n="users.all_roles">{{ __('ui.users.all_roles') }}</option>
+                    <option value="administrator" data-i18n="roles.administrator">{{ __('ui.roles.administrator') }}</option>
+                    <option value="property_manager" data-i18n="roles.property_manager">{{ __('ui.roles.property_manager') }}</option>
+                    <option value="viewer" data-i18n="roles.viewer">{{ __('ui.roles.viewer') }}</option>
                 </select>
             </div>
 
@@ -184,49 +164,39 @@
                     class="
                         mb-1.5 block
                         text-xs font-medium
-                        text-slate-600
+                        text-[var(--pm-text-muted)]
                     "
                 >
-                    <span data-i18n="users.status">
-                        Status
-                    </span>
+                    <span data-i18n="users.status">{{ __('ui.users.status') }}</span>
                 </label>
 
                 <select
                     id="users-status-filter"
                     class="
                         w-full rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2.5
-                        text-sm text-slate-900
+                        border border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2.5
+                        text-sm text-[var(--pm-text)]
                     "
                 >
-                    <option value="" data-i18n="users.all_statuses">
-                        All statuses
-                    </option>
-                    <option value="1" data-i18n="users.active">
-                        Active
-                    </option>
-                    <option value="0" data-i18n="users.inactive">
-                        Inactive
-                    </option>
+                    <option value="" data-i18n="users.all_statuses">{{ __('ui.users.all_statuses') }}</option>
+                    <option value="1" data-i18n="users.active">{{ __('ui.users.active') }}</option>
+                    <option value="0" data-i18n="users.inactive">{{ __('ui.users.inactive') }}</option>
                 </select>
             </div>
         </div>
 
         <div
             id="users-list"
-            class="divide-y divide-slate-100"
+            class="divide-y divide-[var(--pm-border)]"
         >
             <div
                 class="
                     px-5 py-12 text-center
-                    text-sm text-slate-400
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
-                <span data-i18n="users.loading">
-                    Loading users...
-                </span>
+                <span data-i18n="users.loading">{{ __('ui.users.loading') }}</span>
             </div>
         </div>
 
@@ -234,7 +204,7 @@
             id="users-pagination"
             class="
                 hidden border-t
-                border-slate-200
+                border-[var(--pm-border)]
                 px-5 py-4
             "
         ></div>
@@ -255,15 +225,11 @@
         close-label-key="users.close"
     >
         <x-slot:title>
-            <span data-i18n="users.add_user">
-                Add User
-            </span>
+            <span data-i18n="users.add_user">{{ __('ui.users.add_user') }}</span>
         </x-slot:title>
 
         <x-slot:description>
-            <span data-i18n="users.create_description">
-                Create an application user and send a secure password-setup invitation.
-            </span>
+            <span data-i18n="users.create_description">{{ __('ui.users.create_description') }}</span>
         </x-slot:description>
     </x-drawer-header>
 
@@ -297,9 +263,7 @@
                         for="user-name"
                         class="pm-field-label"
                     >
-                        <span data-i18n="users.name">
-                            Name
-                        </span>
+                        <span data-i18n="users.name">{{ __('ui.users.name') }}</span>
                     </label>
 
                     <input
@@ -316,9 +280,7 @@
                         for="user-email"
                         class="pm-field-label"
                     >
-                        <span data-i18n="users.email">
-                            Email
-                        </span>
+                        <span data-i18n="users.email">{{ __('ui.users.email') }}</span>
                     </label>
 
                     <input
@@ -335,9 +297,7 @@
                         for="user-phone"
                         class="pm-field-label"
                     >
-                        <span data-i18n="users.phone">
-                            Phone
-                        </span>
+                        <span data-i18n="users.phone">{{ __('ui.users.phone') }}</span>
                     </label>
 
                     <input
@@ -429,9 +389,7 @@
                 type="button"
                 class="pm-button-secondary"
             >
-                <span data-i18n="users.cancel">
-                    Cancel
-                </span>
+                <span data-i18n="users.cancel">{{ __('ui.users.cancel') }}</span>
             </button>
 
             <button
@@ -440,7 +398,7 @@
                 class="pm-button-primary"
                 data-i18n="actions.save"
             >
-                Save
+                {{ __('ui.actions.save') }}
             </button>
         </x-drawer-footer>
     </form>

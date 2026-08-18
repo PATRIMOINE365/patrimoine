@@ -235,8 +235,42 @@ export async function parseJsonResponse(
 |
 */
 
+const PRESENTATION_LANGUAGE_STORAGE_KEY =
+    'patrimoine.presentation.language';
+
+/**
+ * Return the last organisation language successfully confirmed by the
+ * public presentation endpoint.
+ *
+ * This cache affects first paint only. The endpoint remains authoritative
+ * and refreshes the value during every new document load.
+ *
+ * @returns {'en'|'fr'}
+ */
+function cachedPresentationLanguage() {
+    try {
+        const language =
+            window.localStorage.getItem(
+                PRESENTATION_LANGUAGE_STORAGE_KEY
+            );
+
+        if (
+            language === 'en'
+            || language === 'fr'
+        ) {
+            return language;
+        }
+    } catch {
+        /*
+         * Browser storage restrictions are non-fatal.
+         */
+    }
+
+    return 'en';
+}
+
 const DEFAULT_PRESENTATION_CONFIGURATION = {
-    language: 'en',
+    language: cachedPresentationLanguage(),
     currency: 'GHS',
     locale: 'en',
     browser_locale: 'en-GB',
@@ -327,6 +361,34 @@ export async function loadPresentationConfiguration() {
                             ),
                         },
                     };
+
+                    const confirmedLanguage =
+                        presentationConfiguration
+                            .language;
+
+                    if (
+                        confirmedLanguage === 'en'
+                        || confirmedLanguage === 'fr'
+                    ) {
+                        try {
+                            window.localStorage.setItem(
+                                PRESENTATION_LANGUAGE_STORAGE_KEY,
+                                confirmedLanguage
+                            );
+                        } catch {
+                            /*
+                             * Storage restrictions must not affect
+                             * presentation loading.
+                             */
+                        }
+
+                        document.documentElement.lang =
+                            confirmedLanguage;
+
+                        document.documentElement.dataset
+                            .presentationLanguage =
+                            confirmedLanguage;
+                    }
 
                     return presentationConfiguration;
                 }
@@ -490,6 +552,9 @@ export function applyTranslations() {
                 );
         }
     }
+
+    document.documentElement.dataset.presentationLanguage =
+        language;
 }
 
 /*
@@ -703,7 +768,25 @@ export function formatDate(
     const year =
         date.getFullYear();
 
-    return `${day}-${month}-${year}`;
+    const locale =
+        String(
+            presentationConfiguration.browser_locale
+            || 'en-GB'
+        ).toLowerCase();
+
+    /*
+     * Patrimoine date presentation standard:
+     *
+     * French:  DD-MM-YYYY
+     * English: DD/MM/YYYY
+     *
+     * This applies to normal business dates only.
+     * Activity Log timestamps retain their dedicated
+     * locale-aware date-and-time representation.
+     */
+    return locale.startsWith('fr')
+        ? `${day}-${month}-${year}`
+        : `${day}/${month}/${year}`;
 }
 
 /**

@@ -1,0 +1,77 @@
+{{--
+|--------------------------------------------------------------------------
+| Patrimoine Presentation Language Bootstrap
+|--------------------------------------------------------------------------
+|
+| Runs synchronously in <head>, before the application paints.
+|
+| The organisation language itself remains authoritative from
+| /api/presentation-config. The browser stores only the last successfully
+| confirmed language so a new document can avoid briefly painting the
+| English Blade fallback while the presentation endpoint is loading.
+|
+--}}
+
+<script>
+    (() => {
+        const storageKey =
+            'patrimoine.presentation.language';
+
+        let language =
+            'en';
+
+        try {
+            const storedLanguage =
+                window.localStorage.getItem(
+                    storageKey
+                );
+
+            if (
+                storedLanguage === 'en'
+                || storedLanguage === 'fr'
+            ) {
+                language =
+                    storedLanguage;
+            }
+        } catch (error) {
+            /*
+             * Storage restrictions must never prevent rendering.
+             */
+        }
+
+        document.documentElement.lang =
+            language;
+
+        document.documentElement.dataset.presentationLanguage =
+            language;
+    })();
+</script>
+
+<style>
+    /*
+     * Blade deliberately contains English compatibility fallbacks.
+     *
+     * When we already know that this organisation uses French, retain the
+     * complete layout geometry but conceal those fallback strings until
+     * applyTranslations() has replaced them.
+     *
+     * visibility:hidden preserves element dimensions, avoiding navigation
+     * layout shifts and avoiding the blank-page behaviour fixed earlier.
+     */
+    html[data-presentation-language="fr"]
+    :not([data-i18n-ready="true"])
+    [data-i18n] {
+        visibility: hidden;
+    }
+
+    /*
+     * Placeholder text is not wrapped by a data-i18n element, so conceal
+     * only the placeholder itself. User-entered control values stay visible.
+     */
+    html[data-presentation-language="fr"]
+    :not([data-i18n-ready="true"])
+    [data-i18n-placeholder]::placeholder {
+        color: transparent !important;
+        opacity: 0 !important;
+    }
+</style>

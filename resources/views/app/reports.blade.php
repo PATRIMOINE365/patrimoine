@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Reports — Patrimoine')
+@section('title', __('ui.reports.title'))
 @section('title-i18n', 'reports.title')
 
 @section('content')
 
-<div class="mx-auto max-w-[1600px]">
+<div class="pm-reports-page mx-auto max-w-[1600px]">
 
     {{-- ============================================================
          Page Header
@@ -24,7 +24,7 @@
                     text-patrimoine-700
                 "
             >
-                <span data-i18n="reports.finance">Finance</span>
+                <span data-i18n="reports.finance">{{ __('ui.reports.finance') }}</span>
             </p>
 
             <h1
@@ -33,11 +33,11 @@
                     tracking-tight text-slate-950
                 "
             >
-                <span data-i18n="reports.heading">Reports</span>
+                <span data-i18n="reports.heading">{{ __('ui.reports.heading') }}</span>
             </h1>
 
             <p class="mt-2 text-sm text-slate-500">
-                <span data-i18n="reports.page_description">Review financial and operational reports across owners, tenants and properties.</span>
+                <span data-i18n="reports.page_description">{{ __('ui.reports.page_description') }}</span>
             </p>
         </div>
     </div>
@@ -67,6 +67,7 @@
 
         <aside
             class="
+                pm-reports-controls
                 self-start rounded-xl
                 border border-slate-200
                 bg-white shadow-sm
@@ -84,11 +85,11 @@
                         text-slate-950
                     "
                 >
-                    <span data-i18n="reports.report_type">Report Type</span>
+                    <span data-i18n="reports.report_type">{{ __('ui.reports.report_type') }}</span>
                 </h2>
 
                 <p class="mt-1 text-xs text-slate-500">
-                    <span data-i18n="reports.report_type_description">Select the report you want to review.</span>
+                    <span data-i18n="reports.report_type_description">{{ __('ui.reports.report_type_description') }}</span>
                 </p>
             </div>
 
@@ -109,7 +110,7 @@
                 >
                     <div class="min-w-0">
                         <div class="text-sm font-semibold">
-                            <span data-i18n="reports.managing_organisation">Managing Organisation</span>
+                            <span data-i18n="reports.managing_organisation">{{ __('ui.reports.managing_organisation') }}</span>
                         </div>
 
                         <div
@@ -118,7 +119,7 @@
                                 text-slate-500
                             "
                         >
-                            <span data-i18n="reports.managing_organisation_summary">Portfolio-wide operational and financial summary.</span>
+                            <span data-i18n="reports.managing_organisation_summary">{{ __('ui.reports.managing_organisation_summary') }}</span>
                         </div>
                     </div>
                 </button>
@@ -137,7 +138,7 @@
                 >
                     <div class="min-w-0">
                         <div class="text-sm font-semibold">
-                            <span data-i18n="reports.owner_report">Owner Report</span>
+                            <span data-i18n="reports.owner_report">{{ __('ui.reports.owner_report') }}</span>
                         </div>
 
                         <div
@@ -146,7 +147,7 @@
                                 text-slate-500
                             "
                         >
-                            <span data-i18n="reports.owner_report_summary">Owner balance, credits, debits and ledger history.</span>
+                            <span data-i18n="reports.owner_report_summary">{{ __('ui.reports.owner_report_summary') }}</span>
                         </div>
                     </div>
                 </button>
@@ -165,7 +166,7 @@
                 >
                     <div class="min-w-0">
                         <div class="text-sm font-semibold">
-                            <span data-i18n="reports.building_report">Building Report</span>
+                            <span data-i18n="reports.building_report">{{ __('ui.reports.building_report') }}</span>
                         </div>
 
                         <div
@@ -174,7 +175,7 @@
                                 text-slate-500
                             "
                         >
-                            <span data-i18n="reports.building_report_summary">Billing, collections, expenses and ownership.</span>
+                            <span data-i18n="reports.building_report_summary">{{ __('ui.reports.building_report_summary') }}</span>
                         </div>
                     </div>
                 </button>
@@ -193,7 +194,7 @@
                 >
                     <div class="min-w-0">
                         <div class="text-sm font-semibold">
-                            <span data-i18n="reports.unit_report">Unit Report</span>
+                            <span data-i18n="reports.unit_report">{{ __('ui.reports.unit_report') }}</span>
                         </div>
 
                         <div
@@ -202,7 +203,7 @@
                                 text-slate-500
                             "
                         >
-                            <span data-i18n="reports.unit_report_summary">Lease, billing and collection history for one Unit.</span>
+                            <span data-i18n="reports.unit_report_summary">{{ __('ui.reports.unit_report_summary') }}</span>
                         </div>
                     </div>
                 </button>
@@ -221,7 +222,7 @@
                 >
                     <div class="min-w-0">
                         <div class="text-sm font-semibold">
-                            <span data-i18n="reports.tenant_statement">Tenant Statement</span>
+                            <span data-i18n="reports.tenant_statement">{{ __('ui.reports.tenant_statement') }}</span>
                         </div>
 
                         <div
@@ -230,7 +231,7 @@
                                 text-slate-500
                             "
                         >
-                            <span data-i18n="reports.tenant_statement_summary">Tenant billing, payments and held funds.</span>
+                            <span data-i18n="reports.tenant_statement_summary">{{ __('ui.reports.tenant_statement_summary') }}</span>
                         </div>
                     </div>
                 </button>
@@ -258,7 +259,7 @@
                         text-slate-700
                     "
                 >
-                    <span data-i18n="reports.search">Search</span>
+                    <span data-i18n="reports.search">{{ __('ui.reports.search') }}</span>
                 </label>
 
                 <div class="relative">
@@ -267,9 +268,9 @@
                         id="report-subject-search"
                         type="search"
                         autocomplete="off"
-                        placeholder="Search..."
-                        data-i18n-placeholder="reports.search_placeholder"
+                        placeholder="{{ __('ui.reports.search_placeholder') }}" data-i18n-placeholder="reports.search_placeholder"
                         class="
+                            pm-input
                             w-full rounded-lg
                             border border-slate-200
                             px-3.5 py-2.5
@@ -344,7 +345,7 @@
                                 hover:text-patrimoine-950
                             "
                         >
-                            <span data-i18n="reports.change">Change</span>
+                            <span data-i18n="reports.change">{{ __('ui.reports.change') }}</span>
                         </button>
                     </div>
                 </div>
@@ -361,11 +362,11 @@
                 "
             >
                 <div class="text-sm font-medium text-slate-700">
-                    <span data-i18n="reports.reporting_period">Reporting Period</span>
+                    <span data-i18n="reports.reporting_period">{{ __('ui.reports.reporting_period') }}</span>
                 </div>
 
                 <p class="mt-1 text-xs text-slate-500">
-                    <span data-i18n="reports.period_description">Leave dates empty to include all available history.</span>
+                    <span data-i18n="reports.period_description">{{ __('ui.reports.period_description') }}</span>
                 </p>
 
                 <div class="mt-4 space-y-3">
@@ -379,22 +380,75 @@
                                 text-slate-600
                             "
                         >
-                            <span data-i18n="reports.from">From</span>
+                            <span data-i18n="reports.from">{{ __('ui.reports.from') }}</span>
                         </label>
 
-                        <input
-                            id="report-from"
-                            type="date"
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                px-3 py-2.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
-                        >
+                        <div class="relative">
+                            <input
+                                id="report-from"
+                                type="text"
+                                inputmode="numeric"
+                                placeholder="DD-MM-YYYY"
+                                maxlength="10"
+                                autocomplete="off"
+                                data-report-date-input
+                                class="
+                                    pm-input
+                                    w-full rounded-lg
+                                    border border-slate-200
+                                    py-2.5 pl-3 pr-11
+                                    text-sm outline-none
+                                    focus:border-patrimoine-500
+                                    focus:ring-2
+                                    focus:ring-patrimoine-100
+                                "
+                            >
+
+                            <button
+                                type="button"
+                                data-report-date-picker="report-from"
+                                aria-label="Select date"
+                                class="
+                                    absolute inset-y-0 right-0
+                                    flex w-10 items-center
+                                    justify-center
+                                    text-slate-400
+                                    transition
+                                    hover:text-slate-700
+                                "
+                            >
+                                <svg
+                                    class="h-4 w-4"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <rect
+                                        x="3"
+                                        y="5"
+                                        width="18"
+                                        height="16"
+                                        rx="2"
+                                    />
+                                    <path d="M16 3v4"/>
+                                    <path d="M8 3v4"/>
+                                    <path d="M3 11h18"/>
+                                </svg>
+                            </button>
+
+                            <input
+                                id="report-from-picker"
+                                type="date"
+                                tabindex="-1"
+                                aria-hidden="true"
+                                class="
+                                    pointer-events-none
+                                    absolute h-px w-px
+                                    overflow-hidden opacity-0
+                                "
+                            >
+                        </div>
                     </div>
 
                     <div>
@@ -406,22 +460,75 @@
                                 text-slate-600
                             "
                         >
-                            <span data-i18n="reports.to">To</span>
+                            <span data-i18n="reports.to">{{ __('ui.reports.to') }}</span>
                         </label>
 
-                        <input
-                            id="report-to"
-                            type="date"
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                px-3 py-2.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
-                        >
+                        <div class="relative">
+                            <input
+                                id="report-to"
+                                type="text"
+                                inputmode="numeric"
+                                placeholder="DD-MM-YYYY"
+                                maxlength="10"
+                                autocomplete="off"
+                                data-report-date-input
+                                class="
+                                    pm-input
+                                    w-full rounded-lg
+                                    border border-slate-200
+                                    py-2.5 pl-3 pr-11
+                                    text-sm outline-none
+                                    focus:border-patrimoine-500
+                                    focus:ring-2
+                                    focus:ring-patrimoine-100
+                                "
+                            >
+
+                            <button
+                                type="button"
+                                data-report-date-picker="report-to"
+                                aria-label="Select date"
+                                class="
+                                    absolute inset-y-0 right-0
+                                    flex w-10 items-center
+                                    justify-center
+                                    text-slate-400
+                                    transition
+                                    hover:text-slate-700
+                                "
+                            >
+                                <svg
+                                    class="h-4 w-4"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <rect
+                                        x="3"
+                                        y="5"
+                                        width="18"
+                                        height="16"
+                                        rx="2"
+                                    />
+                                    <path d="M16 3v4"/>
+                                    <path d="M8 3v4"/>
+                                    <path d="M3 11h18"/>
+                                </svg>
+                            </button>
+
+                            <input
+                                id="report-to-picker"
+                                type="date"
+                                tabindex="-1"
+                                aria-hidden="true"
+                                class="
+                                    pointer-events-none
+                                    absolute h-px w-px
+                                    overflow-hidden opacity-0
+                                "
+                            >
+                        </div>
                     </div>
 
                 </div>
@@ -430,18 +537,11 @@
                     id="run-report-button"
                     type="button"
                     class="
-                        mt-4 w-full rounded-lg
-                        bg-patrimoine-950
-                        px-4 py-2.5
-                        text-sm font-medium
-                        text-white shadow-sm
-                        transition
-                        hover:bg-patrimoine-900
-                        disabled:cursor-not-allowed
-                        disabled:opacity-50
+                        pm-button-primary
+                        mt-4 w-full
                     "
                 >
-                    <span data-i18n="reports.run_report">Run Report</span>
+                    <span data-i18n="reports.run_report">{{ __('ui.reports.run_report') }}</span>
                 </button>
             </div>
         </aside>
@@ -452,6 +552,7 @@
 
         <section
             class="
+                pm-reports-output-shell
                 min-w-0 overflow-hidden
                 rounded-xl border
                 border-slate-200
@@ -478,7 +579,7 @@
                             text-slate-950
                         "
                     >
-                        <span data-i18n="reports.managing_organisation_report">Managing Organisation Report</span>
+                        <span data-i18n="reports.managing_organisation_report">{{ __('ui.reports.managing_organisation_report') }}</span>
                     </h2>
 
                     <div
@@ -488,7 +589,7 @@
                             text-slate-500
                         "
                     >
-                        <span data-i18n="reports.managing_organisation_description">Portfolio-wide financial and operational report.</span>
+                        <span data-i18n="reports.managing_organisation_description">{{ __('ui.reports.managing_organisation_description') }}</span>
                     </div>
                 </div>
 
@@ -501,40 +602,24 @@
                     <button
                         id="report-pdf-button"
                         type="button"
-                        class="
-                            rounded-lg border
-                            border-slate-200
-                            bg-white px-3.5 py-2.5
-                            text-sm font-medium
-                            text-slate-700
-                            transition
-                            hover:bg-slate-50
-                        "
+                        class="pm-button-secondary"
                     >
-                        <span data-i18n="reports.pdf">PDF</span>
+                        <span data-i18n="reports.pdf">{{ __('ui.reports.pdf') }}</span>
                     </button>
 
                     <button
                         id="report-csv-button"
                         type="button"
-                        class="
-                            rounded-lg border
-                            border-slate-200
-                            bg-white px-3.5 py-2.5
-                            text-sm font-medium
-                            text-slate-700
-                            transition
-                            hover:bg-slate-50
-                        "
+                        class="pm-button-secondary"
                     >
-                        <span data-i18n="reports.csv">CSV</span>
+                        <span data-i18n="reports.csv">{{ __('ui.reports.csv') }}</span>
                     </button>
                 </div>
             </div>
 
             <div
                 id="report-output"
-                class="p-6"
+                class="pm-reports-output p-6"
             >
                 <div
                     class="
@@ -548,7 +633,7 @@
                                 text-sm text-slate-500
                             "
                         >
-                            <span data-i18n="reports.initial_prompt">Select a report type and run the report.</span>
+                            <span data-i18n="reports.initial_prompt">{{ __('ui.reports.initial_prompt') }}</span>
                         </div>
                     </div>
                 </div>

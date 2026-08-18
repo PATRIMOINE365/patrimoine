@@ -21,6 +21,7 @@
         'pm-drawer fixed inset-0 z-[70] flex',
     ]) }}
     aria-hidden="true"
+    hidden
 >
     <div
         @if($backdropId)

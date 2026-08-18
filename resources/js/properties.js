@@ -1519,10 +1519,10 @@ function initializePropertyCreation() {
         (event) => {
             if (
                 event.key === 'Escape'
-                && ! modal
+                && modal
                     .classList
                     .contains(
-                        'hidden'
+                        'pm-drawer-active'
                     )
             ) {
                 closePropertyModal();
@@ -1548,12 +1548,12 @@ function configurePropertyModal(mode) {
 
     const title =
         document.getElementById(
-            'property-modal-title'
+            'property-modal-title-text'
         );
 
     const description =
         document.getElementById(
-            'property-modal-description'
+            'property-modal-description-text'
         );
 
     const unitsSection =
@@ -1600,13 +1600,9 @@ function configurePropertyModal(mode) {
 
     if (submitButton) {
         submitButton.textContent =
-            editing
-                ? translate(
-                    'properties.save_changes'
-                )
-                : translate(
-                    'properties.create_property'
-                );
+            translate(
+                'properties.save'
+            );
     }
 }
 
@@ -1737,26 +1733,45 @@ async function openEditPropertyModal(
  * Make the shared property modal visible.
  */
 function showPropertyModal() {
-    const modal =
+    const drawer =
         document.getElementById(
             'property-modal'
         );
 
-    if (! modal) {
+    if (! drawer) {
         return;
     }
 
-    modal.classList.remove(
+    drawer.classList.remove(
+        'pm-drawer-open',
+        'pm-drawer-closing'
+    );
+
+    drawer.removeAttribute(
         'hidden'
     );
 
-    modal.setAttribute(
+    drawer.classList.add(
+        'pm-drawer-active'
+    );
+
+    drawer.setAttribute(
         'aria-hidden',
         'false'
     );
 
     document.body.classList.add(
         'overflow-hidden'
+    );
+
+    /*
+     * Force the active drawer state to render before applying the open
+     * transition. This matches the working Owner drawer lifecycle.
+     */
+    void drawer.offsetWidth;
+
+    drawer.classList.add(
+        'pm-drawer-open'
     );
 }
 
@@ -1852,35 +1867,49 @@ function populatePropertyForm(
  * Close and reset the Property modal.
  */
 function closePropertyModal() {
-    const modal =
+    const drawer =
         document.getElementById(
             'property-modal'
         );
 
-    if (! modal) {
+    if (! drawer) {
         return;
     }
 
-    modal.classList.add(
-        'hidden'
+    drawer.classList.remove(
+        'pm-drawer-open'
     );
 
-    modal.setAttribute(
+    drawer.classList.add(
+        'pm-drawer-closing'
+    );
+
+    drawer.setAttribute(
         'aria-hidden',
         'true'
     );
 
-    document.body.classList.remove(
-        'overflow-hidden'
-    );
+    window.setTimeout(
+        () => {
+            drawer.classList.remove(
+                'pm-drawer-active',
+                'pm-drawer-closing'
+            );
 
-    resetPropertyForm();
+            document.body.classList.remove(
+                'overflow-hidden'
+            );
 
-    editingPropertyId =
-        null;
+            resetPropertyForm();
 
-    configurePropertyModal(
-        'create'
+            editingPropertyId =
+                null;
+
+            configurePropertyModal(
+                'create'
+            );
+        },
+        220
     );
 }
 
@@ -2303,12 +2332,9 @@ function updateOwnershipTotal() {
         )}: ${normalized}%`;
 
     output.classList.remove(
-        'bg-slate-100',
-        'text-slate-600',
-        'bg-green-100',
-        'text-green-700',
-        'bg-red-100',
-        'text-red-700'
+        'pm-ownership-total-valid',
+        'pm-ownership-total-incomplete',
+        'pm-ownership-total-excess'
     );
 
     if (
@@ -2317,20 +2343,17 @@ function updateOwnershipTotal() {
         ) < 0.001
     ) {
         output.classList.add(
-            'bg-green-100',
-            'text-green-700'
+            'pm-ownership-total-valid'
         );
     } else if (
         total > 100
     ) {
         output.classList.add(
-            'bg-red-100',
-            'text-red-700'
+            'pm-ownership-total-excess'
         );
     } else {
         output.classList.add(
-            'bg-slate-100',
-            'text-slate-600'
+            'pm-ownership-total-incomplete'
         );
     }
 }
@@ -2855,13 +2878,9 @@ async function submitPropertyForm(
             false;
 
         submitButton.textContent =
-            editing
-                ? translate(
-                    'properties.save_changes'
-                )
-                : translate(
-                    'properties.create_property'
-                );
+            translate(
+                'properties.save'
+            );
     }
 }
 
@@ -3553,6 +3572,10 @@ function hideOwnerFormError() {
 |--------------------------------------------------------------------------
 */
 
+let existingUnitSlideCloseTimer =
+    null;
+
+
 /**
  * Initialize the shared Add/Edit Unit modal.
  */
@@ -3592,6 +3615,9 @@ function initializeExistingUnitCreation() {
             closeExistingUnitModal
         );
 
+    /*
+     * Keep the existing backdrop listener.
+     */
     document
         .getElementById(
             'existing-unit-modal-backdrop'
@@ -3600,6 +3626,30 @@ function initializeExistingUnitCreation() {
             'click',
             closeExistingUnitModal
         );
+
+    /*
+     * The legacy Unit modal has a full-screen positioning wrapper above
+     * the backdrop. Detect any click outside the actual right-side panel
+     * from the modal root as well.
+     */
+    modal.addEventListener(
+        'click',
+        (event) => {
+            const panel =
+                modal.querySelector(
+                    ':scope > div:not(#existing-unit-modal-backdrop) > div'
+                );
+
+            if (
+                panel
+                && ! panel.contains(
+                    event.target
+                )
+            ) {
+                closeExistingUnitModal();
+            }
+        }
+    );
 
     form.addEventListener(
         'submit',
@@ -3611,10 +3661,10 @@ function initializeExistingUnitCreation() {
         (event) => {
             if (
                 event.key === 'Escape'
-                && ! modal
+                && modal
                     .classList
                     .contains(
-                        'hidden'
+                        'existing-unit-slide-active'
                     )
             ) {
                 closeExistingUnitModal();
@@ -3721,8 +3771,33 @@ function openExistingUnitModal(
         );
     }
 
+    /*
+     * If a previous close animation was still pending, cancel it.
+     */
+    if (existingUnitSlideCloseTimer !== null) {
+        window.clearTimeout(
+            existingUnitSlideCloseTimer
+        );
+
+        existingUnitSlideCloseTimer =
+            null;
+    }
+
+    /*
+     * Expose the modal, but leave the panel translated off-screen.
+     */
+    modal.style.removeProperty(
+        'display'
+    );
+
     modal.classList.remove(
-        'hidden'
+        'hidden',
+        'existing-unit-slide-open',
+        'existing-unit-slide-closing'
+    );
+
+    modal.classList.add(
+        'existing-unit-slide-active'
     );
 
     modal.setAttribute(
@@ -3734,11 +3809,41 @@ function openExistingUnitModal(
         'overflow-hidden'
     );
 
-    document
-        .getElementById(
-            'existing-unit-name'
-        )
-        ?.focus();
+    const panel =
+        modal.querySelector(
+            ':scope > div:not(#existing-unit-modal-backdrop) > div'
+        );
+
+    /*
+     * Force the browser to render the translateX(100%) starting position
+     * before applying the open state.
+     */
+    if (panel) {
+        void panel.getBoundingClientRect();
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    modal.classList.add(
+                        'existing-unit-slide-open'
+                    );
+
+                    window.setTimeout(
+                        () => {
+                            document
+                                .getElementById(
+                                    'existing-unit-name'
+                                )
+                                ?.focus();
+                        },
+                        50
+                    );
+                }
+            );
+        }
+    );
 }
 
 /**
@@ -3817,13 +3922,9 @@ function configureExistingUnitModal(
 
     if (submitButton) {
         submitButton.textContent =
-            editing
-                ? translate(
-                    'properties.save_changes'
-                )
-                : translate(
-                    'properties.add_unit'
-                );
+            translate(
+                'properties.save'
+            );
     }
 }
 
@@ -3906,12 +4007,33 @@ function closeExistingUnitModal() {
             'existing-unit-form'
         );
 
-    if (! modal) {
+    if (
+        ! modal
+        || ! modal.classList.contains(
+            'existing-unit-slide-active'
+        )
+    ) {
         return;
     }
 
+    const panel =
+        modal.querySelector(
+            ':scope > div:not(#existing-unit-modal-backdrop) > div'
+        );
+
+    /*
+     * Begin the 800ms slide-out.
+     *
+     * CSS makes the closing root pointer-events:none immediately, so the
+     * underlying Properties workspace cannot be blocked while the visual
+     * transition is running.
+     */
+    modal.classList.remove(
+        'existing-unit-slide-open'
+    );
+
     modal.classList.add(
-        'hidden'
+        'existing-unit-slide-closing'
     );
 
     modal.setAttribute(
@@ -3919,31 +4041,129 @@ function closeExistingUnitModal() {
         'true'
     );
 
-    document.body.classList.remove(
-        'overflow-hidden'
-    );
-
-    form?.reset();
-
-    const buildingNameElement =
-        document.getElementById(
-            'existing-unit-building-name'
+    if (existingUnitSlideCloseTimer !== null) {
+        window.clearTimeout(
+            existingUnitSlideCloseTimer
         );
 
-    if (buildingNameElement) {
-        buildingNameElement.textContent =
-            '—';
+        existingUnitSlideCloseTimer =
+            null;
     }
 
-    existingUnitFormMode =
-        'create';
+    let cleanedUp =
+        false;
 
-    editingUnitId =
-        null;
+    const finishClose =
+        () => {
+            if (cleanedUp) {
+                return;
+            }
 
-    resetExistingUnitModalLabels();
+            cleanedUp =
+                true;
 
-    hideExistingUnitFormError();
+            if (existingUnitSlideCloseTimer !== null) {
+                window.clearTimeout(
+                    existingUnitSlideCloseTimer
+                );
+
+                existingUnitSlideCloseTimer =
+                    null;
+            }
+
+            panel?.removeEventListener(
+                'transitionend',
+                handleTransitionEnd
+            );
+
+            modal.classList.remove(
+                'existing-unit-slide-active',
+                'existing-unit-slide-open',
+                'existing-unit-slide-closing'
+            );
+
+            modal.classList.add(
+                'hidden'
+            );
+
+            /*
+             * Ensure this legacy full-screen root is completely removed
+             * from layout and hit-testing after the transition.
+             */
+            modal.style.setProperty(
+                'display',
+                'none',
+                'important'
+            );
+
+            const anotherDrawerOpen =
+                document.querySelector(
+                    '.pm-drawer.pm-drawer-active'
+                );
+
+            if (! anotherDrawerOpen) {
+                document.body.classList.remove(
+                    'overflow-hidden'
+                );
+            }
+
+            form?.reset();
+
+            const buildingNameElement =
+                document.getElementById(
+                    'existing-unit-building-name'
+                );
+
+            if (buildingNameElement) {
+                buildingNameElement.textContent =
+                    '—';
+            }
+
+            existingUnitFormMode =
+                'create';
+
+            editingUnitId =
+                null;
+
+            resetExistingUnitModalLabels();
+
+            hideExistingUnitFormError();
+        };
+
+    const handleTransitionEnd =
+        (event) => {
+            /*
+             * Ignore opacity transitions and unrelated descendants.
+             * We only care about completion of the panel transform.
+             */
+            if (
+                event.target !== panel
+                || event.propertyName !== 'transform'
+            ) {
+                return;
+            }
+
+            finishClose();
+        };
+
+    if (panel) {
+        panel.addEventListener(
+            'transitionend',
+            handleTransitionEnd
+        );
+    }
+
+    /*
+     * Safety fallback only.
+     *
+     * transitionend may not fire when reduced motion is enabled or if the
+     * browser interrupts the transition.
+     */
+    existingUnitSlideCloseTimer =
+        window.setTimeout(
+            finishClose,
+            900
+        );
 }
 
 /**
@@ -3982,7 +4202,7 @@ function resetExistingUnitModalLabels() {
     if (submitButton) {
         submitButton.textContent =
             translate(
-                'properties.add_unit'
+                'properties.save'
             );
     }
 }

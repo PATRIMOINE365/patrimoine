@@ -553,8 +553,9 @@ async function loadActivityLog(
     container.innerHTML = `
         <div
             class="
+                pm-activity-log-loading
                 px-5 py-12 text-center
-                text-sm text-[var(--pm-text-subtle)]
+                text-sm
             "
         >
             ${escapeHtml(
@@ -721,11 +722,10 @@ function activityRow(event) {
                     >
                         <span
                             class="
+                                pm-activity-action-badge
                                 rounded-full
-                                bg-patrimoine-50
                                 px-2.5 py-1
                                 text-xs font-medium
-                                text-patrimoine-700
                             "
                         >
                             ${escapeHtml(
@@ -740,11 +740,10 @@ function activityRow(event) {
                                 ? `
                                     <span
                                         class="
+                                            pm-activity-role-badge
                                             rounded-full
-                                            bg-[var(--pm-surface-muted)]
                                             px-2.5 py-1
                                             text-xs font-medium
-                                            text-[var(--pm-text-secondary)]
                                         "
                                     >
                                         ${escapeHtml(
@@ -811,12 +810,11 @@ function activityRow(event) {
                     type="button"
                     data-activity-log-id="${escapeHtml(event.id)}"
                     class="
+                        pm-activity-detail-button
                         shrink-0 rounded-lg
-                        border border-[var(--pm-border)]
-                        bg-[var(--pm-surface)] px-3 py-2
+                        border px-3 py-2
                         text-xs font-medium
-                        text-[var(--pm-text-secondary)]
-                        hover:bg-[var(--pm-hover)]
+                        transition
                     "
                 >
                     ${escapeHtml(
@@ -1392,6 +1390,10 @@ function showActivityModal() {
     modal.classList.remove(
         'pm-drawer-open',
         'pm-drawer-closing'
+    );
+
+    modal.removeAttribute(
+        'hidden'
     );
 
     modal.classList.add(

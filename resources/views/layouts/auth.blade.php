@@ -30,6 +30,8 @@
         href="/branding/favicon/apple-touch-icon.png"
     >
 
+    <x-presentation-language-bootstrap />
+
     <x-theme-bootstrap />
 
     @vite([
@@ -92,7 +94,7 @@
                     "
                 >
                     <span data-i18n="product.property_management">
-                        Property Management
+                        {{ __('ui.product.property_management') }}
                     </span>
                 </p>
 
@@ -103,7 +105,7 @@
                     "
                 >
                     <span data-i18n="login.hero_title">
-                        Your property portfolio, finances and tenants in one place.
+                        {{ __('ui.login.hero_title') }}
                     </span>
                 </h1>
 
@@ -114,9 +116,7 @@
                     "
                 >
                     <span data-i18n="login.hero_description">
-                        Manage buildings, leases, rent collections,
-                        owner funds and financial reporting from a
-                        single workspace.
+                        {{ __('ui.login.hero_description') }}
                     </span>
                 </p>
             </div>
@@ -128,7 +128,7 @@
                 "
             >
                 <span data-i18n="login.product_name">
-                    Patrimoine Property Management
+                    {{ __('ui.login.product_name') }}
                 </span>
             </div>
         </section>

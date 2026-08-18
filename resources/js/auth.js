@@ -373,6 +373,37 @@ export async function initializeAuthenticatedShell() {
  * @param {object} user
  */
 function renderCurrentUser(user) {
+    /*
+     * Cache only non-sensitive shell presentation identity.
+     *
+     * The authoritative user is still /api/auth/me. This cache exists
+     * solely to prevent generic placeholder identity from flashing during
+     * the next full-document navigation or refresh.
+     */
+    try {
+        window.sessionStorage.setItem(
+            'patrimoine.current_user',
+            JSON.stringify({
+                name:
+                    String(
+                        user.name
+                        || ''
+                    ),
+
+                role:
+                    String(
+                        user.role
+                        || ''
+                    ),
+            })
+        );
+    } catch {
+        /*
+         * Storage restrictions must never prevent authentication or shell
+         * rendering.
+         */
+    }
+
     const nameElement =
         document.getElementById(
             'sidebar-user-name'
@@ -773,6 +804,7 @@ function initializeShellControls() {
 
     syncThemeOptions();
 }
+
 
 /*
 |--------------------------------------------------------------------------

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard — Patrimoine')
+@section('title', __('ui.dashboard.title'))
 @section('title-i18n', 'dashboard.title')
 
 @section('content')
 
-<div class="mx-auto max-w-[1600px]">
+<div class="pm-dashboard-page mx-auto max-w-[1600px]">
 
     <div
         class="
@@ -21,7 +21,7 @@
                 "
             >
                 <span data-i18n="dashboard.overview">
-                    Overview
+                    {{ __('ui.dashboard.overview') }}
                 </span>
             </p>
 
@@ -32,13 +32,13 @@
                 "
             >
                 <span data-i18n="dashboard.heading">
-                    Dashboard
+                    {{ __('ui.dashboard.heading') }}
                 </span>
             </h1>
 
             <p class="mt-2 text-sm text-slate-500">
                 <span data-i18n="dashboard.description">
-                    Current portfolio and financial position.
+                    {{ __('ui.dashboard.description') }}
                 </span>
             </p>
         </div>
@@ -78,7 +78,7 @@
         >
             <div class="text-sm text-slate-500">
                 <span data-i18n="dashboard.buildings">
-                    Buildings
+                    {{ __('ui.dashboard.buildings') }}
                 </span>
             </div>
 
@@ -101,7 +101,7 @@
         >
             <div class="text-sm text-slate-500">
                 <span data-i18n="dashboard.total_units">
-                    Total Units
+                    {{ __('ui.dashboard.total_units') }}
                 </span>
             </div>
 
@@ -124,7 +124,7 @@
         >
             <div class="text-sm text-slate-500">
                 <span data-i18n="dashboard.occupied_units">
-                    Occupied Units
+                    {{ __('ui.dashboard.occupied_units') }}
                 </span>
             </div>
 
@@ -147,7 +147,7 @@
         >
             <div class="text-sm text-slate-500">
                 <span data-i18n="dashboard.vacant_units">
-                    Vacant Units
+                    {{ __('ui.dashboard.vacant_units') }}
                 </span>
             </div>
 
@@ -179,7 +179,7 @@
         >
             <div class="text-sm text-slate-500">
                 <span data-i18n="dashboard.rent_due">
-                    Rent Due
+                    {{ __('ui.dashboard.rent_due') }}
                 </span>
             </div>
 
@@ -202,7 +202,7 @@
         >
             <div class="text-sm text-slate-500">
                 <span data-i18n="dashboard.rent_overdue">
-                    Rent Overdue
+                    {{ __('ui.dashboard.rent_overdue') }}
                 </span>
             </div>
 
@@ -225,7 +225,7 @@
         >
             <div class="text-sm text-slate-500">
                 <span data-i18n="dashboard.collected_this_month">
-                    Collected This Month
+                    {{ __('ui.dashboard.collected_this_month') }}
                 </span>
             </div>
 
@@ -248,7 +248,7 @@
         >
             <div class="text-sm text-slate-500">
                 <span data-i18n="dashboard.owner_funds_held">
-                    Owner Funds Held
+                    {{ __('ui.dashboard.owner_funds_held') }}
                 </span>
             </div>
 
@@ -289,13 +289,13 @@
                     "
                 >
                     <span data-i18n="dashboard.overdue_rent">
-                        Overdue Rent
+                        {{ __('ui.dashboard.overdue_rent') }}
                     </span>
                 </h2>
 
                 <p class="mt-1 text-xs text-slate-500">
                     <span data-i18n="dashboard.overdue_description">
-                        Outstanding obligations requiring attention.
+                        {{ __('ui.dashboard.overdue_description') }}
                     </span>
                 </p>
             </div>
@@ -306,7 +306,7 @@
             >
                 <div class="text-sm text-slate-400">
                     <span data-i18n="dashboard.loading">
-                        Loading…
+                        {{ __('ui.dashboard.loading') }}
                     </span>
                 </div>
             </div>
@@ -331,13 +331,13 @@
                     "
                 >
                     <span data-i18n="dashboard.upcoming_rent">
-                        Upcoming Rent
+                        {{ __('ui.dashboard.upcoming_rent') }}
                     </span>
                 </h2>
 
                 <p class="mt-1 text-xs text-slate-500">
                     <span data-i18n="dashboard.upcoming_description">
-                        Rent obligations becoming due soon.
+                        {{ __('ui.dashboard.upcoming_description') }}
                     </span>
                 </p>
             </div>
@@ -348,7 +348,7 @@
             >
                 <div class="text-sm text-slate-400">
                     <span data-i18n="dashboard.loading">
-                        Loading…
+                        {{ __('ui.dashboard.loading') }}
                     </span>
                 </div>
             </div>

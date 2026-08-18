@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Settings — Patrimoine')
+@section('title', __('ui.settings.title'))
 @section('title-i18n', 'settings.title')
 
 @section('content')
@@ -26,9 +26,7 @@
                     text-patrimoine-700
                 "
             >
-                <span data-i18n="settings.administration">
-                    Administration
-                </span>
+                <span data-i18n="settings.administration">{{ __('ui.settings.administration') }}</span>
             </p>
 
             <h1
@@ -38,9 +36,7 @@
                     text-[var(--pm-text)]
                 "
             >
-                <span data-i18n="settings.heading">
-                    Settings
-                </span>
+                <span data-i18n="settings.heading">{{ __('ui.settings.heading') }}</span>
             </h1>
 
             <p
@@ -50,9 +46,7 @@
                     text-[var(--pm-text-muted)]
                 "
             >
-                <span data-i18n="settings.description">
-                    Configure the organisation operating this Patrimoine installation.
-                </span>
+                <span data-i18n="settings.description">{{ __('ui.settings.description') }}</span>
             </p>
         </div>
     </div>
@@ -89,12 +83,11 @@
                     text-[var(--pm-text)]
                 "
             >
-                <span data-i18n="settings.managing_organisation">Managing Organisation</span>
+                <span data-i18n="settings.managing_organisation">{{ __('ui.settings.managing_organisation') }}</span>
             </h2>
 
             <p class="mt-1 text-sm leading-6 text-[var(--pm-text-muted)]">
-                <span data-i18n="settings.managing_organisation_description">This organisation represents the company or entity managing
-                the property portfolio in this Patrimoine installation.</span>
+                <span data-i18n="settings.managing_organisation_description">{{ __('ui.settings.managing_organisation_description') }}</span>
             </p>
         </div>
 
@@ -110,7 +103,7 @@
                             text-slate-950
                         "
                     >
-                        <span data-i18n="settings.organisation_details">Organisation Details</span>
+                        <span data-i18n="settings.organisation_details">{{ __('ui.settings.organisation_details') }}</span>
                     </h3>
 
                     <div
@@ -128,7 +121,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.legal_name">Legal Name</span>
+                                <span data-i18n="settings.legal_name">{{ __('ui.settings.legal_name') }}</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -138,7 +131,7 @@
                                 required
                                 maxlength="255"
                                 data-i18n-placeholder="settings.legal_name_placeholder"
-                                placeholder="e.g. Apotica Company Limited"
+                                placeholder="{{ __('ui.settings.legal_name_placeholder') }}"
                                 class="
                                     w-full rounded-lg
                                     border border-slate-200
@@ -161,7 +154,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.address">Address</span>
+                                <span data-i18n="settings.address">{{ __('ui.settings.address') }}</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -170,7 +163,7 @@
                                 rows="2"
                                 required
                                 data-i18n-placeholder="settings.address_placeholder"
-                                placeholder="Organisation address"
+                                placeholder="{{ __('ui.settings.address_placeholder') }}"
                                 class="
                                     w-full resize-y rounded-lg
                                     border border-slate-200
@@ -193,7 +186,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.phone">Phone</span>
+                                <span data-i18n="settings.phone">{{ __('ui.settings.phone') }}</span>
                             </label>
 
                             <input
@@ -222,7 +215,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.alternate_phone">Alternate Phone</span>
+                                <span data-i18n="settings.alternate_phone">{{ __('ui.settings.alternate_phone') }}</span>
                             </label>
 
                             <input
@@ -251,7 +244,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.general_email">General Email</span>
+                                <span data-i18n="settings.general_email">{{ __('ui.settings.general_email') }}</span>
                             </label>
 
                             <input
@@ -281,7 +274,7 @@
                             text-slate-950
                         "
                     >
-                        <span data-i18n="settings.primary_contact">Primary Contact</span>
+                        <span data-i18n="settings.primary_contact">{{ __('ui.settings.primary_contact') }}</span>
                     </h3>
 
                     <div
@@ -299,7 +292,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.contact_person">Contact Person</span>
+                                <span data-i18n="settings.contact_person">{{ __('ui.settings.contact_person') }}</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -330,7 +323,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.contact_phone">Contact Phone</span>
+                                <span data-i18n="settings.contact_phone">{{ __('ui.settings.contact_phone') }}</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -361,7 +354,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.contact_email">Contact Email</span>
+                                <span data-i18n="settings.contact_email">{{ __('ui.settings.contact_email') }}</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -393,9 +386,7 @@
                             text-slate-950
                         "
                     >
-                        <span data-i18n="settings.registration">
-                            Registration
-                        </span>
+                        <span data-i18n="settings.registration">{{ __('ui.settings.registration') }}</span>
                     </h3>
 
                     <div
@@ -413,7 +404,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.registration_number">Registration Number</span>
+                                <span data-i18n="settings.registration_number">{{ __('ui.settings.registration_number') }}</span>
                             </label>
 
                             <input
@@ -441,7 +432,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.vat_tin">VAT / TIN</span>
+                                <span data-i18n="settings.vat_tin">{{ __('ui.settings.vat_tin') }}</span>
                             </label>
 
                             <input
@@ -470,12 +461,11 @@
                             text-slate-950
                         "
                     >
-                        <span data-i18n="settings.language_currency">Language & Currency</span>
+                        <span data-i18n="settings.language_currency">{{ __('ui.settings.language_currency') }}</span>
                     </h3>
 
                     <p class="mb-4 text-xs text-slate-500">
-                        <span data-i18n="settings.language_currency_description">These settings apply to the entire Managing Organisation.
-                        Language and currency are independent.</span>
+                        <span data-i18n="settings.language_currency_description">{{ __('ui.settings.language_currency_description') }}</span>
                     </p>
 
                     <div
@@ -493,9 +483,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.language">
-                                    Language
-                                </span>
+                                <span data-i18n="settings.language">{{ __('ui.settings.language') }}</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -520,14 +508,12 @@
                                     <option
                                         value="{{ $code }}"
                                         data-i18n="language.{{ $code }}"
-                                    >
-                                        {{ $definition['name'] ?? $code }}
-                                    </option>
+                                    >{{ __('ui.language.' . $code) }}</option>
                                 @endforeach
                             </select>
 
                             <p class="mt-1.5 text-xs text-slate-500">
-                                <span data-i18n="settings.language_help">Controls normal user-facing Patrimoine content.</span>
+                                <span data-i18n="settings.language_help">{{ __('ui.settings.language_help') }}</span>
                             </p>
                         </div>
 
@@ -540,9 +526,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.currency">
-                                    Currency
-                                </span>
+                                <span data-i18n="settings.currency">{{ __('ui.settings.currency') }}</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -571,8 +555,7 @@
                             </select>
 
                             <p class="mt-1.5 text-xs text-slate-500">
-                                <span data-i18n="settings.currency_help">Changes presentation only. Stored monetary
-                                values are never converted.</span>
+                                <span data-i18n="settings.currency_help">{{ __('ui.settings.currency_help') }}</span>
                             </p>
                         </div>
                     </div>
@@ -587,12 +570,11 @@
                             text-slate-950
                         "
                     >
-                        <span data-i18n="settings.financial_defaults">Financial Defaults</span>
+                        <span data-i18n="settings.financial_defaults">{{ __('ui.settings.financial_defaults') }}</span>
                     </h3>
 
                     <p class="mb-4 text-xs text-slate-500">
-                        <span data-i18n="settings.financial_defaults_description">Defaults apply to newly created records only.
-                        Existing leases and invoices keep their stored values.</span>
+                        <span data-i18n="settings.financial_defaults_description">{{ __('ui.settings.financial_defaults_description') }}</span>
                     </p>
 
                     <div
@@ -610,7 +592,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.default_vat_rate">Default VAT Rate %</span>
+                                <span data-i18n="settings.default_vat_rate">{{ __('ui.settings.default_vat_rate') }}</span>
 
                                 <x-field-help
                                     label="About Default VAT Rate"
@@ -653,7 +635,7 @@
                                     text-slate-500
                                 "
                             >
-                                <span data-i18n="settings.vat_starting_rate">Used as the starting VAT rate for new Leases.</span>
+                                <span data-i18n="settings.vat_starting_rate">{{ __('ui.settings.vat_starting_rate') }}</span>
                             </p>
                         </div>
                     </div>
@@ -671,11 +653,11 @@
                             text-slate-950
                         "
                     >
-                        <span data-i18n="settings.banking_details">Banking Details</span>
+                        <span data-i18n="settings.banking_details">{{ __('ui.settings.banking_details') }}</span>
                     </h3>
 
                     <p class="mb-4 text-xs text-slate-500">
-                        <span data-i18n="settings.optional">Optional.</span>
+                        <span data-i18n="settings.optional">{{ __('ui.settings.optional') }}</span>
                     </p>
 
                     <div
@@ -693,7 +675,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.bank_name">Bank Name</span>
+                                <span data-i18n="settings.bank_name">{{ __('ui.settings.bank_name') }}</span>
                             </label>
 
                             <input
@@ -721,7 +703,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.bank_branch">Bank Branch</span>
+                                <span data-i18n="settings.bank_branch">{{ __('ui.settings.bank_branch') }}</span>
                             </label>
 
                             <input
@@ -749,7 +731,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.account_name">Account Name</span>
+                                <span data-i18n="settings.account_name">{{ __('ui.settings.account_name') }}</span>
                             </label>
 
                             <input
@@ -777,7 +759,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="settings.account_number">Account Number</span>
+                                <span data-i18n="settings.account_number">{{ __('ui.settings.account_number') }}</span>
                             </label>
 
                             <input
@@ -808,9 +790,7 @@
                             text-slate-700
                         "
                     >
-                        <span data-i18n="settings.notes">
-                            Notes
-                        </span>
+                        <span data-i18n="settings.notes">{{ __('ui.settings.notes') }}</span>
                     </label>
 
                     <textarea
@@ -837,9 +817,7 @@
                         text-[var(--pm-text-muted)]
                     "
                 >
-                    <span data-i18n="settings.managing_organisation">
-                        Managing Organisation
-                    </span>
+                    <span data-i18n="settings.managing_organisation">{{ __('ui.settings.managing_organisation') }}</span>
                 </div>
 
                 <button
@@ -847,9 +825,7 @@
                     type="submit"
                     class="pm-button-primary"
                 >
-                    <span data-i18n="settings.save">
-                        Save Organisation
-                    </span>
+                    <span data-i18n="settings.save">{{ __('ui.settings.save') }}</span>
                 </button>
             </div>
 

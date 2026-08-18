@@ -212,7 +212,7 @@ async function loadUsers(
         <div
             class="
                 px-5 py-12 text-center
-                text-sm text-slate-400
+                text-sm text-[var(--pm-text-muted)]
             "
         >
             ${escapeHtml(
@@ -296,7 +296,7 @@ function renderUsers(payload) {
                 <div
                     class="
                         text-sm font-medium
-                        text-slate-900
+                        text-[var(--pm-text)]
                     "
                 >
                     ${escapeHtml(
@@ -309,7 +309,7 @@ function renderUsers(payload) {
                 <div
                     class="
                         mt-1 text-sm
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                 >
                     ${escapeHtml(
@@ -345,8 +345,8 @@ function userRow(user) {
 
     const statusClass =
         user.is_active
-            ? 'bg-emerald-50 text-emerald-700'
-            : 'bg-slate-100 text-slate-600';
+            ? 'bg-[var(--pm-success-background)] text-[var(--pm-success-text)]'
+            : 'bg-[var(--pm-surface-subtle)] text-[var(--pm-text-muted)]';
 
     const statusLabel =
         user.is_active
@@ -376,7 +376,7 @@ function userRow(user) {
                         <div
                             class="
                                 text-sm font-semibold
-                                text-slate-950
+                                text-[var(--pm-text)]
                             "
                         >
                             ${escapeHtml(
@@ -446,7 +446,7 @@ function userRow(user) {
                     <div
                         class="
                             mt-1.5 text-sm
-                            text-slate-600
+                            text-[var(--pm-text-muted)]
                         "
                     >
                         ${escapeHtml(
@@ -458,7 +458,7 @@ function userRow(user) {
                         class="
                             mt-2 flex flex-wrap
                             gap-x-5 gap-y-1
-                            text-xs text-slate-500
+                            text-xs text-[var(--pm-text-muted)]
                         "
                     >
                         <span>
@@ -518,11 +518,12 @@ function userRow(user) {
                                     data-user-id="${escapeHtml(user.id)}"
                                     class="
                                         rounded-lg border
-                                        border-slate-200
-                                        bg-white px-3 py-2
+                                        border-[var(--pm-border)]
+                                        bg-[var(--pm-surface)] px-3 py-2
                                         text-xs font-medium
-                                        text-slate-700
-                                        hover:bg-slate-50
+                                        text-[var(--pm-text)]
+                                        transition
+                                        hover:bg-[var(--pm-surface-subtle)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -539,11 +540,12 @@ function userRow(user) {
                                     data-user-id="${escapeHtml(user.id)}"
                                     class="
                                         rounded-lg border
-                                        border-slate-200
-                                        bg-white px-3 py-2
+                                        border-[var(--pm-border)]
+                                        bg-[var(--pm-surface)] px-3 py-2
                                         text-xs font-medium
-                                        text-slate-700
-                                        hover:bg-slate-50
+                                        text-[var(--pm-text)]
+                                        transition
+                                        hover:bg-[var(--pm-surface-subtle)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -564,11 +566,12 @@ function userRow(user) {
                                     data-user-id="${escapeHtml(user.id)}"
                                     class="
                                         rounded-lg border
-                                        border-red-200
-                                        bg-white px-3 py-2
+                                        border-[var(--pm-danger-border)]
+                                        bg-[var(--pm-surface)] px-3 py-2
                                         text-xs font-medium
-                                        text-red-600
-                                        hover:bg-red-50
+                                        text-[var(--pm-danger-text)]
+                                        transition
+                                        hover:bg-[var(--pm-danger-background)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -708,7 +711,7 @@ function renderUserPagination(
         >
             <div
                 class="
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -729,9 +732,12 @@ function renderUserPagination(
                     ${current <= 1 ? 'disabled' : ''}
                     class="
                         rounded-lg border
-                        border-slate-200
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)]
                         px-3 py-2
-                        text-sm text-slate-700
+                        text-sm text-[var(--pm-text)]
+                        transition
+                        hover:bg-[var(--pm-surface-subtle)]
                         disabled:opacity-40
                     "
                 >
@@ -748,9 +754,12 @@ function renderUserPagination(
                     ${current >= last ? 'disabled' : ''}
                     class="
                         rounded-lg border
-                        border-slate-200
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)]
                         px-3 py-2
-                        text-sm text-slate-700
+                        text-sm text-[var(--pm-text)]
+                        transition
+                        hover:bg-[var(--pm-surface-subtle)]
                         disabled:opacity-40
                     "
                 >
@@ -1064,6 +1073,10 @@ function showUserModal() {
     modal.classList.remove(
         'pm-drawer-open',
         'pm-drawer-closing'
+    );
+
+    modal.removeAttribute(
+        'hidden'
     );
 
     modal.classList.add(

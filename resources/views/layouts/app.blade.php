@@ -58,7 +58,69 @@
         })();
     </script>
 
+    <x-presentation-language-bootstrap />
+
+    <script>
+        (() => {
+            try {
+                const cachedUser =
+                    JSON.parse(
+                        window.sessionStorage.getItem(
+                            'patrimoine.current_user'
+                        )
+                        || 'null'
+                    );
+
+                if (
+                    cachedUser
+                    && typeof cachedUser === 'object'
+                ) {
+                    document.documentElement.dataset
+                        .cachedUserName =
+                            String(
+                                cachedUser.name
+                                || ''
+                            );
+
+                    document.documentElement.dataset
+                        .cachedUserRole =
+                            String(
+                                cachedUser.role
+                                || ''
+                            );
+                }
+            } catch (error) {
+                /*
+                 * Cached presentation identity is optional.
+                 */
+            }
+        })();
+    </script>
+
     <x-theme-bootstrap />
+
+    {{--
+        V1.0.4 Initial Paint Theme
+
+        The theme bootstrap above resolves data-theme synchronously before
+        Vite loads. Give the browser canvas the matching Patrimoine page
+        colour immediately so full-page navigation never exposes the
+        browser's default white background between documents.
+
+        These values intentionally mirror --pm-page in app.css. Runtime
+        styling remains controlled by the semantic theme variables.
+    --}}
+    <style>
+        html,
+        body {
+            background-color: #f7f8f7;
+        }
+
+        html[data-theme="dark"],
+        html[data-theme="dark"] body {
+            background-color: #0f1412;
+        }
+    </style>
 
     @vite([
         'resources/css/app.css',
@@ -68,8 +130,8 @@
 
 <body
     class="
-        min-h-screen bg-[#f7f8f7]
-        font-sans text-slate-900
+        min-h-screen bg-[var(--pm-page)]
+        font-sans text-[var(--pm-text)]
     "
     data-auth-required="true"
 >
@@ -138,7 +200,7 @@
                         "
                     >
                         <span data-i18n="product.property_management">
-                            Property Management
+                            {{ __('ui.product.property_management') }}
                         </span>
                     </div>
                 </div>
@@ -159,7 +221,7 @@
                     text-patrimoine-400
                 "
             >
-                <span data-i18n="navigation.workspace">Workspace</span>
+                <span data-i18n="navigation.workspace">{{ __('ui.navigation.workspace') }}</span>
             </p>
 
             <div class="space-y-1">
@@ -190,7 +252,7 @@
                         <rect x="14" y="14" width="7" height="7" rx="1"/>
                     </svg>
 
-                    <span data-i18n="navigation.dashboard">Dashboard</span>
+                    <span data-i18n="navigation.dashboard">{{ __('ui.navigation.dashboard') }}</span>
                 </a>
 
                 <a
@@ -221,7 +283,7 @@
                         <path d="M15 13h.01"/>
                     </svg>
 
-                    <span data-i18n="navigation.properties">Properties</span>
+                    <span data-i18n="navigation.properties">{{ __('ui.navigation.properties') }}</span>
                 </a>
 
                 <a
@@ -250,7 +312,7 @@
                         <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                     </svg>
 
-                    <span data-i18n="navigation.parties">Parties</span>
+                    <span data-i18n="navigation.parties">{{ __('ui.navigation.parties') }}</span>
                 </a>
 
 
@@ -280,7 +342,7 @@
                         <line x1="8" y1="17" x2="16" y2="17"/>
                     </svg>
 
-                    <span data-i18n="navigation.leases">Leases</span>
+                    <span data-i18n="navigation.leases">{{ __('ui.navigation.leases') }}</span>
                 </a>
 
 
@@ -311,7 +373,7 @@
                         <line x1="2" y1="10" x2="22" y2="10"/>
                     </svg>
 
-                    <span data-i18n="navigation.payments">Payments</span>
+                    <span data-i18n="navigation.payments">{{ __('ui.navigation.payments') }}</span>
                 </a>
             </div>
 
@@ -323,7 +385,7 @@
                     text-patrimoine-400
                 "
             >
-                <span data-i18n="navigation.finance">Finance</span>
+                <span data-i18n="navigation.finance">{{ __('ui.navigation.finance') }}</span>
             </p>
 
 
@@ -360,7 +422,7 @@
                         <path d="M17 11h4"/>
                     </svg>
 
-                    <span data-i18n="navigation.tenants">Tenants</span>
+                    <span data-i18n="navigation.tenants">{{ __('ui.navigation.tenants') }}</span>
                 </a>
 
 
@@ -391,7 +453,7 @@
                         <path d="M19 6v4"/>
                     </svg>
 
-                    <span data-i18n="navigation.owners">Owners</span>
+                    <span data-i18n="navigation.owners">{{ __('ui.navigation.owners') }}</span>
                 </a>
 
 
@@ -420,7 +482,7 @@
                         <path d="m7 16 4-5 4 3 5-7"/>
                     </svg>
 
-                    <span data-i18n="navigation.reports">Reports</span>
+                    <span data-i18n="navigation.reports">{{ __('ui.navigation.reports') }}</span>
                 </a>
 
 
@@ -446,7 +508,7 @@
                             text-patrimoine-400
                         "
                     >
-                        <span data-i18n="navigation.manage">Manage</span>
+                        <span data-i18n="navigation.manage">{{ __('ui.navigation.manage') }}</span>
                     </p>
 
                     <div class="space-y-1">
@@ -482,7 +544,7 @@
                         </svg>
 
                         <span data-i18n="navigation.activity_log">
-                            Activity Log
+                            {{ __('ui.navigation.activity_log') }}
                         </span>
                     </a>
 
@@ -515,7 +577,7 @@
                         </svg>
 
                         <span data-i18n="navigation.users">
-                            Users
+                            {{ __('ui.navigation.users') }}
                         </span>
                     </a>
 
@@ -544,7 +606,7 @@
                         <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.1A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.1A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.2.37.5.7.9.9.3.16.7.2 1.1.2h.1v4h-.1a1.7 1.7 0 0 0-2 .9Z"/>
                     </svg>
 
-                    <span data-i18n="navigation.settings">Settings</span>
+                    <span data-i18n="navigation.settings">{{ __('ui.navigation.settings') }}</span>
                 </a>
                     </div>
                 </div>
@@ -571,9 +633,7 @@
                         rounded-full bg-patrimoine-700
                         text-sm font-semibold text-white
                     "
-                >
-                    PM
-                </div>
+                ></div>
 
                 <div class="min-w-0 flex-1">
                     <div
@@ -582,9 +642,7 @@
                             truncate text-sm font-medium
                             text-white
                         "
-                    >
-                        Property Manager
-                    </div>
+                    ></div>
 
                     <div
                         id="sidebar-user-role"
@@ -592,9 +650,7 @@
                             truncate text-xs
                             text-patrimoine-300
                         "
-                    >
-                        Property Manager
-                    </div>
+                    ></div>
                 </div>
             </div>
 
@@ -652,7 +708,7 @@
                         text-[var(--pm-text)]
                     "
                 >
-                    Patrimoine
+                    {{ app(App\Services\ApplicationIdentityService::class)->displayName() }}
                 </div>
 
                 <div
@@ -663,7 +719,7 @@
                     "
                     data-i18n="product.property_management"
                 >
-                    Property Management
+                    {{ __('ui.product.property_management') }}
                 </div>
             </div>
 
@@ -935,7 +991,7 @@
                                 "
                                 data-i18n="shell.appearance"
                             >
-                                Appearance
+                                {{ __('ui.shell.appearance') }}
                             </div>
 
                             <div
@@ -954,7 +1010,7 @@
                                     class="theme-option"
                                     data-i18n="shell.theme_light"
                                 >
-                                    Light
+                                    {{ __('ui.shell.theme_light') }}
                                 </button>
 
                                 <button
@@ -963,7 +1019,7 @@
                                     class="theme-option"
                                     data-i18n="shell.theme_dark"
                                 >
-                                    Dark
+                                    {{ __('ui.shell.theme_dark') }}
                                 </button>
 
                                 <button
@@ -972,7 +1028,7 @@
                                     class="theme-option"
                                     data-i18n="shell.theme_system"
                                 >
-                                    System
+                                    {{ __('ui.shell.theme_system') }}
                                 </button>
                             </div>
                         </div>
@@ -1000,7 +1056,7 @@
                                 </svg>
 
                                 <span data-i18n="password.change_action">
-                                    Change password
+                                    {{ __('ui.password.change_action') }}
                                 </span>
                             </button>
 
@@ -1022,7 +1078,7 @@
                                 </svg>
 
                                 <span data-i18n="navigation.sign_out">
-                                    Sign out
+                                    {{ __('ui.navigation.sign_out') }}
                                 </span>
                             </button>
                         </div>
@@ -1209,6 +1265,138 @@
         </form>
     </div>
 </div>
+
+    <script>
+        (() => {
+            const root =
+                document.documentElement;
+
+            const name =
+                root.dataset.cachedUserName
+                || '';
+
+            const role =
+                root.dataset.cachedUserRole
+                || '';
+
+            if (
+                name === ''
+                && role === ''
+            ) {
+                return;
+            }
+
+            const initials = (value) => {
+                const parts =
+                    String(value)
+                        .trim()
+                        .split(/\s+/)
+                        .filter(Boolean);
+
+                if (parts.length === 0) {
+                    return '';
+                }
+
+                return parts
+                    .slice(0, 2)
+                    .map(
+                        part =>
+                            part
+                                .charAt(0)
+                                .toUpperCase()
+                    )
+                    .join('');
+            };
+
+            const roleLabels = {
+                en: {
+                    administrator:
+                        'Administrator',
+                    property_manager:
+                        'Property Manager',
+                    viewer:
+                        'Viewer',
+                },
+
+                fr: {
+                    administrator:
+                        'Administrateur',
+                    property_manager:
+                        'Gestionnaire immobilier',
+                    viewer:
+                        'Lecteur',
+                },
+            };
+
+            const language =
+                root.dataset.presentationLanguage
+                || 'en';
+
+            const translatedRole =
+                roleLabels[language]?.[role]
+                || roleLabels.en[role]
+                || role;
+
+            const avatar =
+                initials(name);
+
+            [
+                'sidebar-user-name',
+                'topbar-user-name',
+                'user-menu-name',
+            ].forEach(
+                id => {
+                    const element =
+                        document.getElementById(id);
+
+                    if (
+                        element
+                        && name !== ''
+                    ) {
+                        element.textContent =
+                            name;
+                    }
+                }
+            );
+
+            [
+                'sidebar-user-role',
+                'topbar-user-role',
+                'user-menu-role',
+            ].forEach(
+                id => {
+                    const element =
+                        document.getElementById(id);
+
+                    if (
+                        element
+                        && translatedRole !== ''
+                    ) {
+                        element.textContent =
+                            translatedRole;
+                    }
+                }
+            );
+
+            [
+                'sidebar-avatar',
+                'topbar-avatar',
+            ].forEach(
+                id => {
+                    const element =
+                        document.getElementById(id);
+
+                    if (
+                        element
+                        && avatar !== ''
+                    ) {
+                        element.textContent =
+                            avatar;
+                    }
+                }
+            );
+        })();
+    </script>
 
 </body>
 </html>
