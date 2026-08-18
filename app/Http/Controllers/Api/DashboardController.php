@@ -52,8 +52,7 @@ class DashboardController extends Controller
             'as_of' => $asOfDate->toDateString(),
             'count' => $invoices->count(),
             'data' => $invoices->map(
-                fn ($invoice): array =>
-                    $this->serializeInvoice($invoice)
+                fn ($invoice): array => $this->serializeInvoice($invoice)
             )->values(),
         ]);
     }
@@ -97,8 +96,7 @@ class DashboardController extends Controller
             'days' => $days,
             'count' => $invoices->count(),
             'data' => $invoices->map(
-                fn ($invoice): array =>
-                    $this->serializeInvoice($invoice)
+                fn ($invoice): array => $this->serializeInvoice($invoice)
             )->values(),
         ]);
     }
@@ -134,13 +132,11 @@ class DashboardController extends Controller
             'status' => $invoice->status,
             'total_amount' => $invoice->total_amount,
             'paid_amount' => $invoice->paidAmount(),
-            'outstanding_amount' =>
-                $invoice->outstandingAmount(),
+            'outstanding_amount' => $invoice->outstandingAmount(),
 
             'tenant' => [
                 'id' => $invoice->lease->tenant->id,
-                'name' =>
-                    $invoice->lease->tenant->name
+                'name' => $invoice->lease->tenant->name
                     ?? $invoice->lease->tenant->legal_name,
             ],
 

@@ -61,19 +61,15 @@ class TenantFundAllocationService
                 }
 
                 $category = match ($fundType) {
-                    'rent_reserve' =>
-                        'reserve_funding',
+                    'rent_reserve' => 'reserve_funding',
 
-                    'consumable_advance' =>
-                        'advance_funding',
+                    'consumable_advance' => 'advance_funding',
 
-                    'security_deposit' =>
-                        'deposit_funding',
+                    'security_deposit' => 'deposit_funding',
 
-                    default =>
-                        throw new RuntimeException(
-                            'Unsupported tenant fund type.'
-                        ),
+                    default => throw new RuntimeException(
+                        'Unsupported tenant fund type.'
+                    ),
                 };
 
                 $account = TenantFundAccount::firstOrCreate(
@@ -101,10 +97,8 @@ class TenantFundAllocationService
                     'category' => $category,
                     'amount' => $amount,
                     'transaction_date' => $transactionDate,
-                    'reference' =>
-                        $reference ?? $payment->reference,
-                    'notes' =>
-                        $notes
+                    'reference' => $reference ?? $payment->reference,
+                    'notes' => $notes
                         ?? 'Classified from tenant Payment.',
                 ]);
             }

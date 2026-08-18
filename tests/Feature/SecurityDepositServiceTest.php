@@ -86,17 +86,13 @@ class SecurityDepositServiceTest extends TestCase
             );
 
         SecurityDepositDeduction::create([
-            'lease_id' =>
-                $context['lease']->id,
+            'lease_id' => $context['lease']->id,
 
-            'description' =>
-                'Damaged lock',
+            'description' => 'Damaged lock',
 
-            'amount' =>
-                3000,
+            'amount' => 3000,
 
-            'deduction_date' =>
-                '2026-08-10',
+            'deduction_date' => '2026-08-10',
         ]);
 
         $settlement =
@@ -136,8 +132,8 @@ class SecurityDepositServiceTest extends TestCase
         );
 
         $this->assertNull(
-    $settlement->debt_invoice_id
-);
+            $settlement->debt_invoice_id
+        );
 
         /*
          * After deduction and refund, no Security Deposit funds remain held.
@@ -152,18 +148,14 @@ class SecurityDepositServiceTest extends TestCase
         $this->assertDatabaseHas(
             'tenant_fund_transactions',
             [
-                'tenant_fund_account_id' =>
-                    $context['account']->id,
+                'tenant_fund_account_id' => $context['account']->id,
 
-                'category' =>
-                    'refund',
+                'category' => 'refund',
 
-                'amount' =>
-                    7000,
+                'amount' => 7000,
 
-                'reference' =>
-                    $settlement
-                        ->refund_voucher_number,
+                'reference' => $settlement
+                    ->refund_voucher_number,
             ]
         );
     }
@@ -179,17 +171,13 @@ class SecurityDepositServiceTest extends TestCase
             );
 
         SecurityDepositDeduction::create([
-            'lease_id' =>
-                $context['lease']->id,
+            'lease_id' => $context['lease']->id,
 
-            'description' =>
-                'Major repairs',
+            'description' => 'Major repairs',
 
-            'amount' =>
-                13000,
+            'amount' => 13000,
 
-            'deduction_date' =>
-                '2026-08-10',
+            'deduction_date' => '2026-08-10',
         ]);
 
         $settlement =
@@ -222,42 +210,42 @@ class SecurityDepositServiceTest extends TestCase
 
         $settlement->refresh();
 
-$this->assertNotNull(
-    $settlement->debt_invoice_id
-);
+        $this->assertNotNull(
+            $settlement->debt_invoice_id
+        );
 
-$debtInvoice =
-    $settlement
-        ->debtInvoice()
-        ->firstOrFail();
+        $debtInvoice =
+            $settlement
+                ->debtInvoice()
+                ->firstOrFail();
 
-$this->assertSame(
-    'security_deposit_debt',
-    $debtInvoice->type
-);
+        $this->assertSame(
+            'security_deposit_debt',
+            $debtInvoice->type
+        );
 
-$this->assertSame(
-    3000,
-    $debtInvoice->total_amount
-);
+        $this->assertSame(
+            3000,
+            $debtInvoice->total_amount
+        );
 
-$this->assertSame(
-    3000,
-    $debtInvoice->outstandingAmount()
-);
+        $this->assertSame(
+            3000,
+            $debtInvoice->outstandingAmount()
+        );
 
-$this->assertSame(
-    'issued',
-    $debtInvoice->status
-);
+        $this->assertSame(
+            'issued',
+            $debtInvoice->status
+        );
 
-$this->assertSame(
-    sprintf(
-        'SDD-%06d',
-        $settlement->id
-    ),
-    $debtInvoice->invoice_number
-);
+        $this->assertSame(
+            sprintf(
+                'SDD-%06d',
+                $settlement->id
+            ),
+            $debtInvoice->invoice_number
+        );
 
         $this->assertSame(
             sprintf(
@@ -342,17 +330,13 @@ $this->assertSame(
             );
 
         SecurityDepositDeduction::create([
-            'lease_id' =>
-                $context['lease']->id,
+            'lease_id' => $context['lease']->id,
 
-            'description' =>
-                'Repairs',
+            'description' => 'Repairs',
 
-            'amount' =>
-                10000,
+            'amount' => 10000,
 
-            'deduction_date' =>
-                '2026-08-10',
+            'deduction_date' => '2026-08-10',
         ]);
 
         $settlement =

@@ -6,13 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePaymentRequest;
 use App\Models\Payment;
 use App\Models\TenantFundTransaction;
-use App\Services\PaymentAllocationService;
 use App\Services\ActivityLogService;
 use App\Services\FinancialActivitySnapshotService;
+use App\Services\Notifications\EmailDeliveryService;
+use App\Services\PaymentAllocationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Services\Notifications\EmailDeliveryService;
 use Throwable;
 
 /**
@@ -85,10 +85,6 @@ class PaymentController extends Controller
         );
     }
 
-
-
-
-
     /**
      * Record and immediately allocate a tenant Payment.
      *
@@ -157,10 +153,6 @@ class PaymentController extends Controller
         );
     }
 
-
-
-
-
     /**
      * Return one Payment with allocation and balance information.
      */
@@ -199,26 +191,22 @@ class PaymentController extends Controller
             'collector_name' => $payment->collector_name,
             'notes' => $payment->notes,
 
-            'allocated_amount' =>
-                $payment->allocatedAmount(),
+            'allocated_amount' => $payment->allocatedAmount(),
 
-            'unallocated_amount' =>
-                $payment->unallocatedAmount(),
+            'unallocated_amount' => $payment->unallocatedAmount(),
 
             /*
              * Unapplied money may already have been moved into one or more
              * tenant-held funds. Keep that distinct from raw unallocated
              * Payment money so the browser knows what remains actionable.
              */
-            'classified_fund_amount' =>
-                $this->classifiedFundAmount(
-                    $payment
-                ),
+            'classified_fund_amount' => $this->classifiedFundAmount(
+                $payment
+            ),
 
-            'remaining_unclassified_amount' =>
-                $this->remainingUnclassifiedAmount(
-                    $payment
-                ),
+            'remaining_unclassified_amount' => $this->remainingUnclassifiedAmount(
+                $payment
+            ),
 
             'lease' => $payment->lease,
 

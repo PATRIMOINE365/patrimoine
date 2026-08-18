@@ -222,6 +222,7 @@ class OwnerPayoutServiceTest extends TestCase
         $this->assertSame(0, $account->fresh()->balance());
         $this->assertSame(7000, $payout->allocatedAmount());
     }
+
     /**
      * Credits already consumed economically by owner expenses must not later
      * be presented as the source of another payout.

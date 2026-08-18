@@ -860,6 +860,7 @@ function initializeLogout() {
     );
 }
 
+
 /*
 |--------------------------------------------------------------------------
 | Managing Organisation Identity

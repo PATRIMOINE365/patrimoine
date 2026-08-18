@@ -106,38 +106,28 @@ class OwnerAccountController extends Controller
         $accounts->getCollection()->transform(
             function (OwnerAccount $account): array {
                 return [
-                    'id' =>
-                        $account->id,
+                    'id' => $account->id,
 
-                    'party_id' =>
-                        $account->party_id,
+                    'party_id' => $account->party_id,
 
-                    'status' =>
-                        $account->status,
+                    'status' => $account->status,
 
-                    'balance' =>
-                        $account->balance(),
+                    'balance' => $account->balance(),
 
-                    'credited_amount' =>
-                        $account->creditedAmount(),
+                    'credited_amount' => $account->creditedAmount(),
 
-                    'debited_amount' =>
-                        $account->debitedAmount(),
+                    'debited_amount' => $account->debitedAmount(),
 
-                    'property_count' =>
-                        $account
-                            ->party
-                            ->buildingOwnerships()
-                            ->count(),
+                    'property_count' => $account
+                        ->party
+                        ->buildingOwnerships()
+                        ->count(),
 
-                    'party' =>
-                        $account->party,
+                    'party' => $account->party,
 
-                    'created_at' =>
-                        $account->created_at,
+                    'created_at' => $account->created_at,
 
-                    'updated_at' =>
-                        $account->updated_at,
+                    'updated_at' => $account->updated_at,
                 ];
             }
         );
@@ -183,41 +173,31 @@ class OwnerAccountController extends Controller
                             $ownership->building;
 
                         return [
-                            'ownership_id' =>
-                                $ownership->id,
+                            'ownership_id' => $ownership->id,
 
-                            'ownership_percentage' =>
-                                $ownership->ownership_percentage,
+                            'ownership_percentage' => $ownership->ownership_percentage,
 
                             'building' => [
-                                'id' =>
-                                    $building->id,
+                                'id' => $building->id,
 
-                                'name' =>
-                                    $building->name,
+                                'name' => $building->name,
 
-                                'location' =>
-                                    $building->location,
+                                'location' => $building->location,
 
-                                'address' =>
-                                    $building->address,
+                                'address' => $building->address,
 
-                                'units' =>
-                                    $building
-                                        ->units
-                                        ->map(
-                                            fn ($unit): array => [
-                                                'id' =>
-                                                    $unit->id,
+                                'units' => $building
+                                    ->units
+                                    ->map(
+                                        fn ($unit): array => [
+                                            'id' => $unit->id,
 
-                                                'name' =>
-                                                    $unit->name,
+                                            'name' => $unit->name,
 
-                                                'description' =>
-                                                    $unit->description,
-                                            ]
-                                        )
-                                        ->values(),
+                                            'description' => $unit->description,
+                                        ]
+                                    )
+                                    ->values(),
                             ],
                         ];
                     }
@@ -260,8 +240,7 @@ class OwnerAccountController extends Controller
                         ),
                         100
                     ),
-                    pageName:
-                        'transactions_page'
+                    pageName: 'transactions_page'
                 );
 
         /*
@@ -276,63 +255,47 @@ class OwnerAccountController extends Controller
             ->transform(
                 function (OwnerTransaction $transaction): array {
                     return [
-                        'id' =>
-                            $transaction->id,
+                        'id' => $transaction->id,
 
-                        'direction' =>
-                            $transaction->direction,
+                        'direction' => $transaction->direction,
 
-                        'category' =>
-                            $transaction->category,
+                        'category' => $transaction->category,
 
-                        'amount' =>
-                            $transaction->amount,
+                        'amount' => $transaction->amount,
 
-                        'transaction_date' =>
-                            $transaction
-                                ->transaction_date
-                                ->toDateString(),
+                        'transaction_date' => $transaction
+                            ->transaction_date
+                            ->toDateString(),
 
-                        'payment_method' =>
-                            $transaction->payment_method,
+                        'payment_method' => $transaction->payment_method,
 
-                        'deposit_purpose' =>
-                            $transaction->deposit_purpose,
+                        'deposit_purpose' => $transaction->deposit_purpose,
 
-                        'collector_name' =>
-                            $transaction->collector_name,
+                        'collector_name' => $transaction->collector_name,
 
-                        'reference' =>
-                            $transaction->reference,
+                        'reference' => $transaction->reference,
 
-                        'notes' =>
-                            $transaction->notes,
+                        'notes' => $transaction->notes,
 
-                        'building' =>
-                            $transaction->building,
+                        'building' => $transaction->building,
 
-                        'unit' =>
-                            $transaction->unit,
+                        'unit' => $transaction->unit,
 
-                        'lease_id' =>
-                            $transaction->lease_id,
+                        'lease_id' => $transaction->lease_id,
 
-                        'invoice_id' =>
-                            $transaction->invoice_id,
+                        'invoice_id' => $transaction->invoice_id,
 
-                        'receipt_endpoint' =>
-                            (
-                                $transaction->direction === 'credit'
-                                && $transaction->category === 'owner_deposit'
-                            )
+                        'receipt_endpoint' => (
+                            $transaction->direction === 'credit'
+                            && $transaction->category === 'owner_deposit'
+                        )
                                 ? sprintf(
                                     '/api/owner-deposits/%d/receipt',
                                     $transaction->id
                                 )
                                 : null,
 
-                        'created_at' =>
-                            $transaction->created_at,
+                        'created_at' => $transaction->created_at,
                     ];
                 }
             );
@@ -344,64 +307,46 @@ class OwnerAccountController extends Controller
                 ->values()
                 ->map(
                     fn ($payout): array => [
-                        'id' =>
-                            $payout->id,
+                        'id' => $payout->id,
 
-                        'amount' =>
-                            $payout->amount,
+                        'amount' => $payout->amount,
 
-                        'payout_date' =>
-                            $payout
-                                ->payout_date
-                                ->toDateString(),
+                        'payout_date' => $payout
+                            ->payout_date
+                            ->toDateString(),
 
-                        'payment_method' =>
-                            $payout->payment_method,
+                        'payment_method' => $payout->payment_method,
 
-                        'reference' =>
-                            $payout->reference,
+                        'reference' => $payout->reference,
 
-                        'notes' =>
-                            $payout->notes,
+                        'notes' => $payout->notes,
                     ]
                 );
 
         return response()->json([
-            'id' =>
-                $ownerAccount->id,
+            'id' => $ownerAccount->id,
 
-            'party_id' =>
-                $ownerAccount->party_id,
+            'party_id' => $ownerAccount->party_id,
 
-            'status' =>
-                $ownerAccount->status,
+            'status' => $ownerAccount->status,
 
-            'balance' =>
-                $ownerAccount->balance(),
+            'balance' => $ownerAccount->balance(),
 
-            'credited_amount' =>
-                $ownerAccount->creditedAmount(),
+            'credited_amount' => $ownerAccount->creditedAmount(),
 
-            'debited_amount' =>
-                $ownerAccount->debitedAmount(),
+            'debited_amount' => $ownerAccount->debitedAmount(),
 
-            'party' =>
-                $ownerAccount->party,
+            'party' => $ownerAccount->party,
 
-            'properties' =>
-                $properties,
+            'properties' => $properties,
 
-            'transactions' =>
-                $transactions,
+            'transactions' => $transactions,
 
-            'payouts' =>
-                $payouts,
+            'payouts' => $payouts,
 
-            'created_at' =>
-                $ownerAccount->created_at,
+            'created_at' => $ownerAccount->created_at,
 
-            'updated_at' =>
-                $ownerAccount->updated_at,
+            'updated_at' => $ownerAccount->updated_at,
         ]);
     }
 }

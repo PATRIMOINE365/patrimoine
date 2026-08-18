@@ -305,7 +305,11 @@
 
                         <input
                             id="payment-from-filter"
-                            type="date"
+                            type="text"
+                            inputmode="numeric"
+                            maxlength="10"
+                            autocomplete="off"
+                            data-pm-date-input
                             class="
                                 w-full rounded-lg
                                 border border-slate-200
@@ -329,7 +333,11 @@
 
                         <input
                             id="payment-to-filter"
-                            type="date"
+                            type="text"
+                            inputmode="numeric"
+                            maxlength="10"
+                            autocomplete="off"
+                            data-pm-date-input
                             class="
                                 w-full rounded-lg
                                 border border-slate-200
@@ -1025,7 +1033,7 @@
                                             data-payment-date-input
                                             inputmode="numeric"
                                             maxlength="10"
-                                            placeholder="dd-mm-yyyy"
+                                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                             required
                                             class="
                                                 w-full rounded-lg
@@ -1525,7 +1533,11 @@
 
                         <input
                             id="tenant-fund-date"
-                            type="date"
+                            type="text"
+                            inputmode="numeric"
+                            maxlength="10"
+                            autocomplete="off"
+                            data-pm-date-input
                             required
                             class="pm-input"
                         >

@@ -2,9 +2,9 @@
 
 namespace App\Services\Reports\Exports;
 
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Services\ApplicationIdentityService;
 use App\Services\ApplicationPresentationFormatter;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 /**
  * Converts an already-calculated Patrimoine report into downloadable
@@ -15,24 +15,17 @@ use App\Services\ApplicationPresentationFormatter;
  * PDF and CSV outputs always use the same financial interpretation.
  */
 class ReportExportService
-
 {
-
     public function __construct(
 
         private ApplicationIdentityService $identity,
         private ApplicationPresentationFormatter $formatter
 
-    ) {
-
-    }
+    ) {}
 
     /**
-
      * Render a report as PDF and return the raw PDF contents.
-
      */
-
     public function pdf(
 
         string $title,
@@ -51,9 +44,7 @@ class ReportExportService
 
                 'sections' => $this->sections($report),
 
-                'managingOrganisation' =>
-
-                    $this->identity->managingOrganisation(),
+                'managingOrganisation' => $this->identity->managingOrganisation(),
 
             ]
 
@@ -66,9 +57,7 @@ class ReportExportService
     }
 
     /**
-
      * Render a report as CSV.
-
      */
     public function csv(array $report): string
     {
@@ -152,7 +141,7 @@ class ReportExportService
          * UTF-8 BOM improves compatibility when CSV files are opened
          * directly in Microsoft Excel.
          */
-        return "\xEF\xBB\xBF" . $contents;
+        return "\xEF\xBB\xBF".$contents;
     }
 
     /**
@@ -220,7 +209,7 @@ class ReportExportService
         foreach ($values as $key => $value) {
             $label = $prefix === ''
                 ? $this->humanize((string) $key)
-                : $prefix . ' / ' . $this->humanize((string) $key);
+                : $prefix.' / '.$this->humanize((string) $key);
 
             if (
                 is_array($value)
@@ -303,8 +292,7 @@ class ReportExportService
         $keys = array_keys($first);
 
         $headers = array_map(
-            fn ($column): string =>
-                $this->humanize((string) $column),
+            fn ($column): string => $this->humanize((string) $column),
             $keys
         );
 
@@ -499,7 +487,7 @@ class ReportExportService
      */
     private function humanize(string $value): string
     {
-        $translationKey = 'reports.labels.' . $value;
+        $translationKey = 'reports.labels.'.$value;
 
         $translated = __($translationKey);
 

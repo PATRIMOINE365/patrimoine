@@ -61,8 +61,8 @@ return [
     'payment_methods' => [
         'cash' => 'Espèces',
         'bank_transfer' => 'Virement bancaire',
-        'momo' => 'MoMo',
-        'mobile_money' => 'Mobile Money',
+        'momo' => 'Paiement mobile',
+        'mobile_money' => 'Paiement mobile',
         'cheque' => 'Chèque',
         'check' => 'Chèque',
     ],
@@ -77,22 +77,13 @@ return [
         'ignore' => 'Si vous n’attendiez pas cette invitation, vous pouvez ignorer cet e-mail.',
     ],
 
-
-
     'password_reset' => [
-        'subject' =>
-            'Réinitialisez votre mot de passe :organisation',
-        'title' =>
-            'Réinitialisez votre mot de passe',
-        'greeting' =>
-            'Bonjour :name,',
-        'introduction' =>
-            'Une réinitialisation du mot de passe a été demandée pour votre compte :organisation.',
-        'action' =>
-            'Réinitialiser mon mot de passe',
-        'expiry' =>
-            'Ce lien expire dans 24 heures.',
-        'ignore' =>
-            'Si vous n’avez pas demandé cette réinitialisation, vous pouvez ignorer cet e-mail.',
+        'subject' => 'Réinitialisez votre mot de passe :organisation',
+        'title' => 'Réinitialisez votre mot de passe',
+        'greeting' => 'Bonjour :name,',
+        'introduction' => 'Une réinitialisation du mot de passe a été demandée pour votre compte :organisation.',
+        'action' => 'Réinitialiser mon mot de passe',
+        'expiry' => 'Ce lien expire dans 24 heures.',
+        'ignore' => 'Si vous n’avez pas demandé cette réinitialisation, vous pouvez ignorer cet e-mail.',
     ],
 ];

@@ -5,10 +5,12 @@ namespace Tests\Feature;
 use App\Mail\InvoiceMail;
 use App\Mail\ReceiptMail;
 use App\Mail\RentReminderMail;
+use App\Models\ApplicationSetting;
 use App\Models\Building;
 use App\Models\Invoice;
 use App\Models\Lease;
 use App\Models\Party;
+use App\Models\PartyRole;
 use App\Models\Payment;
 use App\Models\PaymentAllocation;
 use App\Models\Unit;
@@ -16,8 +18,6 @@ use App\Services\Notifications\EmailDeliveryService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
-use App\Models\ApplicationSetting;
-use App\Models\PartyRole;
 
 /**
  * Verifies Patrimoine financial email delivery.
@@ -68,9 +68,7 @@ class EmailDeliveryTest extends TestCase
             'status' => 'active',
         ]);
 
-
-
-                /*
+        /*
          * Configure the single-tenant business identity used on outgoing
          * Patrimoine correspondence.
          */
@@ -81,8 +79,7 @@ class EmailDeliveryTest extends TestCase
             'email' => 'accounts@email-management.example',
             'contact_person_name' => 'Accounts Manager',
             'contact_person_phone' => '0200001701',
-            'contact_person_email' =>
-                'manager@email-management.example',
+            'contact_person_email' => 'manager@email-management.example',
         ]);
 
         PartyRole::create([
@@ -91,8 +88,7 @@ class EmailDeliveryTest extends TestCase
         ]);
 
         ApplicationSetting::create([
-            'managing_organisation_party_id' =>
-                $managingOrganisation->id,
+            'managing_organisation_party_id' => $managingOrganisation->id,
         ]);
 
         $invoice = Invoice::create([
@@ -261,10 +257,9 @@ class EmailDeliveryTest extends TestCase
         );
     }
 
-
     public function test_invoice_email_renders_french_date_and_fcfa_currency(): void
     {
-        \Illuminate\Support\Facades\Mail::fake();
+        Mail::fake();
 
         $context =
             $this->createContext();
@@ -277,13 +272,13 @@ class EmailDeliveryTest extends TestCase
             ]);
 
         app(
-            \App\Services\Notifications\EmailDeliveryService::class
+            EmailDeliveryService::class
         )->sendInvoice(
             $context['invoice']
         );
 
-        \Illuminate\Support\Facades\Mail::assertSent(
-            \App\Mail\InvoiceMail::class,
+        Mail::assertSent(
+            InvoiceMail::class,
             function ($mail): bool {
                 $previousLocale =
                     app()->getLocale();
@@ -325,12 +320,11 @@ class EmailDeliveryTest extends TestCase
                     )
                     && str_contains(
                         $html,
-                        '15 août 2026'
+                        '15-08-2026'
                     );
             }
         );
     }
-
 
     /**
      * Receipt email localises prose and persisted payment-method codes.
@@ -402,7 +396,7 @@ class EmailDeliveryTest extends TestCase
                     )
                     && str_contains(
                         $html,
-                        '5 août 2026'
+                        '05-08-2026'
                     );
             }
         );
@@ -474,10 +468,9 @@ class EmailDeliveryTest extends TestCase
                     )
                     && str_contains(
                         $html,
-                        '15 août 2026'
+                        '15-08-2026'
                     );
             }
         );
     }
-
 }

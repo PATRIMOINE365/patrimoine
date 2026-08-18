@@ -4,6 +4,7 @@ namespace App\Services\Reports;
 
 use App\Models\Building;
 use App\Models\Invoice;
+use App\Models\Lease;
 use App\Models\OwnerExpense;
 use App\Models\OwnerTransaction;
 use App\Models\Payment;
@@ -29,7 +30,7 @@ class BuildingReportService
         $unitIds = $building->units()
             ->pluck('id');
 
-        $leaseIds = \App\Models\Lease::query()
+        $leaseIds = Lease::query()
             ->whereIn('unit_id', $unitIds)
             ->pluck('id');
 
@@ -103,114 +104,93 @@ class BuildingReportService
                 'to' => $to,
             ],
 
-'summary' => [
-    'units' => $building->units->count(),
-    'leases' => $leaseIds->count(),
+            'summary' => [
+                'units' => $building->units->count(),
+                'leases' => $leaseIds->count(),
 
-    /*
+                /*
      * Preserve the existing generic totals as the complete Building
      * receivable position for backward compatibility.
      */
-    'invoiced' =>
-        (int) $invoices->sum('total_amount'),
+                'invoiced' => (int) $invoices->sum('total_amount'),
 
-    'invoice_settled' =>
-        (int) $invoices->sum(
-            fn (Invoice $invoice): int =>
-                $invoice->paidAmount()
-        ),
+                'invoice_settled' => (int) $invoices->sum(
+                    fn (Invoice $invoice): int => $invoice->paidAmount()
+                ),
 
-    'outstanding' =>
-        (int) $invoices->sum(
-            fn (Invoice $invoice): int =>
-                $invoice->outstandingAmount()
-        ),
+                'outstanding' => (int) $invoices->sum(
+                    fn (Invoice $invoice): int => $invoice->outstandingAmount()
+                ),
 
-    /*
+                /*
      * V1.0.1 explicitly separates contractual rent from Security Deposit
      * close-out debt.
      */
-    'rent_invoiced' =>
-        (int) $invoices
-            ->where('type', 'rent')
-            ->sum('total_amount'),
+                'rent_invoiced' => (int) $invoices
+                    ->where('type', 'rent')
+                    ->sum('total_amount'),
 
-    'security_deposit_debt_invoiced' =>
-        (int) $invoices
-            ->where('type', 'security_deposit_debt')
-            ->sum('total_amount'),
+                'security_deposit_debt_invoiced' => (int) $invoices
+                    ->where('type', 'security_deposit_debt')
+                    ->sum('total_amount'),
 
-    'rent_outstanding' =>
-        (int) $invoices
-            ->where('type', 'rent')
-            ->sum(
-                fn (Invoice $invoice): int =>
-                    $invoice->outstandingAmount()
-            ),
+                'rent_outstanding' => (int) $invoices
+                    ->where('type', 'rent')
+                    ->sum(
+                        fn (Invoice $invoice): int => $invoice->outstandingAmount()
+                    ),
 
-    'security_deposit_debt_outstanding' =>
-        (int) $invoices
-            ->where('type', 'security_deposit_debt')
-            ->sum(
-                fn (Invoice $invoice): int =>
-                    $invoice->outstandingAmount()
-            ),
+                'security_deposit_debt_outstanding' => (int) $invoices
+                    ->where('type', 'security_deposit_debt')
+                    ->sum(
+                        fn (Invoice $invoice): int => $invoice->outstandingAmount()
+                    ),
 
-    'total_outstanding' =>
-        (int) $invoices->sum(
-            fn (Invoice $invoice): int =>
-                $invoice->outstandingAmount()
-        ),
+                'total_outstanding' => (int) $invoices->sum(
+                    fn (Invoice $invoice): int => $invoice->outstandingAmount()
+                ),
 
-    'cash_received' =>
-        (int) $payments->sum('amount'),
+                'cash_received' => (int) $payments->sum('amount'),
 
-    'property_expenses' =>
-        (int) $expenses->sum('amount'),
+                'property_expenses' => (int) $expenses->sum('amount'),
 
-    'owner_rent_entitlement' =>
-        $this->ledgerCategory(
-            $ownerTransactions,
-            'rent_entitlement',
-            'credit'
-        ),
+                'owner_rent_entitlement' => $this->ledgerCategory(
+                    $ownerTransactions,
+                    'rent_entitlement',
+                    'credit'
+                ),
 
-    'management_fees' =>
-        $this->ledgerCategory(
-            $ownerTransactions,
-            'management_fee',
-            'debit'
-        ),
+                'management_fees' => $this->ledgerCategory(
+                    $ownerTransactions,
+                    'management_fee',
+                    'debit'
+                ),
 
-    'agent_commissions' =>
-        $this->ledgerCategory(
-            $ownerTransactions,
-            'agent_commission',
-            'debit'
-        ),
-],
+                'agent_commissions' => $this->ledgerCategory(
+                    $ownerTransactions,
+                    'agent_commission',
+                    'debit'
+                ),
+            ],
 
             'ownership' => $building->ownerships
                 ->map(fn ($ownership): array => [
-                    'party_id' => $ownership->party_id,
-                    'owner' =>
-                        $ownership->party->name
-                        ?? $ownership->party->legal_name,
-                    'percentage' =>
-                        $ownership->ownership_percentage,
+                'party_id' => $ownership->party_id,
+                'owner' => $ownership->party->name
+                    ?? $ownership->party->legal_name,
+                'percentage' => $ownership->ownership_percentage,
                 ])
                 ->values()
                 ->all(),
 
             'expenses' => $expenses
                 ->map(fn (OwnerExpense $expense): array => [
-                    'id' => $expense->id,
-                    'date' =>
-                        $expense->expense_date->toDateString(),
-                    'description' => $expense->description,
-                    'amount' => $expense->amount,
-                    'unit_id' => $expense->unit_id,
-                    'reference' => $expense->reference,
+                'id' => $expense->id,
+                'date' => $expense->expense_date->toDateString(),
+                'description' => $expense->description,
+                'amount' => $expense->amount,
+                'unit_id' => $expense->unit_id,
+                'reference' => $expense->reference,
                 ])
                 ->values()
                 ->all(),

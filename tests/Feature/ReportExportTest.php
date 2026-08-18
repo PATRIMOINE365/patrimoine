@@ -14,16 +14,16 @@ use App\Models\Payment;
 use App\Models\PaymentAllocation;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
+use Tests\TestCase;
 
 /**
  * Verifies formal report PDF and CSV exports.
  */
 class ReportExportTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -239,7 +239,7 @@ class ReportExportTest extends TestCase
 
         $response = $this->get(
             "/api/reports/owners/{$context['owner']->id}/csv"
-            . '?from=2026-08-06&to=2026-08-31'
+            .'?from=2026-08-06&to=2026-08-31'
         );
 
         $response->assertOk();
@@ -265,14 +265,13 @@ class ReportExportTest extends TestCase
 
         $this->getJson(
             "/api/reports/buildings/{$context['building']->id}/pdf"
-            . '?from=2026-09-01&to=2026-08-01'
+            .'?from=2026-09-01&to=2026-08-01'
         )
             ->assertUnprocessable()
             ->assertJsonValidationErrors([
                 'to',
             ]);
     }
-
 
     public function test_csv_export_renders_french_dates_and_fcfa_money(): void
     {
@@ -287,7 +286,7 @@ class ReportExportTest extends TestCase
         $response =
             $this->get(
                 "/api/reports/tenants/{$context['tenant']->id}/csv"
-                . '?from=2026-08-01&to=2026-08-31'
+                .'?from=2026-08-01&to=2026-08-31'
             );
 
         $response->assertOk();
@@ -312,7 +311,7 @@ class ReportExportTest extends TestCase
          * Report-period and row dates follow the selected French locale.
          */
         $this->assertStringContainsString(
-            '01 août 2026',
+            '01-08-2026',
             $contents
         );
 
@@ -336,14 +335,13 @@ class ReportExportTest extends TestCase
          * The semantic ID field remains an identifier rather than money.
          */
         $this->assertStringContainsString(
-            'ID,' . $context['tenant']->id,
+            'ID,'.$context['tenant']->id,
             $contents
         );
 
         $this->assertStringNotContainsString(
-            $context['tenant']->id . ' FCFA',
+            $context['tenant']->id.' FCFA',
             $contents
         );
     }
-
 }

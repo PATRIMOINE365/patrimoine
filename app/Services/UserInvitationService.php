@@ -6,7 +6,6 @@ use App\Mail\UserInvitationMail;
 use App\Models\User;
 use App\Models\UserInvitation;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -22,8 +21,7 @@ class UserInvitationService
     public function __construct(
         private ApplicationIdentityService $identity,
         private ApplicationLocaleService $locale
-    ) {
-    }
+    ) {}
 
     /**
      * Issue a new 24-hour invitation and send it to the User.
@@ -84,9 +82,9 @@ class UserInvitationService
          */
         $url = url(
             '/invitation?token='
-            . urlencode($plainToken)
-            . '&email='
-            . urlencode($user->email)
+            .urlencode($plainToken)
+            .'&email='
+            .urlencode($user->email)
         );
 
         Mail::to($user->email)

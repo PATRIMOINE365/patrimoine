@@ -96,8 +96,7 @@ class UpdateBuildingRequest extends FormRequest
                 }
 
                 $total = collect($this->input('owners', []))->sum(
-                    fn (array $owner): float =>
-                        (float) $owner['ownership_percentage']
+                    fn (array $owner): float => (float) $owner['ownership_percentage']
                 );
 
                 if (abs($total - 100.0) > 0.001) {

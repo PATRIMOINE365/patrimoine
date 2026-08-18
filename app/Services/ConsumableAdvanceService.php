@@ -81,32 +81,29 @@ class ConsumableAdvanceService
                 );
             }
 
+            if ($invoice->lease_id !== $lease->id) {
+                throw new RuntimeException(
+                    __('business.consumable_advance.wrong_invoice_lease')
+                );
+            }
 
-if ($invoice->lease_id !== $lease->id) {
-    throw new RuntimeException(
-        __('business.consumable_advance.wrong_invoice_lease')
-    );
-}
+            /*
+             * Consumable Advance may be applied to contractual rent only.
+             *
+             * Other tenant receivables remain collectible through the ordinary
+             * Payment allocation workflow and must never create owner rent entitlement.
+             */
+            if (! $invoice->isRentInvoice()) {
+                throw new RuntimeException(
+                    __('business.consumable_advance.rent_only')
+                );
+            }
 
-/*
- * Consumable Advance may be applied to contractual rent only.
- *
- * Other tenant receivables remain collectible through the ordinary
- * Payment allocation workflow and must never create owner rent entitlement.
- */
-if (! $invoice->isRentInvoice()) {
-    throw new RuntimeException(
-        __('business.consumable_advance.rent_only')
-    );
-}
-
-if ($amount <= 0) {
-    throw new RuntimeException(
-        __('business.consumable_advance.amount_positive')
-    );
-}
-
-
+            if ($amount <= 0) {
+                throw new RuntimeException(
+                    __('business.consumable_advance.amount_positive')
+                );
+            }
 
             if ($amount > $account->balance()) {
                 throw new RuntimeException(
@@ -190,8 +187,7 @@ if ($amount <= 0) {
         }
 
         $ownershipTotal = (float) $ownerships->sum(
-            fn ($ownership) =>
-                (float) $ownership->ownership_percentage
+            fn ($ownership) => (float) $ownership->ownership_percentage
         );
 
         if (abs($ownershipTotal - 100.0) > 0.001) {

@@ -8,10 +8,9 @@ return [
         'payment_method' => [
             'cash' => 'Espèces',
             'bank_transfer' => 'Virement bancaire',
-            'momo' => 'MoMo',
+            'momo' => 'Paiement mobile',
         ],
     ],
-
 
     'receipt' => [
         'title' => 'Reçu',
@@ -48,7 +47,6 @@ return [
         'footer_prefix' => 'Merci. Ce reçu confirme le paiement enregistré par',
     ],
 
-
     'owner_deposit_receipt' => [
         'title' => 'Reçu de dépôt du propriétaire',
         'heading' => 'REÇU DE DÉPÔT DU PROPRIÉTAIRE',
@@ -80,7 +78,6 @@ return [
             'other' => 'Autre',
         ],
     ],
-
 
     'security_deposit_voucher' => [
         'title' => 'Bordereau de règlement du dépôt de garantie',

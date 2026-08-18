@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Services\ActivityLogService;
-use App\Services\FinancialActivitySnapshotService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOwnerPayoutRequest;
 use App\Models\OwnerAccount;
+use App\Services\ActivityLogService;
+use App\Services\FinancialActivitySnapshotService;
 use App\Services\OwnerPayoutService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
@@ -66,12 +66,9 @@ class OwnerPayoutController extends Controller
         return response()->json(
             data: [
                 'payout' => $payout,
-                'allocated_amount' =>
-                    $payout->allocatedAmount(),
-                'unallocated_amount' =>
-                    $payout->unallocatedAmount(),
-                'owner_balance' =>
-                    $ownerAccount->fresh()->balance(),
+                'allocated_amount' => $payout->allocatedAmount(),
+                'unallocated_amount' => $payout->unallocatedAmount(),
+                'owner_balance' => $ownerAccount->fresh()->balance(),
             ],
             status: 201
         );

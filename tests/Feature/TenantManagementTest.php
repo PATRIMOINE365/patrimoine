@@ -25,8 +25,8 @@ use Tests\TestCase;
  */
 class TenantManagementTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {

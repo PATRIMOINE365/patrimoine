@@ -135,30 +135,29 @@ class UserManagementApiTest extends TestCase
                     'name' => 'New Manager',
                     'email' => 'NEW.MANAGER@EXAMPLE.TEST',
                     'phone' => '0244000002',
-                    'role' =>
-                        UserRole::PropertyManager->value,
+                    'role' => UserRole::PropertyManager->value,
                 ]
             )
-            ->assertCreated()
-            ->assertJsonPath(
-                'name',
-                'New Manager'
-            )
-            ->assertJsonPath(
-                'email',
-                'new.manager@example.test'
-            )
-            ->assertJsonPath(
-                'role',
-                UserRole::PropertyManager->value
-            )
-            ->assertJsonPath(
-                'is_active',
-                true
-            )
-            ->assertJsonMissingPath(
-                'password'
-            );
+                ->assertCreated()
+                ->assertJsonPath(
+                    'name',
+                    'New Manager'
+                )
+                ->assertJsonPath(
+                    'email',
+                    'new.manager@example.test'
+                )
+                ->assertJsonPath(
+                    'role',
+                    UserRole::PropertyManager->value
+                )
+                ->assertJsonPath(
+                    'is_active',
+                    true
+                )
+                ->assertJsonMissingPath(
+                    'password'
+                );
 
         $user = User::query()->findOrFail(
             $response->json('id')
@@ -217,8 +216,7 @@ class UserManagementApiTest extends TestCase
                 [
                     'name' => 'Duplicate Email',
                     'email' => 'EXISTING@EXAMPLE.TEST',
-                    'role' =>
-                        UserRole::Viewer->value,
+                    'role' => UserRole::Viewer->value,
                 ]
             )
             ->assertUnprocessable()
@@ -258,8 +256,7 @@ class UserManagementApiTest extends TestCase
                     'name' => 'After Name',
                     'email' => 'AFTER@EXAMPLE.TEST',
                     'phone' => '0244000003',
-                    'role' =>
-                        UserRole::Viewer->value,
+                    'role' => UserRole::Viewer->value,
                     'is_active' => false,
                 ]
             )
@@ -321,8 +318,7 @@ class UserManagementApiTest extends TestCase
             ->patchJson(
                 "/api/users/{$administrator->id}",
                 [
-                    'role' =>
-                        UserRole::Viewer->value,
+                    'role' => UserRole::Viewer->value,
                 ]
             )
             ->assertUnprocessable()
@@ -383,8 +379,7 @@ class UserManagementApiTest extends TestCase
             ->patchJson(
                 "/api/users/{$target->id}",
                 [
-                    'role' =>
-                        UserRole::PropertyManager->value,
+                    'role' => UserRole::PropertyManager->value,
                 ]
             )
             ->assertUnprocessable()
@@ -446,8 +441,7 @@ class UserManagementApiTest extends TestCase
                 [
                     'name' => 'Replacement User',
                     'email' => 'reusable@example.test',
-                    'role' =>
-                        UserRole::Viewer->value,
+                    'role' => UserRole::Viewer->value,
                 ]
             )
             ->assertCreated();
@@ -487,7 +481,7 @@ class UserManagementApiTest extends TestCase
     /**
      * Create an active Administrator for API tests.
      *
-     * @param array<string, mixed> $attributes
+     * @param  array<string, mixed>  $attributes
      */
     private function administrator(
         array $attributes = []

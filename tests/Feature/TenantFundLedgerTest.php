@@ -8,6 +8,7 @@ use App\Models\Party;
 use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
 use App\Models\Unit;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -125,7 +126,7 @@ class TenantFundLedgerTest extends TestCase
             'type' => 'security_deposit',
         ]);
 
-        $this->expectException(\Illuminate\Database\QueryException::class);
+        $this->expectException(QueryException::class);
 
         TenantFundAccount::create([
             'lease_id' => $lease->id,

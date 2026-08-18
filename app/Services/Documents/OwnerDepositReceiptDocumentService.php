@@ -26,8 +26,7 @@ class OwnerDepositReceiptDocumentService
     public function __construct(
         private ApplicationIdentityService $identity,
         private ApplicationPresentationFormatter $formatter
-    ) {
-    }
+    ) {}
 
     /**
      * Generate PDF contents for an Owner deposit receipt.
@@ -50,13 +49,11 @@ class OwnerDepositReceiptDocumentService
         return Pdf::loadView(
             'documents.owner-deposit-receipt',
             [
-                'transaction' =>
-                    $transaction,
+                'transaction' => $transaction,
 
                 'formatter' => $this->formatter,
-                'managingOrganisation' =>
-                    $this->identity
-                        ->managingOrganisation(),
+                'managingOrganisation' => $this->identity
+                    ->managingOrganisation(),
 
                 /*
                  * OwnerAccount balances are derived from the ledger.
@@ -64,10 +61,9 @@ class OwnerDepositReceiptDocumentService
                  * The current balance is useful operational information,
                  * but the receipt primarily confirms the deposit itself.
                  */
-                'ownerBalance' =>
-                    $transaction
-                        ->ownerAccount
-                        ->balance(),
+                'ownerBalance' => $transaction
+                    ->ownerAccount
+                    ->balance(),
             ]
         )
             ->setPaper('a4')

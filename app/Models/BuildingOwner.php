@@ -62,8 +62,7 @@ class BuildingOwner extends Model
         static::created(
             function (BuildingOwner $ownership): void {
                 OwnerAccount::firstOrCreate([
-                    'party_id' =>
-                        $ownership->party_id,
+                    'party_id' => $ownership->party_id,
                 ]);
             }
         );

@@ -7,6 +7,7 @@ use App\Models\BuildingOwner;
 use App\Models\Invoice;
 use App\Models\Lease;
 use App\Models\OwnerAccount;
+use App\Models\OwnerExpense;
 use App\Models\OwnerTransaction;
 use App\Models\Party;
 use App\Models\Payment;
@@ -16,7 +17,6 @@ use App\Services\OwnerAccountingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use RuntimeException;
 use Tests\TestCase;
-use App\Models\OwnerExpense;
 
 /**
  * Verifies owner-ledger accounting and property-expense allocation.
@@ -200,8 +200,6 @@ class OwnerAccountingServiceTest extends TestCase
         $this->assertSame(-3000, $account->balance());
     }
 
-
-
     /**
      * Owner entitlement is created only when tenant rent is actually collected.
      */
@@ -209,7 +207,7 @@ class OwnerAccountingServiceTest extends TestCase
     {
         $context = $this->createBuildingWithOwners(60.00, 40.00);
 
-        $unit = \App\Models\Unit::create([
+        $unit = Unit::create([
             'building_id' => $context['building']->id,
             'name' => 'Unit 1',
         ]);
@@ -221,7 +219,7 @@ class OwnerAccountingServiceTest extends TestCase
             'email' => 'rent-tenant@example.test',
         ]);
 
-        $lease = \App\Models\Lease::create([
+        $lease = Lease::create([
             'unit_id' => $unit->id,
             'tenant_id' => $tenant->id,
             'start_date' => '2026-08-01',
@@ -229,7 +227,7 @@ class OwnerAccountingServiceTest extends TestCase
             'status' => 'active',
         ]);
 
-        $invoice = \App\Models\Invoice::create([
+        $invoice = Invoice::create([
             'lease_id' => $lease->id,
             'invoice_number' => 'INV-OWNER-001',
             'period_start' => '2026-08-01',
@@ -246,7 +244,7 @@ class OwnerAccountingServiceTest extends TestCase
         /*
         * Only GHS 4,000 has actually been received.
         */
-        $payment = \App\Models\Payment::create([
+        $payment = Payment::create([
             'lease_id' => $lease->id,
             'amount' => 4000,
             'payment_date' => '2026-08-05',
@@ -254,7 +252,7 @@ class OwnerAccountingServiceTest extends TestCase
             'reference' => 'BANK-OWNER-001',
         ]);
 
-        $allocation = \App\Models\PaymentAllocation::create([
+        $allocation = PaymentAllocation::create([
             'payment_id' => $payment->id,
             'invoice_id' => $invoice->id,
             'amount' => 4000,
@@ -292,11 +290,6 @@ class OwnerAccountingServiceTest extends TestCase
             + $secondAccount->creditedAmount()
         );
     }
-
-
-
-
-
 
     /**
      * Percentage management fees are charged only when tenant rent is
@@ -357,7 +350,7 @@ class OwnerAccountingServiceTest extends TestCase
             'vat_amount' => 0,
         ]);
 
-        $payment = \App\Models\Payment::create([
+        $payment = Payment::create([
             'lease_id' => $lease->id,
             'amount' => 10000,
             'payment_date' => '2026-01-05',
@@ -365,7 +358,7 @@ class OwnerAccountingServiceTest extends TestCase
             'reference' => 'MGMT-FEE-PAY-001',
         ]);
 
-        $allocation = \App\Models\PaymentAllocation::create([
+        $allocation = PaymentAllocation::create([
             'payment_id' => $payment->id,
             'invoice_id' => $invoice->id,
             'amount' => 10000,
@@ -415,11 +408,6 @@ class OwnerAccountingServiceTest extends TestCase
         );
     }
 
-
-
-
-
-
     /**
      * One-time Agent commission is distributed across owners.
      */
@@ -427,7 +415,7 @@ class OwnerAccountingServiceTest extends TestCase
     {
         $context = $this->createBuildingWithOwners(60.00, 40.00);
 
-        $unit = \App\Models\Unit::create([
+        $unit = Unit::create([
             'building_id' => $context['building']->id,
             'name' => 'Unit 1',
         ]);
@@ -439,7 +427,7 @@ class OwnerAccountingServiceTest extends TestCase
             'email' => 'commission-tenant@example.test',
         ]);
 
-        $lease = \App\Models\Lease::create([
+        $lease = Lease::create([
             'unit_id' => $unit->id,
             'tenant_id' => $tenant->id,
             'start_date' => '2026-08-01',
@@ -472,7 +460,7 @@ class OwnerAccountingServiceTest extends TestCase
     {
         $context = $this->createBuildingWithOwners(60.00, 40.00);
 
-        $unit = \App\Models\Unit::create([
+        $unit = Unit::create([
             'building_id' => $context['building']->id,
             'name' => 'Unit 1',
         ]);
@@ -484,7 +472,7 @@ class OwnerAccountingServiceTest extends TestCase
             'email' => 'unpaid@example.test',
         ]);
 
-        $lease = \App\Models\Lease::create([
+        $lease = Lease::create([
             'unit_id' => $unit->id,
             'tenant_id' => $tenant->id,
             'start_date' => '2026-08-01',
@@ -492,7 +480,7 @@ class OwnerAccountingServiceTest extends TestCase
             'status' => 'active',
         ]);
 
-        \App\Models\Invoice::create([
+        Invoice::create([
             'lease_id' => $lease->id,
             'invoice_number' => 'INV-OWNER-UNPAID',
             'period_start' => '2026-08-01',
@@ -520,6 +508,7 @@ class OwnerAccountingServiceTest extends TestCase
 
         $this->assertDatabaseCount('owner_transactions', 0);
     }
+
     /**
      * Reprocessing the same PaymentAllocation must never credit owners twice.
      */
@@ -527,7 +516,7 @@ class OwnerAccountingServiceTest extends TestCase
     {
         $context = $this->createBuildingWithOwners(60.00, 40.00);
 
-        $unit = \App\Models\Unit::create([
+        $unit = Unit::create([
             'building_id' => $context['building']->id,
             'name' => 'Unit 1',
         ]);
@@ -539,7 +528,7 @@ class OwnerAccountingServiceTest extends TestCase
             'email' => 'idempotency@example.test',
         ]);
 
-        $lease = \App\Models\Lease::create([
+        $lease = Lease::create([
             'unit_id' => $unit->id,
             'tenant_id' => $tenant->id,
             'start_date' => '2026-08-01',
@@ -547,7 +536,7 @@ class OwnerAccountingServiceTest extends TestCase
             'status' => 'active',
         ]);
 
-        $invoice = \App\Models\Invoice::create([
+        $invoice = Invoice::create([
             'lease_id' => $lease->id,
             'invoice_number' => 'INV-IDEMPOTENT-001',
             'period_start' => '2026-08-01',
@@ -561,14 +550,14 @@ class OwnerAccountingServiceTest extends TestCase
             'vat_amount' => 0,
         ]);
 
-        $payment = \App\Models\Payment::create([
+        $payment = Payment::create([
             'lease_id' => $lease->id,
             'amount' => 4000,
             'payment_date' => '2026-08-05',
             'payment_method' => 'bank_transfer',
         ]);
 
-        $allocation = \App\Models\PaymentAllocation::create([
+        $allocation = PaymentAllocation::create([
             'payment_id' => $payment->id,
             'invoice_id' => $invoice->id,
             'amount' => 4000,

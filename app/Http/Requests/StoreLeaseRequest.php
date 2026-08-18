@@ -165,8 +165,7 @@ class StoreLeaseRequest extends FormRequest
 
             'advance_received_date' => [
                 Rule::requiredIf(
-                    fn (): bool =>
-                        $this->boolean('advance_received')
+                    fn (): bool => $this->boolean('advance_received')
                 ),
                 'nullable',
                 'date',
@@ -175,8 +174,7 @@ class StoreLeaseRequest extends FormRequest
 
             'advance_received_method' => [
                 Rule::requiredIf(
-                    fn (): bool =>
-                        $this->boolean('advance_received')
+                    fn (): bool => $this->boolean('advance_received')
                 ),
                 'nullable',
                 Rule::in([
@@ -194,17 +192,13 @@ class StoreLeaseRequest extends FormRequest
 
             'advance_received_collector' => [
                 Rule::requiredIf(
-                    fn (): bool =>
-                        $this->boolean('advance_received')
+                    fn (): bool => $this->boolean('advance_received')
                         && $this->input('advance_received_method') === 'cash'
                 ),
                 'nullable',
                 'string',
                 'max:255',
             ],
-
-
-
 
             /*
             * Rent increment configuration.
@@ -404,136 +398,136 @@ class StoreLeaseRequest extends FormRequest
     }
 
     /**
- * Ensure the contractual Rent Reserve is part of, and cannot exceed,
- * the total contractual Advance Payment.
- */
-private function validateAdvanceTerms($validator): void
-{
-    $advancePayment =
-        $this->integer(
-            'advance_payment_amount'
-        );
-
-    $rentReserve =
-        $this->integer(
-            'rent_reserve_amount'
-        );
-
-    if ($rentReserve > $advancePayment) {
-        $validator->errors()->add(
-            'rent_reserve_amount',
-            __('api.validation.rent_reserve_exceeds_advance')
-        );
-    }
-}
-
-/**
- * Ensure rent-increment fields remain internally consistent.
- */
-private function validateRentIncrement($validator): void
-{
-    $type =
-        $this->input(
-            'rent_increment_type'
-        );
-
-    $value =
-        (float) $this->input(
-            'rent_increment_value',
-            0
-        );
-
-    $dateSupplied =
-        $this->filled(
-            'next_rent_increment_date'
-        );
-
-    if (
-        $type === 'none'
-        && $value !== 0.0
-    ) {
-        $validator->errors()->add(
-            'rent_increment_value',
-            __('api.validation.rent_increment_none_zero')
-        );
-    }
-
-    if (
-        $type === 'none'
-        && $dateSupplied
-    ) {
-        $validator->errors()->add(
-            'next_rent_increment_date',
-            __('api.validation.rent_increment_none_date')
-        );
-    }
-
-    if (
-        $type !== 'none'
-        && $value <= 0
-    ) {
-        $validator->errors()->add(
-            'rent_increment_value',
-            __('api.validation.rent_increment_value_required')
-        );
-    }
-
-    if (
-        $type !== 'none'
-        && ! $dateSupplied
-    ) {
-        $validator->errors()->add(
-            'next_rent_increment_date',
-            __('api.validation.rent_increment_date_required')
-        );
-    }
-
-    if (
-        $type === 'percentage'
-        && $value > 100
-    ) {
-        $validator->errors()->add(
-            'rent_increment_value',
-            __('api.validation.rent_increment_percentage_max')
-        );
-    }
-}
-
-/**
- * Validate historical Advance Payment reconstruction.
- */
-private function validateReceivedAdvance($validator): void
-{
-    if (! $this->boolean('advance_received')) {
-        return;
-    }
-
-    $advanceAmount =
-        $this->integer(
-            'advance_payment_amount'
-        );
-
-    if ($advanceAmount <= 0) {
-        $validator->errors()->add(
-            'advance_payment_amount',
-            __('api.validation.advance_received_positive')
-        );
-    }
-
-    /*
-     * Historical money cannot have been received before the Lease itself
-     * began because it would not yet belong to this Lease.
+     * Ensure the contractual Rent Reserve is part of, and cannot exceed,
+     * the total contractual Advance Payment.
      */
-    if (
-        $this->filled('advance_received_date')
-        && $this->filled('start_date')
-        && $this->date('advance_received_date')
-            ->lt($this->date('start_date'))
-    ) {
-        $validator->errors()->add(
-            'advance_received_date',
-            __('api.validation.advance_received_before_lease')
-        );
+    private function validateAdvanceTerms($validator): void
+    {
+        $advancePayment =
+            $this->integer(
+                'advance_payment_amount'
+            );
+
+        $rentReserve =
+            $this->integer(
+                'rent_reserve_amount'
+            );
+
+        if ($rentReserve > $advancePayment) {
+            $validator->errors()->add(
+                'rent_reserve_amount',
+                __('api.validation.rent_reserve_exceeds_advance')
+            );
+        }
     }
-}
+
+    /**
+     * Ensure rent-increment fields remain internally consistent.
+     */
+    private function validateRentIncrement($validator): void
+    {
+        $type =
+            $this->input(
+                'rent_increment_type'
+            );
+
+        $value =
+            (float) $this->input(
+                'rent_increment_value',
+                0
+            );
+
+        $dateSupplied =
+            $this->filled(
+                'next_rent_increment_date'
+            );
+
+        if (
+            $type === 'none'
+            && $value !== 0.0
+        ) {
+            $validator->errors()->add(
+                'rent_increment_value',
+                __('api.validation.rent_increment_none_zero')
+            );
+        }
+
+        if (
+            $type === 'none'
+            && $dateSupplied
+        ) {
+            $validator->errors()->add(
+                'next_rent_increment_date',
+                __('api.validation.rent_increment_none_date')
+            );
+        }
+
+        if (
+            $type !== 'none'
+            && $value <= 0
+        ) {
+            $validator->errors()->add(
+                'rent_increment_value',
+                __('api.validation.rent_increment_value_required')
+            );
+        }
+
+        if (
+            $type !== 'none'
+            && ! $dateSupplied
+        ) {
+            $validator->errors()->add(
+                'next_rent_increment_date',
+                __('api.validation.rent_increment_date_required')
+            );
+        }
+
+        if (
+            $type === 'percentage'
+            && $value > 100
+        ) {
+            $validator->errors()->add(
+                'rent_increment_value',
+                __('api.validation.rent_increment_percentage_max')
+            );
+        }
+    }
+
+    /**
+     * Validate historical Advance Payment reconstruction.
+     */
+    private function validateReceivedAdvance($validator): void
+    {
+        if (! $this->boolean('advance_received')) {
+            return;
+        }
+
+        $advanceAmount =
+            $this->integer(
+                'advance_payment_amount'
+            );
+
+        if ($advanceAmount <= 0) {
+            $validator->errors()->add(
+                'advance_payment_amount',
+                __('api.validation.advance_received_positive')
+            );
+        }
+
+        /*
+         * Historical money cannot have been received before the Lease itself
+         * began because it would not yet belong to this Lease.
+         */
+        if (
+            $this->filled('advance_received_date')
+            && $this->filled('start_date')
+            && $this->date('advance_received_date')
+                ->lt($this->date('start_date'))
+        ) {
+            $validator->errors()->add(
+                'advance_received_date',
+                __('api.validation.advance_received_before_lease')
+            );
+        }
+    }
 }

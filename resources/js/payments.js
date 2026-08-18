@@ -8,6 +8,13 @@ import {
     translate,
 } from './core.js';
 
+import {
+    dateForApi,
+    dateForDisplay,
+    initializeDateInputs,
+    openDatePicker,
+} from './date-input.js';
+
 /*
 |--------------------------------------------------------------------------
 | Patrimoine Payments Workspace
@@ -59,6 +66,12 @@ export async function initializePayments() {
     if (! list) {
         return false;
     }
+
+    /*
+     * Standardize visible business-date controls before any form or
+     * filter interactions occur.
+     */
+    initializeDateInputs();
 
     initializePaymentFilters();
 
@@ -168,13 +181,17 @@ function buildPaymentRegisterQuery(
         );
 
     const from =
-        fieldValue(
-            'payment-from-filter'
+        dateForApi(
+            fieldValue(
+                'payment-from-filter'
+            )
         );
 
     const to =
-        fieldValue(
-            'payment-to-filter'
+        dateForApi(
+            fieldValue(
+                'payment-to-filter'
+            )
         );
 
     if (source) {
@@ -1073,18 +1090,9 @@ function initializePaymentDateInput() {
     pickerButton.addEventListener(
         'click',
         () => {
-            syncNative();
-
-            if (
-                typeof nativeInput.showPicker
-                === 'function'
-            ) {
-                nativeInput.showPicker();
-
-                return;
-            }
-
-            nativeInput.click();
+            openDatePicker(
+                textInput
+            );
         }
     );
 
@@ -1133,11 +1141,18 @@ function paymentDateForDisplay(
         );
     }
 
-    return `${match[3]}-${match[2]}-${match[1]}`;
+    const separator =
+        document.documentElement.lang
+            ?.toLowerCase()
+            .startsWith('fr')
+            ? '-'
+            : '/';
+
+    return `${match[3]}${separator}${match[2]}${separator}${match[1]}`;
 }
 
 /**
- * Convert DD-MM-YYYY to YYYY-MM-DD.
+ * Convert DD-MM-YYYY or DD/MM/YYYY to YYYY-MM-DD.
  *
  * Existing ISO values remain unchanged.
  */
@@ -1159,7 +1174,7 @@ function paymentDateForApi(
 
     const match =
         normalized.match(
-            /^(\d{2})-(\d{2})-(\d{4})$/
+            /^(\d{2})[-/](\d{2})[-/](\d{4})$/
         );
 
     if (! match) {
@@ -4303,12 +4318,14 @@ function renderTenantFundPayment(
         && ! dateInput.value
     ) {
         dateInput.value =
-            String(
-                payment?.payment_date
-                ?? ''
-            ).slice(
-                0,
-                10
+            dateForDisplay(
+                String(
+                    payment?.payment_date
+                    ?? ''
+                ).slice(
+                    0,
+                    10
+                )
             );
     }
 
@@ -4352,8 +4369,10 @@ async function submitTenantFundAllocation(
         );
 
     const transactionDate =
-        fieldValue(
-            'tenant-fund-date'
+        dateForApi(
+            fieldValue(
+                'tenant-fund-date'
+            )
         );
 
     const reference =

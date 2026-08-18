@@ -40,17 +40,17 @@ class SendRentReminders extends Command
         $sent = 0;
         $failed = 0;
 
-Invoice::query()
-    ->where('type', 'rent')
-    ->whereIn('status', [
-        'issued',
-        'partial',
-    ])
-    ->whereDate(
-        'due_date',
-        '<=',
-        $asOf->toDateString()
-    )
+        Invoice::query()
+            ->where('type', 'rent')
+            ->whereIn('status', [
+                'issued',
+                'partial',
+            ])
+            ->whereDate(
+                'due_date',
+                '<=',
+                $asOf->toDateString()
+            )
             ->orderBy('id')
             ->chunkById(
                 100,
@@ -64,10 +64,10 @@ Invoice::query()
                         $processed++;
 
                         /*
-                         * paidAmount()/outstandingAmount() are derived values.
-                         * This prevents reminders for fully settled invoices
-                         * even if their persisted status was stale.
-                         */
+                                 * paidAmount()/outstandingAmount() are derived values.
+                                 * This prevents reminders for fully settled invoices
+                                 * even if their persisted status was stale.
+                                 */
                         if ($invoice->outstandingAmount() <= 0) {
                             continue;
                         }
@@ -156,7 +156,7 @@ Invoice::query()
                 $date === false
                 || $date->format('Y-m-d') !== $asOf
             ) {
-                throw new \InvalidArgumentException();
+                throw new \InvalidArgumentException;
             }
 
             return $date->startOfDay();

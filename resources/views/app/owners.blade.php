@@ -809,10 +809,11 @@
                         id="owner-deposit-date"
                         type="text"
                         inputmode="numeric"
-                        placeholder="DD-MM-YYYY"
+                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                         maxlength="10"
                         autocomplete="off"
                         data-owner-date-input
+                        data-pm-date-input
                         required
                         class="
                             w-full rounded-lg
@@ -1321,10 +1322,11 @@
                         id="owner-expense-date"
                         type="text"
                         inputmode="numeric"
-                        placeholder="DD-MM-YYYY"
+                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                         maxlength="10"
                         autocomplete="off"
                         data-owner-date-input
+                        data-pm-date-input
                         required
                         class="
                             w-full rounded-lg
@@ -1530,10 +1532,11 @@
                         id="owner-payout-date"
                         type="text"
                         inputmode="numeric"
-                        placeholder="DD-MM-YYYY"
+                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                         maxlength="10"
                         autocomplete="off"
                         data-owner-date-input
+                        data-pm-date-input
                         required
                         class="
                             w-full rounded-lg
@@ -1794,10 +1797,11 @@
                         id="owner-adjustment-date"
                         type="text"
                         inputmode="numeric"
-                        placeholder="DD-MM-YYYY"
+                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                         maxlength="10"
                         autocomplete="off"
                         data-owner-date-input
+                        data-pm-date-input
                         required
                         class="
                             w-full rounded-lg

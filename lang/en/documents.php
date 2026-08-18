@@ -8,10 +8,9 @@ return [
         'payment_method' => [
             'cash' => 'Cash',
             'bank_transfer' => 'Bank Transfer',
-            'momo' => 'MoMo',
+            'momo' => 'Mobile Payment',
         ],
     ],
-
 
     'receipt' => [
         'title' => 'Receipt',
@@ -48,7 +47,6 @@ return [
         'footer_prefix' => 'Thank you. This receipt confirms payment recorded by',
     ],
 
-
     'owner_deposit_receipt' => [
         'title' => 'Owner Deposit Receipt',
         'heading' => 'OWNER DEPOSIT RECEIPT',
@@ -80,7 +78,6 @@ return [
             'other' => 'Other',
         ],
     ],
-
 
     'security_deposit_voucher' => [
         'title' => 'Security Deposit Settlement Voucher',

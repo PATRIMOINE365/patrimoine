@@ -6,6 +6,7 @@ use App\Models\ApplicationSetting;
 use App\Services\ApplicationLocaleService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 /**
@@ -123,10 +124,9 @@ class ApplicationLocaleServiceTest extends TestCase
         );
     }
 
-
     public function test_locale_resolution_is_safe_before_application_settings_table_exists(): void
     {
-        \Illuminate\Support\Facades\Schema::dropIfExists(
+        Schema::dropIfExists(
             'application_settings'
         );
 
@@ -152,5 +152,4 @@ class ApplicationLocaleServiceTest extends TestCase
             App::currentLocale()
         );
     }
-
 }

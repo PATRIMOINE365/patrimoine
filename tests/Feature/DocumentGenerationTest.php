@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ApplicationSetting;
 use App\Models\Building;
 use App\Models\BuildingOwner;
 use App\Models\Invoice;
@@ -11,20 +12,19 @@ use App\Models\OwnerTransaction;
 use App\Models\Party;
 use App\Models\Payment;
 use App\Models\PaymentAllocation;
-use App\Models\Unit;
-use App\Services\Documents\InvoiceDocumentService;
-use App\Services\Documents\OwnerDepositReceiptDocumentService;
-use App\Services\Documents\ReceiptDocumentService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Concerns\AuthenticatesApiUser;
-use Tests\TestCase;
 use App\Models\SecurityDepositDeduction;
 use App\Models\SecurityDepositSettlement;
 use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
+use App\Models\Unit;
+use App\Services\Documents\InvoiceDocumentService;
+use App\Services\Documents\OwnerDepositReceiptDocumentService;
+use App\Services\Documents\ReceiptDocumentService;
 use App\Services\Documents\SecurityDepositVoucherDocumentService;
 use App\Services\SecurityDepositService;
-use App\Models\ApplicationSetting;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\AuthenticatesApiUser;
+use Tests\TestCase;
 
 /**
  * Verifies Patrimoine financial document generation.
@@ -40,8 +40,8 @@ use App\Models\ApplicationSetting;
  */
 class DocumentGenerationTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -191,38 +191,27 @@ class DocumentGenerationTest extends TestCase
          * collection activity.
          */
         $deposit = OwnerTransaction::create([
-            'owner_account_id' =>
-                $account->id,
+            'owner_account_id' => $account->id,
 
-            'building_id' =>
-                $building->id,
+            'building_id' => $building->id,
 
-            'unit_id' =>
-                $unit->id,
+            'unit_id' => $unit->id,
 
-            'direction' =>
-                'credit',
+            'direction' => 'credit',
 
-            'category' =>
-                'owner_deposit',
+            'category' => 'owner_deposit',
 
-            'amount' =>
-                7500,
+            'amount' => 7500,
 
-            'transaction_date' =>
-                '2026-08-12',
+            'transaction_date' => '2026-08-12',
 
-            'payment_method' =>
-                'bank_transfer',
+            'payment_method' => 'bank_transfer',
 
-            'deposit_purpose' =>
-                'repair_maintenance',
+            'deposit_purpose' => 'repair_maintenance',
 
-            'reference' =>
-                'OWNER-DEP-PDF-001',
+            'reference' => 'OWNER-DEP-PDF-001',
 
-            'notes' =>
-                'Funds supplied for vacant-unit repairs.',
+            'notes' => 'Funds supplied for vacant-unit repairs.',
         ]);
 
         return compact(
@@ -436,32 +425,23 @@ class DocumentGenerationTest extends TestCase
             $this->createOwnerDepositContext();
 
         $expense = OwnerTransaction::create([
-            'owner_account_id' =>
-                $context['account']->id,
+            'owner_account_id' => $context['account']->id,
 
-            'building_id' =>
-                $context['building']->id,
+            'building_id' => $context['building']->id,
 
-            'unit_id' =>
-                $context['unit']->id,
+            'unit_id' => $context['unit']->id,
 
-            'direction' =>
-                'debit',
+            'direction' => 'debit',
 
-            'category' =>
-                'expense',
+            'category' => 'expense',
 
-            'amount' =>
-                2000,
+            'amount' => 2000,
 
-            'transaction_date' =>
-                '2026-08-12',
+            'transaction_date' => '2026-08-12',
 
-            'reference' =>
-                'EXP-NOT-RECEIPT-001',
+            'reference' => 'EXP-NOT-RECEIPT-001',
 
-            'notes' =>
-                'This accounting debit is not incoming owner money.',
+            'notes' => 'This accounting debit is not incoming owner money.',
         ]);
 
         $this->getJson(
@@ -501,139 +481,138 @@ class DocumentGenerationTest extends TestCase
     }
 
     /**
- * Build a finalized Security Deposit settlement for document testing.
- *
- * @return SecurityDepositSettlement
- */
-private function createSecurityDepositSettlementContext(): SecurityDepositSettlement
-{
-    $building = Building::create([
-        'name' => 'Security Deposit Voucher Building',
-    ]);
+     * Build a finalized Security Deposit settlement for document testing.
+     */
+    private function createSecurityDepositSettlementContext(): SecurityDepositSettlement
+    {
+        $building = Building::create([
+            'name' => 'Security Deposit Voucher Building',
+        ]);
 
-    $unit = Unit::create([
-        'building_id' => $building->id,
-        'name' => 'Unit SDV-1',
-    ]);
+        $unit = Unit::create([
+            'building_id' => $building->id,
+            'name' => 'Unit SDV-1',
+        ]);
 
-    $tenant = Party::create([
-        'type' => 'person',
-        'name' => 'Security Deposit Voucher Tenant',
-        'phone' => '0200001560',
-        'email' => 'security-voucher@example.test',
-    ]);
+        $tenant = Party::create([
+            'type' => 'person',
+            'name' => 'Security Deposit Voucher Tenant',
+            'phone' => '0200001560',
+            'email' => 'security-voucher@example.test',
+        ]);
 
-    $lease = Lease::create([
-        'unit_id' => $unit->id,
-        'tenant_id' => $tenant->id,
-        'start_date' => '2026-01-01',
-        'rent_amount' => 5000,
-        'security_deposit_amount' => 10000,
-        'status' => 'terminated',
-    ]);
+        $lease = Lease::create([
+            'unit_id' => $unit->id,
+            'tenant_id' => $tenant->id,
+            'start_date' => '2026-01-01',
+            'rent_amount' => 5000,
+            'security_deposit_amount' => 10000,
+            'status' => 'terminated',
+        ]);
 
-    $account = TenantFundAccount::create([
-        'lease_id' => $lease->id,
-        'type' => 'security_deposit',
-        'status' => 'active',
-    ]);
+        $account = TenantFundAccount::create([
+            'lease_id' => $lease->id,
+            'type' => 'security_deposit',
+            'status' => 'active',
+        ]);
 
-    TenantFundTransaction::create([
-        'tenant_fund_account_id' => $account->id,
-        'direction' => 'credit',
-        'category' => 'deposit_funding',
-        'amount' => 10000,
-        'transaction_date' => '2026-01-01',
-    ]);
+        TenantFundTransaction::create([
+            'tenant_fund_account_id' => $account->id,
+            'direction' => 'credit',
+            'category' => 'deposit_funding',
+            'amount' => 10000,
+            'transaction_date' => '2026-01-01',
+        ]);
 
-    SecurityDepositDeduction::create([
-        'lease_id' => $lease->id,
-        'description' => 'Damaged lock',
-        'amount' => 3000,
-        'deduction_date' => '2026-08-10',
-        'reference' => 'INSPECTION-SDV-001',
-    ]);
+        SecurityDepositDeduction::create([
+            'lease_id' => $lease->id,
+            'description' => 'Damaged lock',
+            'amount' => 3000,
+            'deduction_date' => '2026-08-10',
+            'reference' => 'INSPECTION-SDV-001',
+        ]);
 
-    return app(
-        SecurityDepositService::class
-    )->settle(
-        $lease,
-        '2026-08-11',
-        'Final move-out settlement.'
-    );
-}
-/**
- * Security Deposit settlement service generates a genuine PDF voucher.
- */
-public function test_security_deposit_voucher_service_generates_pdf(): void
-{
-    $settlement =
-        $this->createSecurityDepositSettlementContext();
+        return app(
+            SecurityDepositService::class
+        )->settle(
+            $lease,
+            '2026-08-11',
+            'Final move-out settlement.'
+        );
+    }
 
-    $contents =
-        app(
-            SecurityDepositVoucherDocumentService::class
-        )->generate(
-            $settlement
+    /**
+     * Security Deposit settlement service generates a genuine PDF voucher.
+     */
+    public function test_security_deposit_voucher_service_generates_pdf(): void
+    {
+        $settlement =
+            $this->createSecurityDepositSettlementContext();
+
+        $contents =
+            app(
+                SecurityDepositVoucherDocumentService::class
+            )->generate(
+                $settlement
+            );
+
+        $this->assertStringStartsWith(
+            '%PDF-',
+            $contents
         );
 
-    $this->assertStringStartsWith(
-        '%PDF-',
-        $contents
-    );
+        $this->assertGreaterThan(
+            1000,
+            strlen($contents)
+        );
+    }
 
-    $this->assertGreaterThan(
-        1000,
-        strlen($contents)
-    );
-}
+    /**
+     * Security Deposit voucher can be downloaded through the API.
+     */
+    public function test_security_deposit_voucher_can_be_downloaded_through_api(): void
+    {
+        $settlement =
+            $this->createSecurityDepositSettlementContext();
 
-/**
- * Security Deposit voucher can be downloaded through the API.
- */
-public function test_security_deposit_voucher_can_be_downloaded_through_api(): void
-{
-    $settlement =
-        $this->createSecurityDepositSettlementContext();
+        $response =
+            $this->get(
+                "/api/security-deposit-settlements/{$settlement->id}/voucher"
+            );
 
-    $response =
-        $this->get(
-            "/api/security-deposit-settlements/{$settlement->id}/voucher"
+        $response
+            ->assertOk()
+            ->assertHeader(
+                'Content-Type',
+                'application/pdf'
+            );
+
+        $this->assertStringContainsString(
+            'Patrimoine-Security-Deposit-Voucher-'.
+                $settlement->refund_voucher_number.
+                '.pdf',
+            (string) $response
+                ->headers
+                ->get(
+                    'Content-Disposition'
+                )
         );
 
-    $response
-        ->assertOk()
-        ->assertHeader(
-            'Content-Type',
-            'application/pdf'
+        $this->assertStringStartsWith(
+            '%PDF-',
+            $response->getContent()
         );
+    }
 
-    $this->assertStringContainsString(
-        'Patrimoine-Security-Deposit-Voucher-' .
-            $settlement->refund_voucher_number .
-            '.pdf',
-        (string) $response
-            ->headers
-            ->get(
-                'Content-Disposition'
-            )
-    );
-
-    $this->assertStringStartsWith(
-        '%PDF-',
-        $response->getContent()
-    );
-}
-
-/**
- * Missing Security Deposit settlement voucher returns standard 404.
- */
-public function test_missing_security_deposit_voucher_returns_not_found(): void
-{
-    $this->getJson(
-        '/api/security-deposit-settlements/999999/voucher'
-    )->assertNotFound();
-}
+    /**
+     * Missing Security Deposit settlement voucher returns standard 404.
+     */
+    public function test_missing_security_deposit_voucher_returns_not_found(): void
+    {
+        $this->getJson(
+            '/api/security-deposit-settlements/999999/voucher'
+        )->assertNotFound();
+    }
 
     /**
      * Owner deposit receipt validation failures follow French.
@@ -663,5 +642,4 @@ public function test_missing_security_deposit_voucher_returns_not_found(): void
                 'Seuls les dépôts de propriétaire peuvent générer un reçu de dépôt de propriétaire.'
             );
     }
-
 }

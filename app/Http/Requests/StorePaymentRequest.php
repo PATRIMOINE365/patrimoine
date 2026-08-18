@@ -81,8 +81,7 @@ class StorePaymentRequest extends FormRequest
                 'string',
                 'max:255',
                 Rule::requiredIf(
-                    fn (): bool =>
-                        $this->input('payment_method') === 'cash'
+                    fn (): bool => $this->input('payment_method') === 'cash'
                 ),
             ],
 

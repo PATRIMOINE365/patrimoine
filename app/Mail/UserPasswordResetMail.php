@@ -21,8 +21,7 @@ class UserPasswordResetMail extends Mailable
         public User $user,
         public string $resetUrl,
         public string $organisationName
-    ) {
-    }
+    ) {}
 
     public function envelope(): Envelope
     {

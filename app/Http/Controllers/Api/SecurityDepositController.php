@@ -8,12 +8,12 @@ use App\Http\Requests\StoreSecurityDepositDeductionRequest;
 use App\Models\Lease;
 use App\Models\SecurityDepositDeduction;
 use App\Models\TenantFundAccount;
+use App\Services\ActivityLogService;
+use App\Services\FinancialActivitySnapshotService;
 use App\Services\SecurityDepositService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
-use App\Services\ActivityLogService;
-use App\Services\FinancialActivitySnapshotService;
 
 /**
  * Operational API controller for Security Deposit close-out.
@@ -97,26 +97,19 @@ class SecurityDepositController extends Controller
                 : $settlement->tenant_debt_amount;
 
         return response()->json([
-            'contractual_amount' =>
-                (int) ($lease->security_deposit_amount ?? 0),
+            'contractual_amount' => (int) ($lease->security_deposit_amount ?? 0),
 
-            'held_balance' =>
-                $heldBalance,
+            'held_balance' => $heldBalance,
 
-            'deductions' =>
-                $deductions,
+            'deductions' => $deductions,
 
-            'deduction_total' =>
-                $deductionTotal,
+            'deduction_total' => $deductionTotal,
 
-            'estimated_refund' =>
-                $estimatedRefund,
+            'estimated_refund' => $estimatedRefund,
 
-            'estimated_tenant_debt' =>
-                $estimatedTenantDebt,
+            'estimated_tenant_debt' => $estimatedTenantDebt,
 
-            'settlement' =>
-                $settlement,
+            'settlement' => $settlement,
         ]);
     }
 
@@ -180,33 +173,27 @@ class SecurityDepositController extends Controller
 
         $deduction =
             SecurityDepositDeduction::create([
-                'lease_id' =>
-                    $lease->id,
+                'lease_id' => $lease->id,
 
-                'description' =>
-                    $request->validated(
-                        'description'
-                    ),
+                'description' => $request->validated(
+                    'description'
+                ),
 
-                'amount' =>
-                    $request->integer(
-                        'amount'
-                    ),
+                'amount' => $request->integer(
+                    'amount'
+                ),
 
-                'deduction_date' =>
-                    $request->validated(
-                        'deduction_date'
-                    ),
+                'deduction_date' => $request->validated(
+                    'deduction_date'
+                ),
 
-                'reference' =>
-                    $request->validated(
-                        'reference'
-                    ),
+                'reference' => $request->validated(
+                    'reference'
+                ),
 
-                'notes' =>
-                    $request->validated(
-                        'notes'
-                    ),
+                'notes' => $request->validated(
+                    'notes'
+                ),
             ]);
 
         $activityLog->record(
@@ -245,21 +232,18 @@ class SecurityDepositController extends Controller
             $request->validated();
 
         try {
-        $settlement =
-            $service->settle(
-                lease:
-                    $lease,
+            $settlement =
+                $service->settle(
+                    lease: $lease,
 
-                settlementDate:
-                    $validated[
-                        'settlement_date'
-                    ],
+                    settlementDate: $validated[
+                            'settlement_date'
+                        ],
 
-                notes:
-                    $validated[
-                        'notes'
-                    ] ?? null
-            );
+                    notes: $validated[
+                            'notes'
+                        ] ?? null
+                );
         } catch (RuntimeException $exception) {
             throw ValidationException::withMessages([
                 'security_deposit' => [
@@ -280,13 +264,11 @@ class SecurityDepositController extends Controller
         );
 
         return response()->json(
-            data:
-                $settlement->load(
-                    'lease'
-                ),
+            data: $settlement->load(
+                'lease'
+            ),
 
-            status:
-                201
+            status: 201
         );
     }
 }

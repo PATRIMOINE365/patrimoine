@@ -38,12 +38,12 @@ class OwnerPayoutService
     /**
      * Create and allocate an owner payout.
      *
-     * @param OwnerAccount $account Owner account receiving the payout.
-     * @param int $amount Whole-currency payout amount.
-     * @param string $payoutDate Effective payout date in YYYY-MM-DD format.
-     * @param string $paymentMethod Payment channel such as cash, bank_transfer or momo.
-     * @param string|null $reference Optional external payment reference.
-     * @param string|null $notes Optional administrative notes.
+     * @param  OwnerAccount  $account  Owner account receiving the payout.
+     * @param  int  $amount  Whole-currency payout amount.
+     * @param  string  $payoutDate  Effective payout date in YYYY-MM-DD format.
+     * @param  string  $paymentMethod  Payment channel such as cash, bank_transfer or momo.
+     * @param  string|null  $reference  Optional external payment reference.
+     * @param  string|null  $notes  Optional administrative notes.
      *
      * @throws RuntimeException When the payout violates accounting rules.
      */

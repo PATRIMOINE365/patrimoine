@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -63,7 +64,6 @@ class BrowserLocalisationTest extends TestCase
             );
     }
 
-
     public function test_dashboard_exposes_translation_hooks(): void
     {
         $this
@@ -93,8 +93,6 @@ class BrowserLocalisationTest extends TestCase
                 'Current portfolio and financial position.'
             );
     }
-
-
 
     public function test_settings_exposes_translation_hooks(): void
     {
@@ -133,8 +131,6 @@ class BrowserLocalisationTest extends TestCase
                 'Save Organisation'
             );
     }
-
-
 
     public function test_properties_exposes_translation_hooks(): void
     {
@@ -178,8 +174,6 @@ class BrowserLocalisationTest extends TestCase
             );
     }
 
-
-
     public function test_parties_exposes_translation_hooks(): void
     {
         $this
@@ -222,12 +216,10 @@ class BrowserLocalisationTest extends TestCase
             );
     }
 
-
-
     public function test_leases_exposes_translation_hooks(): void
     {
         $user =
-            \App\Models\User::factory()
+            User::factory()
                 ->create();
 
         $this
@@ -263,14 +255,6 @@ class BrowserLocalisationTest extends TestCase
                 false
             )
             ->assertSee(
-                'data-i18n="leases.security_closeout"',
-                false
-            )
-            ->assertSee(
-                'data-i18n="leases.tenant_money"',
-                false
-            )
-            ->assertSee(
                 'data-i18n-aria-label="leases.close"',
                 false
             )
@@ -278,7 +262,6 @@ class BrowserLocalisationTest extends TestCase
                 'Lease Register'
             );
     }
-
 
     public function test_payments_exposes_translation_hooks(): void
     {
@@ -339,7 +322,6 @@ class BrowserLocalisationTest extends TestCase
             );
     }
 
-
     public function test_owners_exposes_translation_hooks(): void
     {
         $response = $this->get('/owners');
@@ -399,7 +381,6 @@ class BrowserLocalisationTest extends TestCase
             );
     }
 
-
     public function test_tenants_exposes_translation_hooks(): void
     {
         $response = $this->get('/tenants');
@@ -434,7 +415,6 @@ class BrowserLocalisationTest extends TestCase
                 'Tenants'
             );
     }
-
 
     /**
      * Protect against accidentally placing French application-page keys
@@ -500,8 +480,7 @@ class BrowserLocalisationTest extends TestCase
                 "'owners.heading': 'Owners'",
                 "'tenants.heading': 'Tenants'",
                 "'reports.heading': 'Reports'",
-            ]
-            as $expected
+            ] as $expected
         ) {
             $this->assertStringContainsString(
                 $expected,
@@ -516,8 +495,7 @@ class BrowserLocalisationTest extends TestCase
                 "'owners.heading': 'Propriétaires'",
                 "'tenants.heading': 'Locataires'",
                 "'reports.heading': 'Rapports'",
-            ]
-            as $expected
+            ] as $expected
         ) {
             $this->assertStringNotContainsString(
                 $expected,
@@ -581,5 +559,4 @@ class BrowserLocalisationTest extends TestCase
             $source
         );
     }
-
 }

@@ -3,12 +3,13 @@
 namespace App\Services;
 
 use App\Models\Building;
+use App\Models\Lease;
 use App\Models\OwnerAccount;
 use App\Models\OwnerExpense;
 use App\Models\OwnerTransaction;
+use App\Models\PaymentAllocation;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
-use App\Models\Unit;
 
 /**
  * Handles owner-side accounting entries.
@@ -109,7 +110,6 @@ class OwnerAccountingService
         });
     }
 
-
     /**
      * Post owner rent entitlement when tenant money is actually collected.
      *
@@ -126,7 +126,7 @@ class OwnerAccountingService
      * @return array<int, OwnerTransaction>
      */
     public function postCollectedRentEntitlement(
-        \App\Models\PaymentAllocation $allocation
+        PaymentAllocation $allocation
     ): array {
         return DB::transaction(function () use ($allocation): array {
             $allocation->refresh();
@@ -163,8 +163,7 @@ class OwnerAccountingService
             }
 
             $ownershipTotal = (float) $ownerships->sum(
-                fn ($ownership) =>
-                    (float) $ownership->ownership_percentage
+                fn ($ownership) => (float) $ownership->ownership_percentage
             );
 
             if (abs($ownershipTotal - 100.0) > 0.001) {
@@ -219,25 +218,18 @@ class OwnerAccountingService
                     * Entitlement date follows the tenant Payment date rather
                     * than the Invoice issue date.
                     */
-                    'transaction_date' =>
-                        $allocation->payment->payment_date,
+                    'transaction_date' => $allocation->payment->payment_date,
 
-                    'reference' =>
-                        $allocation->payment->reference
+                    'reference' => $allocation->payment->reference
                         ?? $invoice->invoice_number,
 
-                    'notes' =>
-                        'Owner share of tenant rent actually collected.',
+                    'notes' => 'Owner share of tenant rent actually collected.',
                 ]);
             }
 
             return $transactions;
         });
     }
-
-
-
-
 
     /**
      * Post the management fee applicable to an Invoice.
@@ -252,26 +244,22 @@ class OwnerAccountingService
      * @return array<int, OwnerTransaction>
      */
 
-
-
-
     /**
- * Post the management fee attributable to collected tenant rent.
- *
- * Patrimoine uses cash-basis owner accounting. Management fees therefore
- * become chargeable only when tenant rent is actually received and allocated
- * to an Invoice.
- *
- * Percentage fees are calculated from the collected allocation.
- *
- * Fixed fees are charged once when the first collection is made against the
- * Invoice.
- *
- * @return array<int, OwnerTransaction>
- */
-
+     * Post the management fee attributable to collected tenant rent.
+     *
+     * Patrimoine uses cash-basis owner accounting. Management fees therefore
+     * become chargeable only when tenant rent is actually received and allocated
+     * to an Invoice.
+     *
+     * Percentage fees are calculated from the collected allocation.
+     *
+     * Fixed fees are charged once when the first collection is made against the
+     * Invoice.
+     *
+     * @return array<int, OwnerTransaction>
+     */
     public function postManagementFee(
-        \App\Models\PaymentAllocation $allocation
+        PaymentAllocation $allocation
     ): array {
         return DB::transaction(
             function () use ($allocation): array {
@@ -347,28 +335,18 @@ class OwnerAccountingService
                     building: $lease->unit->building,
                     amount: $feeAmount,
                     category: 'management_fee',
-                    transactionDate:
-                        $allocation->payment->payment_date->toDateString(),
+                    transactionDate: $allocation->payment->payment_date->toDateString(),
                     leaseId: $lease->id,
                     unitId: $lease->unit_id,
                     invoiceId: $invoice->id,
                     paymentAllocationId: $allocation->id,
-                    reference:
-                        $allocation->payment->reference
+                    reference: $allocation->payment->reference
                         ?? $invoice->invoice_number,
-                    notes:
-                        'Management fee charged against tenant rent actually collected.'
+                    notes: 'Management fee charged against tenant rent actually collected.'
                 );
             }
         );
     }
-
-
-
-
-
-
-
 
     /**
      * Post the one-time Agent commission configured on a Lease.
@@ -381,7 +359,7 @@ class OwnerAccountingService
      *
      * @return array<int, OwnerTransaction>
      */
-    public function postAgentCommission(\App\Models\Lease $lease): array
+    public function postAgentCommission(Lease $lease): array
     {
         return DB::transaction(function () use ($lease): array {
             $lease->refresh();

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ApplicationSetting;
 use App\Models\Building;
 use App\Models\Lease;
 use App\Models\Party;
@@ -12,15 +13,14 @@ use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\AuthenticatesApiUser;
 use Tests\TestCase;
-use App\Models\ApplicationSetting;
 
 /**
  * Verifies the Patrimoine Security Deposit operational API.
  */
 class SecurityDepositApiTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -97,17 +97,13 @@ class SecurityDepositApiTest extends TestCase
             );
 
         SecurityDepositDeduction::create([
-            'lease_id' =>
-                $context['lease']->id,
+            'lease_id' => $context['lease']->id,
 
-            'description' =>
-                'Damaged lock',
+            'description' => 'Damaged lock',
 
-            'amount' =>
-                3000,
+            'amount' => 3000,
 
-            'deduction_date' =>
-                '2026-08-10',
+            'deduction_date' => '2026-08-10',
         ]);
 
         $this->getJson(
@@ -155,20 +151,15 @@ class SecurityDepositApiTest extends TestCase
         $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/deductions",
             [
-                'description' =>
-                    'Repainting',
+                'description' => 'Repainting',
 
-                'amount' =>
-                    2500,
+                'amount' => 2500,
 
-                'deduction_date' =>
-                    '2026-08-10',
+                'deduction_date' => '2026-08-10',
 
-                'reference' =>
-                    'INSPECTION-001',
+                'reference' => 'INSPECTION-001',
 
-                'notes' =>
-                    'Bedroom wall repainting.',
+                'notes' => 'Bedroom wall repainting.',
             ]
         )
             ->assertCreated()
@@ -188,17 +179,13 @@ class SecurityDepositApiTest extends TestCase
         $this->assertDatabaseHas(
             'security_deposit_deductions',
             [
-                'lease_id' =>
-                    $context['lease']->id,
+                'lease_id' => $context['lease']->id,
 
-                'description' =>
-                    'Repainting',
+                'description' => 'Repainting',
 
-                'amount' =>
-                    2500,
+                'amount' => 2500,
 
-                'reference' =>
-                    'INSPECTION-001',
+                'reference' => 'INSPECTION-001',
             ]
         );
     }
@@ -214,14 +201,11 @@ class SecurityDepositApiTest extends TestCase
         $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/deductions",
             [
-                'description' =>
-                    '',
+                'description' => '',
 
-                'amount' =>
-                    0,
+                'amount' => 0,
 
-                'deduction_date' =>
-                    '',
+                'deduction_date' => '',
             ]
         )
             ->assertUnprocessable()
@@ -239,24 +223,19 @@ class SecurityDepositApiTest extends TestCase
     {
         $context =
             $this->createContext(
-                depositAmount:
-                    10000,
+                depositAmount: 10000,
 
-                status:
-                    'active'
+                status: 'active'
             );
 
         $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/deductions",
             [
-                'description' =>
-                    'Damaged lock',
+                'description' => 'Damaged lock',
 
-                'amount' =>
-                    1000,
+                'amount' => 1000,
 
-                'deduction_date' =>
-                    '2026-08-10',
+                'deduction_date' => '2026-08-10',
             ]
         )
             ->assertUnprocessable()
@@ -281,22 +260,18 @@ class SecurityDepositApiTest extends TestCase
         $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/settle",
             [
-                'settlement_date' =>
-                    '2026-08-11',
+                'settlement_date' => '2026-08-11',
             ]
         )->assertCreated();
 
         $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/deductions",
             [
-                'description' =>
-                    'Late deduction',
+                'description' => 'Late deduction',
 
-                'amount' =>
-                    1000,
+                'amount' => 1000,
 
-                'deduction_date' =>
-                    '2026-08-12',
+                'deduction_date' => '2026-08-12',
             ]
         )
             ->assertUnprocessable()
@@ -321,25 +296,20 @@ class SecurityDepositApiTest extends TestCase
             );
 
         SecurityDepositDeduction::create([
-            'lease_id' =>
-                $context['lease']->id,
+            'lease_id' => $context['lease']->id,
 
-            'description' =>
-                'Damaged lock',
+            'description' => 'Damaged lock',
 
-            'amount' =>
-                3000,
+            'amount' => 3000,
 
-            'deduction_date' =>
-                '2026-08-10',
+            'deduction_date' => '2026-08-10',
         ]);
 
         $response =
             $this->postJson(
                 "/api/leases/{$context['lease']->id}/security-deposit/settle",
                 [
-                    'settlement_date' =>
-                        '2026-08-11',
+                    'settlement_date' => '2026-08-11',
 
                 ]
             );
@@ -389,24 +359,19 @@ class SecurityDepositApiTest extends TestCase
             );
 
         SecurityDepositDeduction::create([
-            'lease_id' =>
-                $context['lease']->id,
+            'lease_id' => $context['lease']->id,
 
-            'description' =>
-                'Cleaning',
+            'description' => 'Cleaning',
 
-            'amount' =>
-                1500,
+            'amount' => 1500,
 
-            'deduction_date' =>
-                '2026-08-10',
+            'deduction_date' => '2026-08-10',
         ]);
 
         $settlementResponse = $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/settle",
             [
-                'settlement_date' =>
-                    '2026-08-11',
+                'settlement_date' => '2026-08-11',
 
             ]
         );
@@ -465,24 +430,19 @@ class SecurityDepositApiTest extends TestCase
             );
 
         SecurityDepositDeduction::create([
-            'lease_id' =>
-                $context['lease']->id,
+            'lease_id' => $context['lease']->id,
 
-            'description' =>
-                'Major repairs',
+            'description' => 'Major repairs',
 
-            'amount' =>
-                13000,
+            'amount' => 13000,
 
-            'deduction_date' =>
-                '2026-08-10',
+            'deduction_date' => '2026-08-10',
         ]);
 
         $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/settle",
             [
-                'settlement_date' =>
-                    '2026-08-11',
+                'settlement_date' => '2026-08-11',
             ]
         )
             ->assertCreated()
@@ -514,16 +474,14 @@ class SecurityDepositApiTest extends TestCase
         $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/settle",
             [
-                'settlement_date' =>
-                    '2026-08-11',
+                'settlement_date' => '2026-08-11',
             ]
         )->assertCreated();
 
         $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/settle",
             [
-                'settlement_date' =>
-                    '2026-08-12',
+                'settlement_date' => '2026-08-12',
             ]
         )
             ->assertUnprocessable()
@@ -553,8 +511,7 @@ class SecurityDepositApiTest extends TestCase
         $this->postJson(
             "/api/leases/{$context['lease']->id}/security-deposit/settle",
             [
-                'settlement_date' =>
-                    '2026-08-11',
+                'settlement_date' => '2026-08-11',
             ]
         )
             ->assertUnprocessable()
@@ -598,5 +555,4 @@ class SecurityDepositApiTest extends TestCase
                 'Aucun compte de dépôt de garantie n’existe pour ce bail.'
             );
     }
-
 }

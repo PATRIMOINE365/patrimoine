@@ -6,22 +6,21 @@ use App\Models\Building;
 use App\Models\BuildingOwner;
 use App\Models\Invoice;
 use App\Models\Lease;
-use App\Models\OwnerAccount;
 use App\Models\OwnerTransaction;
 use App\Models\Party;
 use App\Models\Payment;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
+use Tests\TestCase;
 
 /**
  * Verifies the Patrimoine read-only dashboard API.
  */
 class DashboardApiTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {

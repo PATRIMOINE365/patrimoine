@@ -66,77 +66,57 @@ class MixedTenantDebtUiTestSeeder extends Seeder
              * portion can enter the owner-accounting pipeline normally.
              */
             $owner = Party::create([
-                'type' =>
-                    'person',
+                'type' => 'person',
 
-                'name' =>
-                    'UI TEST 07 Owner',
+                'name' => 'UI TEST 07 Owner',
 
-                'phone' =>
-                    '0209999070',
+                'phone' => '0209999070',
 
-                'email' =>
-                    'ui-test-07-owner@example.test',
+                'email' => 'ui-test-07-owner@example.test',
             ]);
 
             PartyRole::create([
-                'party_id' =>
-                    $owner->id,
+                'party_id' => $owner->id,
 
-                'role' =>
-                    'owner',
+                'role' => 'owner',
             ]);
 
             $building = Building::create([
-                'name' =>
-                    'UI TEST 07 - Mixed Receivables Building',
+                'name' => 'UI TEST 07 - Mixed Receivables Building',
 
-                'location' =>
-                    'Patrimoine Test Data',
+                'location' => 'Patrimoine Test Data',
 
-                'notes' =>
-                    'Disposable mixed rent and Security Deposit debt UI scenario.',
+                'notes' => 'Disposable mixed rent and Security Deposit debt UI scenario.',
             ]);
 
             BuildingOwner::create([
-                'building_id' =>
-                    $building->id,
+                'building_id' => $building->id,
 
-                'party_id' =>
-                    $owner->id,
+                'party_id' => $owner->id,
 
-                'ownership_percentage' =>
-                    100.00,
+                'ownership_percentage' => 100.00,
             ]);
 
             $unit = Unit::create([
-                'building_id' =>
-                    $building->id,
+                'building_id' => $building->id,
 
-                'name' =>
-                    'UI TEST 07 - Mixed Rent and Deposit Debt',
+                'name' => 'UI TEST 07 - Mixed Rent and Deposit Debt',
             ]);
 
             $tenant = Party::create([
-                'type' =>
-                    'person',
+                'type' => 'person',
 
-                'name' =>
-                    'UI TEST 07 Tenant',
+                'name' => 'UI TEST 07 Tenant',
 
-                'phone' =>
-                    '0209999007',
+                'phone' => '0209999007',
 
-                'email' =>
-                    'ui-test-07-tenant@example.test',
+                'email' => 'ui-test-07-tenant@example.test',
             ]);
 
             PartyRole::create([
-                'party_id' =>
-                    $tenant->id,
+                'party_id' => $tenant->id,
 
-                'role' =>
-                    'tenant',
+                'role' => 'tenant',
             ]);
 
             /*
@@ -144,62 +124,43 @@ class MixedTenantDebtUiTestSeeder extends Seeder
              * settlement belongs to the final Lease close-out workflow.
              */
             $lease = Lease::create([
-                'unit_id' =>
-                    $unit->id,
+                'unit_id' => $unit->id,
 
-                'tenant_id' =>
-                    $tenant->id,
+                'tenant_id' => $tenant->id,
 
-                'start_date' =>
-                    '2026-03-01',
+                'start_date' => '2026-03-01',
 
-                'end_date' =>
-                    '2026-07-31',
+                'end_date' => '2026-07-31',
 
-                'status' =>
-                    'terminated',
+                'status' => 'terminated',
 
-                'termination_notice_date' =>
-                    '2026-07-01',
+                'termination_notice_date' => '2026-07-01',
 
-                'rent_amount' =>
-                    3000,
+                'rent_amount' => 3000,
 
-                'payment_frequency' =>
-                    'monthly',
+                'payment_frequency' => 'monthly',
 
-                'due_day' =>
-                    1,
+                'due_day' => 1,
 
-                'vat_rate' =>
-                    0,
+                'vat_rate' => 0,
 
-                'security_deposit_amount' =>
-                    5000,
+                'security_deposit_amount' => 5000,
 
-                'advance_payment_amount' =>
-                    0,
+                'advance_payment_amount' => 0,
 
-                'rent_reserve_amount' =>
-                    0,
+                'rent_reserve_amount' => 0,
 
-                'rent_increment_type' =>
-                    'none',
+                'rent_increment_type' => 'none',
 
-                'rent_increment_value' =>
-                    0,
+                'rent_increment_value' => 0,
 
-                'management_fee_type' =>
-                    'none',
+                'management_fee_type' => 'none',
 
-                'management_fee_value' =>
-                    0,
+                'management_fee_value' => 0,
 
-                'agent_commission_amount' =>
-                    0,
+                'agent_commission_amount' => 0,
 
-                'notes' =>
-                    'UI TEST 07 mixed rent and Security Deposit debt collection scenario.',
+                'notes' => 'UI TEST 07 mixed rent and Security Deposit debt collection scenario.',
             ]);
 
             /*
@@ -209,47 +170,33 @@ class MixedTenantDebtUiTestSeeder extends Seeder
              * before the later Security Deposit debt receivable.
              */
             Invoice::create([
-                'lease_id' =>
-                    $lease->id,
+                'lease_id' => $lease->id,
 
-                'invoice_number' =>
-                    'UI-TEST-07-RENT-001',
+                'invoice_number' => 'UI-TEST-07-RENT-001',
 
-                'type' =>
-                    'rent',
+                'type' => 'rent',
 
-                'period_start' =>
-                    '2026-07-01',
+                'period_start' => '2026-07-01',
 
-                'period_end' =>
-                    '2026-07-31',
+                'period_end' => '2026-07-31',
 
-                'issue_date' =>
-                    '2026-07-01',
+                'issue_date' => '2026-07-01',
 
-                'due_date' =>
-                    '2026-07-01',
+                'due_date' => '2026-07-01',
 
-                'status' =>
-                    'issued',
+                'status' => 'issued',
 
-                'total_amount' =>
-                    3000,
+                'total_amount' => 3000,
 
-                'vat_rate' =>
-                    0,
+                'vat_rate' => 0,
 
-                'net_amount' =>
-                    3000,
+                'net_amount' => 3000,
 
-                'vat_amount' =>
-                    0,
+                'vat_amount' => 0,
 
-                'proration_amount' =>
-                    null,
+                'proration_amount' => null,
 
-                'notes' =>
-                    'UI TEST 07 ordinary rent receivable.',
+                'notes' => 'UI TEST 07 ordinary rent receivable.',
             ]);
 
             /*
@@ -260,60 +207,43 @@ class MixedTenantDebtUiTestSeeder extends Seeder
              * became Security Deposit rather than rent.
              */
             $depositPayment = Payment::create([
-                'lease_id' =>
-                    $lease->id,
+                'lease_id' => $lease->id,
 
-                'amount' =>
-                    5000,
+                'amount' => 5000,
 
-                'payment_date' =>
-                    '2026-03-01',
+                'payment_date' => '2026-03-01',
 
-                'payment_method' =>
-                    'bank_transfer',
+                'payment_method' => 'bank_transfer',
 
-                'reference' =>
-                    'UI-TEST-07-DEPOSIT-5000',
+                'reference' => 'UI-TEST-07-DEPOSIT-5000',
 
-                'notes' =>
-                    'UI TEST 07 original Security Deposit receipt.',
+                'notes' => 'UI TEST 07 original Security Deposit receipt.',
             ]);
 
             $depositAccount = TenantFundAccount::create([
-                'lease_id' =>
-                    $lease->id,
+                'lease_id' => $lease->id,
 
-                'type' =>
-                    'security_deposit',
+                'type' => 'security_deposit',
 
-                'status' =>
-                    'active',
+                'status' => 'active',
             ]);
 
             TenantFundTransaction::create([
-                'tenant_fund_account_id' =>
-                    $depositAccount->id,
+                'tenant_fund_account_id' => $depositAccount->id,
 
-                'payment_id' =>
-                    $depositPayment->id,
+                'payment_id' => $depositPayment->id,
 
-                'direction' =>
-                    'credit',
+                'direction' => 'credit',
 
-                'category' =>
-                    'deposit_funding',
+                'category' => 'deposit_funding',
 
-                'amount' =>
-                    5000,
+                'amount' => 5000,
 
-                'transaction_date' =>
-                    '2026-03-01',
+                'transaction_date' => '2026-03-01',
 
-                'reference' =>
-                    'UI-TEST-07-DEPOSIT-5000',
+                'reference' => 'UI-TEST-07-DEPOSIT-5000',
 
-                'notes' =>
-                    'UI TEST 07 opening Security Deposit balance.',
+                'notes' => 'UI TEST 07 opening Security Deposit balance.',
             ]);
 
             /*
@@ -323,36 +253,27 @@ class MixedTenantDebtUiTestSeeder extends Seeder
              * one security_deposit_debt Invoice automatically.
              */
             SecurityDepositDeduction::create([
-                'lease_id' =>
-                    $lease->id,
+                'lease_id' => $lease->id,
 
-                'description' =>
-                    'UI TEST 07 close-out repairs',
+                'description' => 'UI TEST 07 close-out repairs',
 
-                'amount' =>
-                    7000,
+                'amount' => 7000,
 
-                'deduction_date' =>
-                    '2026-08-13',
+                'deduction_date' => '2026-08-13',
 
-                'reference' =>
-                    'UI-TEST-07-DEDUCTION-001',
+                'reference' => 'UI-TEST-07-DEDUCTION-001',
 
-                'notes' =>
-                    'Creates GHS 2,000 Security Deposit close-out debt.',
+                'notes' => 'Creates GHS 2,000 Security Deposit close-out debt.',
             ]);
 
             app(
                 SecurityDepositService::class
             )->settle(
-                lease:
-                    $lease,
+                lease: $lease,
 
-                settlementDate:
-                    '2026-08-13',
+                settlementDate: '2026-08-13',
 
-                notes:
-                    'UI TEST 07 settlement generating mixed tenant receivables.'
+                notes: 'UI TEST 07 settlement generating mixed tenant receivables.'
             );
         });
 

@@ -24,13 +24,12 @@ class LeaseInitializationService
         private readonly PaymentAllocationService $paymentAllocation,
         private readonly TenantFundAllocationService $tenantFundAllocation,
         private readonly OwnerAccountingService $ownerAccounting
-    ) {
-    }
+    ) {}
 
     /**
      * Bring a newly-created Lease up to its correct operational position.
      *
-     * @param array<string, mixed> $openingFinancialData
+     * @param  array<string, mixed>  $openingFinancialData
      */
     public function initialize(
         Lease $lease,
@@ -106,87 +105,78 @@ class LeaseInitializationService
      * - owner rent entitlement; and
      * - Managing Organisation fee.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
-private function initializeReceivedAdvance(
+    private function initializeReceivedAdvance(
 
-    Lease $lease,
+        Lease $lease,
 
-    array $data
+        array $data
 
-): Payment {
+    ): Payment {
 
-    /*
+        /*
 
-     * A Lease may have only one historical opening Advance Payment.
+         * A Lease may have only one historical opening Advance Payment.
 
-     *
+         *
 
-     * This makes initialization idempotent. Editing the Lease again or
+         * This makes initialization idempotent. Editing the Lease again or
 
-     * accidentally resubmitting the same opening instructions must never
+         * accidentally resubmitting the same opening instructions must never
 
-     * duplicate tenant cash, Invoice settlement or owner accounting.
+         * duplicate tenant cash, Invoice settlement or owner accounting.
 
-     */
+         */
 
-    $existingOpeningPayment = Payment::query()
+        $existingOpeningPayment = Payment::query()
 
-        ->where('lease_id', $lease->id)
+            ->where('lease_id', $lease->id)
 
-        ->where('is_opening_advance', true)
+            ->where('is_opening_advance', true)
 
-        ->first();
+            ->first();
 
-    if ($existingOpeningPayment !== null) {
+        if ($existingOpeningPayment !== null) {
 
-        return $existingOpeningPayment;
+            return $existingOpeningPayment;
 
-    }
+        }
 
-    $paymentDate =
+        $paymentDate =
 
-        (string) $data[
+            (string) $data[
 
-            'advance_received_date'
+                'advance_received_date'
 
-        ];
+            ];
 
-    /*
+        /*
 
-     * One Payment represents the actual historical tenant money received.
+         * One Payment represents the actual historical tenant money received.
 
-     */
+         */
         $payment = Payment::create([
-            'lease_id' =>
-                $lease->id,
+            'lease_id' => $lease->id,
 
-            'amount' =>
-                $lease->advance_payment_amount,
+            'amount' => $lease->advance_payment_amount,
 
-            'payment_date' =>
-                $paymentDate,
+            'payment_date' => $paymentDate,
 
-            'payment_method' =>
-                $data[
+            'payment_method' => $data[
                     'advance_received_method'
                 ],
 
-            'reference' =>
-                $data[
+            'reference' => $data[
                     'advance_received_reference'
                 ] ?? null,
 
-            'collector_name' =>
-                $data[
+            'collector_name' => $data[
                     'advance_received_collector'
                 ] ?? null,
 
-            'notes' =>
-                'Historical Advance Payment recorded during Lease opening.',
-            'is_opening_advance' =>
-
-                true,
+            'notes' => 'Historical Advance Payment recorded during Lease opening.',
+            'is_opening_advance' => true,
         ]);
 
         /*
@@ -202,14 +192,10 @@ private function initializeReceivedAdvance(
                 ->allocate(
                     payment: $payment,
                     fundType: 'rent_reserve',
-                    amount:
-                        $lease->rent_reserve_amount,
-                    transactionDate:
-                        $paymentDate,
-                    reference:
-                        $payment->reference,
-                    notes:
-                        'Historical Rent Reserve funded from Lease opening Advance Payment.'
+                    amount: $lease->rent_reserve_amount,
+                    transactionDate: $paymentDate,
+                    reference: $payment->reference,
+                    notes: 'Historical Rent Reserve funded from Lease opening Advance Payment.'
                 );
         }
 
@@ -244,16 +230,11 @@ private function initializeReceivedAdvance(
             $this->tenantFundAllocation
                 ->allocate(
                     payment: $payment,
-                    fundType:
-                        'consumable_advance',
-                    amount:
-                        $remaining,
-                    transactionDate:
-                        $paymentDate,
-                    reference:
-                        $payment->reference,
-                    notes:
-                        'Remaining historical Advance Payment retained as Consumable Advance.'
+                    fundType: 'consumable_advance',
+                    amount: $remaining,
+                    transactionDate: $paymentDate,
+                    reference: $payment->reference,
+                    notes: 'Remaining historical Advance Payment retained as Consumable Advance.'
                 );
         }
 

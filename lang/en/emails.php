@@ -61,8 +61,8 @@ return [
     'payment_methods' => [
         'cash' => 'Cash',
         'bank_transfer' => 'Bank Transfer',
-        'momo' => 'MoMo',
-        'mobile_money' => 'Mobile Money',
+        'momo' => 'Mobile Payment',
+        'mobile_money' => 'Mobile Payment',
         'cheque' => 'Cheque',
         'check' => 'Cheque',
     ],
@@ -77,22 +77,13 @@ return [
         'ignore' => 'If you were not expecting this invitation, you can ignore this email.',
     ],
 
-
-
     'password_reset' => [
-        'subject' =>
-            'Reset your :organisation password',
-        'title' =>
-            'Reset your password',
-        'greeting' =>
-            'Hello :name,',
-        'introduction' =>
-            'A password reset was requested for your :organisation account.',
-        'action' =>
-            'Reset my password',
-        'expiry' =>
-            'This link expires in 24 hours.',
-        'ignore' =>
-            'If you did not request this reset, you can ignore this email.',
+        'subject' => 'Reset your :organisation password',
+        'title' => 'Reset your password',
+        'greeting' => 'Hello :name,',
+        'introduction' => 'A password reset was requested for your :organisation account.',
+        'action' => 'Reset my password',
+        'expiry' => 'This link expires in 24 hours.',
+        'ignore' => 'If you did not request this reset, you can ignore this email.',
     ],
 ];

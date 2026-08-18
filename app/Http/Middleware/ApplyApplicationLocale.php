@@ -19,8 +19,7 @@ class ApplyApplicationLocale
 {
     public function __construct(
         private ApplicationLocaleService $locale
-    ) {
-    }
+    ) {}
 
     /**
      * Apply the application language before controllers/views execute.

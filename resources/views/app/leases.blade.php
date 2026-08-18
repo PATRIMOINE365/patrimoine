@@ -787,7 +787,7 @@
                                     data-pm-date-input
                                     inputmode="numeric"
                                     maxlength="10"
-                                    placeholder="dd-mm-yyyy"
+                                    placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                     type="text"
                                     required
                                     class="
@@ -867,7 +867,7 @@
                                     data-pm-date-input
                                     inputmode="numeric"
                                     maxlength="10"
-                                    placeholder="dd-mm-yyyy"
+                                    placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                     type="text"
                                     class="
                                         w-full rounded-lg
@@ -1017,7 +1017,7 @@
                                     data-pm-date-input
                                     inputmode="numeric"
                                     maxlength="10"
-                                    placeholder="dd-mm-yyyy"
+                                    placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                     type="text"
                                     class="
                                         w-full rounded-lg
@@ -1662,7 +1662,7 @@
                                     data-pm-date-input
                                     inputmode="numeric"
                                     maxlength="10"
-                                    placeholder="dd-mm-yyyy"
+                                    placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                         type="text"
                                         class="
                                             w-full rounded-lg
@@ -2027,7 +2027,7 @@
                                     data-pm-date-input
                                     inputmode="numeric"
                                     maxlength="10"
-                                    placeholder="dd-mm-yyyy"
+                                    placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                     type="text"
                                     disabled
                                     class="
@@ -2720,7 +2720,7 @@
                                             data-security-date-input
                                             inputmode="numeric"
                                             maxlength="10"
-                                            placeholder="dd-mm-yyyy"
+                                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                             required
                                             class="
                                                 w-full rounded-lg
@@ -2921,7 +2921,7 @@
                                             data-security-date-input
                                             inputmode="numeric"
                                             maxlength="10"
-                                            placeholder="dd-mm-yyyy"
+                                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                             required
                                             class="
                                                 w-full rounded-lg
@@ -3388,7 +3388,7 @@
                             data-tenant-funds-date-input
                             inputmode="numeric"
                             maxlength="10"
-                            placeholder="dd-mm-yyyy"
+                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                     type="text"
                                     required
                                     class="
@@ -3568,7 +3568,7 @@
                             data-tenant-funds-date-input
                             inputmode="numeric"
                             maxlength="10"
-                            placeholder="dd-mm-yyyy"
+                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                     type="text"
                                     required
                                     class="

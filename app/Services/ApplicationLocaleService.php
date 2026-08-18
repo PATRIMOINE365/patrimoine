@@ -148,41 +148,34 @@ class ApplicationLocaleService
             $this->currency();
 
         return [
-            'language' =>
-                $language,
+            'language' => $language,
 
-            'currency' =>
-                $currency,
+            'currency' => $currency,
 
-            'locale' =>
-                (string) config(
-                    "patrimoine.languages.{$language}.locale",
-                    $language
-                ),
+            'locale' => (string) config(
+                "patrimoine.languages.{$language}.locale",
+                $language
+            ),
 
-            'browser_locale' =>
-                (string) config(
-                    "patrimoine.languages.{$language}.browser_locale",
-                    'en-GB'
-                ),
+            'browser_locale' => (string) config(
+                "patrimoine.languages.{$language}.browser_locale",
+                'en-GB'
+            ),
 
-            'currency_definition' =>
-                $this->currencyDefinition(
-                    $currency
-                ),
+            'currency_definition' => $this->currencyDefinition(
+                $currency
+            ),
 
-            'supported_languages' =>
-                $this->supportedLanguages(),
+            'supported_languages' => $this->supportedLanguages(),
 
-            'supported_currencies' =>
-                $this->supportedCurrencies(),
+            'supported_currencies' => $this->supportedCurrencies(),
         ];
     }
 
     /**
      * Return a safe persisted setting or its compatibility default.
      *
-     * @param list<string> $supportedValues
+     * @param  list<string>  $supportedValues
      */
     private function normalizedSetting(
         string $attribute,

@@ -63,8 +63,7 @@ class UserPasswordWorkflowTest extends TestCase
 
         Mail::assertSent(
             UserInvitationMail::class,
-            fn (UserInvitationMail $mail): bool =>
-                $mail->hasTo('invited@example.test')
+            fn (UserInvitationMail $mail): bool => $mail->hasTo('invited@example.test')
         );
     }
 
@@ -191,8 +190,7 @@ class UserPasswordWorkflowTest extends TestCase
                     'email' => $user->email,
                     'token' => $token,
                     'password' => 'NewPassword123!',
-                    'password_confirmation' =>
-                        'NewPassword123!',
+                    'password_confirmation' => 'NewPassword123!',
                 ]
             )
             ->assertOk();
@@ -241,8 +239,7 @@ class UserPasswordWorkflowTest extends TestCase
             'email' => $user->email,
             'token' => $token,
             'password' => 'NewPassword123!',
-            'password_confirmation' =>
-                'NewPassword123!',
+            'password_confirmation' => 'NewPassword123!',
         ];
 
         $this
@@ -291,8 +288,7 @@ class UserPasswordWorkflowTest extends TestCase
                     'email' => $user->email,
                     'token' => $token,
                     'password' => 'NewPassword123!',
-                    'password_confirmation' =>
-                        'NewPassword123!',
+                    'password_confirmation' => 'NewPassword123!',
                 ]
             )
             ->assertUnprocessable();
@@ -332,8 +328,7 @@ class UserPasswordWorkflowTest extends TestCase
                     'email' => $user->email,
                     'token' => $oldToken,
                     'password' => 'NewPassword123!',
-                    'password_confirmation' =>
-                        'NewPassword123!',
+                    'password_confirmation' => 'NewPassword123!',
                 ]
             )
             ->assertUnprocessable();
@@ -415,8 +410,7 @@ class UserPasswordWorkflowTest extends TestCase
                     'email' => $user->email,
                     'token' => $token,
                     'password' => 'ResetPassword123!',
-                    'password_confirmation' =>
-                        'ResetPassword123!',
+                    'password_confirmation' => 'ResetPassword123!',
                 ]
             )
             ->assertOk();
@@ -449,8 +443,7 @@ class UserPasswordWorkflowTest extends TestCase
         DB::table('password_reset_tokens')
             ->where('email', $user->email)
             ->update([
-                'created_at' =>
-                    now()->subHours(25),
+                'created_at' => now()->subHours(25),
             ]);
 
         $this
@@ -460,8 +453,7 @@ class UserPasswordWorkflowTest extends TestCase
                     'email' => $user->email,
                     'token' => $token,
                     'password' => 'ResetPassword123!',
-                    'password_confirmation' =>
-                        'ResetPassword123!',
+                    'password_confirmation' => 'ResetPassword123!',
                 ]
             )
             ->assertUnprocessable();
@@ -479,12 +471,9 @@ class UserPasswordWorkflowTest extends TestCase
             ->postJson(
                 '/api/auth/change-password',
                 [
-                    'current_password' =>
-                        'OldPassword123!',
-                    'password' =>
-                        'NewPassword123!',
-                    'password_confirmation' =>
-                        'NewPassword123!',
+                    'current_password' => 'OldPassword123!',
+                    'password' => 'NewPassword123!',
+                    'password_confirmation' => 'NewPassword123!',
                 ]
             )
             ->assertOk();
@@ -511,8 +500,7 @@ class UserPasswordWorkflowTest extends TestCase
                 [
                     'current_password' => 'WrongPassword!',
                     'password' => 'NewPassword123!',
-                    'password_confirmation' =>
-                        'NewPassword123!',
+                    'password_confirmation' => 'NewPassword123!',
                 ]
             )
             ->assertUnprocessable();
@@ -552,8 +540,7 @@ class UserPasswordWorkflowTest extends TestCase
                 '/api/auth/login',
                 [
                     'email' => $user->email,
-                    'password' =>
-                        'UnknownInternalPassword123!',
+                    'password' => 'UnknownInternalPassword123!',
                 ]
             )
             ->assertUnprocessable();
@@ -639,8 +626,7 @@ class UserPasswordWorkflowTest extends TestCase
 
         Mail::assertSent(
             UserInvitationMail::class,
-            fn (UserInvitationMail $mail): bool =>
-                $mail->locale === 'fr'
+            fn (UserInvitationMail $mail): bool => $mail->locale === 'fr'
         );
     }
 
@@ -663,8 +649,7 @@ class UserPasswordWorkflowTest extends TestCase
                 '/api/auth/login',
                 [
                     'email' => $user->email,
-                    'password' =>
-                        'ExistingPassword123!',
+                    'password' => 'ExistingPassword123!',
                 ]
             )
             ->assertOk();

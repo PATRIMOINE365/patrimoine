@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Building;
+use App\Models\BuildingOwner;
 use App\Models\Invoice;
 use App\Models\Lease;
 use App\Models\Party;
@@ -11,7 +12,6 @@ use App\Models\Unit;
 use App\Services\PaymentAllocationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\BuildingOwner;
 
 /**
  * Verifies Patrimoine's FIFO payment-allocation rules.
@@ -232,123 +232,101 @@ class PaymentAllocationServiceTest extends TestCase
         $this->assertSame(5000, $active->fresh()->paidAmount());
     }
 
-/**
- * Paying Security Deposit close-out debt settles the tenant receivable
- * without treating the collection as rent owed to Building owners.
- */
-public function test_security_deposit_debt_payment_does_not_create_rent_entitlement(): void
-{
-    $lease =
-        $this->createLease();
-
-    $invoice =
-        Invoice::create([
-            'lease_id' =>
-                $lease->id,
-
-            'invoice_number' =>
-                'SDD-000001',
-
-            'type' =>
-                'security_deposit_debt',
-
-            'period_start' =>
-                '2026-08-11',
-
-            'period_end' =>
-                '2026-08-11',
-
-            'issue_date' =>
-                '2026-08-11',
-
-            'due_date' =>
-                '2026-08-11',
-
-            'status' =>
-                'issued',
-
-            'total_amount' =>
-                2000,
-
-            'vat_rate' =>
-                0,
-
-            'net_amount' =>
-                2000,
-
-            'vat_amount' =>
-                0,
-        ]);
-
-    $payment =
-        Payment::create([
-            'lease_id' =>
-                $lease->id,
-
-            'amount' =>
-                1000,
-
-            'payment_date' =>
-                '2026-08-13',
-
-            'payment_method' =>
-                'bank_transfer',
-
-            'reference' =>
-                'DEBT-PAYMENT-001',
-        ]);
-
-    app(
-        PaymentAllocationService::class
-    )->allocate(
-        $payment
-    );
-
-    $this->assertSame(
-        1000,
-        $invoice
-            ->fresh()
-            ->paidAmount()
-    );
-
-    $this->assertSame(
-        1000,
-        $invoice
-            ->fresh()
-            ->outstandingAmount()
-    );
-
-    $this->assertSame(
-        'partial',
-        $invoice
-            ->fresh()
-            ->status
-    );
-
-    /*
-     * A Security Deposit debt collection is not rent.
+    /**
+     * Paying Security Deposit close-out debt settles the tenant receivable
+     * without treating the collection as rent owed to Building owners.
      */
-    $this->assertDatabaseMissing(
-        'owner_transactions',
-        [
-            'invoice_id' =>
-                $invoice->id,
+    public function test_security_deposit_debt_payment_does_not_create_rent_entitlement(): void
+    {
+        $lease =
+            $this->createLease();
 
-            'category' =>
-                'rent_entitlement',
-        ]
-    );
+        $invoice =
+            Invoice::create([
+                'lease_id' => $lease->id,
 
-    $this->assertDatabaseMissing(
-        'owner_transactions',
-        [
-            'invoice_id' =>
-                $invoice->id,
+                'invoice_number' => 'SDD-000001',
 
-            'category' =>
-                'management_fee',
-        ]
-    );
-}
+                'type' => 'security_deposit_debt',
 
+                'period_start' => '2026-08-11',
+
+                'period_end' => '2026-08-11',
+
+                'issue_date' => '2026-08-11',
+
+                'due_date' => '2026-08-11',
+
+                'status' => 'issued',
+
+                'total_amount' => 2000,
+
+                'vat_rate' => 0,
+
+                'net_amount' => 2000,
+
+                'vat_amount' => 0,
+            ]);
+
+        $payment =
+            Payment::create([
+                'lease_id' => $lease->id,
+
+                'amount' => 1000,
+
+                'payment_date' => '2026-08-13',
+
+                'payment_method' => 'bank_transfer',
+
+                'reference' => 'DEBT-PAYMENT-001',
+            ]);
+
+        app(
+            PaymentAllocationService::class
+        )->allocate(
+            $payment
+        );
+
+        $this->assertSame(
+            1000,
+            $invoice
+                ->fresh()
+                ->paidAmount()
+        );
+
+        $this->assertSame(
+            1000,
+            $invoice
+                ->fresh()
+                ->outstandingAmount()
+        );
+
+        $this->assertSame(
+            'partial',
+            $invoice
+                ->fresh()
+                ->status
+        );
+
+        /*
+         * A Security Deposit debt collection is not rent.
+         */
+        $this->assertDatabaseMissing(
+            'owner_transactions',
+            [
+                'invoice_id' => $invoice->id,
+
+                'category' => 'rent_entitlement',
+            ]
+        );
+
+        $this->assertDatabaseMissing(
+            'owner_transactions',
+            [
+                'invoice_id' => $invoice->id,
+
+                'category' => 'management_fee',
+            ]
+        );
+    }
 }

@@ -404,10 +404,11 @@ class ActivityLogExportService
         $formatter =
             new IntlDateFormatter(
                 $locale,
-                IntlDateFormatter::MEDIUM,
-                IntlDateFormatter::MEDIUM,
+                IntlDateFormatter::NONE,
+                IntlDateFormatter::NONE,
                 config('app.timezone'),
-                IntlDateFormatter::GREGORIAN
+                IntlDateFormatter::GREGORIAN,
+                'dd MMM yyyy, HH:mm:ss'
             );
 
         $formatted =
@@ -417,7 +418,7 @@ class ActivityLogExportService
 
         return $formatted === false
             ? $date->format(
-                'Y-m-d H:i:s'
+                'd M Y, H:i:s'
             )
             : $formatted;
     }

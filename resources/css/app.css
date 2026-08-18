@@ -9850,3 +9850,528 @@ html[data-shell-role="administrator"]
     display: block !important;
 }
 
+
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.4 Shared Patrimoine Date Picker
+|--------------------------------------------------------------------------
+|
+| Generic calendar presentation for shared [data-pm-date-input] fields.
+| Specialized Lease / Payment / Report / Security Deposit controls keep
+| their existing scoped styling.
+|
+*/
+
+.pm-date-control {
+    position: relative;
+    width: 100%;
+}
+
+
+.pm-date-control
+[data-pm-date-input] {
+    width: 100%;
+    padding-right: 2.75rem !important;
+}
+
+
+.pm-date-picker-button {
+    position: absolute;
+
+    top: 50%;
+    right: 0.5rem;
+
+    z-index: 2;
+
+    display: inline-flex;
+
+    width: 2rem;
+    height: 2rem;
+
+    transform: translateY(-50%);
+
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 0.45rem;
+
+    background: transparent;
+
+    color: var(--pm-text-muted);
+
+    cursor: pointer;
+
+    transition:
+        background-color 150ms ease,
+        color 150ms ease;
+}
+
+
+.pm-date-picker-button:hover {
+    background: var(--pm-hover);
+    color: var(--pm-text);
+}
+
+
+.pm-date-picker-button:focus-visible {
+    outline: none;
+
+    box-shadow:
+        0 0 0 3px
+        color-mix(
+            in srgb,
+            var(--color-patrimoine-500) 18%,
+            transparent
+        );
+}
+
+
+.pm-date-picker-button svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+
+/*
+ * Native input remains in the document solely to invoke the browser's
+ * calendar UI. It must never display its own locale-dependent date field.
+ */
+.pm-native-date-picker {
+    position: absolute !important;
+
+    width: 1px !important;
+    height: 1px !important;
+
+    margin: -1px !important;
+    padding: 0 !important;
+
+    overflow: hidden !important;
+
+    clip: rect(0 0 0 0) !important;
+    clip-path: inset(50%) !important;
+
+    border: 0 !important;
+
+    opacity: 0 !important;
+
+    pointer-events: none !important;
+
+    white-space: nowrap !important;
+}
+
+
+/* END V1.0.4 Shared Patrimoine Date Picker */
+
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.4 Date Picker — Cursor Hit Area
+|--------------------------------------------------------------------------
+|
+| Only the visible calendar trigger uses the hand cursor.
+|
+| Date text fields retain the normal text cursor and the surrounding
+| control retains the normal arrow cursor. Hidden native date inputs
+| must never influence pointer presentation.
+|
+*/
+
+/* Normal area surrounding a date control = normal arrow. */
+.pm-date-control,
+.pm-lease-date-control,
+.pm-payment-date-control,
+.pm-security-date-control,
+.pm-tenant-funds-date-control,
+.pm-report-date-control {
+    cursor: default !important;
+}
+
+
+/* Visible date-entry field = text cursor. */
+[data-pm-date-input],
+[data-lease-date-input],
+[data-payment-date-input],
+[data-security-date-input],
+[data-tenant-funds-date-input],
+[data-report-date-input] {
+    cursor: text !important;
+}
+
+
+/* ONLY the actual calendar button gets the hand cursor. */
+.pm-date-picker-button,
+.pm-lease-date-picker-button,
+.pm-payment-date-picker-button,
+.pm-security-date-picker-button,
+.pm-tenant-funds-date-picker-button,
+.pm-report-date-picker-button {
+    cursor: pointer !important;
+}
+
+
+/*
+ * SVG artwork itself should not create a separate hit-testing surface.
+ * The button remains the sole clickable calendar target.
+ */
+.pm-date-picker-button svg,
+.pm-lease-date-picker-button svg,
+.pm-payment-date-picker-button svg,
+.pm-security-date-picker-button svg,
+.pm-tenant-funds-date-picker-button svg,
+.pm-report-date-picker-button svg {
+    pointer-events: none !important;
+}
+
+
+/* Hidden browser-calendar engines must never participate in hit testing. */
+.pm-native-date-picker,
+.pm-lease-native-date-picker,
+.pm-payment-native-date-picker,
+.pm-security-native-date-picker,
+.pm-tenant-funds-native-date-picker,
+.pm-report-native-date-picker {
+    pointer-events: none !important;
+    cursor: default !important;
+}
+
+
+/* END V1.0.4 Date Picker — Cursor Hit Area */
+
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.4 Date Picker — Final Cursor Behaviour
+|--------------------------------------------------------------------------
+|
+| Normal surface       = arrow
+| Date text field      = text cursor
+| Calendar trigger     = hand
+|
+*/
+
+
+/* The overall date-control area must NEVER become a hand. */
+.pm-date-control,
+.pm-lease-date-control,
+.pm-payment-date-control,
+.pm-security-date-control,
+.pm-tenant-funds-date-control,
+.pm-report-date-control {
+    cursor: default !important;
+}
+
+
+/* Typing area behaves like a normal text field. */
+input[data-pm-date-input],
+input[data-lease-date-input],
+input[data-payment-date-input],
+input[data-security-date-input],
+input[data-tenant-funds-date-input],
+input[data-report-date-input] {
+    cursor: text !important;
+}
+
+
+/*
+ * Target the ACTUAL calendar triggers by their data attributes.
+ *
+ * CSS cursor:pointer = hand.
+ */
+button[data-pm-date-picker],
+button[data-lease-date-picker],
+button[data-payment-date-picker],
+button[data-security-date-picker],
+button[data-tenant-funds-date-picker],
+button[data-report-date-picker] {
+    cursor: pointer !important;
+}
+
+
+/*
+ * SVG paths must not intercept the mouse independently.
+ * The button underneath owns the complete calendar hit area.
+ */
+button[data-pm-date-picker] svg,
+button[data-pm-date-picker] svg *,
+button[data-lease-date-picker] svg,
+button[data-lease-date-picker] svg *,
+button[data-payment-date-picker] svg,
+button[data-payment-date-picker] svg *,
+button[data-security-date-picker] svg,
+button[data-security-date-picker] svg *,
+button[data-tenant-funds-date-picker] svg,
+button[data-tenant-funds-date-picker] svg *,
+button[data-report-date-picker] svg,
+button[data-report-date-picker] svg * {
+    pointer-events: none !important;
+}
+
+
+/*
+ * Native date inputs exist only to launch the browser calendar.
+ * They must never create a cursor/hit area of their own.
+ */
+input[type="date"][class*="native-date-picker"] {
+    pointer-events: none !important;
+    cursor: default !important;
+}
+
+
+/* END V1.0.4 Date Picker — Final Cursor Behaviour */
+
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.4 Patrimoine Shared Calendar
+|--------------------------------------------------------------------------
+*/
+
+.pm-calendar-popover {
+    position: fixed;
+
+    z-index: 10050;
+
+    width: 18rem;
+
+    border: 1px solid var(--pm-border);
+    border-radius: 0.75rem;
+
+    background: var(--pm-surface);
+
+    padding: 0.75rem;
+
+    color: var(--pm-text);
+
+    box-shadow:
+        0 18px 45px rgb(15 23 42 / 0.18),
+        0 4px 12px rgb(15 23 42 / 0.08);
+}
+
+
+.pm-calendar-popover[hidden] {
+    display: none !important;
+}
+
+
+.pm-calendar-header {
+    display: grid;
+
+    grid-template-columns:
+        2rem
+        minmax(0, 1fr)
+        2rem;
+
+    align-items: center;
+
+    margin-bottom: 0.625rem;
+}
+
+
+.pm-calendar-month {
+    text-align: center;
+
+    font-size: 0.875rem;
+    font-weight: 600;
+
+    text-transform: capitalize;
+}
+
+
+.pm-calendar-nav {
+    display: inline-flex;
+
+    width: 2rem;
+    height: 2rem;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 0.45rem;
+
+    background: transparent;
+
+    color: var(--pm-text-muted);
+
+    cursor: pointer;
+}
+
+
+.pm-calendar-nav:hover {
+    background: var(--pm-hover);
+    color: var(--pm-text);
+}
+
+
+.pm-calendar-nav svg {
+    width: 1rem;
+    height: 1rem;
+
+    pointer-events: none;
+}
+
+
+.pm-calendar-weekdays,
+.pm-calendar-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(7, minmax(0, 1fr));
+
+    gap: 0.125rem;
+}
+
+
+.pm-calendar-weekdays {
+    margin-bottom: 0.25rem;
+}
+
+
+.pm-calendar-weekdays span {
+    padding: 0.25rem 0;
+
+    text-align: center;
+
+    color: var(--pm-text-muted);
+
+    font-size: 0.6875rem;
+    font-weight: 600;
+}
+
+
+.pm-calendar-empty {
+    min-height: 2rem;
+}
+
+
+.pm-calendar-day {
+    display: inline-flex;
+
+    min-height: 2rem;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 0.45rem;
+
+    background: transparent;
+
+    color: var(--pm-text);
+
+    font-size: 0.8125rem;
+
+    cursor: pointer;
+}
+
+
+.pm-calendar-day:hover {
+    background: var(--pm-hover);
+}
+
+
+.pm-calendar-day-today {
+    box-shadow:
+        inset 0 0 0 1px
+        var(--color-patrimoine-500);
+}
+
+
+.pm-calendar-day-selected {
+    background:
+        var(--color-patrimoine-800);
+
+    color: white;
+}
+
+
+.pm-calendar-day-selected:hover {
+    background:
+        var(--color-patrimoine-900);
+}
+
+
+.pm-calendar-footer {
+    display: flex;
+
+    justify-content: center;
+
+    margin-top: 0.625rem;
+    padding-top: 0.625rem;
+
+    border-top: 1px solid var(--pm-border);
+}
+
+
+.pm-calendar-today {
+    border: 0;
+    border-radius: 0.45rem;
+
+    background: transparent;
+
+    padding: 0.375rem 0.75rem;
+
+    color: var(--color-patrimoine-700);
+
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.pm-calendar-today:hover {
+    background: var(--pm-hover);
+}
+
+
+html[data-theme="dark"]
+.pm-calendar-today {
+    color: var(--color-patrimoine-300);
+}
+
+
+/*
+ * Calendar cursor standard:
+ *
+ * field text = text cursor
+ * calendar trigger = hand
+ * calendar controls/dates = hand
+ * everything else = normal arrow
+ */
+.pm-date-control,
+.pm-lease-date-control,
+.pm-payment-date-control,
+.pm-security-date-control,
+.pm-tenant-funds-date-control,
+.pm-report-date-control {
+    cursor: default !important;
+}
+
+
+input[data-pm-date-input],
+input[data-lease-date-input],
+input[data-payment-date-input],
+input[data-security-date-input],
+input[data-tenant-funds-date-input],
+input[data-report-date-input] {
+    cursor: text !important;
+}
+
+
+button[data-pm-date-picker],
+button[data-lease-date-picker],
+button[data-payment-date-picker],
+button[data-security-date-picker],
+button[data-tenant-funds-date-picker],
+button[data-report-date-picker],
+.pm-calendar-nav,
+.pm-calendar-day,
+.pm-calendar-today {
+    cursor: pointer !important;
+}
+
+
+/* END V1.0.4 Patrimoine Shared Calendar */

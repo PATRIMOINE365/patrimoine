@@ -18,8 +18,7 @@ class SecurityDepositVoucherDocumentService
     public function __construct(
         private ApplicationIdentityService $identity,
         private ApplicationPresentationFormatter $formatter
-    ) {
-    }
+    ) {}
 
     /**
      * Generate PDF contents for a finalized Security Deposit settlement.
@@ -36,28 +35,25 @@ class SecurityDepositVoucherDocumentService
         return Pdf::loadView(
             'documents.security-deposit-voucher',
             [
-                'settlement' =>
-                    $settlement,
+                'settlement' => $settlement,
 
-                'deductions' =>
-                    $settlement
-                        ->lease
-                        ->securityDepositDeductions
-                        ->sortBy([
-                            [
-                                'deduction_date',
-                                'asc',
-                            ],
-                            [
-                                'id',
-                                'asc',
-                            ],
-                        ]),
+                'deductions' => $settlement
+                    ->lease
+                    ->securityDepositDeductions
+                    ->sortBy([
+                        [
+                            'deduction_date',
+                            'asc',
+                        ],
+                        [
+                            'id',
+                            'asc',
+                        ],
+                    ]),
 
                 'formatter' => $this->formatter,
-                'managingOrganisation' =>
-                    $this->identity
-                        ->managingOrganisation(),
+                'managingOrganisation' => $this->identity
+                    ->managingOrganisation(),
             ]
         )
             ->setPaper(

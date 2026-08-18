@@ -227,8 +227,7 @@ class AuthController extends Controller
             actorEmail: mb_strtolower(
                 trim($email)
             ),
-            entityType:
-                $user === null
+            entityType: $user === null
                     ? null
                     : 'user',
             entityId: $user?->id,

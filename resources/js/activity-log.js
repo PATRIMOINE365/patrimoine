@@ -19,6 +19,11 @@ import {
     translate,
 } from './core.js';
 
+import {
+    dateForApi,
+    initializeDateInputs,
+} from './date-input.js';
+
 let activitySearchTimer =
     null;
 
@@ -48,6 +53,13 @@ export async function initializeActivityLog() {
 
         return;
     }
+
+    /*
+     * Activity Log filters use the same visible date convention as the
+     * rest of Patrimoine. Event timestamps retain their dedicated
+     * date-and-time formatter.
+     */
+    initializeDateInputs();
 
     initializeFilters();
     initializeExportActions();
@@ -152,13 +164,17 @@ function activityFilterParameters() {
             ),
 
         from:
-            formValue(
-                'activity-log-from'
+            dateForApi(
+                formValue(
+                    'activity-log-from'
+                )
             ),
 
         to:
-            formValue(
-                'activity-log-to'
+            dateForApi(
+                formValue(
+                    'activity-log-to'
+                )
             ),
 
         user_id:
@@ -1581,8 +1597,13 @@ function formatActivityTimestamp(
         configuration.browser_locale
         || 'en-GB',
         {
-            dateStyle: 'medium',
-            timeStyle: 'medium',
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hourCycle: 'h23',
         }
     ).format(
         date

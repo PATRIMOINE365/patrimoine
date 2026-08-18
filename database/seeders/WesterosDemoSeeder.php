@@ -4,10 +4,12 @@ namespace Database\Seeders;
 
 use App\Models\Building;
 use App\Models\BuildingOwner;
+use App\Models\Invoice;
 use App\Models\Lease;
 use App\Models\Party;
 use App\Models\PartyRole;
 use App\Models\Payment;
+use App\Models\PaymentAllocation;
 use App\Models\Unit;
 use App\Services\LeaseInitializationService;
 use App\Services\PaymentAllocationService;
@@ -27,11 +29,15 @@ use Illuminate\Support\Facades\DB;
 class WesterosDemoSeeder extends Seeder
 {
     private array $owners = [];
+
     private array $tenants = [];
+
     private array $agents = [];
+
     private array $buildings = [];
 
     private int $phoneSequence = 200000000;
+
     private int $paymentSequence = 1;
 
     public function run(): void
@@ -56,18 +62,18 @@ class WesterosDemoSeeder extends Seeder
 
         $this->command?->newLine();
         $this->command?->info('Westeros demo dataset created successfully.');
-        $this->command?->info('Parties:   ' . Party::count());
-        $this->command?->info('Buildings: ' . Building::count());
-        $this->command?->info('Units:     ' . Unit::count());
-        $this->command?->info('Leases:    ' . Lease::count());
+        $this->command?->info('Parties:   '.Party::count());
+        $this->command?->info('Buildings: '.Building::count());
+        $this->command?->info('Units:     '.Unit::count());
+        $this->command?->info('Leases:    '.Lease::count());
         $this->command?->info(
-            'Invoices:  ' . \App\Models\Invoice::count()
+            'Invoices:  '.Invoice::count()
         );
         $this->command?->info(
-            'Payments:  ' . Payment::count()
+            'Payments:  '.Payment::count()
         );
         $this->command?->info(
-            'Allocations: ' . \App\Models\PaymentAllocation::count()
+            'Allocations: '.PaymentAllocation::count()
         );
     }
 
@@ -95,16 +101,12 @@ class WesterosDemoSeeder extends Seeder
                 'address' => "{$name}, Westeros",
                 'contact_person_name' => $contact,
                 'contact_person_phone' => $this->nextPhone(),
-                'contact_person_email' =>
-                    "{$key}.contact@westeros.patrimoine.test",
-                'registration_number' =>
-                    'WEST-' . strtoupper($key),
-                'vat_tin' =>
-                    'TIN-' . strtoupper($key),
+                'contact_person_email' => "{$key}.contact@westeros.patrimoine.test",
+                'registration_number' => 'WEST-'.strtoupper($key),
+                'vat_tin' => 'TIN-'.strtoupper($key),
                 'bank_name' => 'Iron Bank of Braavos',
                 'bank_account_name' => $name,
-                'bank_account_number' =>
-                    (string) random_int(1000000000, 9999999999),
+                'bank_account_number' => (string) random_int(1000000000, 9999999999),
                 'bank_branch' => 'Braavos',
                 'notes' => 'WESTEROS DEMO DATASET - Property owner.',
             ]);
@@ -134,7 +136,7 @@ class WesterosDemoSeeder extends Seeder
         foreach ($names as $key => $name) {
             $party = $this->person(
                 $name,
-                $key . '.agent',
+                $key.'.agent',
                 'WESTEROS DEMO DATASET - Property agent.'
             );
 
@@ -201,7 +203,7 @@ class WesterosDemoSeeder extends Seeder
         ];
 
         foreach ($names as $index => $name) {
-            $key = 'tenant_' . ($index + 1);
+            $key = 'tenant_'.($index + 1);
 
             $party = $this->person(
                 $name,
@@ -394,8 +396,7 @@ class WesterosDemoSeeder extends Seeder
 
             $building = Building::create([
                 'name' => $name,
-                'description' =>
-                    "Prestigious managed property located in {$location}.",
+                'description' => "Prestigious managed property located in {$location}.",
                 'address' => "{$name}, {$location}, Westeros",
                 'location' => $location,
                 'notes' => 'WESTEROS DEMO DATASET',
@@ -415,8 +416,7 @@ class WesterosDemoSeeder extends Seeder
                 $createdUnits[] = Unit::create([
                     'building_id' => $building->id,
                     'name' => $unitName,
-                    'description' =>
-                        "WESTEROS DEMO DATASET - {$unitName} at {$name}.",
+                    'description' => "WESTEROS DEMO DATASET - {$unitName} at {$name}.",
                 ]);
             }
 
@@ -548,8 +548,7 @@ class WesterosDemoSeeder extends Seeder
                 /*
                  * Mix default contractual due dates with explicit overrides.
                  */
-                'due_day' =>
-                    $index % 4 === 0
+                'due_day' => $index % 4 === 0
                         ? 1
                         : (
                             $index % 4 === 1
@@ -558,51 +557,40 @@ class WesterosDemoSeeder extends Seeder
                         ),
 
                 'vat_rate' => $vatRate,
-                'proration_amount' =>
-                    $index % 13 === 0
+                'proration_amount' => $index % 13 === 0
                         ? 0
                         : null,
 
-                'security_deposit_amount' =>
-                    $securityDeposit,
+                'security_deposit_amount' => $securityDeposit,
 
-                'advance_payment_amount' =>
-                    $advanceAmount,
+                'advance_payment_amount' => $advanceAmount,
 
-                'rent_reserve_amount' =>
-                    $reserveAmount,
+                'rent_reserve_amount' => $reserveAmount,
 
-                'rent_increment_type' =>
-                    $index % 9 === 0
+                'rent_increment_type' => $index % 9 === 0
                         ? 'percentage'
                         : 'none',
 
-                'rent_increment_value' =>
-                    $index % 9 === 0
+                'rent_increment_value' => $index % 9 === 0
                         ? 7.5
                         : 0,
 
-                'next_rent_increment_date' =>
-                    $index % 9 === 0
+                'next_rent_increment_date' => $index % 9 === 0
                         ? $today
                             ->copy()
                             ->addMonths(4 + ($index % 4))
                             ->toDateString()
                         : null,
 
-                'management_fee_type' =>
-                    $managementType,
+                'management_fee_type' => $managementType,
 
-                'management_fee_value' =>
-                    $managementValue,
+                'management_fee_value' => $managementValue,
 
-                'agent_commission_amount' =>
-                    $agent !== null
+                'agent_commission_amount' => $agent !== null
                         ? (int) round($rent * 0.5)
                         : 0,
 
-                'notes' =>
-                    'WESTEROS DEMO DATASET - Rich operational test Lease.',
+                'notes' => 'WESTEROS DEMO DATASET - Rich operational test Lease.',
             ]);
 
             /*
@@ -616,15 +604,12 @@ class WesterosDemoSeeder extends Seeder
             if ($hasAdvance && $index % 12 === 0) {
                 $openingData = [
                     'advance_received' => true,
-                    'advance_received_date' =>
-                        $startDate->toDateString(),
-                    'advance_received_method' =>
-                        'bank_transfer',
-                    'advance_received_reference' =>
-                        sprintf(
-                            'WEST-ADV-%04d',
-                            $index + 1
-                        ),
+                    'advance_received_date' => $startDate->toDateString(),
+                    'advance_received_method' => 'bank_transfer',
+                    'advance_received_reference' => sprintf(
+                        'WEST-ADV-%04d',
+                        $index + 1
+                    ),
                 ];
             }
 
@@ -660,8 +645,7 @@ class WesterosDemoSeeder extends Seeder
          * affecting occupancy or generating invoices.
          */
         foreach (
-            $allUnits->slice(44, 4)->values()
-            as $offset => $unit
+            $allUnits->slice(44, 4)->values() as $offset => $unit
         ) {
             $tenantIndex = 44 + $offset;
 
@@ -672,19 +656,15 @@ class WesterosDemoSeeder extends Seeder
             Lease::create([
                 'unit_id' => $unit->id,
                 'tenant_id' => $this->tenants[$tenantIndex]->id,
-                'agent_id' =>
-                    $agents[$offset % count($agents)]->id,
-                'start_date' =>
-                    $today->copy()->addMonth()->toDateString(),
-                'end_date' =>
-                    $today->copy()->addYears(2)->toDateString(),
+                'agent_id' => $agents[$offset % count($agents)]->id,
+                'start_date' => $today->copy()->addMonth()->toDateString(),
+                'end_date' => $today->copy()->addYears(2)->toDateString(),
                 'status' => 'draft',
                 'rent_amount' => 5000 + ($offset * 1000),
                 'payment_frequency' => 'monthly',
                 'due_day' => 1,
                 'vat_rate' => 18,
-                'security_deposit_amount' =>
-                    5000 + ($offset * 1000),
+                'security_deposit_amount' => 5000 + ($offset * 1000),
                 'advance_payment_amount' => 0,
                 'rent_reserve_amount' => 0,
                 'rent_increment_type' => 'none',
@@ -692,8 +672,7 @@ class WesterosDemoSeeder extends Seeder
                 'management_fee_type' => 'percentage',
                 'management_fee_value' => 10,
                 'agent_commission_amount' => 1500,
-                'notes' =>
-                    'WESTEROS DEMO DATASET - Future draft Lease.',
+                'notes' => 'WESTEROS DEMO DATASET - Future draft Lease.',
             ]);
         }
     }
@@ -716,8 +695,7 @@ class WesterosDemoSeeder extends Seeder
 
         $outstanding =
             (int) $invoices->sum(
-                fn ($invoice) =>
-                    $invoice->outstandingAmount()
+                fn ($invoice) => $invoice->outstandingAmount()
             );
 
         if ($outstanding <= 0) {
@@ -775,20 +753,16 @@ class WesterosDemoSeeder extends Seeder
         $payment = Payment::create([
             'lease_id' => $lease->id,
             'amount' => $amount,
-            'payment_date' =>
-                $paymentDate->toDateString(),
+            'payment_date' => $paymentDate->toDateString(),
             'payment_method' => $method,
-            'reference' =>
-                sprintf(
-                    'WEST-PAY-%06d',
-                    $this->paymentSequence++
-                ),
-            'collector_name' =>
-                $method === 'cash'
+            'reference' => sprintf(
+                'WEST-PAY-%06d',
+                $this->paymentSequence++
+            ),
+            'collector_name' => $method === 'cash'
                     ? 'Ser Bronn - Demo Collector'
                     : null,
-            'notes' =>
-                'WESTEROS DEMO DATASET - Tenant rent payment.',
+            'notes' => 'WESTEROS DEMO DATASET - Tenant rent payment.',
             'is_opening_advance' => false,
         ]);
 
@@ -813,24 +787,22 @@ class WesterosDemoSeeder extends Seeder
             'name' => $name,
             'phone' => $this->nextPhone(),
             'alternate_phone' => $this->nextPhone(),
-            'email' =>
-                strtolower($emailKey)
-                . '@westeros.patrimoine.test',
+            'email' => strtolower($emailKey)
+                .'@westeros.patrimoine.test',
             'address' => 'Westeros',
-            'id_number' =>
-                'WEST-ID-' . strtoupper(
-                    str_replace(
-                        ['.', '_', ' '],
-                        '-',
-                        $emailKey
-                    )
-                ),
+            'id_number' => 'WEST-ID-'.strtoupper(
+                str_replace(
+                    ['.', '_', ' '],
+                    '-',
+                    $emailKey
+                )
+            ),
             'notes' => $notes,
         ]);
     }
 
     private function nextPhone(): string
     {
-        return '0' . ($this->phoneSequence++);
+        return '0'.($this->phoneSequence++);
     }
 }

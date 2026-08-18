@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\UserRole;
+use App\Models\ApplicationSetting;
 use App\Models\Building;
 use App\Models\Invoice;
 use App\Models\Lease;
@@ -311,7 +312,7 @@ class BusinessRecordDeletionIntegrityTest extends TestCase
 
     public function test_delete_integrity_message_renders_in_french(): void
     {
-        \App\Models\ApplicationSetting::create([
+        ApplicationSetting::create([
             'language' => 'fr',
             'currency' => 'GHS',
         ]);
@@ -343,14 +344,13 @@ class BusinessRecordDeletionIntegrityTest extends TestCase
             'type' => 'person',
             'name' => $name,
             'phone' => '0200000000',
-            'email' =>
-                strtolower(
-                    str_replace(
-                        ' ',
-                        '.',
-                        $name
-                    )
+            'email' => strtolower(
+                str_replace(
+                    ' ',
+                    '.',
+                    $name
                 )
+            )
                 .'@delete-integrity.test',
         ]);
     }
@@ -358,8 +358,7 @@ class BusinessRecordDeletionIntegrityTest extends TestCase
     private function unit(): Unit
     {
         $building = Building::create([
-            'name' =>
-                'Building '.uniqid(),
+            'name' => 'Building '.uniqid(),
         ]);
 
         return Unit::create([

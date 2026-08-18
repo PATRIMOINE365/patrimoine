@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ConsumeAdvanceRequest;
 use App\Models\Invoice;
 use App\Models\TenantFundAccount;
+use App\Services\ActivityLogService;
 use App\Services\ConsumableAdvanceService;
+use App\Services\FinancialActivitySnapshotService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
-use App\Services\ActivityLogService;
-use App\Services\FinancialActivitySnapshotService;
 
 /**
  * Transactional API controller for Consumable Advance usage.
@@ -97,8 +97,7 @@ class ConsumableAdvanceController extends Controller
                     'invoice_number' => $invoice->invoice_number,
                     'status' => $invoice->status,
                     'paid_amount' => $invoice->paidAmount(),
-                    'outstanding_amount' =>
-                        $invoice->outstandingAmount(),
+                    'outstanding_amount' => $invoice->outstandingAmount(),
                 ],
             ],
             status: 201

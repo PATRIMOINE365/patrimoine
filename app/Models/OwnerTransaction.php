@@ -75,6 +75,7 @@ class OwnerTransaction extends Model
     {
         return $this->hasMany(OwnerPayoutAllocation::class);
     }
+
     /**
      * Tenant PaymentAllocation that generated this owner transaction,
      * when the transaction represents collected rent entitlement.

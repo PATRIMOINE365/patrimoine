@@ -13,8 +13,8 @@ use Tests\TestCase;
  */
 class ManagingOrganisationApiTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -71,8 +71,7 @@ class ManagingOrganisationApiTest extends TestCase
         $this->assertDatabaseHas(
             'application_settings',
             [
-                'managing_organisation_party_id' =>
-                    $party->id,
+                'managing_organisation_party_id' => $party->id,
             ]
         );
     }
@@ -179,7 +178,6 @@ class ManagingOrganisationApiTest extends TestCase
             ->assertUnauthorized();
     }
 
-
     /**
      * The configured managing organisation cannot lose its protected role
      * through the generic Party API.
@@ -202,12 +200,9 @@ class ManagingOrganisationApiTest extends TestCase
                     'type' => 'organisation',
                     'legal_name' => $party->legal_name,
                     'address' => $party->address,
-                    'contact_person_name' =>
-                        $party->contact_person_name,
-                    'contact_person_phone' =>
-                        $party->contact_person_phone,
-                    'contact_person_email' =>
-                        $party->contact_person_email,
+                    'contact_person_name' => $party->contact_person_name,
+                    'contact_person_phone' => $party->contact_person_phone,
+                    'contact_person_email' => $party->contact_person_email,
                     'roles' => [],
                 ]
             )
@@ -260,78 +255,73 @@ class ManagingOrganisationApiTest extends TestCase
         $this->assertDatabaseHas(
             'application_settings',
             [
-                'managing_organisation_party_id' =>
-                    $party->id,
+                'managing_organisation_party_id' => $party->id,
             ]
         );
     }
 
+    /**
+     * The Managing Organisation API exposes the application-wide
+     * default VAT rate.
+     */
+    public function test_managing_organisation_exposes_default_vat_rate(): void
+    {
+        $payload =
+            $this->validPayload();
 
+        $payload['default_vat_rate'] =
+            15.00;
 
+        $this
+            ->putJson(
+                '/api/managing-organisation',
+                $payload
+            )
+            ->assertOk()
+            ->assertJsonPath(
+                'default_vat_rate',
+                '15.00'
+            );
 
-/**
- * The Managing Organisation API exposes the application-wide
- * default VAT rate.
- */
-public function test_managing_organisation_exposes_default_vat_rate(): void
-{
-    $payload =
-        $this->validPayload();
+        $this
+            ->getJson(
+                '/api/managing-organisation'
+            )
+            ->assertOk()
+            ->assertJsonPath(
+                'default_vat_rate',
+                '15.00'
+            );
 
-    $payload['default_vat_rate'] =
-        15.00;
-
-    $this
-        ->putJson(
-            '/api/managing-organisation',
-            $payload
-        )
-        ->assertOk()
-        ->assertJsonPath(
-            'default_vat_rate',
-            '15.00'
+        $this->assertDatabaseHas(
+            'application_settings',
+            [
+                'default_vat_rate' => 15.00,
+            ]
         );
+    }
 
-    $this
-        ->getJson(
-            '/api/managing-organisation'
-        )
-        ->assertOk()
-        ->assertJsonPath(
-            'default_vat_rate',
-            '15.00'
-        );
+    /**
+     * Default VAT must remain a valid percentage.
+     */
+    public function test_managing_organisation_rejects_invalid_default_vat_rate(): void
+    {
+        $payload =
+            $this->validPayload();
 
-    $this->assertDatabaseHas(
-        'application_settings',
-        [
-            'default_vat_rate' =>
-                15.00,
-        ]
-    );
-}
+        $payload['default_vat_rate'] =
+            150;
 
-/**
- * Default VAT must remain a valid percentage.
- */
-public function test_managing_organisation_rejects_invalid_default_vat_rate(): void
-{
-    $payload =
-        $this->validPayload();
-
-    $payload['default_vat_rate'] =
-        150;
-
-    $this
-        ->putJson(
-            '/api/managing-organisation',
-            $payload
-        )
-        ->assertUnprocessable()
-        ->assertJsonValidationErrors([
-            'default_vat_rate',
-        ]);
-}
+        $this
+            ->putJson(
+                '/api/managing-organisation',
+                $payload
+            )
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'default_vat_rate',
+            ]);
+    }
 
     /**
      * Return a complete valid managing-organisation payload.
@@ -341,53 +331,37 @@ public function test_managing_organisation_rejects_invalid_default_vat_rate(): v
     private function validPayload(): array
     {
         return [
-            'legal_name' =>
-                'Patrimoine Management Limited',
+            'legal_name' => 'Patrimoine Management Limited',
 
-            'address' =>
-                'Accra, Ghana',
+            'address' => 'Accra, Ghana',
 
-            'phone' =>
-                '0302000000',
+            'phone' => '0302000000',
 
-            'email' =>
-                'info@patrimoine.example',
+            'email' => 'info@patrimoine.example',
 
-            'contact_person_name' =>
-                'Property Manager',
+            'contact_person_name' => 'Property Manager',
 
-            'contact_person_phone' =>
-                '0200000000',
+            'contact_person_phone' => '0200000000',
 
-            'contact_person_email' =>
-                'manager@patrimoine.example',
+            'contact_person_email' => 'manager@patrimoine.example',
 
-            'registration_number' =>
-                'CS000000000',
+            'registration_number' => 'CS000000000',
 
-            'vat_tin' =>
-                'C0000000000',
+            'vat_tin' => 'C0000000000',
 
-            'bank_name' =>
-                'Example Bank',
+            'bank_name' => 'Example Bank',
 
-            'bank_account_name' =>
-                'Patrimoine Management Limited',
+            'bank_account_name' => 'Patrimoine Management Limited',
 
-            'bank_account_number' =>
-                '0000000000',
+            'bank_account_number' => '0000000000',
 
-            'bank_branch' =>
-                'Accra',
+            'bank_branch' => 'Accra',
 
-            'default_vat_rate' =>
-                18.00,
+            'default_vat_rate' => 18.00,
 
-            'notes' =>
-                'Primary Patrimoine managing organisation.',
+            'notes' => 'Primary Patrimoine managing organisation.',
         ];
     }
-
 
     public function test_missing_language_and_currency_use_compatibility_defaults(): void
     {
@@ -445,8 +419,6 @@ public function test_managing_organisation_rejects_invalid_default_vat_rate(): v
                 'currency',
             ]);
     }
-
-
 
     public function test_language_and_currency_can_be_updated_independently(): void
     {
@@ -506,5 +478,4 @@ public function test_managing_organisation_rejects_invalid_default_vat_rate(): v
             $settings->currency
         );
     }
-
 }

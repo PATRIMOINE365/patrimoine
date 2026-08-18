@@ -114,7 +114,11 @@
 
                 <input
                     id="activity-log-from"
-                    type="date"
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="10"
+                    autocomplete="off"
+                    data-pm-date-input
                     class="pm-input"
                 >
             </div>
@@ -129,7 +133,11 @@
 
                 <input
                     id="activity-log-to"
-                    type="date"
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="10"
+                    autocomplete="off"
+                    data-pm-date-input
                     class="pm-input"
                 >
             </div>

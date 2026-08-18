@@ -21,8 +21,7 @@ class UserInvitationMail extends Mailable
         public User $user,
         public string $invitationUrl,
         public string $organisationName
-    ) {
-    }
+    ) {}
 
     public function envelope(): Envelope
     {

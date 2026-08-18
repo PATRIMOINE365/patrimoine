@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Represents a person, organisation, or association that interacts
@@ -67,6 +68,7 @@ class Party extends Model
     {
         return $this->hasMany(BuildingOwner::class);
     }
+
     /**
      * Leases where this Party is the tenant.
      */
@@ -88,11 +90,12 @@ class Party extends Model
             foreignKey: 'agent_id'
         );
     }
+
     /**
      * Consolidated owner financial account for this Party, when the Party
      * participates in Patrimoine as an owner.
      */
-    public function ownerAccount(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function ownerAccount(): HasOne
     {
         return $this->hasOne(OwnerAccount::class);
     }

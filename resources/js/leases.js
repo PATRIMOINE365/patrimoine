@@ -42,6 +42,7 @@ import {
     dateForApi,
     dateForDisplay,
     initializeDateInputs,
+    openDatePicker,
 } from './date-input.js';
 
 /*
@@ -2337,19 +2338,9 @@ function initializeLeaseDateInputs() {
                 button.addEventListener(
                     'click',
                     () => {
-                        syncNativeFromText();
-
-                        if (
-                            typeof nativeInput
-                                .showPicker
-                            === 'function'
-                        ) {
-                            nativeInput.showPicker();
-
-                            return;
-                        }
-
-                        nativeInput.click();
+                        openDatePicker(
+                            textInput
+                        );
                     }
                 );
 
@@ -4016,19 +4007,9 @@ function initializeSecurityDepositDateInputs() {
                 pickerButton.addEventListener(
                     'click',
                     () => {
-                        syncNative();
-
-                        if (
-                            typeof nativeInput
-                                .showPicker
-                            === 'function'
-                        ) {
-                            nativeInput.showPicker();
-
-                            return;
-                        }
-
-                        nativeInput.click();
+                        openDatePicker(
+                            textInput
+                        );
                     }
                 );
 
@@ -5331,19 +5312,9 @@ function initializeTenantFundsDateInputs() {
                 button.addEventListener(
                     'click',
                     () => {
-                        syncNative();
-
-                        if (
-                            typeof nativeInput
-                                .showPicker
-                            === 'function'
-                        ) {
-                            nativeInput.showPicker();
-
-                            return;
-                        }
-
-                        nativeInput.click();
+                        openDatePicker(
+                            textInput
+                        );
                     }
                 );
 

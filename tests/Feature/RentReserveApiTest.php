@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ApplicationSetting;
 use App\Models\Building;
 use App\Models\BuildingOwner;
 use App\Models\Invoice;
@@ -12,17 +13,16 @@ use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
-use App\Models\ApplicationSetting;
+use Tests\TestCase;
 
 /**
  * Verifies the Patrimoine Rent Reserve transactional API.
  */
 class RentReserveApiTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -267,5 +267,4 @@ class RentReserveApiTest extends TestCase
                 'Le compte de réserve de loyer est fermé.'
             );
     }
-
 }

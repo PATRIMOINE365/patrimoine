@@ -69,31 +69,25 @@ class PaymentRegisterController extends Controller
 
         $tenantQuery =
             $this->tenantPaymentQuery(
-                paymentMethod:
-                    $validated['payment_method']
+                paymentMethod: $validated['payment_method']
                     ?? null,
 
-                from:
-                    $validated['from']
+                from: $validated['from']
                     ?? null,
 
-                to:
-                    $validated['to']
+                to: $validated['to']
                     ?? null
             );
 
         $ownerQuery =
             $this->ownerDepositQuery(
-                paymentMethod:
-                    $validated['payment_method']
+                paymentMethod: $validated['payment_method']
                     ?? null,
 
-                from:
-                    $validated['from']
+                from: $validated['from']
                     ?? null,
 
-                to:
-                    $validated['to']
+                to: $validated['to']
                     ?? null
             );
 
@@ -133,19 +127,16 @@ class PaymentRegisterController extends Controller
                     'id'
                 )
                 ->paginate(
-                    perPage:
-                        (int) (
-                            $validated['per_page']
-                            ?? 25
-                        )
+                    perPage: (int) (
+                        $validated['per_page']
+                        ?? 25
+                    )
                 );
 
         return response()->json([
-            'summary' =>
-                $this->currentMonthSummary(),
+            'summary' => $this->currentMonthSummary(),
 
-            'transactions' =>
-                $transactions,
+            'transactions' => $transactions,
         ]);
     }
 
@@ -186,29 +177,26 @@ class PaymentRegisterController extends Controller
             )
             ->when(
                 $paymentMethod !== null,
-                fn ($query) =>
-                    $query->where(
-                        'payments.payment_method',
-                        $paymentMethod
-                    )
+                fn ($query) => $query->where(
+                    'payments.payment_method',
+                    $paymentMethod
+                )
             )
             ->when(
                 $from !== null,
-                fn ($query) =>
-                    $query->whereDate(
-                        'payments.payment_date',
-                        '>=',
-                        $from
-                    )
+                fn ($query) => $query->whereDate(
+                    'payments.payment_date',
+                    '>=',
+                    $from
+                )
             )
             ->when(
                 $to !== null,
-                fn ($query) =>
-                    $query->whereDate(
-                        'payments.payment_date',
-                        '<=',
-                        $to
-                    )
+                fn ($query) => $query->whereDate(
+                    'payments.payment_date',
+                    '<=',
+                    $to
+                )
             )
             ->select([
                 'payments.id as id',
@@ -302,29 +290,26 @@ class PaymentRegisterController extends Controller
             )
             ->when(
                 $paymentMethod !== null,
-                fn ($query) =>
-                    $query->where(
-                        'owner_transactions.payment_method',
-                        $paymentMethod
-                    )
+                fn ($query) => $query->where(
+                    'owner_transactions.payment_method',
+                    $paymentMethod
+                )
             )
             ->when(
                 $from !== null,
-                fn ($query) =>
-                    $query->whereDate(
-                        'owner_transactions.transaction_date',
-                        '>=',
-                        $from
-                    )
+                fn ($query) => $query->whereDate(
+                    'owner_transactions.transaction_date',
+                    '>=',
+                    $from
+                )
             )
             ->when(
                 $to !== null,
-                fn ($query) =>
-                    $query->whereDate(
-                        'owner_transactions.transaction_date',
-                        '<=',
-                        $to
-                    )
+                fn ($query) => $query->whereDate(
+                    'owner_transactions.transaction_date',
+                    '<=',
+                    $to
+                )
             )
             ->select([
                 'owner_transactions.id as id',
@@ -454,18 +439,14 @@ class PaymentRegisterController extends Controller
                 ->count();
 
         return [
-            'received_this_month' =>
-                $tenantAmount
+            'received_this_month' => $tenantAmount
                 + $ownerAmount,
 
-            'tenant_payments' =>
-                $tenantAmount,
+            'tenant_payments' => $tenantAmount,
 
-            'owner_deposits' =>
-                $ownerAmount,
+            'owner_deposits' => $ownerAmount,
 
-            'transactions' =>
-                $tenantTransactions
+            'transactions' => $tenantTransactions
                 + $ownerTransactions,
         ];
     }

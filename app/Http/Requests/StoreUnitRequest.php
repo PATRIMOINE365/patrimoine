@@ -37,11 +37,10 @@ class StoreUnitRequest extends FormRequest
                  */
                 Rule::unique('units', 'name')
                     ->where(
-                        fn ($query) =>
-                            $query->where(
-                                'building_id',
-                                $this->input('building_id')
-                            )
+                        fn ($query) => $query->where(
+                            'building_id',
+                            $this->input('building_id')
+                        )
                     ),
             ],
 

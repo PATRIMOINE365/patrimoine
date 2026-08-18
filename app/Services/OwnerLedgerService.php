@@ -20,132 +20,119 @@ use RuntimeException;
  */
 class OwnerLedgerService
 {
-
-/**
- * Record actual money received from an owner.
- *
- * The deposit increases the owner's consolidated balance. Building and Unit
- * references provide operational context but do not create or settle an
- * expense automatically.
- */
-public function recordDeposit(
-    OwnerAccount $account,
-    int $amount,
-    string $transactionDate,
-    string $paymentMethod,
-    string $depositPurpose,
-    ?int $buildingId = null,
-    ?int $unitId = null,
-    ?string $reference = null,
-    ?string $collectorName = null,
-    ?string $notes = null
-): OwnerTransaction {
-    if ($amount <= 0) {
-        throw new RuntimeException(
-            __('business.owner.deposit_positive')
-        );
-    }
-
-    if (
-        ! in_array(
-            $paymentMethod,
-            [
-                'cash',
-                'bank_transfer',
-                'momo',
-            ],
-            true
-        )
-    ) {
-        throw new RuntimeException(
-            __('business.owner.deposit_payment_method')
-        );
-    }
-
-    if (
-        ! in_array(
-            $depositPurpose,
-            [
-                'general_funding',
-                'property_expense',
-                'repair_maintenance',
-                'other',
-            ],
-            true
-        )
-    ) {
-        throw new RuntimeException(
-            __('business.owner.deposit_purpose')
-        );
-    }
-
-    if (
-        $paymentMethod === 'cash'
-        && trim((string) $collectorName) === ''
-    ) {
-        throw new RuntimeException(
-            __('business.owner.cash_collector_required')
-        );
-    }
-
-    return DB::transaction(
-        function () use (
-            $account,
-            $amount,
-            $transactionDate,
-            $paymentMethod,
-            $depositPurpose,
-            $buildingId,
-            $unitId,
-            $reference,
-            $collectorName,
-            $notes
-        ): OwnerTransaction {
-            $account = OwnerAccount::query()
-                ->lockForUpdate()
-                ->findOrFail($account->id);
-
-            return OwnerTransaction::create([
-                'owner_account_id' =>
-                    $account->id,
-
-                'building_id' =>
-                    $buildingId,
-
-                'unit_id' =>
-                    $unitId,
-
-                'direction' =>
-                    'credit',
-
-                'category' =>
-                    'owner_deposit',
-
-                'amount' =>
-                    $amount,
-
-                'transaction_date' =>
-                    $transactionDate,
-
-                'payment_method' =>
-                    $paymentMethod,
-
-                'deposit_purpose' =>
-                    $depositPurpose,
-
-                'collector_name' =>
-                    $collectorName,
-
-                'reference' =>
-                    $reference,
-
-                'notes' =>
-                    $notes
-                    ?? 'Funds deposited by owner.',
-            ]);
+    /**
+     * Record actual money received from an owner.
+     *
+     * The deposit increases the owner's consolidated balance. Building and Unit
+     * references provide operational context but do not create or settle an
+     * expense automatically.
+     */
+    public function recordDeposit(
+        OwnerAccount $account,
+        int $amount,
+        string $transactionDate,
+        string $paymentMethod,
+        string $depositPurpose,
+        ?int $buildingId = null,
+        ?int $unitId = null,
+        ?string $reference = null,
+        ?string $collectorName = null,
+        ?string $notes = null
+    ): OwnerTransaction {
+        if ($amount <= 0) {
+            throw new RuntimeException(
+                __('business.owner.deposit_positive')
+            );
         }
-    );
-}
+
+        if (
+            ! in_array(
+                $paymentMethod,
+                [
+                    'cash',
+                    'bank_transfer',
+                    'momo',
+                ],
+                true
+            )
+        ) {
+            throw new RuntimeException(
+                __('business.owner.deposit_payment_method')
+            );
+        }
+
+        if (
+            ! in_array(
+                $depositPurpose,
+                [
+                    'general_funding',
+                    'property_expense',
+                    'repair_maintenance',
+                    'other',
+                ],
+                true
+            )
+        ) {
+            throw new RuntimeException(
+                __('business.owner.deposit_purpose')
+            );
+        }
+
+        if (
+            $paymentMethod === 'cash'
+            && trim((string) $collectorName) === ''
+        ) {
+            throw new RuntimeException(
+                __('business.owner.cash_collector_required')
+            );
+        }
+
+        return DB::transaction(
+            function () use (
+                $account,
+                $amount,
+                $transactionDate,
+                $paymentMethod,
+                $depositPurpose,
+                $buildingId,
+                $unitId,
+                $reference,
+                $collectorName,
+                $notes
+            ): OwnerTransaction {
+                $account = OwnerAccount::query()
+                    ->lockForUpdate()
+                    ->findOrFail($account->id);
+
+                return OwnerTransaction::create([
+                    'owner_account_id' => $account->id,
+
+                    'building_id' => $buildingId,
+
+                    'unit_id' => $unitId,
+
+                    'direction' => 'credit',
+
+                    'category' => 'owner_deposit',
+
+                    'amount' => $amount,
+
+                    'transaction_date' => $transactionDate,
+
+                    'payment_method' => $paymentMethod,
+
+                    'deposit_purpose' => $depositPurpose,
+
+                    'collector_name' => $collectorName,
+
+                    'reference' => $reference,
+
+                    'notes' => $notes
+                        ?? 'Funds deposited by owner.',
+                ]);
+            }
+        );
+    }
 
     /**
      * Record a manual owner-ledger adjustment.

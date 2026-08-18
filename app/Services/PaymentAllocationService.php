@@ -43,8 +43,7 @@ class PaymentAllocationService
      */
     public function __construct(
         private readonly OwnerAccountingService $ownerAccountingService
-    ) {
-    }
+    ) {}
 
     /**
      * Allocate all currently available funds from a Payment.
@@ -138,11 +137,9 @@ class PaymentAllocationService
                         $payment
                             ->allocations()
                             ->create([
-                                'invoice_id' =>
-                                    $invoice->id,
+                                'invoice_id' => $invoice->id,
 
-                                'amount' =>
-                                    $allocationAmount,
+                                'amount' => $allocationAmount,
                             ]);
 
                     /*
@@ -189,8 +186,7 @@ class PaymentAllocationService
                      * of truth for how much money was actually applied.
                      */
                     $invoice->update([
-                        'status' =>
-                            $invoice->outstandingAmount() === 0
+                        'status' => $invoice->outstandingAmount() === 0
                                 ? 'paid'
                                 : 'partial',
                     ]);

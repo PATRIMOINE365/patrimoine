@@ -37,11 +37,10 @@ class UpdateUnitRequest extends FormRequest
                 Rule::unique('units', 'name')
                     ->ignore($unit?->id)
                     ->where(
-                        fn ($query) =>
-                            $query->where(
-                                'building_id',
-                                $this->input('building_id')
-                            )
+                        fn ($query) => $query->where(
+                            'building_id',
+                            $this->input('building_id')
+                        )
                     ),
             ],
 

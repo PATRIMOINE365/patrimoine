@@ -11,6 +11,7 @@ import {
     dateForApi,
     dateForDisplay,
     initializeDateInputs,
+    openDatePicker,
 } from './date-input.js';
 
 /*

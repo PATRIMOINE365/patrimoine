@@ -388,10 +388,11 @@
                                 id="report-from"
                                 type="text"
                                 inputmode="numeric"
-                                placeholder="DD-MM-YYYY"
+                                placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                 maxlength="10"
                                 autocomplete="off"
                                 data-report-date-input
+                                data-pm-date-input
                                 class="
                                     pm-input
                                     w-full rounded-lg
@@ -468,10 +469,11 @@
                                 id="report-to"
                                 type="text"
                                 inputmode="numeric"
-                                placeholder="DD-MM-YYYY"
+                                placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                 maxlength="10"
                                 autocomplete="off"
                                 data-report-date-input
+                                data-pm-date-input
                                 class="
                                     pm-input
                                     w-full rounded-lg

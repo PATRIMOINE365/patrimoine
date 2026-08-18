@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\ApplicationSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\ApplicationSetting;
 
 /**
  * Verify Patrimoine API authentication through Laravel Sanctum.
@@ -161,8 +161,6 @@ class AuthApiTest extends TestCase
             );
     }
 
-
-
     /**
      * The current API token can be revoked through logout.
      */
@@ -204,8 +202,6 @@ class AuthApiTest extends TestCase
         );
     }
 
-
-
     /**
      * A Sanctum token that has been revoked cannot authenticate a new request.
      */
@@ -241,8 +237,6 @@ class AuthApiTest extends TestCase
             ->getJson('/api/auth/me')
             ->assertUnauthorized();
     }
-
-
 
     /**
      * Authentication-protected endpoints reject anonymous requests.
@@ -313,5 +307,4 @@ class AuthApiTest extends TestCase
                 'Déconnexion effectuée avec succès.'
             );
     }
-
 }
