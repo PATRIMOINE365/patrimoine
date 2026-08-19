@@ -44,7 +44,11 @@ class OwnerLedgerController extends Controller
                 buildingId: $validated['building_id'] ?? null,
                 unitId: $validated['unit_id'] ?? null,
                 reference: $validated['reference'] ?? null,
-                collectorName: $validated['collector_name'] ?? null,
+                cashReceiverUser: (
+                    $validated['payment_method'] === 'cash'
+                        ? $request->user()
+                        : null
+                ),
                 notes: $validated['notes'] ?? null
             );
         } catch (RuntimeException $exception) {

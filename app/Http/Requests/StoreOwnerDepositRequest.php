@@ -90,18 +90,6 @@ class StoreOwnerDepositRequest extends FormRequest
                 'max:255',
             ],
 
-            /*
-             * Cash must identify who physically received the money.
-             */
-            'collector_name' => [
-                'nullable',
-                'string',
-                'max:255',
-                Rule::requiredIf(
-                    fn (): bool => $this->input('payment_method') === 'cash'
-                ),
-            ],
-
             'notes' => [
                 'nullable',
                 'string',

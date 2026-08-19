@@ -106,8 +106,44 @@ class PaymentController extends Controller
                 /*
                 * Persist the incoming payment first.
                 */
+                $paymentData = $request->validated();
+
+                /*
+                 * V1.0.5 Cash Receiver normalization.
+                 *
+                 * Cash is always attributed to the authenticated Patrimoine
+                 * User. The client cannot choose or type another receiver.
+                 *
+                 * cash_receiver_name is a frozen historical snapshot so the
+                 * transaction remains readable if the User is later renamed,
+                 * deactivated or deleted.
+                 *
+                 * Electronic payments have no Cash Receiver.
+                 */
+                if ($paymentData['payment_method'] === 'cash') {
+                    $user = $request->user();
+
+                    if ($user === null) {
+                        throw new \LogicException(
+                            'Authenticated User is required for cash receipt attribution.'
+                        );
+                    }
+
+                    $paymentData['cash_receiver_user_id'] = $user->id;
+                    $paymentData['cash_receiver_name'] = $user->name;
+                } else {
+                    $paymentData['cash_receiver_user_id'] = null;
+                    $paymentData['cash_receiver_name'] = null;
+                }
+
+                /*
+                 * collector_name is retained only as a legacy historical
+                 * field. New V1.0.5 transactions must not populate it.
+                 */
+                unset($paymentData['collector_name']);
+
                 $payment = Payment::create(
-                    $request->validated()
+                    $paymentData
                 );
 
                 /*
@@ -188,7 +224,14 @@ class PaymentController extends Controller
                 ->toDateString(),
             'payment_method' => $payment->payment_method,
             'reference' => $payment->reference,
+            /*
+             * collector_name is retained for pre-V1.0.5 historical records.
+             * New cash transactions use the normalized User identity fields.
+             */
             'collector_name' => $payment->collector_name,
+            'cash_receiver_user_id' => $payment->cash_receiver_user_id,
+            'cash_receiver_name' => $payment->cash_receiver_name
+                ?? $payment->collector_name,
             'notes' => $payment->notes,
 
             'allocated_amount' => $payment->allocatedAmount(),

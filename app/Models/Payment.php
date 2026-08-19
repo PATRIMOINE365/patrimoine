@@ -27,6 +27,8 @@ class Payment extends Model
         'payment_method',
         'reference',
         'collector_name',
+        'cash_receiver_user_id',
+        'cash_receiver_name',
         'notes',
         'is_opening_advance',
     ];
@@ -116,6 +118,14 @@ class Payment extends Model
             $this->amount
             - $this->allocatedAmount()
             - $this->classifiedFundAmount()
+        );
+    }
+
+    public function cashReceiver()
+    {
+        return $this->belongsTo(
+            User::class,
+            'cash_receiver_user_id'
         );
     }
 }

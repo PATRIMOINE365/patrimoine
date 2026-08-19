@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\OwnerAccount;
 use App\Models\OwnerTransaction;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -36,7 +37,7 @@ class OwnerLedgerService
         ?int $buildingId = null,
         ?int $unitId = null,
         ?string $reference = null,
-        ?string $collectorName = null,
+        ?User $cashReceiverUser = null,
         ?string $notes = null
     ): OwnerTransaction {
         if ($amount <= 0) {
@@ -80,7 +81,7 @@ class OwnerLedgerService
 
         if (
             $paymentMethod === 'cash'
-            && trim((string) $collectorName) === ''
+            && $cashReceiverUser === null
         ) {
             throw new RuntimeException(
                 __('business.owner.cash_collector_required')
@@ -97,7 +98,7 @@ class OwnerLedgerService
                 $buildingId,
                 $unitId,
                 $reference,
-                $collectorName,
+                $cashReceiverUser,
                 $notes
             ): OwnerTransaction {
                 $account = OwnerAccount::query()
@@ -123,7 +124,26 @@ class OwnerLedgerService
 
                     'deposit_purpose' => $depositPurpose,
 
-                    'collector_name' => $collectorName,
+                    /*
+                     * V1.0.5:
+                     * Cash Receiver is the authenticated User.
+                     * Preserve both relationship and frozen name snapshot.
+                     * Non-cash transactions have no Cash Receiver.
+                     *
+                     * collector_name remains a legacy historical column and
+                     * is intentionally not populated by new transactions.
+                     */
+                    'cash_receiver_user_id' => (
+                        $paymentMethod === 'cash'
+                            ? $cashReceiverUser?->id
+                            : null
+                    ),
+
+                    'cash_receiver_name' => (
+                        $paymentMethod === 'cash'
+                            ? $cashReceiverUser?->name
+                            : null
+                    ),
 
                     'reference' => $reference,
 

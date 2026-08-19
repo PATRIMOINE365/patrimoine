@@ -284,45 +284,108 @@ class PaymentApiTest extends TestCase
     }
 
     /**
-     * Cash payments require collector information.
+     * Cash payments automatically use the authenticated User
+     * as the immutable Cash Receiver.
      */
-    public function test_cash_payment_requires_collector(): void
+    public function test_cash_payment_uses_authenticated_user_as_cash_receiver(): void
     {
         $context = $this->createContext();
 
-        $this->postJson('/api/payments', [
-            'lease_id' => $context['lease']->id,
-            'amount' => 5000,
-            'payment_date' => '2026-06-01',
-            'payment_method' => 'cash',
-        ])
-            ->assertUnprocessable()
-            ->assertJsonValidationErrors([
-                'collector_name',
-            ]);
-    }
+        $user = \App\Models\User::factory()->create([
+            'name' => 'Ama Receiver',
+        ]);
 
-    /**
-     * Cash payments may be recorded when collector information is present.
-     */
-    public function test_cash_payment_can_be_recorded_with_collector(): void
-    {
-        $context = $this->createContext();
+        $this->actingAs($user);
 
         $response = $this->postJson('/api/payments', [
             'lease_id' => $context['lease']->id,
             'amount' => 5000,
             'payment_date' => '2026-06-01',
             'payment_method' => 'cash',
-            'collector_name' => 'Ama Collector',
         ]);
 
         $response
             ->assertCreated()
             ->assertJsonPath(
-                'collector_name',
-                'Ama Collector'
+                'cash_receiver_user_id',
+                $user->id
+            )
+            ->assertJsonPath(
+                'cash_receiver_name',
+                'Ama Receiver'
             );
+
+        $payment = \App\Models\Payment::query()
+            ->findOrFail(
+                $response->json('id')
+            );
+
+        $this->assertSame(
+            $user->id,
+            $payment->cash_receiver_user_id
+        );
+
+        $this->assertSame(
+            'Ama Receiver',
+            $payment->cash_receiver_name
+        );
+
+        $this->assertNull(
+            $payment->collector_name
+        );
+    }
+
+    /**
+     * Typed legacy collector information cannot override
+     * the authenticated Cash Receiver.
+     */
+    public function test_cash_payment_ignores_typed_legacy_collector_name(): void
+    {
+        $context = $this->createContext();
+
+        $user = \App\Models\User::factory()->create([
+            'name' => 'Authenticated Receiver',
+        ]);
+
+        $this->actingAs($user);
+
+        $response = $this->postJson('/api/payments', [
+            'lease_id' => $context['lease']->id,
+            'amount' => 5000,
+            'payment_date' => '2026-06-01',
+            'payment_method' => 'cash',
+            'collector_name' => 'Fake Typed Collector',
+        ]);
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath(
+                'cash_receiver_user_id',
+                $user->id
+            )
+            ->assertJsonPath(
+                'cash_receiver_name',
+                'Authenticated Receiver'
+            );
+
+        $payment = \App\Models\Payment::query()
+            ->findOrFail(
+                $response->json('id')
+            );
+
+        $this->assertSame(
+            $user->id,
+            $payment->cash_receiver_user_id
+        );
+
+        $this->assertSame(
+            'Authenticated Receiver',
+            $payment->cash_receiver_name
+        );
+
+        $this->assertNull(
+            $payment->collector_name
+        );
     }
 
     /**
