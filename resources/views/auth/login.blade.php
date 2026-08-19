@@ -1,292 +1,144 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+@extends('layouts.auth')
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
+@section('title_key', 'login.title')
+@section('title_fallback', 'Sign in — Patrimoine')
+
+@section('content')
+
+<div class="pm-auth-login">
+
+    <div class="mb-9">
+        <h2 class="pm-auth-title text-3xl font-semibold tracking-tight">
+            <span data-i18n="login.welcome">
+                {{ __('ui.login.welcome') }}
+            </span>
+        </h2>
+
+        <p class="pm-auth-description mt-2 text-sm leading-6">
+            <span data-i18n="login.description">
+                {{ __('ui.login.description') }}
+            </span>
+        </p>
+    </div>
+
+    <div
+        id="login-error"
+        class="
+            pm-auth-error
+            mb-5 hidden rounded-lg
+            px-4 py-3 text-sm
+        "
+    ></div>
+
+    <form
+        id="login-form"
+        class="space-y-5"
     >
-
-    <title data-i18n-title="login.title">Sign in — Patrimoine</title>
-
-    @vite([
-        'resources/css/app.css',
-        'resources/js/app.js',
-    ])
-</head>
-
-<body class="min-h-screen bg-stone-50 font-sans text-slate-900">
-
-    <main class="grid min-h-screen lg:grid-cols-2">
-
-        {{-- Branding panel --}}
-        <section
-            class="
-                relative hidden overflow-hidden
-                bg-patrimoine-950
-                lg:flex lg:flex-col lg:justify-between
-                p-12
-            "
-        >
-            <div
+        <div>
+            <label
+                for="email"
                 class="
-                    absolute -right-32 -top-32
-                    h-96 w-96 rounded-full
-                    bg-patrimoine-800/50
-                "
-            ></div>
-
-            <div
-                class="
-                    absolute -bottom-40 -left-32
-                    h-[30rem] w-[30rem] rounded-full
-                    bg-patrimoine-800/40
-                "
-            ></div>
-
-            <div class="relative z-10">
-                <div class="flex items-center gap-3">
-                    <div
-                        class="
-                            flex h-11 w-11 items-center justify-center
-                            rounded-xl bg-white
-                            font-semibold text-patrimoine-950
-                        "
-                    >
-                        P
-                    </div>
-
-                    <span class="text-xl font-semibold text-white">
-                        Patrimoine
-                    </span>
-                </div>
-            </div>
-
-            <div class="relative z-10 max-w-lg">
-                <p
-                    class="
-                        mb-4 text-xs font-semibold uppercase
-                        tracking-[0.24em] text-patrimoine-300
-                    "
-                >
-                    <span data-i18n="product.property_management">{{ __('ui.product.property_management') }}</span>
-                </p>
-
-                <h1
-                    class="
-                        text-4xl font-semibold leading-tight
-                        tracking-tight text-white
-                    "
-                >
-                    <span data-i18n="login.hero_title">
-                        Your property portfolio,
-                        finances and tenants in one place.
-                    </span>
-                </h1>
-
-                <p
-                    class="
-                        mt-6 max-w-md text-base leading-7
-                        text-patrimoine-200
-                    "
-                >
-                    <span data-i18n="login.hero_description">
-                        Manage buildings, leases, rent collections,
-                        owner funds and financial reporting from a
-                        single workspace.
-                    </span>
-                </p>
-            </div>
-
-            <div
-                class="
-                    relative z-10 text-sm
-                    text-patrimoine-300
+                    pm-auth-label
+                    mb-2 block text-sm font-medium
                 "
             >
-                <span data-i18n="login.product_name">
-                    {{ __('ui.login.product_name') }}
+                <span data-i18n="login.email">
+                    {{ __('ui.login.email') }}
                 </span>
-            </div>
-        </section>
+            </label>
 
-        {{-- Login panel --}}
-        <section
+            <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                autofocus
+                class="
+                    pm-auth-input
+                    block w-full rounded-lg
+                    px-3.5 py-3
+                    text-sm
+                    shadow-sm outline-none
+                    transition
+                "
+                data-i18n-placeholder="login.email_placeholder"
+                placeholder="name@example.com"
+            >
+        </div>
+
+        <div>
+            <div class="mb-2 flex items-center justify-between">
+                <label
+                    for="password"
+                    class="
+                        pm-auth-label
+                        block text-sm font-medium
+                    "
+                >
+                    <span data-i18n="login.password">
+                        {{ __('ui.login.password') }}
+                    </span>
+                </label>
+
+                <a
+                    href="/forgot-password"
+                    class="
+                        pm-auth-link
+                        text-xs font-medium
+                    "
+                    data-i18n="password.forgot_link"
+                >
+                    {{ __('ui.password.forgot_link') }}
+                </a>
+            </div>
+
+            <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+                class="
+                    pm-auth-input
+                    block w-full rounded-lg
+                    px-3.5 py-3
+                    text-sm
+                    shadow-sm outline-none
+                    transition
+                "
+                data-i18n-placeholder="login.password_placeholder"
+                placeholder="Enter your password"
+            >
+        </div>
+
+        <button
+            id="login-button"
+            type="submit"
             class="
-                flex min-h-screen items-center justify-center
-                px-6 py-12 sm:px-10 lg:px-16
+                pm-auth-submit
+                flex w-full items-center justify-center
+                rounded-lg
+                px-4 py-3
+                text-sm font-semibold
+                shadow-sm transition
+                focus:outline-none
+                disabled:cursor-not-allowed
+                disabled:opacity-60
             "
         >
-            <div class="w-full max-w-md">
+            <span data-i18n="login.sign_in">
+                {{ __('ui.login.sign_in') }}
+            </span>
+        </button>
+    </form>
 
-                {{-- Mobile branding --}}
-                <div class="mb-12 flex items-center gap-3 lg:hidden">
-                    <div
-                        class="
-                            flex h-10 w-10 items-center justify-center
-                            rounded-xl bg-patrimoine-950
-                            font-semibold text-white
-                        "
-                    >
-                        P
-                    </div>
+    <p class="pm-auth-footer mt-10 text-center text-xs leading-5">
+        <span data-i18n="login.secure_access">
+            {{ __('ui.login.secure_access') }}
+        </span>
+    </p>
 
-                    <span class="text-xl font-semibold">
-                        Patrimoine
-                    </span>
-                </div>
+</div>
 
-                <div class="mb-9">
-                    <h2
-                        class="
-                            text-3xl font-semibold tracking-tight
-                            text-slate-950
-                        "
-                    >
-                        <span data-i18n="login.welcome">Welcome back</span>
-                    </h2>
-
-                    <p class="mt-2 text-sm leading-6 text-slate-500">
-                        <span data-i18n="login.description">Sign in to access the property management workspace.</span>
-                    </p>
-                </div>
-
-                <div
-                    id="login-error"
-                    class="
-                        mb-5 hidden rounded-lg
-                        border border-red-200 bg-red-50
-                        px-4 py-3 text-sm text-red-700
-                    "
-                ></div>
-
-                <form
-                    id="login-form"
-                    class="space-y-5"
-                >
-                    <div>
-                        <label
-                            for="email"
-                            class="
-                                mb-2 block text-sm font-medium
-                                text-slate-700
-                            "
-                        >
-                            <span data-i18n="login.email">Email address</span>
-                        </label>
-
-                        <input
-                            id="email"
-                            name="email"
-                            type="email"
-                            autocomplete="email"
-                            required
-                            autofocus
-                            class="
-                                block w-full rounded-lg
-                                border border-slate-300
-                                bg-white px-3.5 py-3
-                                text-sm text-slate-900
-                                shadow-sm outline-none
-                                transition
-                                placeholder:text-slate-400
-                                focus:border-patrimoine-600
-                                focus:ring-3
-                                focus:ring-patrimoine-600/10
-                            "
-                            data-i18n-placeholder="login.email_placeholder" placeholder="name@example.com"
-                        >
-                    </div>
-
-                    <div>
-                        <div
-                            class="
-                                mb-2 flex items-center justify-between
-                            "
-                        >
-                            <label
-                                for="password"
-                                class="
-                                    block text-sm font-medium
-                                    text-slate-700
-                                "
-                            >
-                                <span data-i18n="login.password">Password</span>
-                            </label>
-
-                            <a
-                                href="/forgot-password"
-                                class="
-                                    text-xs font-medium
-                                    text-patrimoine-800
-                                    hover:text-patrimoine-950
-                                "
-                                data-i18n="password.forgot_link"
-                            >
-                                Forgot password?
-                            </a>
-                        </div>
-
-                        <input
-                            id="password"
-                            name="password"
-                            type="password"
-                            autocomplete="current-password"
-                            required
-                            class="
-                                block w-full rounded-lg
-                                border border-slate-300
-                                bg-white px-3.5 py-3
-                                text-sm text-slate-900
-                                shadow-sm outline-none
-                                transition
-                                placeholder:text-slate-400
-                                focus:border-patrimoine-600
-                                focus:ring-3
-                                focus:ring-patrimoine-600/10
-                            "
-                            data-i18n-placeholder="login.password_placeholder" placeholder="Enter your password"
-                        >
-                    </div>
-
-                    <button
-                        id="login-button"
-                        type="submit"
-                        class="
-                            flex w-full items-center justify-center
-                            rounded-lg bg-patrimoine-950
-                            px-4 py-3
-                            text-sm font-semibold text-white
-                            shadow-sm transition
-                            hover:bg-patrimoine-800
-                            focus:outline-none
-                            focus:ring-4
-                            focus:ring-patrimoine-700/20
-                            disabled:cursor-not-allowed
-                            disabled:opacity-60
-                        "
-                    >
-                        <span data-i18n="login.sign_in">
-                            Sign in
-                        </span>
-                    </button>
-                </form>
-
-                <p
-                    class="
-                        mt-10 text-center text-xs
-                        leading-5 text-slate-400
-                    "
-                >
-                    <span data-i18n="login.secure_access">
-                        {{ __('ui.login.secure_access') }}
-                    </span>
-                </p>
-            </div>
-        </section>
-
-    </main>
-
-</body>
-</html>
+@endsection

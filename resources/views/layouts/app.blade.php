@@ -496,40 +496,33 @@
 
 
 
-                <div
+            </div>
+        </nav>
+
+        {{-- Administrator management menu --}}
+        <div
+            data-requires-capability="view_activity_log"
+            class="
+                rbac-hidden shell-admin-only
+                relative
+                border-t border-white/10
+                p-4
+            "
+        >
+            <div
+                id="sidebar-manage-menu"
+                class="
+                    pm-sidebar-manage-menu
+                    hidden
+                "
+            >
+                <a
+                    href="/activity-log"
                     data-requires-capability="view_activity_log"
-                    class="rbac-hidden shell-admin-only"
+                    class="pm-sidebar-manage-item"
                 >
-                    <p
-                        class="
-                            mb-3 mt-8 px-3
-                            text-[10px] font-semibold uppercase
-                            tracking-[0.16em]
-                            text-patrimoine-400
-                        "
-                    >
-                        <span data-i18n="navigation.manage">{{ __('ui.navigation.manage') }}</span>
-                    </p>
-
-                    <div class="space-y-1">
-
-                    <a
-                        href="/activity-log"
-                        data-requires-capability="view_activity_log"
-                        class="
-
-                            {{ request()->is('activity-log')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                            }}
-                            flex items-center gap-3
-                            rounded-lg px-3 py-2.5
-                            text-sm font-medium
-                            transition
-                        "
-                    >
+                    <div class="pm-sidebar-manage-icon">
                         <svg
-                            class="h-5 w-5"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -542,118 +535,139 @@
                             <circle cx="5" cy="12" r="1"/>
                             <circle cx="5" cy="19" r="1"/>
                         </svg>
+                    </div>
 
-                        <span data-i18n="navigation.activity_log">
+                    <div class="min-w-0">
+                        <div
+                            class="pm-sidebar-manage-title"
+                            data-i18n="navigation.activity_log"
+                        >
                             {{ __('ui.navigation.activity_log') }}
-                        </span>
-                    </a>
+                        </div>
 
-                    <a
-                        href="/users"
-                        data-requires-capability="manage_users"
-                        class="
+                        <div
+                            class="pm-sidebar-manage-description"
+                        >
+                            {{ __('ui.navigation.activity_log_description') }}
+                        </div>
+                    </div>
+                </a>
 
-                            {{ request()->is('users')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                            }}
-                            flex items-center gap-3
-                            rounded-lg px-3 py-2.5
-                            text-sm font-medium
-                            transition
-                        "
-                    >
+                <a
+                    href="/users"
+                    data-requires-capability="manage_users"
+                    class="pm-sidebar-manage-item"
+                >
+                    <div class="pm-sidebar-manage-icon">
                         <svg
-                            class="h-5 w-5"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
                             stroke-width="1.8"
+                            aria-hidden="true"
                         >
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                             <circle cx="9" cy="7" r="4"/>
                             <path d="M19 8v6"/>
                             <path d="M16 11h6"/>
                         </svg>
+                    </div>
 
-                        <span data-i18n="navigation.users">
+                    <div class="min-w-0">
+                        <div
+                            class="pm-sidebar-manage-title"
+                            data-i18n="navigation.users"
+                        >
                             {{ __('ui.navigation.users') }}
-                        </span>
-                    </a>
+                        </div>
 
-                    <a
-                        href="/settings"
-                        data-requires-capability="manage_settings"
-                        class="
-                            {{ request()->is('settings')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                            }}
-                            flex items-center gap-3
-                            rounded-lg px-3 py-2.5
-                            text-sm font-medium
-                            transition
-                        "
-                    >
+                        <div
+                            class="pm-sidebar-manage-description"
+                        >
+                            {{ __('ui.navigation.users_description') }}
+                        </div>
+                    </div>
+                </a>
+
+                <a
+                    href="/settings"
+                    data-requires-capability="manage_settings"
+                    class="pm-sidebar-manage-item"
+                >
+                    <div class="pm-sidebar-manage-icon">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.1A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.1A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.2.37.5.7.9.9.3.16.7.2 1.1.2h.1v4h-.1a1.7 1.7 0 0 0-2 .9Z"/>
+                        </svg>
+                    </div>
+
+                    <div class="min-w-0">
+                        <div
+                            class="pm-sidebar-manage-title"
+                            data-i18n="navigation.settings"
+                        >
+                            {{ __('ui.navigation.settings') }}
+                        </div>
+
+                        <div
+                            class="pm-sidebar-manage-description"
+                        >
+                            {{ __('ui.navigation.settings_description') }}
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <button
+                id="sidebar-manage-toggle"
+                type="button"
+                class="
+                    pm-sidebar-manage-toggle
+                    {{ request()->is('activity-log') || request()->is('settings')
+                        ? 'pm-sidebar-manage-toggle-active'
+                        : ''
+                    }}
+                "
+                aria-expanded="false"
+                aria-controls="sidebar-manage-menu"
+            >
+                <span class="pm-sidebar-manage-toggle-icon">
                     <svg
-                        class="h-5 w-5"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
                         stroke-width="1.8"
                     >
-                        <circle cx="12" cy="12" r="3"/>
-                        <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.1A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.1A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.2.37.5.7.9.9.3.16.7.2 1.1.2h.1v4h-.1a1.7 1.7 0 0 0-2 .9Z"/>
+                        <rect x="4" y="3" width="16" height="18" rx="2"/>
+                        <circle cx="12" cy="9" r="2.5"/>
+                        <path d="M8 17c.7-2 2-3 4-3s3.3 1 4 3"/>
                     </svg>
+                </span>
 
-                    <span data-i18n="navigation.settings">{{ __('ui.navigation.settings') }}</span>
-                </a>
-                    </div>
-                </div>
-            </div>
-        </nav>
+                <span
+                    class="flex-1 text-left"
+                    data-i18n="navigation.manage"
+                >
+                    {{ __('ui.navigation.manage') }}
+                </span>
 
-        <div
-            class="
-                border-t border-white/10
-                p-4
-            "
-        >
-            <div
-                class="
-                    flex items-center gap-3
-                    rounded-lg px-3 py-2
-                "
-            >
-                <div
-                    id="sidebar-avatar"
-                    class="
-                        flex h-9 w-9 shrink-0
-                        items-center justify-center
-                        rounded-full bg-patrimoine-700
-                        text-sm font-semibold text-white
-                    "
-                ></div>
-
-                <div class="min-w-0 flex-1">
-                    <div
-                        id="sidebar-user-name"
-                        class="
-                            truncate text-sm font-medium
-                            text-white
-                        "
-                    ></div>
-
-                    <div
-                        id="sidebar-user-role"
-                        class="
-                            truncate text-xs
-                            text-patrimoine-300
-                        "
-                    ></div>
-                </div>
-            </div>
-
+                <svg
+                    id="sidebar-manage-chevron"
+                    class="pm-sidebar-manage-chevron"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <path d="m6 15 6-6 6 6"/>
+                </svg>
+            </button>
+        </div>
         </div>
     </aside>
 
@@ -800,12 +814,12 @@
                         </svg>
 
                         <span
+                            id="notification-unread-badge"
                             class="
-                                absolute right-2 top-2
-                                h-2 w-2 rounded-full
-                                bg-patrimoine-600
-                                ring-2 ring-[var(--pm-surface)]
+                                pm-notification-unread-badge
+                                hidden
                             "
+                            aria-hidden="true"
                         ></span>
                     </button>
 
@@ -837,7 +851,10 @@
                             </div>
                         </div>
 
-                        <div class="p-4">
+                        <div
+                            class="p-4"
+                            data-release-notification
+                        >
                             <div
                                 class="
                                     text-sm font-semibold
@@ -879,67 +896,28 @@
                         id="user-menu-toggle"
                         type="button"
                         class="
-                            flex items-center gap-2
-                            rounded-lg p-1.5
-                            text-left transition
+                            inline-flex h-10 w-10
+                            items-center justify-center
+                            rounded-lg
+                            text-[var(--pm-text-muted)]
+                            transition
                             hover:bg-[var(--pm-hover)]
+                            hover:text-[var(--pm-text)]
                         "
                         aria-expanded="false"
+                        aria-label="{{ __('ui.shell.my_profile') }}"
+                        title="{{ __('ui.shell.my_profile') }}"
                     >
-                        <div
-                            id="topbar-avatar"
-                            class="
-                                flex h-8 w-8 shrink-0
-                                items-center justify-center
-                                rounded-full
-                                bg-patrimoine-800
-                                text-xs font-semibold text-white
-                            "
-                        >
-                            PM
-                        </div>
-
-                        <div
-                            class="
-                                hidden min-w-0
-                                lg:block
-                            "
-                        >
-                            <div
-                                id="topbar-user-name"
-                                class="
-                                    max-w-36 truncate
-                                    text-xs font-semibold
-                                    text-[var(--pm-text)]
-                                "
-                            >
-                                Property Manager
-                            </div>
-
-                            <div
-                                id="topbar-user-role"
-                                class="
-                                    max-w-36 truncate
-                                    text-[11px]
-                                    text-[var(--pm-text-muted)]
-                                "
-                            >
-                                Property Manager
-                            </div>
-                        </div>
-
                         <svg
-                            class="
-                                hidden h-4 w-4
-                                text-[var(--pm-text-subtle)]
-                                lg:block
-                            "
+                            class="h-5 w-5"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="2"
+                            stroke-width="1.8"
+                            aria-hidden="true"
                         >
-                            <path d="m6 9 6 6 6-6"/>
+                            <circle cx="12" cy="8" r="4"/>
+                            <path d="M4 21a8 8 0 0 1 16 0"/>
                         </svg>
                     </button>
 
@@ -947,44 +925,145 @@
                         id="user-menu"
                         class="
                             absolute right-0 mt-2 hidden
-                            w-64 overflow-hidden
-                            rounded-xl
+                            w-[min(22rem,calc(100vw-2rem))]
+                            overflow-hidden rounded-xl
                             border border-[var(--pm-border)]
                             bg-[var(--pm-surface-elevated)]
                             shadow-xl
                         "
                     >
+                        {{-- Signed-in identity --}}
                         <div
                             class="
+                                flex items-center gap-3
                                 border-b border-[var(--pm-border)]
-                                px-4 py-3
+                                px-4 py-4
                             "
                         >
                             <div
-                                id="user-menu-name"
+                                id="topbar-avatar"
                                 class="
-                                    truncate text-sm font-semibold
-                                    text-[var(--pm-text)]
+                                    flex h-11 w-11 shrink-0
+                                    items-center justify-center
+                                    rounded-full
+                                    bg-patrimoine-800
+                                    text-sm font-semibold text-white
                                 "
                             >
-                                Property Manager
+                                PM
                             </div>
 
-                            <div
-                                id="user-menu-role"
-                                class="
-                                    mt-0.5 truncate text-xs
-                                    text-[var(--pm-text-muted)]
-                                "
-                            >
-                                Property Manager
+                            <div class="min-w-0 flex-1">
+                                <div
+                                    id="user-menu-name"
+                                    class="
+                                        truncate text-sm font-semibold
+                                        text-[var(--pm-text)]
+                                    "
+                                >
+                                    Property Manager
+                                </div>
+
+                                <div
+                                    id="user-menu-email"
+                                    class="
+                                        mt-0.5 truncate text-xs
+                                        text-[var(--pm-text-muted)]
+                                    "
+                                >
+                                    user@example.com
+                                </div>
+
+                                <div class="mt-2">
+                                    <span
+                                        id="user-menu-role"
+                                        class="
+                                            pm-user-role-pill
+                                            inline-flex items-center
+                                            rounded-full
+                                            px-2.5 py-1
+                                            text-xs font-semibold
+                                        "
+                                    >
+                                        Property Manager
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
+                        {{-- My Profile --}}
                         <div class="p-2">
+                            <button
+                                id="my-profile-open"
+                                type="button"
+                                class="
+                                    flex w-full items-center gap-3
+                                    rounded-lg px-3 py-3
+                                    text-left transition
+                                    hover:bg-[var(--pm-hover)]
+                                "
+                            >
+                                <svg
+                                    class="
+                                        h-5 w-5 shrink-0
+                                        text-[var(--pm-text-muted)]
+                                    "
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    aria-hidden="true"
+                                >
+                                    <circle cx="12" cy="8" r="4"/>
+                                    <path d="M4 21a8 8 0 0 1 16 0"/>
+                                </svg>
+
+                                <span class="min-w-0 flex-1">
+                                    <span
+                                        class="
+                                            block text-sm font-semibold
+                                            text-[var(--pm-text)]
+                                        "
+                                    >
+                                        {{ __('ui.shell.my_profile') }}
+                                    </span>
+
+                                    <span
+                                        class="
+                                            mt-0.5 block text-xs
+                                            text-[var(--pm-text-muted)]
+                                        "
+                                    >
+                                        {{ __('ui.shell.my_profile_description') }}
+                                    </span>
+                                </span>
+
+                                <svg
+                                    class="
+                                        h-4 w-4 shrink-0
+                                        text-[var(--pm-text-subtle)]
+                                    "
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    aria-hidden="true"
+                                >
+                                    <path d="m9 18 6-6-6-6"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        {{-- Appearance --}}
+                        <div
+                            class="
+                                border-t border-[var(--pm-border)]
+                                p-2
+                            "
+                        >
                             <div
                                 class="
-                                    px-2 pb-1 pt-1
+                                    px-2 pb-1.5 pt-1
                                     text-[11px] font-semibold uppercase
                                     tracking-wide
                                     text-[var(--pm-text-subtle)]
@@ -1033,33 +1112,13 @@
                             </div>
                         </div>
 
+                        {{-- Account actions --}}
                         <div
                             class="
                                 border-t border-[var(--pm-border)]
                                 p-2
                             "
                         >
-                            <button
-                                id="change-password-open"
-                                type="button"
-                                class="shell-menu-item"
-                            >
-                                <svg
-                                    class="h-4 w-4"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="1.8"
-                                >
-                                    <rect x="4" y="10" width="16" height="10" rx="2"/>
-                                    <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
-                                </svg>
-
-                                <span data-i18n="password.change_action">
-                                    {{ __('ui.password.change_action') }}
-                                </span>
-                            </button>
-
                             <button
                                 id="logout-button"
                                 type="button"
@@ -1071,14 +1130,34 @@
                                     fill="none"
                                     stroke="currentColor"
                                     stroke-width="1.8"
+                                    aria-hidden="true"
                                 >
                                     <path d="M10 17l5-5-5-5"/>
                                     <path d="M15 12H3"/>
                                     <path d="M21 19V5a2 2 0 0 0-2-2h-6"/>
                                 </svg>
 
-                                <span data-i18n="navigation.sign_out">
-                                    {{ __('ui.navigation.sign_out') }}
+                                <span class="min-w-0">
+                                    <span
+                                        class="
+                                            block text-sm font-medium
+                                            text-[var(--pm-text)]
+                                        "
+                                        data-i18n="navigation.sign_out"
+                                    >
+                                        {{ __('ui.navigation.sign_out') }}
+                                    </span>
+
+                                    <span
+                                        class="
+                                            mt-0.5 block text-xs
+                                            font-normal
+                                            text-[var(--pm-text-muted)]
+                                        "
+                                        data-i18n="navigation.sign_out_description"
+                                    >
+                                        {{ __('ui.navigation.sign_out_description') }}
+                                    </span>
                                 </span>
                             </button>
                         </div>
@@ -1092,6 +1171,283 @@
         </main>
 
     </div>
+
+
+
+<x-drawer
+    id="profile-modal"
+    backdrop-id="profile-modal-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        title-id="profile-modal-title"
+        description-id="profile-modal-description"
+        close-id="profile-modal-close"
+        close-label="Close"
+        close-label-key="users.close"
+    >
+        <x-slot:title>
+            {{ __('ui.shell.my_profile') }}
+        </x-slot:title>
+
+        <x-slot:description>
+            {{ __('ui.shell.profile_description') }}
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="profile-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div
+            class="
+                min-h-0 flex-1
+                overflow-y-auto
+                px-6 py-6
+            "
+        >
+            <div
+                id="profile-form-message"
+                class="
+                    mb-5 hidden rounded-lg
+                    border px-4 py-3
+                    text-sm
+                "
+                role="alert"
+            ></div>
+
+            <div class="grid gap-5 sm:grid-cols-2">
+                <div class="sm:col-span-2">
+                    <label
+                        for="profile-name"
+                        class="pm-field-label"
+                    >
+                        {{ __('ui.users.name') }}
+                    </label>
+
+                    <input
+                        id="profile-name"
+                        type="text"
+                        maxlength="255"
+                        required
+                        class="pm-input"
+                    >
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label
+                        for="profile-email"
+                        class="pm-field-label"
+                    >
+                        {{ __('ui.users.email') }}
+                    </label>
+
+                    <input
+                        id="profile-email"
+                        type="email"
+                        maxlength="255"
+                        required
+                        class="pm-input"
+                    >
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label
+                        for="profile-phone"
+                        class="pm-field-label"
+                    >
+                        {{ __('ui.users.phone') }}
+                    </label>
+
+                    <input
+                        id="profile-phone"
+                        type="text"
+                        maxlength="50"
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="profile-role"
+                        class="pm-field-label"
+                    >
+                        {{ __('ui.users.role') }}
+                    </label>
+
+                    <input
+                        id="profile-role"
+                        type="text"
+                        disabled
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="profile-status"
+                        class="pm-field-label"
+                    >
+                        {{ __('ui.users.status') }}
+                    </label>
+
+                    <input
+                        id="profile-status"
+                        type="text"
+                        disabled
+                        class="pm-input"
+                    >
+                </div>
+
+
+                {{-- Optional authenticated password change --}}
+                <div
+                    class="
+                        sm:col-span-2
+                        mt-3 border-t
+                        border-[var(--pm-border)]
+                        pt-6
+                    "
+                >
+                    <div
+                        class="
+                            mb-5 text-xs font-semibold uppercase
+                            tracking-wide
+                            text-[var(--pm-text-subtle)]
+                        "
+                    >
+                        {{ __('ui.password.section') }}
+                    </div>
+
+                    <div class="space-y-5">
+                        <div>
+                            <label
+                                for="profile-new-password"
+                                class="pm-field-label"
+                            >
+                                {{ __('ui.password.new_password') }}
+                            </label>
+
+                            <div class="relative">
+                                <input
+                                    id="profile-new-password"
+                                    type="password"
+                                    autocomplete="new-password"
+                                    minlength="8"
+                                    class="pm-input pr-12"
+                                >
+
+                                <button
+                                    type="button"
+                                    data-password-toggle="profile-new-password"
+                                    class="
+                                        absolute right-0 top-0
+                                        flex h-full w-11
+                                        items-center justify-center
+                                        text-[var(--pm-text-muted)]
+                                        hover:text-[var(--pm-text)]
+                                    "
+                                    aria-label="{{ __('ui.password.show_password') }}"
+                                >
+                                    <svg
+                                        class="h-5 w-5"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <p
+                                class="
+                                    mt-2 text-xs
+                                    text-[var(--pm-text-muted)]
+                                "
+                            >
+                                {{ __('ui.password.profile_new_help') }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <label
+                                for="profile-current-password"
+                                class="pm-field-label"
+                            >
+                                {{ __('ui.password.current_password') }}
+                            </label>
+
+                            <div class="relative">
+                                <input
+                                    id="profile-current-password"
+                                    type="password"
+                                    autocomplete="current-password"
+                                    class="pm-input pr-12"
+                                >
+
+                                <button
+                                    type="button"
+                                    data-password-toggle="profile-current-password"
+                                    class="
+                                        absolute right-0 top-0
+                                        flex h-full w-11
+                                        items-center justify-center
+                                        text-[var(--pm-text-muted)]
+                                        hover:text-[var(--pm-text)]
+                                    "
+                                    aria-label="{{ __('ui.password.show_password') }}"
+                                >
+                                    <svg
+                                        class="h-5 w-5"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <p
+                                class="
+                                    mt-2 text-xs
+                                    text-[var(--pm-text-muted)]
+                                "
+                            >
+                                {{ __('ui.password.profile_current_help') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                id="profile-cancel-button"
+                type="button"
+                class="pm-button-secondary"
+            >
+                {{ __('ui.users.cancel') }}
+            </button>
+
+            <button
+                id="profile-submit-button"
+                type="submit"
+                class="pm-button-primary"
+            >
+                {{ __('ui.actions.save') }}
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
 
 
 <div

@@ -121,6 +121,19 @@ Route::middleware('auth:sanctum')->group(
             [AuthController::class, 'me']
         );
 
+        Route::patch(
+            'auth/me',
+            [AuthController::class, 'updateMe']
+        );
+
+        Route::post(
+            'auth/release-notification/read',
+            [
+                AuthController::class,
+                'acknowledgeReleaseNotification',
+            ]
+        );
+
         Route::post(
             'auth/logout',
             [AuthController::class, 'logout']

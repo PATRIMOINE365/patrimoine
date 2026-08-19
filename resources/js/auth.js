@@ -89,6 +89,13 @@ function clearUserRole() {
 |--------------------------------------------------------------------------
 */
 
+let authenticatedShellUser =
+    null;
+
+let profileDrawerCloseTimer =
+    null;
+
+
 /**
  * Initialize the login page when present.
  *
@@ -321,6 +328,9 @@ export async function initializeAuthenticatedShell() {
                 response
             );
 
+        authenticatedShellUser =
+            user;
+
         renderCurrentUser(
             user
         );
@@ -361,6 +371,7 @@ export async function initializeAuthenticatedShell() {
     initializeSidebar();
     initializeLogout();
     initializeShellControls();
+    initializeProfileControls();
 
     await loadManagingOrganisation();
 
@@ -373,6 +384,10 @@ export async function initializeAuthenticatedShell() {
  * @param {object} user
  */
 function renderCurrentUser(user) {
+    renderReleaseNotificationState(
+        user
+    );
+
     /*
      * Cache only non-sensitive shell presentation identity.
      *
@@ -384,9 +399,27 @@ function renderCurrentUser(user) {
         window.sessionStorage.setItem(
             'patrimoine.current_user',
             JSON.stringify({
+                id:
+                    Number(
+                        user.id
+                        || 0
+                    ),
+
                 name:
                     String(
                         user.name
+                        || ''
+                    ),
+
+                email:
+                    String(
+                        user.email
+                        || ''
+                    ),
+
+                phone:
+                    String(
+                        user.phone
                         || ''
                     ),
 
@@ -467,6 +500,11 @@ function renderCurrentUser(user) {
             'user-menu-name'
         );
 
+    const menuEmail =
+        document.getElementById(
+            'user-menu-email'
+        );
+
     const menuRole =
         document.getElementById(
             'user-menu-role'
@@ -511,12 +549,683 @@ function renderCurrentUser(user) {
             displayName;
     }
 
+    if (menuEmail) {
+        menuEmail.textContent =
+            String(
+                user.email
+                || ''
+            );
+    }
+
     if (menuRole) {
         menuRole.textContent =
             translatedRole;
     }
 }
 
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Release Notification
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * Reflect the authenticated user's persisted release acknowledgement state
+ * in the notification icon.
+ */
+function renderReleaseNotificationState(
+    user
+) {
+    const badge =
+        document.getElementById(
+            'notification-unread-badge'
+        );
+
+    if (! badge) {
+        return;
+    }
+
+    const unread =
+        Boolean(
+            user
+                ?.has_unread_release_notification
+        );
+
+    badge.classList.toggle(
+        'hidden',
+        ! unread
+    );
+
+    badge.setAttribute(
+        'aria-hidden',
+        unread
+            ? 'false'
+            : 'true'
+    );
+}
+
+
+/**
+ * Persist acknowledgement of the current release.
+ *
+ * The badge is removed only after the API confirms that the state has been
+ * saved successfully. A failed request therefore leaves the notification
+ * visibly unread and allows the user to try again.
+ */
+async function acknowledgeCurrentReleaseNotification() {
+    if (
+        ! authenticatedShellUser
+        || ! authenticatedShellUser
+            .has_unread_release_notification
+    ) {
+        return;
+    }
+
+    const response =
+        await apiRequest(
+            '/api/auth/release-notification/read',
+            {
+                method:
+                    'POST',
+            }
+        );
+
+    const state =
+        await parseJsonResponse(
+            response
+        );
+
+    authenticatedShellUser = {
+        ...authenticatedShellUser,
+
+        current_release:
+            state.current_release,
+
+        last_seen_release:
+            state.last_seen_release,
+
+        has_unread_release_notification:
+            Boolean(
+                state
+                    .has_unread_release_notification
+            ),
+    };
+
+    renderReleaseNotificationState(
+        authenticatedShellUser
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| My Profile
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * Populate and show the signed-in user's own profile drawer.
+ */
+function openProfileModal() {
+    const modal =
+        document.getElementById(
+            'profile-modal'
+        );
+
+    const user =
+        authenticatedShellUser;
+
+    if (! modal || ! user) {
+        return;
+    }
+
+    const name =
+        document.getElementById(
+            'profile-name'
+        );
+
+    const email =
+        document.getElementById(
+            'profile-email'
+        );
+
+    const phone =
+        document.getElementById(
+            'profile-phone'
+        );
+
+    const role =
+        document.getElementById(
+            'profile-role'
+        );
+
+    const status =
+        document.getElementById(
+            'profile-status'
+        );
+
+    if (name) {
+        name.value =
+            user.name ?? '';
+    }
+
+    if (email) {
+        email.value =
+            user.email ?? '';
+    }
+
+    if (phone) {
+        phone.value =
+            user.phone ?? '';
+    }
+
+    if (role) {
+        role.value =
+            translate(
+                `roles.${String(
+                    user.role
+                    || 'property_manager'
+                )}`
+            );
+    }
+
+    if (status) {
+        status.value =
+            Boolean(
+                user.is_active
+            )
+                ? translate(
+                    'users.active'
+                )
+                : translate(
+                    'users.inactive'
+                );
+    }
+
+    const newPassword =
+        document.getElementById(
+            'profile-new-password'
+        );
+
+    const currentPassword =
+        document.getElementById(
+            'profile-current-password'
+        );
+
+    if (newPassword) {
+        newPassword.value = '';
+        newPassword.type = 'password';
+    }
+
+    if (currentPassword) {
+        currentPassword.value = '';
+        currentPassword.type = 'password';
+    }
+
+    hideProfileMessage();
+
+    if (
+        profileDrawerCloseTimer
+        !== null
+    ) {
+        window.clearTimeout(
+            profileDrawerCloseTimer
+        );
+
+        profileDrawerCloseTimer =
+            null;
+    }
+
+    modal.classList.remove(
+        'pm-drawer-open',
+        'pm-drawer-closing'
+    );
+
+    modal.removeAttribute(
+        'hidden'
+    );
+
+    modal.classList.add(
+        'pm-drawer-active'
+    );
+
+    modal.setAttribute(
+        'aria-hidden',
+        'false'
+    );
+
+    document.body.classList.add(
+        'overflow-hidden'
+    );
+
+    const panel =
+        modal.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    if (panel) {
+        void panel
+            .getBoundingClientRect();
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    modal.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
+    );
+}
+
+
+/**
+ * Close the My Profile drawer using the shared drawer transition.
+ */
+function closeProfileModal() {
+    const modal =
+        document.getElementById(
+            'profile-modal'
+        );
+
+    if (
+        ! modal
+        || ! modal.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
+        return;
+    }
+
+    modal.classList.remove(
+        'pm-drawer-open'
+    );
+
+    modal.classList.add(
+        'pm-drawer-closing'
+    );
+
+    modal.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+
+    if (
+        profileDrawerCloseTimer
+        !== null
+    ) {
+        window.clearTimeout(
+            profileDrawerCloseTimer
+        );
+    }
+
+    profileDrawerCloseTimer =
+        window.setTimeout(
+            () => {
+                modal.classList.remove(
+                    'pm-drawer-active',
+                    'pm-drawer-closing'
+                );
+
+                modal.setAttribute(
+                    'hidden',
+                    ''
+                );
+
+                document.body
+                    .classList.remove(
+                        'overflow-hidden'
+                    );
+
+                profileDrawerCloseTimer =
+                    null;
+            },
+            850
+        );
+}
+
+
+/**
+ * Apply standard error/success presentation inside the profile drawer.
+ */
+function showProfileMessage(
+    message,
+    success = false
+) {
+    const box =
+        document.getElementById(
+            'profile-form-message'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent =
+        message;
+
+    box.classList.remove(
+        'hidden',
+        'border-[var(--pm-danger-border)]',
+        'bg-[var(--pm-danger-background)]',
+        'text-[var(--pm-danger-text)]',
+        'border-[var(--pm-success-border)]',
+        'bg-[var(--pm-success-background)]',
+        'text-[var(--pm-success-text)]'
+    );
+
+    box.classList.add(
+        success
+            ? 'border-[var(--pm-success-border)]'
+            : 'border-[var(--pm-danger-border)]',
+        success
+            ? 'bg-[var(--pm-success-background)]'
+            : 'bg-[var(--pm-danger-background)]',
+        success
+            ? 'text-[var(--pm-success-text)]'
+            : 'text-[var(--pm-danger-text)]'
+    );
+}
+
+
+function hideProfileMessage() {
+    const box =
+        document.getElementById(
+            'profile-form-message'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent = '';
+
+    box.classList.add(
+        'hidden'
+    );
+}
+
+
+/**
+ * Register self-profile drawer actions once per authenticated document.
+ */
+function initializeProfileControls() {
+    const form =
+        document.getElementById(
+            'profile-form'
+        );
+
+    if (! form) {
+        return;
+    }
+
+    document
+        .getElementById(
+            'profile-modal-close'
+        )
+        ?.addEventListener(
+            'click',
+            closeProfileModal
+        );
+
+    document
+        .getElementById(
+            'profile-modal-backdrop'
+        )
+        ?.addEventListener(
+            'click',
+            closeProfileModal
+        );
+
+    document
+        .getElementById(
+            'profile-cancel-button'
+        )
+        ?.addEventListener(
+            'click',
+            closeProfileModal
+        );
+
+    document
+        .querySelectorAll(
+            '[data-password-toggle]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        const input =
+                            document.getElementById(
+                                button.dataset
+                                    .passwordToggle
+                            );
+
+                        if (! input) {
+                            return;
+                        }
+
+                        input.type =
+                            input.type === 'password'
+                                ? 'text'
+                                : 'password';
+                    }
+                );
+            }
+        );
+
+    form.addEventListener(
+        'submit',
+        submitProfileForm
+    );
+}
+
+
+/**
+ * Persist the current user's own non-security identity fields.
+ */
+async function submitProfileForm(
+    event
+) {
+    event.preventDefault();
+
+    const form =
+        event.currentTarget;
+
+    const button =
+        document.getElementById(
+            'profile-submit-button'
+        );
+
+    if (
+        ! form
+        || ! button
+        || ! form.reportValidity()
+    ) {
+        return;
+    }
+
+    const name =
+        document.getElementById(
+            'profile-name'
+        );
+
+    const email =
+        document.getElementById(
+            'profile-email'
+        );
+
+    const phone =
+        document.getElementById(
+            'profile-phone'
+        );
+
+    const newPassword =
+        document.getElementById(
+            'profile-new-password'
+        );
+
+    const currentPassword =
+        document.getElementById(
+            'profile-current-password'
+        );
+
+    if (
+        ! name
+        || ! email
+        || ! phone
+        || ! newPassword
+        || ! currentPassword
+    ) {
+        return;
+    }
+
+    /*
+     * A password change begins only when the user enters a new password.
+     *
+     * Browsers/password managers may autofill the current-password field
+     * when this drawer opens. That must not turn an ordinary profile edit
+     * (for example changing the phone number) into a password-change
+     * request.
+     */
+    const changingPassword =
+        newPassword.value.trim() !== '';
+
+    if (
+        changingPassword
+        && currentPassword.value === ''
+    ) {
+        showProfileMessage(
+            translate(
+                'password.profile_current_required'
+            )
+        );
+
+        return;
+    }
+
+    try {
+        hideProfileMessage();
+
+        button.disabled =
+            true;
+
+        const payload = {
+            name:
+                name.value
+                    .trim(),
+
+            email:
+                email.value
+                    .trim(),
+
+            phone:
+                phone.value
+                    .trim()
+                    || null,
+        };
+
+        if (changingPassword) {
+            payload.current_password =
+                currentPassword.value;
+
+            payload.password =
+                newPassword.value;
+
+            payload.password_confirmation =
+                newPassword.value;
+        }
+
+        const response =
+            await apiRequest(
+                '/api/auth/me',
+                {
+                    method:
+                        'PATCH',
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        ),
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        /*
+         * Reload the authoritative authenticated-user representation after
+         * updating the profile.
+         *
+         * This keeps every profile field, including phone and account status,
+         * synchronized with /api/auth/me rather than relying on the PATCH
+         * response shape.
+         */
+        const refreshedResponse =
+            await apiRequest(
+                '/api/auth/me'
+            );
+
+        const user =
+            await parseJsonResponse(
+                refreshedResponse
+            );
+
+        authenticatedShellUser =
+            user;
+
+        renderCurrentUser(
+            user
+        );
+
+        /*
+         * Keep the drawer open after saving, matching normal edit-drawer
+         * behaviour while giving immediate visual confirmation.
+         */
+        if (changingPassword) {
+            /*
+             * Password changes invalidate the authenticated browser token.
+             * Return to login so the user establishes a fresh session.
+             */
+            clearToken();
+            clearUserRole();
+
+            window.location.replace(
+                '/login'
+            );
+
+            return;
+        }
+
+        showProfileMessage(
+            translate(
+                'password.profile_updated'
+            ),
+            true
+        );
+    } catch (error) {
+        showProfileMessage(
+            error instanceof Error
+                ? error.message
+                : (
+                    document.documentElement.lang
+                        .toLowerCase()
+                        .startsWith('fr')
+                        ? 'Impossible de mettre à jour le profil.'
+                        : 'Unable to update profile.'
+                )
+        );
+    } finally {
+        button.disabled =
+            false;
+    }
+}
 
 
 /*
@@ -645,6 +1354,21 @@ function initializeShellControls() {
             'user-menu'
         );
 
+    const profileOpen =
+        document.getElementById(
+            'my-profile-open'
+        );
+
+    const manageToggle =
+        document.getElementById(
+            'sidebar-manage-toggle'
+        );
+
+    const manageMenu =
+        document.getElementById(
+            'sidebar-manage-menu'
+        );
+
     const notificationToggle =
         document.getElementById(
             'notification-menu-toggle'
@@ -666,6 +1390,17 @@ function initializeShellControls() {
         );
     };
 
+    const closeManageMenu = () => {
+        manageMenu?.classList.add(
+            'hidden'
+        );
+
+        manageToggle?.setAttribute(
+            'aria-expanded',
+            'false'
+        );
+    };
+
     const closeNotificationMenu = () => {
         notificationMenu?.classList.add(
             'hidden'
@@ -676,6 +1411,50 @@ function initializeShellControls() {
             'false'
         );
     };
+
+    manageToggle?.addEventListener(
+        'click',
+        (event) => {
+            event.stopPropagation();
+
+            closeUserMenu();
+            closeNotificationMenu();
+
+            const opening =
+                manageMenu?.classList.contains(
+                    'hidden'
+                );
+
+            manageMenu?.classList.toggle(
+                'hidden'
+            );
+
+            manageToggle.setAttribute(
+                'aria-expanded',
+                opening
+                    ? 'true'
+                    : 'false'
+            );
+        }
+    );
+
+    manageMenu?.addEventListener(
+        'click',
+        (event) => {
+            event.stopPropagation();
+        }
+    );
+
+    profileOpen?.addEventListener(
+        'click',
+        (event) => {
+            event.stopPropagation();
+
+            closeUserMenu();
+
+            openProfileModal();
+        }
+    );
 
     userToggle?.addEventListener(
         'click',
@@ -724,6 +1503,23 @@ function initializeShellControls() {
                     ? 'true'
                     : 'false'
             );
+
+            /*
+             * Opening the notification panel counts as seeing the current
+             * release announcement. Closing/reopening an already-read panel
+             * performs no additional API request.
+             */
+            if (opening) {
+                acknowledgeCurrentReleaseNotification()
+                    .catch(
+                        (error) => {
+                            console.error(
+                                'Unable to acknowledge release notification.',
+                                error
+                            );
+                        }
+                    );
+            }
         }
     );
 
@@ -746,6 +1542,7 @@ function initializeShellControls() {
         () => {
             closeUserMenu();
             closeNotificationMenu();
+            closeManageMenu();
         }
     );
 
@@ -755,6 +1552,7 @@ function initializeShellControls() {
             if (event.key === 'Escape') {
                 closeUserMenu();
                 closeNotificationMenu();
+                closeManageMenu();
             }
         }
     );

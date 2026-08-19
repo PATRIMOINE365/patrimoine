@@ -7,7 +7,9 @@ use App\Models\User;
 use App\Services\ActivityLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -171,6 +173,244 @@ class AuthController extends Controller
         );
     }
 
+
+    /**
+     * Update the currently authenticated user's own profile.
+     *
+     * Role and active status cannot be changed through this endpoint.
+     * A password change additionally requires the user's current password.
+     */
+    public function updateMe(
+        Request $request,
+        ActivityLogService $activityLog
+    ): JsonResponse {
+        /** @var User $user */
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique(
+                    'users',
+                    'email'
+                )->ignore($user->id),
+            ],
+
+            'phone' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'current_password' => [
+                'nullable',
+                'required_with:password',
+                'string',
+            ],
+
+            'password' => [
+                'nullable',
+                'required_with:current_password',
+                'string',
+                'min:8',
+                'confirmed',
+            ],
+        ]);
+
+        $changingPassword =
+            filled(
+                $validated['password']
+                ?? null
+            );
+
+        /*
+         * Verify ownership before changing anything.
+         *
+         * This guarantees that an incorrect current password cannot result
+         * in either a password change or partial profile changes.
+         */
+        if (
+            $changingPassword
+            && ! Hash::check(
+                $validated['current_password'],
+                $user->password
+            )
+        ) {
+            throw ValidationException::withMessages([
+                'current_password' => [
+                    __(
+                        'api.password.current_password_incorrect'
+                    ),
+                ],
+            ]);
+        }
+
+        $before = [
+            'name' =>
+                $user->name,
+
+            'email' =>
+                $user->email,
+
+            'phone' =>
+                $user->phone,
+        ];
+
+        DB::transaction(
+            function () use (
+                $user,
+                $validated,
+                $changingPassword
+            ): void {
+                $user->name =
+                    $validated['name'];
+
+                $user->email =
+                    mb_strtolower(
+                        trim(
+                            $validated['email']
+                        )
+                    );
+
+                $user->phone =
+                    $validated['phone']
+                    ?? null;
+
+                if ($changingPassword) {
+                    /*
+                     * User model password casting performs the hash.
+                     */
+                    $user->password =
+                        $validated['password'];
+                }
+
+                $user->save();
+            }
+        );
+
+        $user->refresh();
+
+        $after = [
+            'name' =>
+                $user->name,
+
+            'email' =>
+                $user->email,
+
+            'phone' =>
+                $user->phone,
+        ];
+
+        $changedBefore = [];
+        $changedAfter = [];
+
+        foreach (
+            $before
+            as $field => $value
+        ) {
+            if (
+                $value
+                !== $after[$field]
+            ) {
+                $changedBefore[$field] =
+                    $value;
+
+                $changedAfter[$field] =
+                    $after[$field];
+            }
+        }
+
+        /*
+         * Password values are deliberately never written to Activity Log.
+         *
+         * Continue using the established user.updated action so presentation
+         * and export behaviour remain compatible with V1.0.3.
+         */
+        if (
+            $changedBefore !== []
+            || $changingPassword
+        ) {
+            $activityLog->record(
+                action: 'user.updated',
+                request: $request,
+                entityType: 'user',
+                entityId: $user->id,
+                entityLabel: $user->name,
+                before: $changedBefore,
+                after: $changedAfter,
+                metadata:
+                    $changingPassword
+                        ? [
+                            'password_changed' =>
+                                true,
+                        ]
+                        : []
+            );
+        }
+
+        if ($changingPassword) {
+            /*
+             * Password ownership has changed. Revoke existing sessions,
+             * including the token making this request.
+             */
+            $user->tokens()->delete();
+        }
+
+        return response()->json(
+            $this->serializeUser(
+                $user
+            )
+        );
+    }
+
+    /**
+     * Mark the current Patrimoine release announcement as seen.
+     *
+     * Release acknowledgement is presentation state rather than a
+     * meaningful business action, so it is deliberately not written to
+     * Activity Log.
+     */
+    public function acknowledgeReleaseNotification(
+        Request $request
+    ): JsonResponse {
+        /** @var User $user */
+        $user = $request->user();
+
+        $currentRelease =
+            (string) config(
+                'patrimoine.release'
+            );
+
+        if (
+            $user->last_seen_release
+            !== $currentRelease
+        ) {
+            $user->last_seen_release =
+                $currentRelease;
+
+            $user->save();
+        }
+
+        return response()->json([
+            'current_release' =>
+                $currentRelease,
+
+            'last_seen_release' =>
+                $user->last_seen_release,
+
+            'has_unread_release_notification' =>
+                false,
+        ]);
+    }
+
     /**
      * Revoke the Sanctum token used for the current API request.
      */
@@ -252,7 +492,9 @@ class AuthController extends Controller
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
+            'phone' => $user->phone,
             'role' => $user->role,
+            'is_active' => (bool) $user->is_active,
             'email_verified_at' => $user->email_verified_at,
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
