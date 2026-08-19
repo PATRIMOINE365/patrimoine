@@ -36,7 +36,7 @@ return [
         'deposit_positive' => 'Owner deposit amount must be greater than zero.',
         'deposit_payment_method' => 'Unsupported owner deposit payment method.',
         'deposit_purpose' => 'Unsupported owner deposit purpose.',
-        'cash_collector_required' => 'Cash owner deposits require a collector.',
+        'cash_collector_required' => 'Cash Receiver could not be determined for this cash owner deposit.',
         'adjustment_direction' => 'Owner adjustment direction must be credit or debit.',
         'adjustment_positive' => 'Owner adjustment amount must be greater than zero.',
         'adjustment_reason' => 'Owner adjustment reason is required.',

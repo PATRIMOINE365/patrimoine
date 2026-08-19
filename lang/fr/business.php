@@ -36,7 +36,7 @@ return [
         'deposit_positive' => 'Le montant du dépôt du propriétaire doit être supérieur à zéro.',
         'deposit_payment_method' => 'Le mode de paiement du dépôt du propriétaire n’est pas pris en charge.',
         'deposit_purpose' => 'L’objet du dépôt du propriétaire n’est pas pris en charge.',
-        'cash_collector_required' => 'Un encaisseur est obligatoire pour les dépôts de propriétaire en espèces.',
+        'cash_collector_required' => 'Le réceptionnaire des espèces n’a pas pu être déterminé pour ce dépôt de propriétaire.',
         'adjustment_direction' => 'Le sens de l’ajustement du propriétaire doit être crédit ou débit.',
         'adjustment_positive' => 'Le montant de l’ajustement du propriétaire doit être supérieur à zéro.',
         'adjustment_reason' => 'Le motif de l’ajustement du propriétaire est obligatoire.',

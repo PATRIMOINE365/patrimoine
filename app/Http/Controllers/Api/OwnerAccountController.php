@@ -271,7 +271,9 @@ class OwnerAccountController extends Controller
 
                         'deposit_purpose' => $transaction->deposit_purpose,
 
-                        'collector_name' => $transaction->collector_name,
+                        'collector_name' =>
+                            $transaction->cash_receiver_name
+                            ?? $transaction->collector_name,
 
                         'reference' => $transaction->reference,
 

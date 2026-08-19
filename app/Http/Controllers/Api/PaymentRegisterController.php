@@ -213,7 +213,7 @@ class PaymentRegisterController extends Controller
                 'payments.amount as amount',
                 'payments.payment_method as payment_method',
                 'payments.reference as reference',
-                'payments.collector_name as collector_name',
+                DB::raw('COALESCE(payments.cash_receiver_name, payments.collector_name) as collector_name'),
                 'payments.notes as notes',
 
                 DB::raw(
@@ -326,7 +326,7 @@ class PaymentRegisterController extends Controller
                 'owner_transactions.amount as amount',
                 'owner_transactions.payment_method as payment_method',
                 'owner_transactions.reference as reference',
-                'owner_transactions.collector_name as collector_name',
+                DB::raw('COALESCE(owner_transactions.cash_receiver_name, owner_transactions.collector_name) as collector_name'),
                 'owner_transactions.notes as notes',
                 'owner_transactions.deposit_purpose as deposit_purpose',
 

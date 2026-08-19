@@ -398,6 +398,31 @@ export async function initializeAuthenticatedShell() {
  * @param {object} user
  */
 function renderCurrentUser(user) {
+    /*
+     * V1.0.5 CASH RECEIVER UI NORMALIZATION
+     *
+     * Financial forms never permit a user to type/select a Cash Receiver.
+     * The authenticated User resolved by /api/auth/me is the authoritative
+     * receiver for normal Cash transactions.
+     *
+     * Expose only the resolved identity needed by the presentation layer.
+     * Backend financial services remain authoritative.
+     */
+    document.body.dataset.currentUserId =
+        user?.id != null
+            ? String(user.id)
+            : '';
+
+    document.body.dataset.currentUserName =
+        user?.name ?? '';
+
+    if (
+        typeof window.syncPatrimoineCashReceiverUi
+        === 'function'
+    ) {
+        window.syncPatrimoineCashReceiverUi();
+    }
+
     renderReleaseNotificationState(
         user
     );
@@ -1708,3 +1733,243 @@ async function loadManagingOrganisation() {
             .organisation_name
         || 'Patrimoine';
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.5 Cash Receiver UI normalization
+|--------------------------------------------------------------------------
+|
+| Cash Receiver is not a free-form financial field.
+|
+| Cash:
+|   - authenticated User is displayed;
+|   - field is locked.
+|
+| Bank Transfer / Mobile Payment:
+|   - Cash Receiver is hidden;
+|   - no receiver value is submitted intentionally by the UI.
+|
+| The server remains authoritative and independently enforces these rules.
+|
+*/
+
+function patrimoineCashReceiverInputs(root = document)
+{
+    return root.querySelectorAll([
+        'input[name="collector_name"]',
+        'input[id*="collector"]',
+        'input[data-i18n-placeholder*="collector"]',
+        'input[name="cash_receiver_name"]',
+        'input[id*="cash-receiver"]',
+        'input[id*="cash_receiver"]',
+    ].join(','));
+}
+
+function patrimoinePaymentMethodForReceiver(input)
+{
+    const scopes = [
+        input.closest('form'),
+        input.closest('[role="dialog"]'),
+        input.closest('[data-drawer]'),
+        input.closest('.drawer'),
+        input.closest('.fixed'),
+        input.closest('.modal'),
+        document,
+    ].filter(Boolean);
+
+    const selectors = [
+        'select[name="payment_method"]',
+        'select[id*="payment-method"]',
+        'select[id*="payment_method"]',
+    ];
+
+    for (const scope of scopes) {
+        for (const selector of selectors) {
+            const element =
+                scope.querySelector(selector);
+
+            if (element) {
+                return element;
+            }
+        }
+    }
+
+    return null;
+}
+
+function patrimoineCashReceiverFieldContainer(input)
+{
+    const label =
+        input.id
+            ? document.querySelector(
+                `label[for="${CSS.escape(input.id)}"]`
+            )
+            : null;
+
+    if (label) {
+        let node =
+            input.parentElement;
+
+        while (
+            node
+            && node !== document.body
+        ) {
+            if (node.contains(label)) {
+                return node;
+            }
+
+            node =
+                node.parentElement;
+        }
+    }
+
+    return (
+        input.closest('[data-field]')
+        || input.closest('.form-group')
+        || input.closest('.space-y-2')
+        || input.closest('.space-y-1')
+        || input.parentElement
+    );
+}
+
+function patrimoineNormalizeCashReceiverInput(input)
+{
+    const method =
+        patrimoinePaymentMethodForReceiver(
+            input
+        );
+
+    if (! method) {
+        return;
+    }
+
+    const isCash =
+        method.value === 'cash';
+
+    const currentUserName =
+        document.body.dataset.currentUserName
+        ?? '';
+
+    const container =
+        patrimoineCashReceiverFieldContainer(
+            input
+        );
+
+    /*
+     * Never allow manual receiver entry.
+     */
+    input.readOnly =
+        true;
+
+    input.setAttribute(
+        'aria-readonly',
+        'true'
+    );
+
+    input.autocomplete =
+        'off';
+
+    if (isCash) {
+        /*
+         * Display the authenticated User resolved by auth.js.
+         *
+         * Do not disable the control because existing browser-side validation
+         * may still inspect the value while Phase 3 completes. The backend
+         * ignores collector_name and independently assigns the real User.
+         */
+        input.value =
+            currentUserName;
+
+        input.disabled =
+            false;
+
+        if (container) {
+            container.hidden =
+                false;
+
+            container.classList.remove(
+                'hidden'
+            );
+        }
+    } else {
+        input.value =
+            '';
+
+        /*
+         * Electronic transactions have no Cash Receiver.
+         */
+        if (container) {
+            container.hidden =
+                true;
+
+            container.classList.add(
+                'hidden'
+            );
+        }
+    }
+}
+
+window.syncPatrimoineCashReceiverUi =
+    function syncPatrimoineCashReceiverUi()
+    {
+        patrimoineCashReceiverInputs()
+            .forEach(
+                patrimoineNormalizeCashReceiverInput
+            );
+    };
+
+document.addEventListener(
+    'change',
+    (event) => {
+        const target =
+            event.target;
+
+        if (
+            ! (
+                target
+                instanceof HTMLSelectElement
+            )
+        ) {
+            return;
+        }
+
+        if (
+            target.name === 'payment_method'
+            || target.id.includes(
+                'payment-method'
+            )
+            || target.id.includes(
+                'payment_method'
+            )
+        ) {
+            window.syncPatrimoineCashReceiverUi();
+        }
+    }
+);
+
+document.addEventListener(
+    'DOMContentLoaded',
+    () => {
+        window.syncPatrimoineCashReceiverUi();
+
+        /*
+         * V1.0.4 drawers may insert financial controls after initial page
+         * load. Keep those dynamically-created controls normalized as well.
+         */
+        const observer =
+            new MutationObserver(
+                () => {
+                    window.syncPatrimoineCashReceiverUi();
+                }
+            );
+
+        observer.observe(
+            document.body,
+            {
+                childList: true,
+                subtree: true,
+            }
+        );
+    }
+);
