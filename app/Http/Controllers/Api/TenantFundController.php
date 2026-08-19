@@ -12,6 +12,7 @@ use App\Services\FinancialActivitySnapshotService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Services\Accounting\TenantFundFundingJournalService;
 
 /**
  * Transactional API controller for tenant-held funds.
@@ -121,7 +122,8 @@ class TenantFundController extends Controller
                  * Record the movement from unapplied Payment money into
                  * the appropriate tenant-held fund account.
                  */
-                return TenantFundTransaction::create([
+                $transaction =
+                    TenantFundTransaction::create([
                     'tenant_fund_account_id' => $account->id,
                     'payment_id' => $payment->id,
                     'direction' => 'credit',
@@ -133,6 +135,21 @@ class TenantFundController extends Controller
                     'notes' => $validated['notes']
                         ?? 'Classified from unapplied tenant Payment.',
                 ]);
+
+                /*
+                 * V1.0.5 Phase 3:
+                 *
+                 * The API currently owns its own persisted classification
+                 * boundary, so it must mirror that funding event into the
+                 * same immutable Financial Journal as the reusable service.
+                 */
+                app(
+                    TenantFundFundingJournalService::class
+                )->post(
+                    $transaction
+                );
+
+                return $transaction;
             }
         );
 
