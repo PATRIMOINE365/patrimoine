@@ -15,11 +15,23 @@ use LogicException;
  */
 class JournalEntry extends Model
 {
+
+    public const KIND_FINANCIAL = 'financial';
+
+    public const KIND_REVERSAL = 'reversal';
+
+    public const KIND_INFORMATIONAL = 'informational';
+
+
     /**
      * @var list<string>
      */
     protected $fillable = [
         'journal_number',
+        'entry_kind',
+        'reversal_of_id',
+        'reversed_by_id',
+        'reversal_reason',
         'journal_date',
         'posted_at',
         'transaction_type',
@@ -104,4 +116,35 @@ class JournalEntry extends Model
     {
         return $this->debitTotal() === $this->creditTotal();
     }
+
+    public function reversedEntry()
+    {
+        return $this->belongsTo(self::class, 'reversal_of_id');
+    }
+
+    public function reversalEntry()
+    {
+        return $this->belongsTo(self::class, 'reversed_by_id');
+    }
+
+    public function isFinancial(): bool
+    {
+        return $this->entry_kind === self::KIND_FINANCIAL;
+    }
+
+    public function isReversal(): bool
+    {
+        return $this->entry_kind === self::KIND_REVERSAL;
+    }
+
+    public function isInformational(): bool
+    {
+        return $this->entry_kind === self::KIND_INFORMATIONAL;
+    }
+
+    public function isReversed(): bool
+    {
+        return $this->reversed_by_id !== null;
+    }
+
 }
