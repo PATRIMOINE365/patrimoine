@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+
 use App\Models\Invoice;
+use App\Services\Accounting\RentInvoiceJournalService;
 use App\Models\Lease;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +24,11 @@ use RuntimeException;
  */
 class InvoiceGenerationService
 {
+    public function __construct(
+        private readonly RentInvoiceJournalService $rentInvoiceJournal
+    ) {
+    }
+
     /**
      * Generate one Invoice for a specific billing period.
      *
@@ -147,6 +154,19 @@ class InvoiceGenerationService
                 'proration_amount' => $prorationAmount,
                 'notes' => null,
             ]);
+
+            /*
+             * V1.0.5 Phase 3:
+             * Mirror only newly-created post-cutover rent Invoices into the
+             * immutable Financial Journal. Before cutover this is a no-op.
+             *
+             * This call remains inside the Invoice database transaction so
+             * Invoice creation and Journal posting succeed or roll back
+             * together.
+             */
+            $this->rentInvoiceJournal->post(
+                $invoice
+            );
 
             return $invoice->refresh();
         });
