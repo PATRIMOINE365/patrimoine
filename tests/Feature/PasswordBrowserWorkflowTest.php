@@ -55,7 +55,7 @@ class PasswordBrowserWorkflowTest extends TestCase
             );
     }
 
-    public function test_authenticated_layout_exposes_change_password_to_all_roles(): void
+    public function test_authenticated_layout_exposes_profile_password_change_to_all_roles(): void
     {
         $view =
             file_get_contents(
@@ -64,21 +64,52 @@ class PasswordBrowserWorkflowTest extends TestCase
                 )
             );
 
+        /*
+         * V1.0.4 moved self-service password management into My Profile.
+         *
+         * My Profile is available to every authenticated user regardless of
+         * application role.
+         */
         $this->assertStringContainsString(
-            'id="change-password-open"',
+            'id="my-profile-open"',
             $view
         );
 
         $this->assertStringContainsString(
-            'id="change-password-form"',
+            'id="profile-modal"',
+            $view
+        );
+
+        $this->assertStringContainsString(
+            'id="profile-form"',
+            $view
+        );
+
+        $this->assertStringContainsString(
+            'id="profile-new-password"',
+            $view
+        );
+
+        $this->assertStringContainsString(
+            'id="profile-current-password"',
             $view
         );
 
         /*
          * Changing one's own password is not an Administrator capability.
+         * The profile entry therefore must not be capability-gated.
          */
         $this->assertStringNotContainsString(
-            'id="change-password-open" data-requires',
+            'id="my-profile-open" data-requires',
+            $view
+        );
+
+        /*
+         * V1.0.4 no longer exposes a separate Change Password action in the
+         * authenticated user menu.
+         */
+        $this->assertStringNotContainsString(
+            'id="change-password-open"',
             $view
         );
     }

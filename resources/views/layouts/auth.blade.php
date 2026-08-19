@@ -34,13 +34,37 @@
 
     <x-theme-bootstrap />
 
+    {{--
+        V1.0.4 Initial Paint Theme
+
+        Keep authentication on the same semantic page canvas as the
+        authenticated application and avoid a white flash before Vite
+        finishes loading.
+    --}}
+    <style>
+        html,
+        body {
+            background-color: #f7f8f7;
+        }
+
+        html[data-theme="dark"],
+        html[data-theme="dark"] body {
+            background-color: #0f1412;
+        }
+    </style>
+
     @vite([
         'resources/css/app.css',
         'resources/js/app.js',
     ])
 </head>
 
-<body class="min-h-screen font-sans">
+<body
+    class="
+        min-h-screen bg-[var(--pm-page)]
+        font-sans text-[var(--pm-text)]
+    "
+>
 
     <main class="grid min-h-screen lg:grid-cols-2">
 
@@ -136,6 +160,7 @@
         <section
             class="
                 flex min-h-screen items-center justify-center
+                bg-[var(--pm-page)]
                 px-6 py-12 sm:px-10 lg:px-16
             "
         >
@@ -152,7 +177,7 @@
                         P
                     </div>
 
-                    <span class="text-xl font-semibold">
+                    <span class="text-xl font-semibold text-[var(--pm-text)]">
                         Patrimoine
                     </span>
                 </div>

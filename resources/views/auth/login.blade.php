@@ -38,7 +38,7 @@
             <label
                 for="email"
                 class="
-                    pm-auth-label
+                    pm-field-label
                     mb-2 block text-sm font-medium
                 "
             >
@@ -54,14 +54,7 @@
                 autocomplete="email"
                 required
                 autofocus
-                class="
-                    pm-auth-input
-                    block w-full rounded-lg
-                    px-3.5 py-3
-                    text-sm
-                    shadow-sm outline-none
-                    transition
-                "
+                class="pm-input"
                 data-i18n-placeholder="login.email_placeholder"
                 placeholder="name@example.com"
             >
@@ -72,7 +65,7 @@
                 <label
                     for="password"
                     class="
-                        pm-auth-label
+                        pm-field-label
                         block text-sm font-medium
                     "
                 >
@@ -99,14 +92,7 @@
                 type="password"
                 autocomplete="current-password"
                 required
-                class="
-                    pm-auth-input
-                    block w-full rounded-lg
-                    px-3.5 py-3
-                    text-sm
-                    shadow-sm outline-none
-                    transition
-                "
+                class="pm-input"
                 data-i18n-placeholder="login.password_placeholder"
                 placeholder="Enter your password"
             >
@@ -115,17 +101,7 @@
         <button
             id="login-button"
             type="submit"
-            class="
-                pm-auth-submit
-                flex w-full items-center justify-center
-                rounded-lg
-                px-4 py-3
-                text-sm font-semibold
-                shadow-sm transition
-                focus:outline-none
-                disabled:cursor-not-allowed
-                disabled:opacity-60
-            "
+            class="pm-button-primary w-full disabled:cursor-wait"
         >
             <span data-i18n="login.sign_in">
                 {{ __('ui.login.sign_in') }}

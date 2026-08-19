@@ -30,24 +30,14 @@ function setMessage(element, message, success = false) {
 
     element.classList.remove(
         'hidden',
-        'border-red-200',
-        'bg-red-50',
-        'text-red-700',
-        'border-emerald-200',
-        'bg-emerald-50',
-        'text-emerald-700'
+        'pm-auth-message-success',
+        'pm-auth-message-error'
     );
 
     element.classList.add(
         success
-            ? 'border-emerald-200'
-            : 'border-red-200',
-        success
-            ? 'bg-emerald-50'
-            : 'bg-red-50',
-        success
-            ? 'text-emerald-700'
-            : 'text-red-700'
+            ? 'pm-auth-message-success'
+            : 'pm-auth-message-error'
     );
 }
 

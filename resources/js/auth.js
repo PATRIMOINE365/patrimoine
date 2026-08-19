@@ -178,13 +178,23 @@ export async function initializeLogin() {
             errorBox.textContent =
                 '';
 
+            const buttonLabel =
+                button.querySelector(
+                    '[data-i18n="login.sign_in"]'
+                );
+
             button.disabled =
                 true;
 
-            button.textContent =
-                translate(
-                    'login.signing_in'
-                );
+            button.dataset.busy =
+                'true';
+
+            if (buttonLabel) {
+                buttonLabel.textContent =
+                    translate(
+                        'login.signing_in'
+                    );
+            }
 
             try {
                 /*
@@ -278,10 +288,14 @@ export async function initializeLogin() {
                 button.disabled =
                     false;
 
-                button.textContent =
-                    translate(
-                        'login.sign_in'
-                    );
+                delete button.dataset.busy;
+
+                if (buttonLabel) {
+                    buttonLabel.textContent =
+                        translate(
+                            'login.sign_in'
+                        );
+                }
             }
         }
     );

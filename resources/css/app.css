@@ -10821,27 +10821,22 @@ html.dark
     color: var(--pm-text-muted);
 }
 
-.pm-auth-label {
-    color: var(--pm-text);
-}
 
-.pm-auth-input {
-    border: 1px solid var(--pm-border);
-    background: var(--pm-surface);
-    color: var(--pm-text);
-}
 
-.pm-auth-input::placeholder {
-    color: var(--pm-text-muted);
-}
 
-.pm-auth-input:focus {
+.pm-auth-input:focus,
+.pm-auth-input:focus-visible {
     border-color: var(--pm-accent);
-    box-shadow: 0 0 0 3px color-mix(
-        in srgb,
-        var(--pm-accent) 12%,
-        transparent
-    );
+
+    box-shadow:
+        0 0 0 3px
+        color-mix(
+            in srgb,
+            var(--pm-accent) 12%,
+            transparent
+        );
+
+    outline: none;
 }
 
 .pm-auth-link {
@@ -10852,21 +10847,47 @@ html.dark
     color: var(--pm-text);
 }
 
-.pm-auth-submit {
-    background: var(--pm-accent);
+
+
+.pm-auth-submit:focus,
+.pm-auth-submit:focus-visible {
+    outline: none;
+
+    box-shadow:
+        0 0 0 4px
+        color-mix(
+            in srgb,
+            var(--pm-accent) 20%,
+            transparent
+        );
+}
+
+.pm-auth-submit:disabled,
+.pm-auth-submit[data-busy="true"] {
+    cursor: wait;
+
+    /*
+     * Keep the control visually identifiable while authentication is in
+     * progress. Do not turn it into the pale/white-looking button previously
+     * seen during the French login state.
+     */
+    opacity: 1;
+
+    background:
+        color-mix(
+            in srgb,
+            var(--pm-accent) 82%,
+            var(--pm-surface)
+        );
+
+    border-color:
+        color-mix(
+            in srgb,
+            var(--pm-accent) 82%,
+            var(--pm-border)
+        );
+
     color: #ffffff;
-}
-
-.pm-auth-submit:hover {
-    filter: brightness(1.08);
-}
-
-.pm-auth-submit:focus {
-    box-shadow: 0 0 0 4px color-mix(
-        in srgb,
-        var(--pm-accent) 20%,
-        transparent
-    );
 }
 
 .pm-auth-error {
@@ -10874,3 +10895,36 @@ html.dark
     background: var(--pm-danger-background);
     color: var(--pm-danger-text);
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.4 Password Workflow Theme
+|--------------------------------------------------------------------------
+|
+| Forgot Password, Reset Password and Invitation reuse the same semantic
+| presentation primitives as Login. No page owns light/dark colours directly.
+|
+*/
+
+.pm-auth-password-page {
+    color: var(--pm-text);
+}
+
+.pm-auth-message {
+    border: 1px solid var(--pm-border);
+}
+
+.pm-auth-message-success {
+    border-color: var(--pm-success-border);
+    background: var(--pm-success-background);
+    color: var(--pm-success-text);
+}
+
+.pm-auth-message-error {
+    border-color: var(--pm-danger-border);
+    background: var(--pm-danger-background);
+    color: var(--pm-danger-text);
+}
+
+/* END V1.0.4 PASSWORD WORKFLOW THEME */
