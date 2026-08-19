@@ -555,4 +555,28 @@ class SecurityDepositApiTest extends TestCase
                 'Aucun compte de dépôt de garantie n’existe pour ce bail.'
             );
     }
+
+    public function test_security_deposit_settlement_rejects_invalid_refund_payment_method(): void
+    {
+        $context =
+            $this->createContext(
+                10000
+            );
+
+        $this->postJson(
+            "/api/leases/{$context['lease']->id}/security-deposit/settle",
+            [
+                'settlement_date' =>
+                    '2026-08-11',
+
+                'refund_payment_method' =>
+                    'cheque',
+            ]
+        )
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'refund_payment_method',
+            ]);
+    }
+
 }

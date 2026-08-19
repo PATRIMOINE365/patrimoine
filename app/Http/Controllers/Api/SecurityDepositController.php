@@ -242,6 +242,11 @@ class SecurityDepositController extends Controller
 
                     notes: $validated[
                             'notes'
+                        ] ?? null,
+
+                    refundPaymentMethod:
+                        $validated[
+                            'refund_payment_method'
                         ] ?? null
                 );
         } catch (RuntimeException $exception) {

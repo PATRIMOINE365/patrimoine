@@ -116,12 +116,20 @@ class AccountingEventMap
                     SystemChartOfAccounts::TENANT_RENT_RECEIVABLE,
             ],
 
+            /*
+             * Security Deposit retained against final deductions.
+             *
+             * Patrimoine creates a Security Deposit debt Invoice only for
+             * deductions exceeding the amount actually held. The portion
+             * covered by the held deposit therefore becomes recovery
+             * directly and does not create or settle a receivable.
+             */
             self::EVENT_SECURITY_DEPOSIT_APPLIED => [
                 'debit' =>
                     SystemChartOfAccounts::SECURITY_DEPOSIT_HELD,
 
                 'credit' =>
-                    SystemChartOfAccounts::SECURITY_DEPOSIT_DEBT_RECEIVABLE,
+                    SystemChartOfAccounts::SECURITY_DEPOSIT_RECOVERY,
             ],
 
             self::EVENT_OWNER_EXPENSE => [

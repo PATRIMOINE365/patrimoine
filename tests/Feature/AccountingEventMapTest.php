@@ -202,4 +202,28 @@ class AccountingEventMapTest extends TestCase
         app(AccountingEventMap::class)
             ->tenantFundLiability('unknown');
     }
+
+    public function test_security_deposit_application_matches_operational_closeout(): void
+    {
+        $mapping =
+            app(
+                \App\Services\Accounting\AccountingEventMap::class
+            )->fixed(
+                \App\Services\Accounting\AccountingEventMap::
+                    EVENT_SECURITY_DEPOSIT_APPLIED
+            );
+
+        $this->assertSame(
+            \App\Services\Accounting\SystemChartOfAccounts::
+                SECURITY_DEPOSIT_HELD,
+            $mapping['debit']
+        );
+
+        $this->assertSame(
+            \App\Services\Accounting\SystemChartOfAccounts::
+                SECURITY_DEPOSIT_RECOVERY,
+            $mapping['credit']
+        );
+    }
+
 }
