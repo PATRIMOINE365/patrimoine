@@ -119,18 +119,37 @@ class Invoice extends Model
     }
 
     /**
+     * Manual Security Deposit applications applied to this Invoice.
+     */
+    public function securityDepositApplications(): HasMany
+    {
+        return $this->hasMany(SecurityDepositApplication::class);
+    }
+
+    /**
+     * Amount settled through manual Security Deposit application.
+     */
+    public function securityDepositAppliedAmount(): int
+    {
+        return (int) $this->securityDepositApplications()
+            ->sum('amount');
+    }
+
+    /**
      * Total amount settled against this Invoice.
      *
      * Settlement may come from:
      * - ordinary tenant Payments;
      * - Rent Reserve;
-     * - Consumable Advance.
+     * - Consumable Advance;
+     * - manual Security Deposit application.
      */
     public function paidAmount(): int
     {
         return $this->paymentPaidAmount()
             + $this->reservePaidAmount()
-            + $this->advancePaidAmount();
+            + $this->advancePaidAmount()
+            + $this->securityDepositAppliedAmount();
     }
 
     /**

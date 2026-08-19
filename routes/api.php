@@ -421,6 +421,11 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 Route::post(
+                    'leases/{lease}/security-deposit/apply',
+                    [SecurityDepositController::class, 'apply']
+                );
+
+                Route::post(
                     'leases/{lease}/security-deposit/settle',
                     [SecurityDepositController::class, 'settle']
                 );
