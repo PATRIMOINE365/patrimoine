@@ -291,9 +291,25 @@ class AccountingEventMap
             'cash' =>
                 SystemChartOfAccounts::CASH,
 
+            /*
+             * Patrimoine's operational Payment domain uses
+             * `bank_transfer`.
+             *
+             * `bank` remains accepted as a compatibility alias for the
+             * accounting foundation introduced before runtime integration.
+             */
+            'bank_transfer',
             'bank' =>
                 SystemChartOfAccounts::BANK,
 
+            /*
+             * Patrimoine's operational Payment domain uses `momo`.
+             *
+             * `mobile_payment` remains accepted as a compatibility alias
+             * because the accounting vocabulary intentionally uses the
+             * generic Mobile Payment label.
+             */
+            'momo',
             'mobile_payment' =>
                 SystemChartOfAccounts::MOBILE_PAYMENT_CLEARING,
 

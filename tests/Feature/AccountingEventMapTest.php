@@ -92,6 +92,20 @@ class AccountingEventMapTest extends TestCase
 
         $this->assertSame(
             SystemChartOfAccounts::BANK,
+            $map->paymentAsset('bank_transfer')
+        );
+
+        $this->assertSame(
+            SystemChartOfAccounts::MOBILE_PAYMENT_CLEARING,
+            $map->paymentAsset('momo')
+        );
+
+        /*
+         * Compatibility aliases remain supported for accounting
+         * foundation callers created before runtime integration.
+         */
+        $this->assertSame(
+            SystemChartOfAccounts::BANK,
             $map->paymentAsset('bank')
         );
 
