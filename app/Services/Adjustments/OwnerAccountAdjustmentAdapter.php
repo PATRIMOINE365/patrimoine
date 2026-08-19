@@ -4,6 +4,7 @@ namespace App\Services\Adjustments;
 
 use App\Models\OwnerAccount;
 use App\Models\OwnerTransaction;
+use App\Services\Accounting\OwnerAdjustmentJournalService;
 use RuntimeException;
 
 /**
@@ -18,6 +19,10 @@ use RuntimeException;
  */
 final class OwnerAccountAdjustmentAdapter implements AdjustmentAccountAdapter
 {
+    public function __construct(
+        private readonly OwnerAdjustmentJournalService $journal,
+    ) {}
+
     public function supports(
         AdjustmentContext $context
     ): bool {
@@ -72,32 +77,48 @@ final class OwnerAccountAdjustmentAdapter implements AdjustmentAccountAdapter
 
         $transaction =
             OwnerTransaction::create([
-                'owner_account_id' =>
-                    $command->context->entityId,
+                'owner_account_id' => $command->context->entityId,
 
-                'direction' =>
-                    $direction,
+                'direction' => $direction,
 
-                'category' =>
-                    'adjustment',
+                'category' => 'adjustment',
 
-                'amount' =>
-                    $calculation->absoluteDifference(),
+                'amount' => $calculation->absoluteDifference(),
 
-                'transaction_date' =>
-                    $command->effectiveDate->toDateString(),
+                'transaction_date' => $command->effectiveDate->toDateString(),
 
-                'reference' =>
-                    $command->context->metadata['reference']
+                'reference' => $command->context->metadata['reference']
                     ?? null,
 
                 /*
                  * Retain the human explanation on the existing operational
                  * ledger for backward-compatible reporting/readability.
                  */
-                'notes' =>
-                    $command->reason,
+                'notes' => $command->reason,
             ]);
+
+        /*
+         * ContextualAdjustmentService owns the outer database transaction.
+         * Therefore the operational OwnerTransaction and its Financial
+         * Journal entry either both succeed or both roll back.
+         */
+        $this->journal->post(
+            transaction: $transaction,
+            previousBalance: $calculation->previousBalance,
+            correctedBalance: $calculation->correctedBalance,
+            difference: $calculation->difference,
+            reason: $command->reason,
+            actor: $command->performedBy,
+            context: [
+                'owner_id' => $command->context->metadata['owner_id']
+                    ?? null,
+
+                'owner_name' => $command->context->metadata['owner_name']
+                    ?? null,
+
+                'entity_label' => $command->context->entityLabel,
+            ],
+        );
 
         return new AdjustmentResult(
             context: $command->context,
@@ -108,37 +129,27 @@ final class OwnerAccountAdjustmentAdapter implements AdjustmentAccountAdapter
             transactionType: 'owner_adjustment',
             transactionId: $transaction->id,
             transactionSnapshot: [
-                'owner_transaction_id' =>
-                    $transaction->id,
+                'owner_transaction_id' => $transaction->id,
 
-                'owner_account_id' =>
-                    $command->context->entityId,
+                'owner_account_id' => $command->context->entityId,
 
-                'previous_balance' =>
-                    $calculation->previousBalance,
+                'previous_balance' => $calculation->previousBalance,
 
-                'corrected_balance' =>
-                    $calculation->correctedBalance,
+                'corrected_balance' => $calculation->correctedBalance,
 
-                'difference' =>
-                    $calculation->difference,
+                'difference' => $calculation->difference,
 
-                'direction' =>
-                    $transaction->direction,
+                'direction' => $transaction->direction,
 
-                'amount' =>
-                    $transaction->amount,
+                'amount' => $transaction->amount,
 
-                'transaction_date' =>
-                    $transaction
-                        ->transaction_date
-                        ->toDateString(),
+                'transaction_date' => $transaction
+                    ->transaction_date
+                    ->toDateString(),
 
-                'reason' =>
-                    $command->reason,
+                'reason' => $command->reason,
 
-                'reference' =>
-                    $transaction->reference,
+                'reference' => $transaction->reference,
             ],
         );
     }
