@@ -1,6 +1,19 @@
 <?php
 
 return [
+    'adjustment_voucher' => [
+        'title' => 'Bon d’ajustement',
+        'voucher_number' => 'Numéro du bon',
+        'date' => 'Date',
+        'context' => 'Contexte',
+        'account' => 'Compte',
+        'previous_balance' => 'Solde précédent',
+        'corrected_balance' => 'Solde corrigé',
+        'difference' => 'Différence d’ajustement',
+        'reason' => 'Motif',
+        'performed_by' => 'Effectué par',
+    ],
+
     'common' => [
         'property_management' => 'Gestion immobilière',
         'vat_tin' => 'TVA/NIF',

@@ -5,6 +5,7 @@ namespace App\Services\Adjustments;
 use App\Models\OwnerAccount;
 use App\Models\OwnerTransaction;
 use App\Services\Accounting\OwnerAdjustmentJournalService;
+use App\Services\Documents\AdjustmentVoucherService;
 use RuntimeException;
 
 /**
@@ -21,6 +22,7 @@ final class OwnerAccountAdjustmentAdapter implements AdjustmentAccountAdapter
 {
     public function __construct(
         private readonly OwnerAdjustmentJournalService $journal,
+        private readonly AdjustmentVoucherService $vouchers,
     ) {}
 
     public function supports(
@@ -120,6 +122,45 @@ final class OwnerAccountAdjustmentAdapter implements AdjustmentAccountAdapter
             ],
         );
 
+        /*
+         * Adjustment Voucher metadata belongs to the same transaction as
+         * the operational ledger row and Financial Journal posting.
+         *
+         * ContextualAdjustmentService owns that transaction boundary.
+         */
+        $voucher =
+            $this->vouchers->create(
+                accountType: $command->context->accountType,
+
+                accountId: $command->context->entityId,
+
+                entityType: 'owner',
+
+                entityId: $command->context
+                    ->metadata['owner_id']
+                    ?? null,
+
+                entityLabel: $command->context->entityLabel,
+
+                accountLabel: 'Owner Account',
+
+                previousBalance: $calculation->previousBalance,
+
+                correctedBalance: $calculation->correctedBalance,
+
+                difference: $calculation->difference,
+
+                reason: $command->reason,
+
+                adjustmentDate: $command->effectiveDate,
+
+                actor: $command->performedBy,
+
+                sourceType: OwnerTransaction::class,
+
+                sourceId: $transaction->id,
+            );
+
         return new AdjustmentResult(
             context: $command->context,
             calculation: $calculation,
@@ -150,6 +191,10 @@ final class OwnerAccountAdjustmentAdapter implements AdjustmentAccountAdapter
                 'reason' => $command->reason,
 
                 'reference' => $transaction->reference,
+
+                'adjustment_voucher_id' => $voucher->id,
+
+                'adjustment_voucher_number' => $voucher->voucher_number,
             ],
         );
     }

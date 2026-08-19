@@ -5,6 +5,7 @@ namespace App\Services\Adjustments;
 use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
 use App\Services\Accounting\TenantFundAdjustmentJournalService;
+use App\Services\Documents\AdjustmentVoucherService;
 use RuntimeException;
 
 /**
@@ -24,6 +25,7 @@ final class TenantFundAdjustmentAdapter implements AdjustmentAccountAdapter
 {
     public function __construct(
         private readonly TenantFundAdjustmentJournalService $journal,
+        private readonly AdjustmentVoucherService $vouchers,
     ) {}
 
     public function supports(
@@ -179,6 +181,74 @@ final class TenantFundAdjustmentAdapter implements AdjustmentAccountAdapter
             ],
         );
 
+        $accountLabel =
+            match ($account->type) {
+                'rent_reserve' => 'Rent Reserve',
+
+                'consumable_advance' => 'Consumable Advance',
+
+                'security_deposit' => 'Security Deposit',
+
+                default => 'Tenant Fund',
+            };
+
+        /*
+         * Freeze enough human-readable context for the Voucher to remain
+         * understandable independently of later Party/property renames.
+         */
+        $entityParts =
+            array_filter(
+                [
+                    $command->context
+                        ->metadata['tenant_name']
+                    ?? null,
+
+                    $command->context->leaseLabel,
+
+                    $command->context->buildingLabel,
+
+                    $command->context->unitLabel,
+                ],
+                static fn ($value): bool => is_string($value)
+                    && trim($value) !== ''
+            );
+
+        $voucher =
+            $this->vouchers->create(
+                accountType: $account->type,
+
+                accountId: $account->id,
+
+                entityType: 'tenant',
+
+                entityId: $command->context
+                    ->metadata['tenant_id']
+                    ?? null,
+
+                entityLabel: implode(
+                    ' — ',
+                    $entityParts
+                ),
+
+                accountLabel: $accountLabel,
+
+                previousBalance: $calculation->previousBalance,
+
+                correctedBalance: $calculation->correctedBalance,
+
+                difference: $calculation->difference,
+
+                reason: $command->reason,
+
+                adjustmentDate: $command->effectiveDate,
+
+                actor: $command->performedBy,
+
+                sourceType: TenantFundTransaction::class,
+
+                sourceId: $transaction->id,
+            );
+
         return new AdjustmentResult(
             context: $command->context,
 
@@ -220,6 +290,10 @@ final class TenantFundAdjustmentAdapter implements AdjustmentAccountAdapter
                 'reason' => $command->reason,
 
                 'reference' => $transaction->reference,
+
+                'adjustment_voucher_id' => $voucher->id,
+
+                'adjustment_voucher_number' => $voucher->voucher_number,
             ],
         );
     }

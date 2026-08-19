@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdjustmentVoucher;
 use App\Models\Invoice;
 use App\Models\OwnerTransaction;
 use App\Models\Payment;
 use App\Models\SecurityDepositSettlement;
 use App\Services\ActivityLogService;
+use App\Services\Documents\AdjustmentVoucherDocumentService;
 use App\Services\Documents\InvoiceDocumentService;
 use App\Services\Documents\OwnerDepositReceiptDocumentService;
 use App\Services\Documents\ReceiptDocumentService;
@@ -218,6 +220,62 @@ class DocumentController extends Controller
                 'Content-Length' => strlen(
                     $contents
                 ),
+            ]
+        );
+    }
+
+    public function adjustmentVoucher(
+        Request $request,
+        AdjustmentVoucher $adjustmentVoucher,
+        AdjustmentVoucherDocumentService $documents,
+        ActivityLogService $activityLog,
+    ) {
+        $contents =
+            $documents->pdf(
+                $adjustmentVoucher
+            );
+
+        /*
+         * Manual financial-document downloads remain meaningful
+         * V1.0.3 Activity Log events.
+         */
+        $activityLog->record(
+            action: 'adjustment_voucher.downloaded',
+
+            request: $request,
+
+            entityType: 'adjustment_voucher',
+
+            entityId: $adjustmentVoucher->id,
+
+            entityLabel: $adjustmentVoucher->voucher_number,
+
+            snapshot: [
+                'voucher_number' => $adjustmentVoucher->voucher_number,
+
+                'account_type' => $adjustmentVoucher->account_type,
+
+                'account_id' => $adjustmentVoucher->account_id,
+
+                'entity_label' => $adjustmentVoucher->entity_label,
+
+                'source_type' => $adjustmentVoucher->source_type,
+
+                'source_id' => $adjustmentVoucher->source_id,
+            ],
+        );
+
+        return response(
+            $contents,
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+
+                'Content-Disposition' => 'inline; filename="'
+                    .$documents->filename(
+                        $adjustmentVoucher
+                    )
+                    .'"',
             ]
         );
     }

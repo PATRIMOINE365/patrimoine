@@ -1,6 +1,19 @@
 <?php
 
 return [
+    'adjustment_voucher' => [
+        'title' => 'Adjustment Voucher',
+        'voucher_number' => 'Voucher Number',
+        'date' => 'Date',
+        'context' => 'Context',
+        'account' => 'Account',
+        'previous_balance' => 'Previous Balance',
+        'corrected_balance' => 'Corrected Balance',
+        'difference' => 'Adjustment Difference',
+        'reason' => 'Reason',
+        'performed_by' => 'Performed By',
+    ],
+
     'common' => [
         'property_management' => 'Property Management',
         'vat_tin' => 'VAT/TIN',

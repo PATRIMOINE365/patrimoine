@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOwnerAdjustmentRequest;
 use App\Http\Requests\StoreOwnerDepositRequest;
 use App\Models\OwnerAccount;
+use App\Models\OwnerTransaction;
 use App\Services\ActivityLogService;
 use App\Services\Adjustments\AdjustmentAccountType;
 use App\Services\Adjustments\AdjustmentContext;
@@ -14,6 +15,7 @@ use App\Services\Adjustments\OwnerAccountAdjustmentAdapter;
 use App\Services\FinancialActivitySnapshotService;
 use App\Services\OwnerLedgerService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
 
@@ -104,7 +106,8 @@ class OwnerLedgerController extends Controller
         ActivityLogService $activityLog,
         FinancialActivitySnapshotService $activitySnapshots
     ): JsonResponse {
-        $validated = $request->validated();
+        $validated =
+            $request->validated();
 
         $ownerAccount->loadMissing(
             'party'
@@ -120,41 +123,28 @@ class OwnerLedgerController extends Controller
 
         $context =
             new AdjustmentContext(
-                accountType:
-                    AdjustmentAccountType::OWNER_ACCOUNT,
+                accountType: AdjustmentAccountType::OWNER_ACCOUNT,
 
-                entityType:
-                    'owner_account',
+                entityType: 'owner_account',
 
-                entityId:
-                    $ownerAccount->id,
+                entityId: $ownerAccount->id,
 
-                entityLabel:
-                    $ownerName !== ''
+                entityLabel: $ownerName !== ''
                         ? $ownerName
                         : 'Owner Account #'.$ownerAccount->id,
 
                 metadata: [
-                    'owner_id' =>
-                        $ownerAccount->party_id,
+                    'owner_id' => $ownerAccount->party_id,
 
-                    'owner_name' =>
-                        $ownerName !== ''
+                    'owner_name' => $ownerName !== ''
                             ? $ownerName
                             : null,
 
-                    'reference' =>
-                        $validated['reference']
+                    'reference' => $validated['reference']
                         ?? null,
                 ],
             );
 
-        /*
-         * Step 3A resolves the existing Owner adapter explicitly.
-         *
-         * Later Phase 4 steps will register the complete set of account
-         * adapters for universal Tenant/Owner contextual resolution.
-         */
         $adjustments =
             new ContextualAdjustmentService([
                 app(
@@ -162,26 +152,113 @@ class OwnerLedgerController extends Controller
                 ),
             ]);
 
+        /*
+         * The complete human Adjustment is one atomic operation:
+         *
+         * - OwnerTransaction;
+         * - Financial Journal;
+         * - Adjustment Voucher metadata;
+         * - Activity Log.
+         *
+         * ContextualAdjustmentService supplies the nested financial
+         * transaction. This outer transaction additionally includes the
+         * Activity Log event.
+         */
         try {
-            $result =
-                $adjustments->perform(
-                    context:
+            $completed =
+                DB::transaction(
+                    function () use (
+                        $adjustments,
                         $context,
+                        $validated,
+                        $request,
+                        $activityLog,
+                        $activitySnapshots,
+                        $ownerAccount,
+                        $ownerName,
+                    ): array {
+                        $result =
+                            $adjustments->perform(
+                                context: $context,
 
-                    correctedBalance:
-                        (int) $validated[
-                            'corrected_balance'
-                        ],
+                                correctedBalance: (int) $validated[
+                                        'corrected_balance'
+                                    ],
 
-                    reason:
-                        $validated['reason'],
+                                reason: $validated['reason'],
 
-                    performedBy:
-                        $request->user(),
+                                performedBy: $request->user(),
+                            );
+
+                        $transaction =
+                            OwnerTransaction::query()
+                                ->findOrFail(
+                                    $result->transactionId
+                                );
+
+                        $snapshot =
+                            array_merge(
+                                $activitySnapshots
+                                    ->ownerTransaction(
+                                        $transaction
+                                    ),
+                                [
+                                    'previous_balance' => $result
+                                        ->calculation
+                                        ->previousBalance,
+
+                                    'corrected_balance' => $result
+                                        ->calculation
+                                        ->correctedBalance,
+
+                                    'difference' => $result
+                                        ->calculation
+                                        ->difference,
+
+                                    'reason' => $result->reason,
+
+                                    'owner_account_id' => $ownerAccount->id,
+
+                                    'owner_name' => $ownerName !== ''
+                                            ? $ownerName
+                                            : null,
+
+                                    'adjustment_voucher_id' => $result
+                                        ->transactionSnapshot[
+                                                'adjustment_voucher_id'
+                                            ],
+
+                                    'adjustment_voucher_number' => $result
+                                        ->transactionSnapshot[
+                                                'adjustment_voucher_number'
+                                            ],
+                                ],
+                            );
+
+                        $activityLog->record(
+                            action: 'owner_adjustment.recorded',
+
+                            request: $request,
+
+                            entityType: 'owner_transaction',
+
+                            entityId: $transaction->id,
+
+                            entityLabel: 'Owner adjustment #'.$transaction->id,
+
+                            snapshot: $snapshot,
+                        );
+
+                        return [
+                            'result' => $result,
+
+                            'transaction' => $transaction,
+                        ];
+                    }
                 );
         } catch (
             \InvalidArgumentException
-            | RuntimeException
+            |RuntimeException
             $exception
         ) {
             throw ValidationException::withMessages([
@@ -191,114 +268,65 @@ class OwnerLedgerController extends Controller
             ]);
         }
 
+        $result =
+            $completed['result'];
+
         $transaction =
-            \App\Models\OwnerTransaction::query()
-                ->findOrFail(
-                    $result->transactionId
-                );
+            $completed['transaction'];
 
-        /*
-         * Preserve the existing one-human-action Activity Log rule.
-         *
-         * Step 3B will enrich the frozen snapshot with the complete
-         * standardized Adjustment context while keeping exactly one event.
-         */
-        $activityLog->record(
-            action:
-                'owner_adjustment.recorded',
-
-            request:
-                $request,
-
-            entityType:
-                'owner_transaction',
-
-            entityId:
-                $transaction->id,
-
-            entityLabel:
-                'Owner adjustment #'.$transaction->id,
-
-            snapshot:
-                array_merge(
-                    $activitySnapshots
-                        ->ownerTransaction(
-                            $transaction
-                        ),
-
-                    [
-                        'previous_balance' =>
-                            $result
-                                ->calculation
-                                ->previousBalance,
-
-                        'corrected_balance' =>
-                            $result
-                                ->calculation
-                                ->correctedBalance,
-
-                        'difference' =>
-                            $result
-                                ->calculation
-                                ->difference,
-
-                        'reason' =>
-                            $result->reason,
-
-                        'owner_account_id' =>
-                            $ownerAccount->id,
-
-                        'owner_name' =>
-                            $ownerName !== ''
-                                ? $ownerName
-                                : null,
-                    ]
-                ),
-        );
+        $voucherId =
+            $result
+                ->transactionSnapshot[
+                    'adjustment_voucher_id'
+                ];
 
         return response()->json(
             data: [
-                'transaction' =>
-                    $transaction,
+                'transaction' => $transaction,
 
                 'adjustment' => [
-                    'previous_balance' =>
-                        $result
-                            ->calculation
-                            ->previousBalance,
+                    'previous_balance' => $result
+                        ->calculation
+                        ->previousBalance,
 
-                    'corrected_balance' =>
-                        $result
-                            ->calculation
-                            ->correctedBalance,
+                    'corrected_balance' => $result
+                        ->calculation
+                        ->correctedBalance,
 
-                    'difference' =>
-                        $result
-                            ->calculation
-                            ->difference,
+                    'difference' => $result
+                        ->calculation
+                        ->difference,
 
-                    'direction' =>
-                        $result
-                            ->calculation
-                            ->direction,
+                    'direction' => $result
+                        ->calculation
+                        ->direction,
 
-                    'effective_date' =>
-                        $result
-                            ->effectiveDate
-                            ->toDateString(),
+                    'effective_date' => $result
+                        ->effectiveDate
+                        ->toDateString(),
 
-                    'reason' =>
-                        $result->reason,
+                    'reason' => $result->reason,
+                ],
+
+                'adjustment_voucher' => [
+                    'id' => $voucherId,
+
+                    'voucher_number' => $result
+                        ->transactionSnapshot[
+                                'adjustment_voucher_number'
+                            ],
+
+                    'pdf_endpoint' => '/api/adjustment-vouchers/'
+                        .$voucherId
+                        .'/pdf',
                 ],
 
                 'owner_account' => [
-                    'id' =>
-                        $ownerAccount->id,
+                    'id' => $ownerAccount->id,
 
-                    'balance' =>
-                        $ownerAccount
-                            ->fresh()
-                            ->balance(),
+                    'balance' => $ownerAccount
+                        ->fresh()
+                        ->balance(),
                 ],
             ],
 

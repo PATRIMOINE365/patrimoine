@@ -458,6 +458,11 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 Route::get(
+                    'adjustment-vouchers/{adjustmentVoucher}/pdf',
+                    [DocumentController::class, 'adjustmentVoucher']
+                );
+
+                Route::get(
                     'security-deposit-settlements/{settlement}/voucher',
                     [DocumentController::class, 'securityDepositVoucher']
                 );

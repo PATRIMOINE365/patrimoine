@@ -393,6 +393,16 @@ class TenantFundController extends Controller
                                     'unit_id' => $context->unitId,
 
                                     'unit_label' => $context->unitLabel,
+
+                                    'adjustment_voucher_id' => $result
+                                        ->transactionSnapshot[
+                                                'adjustment_voucher_id'
+                                            ],
+
+                                    'adjustment_voucher_number' => $result
+                                        ->transactionSnapshot[
+                                                'adjustment_voucher_number'
+                                            ],
                                 ],
                             );
 
@@ -471,6 +481,25 @@ class TenantFundController extends Controller
                         ->toDateString(),
 
                     'reason' => $result->reason,
+                ],
+
+                'adjustment_voucher' => [
+                    'id' => $result
+                        ->transactionSnapshot[
+                                'adjustment_voucher_id'
+                            ],
+
+                    'voucher_number' => $result
+                        ->transactionSnapshot[
+                                'adjustment_voucher_number'
+                            ],
+
+                    'pdf_endpoint' => '/api/adjustment-vouchers/'
+                        .$result
+                            ->transactionSnapshot[
+                                'adjustment_voucher_id'
+                            ]
+                        .'/pdf',
                 ],
 
                 'context' => $context->snapshot(),
