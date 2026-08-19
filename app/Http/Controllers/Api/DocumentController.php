@@ -8,12 +8,14 @@ use App\Models\Invoice;
 use App\Models\OwnerTransaction;
 use App\Models\Payment;
 use App\Models\SecurityDepositSettlement;
+use App\Models\WithdrawalReceipt;
 use App\Services\ActivityLogService;
 use App\Services\Documents\AdjustmentVoucherDocumentService;
 use App\Services\Documents\InvoiceDocumentService;
 use App\Services\Documents\OwnerDepositReceiptDocumentService;
 use App\Services\Documents\ReceiptDocumentService;
 use App\Services\Documents\SecurityDepositVoucherDocumentService;
+use App\Services\Documents\WithdrawalReceiptDocumentService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
@@ -274,6 +276,27 @@ class DocumentController extends Controller
                 'Content-Disposition' => 'inline; filename="'
                     .$documents->filename(
                         $adjustmentVoucher
+                    )
+                    .'"',
+            ]
+        );
+    }
+
+    public function withdrawalReceipt(
+        WithdrawalReceipt $withdrawalReceipt,
+        WithdrawalReceiptDocumentService $documents,
+    ) {
+        return response(
+            $documents->pdf(
+                $withdrawalReceipt
+            ),
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+
+                'Content-Disposition' => 'inline; filename="'
+                    .$documents->filename(
+                        $withdrawalReceipt
                     )
                     .'"',
             ]

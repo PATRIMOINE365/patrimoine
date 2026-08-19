@@ -1,6 +1,22 @@
 <?php
 
 return [
+
+    'withdrawal_receipt' => [
+        'title' => 'Reçu de retrait',
+        'receipt_number' => 'Numéro de reçu',
+        'tenant' => 'Locataire',
+        'lease' => 'Bail',
+        'building' => 'Immeuble',
+        'unit' => 'Unité',
+        'fund' => 'Fonds',
+        'amount' => 'Montant',
+        'payment_method' => 'Mode de paiement',
+        'date' => 'Date',
+        'reference' => 'Référence',
+        'notes' => 'Notes',
+        'performed_by' => 'Effectué par',
+    ],
     'adjustment_voucher' => [
         'title' => 'Bon d’ajustement',
         'voucher_number' => 'Numéro du bon',

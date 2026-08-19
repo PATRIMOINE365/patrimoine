@@ -32,6 +32,7 @@ class TenantFundTransaction extends Model
         'category',
         'amount',
         'transaction_date',
+        'payment_method',
         'reference',
         'notes',
     ];

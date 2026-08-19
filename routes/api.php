@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\ReportExportController;
 use App\Http\Controllers\Api\SecurityDepositController;
 use App\Http\Controllers\Api\TenantFundController;
 use App\Http\Controllers\Api\TenantFundDepositController;
+use App\Http\Controllers\Api\TenantFundWithdrawalController;
 use App\Http\Controllers\Api\UnitController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -387,6 +388,16 @@ Route::middleware('auth:sanctum')->group(
                 Route::post(
                     'tenant-fund-deposits',
                     [TenantFundDepositController::class, 'store']
+                );
+
+                Route::post(
+                    'tenant-fund-withdrawals',
+                    [TenantFundWithdrawalController::class, 'store']
+                );
+
+                Route::get(
+                    'withdrawal-receipts/{withdrawalReceipt}/pdf',
+                    [DocumentController::class, 'withdrawalReceipt']
                 );
 
                 Route::post(

@@ -1,6 +1,22 @@
 <?php
 
 return [
+
+    'withdrawal_receipt' => [
+        'title' => 'Withdrawal Receipt',
+        'receipt_number' => 'Receipt Number',
+        'tenant' => 'Tenant',
+        'lease' => 'Lease',
+        'building' => 'Building',
+        'unit' => 'Unit',
+        'fund' => 'Fund',
+        'amount' => 'Amount',
+        'payment_method' => 'Payment Method',
+        'date' => 'Date',
+        'reference' => 'Reference',
+        'notes' => 'Notes',
+        'performed_by' => 'Performed By',
+    ],
     'adjustment_voucher' => [
         'title' => 'Adjustment Voucher',
         'voucher_number' => 'Voucher Number',
