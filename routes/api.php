@@ -384,6 +384,11 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 Route::post(
+                    'tenant-funds/{tenantFundAccount}/adjustments',
+                    [TenantFundController::class, 'adjustment']
+                );
+
+                Route::post(
                     'tenant-funds/{tenantFundAccount}/consume-rent',
                     [RentReserveController::class, 'consume']
                 );

@@ -4,15 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AllocateTenantFundRequest;
+use App\Http\Requests\StoreTenantFundAdjustmentRequest;
 use App\Models\Payment;
 use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
+use App\Services\Accounting\TenantFundFundingJournalService;
 use App\Services\ActivityLogService;
+use App\Services\Adjustments\AdjustmentContext;
+use App\Services\Adjustments\ContextualAdjustmentService;
+use App\Services\Adjustments\TenantFundAdjustmentAdapter;
 use App\Services\FinancialActivitySnapshotService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use App\Services\Accounting\TenantFundFundingJournalService;
 
 /**
  * Transactional API controller for tenant-held funds.
@@ -124,17 +128,17 @@ class TenantFundController extends Controller
                  */
                 $transaction =
                     TenantFundTransaction::create([
-                    'tenant_fund_account_id' => $account->id,
-                    'payment_id' => $payment->id,
-                    'direction' => 'credit',
-                    'category' => $category,
-                    'amount' => $amount,
-                    'transaction_date' => $validated['transaction_date'],
-                    'reference' => $validated['reference']
-                        ?? $payment->reference,
-                    'notes' => $validated['notes']
-                        ?? 'Classified from unapplied tenant Payment.',
-                ]);
+                        'tenant_fund_account_id' => $account->id,
+                        'payment_id' => $payment->id,
+                        'direction' => 'credit',
+                        'category' => $category,
+                        'amount' => $amount,
+                        'transaction_date' => $validated['transaction_date'],
+                        'reference' => $validated['reference']
+                            ?? $payment->reference,
+                        'notes' => $validated['notes']
+                            ?? 'Classified from unapplied tenant Payment.',
+                    ]);
 
                 /*
                  * V1.0.5 Phase 3:
@@ -203,6 +207,273 @@ class TenantFundController extends Controller
                      */
                     'remaining_unclassified_amount' => $this->remainingUnclassifiedAmount($payment),
                 ],
+            ],
+            status: 201
+        );
+    }
+
+    /**
+     * Correct one Lease-specific Tenant fund to the balance that should
+     * actually exist.
+     *
+     * V1.0.5 accepts the desired final balance, never a user-entered
+     * debit/credit delta.
+     */
+    public function adjustment(
+        StoreTenantFundAdjustmentRequest $request,
+        TenantFundAccount $tenantFundAccount,
+        ActivityLogService $activityLog,
+        FinancialActivitySnapshotService $activitySnapshots,
+    ): JsonResponse {
+        $validated = $request->validated();
+
+        $tenantFundAccount->loadMissing([
+            'lease.tenant',
+            'lease.unit.building',
+        ]);
+
+        $lease = $tenantFundAccount->lease;
+
+        if ($lease === null) {
+            throw ValidationException::withMessages([
+                'tenant_fund_account' => [
+                    'The selected Tenant fund account has no Lease context.',
+                ],
+            ]);
+        }
+
+        $tenant = $lease->tenant;
+        $unit = $lease->unit;
+        $building = $unit?->building;
+
+        $fundLabel = match ($tenantFundAccount->type) {
+            'rent_reserve' => 'Rent Reserve',
+
+            'consumable_advance' => 'Consumable Advance',
+
+            'security_deposit' => 'Security Deposit',
+
+            default => 'Tenant Fund',
+        };
+
+        $tenantName =
+            trim(
+                (string) (
+                    $tenant?->name
+                    ?? ''
+                )
+            );
+
+        $context =
+            new AdjustmentContext(
+                accountType: $tenantFundAccount->type,
+
+                entityType: 'tenant_fund_account',
+
+                entityId: $tenantFundAccount->id,
+
+                entityLabel: $fundLabel.' #'.$tenantFundAccount->id,
+
+                leaseId: $lease->id,
+
+                leaseLabel: 'Lease #'.$lease->id,
+
+                buildingId: $building?->id,
+
+                buildingLabel: $building?->name,
+
+                unitId: $unit?->id,
+
+                unitLabel: $unit?->name,
+
+                metadata: [
+                    'tenant_id' => $tenant?->id,
+
+                    'tenant_name' => $tenantName !== ''
+                            ? $tenantName
+                            : null,
+
+                    'fund_type' => $tenantFundAccount->type,
+
+                    'reference' => $validated['reference']
+                        ?? null,
+                ],
+            );
+
+        $adjustments =
+            new ContextualAdjustmentService([
+                app(
+                    TenantFundAdjustmentAdapter::class
+                ),
+            ]);
+
+        /*
+         * The outer controller transaction deliberately includes both the
+         * universal Adjustment service and Activity Log creation.
+         *
+         * ContextualAdjustmentService uses its own nested transaction for
+         * account locking + operational ledger + Journal posting. Laravel's
+         * outer transaction ensures an Activity Log failure also prevents a
+         * partially committed Tenant Adjustment.
+         */
+        try {
+            $completed =
+                DB::transaction(
+                    function () use (
+                        $adjustments,
+                        $context,
+                        $validated,
+                        $request,
+                        $activityLog,
+                        $activitySnapshots,
+                        $tenantFundAccount,
+                    ): array {
+                        $result =
+                            $adjustments->perform(
+                                context: $context,
+
+                                correctedBalance: (int) $validated[
+                                        'corrected_balance'
+                                    ],
+
+                                reason: $validated['reason'],
+
+                                performedBy: $request->user(),
+                            );
+
+                        $transaction =
+                            TenantFundTransaction::query()
+                                ->findOrFail(
+                                    $result->transactionId
+                                );
+
+                        $transaction->load([
+                            'account',
+                        ]);
+
+                        $snapshot =
+                            array_merge(
+                                $activitySnapshots
+                                    ->tenantFundTransaction(
+                                        $transaction
+                                    ),
+                                [
+                                    'previous_balance' => $result
+                                        ->calculation
+                                        ->previousBalance,
+
+                                    'corrected_balance' => $result
+                                        ->calculation
+                                        ->correctedBalance,
+
+                                    'difference' => $result
+                                        ->calculation
+                                        ->difference,
+
+                                    'reason' => $result->reason,
+
+                                    'fund_type' => $tenantFundAccount->type,
+
+                                    'tenant_id' => $context
+                                        ->metadata['tenant_id']
+                                        ?? null,
+
+                                    'tenant_name' => $context
+                                        ->metadata['tenant_name']
+                                        ?? null,
+
+                                    'lease_id' => $context->leaseId,
+
+                                    'lease_label' => $context->leaseLabel,
+
+                                    'building_id' => $context->buildingId,
+
+                                    'building_label' => $context->buildingLabel,
+
+                                    'unit_id' => $context->unitId,
+
+                                    'unit_label' => $context->unitLabel,
+                                ],
+                            );
+
+                        $activityLog->record(
+                            action: 'tenant_adjustment.recorded',
+
+                            request: $request,
+
+                            entityType: 'tenant_fund_transaction',
+
+                            entityId: $transaction->id,
+
+                            entityLabel: 'Tenant adjustment #'.$transaction->id,
+
+                            snapshot: $snapshot,
+                        );
+
+                        return [
+                            'result' => $result,
+
+                            'transaction' => $transaction,
+                        ];
+                    }
+                );
+        } catch (
+            \InvalidArgumentException
+            |\RuntimeException
+            $exception
+        ) {
+            throw ValidationException::withMessages([
+                'tenant_fund_account' => [
+                    $exception->getMessage(),
+                ],
+            ]);
+        }
+
+        $result =
+            $completed['result'];
+
+        $transaction =
+            $completed['transaction'];
+
+        return response()->json(
+            data: [
+                'transaction' => $transaction,
+
+                'tenant_fund_account' => [
+                    'id' => $tenantFundAccount->id,
+
+                    'lease_id' => $tenantFundAccount->lease_id,
+
+                    'type' => $tenantFundAccount->type,
+
+                    'status' => $tenantFundAccount->status,
+
+                    'balance' => $tenantFundAccount
+                        ->fresh()
+                        ->balance(),
+                ],
+
+                'adjustment' => [
+                    'previous_balance' => $result
+                        ->calculation
+                        ->previousBalance,
+
+                    'corrected_balance' => $result
+                        ->calculation
+                        ->correctedBalance,
+
+                    'difference' => $result
+                        ->calculation
+                        ->difference,
+
+                    'effective_date' => $result
+                        ->effectiveDate
+                        ->toDateString(),
+
+                    'reason' => $result->reason,
+                ],
+
+                'context' => $context->snapshot(),
             ],
             status: 201
         );
