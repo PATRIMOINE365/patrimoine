@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReportExportController;
 use App\Http\Controllers\Api\SecurityDepositController;
 use App\Http\Controllers\Api\TenantFundController;
+use App\Http\Controllers\Api\TenantFundDepositController;
 use App\Http\Controllers\Api\UnitController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -381,6 +382,11 @@ Route::middleware('auth:sanctum')->group(
                 Route::post(
                     'payments/{payment}/tenant-funds',
                     [TenantFundController::class, 'allocate']
+                );
+
+                Route::post(
+                    'tenant-fund-deposits',
+                    [TenantFundDepositController::class, 'store']
                 );
 
                 Route::post(
