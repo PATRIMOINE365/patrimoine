@@ -136,6 +136,20 @@ class RentReserveService
             ]);
 
             /*
+             * V1.0.5 Phase 3 Step 4:
+             *
+             * The persisted tenant-fund debit and its Financial Journal
+             * posting share the same business transaction. Before the
+             * controlled accounting cutover this call is a no-op.
+             */
+            app(
+                \App\Services\Accounting\TenantFundConsumptionJournalService::class
+            )->post(
+                $transaction
+            );
+
+
+            /*
              * Once reserve money is consumed as rent, it becomes owner
              * entitlement just like ordinary rent cash collected.
              */

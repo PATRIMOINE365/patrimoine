@@ -134,6 +134,20 @@ class ConsumableAdvanceService
             ]);
 
             /*
+             * V1.0.5 Phase 3 Step 4:
+             *
+             * The persisted tenant-fund debit and its Financial Journal
+             * posting share the same business transaction. Before the
+             * controlled accounting cutover this call is a no-op.
+             */
+            app(
+                \App\Services\Accounting\TenantFundConsumptionJournalService::class
+            )->post(
+                $transaction
+            );
+
+
+            /*
              * Once Advance is consumed as rent, it becomes owner
              * entitlement exactly like cash collected from the tenant.
              */
