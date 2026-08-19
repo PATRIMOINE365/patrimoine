@@ -25,7 +25,8 @@ use InvalidArgumentException;
 class JournalPostingService
 {
     public function __construct(
-        private readonly JournalNumberService $numbers
+        private readonly JournalNumberService $numbers,
+        private readonly AccountingBootstrapService $bootstrap
     ) {
     }
 
@@ -39,6 +40,7 @@ class JournalPostingService
      * - description        optional
      * - source_type        optional
      * - source_id          optional
+     * - idempotency_key    optional permanent retry-safe key
      * - actor_user_id      optional
      * - actor_name_snapshot optional
      * - snapshot           optional array
@@ -62,6 +64,15 @@ class JournalPostingService
         array $header,
         array $lines
     ): JournalEntry {
+        /*
+         * Financial posting is the accounting boundary.
+         *
+         * Ensure Patrimoine's system-managed Chart of Accounts exists
+         * immediately before it is required rather than performing
+         * accounting database work during every application boot.
+         */
+        $this->bootstrap->bootstrap();
+
         $normalizedHeader = $this->normalizeHeader($header);
 
         $normalizedLines = $this->normalizeAndValidateLines(
@@ -73,6 +84,20 @@ class JournalPostingService
                 $normalizedHeader,
                 $normalizedLines
             ): JournalEntry {
+                if ($normalizedHeader['idempotency_key'] !== null) {
+                    $existing = JournalEntry::query()
+                        ->with('lines')
+                        ->where(
+                            'idempotency_key',
+                            $normalizedHeader['idempotency_key']
+                        )
+                        ->first();
+
+                    if ($existing !== null) {
+                        return $existing;
+                    }
+                }
+
                 $journalDate = Carbon::parse(
                     $normalizedHeader['journal_date']
                 );
@@ -111,6 +136,9 @@ class JournalPostingService
                     ],
                     'source_id' => $normalizedHeader[
                         'source_id'
+                    ],
+                    'idempotency_key' => $normalizedHeader[
+                        'idempotency_key'
                     ],
                     'actor_user_id' => $normalizedHeader[
                         'actor_user_id'
@@ -229,6 +257,9 @@ class JournalPostingService
                 $header['source_type'] ?? null
             ),
             'source_id' => $sourceId,
+            'idempotency_key' => $this->nullableString(
+                $header['idempotency_key'] ?? null
+            ),
             'actor_user_id' => $actorUserId,
             'actor_name_snapshot' => $this->nullableString(
                 $header['actor_name_snapshot'] ?? null

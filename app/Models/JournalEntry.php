@@ -38,6 +38,7 @@ class JournalEntry extends Model
         'description',
         'source_type',
         'source_id',
+        'idempotency_key',
         'actor_user_id',
         'actor_name_snapshot',
         'snapshot',
