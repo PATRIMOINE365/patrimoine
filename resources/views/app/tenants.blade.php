@@ -165,4 +165,955 @@
     </div>
 </div>
 
+{{-- ================================================================
+     V1.0.5 Tenant Deposit Drawer
+================================================================ --}}
+
+<x-drawer
+    id="tenant-deposit-drawer"
+    backdrop-id="tenant-deposit-drawer-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="tenant-deposit-drawer-close"
+        close-label="{{ __('ui.tenants.close') }}"
+        close-label-key="tenants.close"
+    >
+        <x-slot:title>
+            <span data-i18n="tenants.deposit">
+                {{ __('ui.tenants.deposit') }}
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="tenants.deposit_description">
+                {{ __('ui.tenants.deposit_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="tenant-deposit-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+            <div
+                id="tenant-deposit-error"
+                class="
+                    mb-5 hidden rounded-xl
+                    border border-red-200
+                    bg-red-50 px-4 py-3
+                    text-sm text-red-700
+                "
+            ></div>
+
+            <div
+                class="
+                    mb-5 rounded-xl
+                    border border-slate-200
+                    bg-slate-50 px-4 py-4
+                "
+            >
+                <div
+                    class="
+                        text-xs font-medium uppercase
+                        tracking-wide text-slate-500
+                    "
+                    data-i18n="tenants.transaction_context"
+                >
+                    {{ __('ui.tenants.transaction_context') }}
+                </div>
+
+                <div
+                    id="tenant-deposit-tenant-context"
+                    class="mt-2 text-sm font-semibold text-slate-950"
+                >
+                    —
+                </div>
+
+                <div
+                    id="tenant-deposit-property-context"
+                    class="mt-1 text-sm text-slate-500"
+                ></div>
+            </div>
+
+            <div class="space-y-5">
+                <div>
+                    <label
+                        for="tenant-deposit-lease"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.lease">
+                            {{ __('ui.tenants.lease') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <select
+                        id="tenant-deposit-lease"
+                        required
+                        class="pm-input"
+                    >
+                        <option value="">
+                            {{ __('ui.tenants.select_lease') }}
+                        </option>
+                    </select>
+
+                    <p
+                        class="mt-1.5 text-xs text-slate-500"
+                        data-i18n="tenants.lease_first_help"
+                    >
+                        {{ __('ui.tenants.lease_first_help') }}
+                    </p>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-deposit-account"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.destination">
+                            {{ __('ui.tenants.destination') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <select
+                        id="tenant-deposit-account"
+                        required
+                        disabled
+                        class="pm-input"
+                    >
+                        <option value="">
+                            {{ __('ui.tenants.select_lease_first') }}
+                        </option>
+                    </select>
+                </div>
+
+                <div
+                    class="
+                        grid gap-3 rounded-xl
+                        border border-slate-200
+                        bg-slate-50 p-4
+                        sm:grid-cols-3
+                    "
+                >
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="tenants.current_balance"
+                        >
+                            {{ __('ui.tenants.current_balance') }}
+                        </div>
+
+                        <div
+                            id="tenant-deposit-current-balance"
+                            class="mt-1 font-semibold text-slate-950"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="tenants.transaction_amount"
+                        >
+                            {{ __('ui.tenants.transaction_amount') }}
+                        </div>
+
+                        <div
+                            id="tenant-deposit-preview-amount"
+                            class="mt-1 font-semibold text-slate-950"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="tenants.resulting_balance"
+                        >
+                            {{ __('ui.tenants.resulting_balance') }}
+                        </div>
+
+                        <div
+                            id="tenant-deposit-resulting-balance"
+                            class="mt-1 font-semibold text-slate-950"
+                        >
+                            —
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-deposit-amount"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.amount">
+                            {{ __('ui.tenants.amount') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <input
+                        id="tenant-deposit-amount"
+                        type="number"
+                        min="1"
+                        step="1"
+                        required
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-deposit-method"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.payment_method">
+                            {{ __('ui.tenants.payment_method') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <select
+                        id="tenant-deposit-method"
+                        required
+                        class="pm-input"
+                    >
+                        <option value="cash">
+                            {{ __('ui.tenants.payment_method_cash') }}
+                        </option>
+
+                        <option value="bank_transfer">
+                            {{ __('ui.tenants.payment_method_bank_transfer') }}
+                        </option>
+
+                        <option value="momo">
+                            {{ __('ui.tenants.payment_method_momo') }}
+                        </option>
+                    </select>
+                </div>
+
+                <div
+                    id="tenant-deposit-cash-receiver-wrapper"
+                >
+                    <label
+                        for="tenant-deposit-cash-receiver"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.cash_receiver">
+                            {{ __('ui.tenants.cash_receiver') }}
+                        </span>
+                    </label>
+
+                    <input
+                        id="tenant-deposit-cash-receiver"
+                        type="text"
+                        readonly
+                        class="pm-input cursor-not-allowed bg-slate-50"
+                        placeholder="{{ __('ui.tenants.cash_receiver_automatic') }}"
+                    >
+
+                    <p
+                        class="mt-1.5 text-xs text-slate-500"
+                        data-i18n="tenants.cash_receiver_help"
+                    >
+                        {{ __('ui.tenants.cash_receiver_help') }}
+                    </p>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-deposit-date"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.transaction_date">
+                            {{ __('ui.tenants.transaction_date') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <input
+                        id="tenant-deposit-date"
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="10"
+                        autocomplete="off"
+                        data-pm-date-input
+                        required
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-deposit-reference"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.reference">
+                            {{ __('ui.tenants.reference') }}
+                        </span>
+
+                        <span class="text-xs text-slate-400">
+                            {{ __('ui.tenants.optional') }}
+                        </span>
+                    </label>
+
+                    <input
+                        id="tenant-deposit-reference"
+                        type="text"
+                        maxlength="255"
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-deposit-notes"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.notes">
+                            {{ __('ui.tenants.notes') }}
+                        </span>
+
+                        <span class="text-xs text-slate-400">
+                            {{ __('ui.tenants.optional') }}
+                        </span>
+                    </label>
+
+                    <textarea
+                        id="tenant-deposit-notes"
+                        rows="3"
+                        maxlength="2000"
+                        class="pm-input"
+                    ></textarea>
+                </div>
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                type="button"
+                data-close-tenant-transaction="tenant-deposit-drawer"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="tenants.cancel">
+                    {{ __('ui.tenants.cancel') }}
+                </span>
+            </button>
+
+            <button
+                id="tenant-deposit-submit"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="actions.save">
+                    {{ __('ui.actions.save') }}
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+{{-- ================================================================
+     V1.0.5 Tenant Withdrawal Drawer
+================================================================ --}}
+
+<x-drawer
+    id="tenant-withdrawal-drawer"
+    backdrop-id="tenant-withdrawal-drawer-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="tenant-withdrawal-drawer-close"
+        close-label="{{ __('ui.tenants.close') }}"
+        close-label-key="tenants.close"
+    >
+        <x-slot:title>
+            <span data-i18n="tenants.withdrawal">
+                {{ __('ui.tenants.withdrawal') }}
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="tenants.withdrawal_description">
+                {{ __('ui.tenants.withdrawal_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="tenant-withdrawal-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+            <div
+                id="tenant-withdrawal-error"
+                class="
+                    mb-5 hidden rounded-xl
+                    border border-red-200
+                    bg-red-50 px-4 py-3
+                    text-sm text-red-700
+                "
+            ></div>
+
+            <div
+                class="
+                    mb-5 rounded-xl border border-slate-200
+                    bg-slate-50 px-4 py-4
+                "
+            >
+                <div
+                    class="
+                        text-xs font-medium uppercase
+                        tracking-wide text-slate-500
+                    "
+                    data-i18n="tenants.transaction_context"
+                >
+                    {{ __('ui.tenants.transaction_context') }}
+                </div>
+
+                <div
+                    id="tenant-withdrawal-tenant-context"
+                    class="mt-2 text-sm font-semibold text-slate-950"
+                >
+                    —
+                </div>
+
+                <div
+                    id="tenant-withdrawal-property-context"
+                    class="mt-1 text-sm text-slate-500"
+                ></div>
+            </div>
+
+            <div class="space-y-5">
+                <div>
+                    <label
+                        for="tenant-withdrawal-lease"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.lease">
+                            {{ __('ui.tenants.lease') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <select
+                        id="tenant-withdrawal-lease"
+                        required
+                        class="pm-input"
+                    >
+                        <option value="">
+                            {{ __('ui.tenants.select_lease') }}
+                        </option>
+                    </select>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-withdrawal-account"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.account">
+                            {{ __('ui.tenants.account') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <select
+                        id="tenant-withdrawal-account"
+                        required
+                        disabled
+                        class="pm-input"
+                    >
+                        <option value="">
+                            {{ __('ui.tenants.select_lease_first') }}
+                        </option>
+                    </select>
+                </div>
+
+                <div
+                    class="
+                        grid gap-3 rounded-xl border
+                        border-slate-200 bg-slate-50
+                        p-4 sm:grid-cols-3
+                    "
+                >
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="tenants.current_balance"
+                        >
+                            {{ __('ui.tenants.current_balance') }}
+                        </div>
+
+                        <div
+                            id="tenant-withdrawal-current-balance"
+                            class="mt-1 font-semibold text-slate-950"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="tenants.transaction_amount"
+                        >
+                            {{ __('ui.tenants.transaction_amount') }}
+                        </div>
+
+                        <div
+                            id="tenant-withdrawal-preview-amount"
+                            class="mt-1 font-semibold text-slate-950"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="tenants.resulting_balance"
+                        >
+                            {{ __('ui.tenants.resulting_balance') }}
+                        </div>
+
+                        <div
+                            id="tenant-withdrawal-resulting-balance"
+                            class="mt-1 font-semibold text-slate-950"
+                        >
+                            —
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-withdrawal-amount"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.amount">
+                            {{ __('ui.tenants.amount') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <input
+                        id="tenant-withdrawal-amount"
+                        type="number"
+                        min="1"
+                        step="1"
+                        required
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-withdrawal-method"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.payment_method">
+                            {{ __('ui.tenants.payment_method') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <select
+                        id="tenant-withdrawal-method"
+                        required
+                        class="pm-input"
+                    >
+                        <option value="cash">
+                            {{ __('ui.tenants.payment_method_cash') }}
+                        </option>
+
+                        <option value="bank_transfer">
+                            {{ __('ui.tenants.payment_method_bank_transfer') }}
+                        </option>
+
+                        <option value="momo">
+                            {{ __('ui.tenants.payment_method_momo') }}
+                        </option>
+                    </select>
+                </div>
+
+                <div
+                    id="tenant-withdrawal-cash-receiver-wrapper"
+                >
+                    <label
+                        for="tenant-withdrawal-cash-receiver"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.cash_receiver">
+                            {{ __('ui.tenants.cash_receiver') }}
+                        </span>
+                    </label>
+
+                    <input
+                        id="tenant-withdrawal-cash-receiver"
+                        type="text"
+                        readonly
+                        class="pm-input cursor-not-allowed bg-slate-50"
+                        placeholder="{{ __('ui.tenants.cash_receiver_automatic') }}"
+                    >
+
+                    <p
+                        class="mt-1.5 text-xs text-slate-500"
+                        data-i18n="tenants.cash_receiver_help"
+                    >
+                        {{ __('ui.tenants.cash_receiver_help') }}
+                    </p>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-withdrawal-date"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.transaction_date">
+                            {{ __('ui.tenants.transaction_date') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <input
+                        id="tenant-withdrawal-date"
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="10"
+                        autocomplete="off"
+                        data-pm-date-input
+                        required
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-withdrawal-reference"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.reference">
+                            {{ __('ui.tenants.reference') }}
+                        </span>
+
+                        <span class="text-xs text-slate-400">
+                            {{ __('ui.tenants.optional') }}
+                        </span>
+                    </label>
+
+                    <input
+                        id="tenant-withdrawal-reference"
+                        type="text"
+                        maxlength="255"
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-withdrawal-notes"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.notes">
+                            {{ __('ui.tenants.notes') }}
+                        </span>
+
+                        <span class="text-xs text-slate-400">
+                            {{ __('ui.tenants.optional') }}
+                        </span>
+                    </label>
+
+                    <textarea
+                        id="tenant-withdrawal-notes"
+                        rows="3"
+                        maxlength="2000"
+                        class="pm-input"
+                    ></textarea>
+                </div>
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                type="button"
+                data-close-tenant-transaction="tenant-withdrawal-drawer"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="tenants.cancel">
+                    {{ __('ui.tenants.cancel') }}
+                </span>
+            </button>
+
+            <button
+                id="tenant-withdrawal-submit"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="actions.save">
+                    {{ __('ui.actions.save') }}
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+{{-- ================================================================
+     V1.0.5 Tenant Adjustment Drawer
+================================================================ --}}
+
+<x-drawer
+    id="tenant-adjustment-drawer"
+    backdrop-id="tenant-adjustment-drawer-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="tenant-adjustment-drawer-close"
+        close-label="{{ __('ui.tenants.close') }}"
+        close-label-key="tenants.close"
+    >
+        <x-slot:title>
+            <span data-i18n="tenants.adjustment">
+                {{ __('ui.tenants.adjustment') }}
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="tenants.adjustment_description">
+                {{ __('ui.tenants.adjustment_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="tenant-adjustment-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+            <div
+                id="tenant-adjustment-error"
+                class="
+                    mb-5 hidden rounded-xl
+                    border border-red-200
+                    bg-red-50 px-4 py-3
+                    text-sm text-red-700
+                "
+            ></div>
+
+            <div
+                class="
+                    mb-5 rounded-xl border border-slate-200
+                    bg-slate-50 px-4 py-4
+                "
+            >
+                <div
+                    class="
+                        text-xs font-medium uppercase
+                        tracking-wide text-slate-500
+                    "
+                    data-i18n="tenants.transaction_context"
+                >
+                    {{ __('ui.tenants.transaction_context') }}
+                </div>
+
+                <div
+                    id="tenant-adjustment-tenant-context"
+                    class="mt-2 text-sm font-semibold text-slate-950"
+                >
+                    —
+                </div>
+
+                <div
+                    id="tenant-adjustment-property-context"
+                    class="mt-1 text-sm text-slate-500"
+                ></div>
+            </div>
+
+            <div
+                class="
+                    mb-5 rounded-xl border border-amber-200
+                    bg-amber-50 px-4 py-3
+                    text-sm leading-6 text-amber-800
+                "
+            >
+                <span data-i18n="tenants.adjustment_warning">
+                    {{ __('ui.tenants.adjustment_warning') }}
+                </span>
+            </div>
+
+            <div class="space-y-5">
+                <div>
+                    <label
+                        for="tenant-adjustment-account"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.account">
+                            {{ __('ui.tenants.account') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <select
+                        id="tenant-adjustment-account"
+                        required
+                        class="pm-input"
+                    >
+                        <option value="">
+                            {{ __('ui.tenants.select_account') }}
+                        </option>
+                    </select>
+                </div>
+
+                <div
+                    class="
+                        grid gap-3 rounded-xl border
+                        border-slate-200 bg-slate-50
+                        p-4 sm:grid-cols-3
+                    "
+                >
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="tenants.current_balance"
+                        >
+                            {{ __('ui.tenants.current_balance') }}
+                        </div>
+
+                        <div
+                            id="tenant-adjustment-current-balance"
+                            class="mt-1 font-semibold text-slate-950"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="tenants.correct_balance"
+                        >
+                            {{ __('ui.tenants.correct_balance') }}
+                        </div>
+
+                        <div
+                            id="tenant-adjustment-preview-correct"
+                            class="mt-1 font-semibold text-slate-950"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="tenants.calculated_adjustment"
+                        >
+                            {{ __('ui.tenants.calculated_adjustment') }}
+                        </div>
+
+                        <div
+                            id="tenant-adjustment-difference"
+                            class="mt-1 font-semibold text-slate-950"
+                        >
+                            —
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-adjustment-corrected-balance"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.correct_balance">
+                            {{ __('ui.tenants.correct_balance') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <input
+                        id="tenant-adjustment-corrected-balance"
+                        type="number"
+                        step="1"
+                        required
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-adjustment-reason"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.reason">
+                            {{ __('ui.tenants.reason') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <textarea
+                        id="tenant-adjustment-reason"
+                        rows="4"
+                        maxlength="1000"
+                        required
+                        class="pm-input"
+                        placeholder="{{ __('ui.tenants.adjustment_reason_placeholder') }}"
+                        data-i18n-placeholder="tenants.adjustment_reason_placeholder"
+                    ></textarea>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-adjustment-reference"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.reference">
+                            {{ __('ui.tenants.reference') }}
+                        </span>
+
+                        <span class="text-xs text-slate-400">
+                            {{ __('ui.tenants.optional') }}
+                        </span>
+                    </label>
+
+                    <input
+                        id="tenant-adjustment-reference"
+                        type="text"
+                        maxlength="255"
+                        class="pm-input"
+                    >
+                </div>
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                type="button"
+                data-close-tenant-transaction="tenant-adjustment-drawer"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="tenants.cancel">
+                    {{ __('ui.tenants.cancel') }}
+                </span>
+            </button>
+
+            <button
+                id="tenant-adjustment-submit"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="actions.save">
+                    {{ __('ui.actions.save') }}
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
 @endsection

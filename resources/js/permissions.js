@@ -90,6 +90,11 @@ const CAPABILITY_SELECTORS = {
 
         '#security-deposit-deduction-form',
         '#security-deposit-settlement-form',
+
+        '#tenant-transaction-actions',
+        '#tenant-deposit-form',
+        '#tenant-withdrawal-form',
+        '#tenant-adjustment-form',
     ],
 
     delete_records: [

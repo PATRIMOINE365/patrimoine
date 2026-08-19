@@ -10928,3 +10928,283 @@ html.dark
 }
 
 /* END V1.0.4 PASSWORD WORKFLOW THEME */
+
+/* V1.0.5 TENANT TRANSACTION DRAWER THEME START */
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.5 Tenant Transaction Drawers
+|--------------------------------------------------------------------------
+|
+| Deposit, Withdrawal and Adjustment use the shared V1.0.4 drawer/input
+| primitives, but their inner V1.0.5 markup still contains historical
+| slate utility classes.
+|
+| The drawers are mounted outside the .pm-tenants-page theme scope, so
+| normalize those legacy utilities here using Patrimoine's semantic theme
+| variables. Business markup and JavaScript remain unchanged.
+|
+*/
+
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) .pm-drawer-panel {
+    color: var(--pm-text);
+}
+
+/* Primary text and form labels. */
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) :is(
+    .text-slate-950,
+    .text-slate-900,
+    .text-slate-800,
+    .text-slate-700
+) {
+    color: var(--pm-text) !important;
+}
+
+/* Secondary text. */
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) .text-slate-600 {
+    color: var(--pm-text-secondary) !important;
+}
+
+/* Help text, context captions and optional labels. */
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) :is(
+    .text-slate-500,
+    .text-slate-400
+) {
+    color: var(--pm-text-muted) !important;
+}
+
+/* Legacy neutral borders. */
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) :is(
+    .border-slate-100,
+    .border-slate-200,
+    .border-slate-300
+) {
+    border-color: var(--pm-border) !important;
+}
+
+/*
+ * Transaction context and balance-preview surfaces.
+ * These are the light cards visible in the dark-mode screenshots.
+ */
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) :is(
+    .bg-slate-50,
+    .bg-slate-50\/50,
+    .bg-slate-50\/70,
+    .bg-slate-100
+) {
+    background: var(--pm-surface-subtle) !important;
+}
+
+/* Protect any white legacy surfaces introduced in these drawers later. */
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) .bg-white {
+    background: var(--pm-surface) !important;
+}
+
+/*
+ * Inputs already use .pm-input, but the read-only Cash Receiver field also
+ * carries bg-slate-50. Its read-only state should use the semantic disabled
+ * surface rather than the transaction-card surface.
+ */
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer
+) input[readonly].pm-input {
+    background: var(--pm-input-disabled) !important;
+    color: var(--pm-text) !important;
+}
+
+/*
+ * Keep disabled selectors visibly disabled while retaining dark-mode
+ * contrast.
+ */
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) :is(
+    input,
+    select,
+    textarea
+):disabled {
+    border-color: var(--pm-border) !important;
+    background: var(--pm-input-disabled) !important;
+    color: var(--pm-text-muted) !important;
+    opacity: 1;
+}
+
+/*
+ * Native select popup/options should follow the same browser colour scheme
+ * as the active Patrimoine theme.
+ */
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) :is(
+    select,
+    option
+) {
+    color: var(--pm-text);
+    background: var(--pm-input-background);
+}
+
+html[data-theme="dark"] :is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) {
+    color-scheme: dark;
+}
+
+html[data-theme="light"] :is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) {
+    color-scheme: light;
+}
+
+/*
+ * Adjustment warning is intentionally semantic amber rather than neutral.
+ * Translate its legacy Tailwind warning colours through the application
+ * warning palette so it remains readable in both themes.
+ */
+#tenant-adjustment-drawer .bg-amber-50 {
+    background: var(--pm-warning-background) !important;
+}
+
+#tenant-adjustment-drawer .border-amber-200 {
+    border-color: var(--pm-warning-border) !important;
+}
+
+#tenant-adjustment-drawer .text-amber-800 {
+    color: var(--pm-warning-text) !important;
+}
+
+/*
+ * Likewise keep validation/error surfaces semantic if these hidden error
+ * containers become visible.
+ */
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) .bg-red-50 {
+    background: var(--pm-danger-background) !important;
+}
+
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) .border-red-200 {
+    border-color: var(--pm-danger-border) !important;
+}
+
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) .text-red-700 {
+    color: var(--pm-danger-text) !important;
+}
+
+/* V1.0.5 TENANT TRANSACTION DRAWER THEME END */
+
+/* V1.0.5 TENANT TRANSACTION DRAWER SIZING START */
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.5 Tenant Transaction Drawer Sizing
+|--------------------------------------------------------------------------
+|
+| Deposit, Withdrawal and Adjustment intentionally use the same compact
+| drawer width as Record Owner Deposit.
+|
+| Their footer actions share the complete usable footer width equally so
+| Cancel and Save remain visually balanced in English and French.
+|
+*/
+
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) .pm-drawer-footer {
+    display: grid !important;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+}
+
+:is(
+    #tenant-deposit-drawer,
+    #tenant-withdrawal-drawer,
+    #tenant-adjustment-drawer
+) .pm-drawer-footer
+:is(
+    .pm-button-secondary,
+    .pm-button-primary
+) {
+    display: inline-flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+
+    min-height: 3rem !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    margin: 0 !important;
+    padding-inline: 1rem !important;
+
+    font-size: 0.9375rem !important;
+}
+
+/*
+ * sm already becomes viewport width on narrow screens through the shared
+ * drawer primitive. Keep the two actions side-by-side exactly as in the
+ * Owner Deposit presentation.
+ */
+@media (max-width: 639px) {
+    :is(
+        #tenant-deposit-drawer,
+        #tenant-withdrawal-drawer,
+        #tenant-adjustment-drawer
+    ) .pm-drawer-footer {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+/* V1.0.5 TENANT TRANSACTION DRAWER SIZING END */

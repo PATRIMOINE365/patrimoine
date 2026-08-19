@@ -8,6 +8,16 @@ import {
     translate,
 } from './core.js';
 
+import {
+    browserCan,
+} from './permissions.js';
+
+import {
+    dateForApi,
+    dateForDisplay,
+    initializeDateInputs,
+} from './date-input.js';
+
 /*
 |--------------------------------------------------------------------------
 | Patrimoine Tenant Workspace
@@ -23,6 +33,26 @@ import {
 let tenantSearchTimer = null;
 let tenantPage = 1;
 let selectedTenantId = null;
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.5 Tenant Transaction State
+|--------------------------------------------------------------------------
+|
+| The browser stores presentation context only. Backend services remain
+| authoritative for balances, eligibility, FIFO allocation and accounting.
+|
+*/
+
+let selectedTenant = null;
+let selectedTenantLeases = [];
+let selectedTenantLeaseDetails = new Map();
+
+const tenantTransactionDrawerTimers =
+    new Map();
+
+let tenantTransactionControlsInitialized =
+    false;
 
 
 /**
@@ -41,6 +71,12 @@ export async function initializeTenants() {
     }
 
     initializeTenantSearch();
+
+    initializeTenantTransactionControls();
+
+    initializeDateInputs(
+        '[data-pm-date-input]'
+    );
 
     await loadTenants();
 
@@ -506,6 +542,15 @@ async function selectTenant(
                 leases
             );
 
+        selectedTenant =
+            tenant;
+
+        selectedTenantLeases =
+            leases;
+
+        selectedTenantLeaseDetails =
+            new Map();
+
         renderTenantDetail(
             tenant,
             leases,
@@ -636,27 +681,42 @@ function renderTenantDetail(
                     </div>
                 </div>
 
-                <a
-                    href="/reports?type=tenant&tenant_id=${encodeURIComponent(
-                        tenant.id
-                    )}"
+                <div
                     class="
-                        inline-flex items-center
-                        rounded-lg border
-                        border-slate-200
-                        bg-white px-3.5 py-2.5
-                        text-sm font-medium
-                        text-slate-700
-                        transition
-                        hover:bg-slate-50
+                        flex flex-wrap items-center
+                        justify-end gap-2
                     "
                 >
-                    ${escapeHtml(
-                        translate(
-                            'tenants.tenant_statement'
+                    ${
+                        browserCan(
+                            'manage_finance'
                         )
-                    )}
-                </a>
+                            ? renderTenantTransactionActions()
+                            : ''
+                    }
+
+                    <a
+                        href="/reports?type=tenant&tenant_id=${encodeURIComponent(
+                            tenant.id
+                        )}"
+                        class="
+                            inline-flex items-center
+                            rounded-lg border
+                            border-slate-200
+                            bg-white px-3.5 py-2.5
+                            text-sm font-medium
+                            text-slate-700
+                            transition
+                            hover:bg-slate-50
+                        "
+                    >
+                        ${escapeHtml(
+                            translate(
+                                'tenants.tenant_statement'
+                            )
+                        )}
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -835,6 +895,7 @@ function renderTenantDetail(
 
     initializeTenantInvoiceActions();
     initializeTenantReceiptActions();
+    initializeTenantTransactionActionButtons();
 }
 
 
@@ -3192,4 +3253,2731 @@ function capitalizeWords(
                 + word.slice(1)
         )
         .join(' ');
+}
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.5 Tenant Transaction UI
+|--------------------------------------------------------------------------
+|
+| Tenant is now the contextual operational location for Tenant money.
+|
+| Primary actions:
+| - Deposit
+| - Withdrawal
+| - Adjustment
+|
+| This Step 5C layer intentionally performs no POST mutations yet. It owns
+| selection, eligibility, authoritative balance display and confirmation
+| previews. Step 5D will wire the already-tested backend endpoints.
+|
+*/
+
+/**
+ * Render exactly the three frozen V1.0.5 Tenant transaction actions.
+ *
+ * @returns {string}
+ */
+function renderTenantTransactionActions() {
+    return `
+        <div
+            id="tenant-transaction-actions"
+            data-requires-capability="manage_finance"
+            class="flex flex-wrap items-center gap-2"
+        >
+            <button
+                type="button"
+                data-tenant-transaction-action="deposit"
+                class="pm-button-primary"
+            >
+                ${escapeHtml(
+                    translate(
+                        'tenants.deposit'
+                    )
+                )}
+            </button>
+
+            <button
+                type="button"
+                data-tenant-transaction-action="withdrawal"
+                class="pm-button-secondary"
+            >
+                ${escapeHtml(
+                    translate(
+                        'tenants.withdrawal'
+                    )
+                )}
+            </button>
+
+            <button
+                type="button"
+                data-tenant-transaction-action="adjustment"
+                class="pm-button-secondary"
+            >
+                ${escapeHtml(
+                    translate(
+                        'tenants.adjustment'
+                    )
+                )}
+            </button>
+        </div>
+    `;
+}
+
+
+/**
+ * Register the dynamically rendered selected-Tenant action buttons.
+ */
+function initializeTenantTransactionActionButtons() {
+    if (
+        ! browserCan(
+            'manage_finance'
+        )
+    ) {
+        return;
+    }
+
+    document
+        .querySelectorAll(
+            '[data-tenant-transaction-action]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        const action =
+                            button.dataset
+                                .tenantTransactionAction;
+
+                        if (
+                            action
+                            === 'deposit'
+                        ) {
+                            await openTenantDepositDrawer();
+
+                            return;
+                        }
+
+                        if (
+                            action
+                            === 'withdrawal'
+                        ) {
+                            await openTenantWithdrawalDrawer();
+
+                            return;
+                        }
+
+                        if (
+                            action
+                            === 'adjustment'
+                        ) {
+                            await openTenantAdjustmentDrawer();
+                        }
+                    }
+                );
+            }
+        );
+}
+
+
+/**
+ * Register static controls belonging to the Blade drawers.
+ */
+function initializeTenantTransactionControls() {
+    if (
+        tenantTransactionControlsInitialized
+    ) {
+        return;
+    }
+
+    tenantTransactionControlsInitialized =
+        true;
+
+    [
+        'deposit',
+        'withdrawal',
+        'adjustment',
+    ].forEach(
+        (action) => {
+            document
+                .getElementById(
+                    `tenant-${action}-drawer-close`
+                )
+                ?.addEventListener(
+                    'click',
+                    () => {
+                        closeTenantTransactionDrawer(
+                            `tenant-${action}-drawer`
+                        );
+                    }
+                );
+
+            document
+                .getElementById(
+                    `tenant-${action}-drawer-backdrop`
+                )
+                ?.addEventListener(
+                    'click',
+                    () => {
+                        closeTenantTransactionDrawer(
+                            `tenant-${action}-drawer`
+                        );
+                    }
+                );
+
+            document
+                .querySelectorAll(
+                    `[data-close-tenant-transaction="tenant-${action}-drawer"]`
+                )
+                .forEach(
+                    (button) => {
+                        button.addEventListener(
+                            'click',
+                            () => {
+                                closeTenantTransactionDrawer(
+                                    `tenant-${action}-drawer`
+                                );
+                            }
+                        );
+                    }
+                );
+        }
+    );
+
+    document
+        .getElementById(
+            'tenant-deposit-lease'
+        )
+        ?.addEventListener(
+            'change',
+            async (event) => {
+                await populateDepositDestinations(
+                    event.target.value
+                );
+
+                setTenantTransactionContext(
+                    'tenant-deposit'
+                );
+            }
+        );
+
+    document
+        .getElementById(
+            'tenant-withdrawal-lease'
+        )
+        ?.addEventListener(
+            'change',
+            async (event) => {
+                await populateWithdrawalAccounts(
+                    event.target.value
+                );
+
+                setTenantTransactionContext(
+                    'tenant-withdrawal'
+                );
+            }
+        );
+
+    document
+        .getElementById(
+            'tenant-deposit-account'
+        )
+        ?.addEventListener(
+            'change',
+            () => {
+                updateTenantDepositPreview();
+
+                setTenantTransactionContext(
+                    'tenant-deposit'
+                );
+            }
+        );
+
+    document
+        .getElementById(
+            'tenant-deposit-amount'
+        )
+        ?.addEventListener(
+            'input',
+            updateTenantDepositPreview
+        );
+
+    document
+        .getElementById(
+            'tenant-deposit-method'
+        )
+        ?.addEventListener(
+            'change',
+            updateTenantDepositCashReceiver
+        );
+
+    document
+        .getElementById(
+            'tenant-withdrawal-method'
+        )
+        ?.addEventListener(
+            'change',
+            updateTenantWithdrawalCashReceiver
+        );
+
+    document
+        .getElementById(
+            'tenant-withdrawal-account'
+        )
+        ?.addEventListener(
+            'change',
+            () => {
+                updateTenantWithdrawalPreview();
+
+                setTenantTransactionContext(
+                    'tenant-withdrawal'
+                );
+            }
+        );
+
+    document
+        .getElementById(
+            'tenant-withdrawal-amount'
+        )
+        ?.addEventListener(
+            'input',
+            updateTenantWithdrawalPreview
+        );
+
+    document
+        .getElementById(
+            'tenant-adjustment-account'
+        )
+        ?.addEventListener(
+            'change',
+            () => {
+                updateTenantAdjustmentPreview();
+
+                setTenantTransactionContext(
+                    'tenant-adjustment'
+                );
+            }
+        );
+
+    document
+        .getElementById(
+            'tenant-adjustment-corrected-balance'
+        )
+        ?.addEventListener(
+            'input',
+            updateTenantAdjustmentPreview
+        );
+
+    document
+        .getElementById(
+            'tenant-deposit-form'
+        )
+        ?.addEventListener(
+            'submit',
+            submitTenantDeposit
+        );
+
+    document
+        .getElementById(
+            'tenant-withdrawal-form'
+        )
+        ?.addEventListener(
+            'submit',
+            submitTenantWithdrawal
+        );
+
+    document
+        .getElementById(
+            'tenant-adjustment-form'
+        )
+        ?.addEventListener(
+            'submit',
+            submitTenantAdjustment
+        );
+
+    document.addEventListener(
+        'keydown',
+        (event) => {
+            if (
+                event.key
+                !== 'Escape'
+            ) {
+                return;
+            }
+
+            document
+                .querySelectorAll(
+                    '#tenant-deposit-drawer.pm-drawer-active, '
+                    + '#tenant-withdrawal-drawer.pm-drawer-active, '
+                    + '#tenant-adjustment-drawer.pm-drawer-active'
+                )
+                .forEach(
+                    (drawer) => {
+                        closeTenantTransactionDrawer(
+                            drawer.id
+                        );
+                    }
+                );
+        }
+    );
+}
+
+
+/**
+ * Require an operationally selected Tenant before opening a mutation drawer.
+ *
+ * @returns {boolean}
+ */
+function hasSelectedTenantTransactionContext() {
+    if (
+        ! selectedTenant
+        || ! selectedTenantId
+    ) {
+        showTenantError(
+            translate(
+                'tenants.no_tenant_available'
+            )
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
+
+/**
+ * Open the Deposit drawer.
+ */
+async function openTenantDepositDrawer() {
+    if (
+        ! hasSelectedTenantTransactionContext()
+    ) {
+        return;
+    }
+
+    resetTenantDepositDrawer();
+
+    populateTenantLeaseSelect(
+        'tenant-deposit-lease'
+    );
+
+    setTenantTransactionContext(
+        'tenant-deposit'
+    );
+
+    setTenantTransactionToday(
+        'tenant-deposit-date'
+    );
+
+    updateTenantDepositCashReceiver();
+
+    openTenantTransactionDrawer(
+        'tenant-deposit-drawer'
+    );
+}
+
+
+/**
+ * Open the Withdrawal drawer.
+ */
+async function openTenantWithdrawalDrawer() {
+    if (
+        ! hasSelectedTenantTransactionContext()
+    ) {
+        return;
+    }
+
+    resetTenantWithdrawalDrawer();
+
+    populateTenantLeaseSelect(
+        'tenant-withdrawal-lease'
+    );
+
+    setTenantTransactionContext(
+        'tenant-withdrawal'
+    );
+
+    setTenantTransactionToday(
+        'tenant-withdrawal-date'
+    );
+
+    updateTenantWithdrawalCashReceiver();
+
+    openTenantTransactionDrawer(
+        'tenant-withdrawal-drawer'
+    );
+}
+
+
+/**
+ * Open the Adjustment drawer.
+ *
+ * Adjustment itself is not presented as Lease-first. The account selector
+ * contains every actual Tenant fund account belonging to this Tenant, with
+ * Lease / property context included in each label.
+ */
+async function openTenantAdjustmentDrawer() {
+    if (
+        ! hasSelectedTenantTransactionContext()
+    ) {
+        return;
+    }
+
+    resetTenantAdjustmentDrawer();
+
+    setTenantTransactionContext(
+        'tenant-adjustment'
+    );
+
+    openTenantTransactionDrawer(
+        'tenant-adjustment-drawer'
+    );
+
+    await populateTenantAdjustmentAccounts();
+}
+
+
+/**
+ * Populate one Deposit/Withdrawal Lease selector.
+ *
+ * Draft Leases are excluded because new money operations cannot be posted
+ * against them under the existing validation contract.
+ */
+function populateTenantLeaseSelect(
+    selectId
+) {
+    const select =
+        document.getElementById(
+            selectId
+        );
+
+    if (! select) {
+        return;
+    }
+
+    select.innerHTML =
+        `<option value="">${escapeHtml(
+            translate(
+                'tenants.select_lease'
+            )
+        )}</option>`;
+
+    selectedTenantLeases
+        .filter(
+            (lease) =>
+                lease?.status
+                !== 'draft'
+        )
+        .forEach(
+            (lease) => {
+                const option =
+                    document.createElement(
+                        'option'
+                    );
+
+                option.value =
+                    String(
+                        lease.id
+                    );
+
+                option.textContent =
+                    tenantLeaseLabel(
+                        lease
+                    );
+
+                select.appendChild(
+                    option
+                );
+            }
+        );
+}
+
+
+/**
+ * Fetch and cache authoritative Lease detail.
+ *
+ * @param {number|string} leaseId
+ * @returns {Promise<object|null>}
+ */
+async function tenantLeaseDetail(
+    leaseId
+) {
+    const numericId =
+        Number(
+            leaseId
+        );
+
+    if (
+        ! Number.isInteger(
+            numericId
+        )
+        || numericId <= 0
+    ) {
+        return null;
+    }
+
+    if (
+        selectedTenantLeaseDetails.has(
+            numericId
+        )
+    ) {
+        return selectedTenantLeaseDetails.get(
+            numericId
+        );
+    }
+
+    const response =
+        await apiRequest(
+            `/api/leases/${encodeURIComponent(
+                numericId
+            )}`
+        );
+
+    const lease =
+        await parseJsonResponse(
+            response
+        );
+
+    if (
+        Number(
+            lease?.tenant_id
+            ?? lease?.tenant?.id
+        )
+        !== Number(
+            selectedTenantId
+        )
+    ) {
+        throw new Error(
+            translate(
+                'tenants.unable_to_load_tenant'
+            )
+        );
+    }
+
+    selectedTenantLeaseDetails.set(
+        numericId,
+        lease
+    );
+
+    return lease;
+}
+
+
+/**
+ * Populate Deposit destination choices for one Lease.
+ *
+ * Rent Payment uses /api/payments and FIFO.
+ * The other three destinations use the Tenant Fund Deposit endpoint.
+ */
+async function populateDepositDestinations(
+    leaseId
+) {
+    const select =
+        document.getElementById(
+            'tenant-deposit-account'
+        );
+
+    if (! select) {
+        return;
+    }
+
+    resetTransactionSelect(
+        select,
+        translate(
+            'tenants.select_lease_first'
+        )
+    );
+
+    if (! leaseId) {
+        updateTenantDepositPreview();
+
+        return;
+    }
+
+    try {
+        const lease =
+            await tenantLeaseDetail(
+                leaseId
+            );
+
+        select.disabled =
+            false;
+
+        select.innerHTML = '';
+
+        /*
+         * Rent Payment is displayed only when this Lease actually has an
+         * outstanding Invoice. The backend Payment allocation remains FIFO.
+         */
+        const invoices =
+            Array.isArray(
+                lease?.invoices
+            )
+                ? lease.invoices
+                : [];
+
+        const hasOutstandingInvoice =
+            invoices.some(
+                (invoice) =>
+                    Number(
+                        invoice?.outstanding_amount
+                        ?? invoice?.outstanding
+                        ?? 0
+                    ) > 0
+                    || [
+                        'issued',
+                        'partial',
+                        'overdue',
+                    ].includes(
+                        String(
+                            invoice?.status
+                            ?? ''
+                        )
+                    )
+            );
+
+        if (hasOutstandingInvoice) {
+            appendTransactionOption(
+                select,
+                'rent_payment',
+                translate(
+                    'tenants.rent_payment'
+                ),
+                0,
+                {
+                    kind:
+                        'rent_payment',
+                }
+            );
+        }
+
+        const accounts =
+            tenantFundAccounts(
+                lease
+            );
+
+        accounts
+            .filter(
+                (account) =>
+                    [
+                        'rent_reserve',
+                        'consumable_advance',
+                        'security_deposit',
+                    ].includes(
+                        account.type
+                    )
+            )
+            .forEach(
+                (account) => {
+                    appendTransactionOption(
+                        select,
+                        account.type,
+                        tenantFundAccountLabel(
+                            account
+                        ),
+                        tenantFundBalance(
+                            account
+                        ),
+                        {
+                            kind:
+                                'fund',
+                            accountId:
+                                account.id,
+                        }
+                    );
+                }
+            );
+
+        if (
+            select.options.length
+            === 0
+        ) {
+            resetTransactionSelect(
+                select,
+                translate(
+                    'tenants.no_eligible_accounts'
+                )
+            );
+        }
+
+        updateTenantDepositPreview();
+    } catch (error) {
+        showTenantTransactionError(
+            'tenant-deposit-error',
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'tenants.unable_to_load_accounts'
+                )
+        );
+    }
+}
+
+
+/**
+ * Populate eligible Withdrawal accounts for a Lease.
+ *
+ * Normal withdrawal must never create a negative fund balance, therefore
+ * only positive-balance accounts are offered.
+ */
+async function populateWithdrawalAccounts(
+    leaseId
+) {
+    const select =
+        document.getElementById(
+            'tenant-withdrawal-account'
+        );
+
+    if (! select) {
+        return;
+    }
+
+    resetTransactionSelect(
+        select,
+        translate(
+            'tenants.select_lease_first'
+        )
+    );
+
+    if (! leaseId) {
+        updateTenantWithdrawalPreview();
+
+        return;
+    }
+
+    try {
+        const lease =
+            await tenantLeaseDetail(
+                leaseId
+            );
+
+        const accounts =
+            tenantFundAccounts(
+                lease
+            )
+                .filter(
+                    (account) =>
+                        [
+                            'rent_reserve',
+                            'consumable_advance',
+                        ].includes(
+                            account.type
+                        )
+                        && tenantFundBalance(
+                            account
+                        ) > 0
+                );
+
+        select.innerHTML = '';
+
+        accounts.forEach(
+            (account) => {
+                appendTransactionOption(
+                    select,
+                    account.id,
+                    tenantFundAccountLabel(
+                        account
+                    ),
+                    tenantFundBalance(
+                        account
+                    ),
+                    {
+                        kind:
+                            'fund',
+                        accountId:
+                            account.id,
+                    }
+                );
+            }
+        );
+
+        if (accounts.length === 0) {
+            resetTransactionSelect(
+                select,
+                translate(
+                    'tenants.no_withdrawable_funds'
+                )
+            );
+
+            return;
+        }
+
+        select.disabled =
+            false;
+
+        updateTenantWithdrawalPreview();
+    } catch (error) {
+        showTenantTransactionError(
+            'tenant-withdrawal-error',
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'tenants.unable_to_load_accounts'
+                )
+        );
+    }
+}
+
+
+/**
+ * Load all actual fund accounts belonging to the selected Tenant for
+ * Adjustment. Each account retains its Lease context.
+ */
+async function populateTenantAdjustmentAccounts() {
+    const select =
+        document.getElementById(
+            'tenant-adjustment-account'
+        );
+
+    if (! select) {
+        return;
+    }
+
+    select.disabled =
+        true;
+
+    select.innerHTML =
+        `<option value="">${escapeHtml(
+            translate(
+                'tenants.select_account'
+            )
+        )}</option>`;
+
+    try {
+        for (
+            const summaryLease
+            of selectedTenantLeases
+        ) {
+            const lease =
+                await tenantLeaseDetail(
+                    summaryLease.id
+                );
+
+            tenantFundAccounts(
+                lease
+            ).forEach(
+                (account) => {
+                    const option =
+                        document.createElement(
+                            'option'
+                        );
+
+                    option.value =
+                        String(
+                            account.id
+                        );
+
+                    option.dataset.balance =
+                        String(
+                            tenantFundBalance(
+                                account
+                            )
+                        );
+
+                    option.dataset.leaseId =
+                        String(
+                            lease.id
+                        );
+
+                    option.dataset.fundType =
+                        String(
+                            account.type
+                            ?? ''
+                        );
+
+                    option.textContent =
+                        `${tenantFundAccountLabel(
+                            account
+                        )} · ${tenantLeaseLabel(
+                            lease
+                        )}`;
+
+                    select.appendChild(
+                        option
+                    );
+                }
+            );
+        }
+
+        select.disabled =
+            select.options.length
+            <= 1;
+
+        updateTenantAdjustmentPreview();
+    } catch (error) {
+        showTenantTransactionError(
+            'tenant-adjustment-error',
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'tenants.unable_to_load_accounts'
+                )
+        );
+    }
+}
+
+
+/**
+ * Return actual Tenant fund accounts from Lease detail.
+ *
+ * @param {object} lease
+ * @returns {Array<object>}
+ */
+function tenantFundAccounts(
+    lease
+) {
+    return Array.isArray(
+        lease?.tenant_fund_accounts
+    )
+        ? lease.tenant_fund_accounts
+        : [];
+}
+
+
+/**
+ * Resolve an authoritative account balance already serialized by the API.
+ *
+ * @param {object} account
+ * @returns {number}
+ */
+function tenantFundBalance(
+    account
+) {
+    return Number(
+        account?.balance
+        ?? 0
+    );
+}
+
+
+/**
+ * Human-readable account option including current balance.
+ *
+ * @param {object} account
+ * @returns {string}
+ */
+function tenantFundAccountLabel(
+    account
+) {
+    return `${tenantFundTypeLabel(
+        account?.type
+    )} — ${formatCurrency(
+        tenantFundBalance(
+            account
+        )
+    )}`;
+}
+
+
+/**
+ * Human-readable fund type.
+ *
+ * @param {string} type
+ * @returns {string}
+ */
+function tenantFundTypeLabel(
+    type
+) {
+    const key = {
+        rent_reserve:
+            'tenants.rent_reserve',
+
+        consumable_advance:
+            'tenants.consumable_advance',
+
+        security_deposit:
+            'tenants.security_deposit',
+    }[
+        String(
+            type
+            ?? ''
+        )
+    ];
+
+    return key
+        ? translate(key)
+        : capitalizeWords(
+            type
+        );
+}
+
+
+/**
+ * Lease option label containing Building / Unit and status where available.
+ *
+ * @param {object} lease
+ * @returns {string}
+ */
+function tenantLeaseLabel(
+    lease
+) {
+    const building =
+        lease?.unit?.building?.name
+        ?? lease?.building?.name
+        ?? '';
+
+    const unit =
+        lease?.unit?.name
+        ?? '';
+
+    const reference =
+        lease?.reference
+        ?? lease?.lease_reference
+        ?? `#${lease?.id ?? ''}`;
+
+    return [
+        reference,
+        building,
+        unit,
+    ]
+        .filter(Boolean)
+        .join(' · ');
+}
+
+
+/**
+ * Append one selectable transaction account/destination.
+ */
+function appendTransactionOption(
+    select,
+    value,
+    label,
+    balance,
+    metadata = {}
+) {
+    const option =
+        document.createElement(
+            'option'
+        );
+
+    option.value =
+        String(
+            value
+        );
+
+    option.textContent =
+        label;
+
+    option.dataset.balance =
+        String(
+            Number(
+                balance
+                ?? 0
+            )
+        );
+
+    Object.entries(
+        metadata
+    ).forEach(
+        ([key, metadataValue]) => {
+            if (
+                metadataValue
+                === null
+                || metadataValue
+                === undefined
+            ) {
+                return;
+            }
+
+            option.dataset[key] =
+                String(
+                    metadataValue
+                );
+        }
+    );
+
+    select.appendChild(
+        option
+    );
+}
+
+
+/**
+ * Restore a transaction selector to a disabled placeholder.
+ */
+function resetTransactionSelect(
+    select,
+    label
+) {
+    select.innerHTML =
+        `<option value="">${escapeHtml(
+            label
+        )}</option>`;
+
+    select.disabled =
+        true;
+}
+
+
+/**
+ * Update Deposit Current → Amount → Resulting preview.
+ */
+function updateTenantDepositPreview() {
+    const destination =
+        selectedTransactionOption(
+            'tenant-deposit-account'
+        );
+
+    const amount =
+        positiveIntegerInput(
+            'tenant-deposit-amount'
+        );
+
+    /*
+     * Rent Payment is not a persistent fund balance. For that destination,
+     * the preview therefore presents transaction amount rather than inventing
+     * a browser-side receivable balance.
+     */
+    const rentPayment =
+        destination?.dataset.kind
+        === 'rent_payment';
+
+    const current =
+        rentPayment
+            ? null
+            : selectedOptionBalance(
+                destination
+            );
+
+    setCurrencyPreview(
+        'tenant-deposit-current-balance',
+        current
+    );
+
+    setCurrencyPreview(
+        'tenant-deposit-preview-amount',
+        amount
+    );
+
+    setCurrencyPreview(
+        'tenant-deposit-resulting-balance',
+        current === null
+            ? null
+            : current + amount
+    );
+}
+
+
+/**
+ * Update Withdrawal Current → Amount → Resulting preview.
+ */
+function updateTenantWithdrawalPreview() {
+    const account =
+        selectedTransactionOption(
+            'tenant-withdrawal-account'
+        );
+
+    const current =
+        selectedOptionBalance(
+            account
+        );
+
+    const amount =
+        positiveIntegerInput(
+            'tenant-withdrawal-amount'
+        );
+
+    setCurrencyPreview(
+        'tenant-withdrawal-current-balance',
+        current
+    );
+
+    setCurrencyPreview(
+        'tenant-withdrawal-preview-amount',
+        amount
+    );
+
+    setCurrencyPreview(
+        'tenant-withdrawal-resulting-balance',
+        current === null
+            ? null
+            : current - amount
+    );
+
+    const input =
+        document.getElementById(
+            'tenant-withdrawal-amount'
+        );
+
+    if (
+        input
+        && current !== null
+    ) {
+        input.max =
+            String(
+                Math.max(
+                    0,
+                    current
+                )
+            );
+    }
+}
+
+
+/**
+ * Update Adjustment Current → Correct → Difference preview.
+ */
+function updateTenantAdjustmentPreview() {
+    const account =
+        selectedTransactionOption(
+            'tenant-adjustment-account'
+        );
+
+    const current =
+        selectedOptionBalance(
+            account
+        );
+
+    const correctedInput =
+        document.getElementById(
+            'tenant-adjustment-corrected-balance'
+        );
+
+    const corrected =
+        correctedInput?.value === ''
+            ? null
+            : Number(
+                correctedInput?.value
+            );
+
+    const difference =
+        (
+            current === null
+            || corrected === null
+            || ! Number.isFinite(
+                corrected
+            )
+        )
+            ? null
+            : corrected - current;
+
+    setCurrencyPreview(
+        'tenant-adjustment-current-balance',
+        current
+    );
+
+    setCurrencyPreview(
+        'tenant-adjustment-preview-correct',
+        corrected
+    );
+
+    setCurrencyPreview(
+        'tenant-adjustment-difference',
+        difference
+    );
+}
+
+
+/**
+ * Cash Receiver is displayed only for Cash Deposit.
+ */
+function updateTenantTransactionCashReceiver(action) {
+    const wrapper =
+        document.getElementById(
+            'tenant-deposit-cash-receiver-wrapper'
+        );
+
+    const input =
+        document.getElementById(
+            `tenant-${action}-cash-receiver`
+        );
+
+    const method =
+        document.getElementById(
+            `tenant-${action}-method`
+        )?.value;
+
+    if (
+        ! wrapper
+        || ! input
+    ) {
+        return;
+    }
+
+    const cash =
+        method === 'cash';
+
+    wrapper.classList.toggle(
+        'hidden',
+        ! cash
+    );
+
+    input.value =
+        cash
+            ? String(
+                document.body.dataset
+                    .currentUserName
+                ?? ''
+            )
+            : '';
+}
+
+
+/**
+ * Refresh Deposit Cash Receiver visibility.
+ */
+function updateTenantDepositCashReceiver() {
+    updateTenantTransactionCashReceiver(
+        'deposit'
+    );
+}
+
+
+/**
+ * Refresh Withdrawal Cash Receiver visibility.
+ */
+function updateTenantWithdrawalCashReceiver() {
+    updateTenantTransactionCashReceiver(
+        'withdrawal'
+    );
+}
+
+
+/**
+ * Selected option or null when still on placeholder.
+ */
+function selectedTransactionOption(
+    selectId
+) {
+    const select =
+        document.getElementById(
+            selectId
+        );
+
+    if (
+        ! select
+        || ! select.value
+    ) {
+        return null;
+    }
+
+    return select.options[
+        select.selectedIndex
+    ]
+    ?? null;
+}
+
+
+/**
+ * Balance serialized into a transaction option.
+ */
+function selectedOptionBalance(
+    option
+) {
+    if (! option) {
+        return null;
+    }
+
+    const balance =
+        Number(
+            option.dataset.balance
+        );
+
+    return Number.isFinite(
+        balance
+    )
+        ? balance
+        : null;
+}
+
+
+/**
+ * Read positive integer transaction amount for preview.
+ */
+function positiveIntegerInput(
+    inputId
+) {
+    const value =
+        Number(
+            document
+                .getElementById(
+                    inputId
+                )
+                ?.value
+            ?? 0
+        );
+
+    return (
+        Number.isInteger(
+            value
+        )
+        && value > 0
+    )
+        ? value
+        : 0;
+}
+
+
+/**
+ * Currency preview helper.
+ */
+function setCurrencyPreview(
+    elementId,
+    amount
+) {
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+    if (! element) {
+        return;
+    }
+
+    element.textContent =
+        (
+            amount === null
+            || amount === undefined
+            || ! Number.isFinite(
+                Number(
+                    amount
+                )
+            )
+        )
+            ? '—'
+            : formatCurrency(
+                Number(
+                    amount
+                )
+            );
+}
+
+
+/**
+ * Fill drawer identifying context.
+ */
+function setTenantTransactionContext(
+    prefix
+) {
+    const tenantName =
+        tenantDisplayName(
+            selectedTenant
+        );
+
+    setElementText(
+        `${prefix}-tenant-context`,
+        tenantName
+    );
+
+    setElementText(
+        `${prefix}-property-context`,
+        translate(
+            'tenants.select_lease_context'
+        )
+    );
+}
+
+
+/**
+ * Today in Patrimoine DD-MM-YYYY display form.
+ */
+function setTenantTransactionToday(
+    inputId
+) {
+    const input =
+        document.getElementById(
+            inputId
+        );
+
+    if (! input) {
+        return;
+    }
+
+    const now =
+        new Date();
+
+    const iso =
+        [
+            now.getFullYear(),
+            String(
+                now.getMonth() + 1
+            ).padStart(
+                2,
+                '0'
+            ),
+            String(
+                now.getDate()
+            ).padStart(
+                2,
+                '0'
+            ),
+        ].join('-');
+
+    input.value =
+        dateForDisplay(
+            iso
+        );
+}
+
+
+/**
+ * Reset Deposit controls.
+ */
+function resetTenantDepositDrawer() {
+    document
+        .getElementById(
+            'tenant-deposit-form'
+        )
+        ?.reset();
+
+    hideTenantTransactionError(
+        'tenant-deposit-error'
+    );
+
+    resetTransactionSelect(
+        document.getElementById(
+            'tenant-deposit-account'
+        ),
+        translate(
+            'tenants.select_lease_first'
+        )
+    );
+
+    updateTenantDepositPreview();
+}
+
+
+/**
+ * Reset Withdrawal controls.
+ */
+function resetTenantWithdrawalDrawer() {
+    document
+        .getElementById(
+            'tenant-withdrawal-form'
+        )
+        ?.reset();
+
+    hideTenantTransactionError(
+        'tenant-withdrawal-error'
+    );
+
+    resetTransactionSelect(
+        document.getElementById(
+            'tenant-withdrawal-account'
+        ),
+        translate(
+            'tenants.select_lease_first'
+        )
+    );
+
+    updateTenantWithdrawalPreview();
+}
+
+
+/**
+ * Reset Adjustment controls.
+ */
+function resetTenantAdjustmentDrawer() {
+    document
+        .getElementById(
+            'tenant-adjustment-form'
+        )
+        ?.reset();
+
+    hideTenantTransactionError(
+        'tenant-adjustment-error'
+    );
+
+    const select =
+        document.getElementById(
+            'tenant-adjustment-account'
+        );
+
+    if (select) {
+        select.innerHTML =
+            `<option value="">${escapeHtml(
+                translate(
+                    'tenants.select_account'
+                )
+            )}</option>`;
+
+        select.disabled =
+            true;
+    }
+
+    updateTenantAdjustmentPreview();
+}
+
+
+/**
+ * Open a standard V1.0.4 drawer.
+ */
+function openTenantTransactionDrawer(
+    id
+) {
+    const drawer =
+        document.getElementById(
+            id
+        );
+
+    if (! drawer) {
+        return;
+    }
+
+    const oldTimer =
+        tenantTransactionDrawerTimers.get(
+            id
+        );
+
+    if (oldTimer) {
+        window.clearTimeout(
+            oldTimer
+        );
+
+        tenantTransactionDrawerTimers.delete(
+            id
+        );
+    }
+
+    drawer.classList.remove(
+        'pm-drawer-open',
+        'pm-drawer-closing'
+    );
+
+    drawer.removeAttribute(
+        'hidden'
+    );
+
+    drawer.classList.add(
+        'pm-drawer-active'
+    );
+
+    drawer.setAttribute(
+        'aria-hidden',
+        'false'
+    );
+
+    document.body.classList.add(
+        'overflow-hidden'
+    );
+
+    const panel =
+        drawer.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    if (panel) {
+        void panel.getBoundingClientRect();
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    drawer.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
+    );
+}
+
+
+/**
+ * Close a Tenant transaction drawer.
+ */
+function closeTenantTransactionDrawer(
+    id
+) {
+    const drawer =
+        document.getElementById(
+            id
+        );
+
+    if (
+        ! drawer
+        || ! drawer.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
+        return;
+    }
+
+    drawer.classList.remove(
+        'pm-drawer-open'
+    );
+
+    drawer.classList.add(
+        'pm-drawer-closing'
+    );
+
+    drawer.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+
+    const oldTimer =
+        tenantTransactionDrawerTimers.get(
+            id
+        );
+
+    if (oldTimer) {
+        window.clearTimeout(
+            oldTimer
+        );
+    }
+
+    const timer =
+        window.setTimeout(
+            () => {
+                drawer.classList.remove(
+                    'pm-drawer-active',
+                    'pm-drawer-closing'
+                );
+
+                drawer.setAttribute(
+                    'hidden',
+                    ''
+                );
+
+                tenantTransactionDrawerTimers.delete(
+                    id
+                );
+
+                const anotherDrawerOpen =
+                    document.querySelector(
+                        '.pm-drawer.pm-drawer-active'
+                    );
+
+                if (! anotherDrawerOpen) {
+                    document.body.classList.remove(
+                        'overflow-hidden'
+                    );
+                }
+            },
+            850
+        );
+
+    tenantTransactionDrawerTimers.set(
+        id,
+        timer
+    );
+}
+
+
+/**
+ * Drawer-local financial error.
+ */
+function showTenantTransactionError(
+    id,
+    message
+) {
+    const element =
+        document.getElementById(
+            id
+        );
+
+    if (! element) {
+        return;
+    }
+
+    element.textContent =
+        message;
+
+    element.classList.remove(
+        'hidden'
+    );
+}
+
+
+/**
+ * Clear drawer-local financial error.
+ */
+function hideTenantTransactionError(
+    id
+) {
+    const element =
+        document.getElementById(
+            id
+        );
+
+    if (! element) {
+        return;
+    }
+
+    element.textContent =
+        '';
+
+    element.classList.add(
+        'hidden'
+    );
+}
+
+
+/**
+ * Safe text helper.
+ */
+function setElementText(
+    id,
+    value
+) {
+    const element =
+        document.getElementById(
+            id
+        );
+
+    if (element) {
+        element.textContent =
+            value ?? '';
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.5 Tenant Transaction Submission
+|--------------------------------------------------------------------------
+|
+| This layer maps the frozen Tenant transaction drawers onto already-tested
+| backend financial boundaries.
+|
+| No accounting calculations are duplicated here:
+|
+| Rent Payment
+|     POST /api/payments
+|     Existing PaymentAllocationService owns FIFO.
+|
+| Held-fund Deposit
+|     POST /api/tenant-fund-deposits
+|     Entire amount is classified directly into the selected fund.
+|
+| Withdrawal
+|     POST /api/tenant-fund-withdrawals
+|     Backend enforces availability and creates Withdrawal Receipt.
+|
+| Adjustment
+|     POST /api/tenant-funds/{account}/adjustments
+|     Backend calculates difference, journals, logs and creates Voucher.
+|
+*/
+
+
+/**
+ * Submit Deposit.
+ *
+ * Deposit has two intentionally different backend boundaries:
+ *
+ * - Rent Payment -> ordinary Payment / FIFO;
+ * - Lease fund -> direct Tenant Fund Deposit.
+ *
+ * @param {SubmitEvent} event
+ */
+async function submitTenantDeposit(
+    event
+) {
+    event.preventDefault();
+
+    hideTenantTransactionError(
+        'tenant-deposit-error'
+    );
+
+    const leaseId =
+        requiredPositiveIntegerValue(
+            'tenant-deposit-lease'
+        );
+
+    const destination =
+        selectedTransactionOption(
+            'tenant-deposit-account'
+        );
+
+    const amount =
+        requiredPositiveIntegerValue(
+            'tenant-deposit-amount'
+        );
+
+    const transactionDate =
+        transactionDateForApi(
+            'tenant-deposit-date'
+        );
+
+    const paymentMethod =
+        String(
+            document
+                .getElementById(
+                    'tenant-deposit-method'
+                )
+                ?.value
+            ?? ''
+        );
+
+    const reference =
+        nullableTrimmedValue(
+            'tenant-deposit-reference'
+        );
+
+    const notes =
+        nullableTrimmedValue(
+            'tenant-deposit-notes'
+        );
+
+    if (
+        ! leaseId
+        || ! destination
+        || ! amount
+        || ! transactionDate
+        || ! [
+            'cash',
+            'bank_transfer',
+            'momo',
+        ].includes(
+            paymentMethod
+        )
+    ) {
+        showTenantTransactionError(
+            'tenant-deposit-error',
+            translate(
+                'tenants.transaction_required_fields'
+            )
+        );
+
+        return;
+    }
+
+    const submitButton =
+        document.getElementById(
+            'tenant-deposit-submit'
+        );
+
+    await withTenantTransactionSubmitLock(
+        submitButton,
+        async () => {
+            try {
+                let result;
+
+                if (
+                    destination.dataset.kind
+                    === 'rent_payment'
+                ) {
+                    result =
+                        await postTenantTransaction(
+                            '/api/payments',
+                            {
+                                lease_id:
+                                    leaseId,
+
+                                amount,
+
+                                payment_date:
+                                    transactionDate,
+
+                                payment_method:
+                                    paymentMethod,
+
+                                reference,
+
+                                notes,
+                            }
+                        );
+                } else {
+                    const fundType =
+                        String(
+                            destination.value
+                            ?? ''
+                        );
+
+                    if (
+                        ! [
+                            'rent_reserve',
+                            'consumable_advance',
+                            'security_deposit',
+                        ].includes(
+                            fundType
+                        )
+                    ) {
+                        throw new Error(
+                            translate(
+                                'tenants.invalid_account'
+                            )
+                        );
+                    }
+
+                    result =
+                        await postTenantTransaction(
+                            '/api/tenant-fund-deposits',
+                            {
+                                lease_id:
+                                    leaseId,
+
+                                fund_type:
+                                    fundType,
+
+                                amount,
+
+                                transaction_date:
+                                    transactionDate,
+
+                                payment_method:
+                                    paymentMethod,
+
+                                reference,
+
+                                notes,
+                            }
+                        );
+                }
+
+                closeTenantTransactionDrawer(
+                    'tenant-deposit-drawer'
+                );
+
+                await refreshSelectedTenantAfterTransaction();
+
+                showTenantTransactionSuccess(
+                    translate(
+                        destination.dataset.kind
+                        === 'rent_payment'
+                            ? 'tenants.rent_payment_recorded'
+                            : 'tenants.deposit_recorded'
+                    ),
+                    tenantPaymentDocumentEndpoint(
+                        result
+                    )
+                );
+            } catch (error) {
+                showTenantTransactionError(
+                    'tenant-deposit-error',
+                    tenantTransactionErrorMessage(
+                        error
+                    )
+                );
+            }
+        }
+    );
+}
+
+
+/**
+ * Submit Tenant fund Withdrawal.
+ *
+ * @param {SubmitEvent} event
+ */
+async function submitTenantWithdrawal(
+    event
+) {
+    event.preventDefault();
+
+    hideTenantTransactionError(
+        'tenant-withdrawal-error'
+    );
+
+    const account =
+        selectedTransactionOption(
+            'tenant-withdrawal-account'
+        );
+
+    const accountId =
+        Number(
+            account?.dataset.accountId
+            ?? account?.value
+            ?? 0
+        );
+
+    const amount =
+        requiredPositiveIntegerValue(
+            'tenant-withdrawal-amount'
+        );
+
+    const transactionDate =
+        transactionDateForApi(
+            'tenant-withdrawal-date'
+        );
+
+    const paymentMethod =
+        String(
+            document
+                .getElementById(
+                    'tenant-withdrawal-method'
+                )
+                ?.value
+            ?? ''
+        );
+
+    const reference =
+        nullableTrimmedValue(
+            'tenant-withdrawal-reference'
+        );
+
+    const notes =
+        nullableTrimmedValue(
+            'tenant-withdrawal-notes'
+        );
+
+    const available =
+        selectedOptionBalance(
+            account
+        );
+
+    if (
+        ! Number.isInteger(
+            accountId
+        )
+        || accountId <= 0
+        || ! amount
+        || ! transactionDate
+        || ! [
+            'cash',
+            'bank_transfer',
+            'momo',
+        ].includes(
+            paymentMethod
+        )
+    ) {
+        showTenantTransactionError(
+            'tenant-withdrawal-error',
+            translate(
+                'tenants.transaction_required_fields'
+            )
+        );
+
+        return;
+    }
+
+    /*
+     * Client-side preview guard only.
+     *
+     * The backend remains authoritative and locks/revalidates the account.
+     */
+    if (
+        available !== null
+        && amount > available
+    ) {
+        showTenantTransactionError(
+            'tenant-withdrawal-error',
+            translate(
+                'tenants.withdrawal_exceeds_balance'
+            )
+        );
+
+        return;
+    }
+
+    const submitButton =
+        document.getElementById(
+            'tenant-withdrawal-submit'
+        );
+
+    await withTenantTransactionSubmitLock(
+        submitButton,
+        async () => {
+            try {
+                const result =
+                    await postTenantTransaction(
+                        '/api/tenant-fund-withdrawals',
+                        {
+                            tenant_fund_account_id:
+                                accountId,
+
+                            amount,
+
+                            transaction_date:
+                                transactionDate,
+
+                            payment_method:
+                                paymentMethod,
+
+                            reference,
+
+                            notes,
+                        }
+                    );
+
+                closeTenantTransactionDrawer(
+                    'tenant-withdrawal-drawer'
+                );
+
+                await refreshSelectedTenantAfterTransaction();
+
+                showTenantTransactionSuccess(
+                    translate(
+                        'tenants.withdrawal_recorded'
+                    ),
+                    result
+                        ?.withdrawal_receipt
+                        ?.pdf_endpoint
+                    ?? null
+                );
+            } catch (error) {
+                showTenantTransactionError(
+                    'tenant-withdrawal-error',
+                    tenantTransactionErrorMessage(
+                        error
+                    )
+                );
+            }
+        }
+    );
+}
+
+
+/**
+ * Submit standardized Tenant Adjustment.
+ *
+ * Adjustment has no user-supplied date. The server always uses today.
+ *
+ * @param {SubmitEvent} event
+ */
+async function submitTenantAdjustment(
+    event
+) {
+    event.preventDefault();
+
+    hideTenantTransactionError(
+        'tenant-adjustment-error'
+    );
+
+    const account =
+        selectedTransactionOption(
+            'tenant-adjustment-account'
+        );
+
+    const accountId =
+        Number(
+            account?.value
+            ?? 0
+        );
+
+    const correctedBalance =
+        integerInputValue(
+            'tenant-adjustment-corrected-balance'
+        );
+
+    const reason =
+        nullableTrimmedValue(
+            'tenant-adjustment-reason'
+        );
+
+    const reference =
+        nullableTrimmedValue(
+            'tenant-adjustment-reference'
+        );
+
+    if (
+        ! Number.isInteger(
+            accountId
+        )
+        || accountId <= 0
+        || correctedBalance === null
+        || ! reason
+    ) {
+        showTenantTransactionError(
+            'tenant-adjustment-error',
+            translate(
+                'tenants.adjustment_required_fields'
+            )
+        );
+
+        return;
+    }
+
+    const submitButton =
+        document.getElementById(
+            'tenant-adjustment-submit'
+        );
+
+    await withTenantTransactionSubmitLock(
+        submitButton,
+        async () => {
+            try {
+                const result =
+                    await postTenantTransaction(
+                        `/api/tenant-funds/${encodeURIComponent(
+                            accountId
+                        )}/adjustments`,
+                        {
+                            corrected_balance:
+                                correctedBalance,
+
+                            reason,
+
+                            reference,
+                        }
+                    );
+
+                closeTenantTransactionDrawer(
+                    'tenant-adjustment-drawer'
+                );
+
+                await refreshSelectedTenantAfterTransaction();
+
+                showTenantTransactionSuccess(
+                    translate(
+                        'tenants.adjustment_recorded'
+                    ),
+                    result
+                        ?.adjustment_voucher
+                        ?.pdf_endpoint
+                    ?? null
+                );
+            } catch (error) {
+                showTenantTransactionError(
+                    'tenant-adjustment-error',
+                    tenantTransactionErrorMessage(
+                        error
+                    )
+                );
+            }
+        }
+    );
+}
+
+
+/**
+ * Perform authenticated JSON POST using Patrimoine's central API helper.
+ *
+ * @param {string} endpoint
+ * @param {object} payload
+ * @returns {Promise<any>}
+ */
+async function postTenantTransaction(
+    endpoint,
+    payload
+) {
+    const response =
+        await apiRequest(
+            endpoint,
+            {
+                method:
+                    'POST',
+
+                body:
+                    JSON.stringify(
+                        payload
+                    ),
+            }
+        );
+
+    return parseJsonResponse(
+        response
+    );
+}
+
+
+/**
+ * Refresh all selected Tenant context from authoritative APIs after mutation.
+ */
+async function refreshSelectedTenantAfterTransaction() {
+    const tenantId =
+        selectedTenantId;
+
+    if (! tenantId) {
+        return;
+    }
+
+    /*
+     * Financial account balances and invoices may have changed.
+     * Never retain pre-transaction Lease cache.
+     */
+    selectedTenantLeaseDetails =
+        new Map();
+
+    await selectTenant(
+        tenantId
+    );
+}
+
+
+/**
+ * Prevent accidental duplicate financial submission.
+ *
+ * @param {HTMLButtonElement|null} button
+ * @param {Function} callback
+ */
+async function withTenantTransactionSubmitLock(
+    button,
+    callback
+) {
+    if (
+        button?.disabled
+    ) {
+        return;
+    }
+
+    const previousDisabled =
+        Boolean(
+            button?.disabled
+        );
+
+    if (button) {
+        button.disabled =
+            true;
+
+        button.setAttribute(
+            'aria-busy',
+            'true'
+        );
+    }
+
+    try {
+        await callback();
+    } finally {
+        if (button) {
+            button.disabled =
+                previousDisabled;
+
+            button.removeAttribute(
+                'aria-busy'
+            );
+        }
+    }
+}
+
+
+/**
+ * Convert Patrimoine DD-MM-YYYY input into API YYYY-MM-DD.
+ *
+ * @param {string} inputId
+ * @returns {string|null}
+ */
+function transactionDateForApi(
+    inputId
+) {
+    const value =
+        String(
+            document
+                .getElementById(
+                    inputId
+                )
+                ?.value
+            ?? ''
+        ).trim();
+
+    if (! value) {
+        return null;
+    }
+
+    try {
+        return dateForApi(
+            value
+        );
+    } catch {
+        return null;
+    }
+}
+
+
+/**
+ * Read a positive integer field.
+ *
+ * @param {string} inputId
+ * @returns {number|null}
+ */
+function requiredPositiveIntegerValue(
+    inputId
+) {
+    const value =
+        Number(
+            document
+                .getElementById(
+                    inputId
+                )
+                ?.value
+            ?? ''
+        );
+
+    return (
+        Number.isInteger(
+            value
+        )
+        && value > 0
+    )
+        ? value
+        : null;
+}
+
+
+/**
+ * Read any integer value, including zero and negatives.
+ *
+ * @param {string} inputId
+ * @returns {number|null}
+ */
+function integerInputValue(
+    inputId
+) {
+    const raw =
+        String(
+            document
+                .getElementById(
+                    inputId
+                )
+                ?.value
+            ?? ''
+        ).trim();
+
+    if (raw === '') {
+        return null;
+    }
+
+    const value =
+        Number(
+            raw
+        );
+
+    return Number.isInteger(
+        value
+    )
+        ? value
+        : null;
+}
+
+
+/**
+ * Trim optional form value.
+ *
+ * @param {string} inputId
+ * @returns {string|null}
+ */
+function nullableTrimmedValue(
+    inputId
+) {
+    const value =
+        String(
+            document
+                .getElementById(
+                    inputId
+                )
+                ?.value
+            ?? ''
+        ).trim();
+
+    return value === ''
+        ? null
+        : value;
+}
+
+
+/**
+ * Normalize backend/browser exception for drawer presentation.
+ *
+ * parseJsonResponse already extracts Laravel validation messages where
+ * possible, therefore preserving the server message is preferred.
+ *
+ * @param {unknown} error
+ * @returns {string}
+ */
+function tenantTransactionErrorMessage(
+    error
+) {
+    return error instanceof Error
+        ? error.message
+        : translate(
+            'tenants.transaction_failed'
+        );
+}
+
+
+/**
+ * Resolve Deposit/Payment Receipt endpoint from returned Payment.
+ *
+ * Both ordinary Rent Payment and direct fund Deposit create a Payment.
+ *
+ * @param {any} result
+ * @returns {string|null}
+ */
+function tenantPaymentDocumentEndpoint(
+    result
+) {
+    const paymentId =
+        Number(
+            result?.payment?.id
+            ?? result?.id
+            ?? 0
+        );
+
+    return (
+        Number.isInteger(
+            paymentId
+        )
+        && paymentId > 0
+    )
+        ? `/api/payments/${paymentId}/receipt`
+        : null;
+}
+
+
+/**
+ * Show a short success state at Tenant workspace level.
+ *
+ * Document endpoint is retained as metadata for later history/drill-down
+ * integration. We deliberately do not open a new browser window here because
+ * authenticated document endpoints use Patrimoine's API authentication flow.
+ *
+ * @param {string} message
+ * @param {string|null} documentEndpoint
+ */
+function showTenantTransactionSuccess(
+    message,
+    documentEndpoint = null
+) {
+    let element =
+        document.getElementById(
+            'tenant-transaction-success'
+        );
+
+    if (! element) {
+        const tenantError =
+            document.getElementById(
+                'tenant-error'
+            );
+
+        element =
+            document.createElement(
+                'div'
+            );
+
+        element.id =
+            'tenant-transaction-success';
+
+        element.className = [
+            'mb-4',
+            'rounded-xl',
+            'border',
+            'border-emerald-200',
+            'bg-emerald-50',
+            'px-4',
+            'py-3',
+            'text-sm',
+            'text-emerald-800',
+        ].join(' ');
+
+        if (
+            tenantError?.parentNode
+        ) {
+            tenantError.parentNode.insertBefore(
+                element,
+                tenantError.nextSibling
+            );
+        }
+    }
+
+    if (! element) {
+        return;
+    }
+
+    element.textContent =
+        message;
+
+    if (documentEndpoint) {
+        element.dataset.documentEndpoint =
+            documentEndpoint;
+    } else {
+        delete element.dataset
+            .documentEndpoint;
+    }
+
+    element.classList.remove(
+        'hidden'
+    );
+
+    window.setTimeout(
+        () => {
+            element?.classList.add(
+                'hidden'
+            );
+        },
+        5000
+    );
 }
