@@ -39,17 +39,13 @@ return new class extends Migration
         foreach ($ownerPartyIds as $partyId) {
             DB::table('owner_accounts')
                 ->insertOrIgnore([
-                    'party_id' =>
-                        $partyId,
+                    'party_id' => $partyId,
 
-                    'status' =>
-                        'active',
+                    'status' => 'active',
 
-                    'created_at' =>
-                        $now,
+                    'created_at' => $now,
 
-                    'updated_at' =>
-                        $now,
+                    'updated_at' => $now,
                 ]);
         }
     }

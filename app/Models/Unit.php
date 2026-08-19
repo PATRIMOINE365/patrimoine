@@ -35,6 +35,7 @@ class Unit extends Model
     {
         return $this->belongsTo(Building::class);
     }
+
     /**
      * Lease history for this Unit.
      *

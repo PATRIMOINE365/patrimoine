@@ -2,9 +2,8 @@
 
 namespace App\Services;
 
-use Carbon\CarbonInterface;
+use Carbon\CarbonImmutable;
 use DateTimeInterface;
-use IntlDateFormatter;
 
 /**
  * Centralize user-facing monetary and date presentation for Patrimoine.
@@ -23,8 +22,7 @@ class ApplicationPresentationFormatter
 {
     public function __construct(
         private readonly ApplicationLocaleService $localeService
-    ) {
-    }
+    ) {}
 
     /**
      * Format a whole-number monetary value using the active organisation
@@ -108,12 +106,6 @@ class ApplicationPresentationFormatter
                 ?? $this->localeService->language()
             );
 
-        $locale =
-            (string) config(
-                "patrimoine.languages.{$language}.date_locale",
-                'en_GB'
-            );
-
         $date =
             $value instanceof DateTimeInterface
                 ? $value
@@ -123,23 +115,20 @@ class ApplicationPresentationFormatter
             return (string) $value;
         }
 
-        $formatter = new IntlDateFormatter(
-            $locale,
-            IntlDateFormatter::MEDIUM,
-            IntlDateFormatter::NONE,
-            config('app.timezone'),
-            IntlDateFormatter::GREGORIAN,
-            'dd MMM yyyy'
+        /*
+         * Patrimoine business-date presentation standard:
+         *
+         * French:  DD-MM-YYYY
+         * English: DD/MM/YYYY
+         *
+         * These are presentation values only. Stored/API dates remain
+         * ISO YYYY-MM-DD.
+         */
+        return $date->format(
+            $language === 'fr'
+                ? 'd-m-Y'
+                : 'd/m/Y'
         );
-
-        $formatted =
-            $formatter->format(
-                $date
-            );
-
-        return $formatted === false
-            ? (string) $value
-            : $formatted;
     }
 
     private function integerValue(
@@ -167,7 +156,7 @@ class ApplicationPresentationFormatter
             );
 
         try {
-            return \Carbon\CarbonImmutable::createFromFormat(
+            return CarbonImmutable::createFromFormat(
                 '!Y-m-d',
                 $dateValue,
                 config('app.timezone')

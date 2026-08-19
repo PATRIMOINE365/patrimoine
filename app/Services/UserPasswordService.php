@@ -21,8 +21,7 @@ class UserPasswordService
     public function __construct(
         private ApplicationIdentityService $identity,
         private ApplicationLocaleService $locale
-    ) {
-    }
+    ) {}
 
     /**
      * Send the normal reset flow when the account is eligible.
@@ -65,9 +64,9 @@ class UserPasswordService
 
         $url = url(
             '/reset-password?token='
-            . urlencode($token)
-            . '&email='
-            . urlencode($user->email)
+            .urlencode($token)
+            .'&email='
+            .urlencode($user->email)
         );
 
         Mail::to($user->email)

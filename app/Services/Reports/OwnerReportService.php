@@ -106,80 +106,69 @@ class OwnerReportService
                 'opening_balance' => $openingBalance,
                 'credits' => $credits,
                 'debits' => $debits,
-                'closing_balance' =>
-                    $openingBalance + $credits - $debits,
+                'closing_balance' => $openingBalance + $credits - $debits,
 
-                'rent_entitlement' =>
-                    $this->categoryTotal(
-                        $transactions,
-                        'rent_entitlement',
-                        'credit'
-                    ),
+                'rent_entitlement' => $this->categoryTotal(
+                    $transactions,
+                    'rent_entitlement',
+                    'credit'
+                ),
 
-                'owner_deposits' =>
-                    $this->categoryTotal(
-                        $transactions,
-                        'owner_deposit',
-                        'credit'
-                    ),
+                'owner_deposits' => $this->categoryTotal(
+                    $transactions,
+                    'owner_deposit',
+                    'credit'
+                ),
 
-                'management_fees' =>
-                    $this->categoryTotal(
-                        $transactions,
-                        'management_fee',
-                        'debit'
-                    ),
+                'management_fees' => $this->categoryTotal(
+                    $transactions,
+                    'management_fee',
+                    'debit'
+                ),
 
-                'agent_commissions' =>
-                    $this->categoryTotal(
-                        $transactions,
-                        'agent_commission',
-                        'debit'
-                    ),
+                'agent_commissions' => $this->categoryTotal(
+                    $transactions,
+                    'agent_commission',
+                    'debit'
+                ),
 
-                'expenses' =>
-                    $this->categoryTotal(
-                        $transactions,
-                        'expense',
-                        'debit'
-                    ),
+                'expenses' => $this->categoryTotal(
+                    $transactions,
+                    'expense',
+                    'debit'
+                ),
 
-                'payouts' =>
-                    $this->categoryTotal(
-                        $transactions,
-                        'payout',
-                        'debit'
-                    ),
+                'payouts' => $this->categoryTotal(
+                    $transactions,
+                    'payout',
+                    'debit'
+                ),
 
-                'adjustments_credit' =>
-                    $this->categoryTotal(
-                        $transactions,
-                        'adjustment',
-                        'credit'
-                    ),
+                'adjustments_credit' => $this->categoryTotal(
+                    $transactions,
+                    'adjustment',
+                    'credit'
+                ),
 
-                'adjustments_debit' =>
-                    $this->categoryTotal(
-                        $transactions,
-                        'adjustment',
-                        'debit'
-                    ),
+                'adjustments_debit' => $this->categoryTotal(
+                    $transactions,
+                    'adjustment',
+                    'debit'
+                ),
             ],
 
             'transactions' => $transactions
                 ->map(fn (OwnerTransaction $transaction): array => [
-                    'id' => $transaction->id,
-                    'date' =>
-                        $transaction->transaction_date->toDateString(),
-                    'direction' => $transaction->direction,
-                    'category' => $transaction->category,
-                    'amount' => $transaction->amount,
-                    'building' => $transaction->building?->name,
-                    'unit' => $transaction->unit?->name,
-                    'invoice' =>
-                        $transaction->invoice?->invoice_number,
-                    'reference' => $transaction->reference,
-                    'notes' => $transaction->notes,
+                'id' => $transaction->id,
+                'date' => $transaction->transaction_date->toDateString(),
+                'direction' => $transaction->direction,
+                'category' => $transaction->category,
+                'amount' => $transaction->amount,
+                'building' => $transaction->building?->name,
+                'unit' => $transaction->unit?->name,
+                'invoice' => $transaction->invoice?->invoice_number,
+                'reference' => $transaction->reference,
+                'notes' => $transaction->notes,
                 ])
                 ->values()
                 ->all(),

@@ -7,6 +7,12 @@ import {
     translate,
 } from './core.js';
 
+import {
+    dateForApi,
+    dateForDisplay,
+    initializeDateInputs,
+} from './date-input.js';
+
 /*
 |--------------------------------------------------------------------------
 | Patrimoine Owners Workspace
@@ -58,6 +64,9 @@ export async function initializeOwners() {
     initializeOwnerDirectorySearch();
 
     initializeOwnerWorkspaceActions();
+
+    synchronizeOwnerCurrencyDisplays();
+    initializeOwnerDateInputs();
 
     await loadOwnerDirectory();
 
@@ -130,7 +139,7 @@ async function loadOwnerDirectory(
 
         params.set(
             'per_page',
-            '25'
+            '10'
         );
 
         const search =
@@ -627,7 +636,7 @@ async function selectOwnerAccount(
                     ),
 
                 transactions_per_page:
-                    '25',
+                    '8',
             });
 
         const response =
@@ -778,24 +787,6 @@ function renderOwnerDetail(
             properties.length
         )
     );
-
-    /*
-     * Existing reporting infrastructure already supports formal owner PDF
-     * reports using Party rather than OwnerAccount identity.
-     */
-    const reportLink =
-        document.getElementById(
-            'owner-report-link'
-        );
-
-    if (reportLink) {
-        reportLink.href =
-            `/api/reports/owners/${owner.party_id}/pdf`;
-
-        reportLink.dataset
-            .ownerReportEndpoint =
-            reportLink.href;
-    }
 
     renderOwnerProperties(
         properties
@@ -1862,7 +1853,7 @@ function initializeOwnerWorkspaceActions() {
         );
 
     /*
-     * Clicking outside a modal closes it.
+     * Shared drawer headers generate close buttons by ID.
      */
     [
         'owner-deposit-modal',
@@ -1871,21 +1862,44 @@ function initializeOwnerWorkspaceActions() {
         'owner-adjustment-modal',
     ].forEach(
         (id) => {
-            const modal =
-                document.getElementById(
-                    id
-                );
-
-            modal?.addEventListener(
-                'click',
-                (event) => {
-                    if (event.target === modal) {
+            document
+                .getElementById(
+                    `${id}-close`
+                )
+                ?.addEventListener(
+                    'click',
+                    () => {
                         closeOwnerModal(
                             id
                         );
                     }
-                }
-            );
+                );
+        }
+    );
+
+
+    /*
+     * Clicking the drawer backdrop closes it.
+     */
+    [
+        'owner-deposit-modal',
+        'owner-expense-modal',
+        'owner-payout-modal',
+        'owner-adjustment-modal',
+    ].forEach(
+        (id) => {
+            document
+                .getElementById(
+                    `${id}-backdrop`
+                )
+                ?.addEventListener(
+                    'click',
+                    () => {
+                        closeOwnerModal(
+                            id
+                        );
+                    }
+                );
         }
     );
 
@@ -2022,34 +2036,206 @@ function initializeOwnerWorkspaceActions() {
         );
 }
 
+
 /*
 |--------------------------------------------------------------------------
-| Modal Helpers
+| Owner Financial Drawer Presentation
+|--------------------------------------------------------------------------
+|
+| Drawer dates are displayed using Patrimoine's DD-MM-YYYY convention while
+| API payloads continue to use ISO YYYY-MM-DD dates.
+|
+| Currency labels are derived from formatCurrency(), ensuring these forms use
+| the same organisation-wide presentation configuration as the rest of the
+| application.
+|
+*/
+
+/**
+ * Return the organisation currency marker using the same presentation
+ * configuration as formatCurrency().
+ *
+ * @returns {string}
+ */
+function ownerCurrencyDisplay() {
+    const formatted =
+        formatCurrency(0);
+
+    return formatted
+        .replace(/[0-9\s.,+-]/g, '')
+        .trim();
+}
+
+/**
+ * Synchronise currency markers in Owner financial drawers.
+ */
+function synchronizeOwnerCurrencyDisplays() {
+    const currency =
+        ownerCurrencyDisplay();
+
+    document
+        .querySelectorAll(
+            '[data-currency-display]'
+        )
+        .forEach(
+            (element) => {
+                element.textContent =
+                    currency;
+            }
+        );
+}
+
+/**
+ * Convert ISO YYYY-MM-DD into DD-MM-YYYY for display.
+ *
+ * @param {string|null} value
+ * @returns {string}
+ */
+function ownerDateForDisplay(
+    value
+) {
+    return dateForDisplay(
+        value
+    );
+}
+
+/**
+ * Convert DD-MM-YYYY into ISO YYYY-MM-DD for API submission.
+ *
+ * Existing ISO values are accepted as well.
+ *
+ * @param {string|null} value
+ * @returns {string}
+ */
+function ownerDateForApi(
+    value
+) {
+    return dateForApi(
+        value
+    );
+}
+
+/**
+ * Put an ISO date into an Owner drawer using application display format.
+ *
+ * @param {string} id
+ * @param {string} value
+ */
+function setOwnerDateValue(
+    id,
+    value
+) {
+    setFieldValue(
+        id,
+        ownerDateForDisplay(
+            value
+        )
+    );
+}
+
+/**
+ * Read an Owner drawer date in API format.
+ *
+ * @param {string} id
+ * @returns {string}
+ */
+function ownerDateValue(
+    id
+) {
+    return ownerDateForApi(
+        fieldValue(
+            id
+        )
+    );
+}
+
+/**
+ * Normalise typed Owner drawer dates.
+ *
+ * Digits entered as DDMMYYYY are progressively displayed as DD-MM-YYYY.
+ */
+function initializeOwnerDateInputs() {
+    initializeDateInputs(
+        '[data-owner-date-input]'
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Owner Drawer Helpers
 |--------------------------------------------------------------------------
 */
+
+const ownerDrawerCloseTimers = new Map();
 
 function openOwnerModal(
     id
 ) {
-    const modal =
+    const drawer =
         document.getElementById(
             id
         );
 
-    if (! modal) {
+    if (! drawer) {
         return;
     }
 
-    modal.classList.remove(
+    const oldTimer =
+        ownerDrawerCloseTimers.get(
+            id
+        );
+
+    if (oldTimer) {
+        window.clearTimeout(
+            oldTimer
+        );
+
+        ownerDrawerCloseTimers.delete(
+            id
+        );
+    }
+
+    drawer.classList.remove(
+        'pm-drawer-open',
+        'pm-drawer-closing'
+    );
+
+    drawer.removeAttribute(
         'hidden'
     );
 
-    modal.classList.add(
-        'flex'
+    drawer.classList.add(
+        'pm-drawer-active'
+    );
+
+    drawer.setAttribute(
+        'aria-hidden',
+        'false'
     );
 
     document.body.classList.add(
         'overflow-hidden'
+    );
+
+    const panel =
+        drawer.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    if (panel) {
+        void panel.getBoundingClientRect();
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    drawer.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
     );
 }
 
@@ -2060,25 +2246,73 @@ function closeOwnerModal(
         return;
     }
 
-    const modal =
+    const drawer =
         document.getElementById(
             id
         );
 
-    if (! modal) {
+    if (
+        ! drawer
+        || ! drawer.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
         return;
     }
 
-    modal.classList.add(
-        'hidden'
+    drawer.classList.remove(
+        'pm-drawer-open'
     );
 
-    modal.classList.remove(
-        'flex'
+    drawer.classList.add(
+        'pm-drawer-closing'
     );
 
-    document.body.classList.remove(
-        'overflow-hidden'
+    drawer.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+
+    const oldTimer =
+        ownerDrawerCloseTimers.get(
+            id
+        );
+
+    if (oldTimer) {
+        window.clearTimeout(
+            oldTimer
+        );
+    }
+
+    const timer =
+        window.setTimeout(
+            () => {
+                drawer.classList.remove(
+                    'pm-drawer-active',
+                    'pm-drawer-closing'
+                );
+
+                ownerDrawerCloseTimers.delete(
+                    id
+                );
+
+                const anotherDrawerOpen =
+                    document.querySelector(
+                        '.pm-drawer.pm-drawer-active'
+                    );
+
+                if (! anotherDrawerOpen) {
+                    document.body.classList.remove(
+                        'overflow-hidden'
+                    );
+                }
+            },
+            850
+        );
+
+    ownerDrawerCloseTimers.set(
+        id,
+        timer
     );
 }
 
@@ -2323,7 +2557,7 @@ function openOwnerDepositModal() {
         'owner-deposit-error'
     );
 
-    setFieldValue(
+    setOwnerDateValue(
         'owner-deposit-date',
         localToday()
     );
@@ -2463,7 +2697,7 @@ async function submitOwnerDeposit() {
         amount,
 
         transaction_date:
-            fieldValue(
+            ownerDateValue(
                 'owner-deposit-date'
             ),
 
@@ -2507,7 +2741,7 @@ async function submitOwnerDeposit() {
         'owner-deposit-submit',
         true,
         translate('owners.recording'),
-        translate('owners.record_deposit')
+        translate('actions.save')
     );
 
     try {
@@ -2599,7 +2833,7 @@ function openOwnerExpenseModal() {
 
     hideExpenseOwnershipWarning();
 
-    setFieldValue(
+    setOwnerDateValue(
         'owner-expense-date',
         localToday()
     );
@@ -2774,7 +3008,7 @@ async function submitOwnerExpense() {
         amount,
 
         expense_date:
-            fieldValue(
+            ownerDateValue(
                 'owner-expense-date'
             ),
 
@@ -2795,7 +3029,7 @@ async function submitOwnerExpense() {
         'owner-expense-submit',
         true,
         translate('owners.recording'),
-        translate('owners.record_expense')
+        translate('actions.save')
     );
 
     try {
@@ -2874,7 +3108,7 @@ function openOwnerPayoutModal() {
         'owner-payout-error'
     );
 
-    setFieldValue(
+    setOwnerDateValue(
         'owner-payout-date',
         localToday()
     );
@@ -2963,7 +3197,7 @@ async function submitOwnerPayout() {
         amount,
 
         payout_date:
-            fieldValue(
+            ownerDateValue(
                 'owner-payout-date'
             ),
 
@@ -2989,7 +3223,7 @@ async function submitOwnerPayout() {
         'owner-payout-submit',
         true,
         translate('owners.processing'),
-        translate('owners.make_payout')
+        translate('actions.save')
     );
 
     try {
@@ -3059,7 +3293,7 @@ function openOwnerAdjustmentModal() {
         'credit'
     );
 
-    setFieldValue(
+    setOwnerDateValue(
         'owner-adjustment-date',
         localToday()
     );
@@ -3120,7 +3354,7 @@ async function submitOwnerAdjustment() {
         amount,
 
         transaction_date:
-            fieldValue(
+            ownerDateValue(
                 'owner-adjustment-date'
             ),
 
@@ -3137,7 +3371,7 @@ async function submitOwnerAdjustment() {
         'owner-adjustment-submit',
         true,
         translate('owners.recording'),
-        translate('owners.record_adjustment')
+        translate('actions.save')
     );
 
     try {

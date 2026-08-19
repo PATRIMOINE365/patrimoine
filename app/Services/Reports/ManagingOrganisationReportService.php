@@ -90,128 +90,103 @@ class ManagingOrganisationReportService
             'portfolio' => [
                 'buildings' => Building::count(),
                 'units' => Unit::count(),
-                'owner_accounts' =>
-                    OwnerAccount::count(),
+                'owner_accounts' => OwnerAccount::count(),
             ],
-'billing' => [
-    /*
+            'billing' => [
+                /*
      * Preserve the existing generic totals as the complete receivable
      * position for backward compatibility.
      */
-    'invoiced' =>
-        (int) $invoices->sum('total_amount'),
+                'invoiced' => (int) $invoices->sum('total_amount'),
 
-    'settled' =>
-        (int) $invoices->sum(
-            fn (Invoice $invoice): int =>
-                $invoice->paidAmount()
-        ),
+                'settled' => (int) $invoices->sum(
+                    fn (Invoice $invoice): int => $invoice->paidAmount()
+                ),
 
-    'outstanding' =>
-        (int) $invoices->sum(
-            fn (Invoice $invoice): int =>
-                $invoice->outstandingAmount()
-        ),
+                'outstanding' => (int) $invoices->sum(
+                    fn (Invoice $invoice): int => $invoice->outstandingAmount()
+                ),
 
-    /*
+                /*
      * V1.0.1 explicitly separates contractual rent from Security Deposit
      * close-out debt.
      */
-    'rent_invoiced' =>
-        (int) $invoices
-            ->where('type', 'rent')
-            ->sum('total_amount'),
+                'rent_invoiced' => (int) $invoices
+                    ->where('type', 'rent')
+                    ->sum('total_amount'),
 
-    'security_deposit_debt_invoiced' =>
-        (int) $invoices
-            ->where('type', 'security_deposit_debt')
-            ->sum('total_amount'),
+                'security_deposit_debt_invoiced' => (int) $invoices
+                    ->where('type', 'security_deposit_debt')
+                    ->sum('total_amount'),
 
-    'rent_outstanding' =>
-        (int) $invoices
-            ->where('type', 'rent')
-            ->sum(
-                fn (Invoice $invoice): int =>
-                    $invoice->outstandingAmount()
-            ),
+                'rent_outstanding' => (int) $invoices
+                    ->where('type', 'rent')
+                    ->sum(
+                        fn (Invoice $invoice): int => $invoice->outstandingAmount()
+                    ),
 
-    'security_deposit_debt_outstanding' =>
-        (int) $invoices
-            ->where('type', 'security_deposit_debt')
-            ->sum(
-                fn (Invoice $invoice): int =>
-                    $invoice->outstandingAmount()
-            ),
+                'security_deposit_debt_outstanding' => (int) $invoices
+                    ->where('type', 'security_deposit_debt')
+                    ->sum(
+                        fn (Invoice $invoice): int => $invoice->outstandingAmount()
+                    ),
 
-    'total_outstanding' =>
-        (int) $invoices->sum(
-            fn (Invoice $invoice): int =>
-                $invoice->outstandingAmount()
-        ),
+                'total_outstanding' => (int) $invoices->sum(
+                    fn (Invoice $invoice): int => $invoice->outstandingAmount()
+                ),
 
-    'cash_received' =>
-        (int) $payments->sum('amount'),
-],
+                'cash_received' => (int) $payments->sum('amount'),
+            ],
 
             'owner_accounting' => [
-                'rent_entitlement' =>
-                    $this->ledgerCategory(
-                        $ownerTransactions,
-                        'rent_entitlement',
-                        'credit'
-                    ),
+                'rent_entitlement' => $this->ledgerCategory(
+                    $ownerTransactions,
+                    'rent_entitlement',
+                    'credit'
+                ),
 
-                'management_fees' =>
-                    $this->ledgerCategory(
-                        $ownerTransactions,
-                        'management_fee',
-                        'debit'
-                    ),
+                'management_fees' => $this->ledgerCategory(
+                    $ownerTransactions,
+                    'management_fee',
+                    'debit'
+                ),
 
-                'agent_commissions' =>
-                    $this->ledgerCategory(
-                        $ownerTransactions,
-                        'agent_commission',
-                        'debit'
-                    ),
+                'agent_commissions' => $this->ledgerCategory(
+                    $ownerTransactions,
+                    'agent_commission',
+                    'debit'
+                ),
 
-                'owner_expenses' =>
-                    (int) $expenses->sum('amount'),
+                'owner_expenses' => (int) $expenses->sum('amount'),
 
-                'owner_payouts' =>
-                    $this->ledgerCategory(
-                        $ownerTransactions,
-                        'payout',
-                        'debit'
-                    ),
+                'owner_payouts' => $this->ledgerCategory(
+                    $ownerTransactions,
+                    'payout',
+                    'debit'
+                ),
 
-                'owner_funds_held' =>
-                    (int) OwnerAccount::query()
-                        ->get()
-                        ->sum(
-                            fn (OwnerAccount $account): int =>
-                                max(0, $account->balance())
-                        ),
+                'owner_funds_held' => (int) OwnerAccount::query()
+                ->get()
+                ->sum(
+                    fn (OwnerAccount $account): int => max(0, $account->balance())
+                ),
             ],
 
             'tenant_funds' => [
-                'rent_reserve' =>
-                    $this->fundBalance(
-                        $fundAccounts,
-                        'rent_reserve'
-                    ),
+                'rent_reserve' => $this->fundBalance(
+                    $fundAccounts,
+                    'rent_reserve'
+                ),
 
-                'consumable_advance' =>
-                    $this->fundBalance(
-                        $fundAccounts,
-                        'consumable_advance'
-                    ),
+                'consumable_advance' => $this->fundBalance(
+                    $fundAccounts,
+                    'consumable_advance'
+                ),
 
-                'security_deposit' =>
-                    $this->fundBalance(
-                        $fundAccounts,
-                        'security_deposit'
-                    ),
+                'security_deposit' => $this->fundBalance(
+                    $fundAccounts,
+                    'security_deposit'
+                ),
             ],
         ];
     }
@@ -234,8 +209,7 @@ class ManagingOrganisationReportService
         return (int) $accounts
             ->where('type', $type)
             ->sum(
-                fn (TenantFundAccount $account): int =>
-                    $account->balance()
+                fn (TenantFundAccount $account): int => $account->balance()
             );
     }
 

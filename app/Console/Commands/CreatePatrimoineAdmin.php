@@ -116,17 +116,13 @@ class CreatePatrimoineAdmin extends Command
         $validator =
             Validator::make(
                 [
-                    'name' =>
-                        $name,
+                    'name' => $name,
 
-                    'email' =>
-                        $email,
+                    'email' => $email,
 
-                    'password' =>
-                        $password,
+                    'password' => $password,
 
-                    'password_confirmation' =>
-                        $passwordConfirmation,
+                    'password_confirmation' => $passwordConfirmation,
                 ],
                 [
                     'name' => [
@@ -163,8 +159,7 @@ class CreatePatrimoineAdmin extends Command
             );
 
             foreach (
-                $validator->errors()->all()
-                as $message
+                $validator->errors()->all() as $message
             ) {
                 $this->line(
                     " - {$message}"
@@ -184,29 +179,24 @@ class CreatePatrimoineAdmin extends Command
          */
         $user =
             User::create([
-                'name' =>
-                    $name,
+                'name' => $name,
 
-                'email' =>
-                    $email,
+                'email' => $email,
 
-                'password' =>
-                    $password,
+                'password' => $password,
 
                 /*
                  * This bootstrap command deliberately creates an
                  * Administrator account.
                  */
-                'role' =>
-                    UserRole::Administrator,
+                'role' => UserRole::Administrator,
 
                 /*
                  * Accounts are created deliberately by a trusted system
                  * administrator, therefore the email is considered verified
                  * at bootstrap time.
                  */
-                'email_verified_at' =>
-                    now(),
+                'email_verified_at' => now(),
             ]);
 
         $this->newLine();

@@ -72,23 +72,17 @@ class UserRbacFoundationTest extends TestCase
         $userId =
             DB::table('users')
                 ->insertGetId([
-                    'name' =>
-                        'Existing V1.0.2 User',
+                    'name' => 'Existing V1.0.2 User',
 
-                    'email' =>
-                        'existing-v102@example.test',
+                    'email' => 'existing-v102@example.test',
 
-                    'password' =>
-                        'not-used-by-this-test',
+                    'password' => 'not-used-by-this-test',
 
-                    'role' =>
-                        'property_manager',
+                    'role' => 'property_manager',
 
-                    'created_at' =>
-                        now(),
+                    'created_at' => now(),
 
-                    'updated_at' =>
-                        now(),
+                    'updated_at' => now(),
                 ]);
 
         $migration->up();
@@ -119,7 +113,7 @@ class UserRbacFoundationTest extends TestCase
      */
     public function test_v1_0_2_existing_user_remains_verified_after_upgrade(): void
     {
-        $user = \App\Models\User::factory()->create([
+        $user = User::factory()->create([
             'email_verified_at' => null,
             'password' => 'existing-password',
         ]);
@@ -129,7 +123,7 @@ class UserRbacFoundationTest extends TestCase
          * RefreshDatabase has already applied the complete migration set
          * before this test creates its simulated legacy account.
          */
-        \Illuminate\Support\Facades\DB::table('users')
+        DB::table('users')
             ->where('id', $user->id)
             ->whereNull('email_verified_at')
             ->whereNotNull('password')
@@ -147,5 +141,4 @@ class UserRbacFoundationTest extends TestCase
             $user->isActive()
         );
     }
-
 }

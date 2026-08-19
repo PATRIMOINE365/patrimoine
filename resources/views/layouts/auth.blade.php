@@ -12,13 +12,59 @@
         @yield('title_fallback')
     </title>
 
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/branding/favicon/favicon-32.png"
+    >
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="/branding/favicon/favicon-16.png"
+    >
+    <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/branding/favicon/apple-touch-icon.png"
+    >
+
+    <x-presentation-language-bootstrap />
+
+    <x-theme-bootstrap />
+
+    {{--
+        V1.0.4 Initial Paint Theme
+
+        Keep authentication on the same semantic page canvas as the
+        authenticated application and avoid a white flash before Vite
+        finishes loading.
+    --}}
+    <style>
+        html,
+        body {
+            background-color: #f7f8f7;
+        }
+
+        html[data-theme="dark"],
+        html[data-theme="dark"] body {
+            background-color: #0f1412;
+        }
+    </style>
+
     @vite([
         'resources/css/app.css',
         'resources/js/app.js',
     ])
 </head>
 
-<body class="min-h-screen bg-stone-50 font-sans text-slate-900">
+<body
+    class="
+        min-h-screen bg-[var(--pm-page)]
+        font-sans text-[var(--pm-text)]
+    "
+>
 
     <main class="grid min-h-screen lg:grid-cols-2">
 
@@ -72,7 +118,7 @@
                     "
                 >
                     <span data-i18n="product.property_management">
-                        Property Management
+                        {{ __('ui.product.property_management') }}
                     </span>
                 </p>
 
@@ -83,7 +129,7 @@
                     "
                 >
                     <span data-i18n="login.hero_title">
-                        Your property portfolio, finances and tenants in one place.
+                        {{ __('ui.login.hero_title') }}
                     </span>
                 </h1>
 
@@ -94,9 +140,7 @@
                     "
                 >
                     <span data-i18n="login.hero_description">
-                        Manage buildings, leases, rent collections,
-                        owner funds and financial reporting from a
-                        single workspace.
+                        {{ __('ui.login.hero_description') }}
                     </span>
                 </p>
             </div>
@@ -108,7 +152,7 @@
                 "
             >
                 <span data-i18n="login.product_name">
-                    Patrimoine Property Management
+                    {{ __('ui.login.product_name') }}
                 </span>
             </div>
         </section>
@@ -116,6 +160,7 @@
         <section
             class="
                 flex min-h-screen items-center justify-center
+                bg-[var(--pm-page)]
                 px-6 py-12 sm:px-10 lg:px-16
             "
         >
@@ -132,7 +177,7 @@
                         P
                     </div>
 
-                    <span class="text-xl font-semibold">
+                    <span class="text-xl font-semibold text-[var(--pm-text)]">
                         Patrimoine
                     </span>
                 </div>

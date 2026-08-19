@@ -173,7 +173,7 @@ class GenerateDueInvoices extends Command
                 $date === false
                 || $date->format('Y-m-d') !== $through
             ) {
-                throw new \InvalidArgumentException();
+                throw new \InvalidArgumentException;
             }
 
             return $date->startOfDay();

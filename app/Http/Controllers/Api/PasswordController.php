@@ -128,10 +128,8 @@ class PasswordController extends Controller
 
         $passwords->changeOwnPassword(
             user: $user,
-            currentPassword:
-                $validated['current_password'],
-            newPassword:
-                $validated['password']
+            currentPassword: $validated['current_password'],
+            newPassword: $validated['password']
         );
 
         $activityLog->record(

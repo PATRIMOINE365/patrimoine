@@ -9,18 +9,19 @@ use App\Models\Lease;
 use App\Models\OwnerAccount;
 use App\Models\Party;
 use App\Models\PartyRole;
+use App\Models\Payment;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
+use Tests\TestCase;
 
 /**
  * Verifies the Patrimoine Payment transactional API.
  */
 class PaymentApiTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -421,7 +422,7 @@ class PaymentApiTest extends TestCase
          * Create this one directly because the second Building does not need
          * ownership configuration for a simple listing/filter test.
          */
-        \App\Models\Payment::create([
+        Payment::create([
             'lease_id' => $secondLease->id,
             'amount' => 2000,
             'payment_date' => '2026-08-01',
@@ -465,17 +466,13 @@ class PaymentApiTest extends TestCase
             $this->postJson(
                 '/api/payments',
                 [
-                    'lease_id' =>
-                        $context['lease']->id,
+                    'lease_id' => $context['lease']->id,
 
-                    'amount' =>
-                        8000,
+                    'amount' => 8000,
 
-                    'payment_date' =>
-                        '2026-08-01',
+                    'payment_date' => '2026-08-01',
 
-                    'payment_method' =>
-                        'bank_transfer',
+                    'payment_method' => 'bank_transfer',
                 ]
             );
 
@@ -509,14 +506,11 @@ class PaymentApiTest extends TestCase
         $this->postJson(
             "/api/payments/{$paymentId}/tenant-funds",
             [
-                'fund_type' =>
-                    'rent_reserve',
+                'fund_type' => 'rent_reserve',
 
-                'amount' =>
-                    2000,
+                'amount' => 2000,
 
-                'transaction_date' =>
-                    '2026-08-01',
+                'transaction_date' => '2026-08-01',
             ]
         )->assertCreated();
 
@@ -546,5 +540,4 @@ class PaymentApiTest extends TestCase
                 1000
             );
     }
-
 }

@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Building;
 use App\Models\Lease;
 use App\Models\Party;
-use App\Models\RentIncrement;
 use App\Models\Unit;
 use App\Services\RentIncrementService;
 use Carbon\Carbon;
@@ -49,59 +48,41 @@ class RentIncrementServiceTest extends TestCase
         return Lease::create(
             array_merge(
                 [
-                    'unit_id' =>
-                        $unit->id,
+                    'unit_id' => $unit->id,
 
-                    'tenant_id' =>
-                        $tenant->id,
+                    'tenant_id' => $tenant->id,
 
-                    'start_date' =>
-                        '2025-01-01',
+                    'start_date' => '2025-01-01',
 
-                    'status' =>
-                        'active',
+                    'status' => 'active',
 
-                    'rent_amount' =>
-                        10000,
+                    'rent_amount' => 10000,
 
-                    'payment_frequency' =>
-                        'monthly',
+                    'payment_frequency' => 'monthly',
 
-                    'due_day' =>
-                        1,
+                    'due_day' => 1,
 
-                    'vat_rate' =>
-                        18,
+                    'vat_rate' => 18,
 
-                    'proration_amount' =>
-                        null,
+                    'proration_amount' => null,
 
-                    'security_deposit_amount' =>
-                        0,
+                    'security_deposit_amount' => 0,
 
-                    'advance_payment_amount' =>
-                        0,
+                    'advance_payment_amount' => 0,
 
-                    'rent_reserve_amount' =>
-                        0,
+                    'rent_reserve_amount' => 0,
 
-                    'rent_increment_type' =>
-                        'none',
+                    'rent_increment_type' => 'none',
 
-                    'rent_increment_value' =>
-                        0,
+                    'rent_increment_value' => 0,
 
-                    'next_rent_increment_date' =>
-                        null,
+                    'next_rent_increment_date' => null,
 
-                    'management_fee_type' =>
-                        'none',
+                    'management_fee_type' => 'none',
 
-                    'management_fee_value' =>
-                        0,
+                    'management_fee_value' => 0,
 
-                    'agent_commission_amount' =>
-                        0,
+                    'agent_commission_amount' => 0,
                 ],
                 $overrides
             )
@@ -163,12 +144,9 @@ class RentIncrementServiceTest extends TestCase
                 RentIncrementService::class
             )->schedule(
                 lease: $lease,
-                incrementType:
-                    'percentage',
-                incrementValue:
-                    10,
-                effectiveDate:
-                    '2026-01-01'
+                incrementType: 'percentage',
+                incrementValue: 10,
+                effectiveDate: '2026-01-01'
             );
 
         $this->assertSame(
@@ -208,8 +186,7 @@ class RentIncrementServiceTest extends TestCase
     {
         $lease =
             $this->createLease([
-                'start_date' =>
-                    '2025-01-15',
+                'start_date' => '2025-01-15',
             ]);
 
         $this->expectException(
@@ -224,12 +201,9 @@ class RentIncrementServiceTest extends TestCase
             RentIncrementService::class
         )->schedule(
             lease: $lease,
-            incrementType:
-                'percentage',
-            incrementValue:
-                10,
-            effectiveDate:
-                '2026-01-14'
+            incrementType: 'percentage',
+            incrementValue: 10,
+            effectiveDate: '2026-01-14'
         );
     }
 
@@ -240,8 +214,7 @@ class RentIncrementServiceTest extends TestCase
     {
         $lease =
             $this->createLease([
-                'start_date' =>
-                    '2025-01-15',
+                'start_date' => '2025-01-15',
             ]);
 
         $increment =
@@ -249,12 +222,9 @@ class RentIncrementServiceTest extends TestCase
                 RentIncrementService::class
             )->schedule(
                 lease: $lease,
-                incrementType:
-                    'percentage',
-                incrementValue:
-                    10,
-                effectiveDate:
-                    '2026-01-15'
+                incrementType: 'percentage',
+                incrementValue: 10,
+                effectiveDate: '2026-01-15'
             );
 
         $this->assertSame(
@@ -278,12 +248,9 @@ class RentIncrementServiceTest extends TestCase
 
         $service->schedule(
             lease: $lease,
-            incrementType:
-                'percentage',
-            incrementValue:
-                10,
-            effectiveDate:
-                '2026-01-01'
+            incrementType: 'percentage',
+            incrementValue: 10,
+            effectiveDate: '2026-01-01'
         );
 
         $this->expectException(
@@ -296,12 +263,9 @@ class RentIncrementServiceTest extends TestCase
 
         $service->schedule(
             lease: $lease,
-            incrementType:
-                'fixed',
-            incrementValue:
-                1000,
-            effectiveDate:
-                '2027-01-01'
+            incrementType: 'fixed',
+            incrementValue: 1000,
+            effectiveDate: '2027-01-01'
         );
     }
 
@@ -321,12 +285,9 @@ class RentIncrementServiceTest extends TestCase
         $increment =
             $service->schedule(
                 lease: $lease,
-                incrementType:
-                    'percentage',
-                incrementValue:
-                    10,
-                effectiveDate:
-                    '2026-01-01'
+                incrementType: 'percentage',
+                incrementValue: 10,
+                effectiveDate: '2026-01-01'
             );
 
         $this->expectException(
@@ -361,12 +322,9 @@ class RentIncrementServiceTest extends TestCase
         $increment =
             $service->schedule(
                 lease: $lease,
-                incrementType:
-                    'percentage',
-                incrementValue:
-                    10,
-                effectiveDate:
-                    '2026-01-01'
+                incrementType: 'percentage',
+                incrementValue: 10,
+                effectiveDate: '2026-01-01'
             );
 
         $applied =
@@ -422,12 +380,9 @@ class RentIncrementServiceTest extends TestCase
         $increment =
             $service->schedule(
                 lease: $lease,
-                incrementType:
-                    'fixed',
-                incrementValue:
-                    1500,
-                effectiveDate:
-                    '2026-01-01'
+                incrementType: 'fixed',
+                incrementValue: 1500,
+                effectiveDate: '2026-01-01'
             );
 
         $service->apply(
@@ -473,12 +428,9 @@ class RentIncrementServiceTest extends TestCase
         $first =
             $service->schedule(
                 lease: $lease,
-                incrementType:
-                    'percentage',
-                incrementValue:
-                    10,
-                effectiveDate:
-                    '2026-01-01'
+                incrementType: 'percentage',
+                incrementValue: 10,
+                effectiveDate: '2026-01-01'
             );
 
         $service->apply(
@@ -498,12 +450,9 @@ class RentIncrementServiceTest extends TestCase
 
         $service->schedule(
             lease: $lease->fresh(),
-            incrementType:
-                'percentage',
-            incrementValue:
-                5,
-            effectiveDate:
-                '2026-12-31'
+            incrementType: 'percentage',
+            incrementValue: 5,
+            effectiveDate: '2026-12-31'
         );
     }
 
@@ -523,12 +472,9 @@ class RentIncrementServiceTest extends TestCase
         $increment =
             $service->schedule(
                 lease: $lease,
-                incrementType:
-                    'percentage',
-                incrementValue:
-                    10,
-                effectiveDate:
-                    '2026-01-01'
+                incrementType: 'percentage',
+                incrementValue: 10,
+                effectiveDate: '2026-01-01'
             );
 
         $cancelled =
@@ -575,12 +521,9 @@ class RentIncrementServiceTest extends TestCase
         $increment =
             $service->schedule(
                 lease: $lease,
-                incrementType:
-                    'percentage',
-                incrementValue:
-                    10,
-                effectiveDate:
-                    '2026-01-01'
+                incrementType: 'percentage',
+                incrementValue: 10,
+                effectiveDate: '2026-01-01'
             );
 
         $service->cancel(
@@ -620,17 +563,13 @@ class RentIncrementServiceTest extends TestCase
         $increment =
             $service->schedule(
                 lease: $lease,
-                incrementType:
-                    'percentage',
-                incrementValue:
-                    10,
-                effectiveDate:
-                    '2026-01-01'
+                incrementType: 'percentage',
+                incrementValue: 10,
+                effectiveDate: '2026-01-01'
             );
 
         $lease->update([
-            'rent_amount' =>
-                12000,
+            'rent_amount' => 12000,
         ]);
 
         $this->expectException(
@@ -665,12 +604,9 @@ class RentIncrementServiceTest extends TestCase
         $increment =
             $service->schedule(
                 lease: $lease,
-                incrementType:
-                    'percentage',
-                incrementValue:
-                    10,
-                effectiveDate:
-                    '2026-01-01'
+                incrementType: 'percentage',
+                incrementValue: 10,
+                effectiveDate: '2026-01-01'
             );
 
         $first =

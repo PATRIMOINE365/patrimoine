@@ -647,7 +647,7 @@ class RentIncrementNotificationTest extends TestCase
                     )
                     && str_contains(
                         $html,
-                        '15 août 2027'
+                        '15-08-2027'
                     );
             }
         );

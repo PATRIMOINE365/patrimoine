@@ -38,6 +38,8 @@ let editingUserId =
 /**
  * Initialize User Management only on its dedicated page.
  */
+let userDrawerCloseTimer = null;
+
 export async function initializeUsers() {
     const workspace =
         document.getElementById(
@@ -210,7 +212,7 @@ async function loadUsers(
         <div
             class="
                 px-5 py-12 text-center
-                text-sm text-slate-400
+                text-sm text-[var(--pm-text-muted)]
             "
         >
             ${escapeHtml(
@@ -294,7 +296,7 @@ function renderUsers(payload) {
                 <div
                     class="
                         text-sm font-medium
-                        text-slate-900
+                        text-[var(--pm-text)]
                     "
                 >
                     ${escapeHtml(
@@ -307,7 +309,7 @@ function renderUsers(payload) {
                 <div
                     class="
                         mt-1 text-sm
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                 >
                     ${escapeHtml(
@@ -343,8 +345,8 @@ function userRow(user) {
 
     const statusClass =
         user.is_active
-            ? 'bg-emerald-50 text-emerald-700'
-            : 'bg-slate-100 text-slate-600';
+            ? 'bg-[var(--pm-success-background)] text-[var(--pm-success-text)]'
+            : 'bg-[var(--pm-surface-subtle)] text-[var(--pm-text-muted)]';
 
     const statusLabel =
         user.is_active
@@ -374,7 +376,7 @@ function userRow(user) {
                         <div
                             class="
                                 text-sm font-semibold
-                                text-slate-950
+                                text-[var(--pm-text)]
                             "
                         >
                             ${escapeHtml(
@@ -444,7 +446,7 @@ function userRow(user) {
                     <div
                         class="
                             mt-1.5 text-sm
-                            text-slate-600
+                            text-[var(--pm-text-muted)]
                         "
                     >
                         ${escapeHtml(
@@ -456,7 +458,7 @@ function userRow(user) {
                         class="
                             mt-2 flex flex-wrap
                             gap-x-5 gap-y-1
-                            text-xs text-slate-500
+                            text-xs text-[var(--pm-text-muted)]
                         "
                     >
                         <span>
@@ -516,11 +518,12 @@ function userRow(user) {
                                     data-user-id="${escapeHtml(user.id)}"
                                     class="
                                         rounded-lg border
-                                        border-slate-200
-                                        bg-white px-3 py-2
+                                        border-[var(--pm-border)]
+                                        bg-[var(--pm-surface)] px-3 py-2
                                         text-xs font-medium
-                                        text-slate-700
-                                        hover:bg-slate-50
+                                        text-[var(--pm-text)]
+                                        transition
+                                        hover:bg-[var(--pm-surface-subtle)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -537,11 +540,12 @@ function userRow(user) {
                                     data-user-id="${escapeHtml(user.id)}"
                                     class="
                                         rounded-lg border
-                                        border-slate-200
-                                        bg-white px-3 py-2
+                                        border-[var(--pm-border)]
+                                        bg-[var(--pm-surface)] px-3 py-2
                                         text-xs font-medium
-                                        text-slate-700
-                                        hover:bg-slate-50
+                                        text-[var(--pm-text)]
+                                        transition
+                                        hover:bg-[var(--pm-surface-subtle)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -562,11 +566,12 @@ function userRow(user) {
                                     data-user-id="${escapeHtml(user.id)}"
                                     class="
                                         rounded-lg border
-                                        border-red-200
-                                        bg-white px-3 py-2
+                                        border-[var(--pm-danger-border)]
+                                        bg-[var(--pm-surface)] px-3 py-2
                                         text-xs font-medium
-                                        text-red-600
-                                        hover:bg-red-50
+                                        text-[var(--pm-danger-text)]
+                                        transition
+                                        hover:bg-[var(--pm-danger-background)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -706,7 +711,7 @@ function renderUserPagination(
         >
             <div
                 class="
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -727,9 +732,12 @@ function renderUserPagination(
                     ${current <= 1 ? 'disabled' : ''}
                     class="
                         rounded-lg border
-                        border-slate-200
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)]
                         px-3 py-2
-                        text-sm text-slate-700
+                        text-sm text-[var(--pm-text)]
+                        transition
+                        hover:bg-[var(--pm-surface-subtle)]
                         disabled:opacity-40
                     "
                 >
@@ -746,9 +754,12 @@ function renderUserPagination(
                     ${current >= last ? 'disabled' : ''}
                     class="
                         rounded-lg border
-                        border-slate-200
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)]
                         px-3 py-2
-                        text-sm text-slate-700
+                        text-sm text-[var(--pm-text)]
+                        transition
+                        hover:bg-[var(--pm-surface-subtle)]
                         disabled:opacity-40
                     "
                 >
@@ -1028,9 +1039,7 @@ function configureUserModal() {
     if (button) {
         button.textContent =
             translate(
-                editing
-                    ? 'users.save_changes'
-                    : 'users.create_user'
+                'actions.save'
             );
     }
 }
@@ -1045,8 +1054,35 @@ function showUserModal() {
         return;
     }
 
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+    /*
+     * A drawer may be reopened before the previous close cleanup
+     * has fired. Cancel that old cleanup so it cannot interfere
+     * with this opening animation.
+     */
+    if (userDrawerCloseTimer !== null) {
+        window.clearTimeout(
+            userDrawerCloseTimer
+        );
+
+        userDrawerCloseTimer = null;
+    }
+
+    /*
+     * Start from the real closed position.
+     */
+    modal.classList.remove(
+        'pm-drawer-open',
+        'pm-drawer-closing'
+    );
+
+    modal.removeAttribute(
+        'hidden'
+    );
+
+    modal.classList.add(
+        'pm-drawer-active'
+    );
+
     modal.setAttribute(
         'aria-hidden',
         'false'
@@ -1054,6 +1090,31 @@ function showUserModal() {
 
     document.body.classList.add(
         'overflow-hidden'
+    );
+
+    const panel =
+        modal.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    /*
+     * Force translateX(100%) to be committed before
+     * beginning the opening transition.
+     */
+    if (panel) {
+        void panel.getBoundingClientRect();
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    modal.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
     );
 }
 
@@ -1063,25 +1124,53 @@ function closeUserModal() {
             'user-modal'
         );
 
-    if (! modal) {
+    if (
+        ! modal
+        || ! modal.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
         return;
     }
 
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
+    modal.classList.remove(
+        'pm-drawer-open'
+    );
+
+    modal.classList.add(
+        'pm-drawer-closing'
+    );
+
     modal.setAttribute(
         'aria-hidden',
         'true'
     );
 
-    document.body.classList.remove(
-        'overflow-hidden'
+    if (userDrawerCloseTimer !== null) {
+        window.clearTimeout(
+            userDrawerCloseTimer
+        );
+    }
+
+    userDrawerCloseTimer = window.setTimeout(
+        () => {
+            modal.classList.remove(
+                'pm-drawer-active',
+                'pm-drawer-closing'
+            );
+
+            document.body.classList.remove(
+                'overflow-hidden'
+            );
+
+            userFormMode = 'create';
+            editingUserId = null;
+
+            resetUserForm();
+            userDrawerCloseTimer = null;
+        },
+        850
     );
-
-    userFormMode = 'create';
-    editingUserId = null;
-
-    resetUserForm();
 }
 
 async function submitUserForm(
@@ -1220,9 +1309,7 @@ async function submitUserForm(
 
         button.textContent =
             translate(
-                editing
-                    ? 'users.save_changes'
-                    : 'users.create_user'
+                'actions.save'
             );
     }
 }

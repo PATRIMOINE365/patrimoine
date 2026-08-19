@@ -2,20 +2,20 @@
 
 namespace Tests\Feature;
 
+use App\Models\ApplicationSetting;
 use App\Models\Party;
 use App\Models\PartyRole;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
-use App\Models\ApplicationSetting;
+use Tests\TestCase;
 
 /**
  * Verifies the Patrimoine Party REST API.
  */
 class PartyApiTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -313,5 +313,4 @@ class PartyApiTest extends TestCase
                 'L’organisation gestionnaire configurée ne peut pas être supprimée. Modifiez plutôt la configuration de l’organisation gestionnaire.'
             );
     }
-
 }

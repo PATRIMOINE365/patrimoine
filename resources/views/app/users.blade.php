@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Users — Patrimoine')
+@section('title', __('ui.users.title'))
 @section('title-i18n', 'users.title')
 
 @section('content')
@@ -25,31 +25,25 @@
                     text-patrimoine-700
                 "
             >
-                <span data-i18n="users.administration">
-                    Administration
-                </span>
+                <span data-i18n="users.administration">{{ __('ui.users.administration') }}</span>
             </div>
 
             <h1
                 class="
                     mt-2 text-2xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
-                <span data-i18n="users.heading">
-                    User Management
-                </span>
+                <span data-i18n="users.heading">{{ __('ui.users.heading') }}</span>
             </h1>
 
             <p
                 class="
                     mt-2 max-w-3xl
-                    text-sm leading-6 text-slate-500
+                    text-sm leading-6 text-[var(--pm-text-muted)]
                 "
             >
-                <span data-i18n="users.description">
-                    Manage application users, roles and account access.
-                </span>
+                <span data-i18n="users.description">{{ __('ui.users.description') }}</span>
             </p>
         </div>
 
@@ -65,9 +59,7 @@
                 hover:bg-patrimoine-900
             "
         >
-            <span data-i18n="users.add_user">
-                Add User
-            </span>
+            <span data-i18n="users.add_user">{{ __('ui.users.add_user') }}</span>
         </button>
     </div>
 
@@ -96,14 +88,14 @@
     <section
         class="
             mt-7 rounded-xl
-            border border-slate-200
-            bg-white
+            border border-[var(--pm-border)]
+            bg-[var(--pm-surface)]
         "
     >
         <div
             class="
                 grid gap-4 border-b
-                border-slate-200
+                border-[var(--pm-border)]
                 p-5
                 md:grid-cols-3
             "
@@ -114,24 +106,22 @@
                     class="
                         mb-1.5 block
                         text-xs font-medium
-                        text-slate-600
+                        text-[var(--pm-text-muted)]
                     "
                 >
-                    <span data-i18n="users.search">
-                        Search
-                    </span>
+                    <span data-i18n="users.search">{{ __('ui.users.search') }}</span>
                 </label>
 
                 <input
                     id="users-search"
                     type="search"
                     data-i18n-placeholder="users.search_placeholder"
-                    placeholder="Search name, email or phone..."
+                    placeholder="{{ __('ui.users.search_placeholder') }}"
                     class="
                         w-full rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2.5
-                        text-sm text-slate-900
+                        border border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2.5
+                        text-sm text-[var(--pm-text)]
                         outline-none transition
                         focus:border-patrimoine-500
                         focus:ring-2
@@ -146,35 +136,25 @@
                     class="
                         mb-1.5 block
                         text-xs font-medium
-                        text-slate-600
+                        text-[var(--pm-text-muted)]
                     "
                 >
-                    <span data-i18n="users.role">
-                        Role
-                    </span>
+                    <span data-i18n="users.role">{{ __('ui.users.role') }}</span>
                 </label>
 
                 <select
                     id="users-role-filter"
                     class="
                         w-full rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2.5
-                        text-sm text-slate-900
+                        border border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2.5
+                        text-sm text-[var(--pm-text)]
                     "
                 >
-                    <option value="" data-i18n="users.all_roles">
-                        All roles
-                    </option>
-                    <option value="administrator" data-i18n="roles.administrator">
-                        Administrator
-                    </option>
-                    <option value="property_manager" data-i18n="roles.property_manager">
-                        Property Manager
-                    </option>
-                    <option value="viewer" data-i18n="roles.viewer">
-                        Viewer
-                    </option>
+                    <option value="" data-i18n="users.all_roles">{{ __('ui.users.all_roles') }}</option>
+                    <option value="administrator" data-i18n="roles.administrator">{{ __('ui.roles.administrator') }}</option>
+                    <option value="property_manager" data-i18n="roles.property_manager">{{ __('ui.roles.property_manager') }}</option>
+                    <option value="viewer" data-i18n="roles.viewer">{{ __('ui.roles.viewer') }}</option>
                 </select>
             </div>
 
@@ -184,49 +164,39 @@
                     class="
                         mb-1.5 block
                         text-xs font-medium
-                        text-slate-600
+                        text-[var(--pm-text-muted)]
                     "
                 >
-                    <span data-i18n="users.status">
-                        Status
-                    </span>
+                    <span data-i18n="users.status">{{ __('ui.users.status') }}</span>
                 </label>
 
                 <select
                     id="users-status-filter"
                     class="
                         w-full rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2.5
-                        text-sm text-slate-900
+                        border border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2.5
+                        text-sm text-[var(--pm-text)]
                     "
                 >
-                    <option value="" data-i18n="users.all_statuses">
-                        All statuses
-                    </option>
-                    <option value="1" data-i18n="users.active">
-                        Active
-                    </option>
-                    <option value="0" data-i18n="users.inactive">
-                        Inactive
-                    </option>
+                    <option value="" data-i18n="users.all_statuses">{{ __('ui.users.all_statuses') }}</option>
+                    <option value="1" data-i18n="users.active">{{ __('ui.users.active') }}</option>
+                    <option value="0" data-i18n="users.inactive">{{ __('ui.users.inactive') }}</option>
                 </select>
             </div>
         </div>
 
         <div
             id="users-list"
-            class="divide-y divide-slate-100"
+            class="divide-y divide-[var(--pm-border)]"
         >
             <div
                 class="
                     px-5 py-12 text-center
-                    text-sm text-slate-400
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
-                <span data-i18n="users.loading">
-                    Loading users...
-                </span>
+                <span data-i18n="users.loading">{{ __('ui.users.loading') }}</span>
             </div>
         </div>
 
@@ -234,99 +204,55 @@
             id="users-pagination"
             class="
                 hidden border-t
-                border-slate-200
+                border-[var(--pm-border)]
                 px-5 py-4
             "
         ></div>
     </section>
 </div>
 
-{{-- User create/edit modal --}}
-<div
+{{-- User create/edit drawer --}}
+<x-drawer
     id="user-modal"
-    class="
-        fixed inset-0 z-[70]
-        hidden items-center justify-center
-        p-4
-    "
-    aria-hidden="true"
+    backdrop-id="user-modal-backdrop"
+    width="sm"
 >
-    <div
-        id="user-modal-backdrop"
-        class="
-            absolute inset-0
-            bg-slate-950/50
-            backdrop-blur-[1px]
-        "
-    ></div>
+    <x-drawer-header
+        title-id="user-modal-title"
+        description-id="user-modal-description"
+        close-id="user-modal-close"
+        close-label="Close"
+        close-label-key="users.close"
+    >
+        <x-slot:title>
+            <span data-i18n="users.add_user">{{ __('ui.users.add_user') }}</span>
+        </x-slot:title>
 
-    <div
-        class="
-            relative z-10
-            w-full max-w-xl
-            rounded-2xl bg-white
-            shadow-2xl
-        "
+        <x-slot:description>
+            <span data-i18n="users.create_description">{{ __('ui.users.create_description') }}</span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="user-form"
+        class="flex min-h-0 flex-1 flex-col"
     >
         <div
             class="
-                flex items-start
-                justify-between gap-5
-                border-b border-slate-200
-                px-6 py-5
+                min-h-0 flex-1
+                overflow-y-auto
+                px-6 py-6
             "
-        >
-            <div>
-                <h2
-                    id="user-modal-title"
-                    class="
-                        text-lg font-semibold
-                        text-slate-950
-                    "
-                    data-i18n="users.add_user"
-                >
-                    Add User
-                </h2>
-
-                <p
-                    id="user-modal-description"
-                    class="
-                        mt-1 text-sm
-                        text-slate-500
-                    "
-                    data-i18n="users.create_description"
-                >
-                    Create an application user and send a secure password-setup invitation.
-                </p>
-            </div>
-
-            <button
-                id="user-modal-close"
-                type="button"
-                class="
-                    rounded-lg p-2
-                    text-slate-400
-                    hover:bg-slate-100
-                    hover:text-slate-700
-                "
-                data-i18n-aria-label="users.close"
-                aria-label="Close"
-            >
-                ✕
-            </button>
-        </div>
-
-        <form
-            id="user-form"
-            class="p-6"
         >
             <div
                 id="user-form-error"
                 class="
                     mb-5 hidden rounded-lg
-                    border border-red-200
-                    bg-red-50 px-4 py-3
-                    text-sm text-red-700
+                    border px-4 py-3
+                    text-sm
+                    border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)]
+                    text-[var(--pm-danger-text)]
                 "
                 role="alert"
             ></div>
@@ -335,15 +261,9 @@
                 <div class="sm:col-span-2">
                     <label
                         for="user-name"
-                        class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
-                        "
+                        class="pm-field-label"
                     >
-                        <span data-i18n="users.name">
-                            Name
-                        </span>
+                        <span data-i18n="users.name">{{ __('ui.users.name') }}</span>
                     </label>
 
                     <input
@@ -351,27 +271,16 @@
                         type="text"
                         maxlength="255"
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3 py-2.5
-                            text-sm
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div class="sm:col-span-2">
                     <label
                         for="user-email"
-                        class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
-                        "
+                        class="pm-field-label"
                     >
-                        <span data-i18n="users.email">
-                            Email
-                        </span>
+                        <span data-i18n="users.email">{{ __('ui.users.email') }}</span>
                     </label>
 
                     <input
@@ -379,50 +288,30 @@
                         type="email"
                         maxlength="255"
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3 py-2.5
-                            text-sm
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div>
                     <label
                         for="user-phone"
-                        class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
-                        "
+                        class="pm-field-label"
                     >
-                        <span data-i18n="users.phone">
-                            Phone
-                        </span>
+                        <span data-i18n="users.phone">{{ __('ui.users.phone') }}</span>
                     </label>
 
                     <input
                         id="user-phone"
                         type="text"
                         maxlength="50"
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3 py-2.5
-                            text-sm
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div>
                     <label
                         for="user-role"
-                        class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
-                        "
+                        class="pm-field-label"
                     >
                         <span data-i18n="users.role">
                             Role
@@ -432,19 +321,16 @@
                     <select
                         id="user-role"
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            bg-white px-3 py-2.5
-                            text-sm
-                        "
+                        class="pm-input"
                     >
                         <option value="administrator" data-i18n="roles.administrator">
                             Administrator
                         </option>
+
                         <option value="property_manager" data-i18n="roles.property_manager">
                             Property Manager
                         </option>
+
                         <option value="viewer" data-i18n="roles.viewer">
                             Viewer
                         </option>
@@ -456,7 +342,8 @@
                         sm:col-span-2
                         flex items-center gap-3
                         rounded-lg border
-                        border-slate-200
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface-subtle)]
                         px-4 py-3
                     "
                 >
@@ -474,8 +361,8 @@
                     <span>
                         <span
                             class="
-                                block text-sm
-                                font-medium text-slate-800
+                                block text-sm font-medium
+                                text-[var(--pm-text)]
                             "
                             data-i18n="users.active_account"
                         >
@@ -484,8 +371,8 @@
 
                         <span
                             class="
-                                mt-0.5 block
-                                text-xs text-slate-500
+                                mt-0.5 block text-xs
+                                text-[var(--pm-text-muted)]
                             "
                             data-i18n="users.active_account_help"
                         >
@@ -494,49 +381,27 @@
                     </span>
                 </label>
             </div>
+        </div>
 
-            <div
-                class="
-                    mt-7 flex
-                    justify-end gap-3
-                "
+        <x-drawer-footer>
+            <button
+                id="user-cancel-button"
+                type="button"
+                class="pm-button-secondary"
             >
-                <button
-                    id="user-cancel-button"
-                    type="button"
-                    class="
-                        rounded-lg border
-                        border-slate-200
-                        bg-white px-4 py-2.5
-                        text-sm font-medium
-                        text-slate-700
-                        hover:bg-slate-50
-                    "
-                >
-                    <span data-i18n="users.cancel">
-                        Cancel
-                    </span>
-                </button>
+                <span data-i18n="users.cancel">{{ __('ui.users.cancel') }}</span>
+            </button>
 
-                <button
-                    id="user-submit-button"
-                    type="submit"
-                    class="
-                        rounded-lg
-                        bg-patrimoine-800
-                        px-4 py-2.5
-                        text-sm font-medium
-                        text-white
-                        hover:bg-patrimoine-900
-                        disabled:opacity-50
-                    "
-                    data-i18n="users.create_user"
-                >
-                    Create User
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+            <button
+                id="user-submit-button"
+                type="submit"
+                class="pm-button-primary"
+                data-i18n="actions.save"
+            >
+                {{ __('ui.actions.save') }}
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
 
 @endsection

@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\Invoice;
 use App\Models\Lease;
 use App\Models\SecurityDepositSettlement;
 use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
-use App\Models\Invoice;
 
 /**
  * Handles final settlement of a Lease's Security Deposit.
@@ -123,29 +123,21 @@ class SecurityDepositService
                  */
                 $settlement =
                     SecurityDepositSettlement::create([
-                        'lease_id' =>
-                            $lease->id,
+                        'lease_id' => $lease->id,
 
-                        'deposit_amount' =>
-                            $depositAmount,
+                        'deposit_amount' => $depositAmount,
 
-                        'deduction_amount' =>
-                            $deductionAmount,
+                        'deduction_amount' => $deductionAmount,
 
-                        'refund_amount' =>
-                            $refundAmount,
+                        'refund_amount' => $refundAmount,
 
-                        'tenant_debt_amount' =>
-                            $tenantDebtAmount,
+                        'tenant_debt_amount' => $tenantDebtAmount,
 
-                        'settlement_date' =>
-                            $settlementDate,
+                        'settlement_date' => $settlementDate,
 
-                        'refund_voucher_number' =>
-                            null,
+                        'refund_voucher_number' => null,
 
-                        'notes' =>
-                            $notes,
+                        'notes' => $notes,
                     ]);
 
                 $voucherNumber =
@@ -155,10 +147,8 @@ class SecurityDepositService
                     );
 
                 $settlement->update([
-                    'refund_voucher_number' =>
-                        $voucherNumber,
+                    'refund_voucher_number' => $voucherNumber,
                 ]);
-
 
                 /*
  * Excess Security Deposit deductions remain a genuine amount owed by
@@ -171,76 +161,59 @@ class SecurityDepositService
  * this receivable must not create owner rent entitlement or management
  * fees.
  */
-if ($tenantDebtAmount > 0) {
-    $debtInvoice =
-        Invoice::create([
-            'lease_id' =>
-                $lease->id,
+                if ($tenantDebtAmount > 0) {
+                    $debtInvoice =
+                        Invoice::create([
+                            'lease_id' => $lease->id,
 
-            'invoice_number' =>
-                sprintf(
-                    'SDD-%06d',
-                    $settlement->id
-                ),
+                            'invoice_number' => sprintf(
+                                'SDD-%06d',
+                                $settlement->id
+                            ),
 
-            'type' =>
-                'security_deposit_debt',
+                            'type' => 'security_deposit_debt',
 
-            /*
+                            /*
              * A close-out debt has no recurring rent billing period.
              *
              * The settlement date is used for both dates so the existing
              * Invoice schema remains auditable without inventing a rent
              * period.
              */
-            'period_start' =>
-                $settlementDate,
+                            'period_start' => $settlementDate,
 
-            'period_end' =>
-                $settlementDate,
+                            'period_end' => $settlementDate,
 
-            'issue_date' =>
-                $settlementDate,
+                            'issue_date' => $settlementDate,
 
-            'due_date' =>
-                $settlementDate,
+                            'due_date' => $settlementDate,
 
-            'status' =>
-                'issued',
+                            'status' => 'issued',
 
-            'total_amount' =>
-                $tenantDebtAmount,
+                            'total_amount' => $tenantDebtAmount,
 
-            /*
+                            /*
              * This is recovery of a Security Deposit close-out charge,
              * not contractual VAT-inclusive rent.
              */
-            'vat_rate' =>
-                0,
+                            'vat_rate' => 0,
 
-            'net_amount' =>
-                $tenantDebtAmount,
+                            'net_amount' => $tenantDebtAmount,
 
-            'vat_amount' =>
-                0,
+                            'vat_amount' => 0,
 
-            'proration_amount' =>
-                null,
+                            'proration_amount' => null,
 
-            'notes' =>
-                sprintf(
-                    'Security Deposit close-out debt from settlement %s.',
-                    $voucherNumber
-                ),
-        ]);
+                            'notes' => sprintf(
+                                'Security Deposit close-out debt from settlement %s.',
+                                $voucherNumber
+                            ),
+                        ]);
 
-    $settlement->update([
-        'debt_invoice_id' =>
-            $debtInvoice->id,
-    ]);
-}
-
-
+                    $settlement->update([
+                        'debt_invoice_id' => $debtInvoice->id,
+                    ]);
+                }
 
                 /*
                  * Consume the portion of the deposit retained against
@@ -261,26 +234,19 @@ if ($tenantDebtAmount > 0) {
                     > 0
                 ) {
                     TenantFundTransaction::create([
-                        'tenant_fund_account_id' =>
-                            $account->id,
+                        'tenant_fund_account_id' => $account->id,
 
-                        'direction' =>
-                            'debit',
+                        'direction' => 'debit',
 
-                        'category' =>
-                            'deposit_deduction',
+                        'category' => 'deposit_deduction',
 
-                        'amount' =>
-                            $depositUsedForDeductions,
+                        'amount' => $depositUsedForDeductions,
 
-                        'transaction_date' =>
-                            $settlementDate,
+                        'transaction_date' => $settlementDate,
 
-                        'reference' =>
-                            $voucherNumber,
+                        'reference' => $voucherNumber,
 
-                        'notes' =>
-                            'Security deposit deductions applied during final settlement.',
+                        'notes' => 'Security deposit deductions applied during final settlement.',
                     ]);
                 }
 
@@ -292,26 +258,19 @@ if ($tenantDebtAmount > 0) {
                  */
                 if ($refundAmount > 0) {
                     TenantFundTransaction::create([
-                        'tenant_fund_account_id' =>
-                            $account->id,
+                        'tenant_fund_account_id' => $account->id,
 
-                        'direction' =>
-                            'debit',
+                        'direction' => 'debit',
 
-                        'category' =>
-                            'refund',
+                        'category' => 'refund',
 
-                        'amount' =>
-                            $refundAmount,
+                        'amount' => $refundAmount,
 
-                        'transaction_date' =>
-                            $settlementDate,
+                        'transaction_date' => $settlementDate,
 
-                        'reference' =>
-                            $voucherNumber,
+                        'reference' => $voucherNumber,
 
-                        'notes' =>
-                            'Security deposit refund issued during final settlement.',
+                        'notes' => 'Security deposit refund issued during final settlement.',
                     ]);
                 }
 

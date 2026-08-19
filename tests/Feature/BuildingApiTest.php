@@ -2,22 +2,21 @@
 
 namespace Tests\Feature;
 
+use App\Models\ApplicationSetting;
 use App\Models\Party;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
-use App\Models\ApplicationSetting;
+use Tests\TestCase;
 
 /**
  * Verifies the Patrimoine Building REST API.
  */
 class BuildingApiTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
-
     {
 
         parent::setUp();
@@ -282,7 +281,6 @@ class BuildingApiTest extends TestCase
             );
     }
 
-
     /**
      * Custom FormRequest validation follows French.
      */
@@ -293,7 +291,7 @@ class BuildingApiTest extends TestCase
             'currency' => 'GHS',
         ]);
 
-        $owner = \App\Models\Party::create([
+        $owner = Party::create([
             'type' => 'person',
             'name' => 'Propriétaire Test',
             'phone' => '0200000888',
@@ -316,5 +314,4 @@ class BuildingApiTest extends TestCase
                 'La somme des pourcentages de propriété de l’immeuble doit être égale à 100 %.'
             );
     }
-
 }

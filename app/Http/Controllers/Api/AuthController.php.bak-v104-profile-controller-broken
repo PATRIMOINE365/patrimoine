@@ -1,0 +1,290 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Services\ActivityLogService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+
+/**
+ * Authentication endpoints for Patrimoine application users.
+ *
+ * Patrimoine users are administrative accounts and remain separate from
+ * domain Parties such as owners, tenants and agents.
+ *
+ * Sanctum personal access tokens are supported for API and future mobile
+ * clients. The first-party web application may later use Sanctum's
+ * stateful session authentication instead.
+ */
+class AuthController extends Controller
+{
+    /**
+     * Update the currently authenticated user's own profile.
+     *
+     * Password change is optional. When requested, the supplied current
+     * password must be valid before ANY profile field is persisted.
+     */
+    public function login(
+        Request $request,
+        ActivityLogService $activityLog
+    ): JsonResponse {
+        /** @var User $user */
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                \Illuminate\Validation\Rule::unique(
+                    'users',
+                    'email'
+                )->ignore($user->id),
+            ],
+
+            'phone' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'current_password' => [
+                'nullable',
+                'required_with:password',
+                'string',
+            ],
+
+            'password' => [
+                'nullable',
+                'required_with:current_password',
+                'string',
+                'min:8',
+                'confirmed',
+            ],
+        ]);
+
+        $changingPassword =
+            ! empty(
+                $validated['password']
+                ?? null
+            );
+
+        /*
+         * Verify the current password BEFORE modifying identity fields.
+         * A failed password check therefore leaves the whole profile
+         * untouched.
+         */
+        if (
+            $changingPassword
+            && ! Hash::check(
+                $validated['current_password'],
+                $user->password
+            )
+        ) {
+            throw ValidationException::withMessages([
+                'current_password' => [
+                    __(
+                        'api.password.current_password_incorrect'
+                    ),
+                ],
+            ]);
+        }
+
+        $before = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+        ];
+
+        \Illuminate\Support\Facades\DB::transaction(
+            function () use (
+                $user,
+                $validated,
+                $changingPassword
+            ): void {
+                $user->name =
+                    $validated['name'];
+
+                $user->email =
+                    mb_strtolower(
+                        trim(
+                            $validated['email']
+                        )
+                    );
+
+                $user->phone =
+                    $validated['phone']
+                    ?? null;
+
+                if ($changingPassword) {
+                    $user->password =
+                        $validated['password'];
+                }
+
+                $user->save();
+            }
+        );
+
+        $user->refresh();
+
+        $after = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+        ];
+
+        $changedBefore = [];
+        $changedAfter = [];
+
+        foreach ($before as $field => $value) {
+            if ($value !== $after[$field]) {
+                $changedBefore[$field] =
+                    $value;
+
+                $changedAfter[$field] =
+                    $after[$field];
+            }
+        }
+
+        /*
+         * Keep password values entirely out of Activity Log.
+         */
+        if (
+            $changedBefore !== []
+            || $changingPassword
+        ) {
+            $activityLog->record(
+                action:
+                    $changingPassword
+                        ? 'user.profile_password_updated'
+                        : 'user.profile_updated',
+                request: $request,
+                entityType: 'user',
+                entityId: $user->id,
+                entityLabel: $user->name,
+                before:
+                    $changedBefore !== []
+                        ? $changedBefore
+                        : null,
+                after:
+                    $changedAfter !== []
+                        ? $changedAfter
+                        : null
+            );
+        }
+
+        if ($changingPassword) {
+            /*
+             * A successful password change invalidates all existing API
+             * sessions, including this browser. The frontend then returns
+             * the user to Login.
+             */
+            $user->tokens()->delete();
+        }
+
+        return response()->json(
+            $this->serializeUser(
+                $user
+            )
+        );
+    }
+
+    /**
+     * Revoke the Sanctum token used for the current API request.
+     */
+    public function logout(
+        Request $request,
+        ActivityLogService $activityLog
+    ): JsonResponse {
+
+        /** @var User $user */
+        $user = $request->user();
+
+        /*
+         * API-token authentication provides a current access token.
+         * The null-safe operator also keeps this endpoint compatible with
+         * future stateful Sanctum authentication.
+         */
+        $user->currentAccessToken()?->delete();
+
+        /*
+         * Token revocation is the consequence of logout, not a separate
+         * Activity Log event.
+         */
+        $activityLog->record(
+            action: 'auth.logout',
+            actor: $user,
+            request: $request,
+            entityType: 'user',
+            entityId: $user->id,
+            entityLabel: $user->name,
+        );
+
+        return response()->json([
+            'message' => __('api.auth.logged_out'),
+        ]);
+    }
+
+    /**
+     * Record one unsuccessful authentication attempt without attributing
+     * the attempt to an authenticated User.
+     *
+     * The submitted password is deliberately unavailable to this method and
+     * must never be written to Activity Log.
+     */
+    private function recordFailedLogin(
+        ActivityLogService $activityLog,
+        Request $request,
+        string $email,
+        string $reason,
+        ?User $user = null
+    ): void {
+        $activityLog->record(
+            action: 'auth.login_failed',
+            request: $request,
+            actorEmail: mb_strtolower(
+                trim($email)
+            ),
+            entityType: $user === null
+                    ? null
+                    : 'user',
+            entityId: $user?->id,
+            entityLabel: $user?->name,
+            metadata: [
+                'reason' => $reason,
+            ],
+        );
+    }
+
+    /**
+     * Produce the public API representation of an application user.
+     *
+     * Authentication responses deliberately expose only the fields needed
+     * by clients and never return password or remember-token information.
+     *
+     * @return array<string, mixed>
+     */
+    private function serializeUser(User $user): array
+    {
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role,
+            'email_verified_at' => $user->email_verified_at,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+        ];
+    }
+}

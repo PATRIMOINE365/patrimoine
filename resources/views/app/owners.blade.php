@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Owners — Patrimoine')
+@section('title', __('ui.owners.title'))
 @section('title-i18n', 'owners.title')
 
 @section('content')
 
-<div class="mx-auto max-w-[1600px]">
+<div class="pm-owners-page mx-auto max-w-[1600px]">
 
     {{-- ============================================================
          Page Header
@@ -24,7 +24,9 @@
                     text-patrimoine-700
                 "
             >
-                <span data-i18n="owners.finance">Finance</span>
+                <span data-i18n="owners.finance">
+    {{ __('ui.owners.finance') }}
+</span>
             </p>
 
             <h1
@@ -33,12 +35,15 @@
                     tracking-tight text-slate-950
                 "
             >
-                <span data-i18n="owners.heading">Owners</span>
+                <span data-i18n="owners.heading">
+    {{ __('ui.owners.heading') }}
+</span>
             </h1>
 
             <p class="mt-2 text-sm text-slate-500">
-                <span data-i18n="owners.page_description">Review property ownership, owner balances, transactions,
-                deposits and payouts.</span>
+                <span data-i18n="owners.page_description">
+    {{ __('ui.owners.page_description') }}
+</span>
             </p>
         </div>
     </div>
@@ -61,6 +66,7 @@
 
     <div
         class="
+            pm-owners-workspace
             grid gap-6
             xl:grid-cols-[380px_minmax(0,1fr)]
         "
@@ -72,6 +78,7 @@
 
         <section
             class="
+                pm-owner-directory
                 overflow-hidden rounded-xl
                 border border-slate-200
                 bg-white shadow-sm
@@ -89,11 +96,15 @@
                         text-slate-950
                     "
                 >
-                    <span data-i18n="owners.property_owners">Property Owners</span>
+                    <span data-i18n="owners.property_owners">
+    {{ __('ui.owners.property_owners') }}
+</span>
                 </h2>
 
                 <p class="mt-1 text-xs text-slate-500">
-                    <span data-i18n="owners.search_description">Search by owner name, phone or email.</span>
+                    <span data-i18n="owners.search_description">
+    {{ __('ui.owners.search_description') }}
+</span>
                 </p>
 
                 <div class="mt-4">
@@ -101,7 +112,9 @@
                         for="owners-search"
                         class="sr-only"
                     >
-                        <span data-i18n="owners.search_property_owners">Search Property Owners</span>
+                        <span data-i18n="owners.search_property_owners">
+    {{ __('ui.owners.search_property_owners') }}
+</span>
                     </label>
 
                     <div class="relative">
@@ -126,7 +139,7 @@
                             id="owners-search"
                             type="search"
                             autocomplete="off"
-                            placeholder="Search owners..." data-i18n-placeholder="owners.search_placeholder"
+                            placeholder="{{ __('ui.owners.search_placeholder') }}" data-i18n-placeholder="owners.search_placeholder"
                             class="
                                 w-full rounded-lg
                                 border border-slate-200
@@ -156,7 +169,9 @@
                         text-sm text-slate-400
                     "
                 >
-                    <span data-i18n="owners.loading">Loading owners…</span>
+                    <span data-i18n="owners.loading">
+    {{ __('ui.owners.loading') }}
+</span>
                 </div>
             </div>
 
@@ -177,6 +192,7 @@
         <section
             id="owner-detail-panel"
             class="
+                pm-owner-detail-shell
                 min-w-0 overflow-hidden
                 rounded-xl
                 border border-slate-200
@@ -226,7 +242,9 @@
                             text-slate-900
                         "
                     >
-                        <span data-i18n="owners.select_property_owner">Select a Property Owner</span>
+                        <span data-i18n="owners.select_property_owner">
+    {{ __('ui.owners.select_property_owner') }}
+</span>
                     </h2>
 
                     <p
@@ -235,8 +253,9 @@
                             text-slate-500
                         "
                     >
-                        <span data-i18n="owners.select_owner_description">Choose an owner from the directory to review their
-                        properties, account balance and financial history.</span>
+                        <span data-i18n="owners.select_owner_description">
+    {{ __('ui.owners.select_owner_description') }}
+</span>
                     </p>
                 </div>
             </div>
@@ -296,7 +315,9 @@
                                         text-emerald-700
                                     "
                                 >
-                                    <span data-i18n="owners.active">Active</span>
+                                    <span data-i18n="owners.active">
+    {{ __('ui.owners.active') }}
+</span>
                                 </span>
                             </div>
 
@@ -321,11 +342,14 @@
                                 type="button"
                                 class="
                                     inline-flex items-center gap-2
-                                    rounded-lg bg-patrimoine-950
-                                    px-3.5 py-2.5
-                                    text-sm font-medium text-white
-                                    shadow-sm transition
-                                    hover:bg-patrimoine-900
+                                    rounded-lg border
+                                    border-slate-200
+                                    bg-white px-3.5 py-2.5
+                                    text-sm font-medium
+                                    text-slate-700
+                                    transition
+                                    hover:border-slate-300
+                                    hover:bg-slate-50
                                 "
                             >
                                 <svg
@@ -339,7 +363,9 @@
                                     <path d="M5 12h14"/>
                                 </svg>
 
-                                <span data-i18n="owners.deposit">Deposit</span>
+                                <span data-i18n="owners.deposit">
+    {{ __('ui.owners.deposit') }}
+</span>
                             </button>
 
                             <button
@@ -357,7 +383,9 @@
                                     hover:bg-slate-50
                                 "
                             >
-                                <span data-i18n="owners.expense">Expense</span>
+                                <span data-i18n="owners.expense">
+    {{ __('ui.owners.expense') }}
+</span>
                             </button>
 
                             <button
@@ -377,7 +405,9 @@
                                     disabled:opacity-50
                                 "
                             >
-                                <span data-i18n="owners.payout">Payout</span>
+                                <span data-i18n="owners.payout">
+    {{ __('ui.owners.payout') }}
+</span>
                             </button>
 
                             <button
@@ -395,26 +425,11 @@
                                     hover:bg-slate-50
                                 "
                             >
-                                <span data-i18n="owners.adjustment">Adjustment</span>
+                                <span data-i18n="owners.adjustment">
+    {{ __('ui.owners.adjustment') }}
+</span>
                             </button>
 
-                            <a
-                                id="owner-report-link"
-                                href="#"
-                                class="
-                                    inline-flex items-center
-                                    rounded-lg border
-                                    border-slate-200
-                                    bg-white px-3.5 py-2.5
-                                    text-sm font-medium
-                                    text-slate-700
-                                    transition
-                                    hover:border-slate-300
-                                    hover:bg-slate-50
-                                "
-                            >
-                                <span data-i18n="owners.owner_report">Owner Report</span>
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -441,7 +456,9 @@
                                 text-slate-500
                             "
                         >
-                            <span data-i18n="owners.current_balance">Current Balance</span>
+                            <span data-i18n="owners.current_balance">
+    {{ __('ui.owners.current_balance') }}
+</span>
                         </div>
 
                         <div
@@ -463,7 +480,9 @@
                                 text-slate-500
                             "
                         >
-                            <span data-i18n="owners.total_credits">Total Credits</span>
+                            <span data-i18n="owners.total_credits">
+    {{ __('ui.owners.total_credits') }}
+</span>
                         </div>
 
                         <div
@@ -485,7 +504,9 @@
                                 text-slate-500
                             "
                         >
-                            <span data-i18n="owners.total_debits">Total Debits</span>
+                            <span data-i18n="owners.total_debits">
+    {{ __('ui.owners.total_debits') }}
+</span>
                         </div>
 
                         <div
@@ -507,7 +528,9 @@
                                 text-slate-500
                             "
                         >
-                            <span data-i18n="owners.properties">Properties</span>
+                            <span data-i18n="owners.properties">
+    {{ __('ui.owners.properties') }}
+</span>
                         </div>
 
                         <div
@@ -523,7 +546,9 @@
                 </div>
 
                 {{-- ====================================================
-                     <span data-i18n="owners.properties">Properties</span>
+                     <span data-i18n="owners.properties">
+    {{ __('ui.owners.properties') }}
+</span>
                 ==================================================== --}}
 
                 <div
@@ -545,7 +570,9 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="owners.properties">Properties</span>
+                                <span data-i18n="owners.properties">
+    {{ __('ui.owners.properties') }}
+</span>
                             </h3>
 
                             <p
@@ -554,8 +581,9 @@
                                     text-slate-500
                                 "
                             >
-                                <span data-i18n="owners.properties_description">Buildings owned by this Party, including
-                                vacant properties.</span>
+                                <span data-i18n="owners.properties_description">
+    {{ __('ui.owners.properties_description') }}
+</span>
                             </p>
                         </div>
                     </div>
@@ -586,7 +614,9 @@
                                 text-slate-950
                             "
                         >
-                            <span data-i18n="owners.owner_ledger">Owner Ledger</span>
+                            <span data-i18n="owners.owner_ledger">
+    {{ __('ui.owners.owner_ledger') }}
+</span>
                         </h3>
 
                         <p
@@ -595,8 +625,9 @@
                                 text-slate-500
                             "
                         >
-                            <span data-i18n="owners.ledger_description">Complete auditable financial movements affecting
-                            the owner's consolidated account.</span>
+                            <span data-i18n="owners.ledger_description">
+    {{ __('ui.owners.ledger_description') }}
+</span>
                         </p>
                     </div>
 
@@ -616,7 +647,9 @@
                 </div>
 
                 {{-- ====================================================
-                     <span data-i18n="owners.payout_history">Payout History</span>
+                     <span data-i18n="owners.payout_history">
+    {{ __('ui.owners.payout_history') }}
+</span>
                 ==================================================== --}}
 
                 <div
@@ -631,7 +664,9 @@
                                 text-slate-950
                             "
                         >
-                            <span data-i18n="owners.payout_history">Payout History</span>
+                            <span data-i18n="owners.payout_history">
+    {{ __('ui.owners.payout_history') }}
+</span>
                         </h3>
 
                         <p
@@ -640,7 +675,9 @@
                                 text-slate-500
                             "
                         >
-                            <span data-i18n="owners.payout_history_description">Funds previously paid out to this Property Owner.</span>
+                            <span data-i18n="owners.payout_history_description">
+    {{ __('ui.owners.payout_history_description') }}
+</span>
                         </p>
                     </div>
 
@@ -655,81 +692,44 @@
     </div>
 </div>
 {{-- ================================================================
-     Owner Deposit Modal
+     Owner Deposit Drawer
 ================================================================ --}}
 
-<div
+<x-drawer
     id="owner-deposit-modal"
-    class="
-        fixed inset-0 z-50 hidden
-        items-center justify-center
-        bg-slate-950/50
-        px-4 py-6
-    "
+    backdrop-id="owner-deposit-modal-backdrop"
+    width="sm"
 >
-    <div
-        class="
-            flex max-h-[92vh] w-full max-w-2xl
-            flex-col overflow-hidden
-            rounded-2xl bg-white
-            shadow-2xl
-        "
+    <x-drawer-header
+        close-id="owner-deposit-modal-close"
+        close-label="Close"
+        close-label-key="owners.close"
     >
+        <x-slot:title>
+            <span data-i18n="owners.record_owner_deposit">
+    {{ __('ui.owners.record_owner_deposit') }}
+</span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="owners.deposit_description">
+    {{ __('ui.owners.deposit_description') }}
+</span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+            id="owner-deposit-form"
+            class="flex min-h-0 flex-1 flex-col"
+        >
         <div
             class="
-                flex items-start justify-between
-                border-b border-slate-100
-                px-6 py-5
+                min-h-0 flex-1
+                overflow-y-auto
+                px-6 py-6
             "
         >
-            <div>
-                <h2
-                    class="
-                        text-xl font-semibold
-                        tracking-tight text-slate-950
-                    "
-                >
-                    <span data-i18n="owners.record_owner_deposit">Record Owner Deposit</span>
-                </h2>
-
-                <p
-                    id="owner-deposit-subtitle"
-                    class="mt-1 text-sm text-slate-500"
-                >
-                    <span data-i18n="owners.deposit_description">Record money received from this Property Owner.</span>
-                </p>
-            </div>
-
-            <button
-                type="button"
-                data-close-owner-modal="owner-deposit-modal"
-                aria-label="Close"
-                class="
-                    rounded-lg p-2
-                    text-slate-400 transition
-                    hover:bg-slate-100
-                    hover:text-slate-700
-                "
-
-                data-i18n-aria-label="owners.close">
-                <svg
-                    class="h-5 w-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
-                    <path d="M18 6 6 18"/>
-                    <path d="m6 6 12 12"/>
-                </svg>
-            </button>
-        </div>
-
-        <form
-            id="owner-deposit-form"
-            class="overflow-y-auto px-6 py-6"
-        >
-            <div
+<div
                 id="owner-deposit-error"
                 class="
                     mb-5 hidden rounded-xl
@@ -754,7 +754,9 @@
                             text-slate-700
                         "
                     >
-                        <span data-i18n="owners.amount">Amount</span>
+                        <span data-i18n="owners.amount">
+    {{ __('ui.owners.amount') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -767,7 +769,6 @@
                                 text-sm text-slate-500
                             "
                          data-currency-display>
-                            GHS
                         </span>
 
                         <input
@@ -798,13 +799,21 @@
                             text-slate-700
                         "
                     >
-                        <span data-i18n="owners.deposit_date">Deposit Date</span>
+                        <span data-i18n="owners.deposit_date">
+    {{ __('ui.owners.deposit_date') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
                     <input
                         id="owner-deposit-date"
-                        type="date"
+                        type="text"
+                        inputmode="numeric"
+                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                        maxlength="10"
+                        autocomplete="off"
+                        data-owner-date-input
+                        data-pm-date-input
                         required
                         class="
                             w-full rounded-lg
@@ -827,7 +836,9 @@
                             text-slate-700
                         "
                     >
-                        <span data-i18n="owners.payment_method">Payment Method</span>
+                        <span data-i18n="owners.payment_method">
+    {{ __('ui.owners.payment_method') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -845,16 +856,16 @@
                         "
                     >
                         <option value="bank_transfer" data-i18n="owners.bank_transfer">
-                            Bank Transfer
-                        </option>
+    {{ __('ui.owners.bank_transfer') }}
+</option>
 
                         <option value="momo" data-i18n="owners.momo">
-                            MoMo
-                        </option>
+    {{ __('ui.owners.momo') }}
+</option>
 
                         <option value="cash" data-i18n="owners.cash">
-                            Cash
-                        </option>
+    {{ __('ui.owners.cash') }}
+</option>
                     </select>
                 </div>
 
@@ -867,7 +878,9 @@
                             text-slate-700
                         "
                     >
-                        <span data-i18n="owners.deposit_purpose">Deposit Purpose</span>
+                        <span data-i18n="owners.deposit_purpose">
+    {{ __('ui.owners.deposit_purpose') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -885,20 +898,20 @@
                         "
                     >
                         <option value="general_funding" data-i18n="owners.general_funding">
-                            General Funding
-                        </option>
+    {{ __('ui.owners.general_funding') }}
+</option>
 
                         <option value="property_expense" data-i18n="owners.property_expense">
-                            Property Expense
-                        </option>
+    {{ __('ui.owners.property_expense') }}
+</option>
 
                         <option value="repair_maintenance" data-i18n="owners.repair_maintenance_static">
-                            Repair & Maintenance
-                        </option>
+    {{ __('ui.owners.repair_maintenance_static') }}
+</option>
 
                         <option value="other" data-i18n="owners.other">
-                            Other
-                        </option>
+    {{ __('ui.owners.other') }}
+</option>
                     </select>
                 </div>
 
@@ -911,9 +924,13 @@
                             text-slate-700
                         "
                     >
-                        <span data-i18n="owners.building">Building</span>
+                        <span data-i18n="owners.building">
+    {{ __('ui.owners.building') }}
+</span>
                         <span class="text-xs text-slate-400">
-                            <span data-i18n="owners.optional">(Optional)</span>
+                            <span data-i18n="owners.optional">
+    {{ __('ui.owners.optional') }}
+</span>
                         </span>
                     </label>
 
@@ -930,8 +947,8 @@
                         "
                     >
                         <option value="" data-i18n="owners.no_specific_building">
-                            No specific Building
-                        </option>
+    {{ __('ui.owners.no_specific_building') }}
+</option>
                     </select>
                 </div>
 
@@ -944,9 +961,13 @@
                             text-slate-700
                         "
                     >
-                        <span data-i18n="owners.unit">Unit</span>
+                        <span data-i18n="owners.unit">
+    {{ __('ui.owners.unit') }}
+</span>
                         <span class="text-xs text-slate-400">
-                            <span data-i18n="owners.optional">(Optional)</span>
+                            <span data-i18n="owners.optional">
+    {{ __('ui.owners.optional') }}
+</span>
                         </span>
                     </label>
 
@@ -966,8 +987,8 @@
                         "
                     >
                         <option value="" data-i18n="owners.select_building_first">
-                            Select a Building first
-                        </option>
+    {{ __('ui.owners.select_building_first') }}
+</option>
                     </select>
                 </div>
 
@@ -980,9 +1001,13 @@
                             text-slate-700
                         "
                     >
-                        <span data-i18n="owners.reference">Reference</span>
+                        <span data-i18n="owners.reference">
+    {{ __('ui.owners.reference') }}
+</span>
                         <span class="text-xs text-slate-400">
-                            <span data-i18n="owners.optional">(Optional)</span>
+                            <span data-i18n="owners.optional">
+    {{ __('ui.owners.optional') }}
+</span>
                         </span>
                     </label>
 
@@ -1014,7 +1039,9 @@
                             text-slate-700
                         "
                     >
-                        <span data-i18n="owners.collector">Collector</span>
+                        <span data-i18n="owners.collector">
+    {{ __('ui.owners.collector') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1043,9 +1070,13 @@
                             text-slate-700
                         "
                     >
-                        <span data-i18n="owners.notes">Notes</span>
+                        <span data-i18n="owners.notes">
+    {{ __('ui.owners.notes') }}
+</span>
                         <span class="text-xs text-slate-400">
-                            <span data-i18n="owners.optional">(Optional)</span>
+                            <span data-i18n="owners.optional">
+    {{ __('ui.owners.optional') }}
+</span>
                         </span>
                     </label>
 
@@ -1064,107 +1095,71 @@
                     ></textarea>
                 </div>
             </div>
-        </form>
+        </div>
 
-        <div
-            class="
-                flex items-center justify-end gap-3
-                border-t border-slate-100
-                bg-slate-50/70
-                px-6 py-4
-            "
-        >
+        <x-drawer-footer>
             <button
                 type="button"
                 data-close-owner-modal="owner-deposit-modal"
-                class="
-                    rounded-lg border border-slate-200
-                    bg-white px-4 py-2.5
-                    text-sm font-medium text-slate-700
-                    hover:bg-slate-50
-                "
+                class="pm-button-secondary"
             >
-                <span data-i18n="owners.cancel">Cancel</span>
+                <span data-i18n="owners.cancel">
+    {{ __('ui.owners.cancel') }}
+</span>
             </button>
 
             <button
                 id="owner-deposit-submit"
                 type="submit"
-                form="owner-deposit-form"
-                class="
-                    rounded-lg bg-patrimoine-950
-                    px-4 py-2.5
-                    text-sm font-medium text-white
-                    hover:bg-patrimoine-900
-                    disabled:cursor-not-allowed
-                    disabled:opacity-60
-                "
+                class="pm-button-primary"
             >
-                <span data-i18n="owners.record_deposit">Record Deposit</span>
+                <span data-i18n="actions.save">
+    {{ __('ui.actions.save') }}
+</span>
             </button>
-        </div>
-    </div>
-</div>
-
+        </x-drawer-footer>
+    </form>
+</x-drawer>
 
 {{-- ================================================================
-     Owner Expense Modal
+     Owner Expense Drawer
 ================================================================ --}}
 
-<div
+<x-drawer
     id="owner-expense-modal"
-    class="
-        fixed inset-0 z-50 hidden
-        items-center justify-center
-        bg-slate-950/50
-        px-4 py-6
-    "
+    backdrop-id="owner-expense-modal-backdrop"
+    width="sm"
 >
-    <div
-        class="
-            flex max-h-[92vh] w-full max-w-2xl
-            flex-col overflow-hidden
-            rounded-2xl bg-white
-            shadow-2xl
-        "
+    <x-drawer-header
+        close-id="owner-expense-modal-close"
+        close-label="Close"
+        close-label-key="owners.close"
     >
+        <x-slot:title>
+            <span data-i18n="owners.record_property_expense">
+    {{ __('ui.owners.record_property_expense') }}
+</span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="owners.expense_description">
+    {{ __('ui.owners.expense_description') }}
+</span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+            id="owner-expense-form"
+            class="flex min-h-0 flex-1 flex-col"
+        >
         <div
             class="
-                flex items-start justify-between
-                border-b border-slate-100
-                px-6 py-5
+                min-h-0 flex-1
+                overflow-y-auto
+                px-6 py-6
             "
         >
-            <div>
-                <h2 class="text-xl font-semibold text-slate-950">
-                    <span data-i18n="owners.record_property_expense">Record Property Expense</span>
-                </h2>
-
-                <p class="mt-1 text-sm text-slate-500">
-                    <span data-i18n="owners.expense_description">Record an expense against one of this Owner's properties.</span>
-                </p>
-            </div>
-
-            <button
-                type="button"
-                data-close-owner-modal="owner-expense-modal"
-                class="
-                    rounded-lg p-2
-                    text-slate-400
-                    hover:bg-slate-100
-                "
-
-                aria-label="Close"
-                data-i18n-aria-label="owners.close">
-                ✕
-            </button>
-        </div>
-
-        <form
-            id="owner-expense-form"
-            class="overflow-y-auto px-6 py-6"
-        >
-            <div
+<div
                 id="owner-expense-error"
                 class="
                     mb-5 hidden rounded-xl
@@ -1190,7 +1185,9 @@
                         for="owner-expense-building"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.building">Building</span>
+                        <span data-i18n="owners.building">
+    {{ __('ui.owners.building') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1207,8 +1204,8 @@
                         "
                     >
                         <option value="" data-i18n="owners.select_building">
-                            Select Building
-                        </option>
+    {{ __('ui.owners.select_building') }}
+</option>
                     </select>
                 </div>
 
@@ -1217,9 +1214,13 @@
                         for="owner-expense-unit"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.unit">Unit</span>
+                        <span data-i18n="owners.unit">
+    {{ __('ui.owners.unit') }}
+</span>
                         <span class="text-xs text-slate-400">
-                            <span data-i18n="owners.optional">(Optional)</span>
+                            <span data-i18n="owners.optional">
+    {{ __('ui.owners.optional') }}
+</span>
                         </span>
                     </label>
 
@@ -1236,8 +1237,8 @@
                         "
                     >
                         <option value="" data-i18n="owners.select_building_first">
-                            Select a Building first
-                        </option>
+    {{ __('ui.owners.select_building_first') }}
+</option>
                     </select>
                 </div>
 
@@ -1246,7 +1247,9 @@
                         for="owner-expense-description"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.description">Description</span>
+                        <span data-i18n="owners.description">
+    {{ __('ui.owners.description') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1255,7 +1258,7 @@
                         type="text"
                         maxlength="255"
                         required
-                        placeholder="e.g. Air-conditioner repair" data-i18n-placeholder="owners.expense_description_placeholder"
+                        placeholder="{{ __('ui.owners.expense_description_placeholder') }}" data-i18n-placeholder="owners.expense_description_placeholder"
                         class="
                             w-full rounded-lg
                             border border-slate-200
@@ -1272,7 +1275,9 @@
                         for="owner-expense-amount"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.amount">Amount</span>
+                        <span data-i18n="owners.amount">
+    {{ __('ui.owners.amount') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1284,7 +1289,6 @@
                                 text-sm text-slate-500
                             "
                          data-currency-display>
-                            GHS
                         </span>
 
                         <input
@@ -1308,13 +1312,21 @@
                         for="owner-expense-date"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.expense_date">Expense Date</span>
+                        <span data-i18n="owners.expense_date">
+    {{ __('ui.owners.expense_date') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
                     <input
                         id="owner-expense-date"
-                        type="date"
+                        type="text"
+                        inputmode="numeric"
+                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                        maxlength="10"
+                        autocomplete="off"
+                        data-owner-date-input
+                        data-pm-date-input
                         required
                         class="
                             w-full rounded-lg
@@ -1330,9 +1342,13 @@
                         for="owner-expense-reference"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.reference">Reference</span>
+                        <span data-i18n="owners.reference">
+    {{ __('ui.owners.reference') }}
+</span>
                         <span class="text-xs text-slate-400">
-                            <span data-i18n="owners.optional">(Optional)</span>
+                            <span data-i18n="owners.optional">
+    {{ __('ui.owners.optional') }}
+</span>
                         </span>
                     </label>
 
@@ -1354,9 +1370,13 @@
                         for="owner-expense-notes"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.notes">Notes</span>
+                        <span data-i18n="owners.notes">
+    {{ __('ui.owners.notes') }}
+</span>
                         <span class="text-xs text-slate-400">
-                            <span data-i18n="owners.optional">(Optional)</span>
+                            <span data-i18n="owners.optional">
+    {{ __('ui.owners.optional') }}
+</span>
                         </span>
                     </label>
 
@@ -1372,98 +1392,71 @@
                     ></textarea>
                 </div>
             </div>
-        </form>
+        </div>
 
-        <div
-            class="
-                flex items-center justify-end gap-3
-                border-t border-slate-100
-                bg-slate-50/70 px-6 py-4
-            "
-        >
+        <x-drawer-footer>
             <button
                 type="button"
                 data-close-owner-modal="owner-expense-modal"
-                class="
-                    rounded-lg border border-slate-200
-                    bg-white px-4 py-2.5
-                    text-sm font-medium text-slate-700
-                "
+                class="pm-button-secondary"
             >
-                <span data-i18n="owners.cancel">Cancel</span>
+                <span data-i18n="owners.cancel">
+    {{ __('ui.owners.cancel') }}
+</span>
             </button>
 
             <button
                 id="owner-expense-submit"
                 type="submit"
-                form="owner-expense-form"
-                class="
-                    rounded-lg bg-patrimoine-950
-                    px-4 py-2.5
-                    text-sm font-medium text-white
-                    disabled:opacity-60
-                "
+                class="pm-button-primary"
             >
-                <span data-i18n="owners.record_expense">Record Expense</span>
+                <span data-i18n="actions.save">
+    {{ __('ui.actions.save') }}
+</span>
             </button>
-        </div>
-    </div>
-</div>
-
+        </x-drawer-footer>
+    </form>
+</x-drawer>
 
 {{-- ================================================================
-     Owner Payout Modal
+     Owner Payout Drawer
 ================================================================ --}}
 
-<div
+<x-drawer
     id="owner-payout-modal"
-    class="
-        fixed inset-0 z-50 hidden
-        items-center justify-center
-        bg-slate-950/50
-        px-4 py-6
-    "
+    backdrop-id="owner-payout-modal-backdrop"
+    width="sm"
 >
-    <div
-        class="
-            w-full max-w-xl
-            overflow-hidden rounded-2xl
-            bg-white shadow-2xl
-        "
+    <x-drawer-header
+        close-id="owner-payout-modal-close"
+        close-label="Close"
+        close-label-key="owners.close"
     >
+        <x-slot:title>
+            <span data-i18n="owners.make_owner_payout">
+    {{ __('ui.owners.make_owner_payout') }}
+</span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="owners.payout_description">
+    {{ __('ui.owners.payout_description') }}
+</span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+            id="owner-payout-form"
+            class="flex min-h-0 flex-1 flex-col"
+        >
         <div
             class="
-                flex items-start justify-between
-                border-b border-slate-100
-                px-6 py-5
+                min-h-0 flex-1
+                overflow-y-auto
+                px-6 py-6
             "
         >
-            <div>
-                <h2 class="text-xl font-semibold text-slate-950">
-                    <span data-i18n="owners.make_owner_payout">Make Owner Payout</span>
-                </h2>
-
-                <p class="mt-1 text-sm text-slate-500">
-                    <span data-i18n="owners.payout_description">Pay available funds to the selected Property Owner.</span>
-                </p>
-            </div>
-
-            <button
-                type="button"
-                data-close-owner-modal="owner-payout-modal"
-                class="rounded-lg p-2 text-slate-400 hover:bg-slate-100"
-
-                aria-label="Close"
-                data-i18n-aria-label="owners.close">
-                ✕
-            </button>
-        </div>
-
-        <form
-            id="owner-payout-form"
-            class="px-6 py-6"
-        >
-            <div
+<div
                 id="owner-payout-error"
                 class="
                     mb-5 hidden rounded-xl
@@ -1481,7 +1474,9 @@
                 "
             >
                 <div class="text-xs font-medium uppercase text-slate-500">
-                    <span data-i18n="owners.available_owner_balance">Available Owner Balance</span>
+                    <span data-i18n="owners.available_owner_balance">
+    {{ __('ui.owners.available_owner_balance') }}
+</span>
                 </div>
 
                 <div
@@ -1501,7 +1496,9 @@
                         for="owner-payout-amount"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.amount">Amount</span>
+                        <span data-i18n="owners.amount">
+    {{ __('ui.owners.amount') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1525,13 +1522,21 @@
                         for="owner-payout-date"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.payout_date">Payout Date</span>
+                        <span data-i18n="owners.payout_date">
+    {{ __('ui.owners.payout_date') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
                     <input
                         id="owner-payout-date"
-                        type="date"
+                        type="text"
+                        inputmode="numeric"
+                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                        maxlength="10"
+                        autocomplete="off"
+                        data-owner-date-input
+                        data-pm-date-input
                         required
                         class="
                             w-full rounded-lg
@@ -1547,7 +1552,9 @@
                         for="owner-payout-method"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.payment_method">Payment Method</span>
+                        <span data-i18n="owners.payment_method">
+    {{ __('ui.owners.payment_method') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1562,16 +1569,16 @@
                         "
                     >
                         <option value="bank_transfer" data-i18n="owners.bank_transfer">
-                            Bank Transfer
-                        </option>
+    {{ __('ui.owners.bank_transfer') }}
+</option>
 
                         <option value="momo" data-i18n="owners.momo">
-                            MoMo
-                        </option>
+    {{ __('ui.owners.momo') }}
+</option>
 
                         <option value="cash" data-i18n="owners.cash">
-                            Cash
-                        </option>
+    {{ __('ui.owners.cash') }}
+</option>
                     </select>
                 </div>
 
@@ -1580,9 +1587,13 @@
                         for="owner-payout-reference"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.reference">Reference</span>
+                        <span data-i18n="owners.reference">
+    {{ __('ui.owners.reference') }}
+</span>
                         <span class="text-xs text-slate-400">
-                            <span data-i18n="owners.optional">(Optional)</span>
+                            <span data-i18n="owners.optional">
+    {{ __('ui.owners.optional') }}
+</span>
                         </span>
                     </label>
 
@@ -1604,9 +1615,13 @@
                         for="owner-payout-notes"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.notes">Notes</span>
+                        <span data-i18n="owners.notes">
+    {{ __('ui.owners.notes') }}
+</span>
                         <span class="text-xs text-slate-400">
-                            <span data-i18n="owners.optional">(Optional)</span>
+                            <span data-i18n="owners.optional">
+    {{ __('ui.owners.optional') }}
+</span>
                         </span>
                     </label>
 
@@ -1622,98 +1637,71 @@
                     ></textarea>
                 </div>
             </div>
-        </form>
+        </div>
 
-        <div
-            class="
-                flex justify-end gap-3
-                border-t border-slate-100
-                bg-slate-50/70 px-6 py-4
-            "
-        >
+        <x-drawer-footer>
             <button
                 type="button"
                 data-close-owner-modal="owner-payout-modal"
-                class="
-                    rounded-lg border border-slate-200
-                    bg-white px-4 py-2.5
-                    text-sm font-medium text-slate-700
-                "
+                class="pm-button-secondary"
             >
-                <span data-i18n="owners.cancel">Cancel</span>
+                <span data-i18n="owners.cancel">
+    {{ __('ui.owners.cancel') }}
+</span>
             </button>
 
             <button
                 id="owner-payout-submit"
                 type="submit"
-                form="owner-payout-form"
-                class="
-                    rounded-lg bg-patrimoine-950
-                    px-4 py-2.5
-                    text-sm font-medium text-white
-                    disabled:opacity-60
-                "
+                class="pm-button-primary"
             >
-                <span data-i18n="owners.make_payout">Make Payout</span>
+                <span data-i18n="actions.save">
+    {{ __('ui.actions.save') }}
+</span>
             </button>
-        </div>
-    </div>
-</div>
-
+        </x-drawer-footer>
+    </form>
+</x-drawer>
 
 {{-- ================================================================
-     Owner Adjustment Modal
+     Owner Adjustment Drawer
 ================================================================ --}}
 
-<div
+<x-drawer
     id="owner-adjustment-modal"
-    class="
-        fixed inset-0 z-50 hidden
-        items-center justify-center
-        bg-slate-950/50
-        px-4 py-6
-    "
+    backdrop-id="owner-adjustment-modal-backdrop"
+    width="sm"
 >
-    <div
-        class="
-            w-full max-w-xl
-            overflow-hidden rounded-2xl
-            bg-white shadow-2xl
-        "
+    <x-drawer-header
+        close-id="owner-adjustment-modal-close"
+        close-label="Close"
+        close-label-key="owners.close"
     >
+        <x-slot:title>
+            <span data-i18n="owners.owner_account_adjustment">
+    {{ __('ui.owners.owner_account_adjustment') }}
+</span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="owners.adjustment_description">
+    {{ __('ui.owners.adjustment_description') }}
+</span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+            id="owner-adjustment-form"
+            class="flex min-h-0 flex-1 flex-col"
+        >
         <div
             class="
-                flex items-start justify-between
-                border-b border-slate-100
-                px-6 py-5
+                min-h-0 flex-1
+                overflow-y-auto
+                px-6 py-6
             "
         >
-            <div>
-                <h2 class="text-xl font-semibold text-slate-950">
-                    <span data-i18n="owners.owner_account_adjustment">Owner Account Adjustment</span>
-                </h2>
-
-                <p class="mt-1 text-sm text-slate-500">
-                    <span data-i18n="owners.adjustment_description">Record an exceptional manual accounting correction.</span>
-                </p>
-            </div>
-
-            <button
-                type="button"
-                data-close-owner-modal="owner-adjustment-modal"
-                class="rounded-lg p-2 text-slate-400 hover:bg-slate-100"
-
-                aria-label="Close"
-                data-i18n-aria-label="owners.close">
-                ✕
-            </button>
-        </div>
-
-        <form
-            id="owner-adjustment-form"
-            class="px-6 py-6"
-        >
-            <div
+<div
                 id="owner-adjustment-error"
                 class="
                     mb-5 hidden rounded-xl
@@ -1731,9 +1719,9 @@
                     text-sm leading-6 text-amber-800
                 "
             >
-                <span data-i18n="owners.adjustment_warning">Adjustments should only be used for accounting corrections.
-                Normal owner deposits, expenses and payouts should use their
-                dedicated actions.</span>
+                <span data-i18n="owners.adjustment_warning">
+    {{ __('ui.owners.adjustment_warning') }}
+</span>
             </div>
 
             <div class="grid gap-4 md:grid-cols-2">
@@ -1742,7 +1730,9 @@
                         for="owner-adjustment-direction"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.direction">Direction</span>
+                        <span data-i18n="owners.direction">
+    {{ __('ui.owners.direction') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1757,12 +1747,12 @@
                         "
                     >
                         <option value="credit" data-i18n="owners.credit_increase_balance">
-                            Credit — Increase Owner Balance
-                        </option>
+    {{ __('ui.owners.credit_increase_balance') }}
+</option>
 
                         <option value="debit" data-i18n="owners.debit_reduce_balance">
-                            Debit — Reduce Owner Balance
-                        </option>
+    {{ __('ui.owners.debit_reduce_balance') }}
+</option>
                     </select>
                 </div>
 
@@ -1771,7 +1761,9 @@
                         for="owner-adjustment-amount"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.amount">Amount</span>
+                        <span data-i18n="owners.amount">
+    {{ __('ui.owners.amount') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1795,13 +1787,21 @@
                         for="owner-adjustment-date"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.adjustment_date">Adjustment Date</span>
+                        <span data-i18n="owners.adjustment_date">
+    {{ __('ui.owners.adjustment_date') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
                     <input
                         id="owner-adjustment-date"
-                        type="date"
+                        type="text"
+                        inputmode="numeric"
+                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                        maxlength="10"
+                        autocomplete="off"
+                        data-owner-date-input
+                        data-pm-date-input
                         required
                         class="
                             w-full rounded-lg
@@ -1817,9 +1817,13 @@
                         for="owner-adjustment-reference"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.reference">Reference</span>
+                        <span data-i18n="owners.reference">
+    {{ __('ui.owners.reference') }}
+</span>
                         <span class="text-xs text-slate-400">
-                            <span data-i18n="owners.optional">(Optional)</span>
+                            <span data-i18n="owners.optional">
+    {{ __('ui.owners.optional') }}
+</span>
                         </span>
                     </label>
 
@@ -1841,7 +1845,9 @@
                         for="owner-adjustment-reason"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="owners.reason">Reason</span>
+                        <span data-i18n="owners.reason">
+    {{ __('ui.owners.reason') }}
+</span>
                         <span class="text-red-500">*</span>
                     </label>
 
@@ -1850,7 +1856,7 @@
                         rows="4"
                         maxlength="1000"
                         required
-                        placeholder="Explain why this manual adjustment is necessary..." data-i18n-placeholder="owners.adjustment_reason_placeholder"
+                        placeholder="{{ __('ui.owners.adjustment_reason_placeholder') }}" data-i18n-placeholder="owners.adjustment_reason_placeholder"
                         class="
                             w-full rounded-lg
                             border border-slate-200
@@ -1860,41 +1866,30 @@
                     ></textarea>
                 </div>
             </div>
-        </form>
+        </div>
 
-        <div
-            class="
-                flex justify-end gap-3
-                border-t border-slate-100
-                bg-slate-50/70 px-6 py-4
-            "
-        >
+        <x-drawer-footer>
             <button
                 type="button"
                 data-close-owner-modal="owner-adjustment-modal"
-                class="
-                    rounded-lg border border-slate-200
-                    bg-white px-4 py-2.5
-                    text-sm font-medium text-slate-700
-                "
+                class="pm-button-secondary"
             >
-                <span data-i18n="owners.cancel">Cancel</span>
+                <span data-i18n="owners.cancel">
+    {{ __('ui.owners.cancel') }}
+</span>
             </button>
 
             <button
                 id="owner-adjustment-submit"
                 type="submit"
-                form="owner-adjustment-form"
-                class="
-                    rounded-lg bg-patrimoine-950
-                    px-4 py-2.5
-                    text-sm font-medium text-white
-                    disabled:opacity-60
-                "
+                class="pm-button-primary"
             >
-                <span data-i18n="owners.record_adjustment">Record Adjustment</span>
+                <span data-i18n="actions.save">
+    {{ __('ui.actions.save') }}
+</span>
             </button>
-        </div>
-    </div>
-</div>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
 @endsection

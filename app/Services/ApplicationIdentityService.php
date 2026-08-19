@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\ApplicationSetting;
 use App\Models\Party;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Resolves the business identity of this Patrimoine installation.
@@ -22,6 +23,18 @@ class ApplicationIdentityService
      */
     public function managingOrganisation(): ?Party
     {
+        /*
+         * Application identity is used by shared presentation surfaces,
+         * including pages that can render before Patrimoine's database
+         * schema exists during setup, testing or recovery.
+         *
+         * In that state the product fallback identity must remain usable
+         * instead of preventing the application from rendering.
+         */
+        if (! Schema::hasTable('application_settings')) {
+            return null;
+        }
+
         $settings = ApplicationSetting::query()
             ->with('managingOrganisation.roles')
             ->first();

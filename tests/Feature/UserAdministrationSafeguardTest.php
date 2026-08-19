@@ -334,7 +334,7 @@ class UserAdministrationSafeguardTest extends TestCase
     /**
      * Create an Administrator with explicit defaults for safeguard tests.
      *
-     * @param array<string, mixed> $attributes
+     * @param  array<string, mixed>  $attributes
      */
     private function administrator(
         array $attributes = []

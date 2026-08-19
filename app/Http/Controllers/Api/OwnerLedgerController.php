@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOwnerAdjustmentRequest;
 use App\Http\Requests\StoreOwnerDepositRequest;
 use App\Models\OwnerAccount;
+use App\Services\ActivityLogService;
+use App\Services\FinancialActivitySnapshotService;
 use App\Services\OwnerLedgerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
-use App\Services\ActivityLogService;
-use App\Services\FinancialActivitySnapshotService;
 
 /**
  * Transactional API controller for direct owner-ledger operations.
@@ -38,22 +38,14 @@ class OwnerLedgerController extends Controller
             $transaction = $service->recordDeposit(
                 account: $ownerAccount,
                 amount: (int) $validated['amount'],
-                transactionDate:
-                    $validated['transaction_date'],
-                paymentMethod:
-                    $validated['payment_method'],
-                depositPurpose:
-                    $validated['deposit_purpose'],
-                buildingId:
-                    $validated['building_id'] ?? null,
-                unitId:
-                    $validated['unit_id'] ?? null,
-                reference:
-                    $validated['reference'] ?? null,
-                collectorName:
-                    $validated['collector_name'] ?? null,
-                notes:
-                    $validated['notes'] ?? null
+                transactionDate: $validated['transaction_date'],
+                paymentMethod: $validated['payment_method'],
+                depositPurpose: $validated['deposit_purpose'],
+                buildingId: $validated['building_id'] ?? null,
+                unitId: $validated['unit_id'] ?? null,
+                reference: $validated['reference'] ?? null,
+                collectorName: $validated['collector_name'] ?? null,
+                notes: $validated['notes'] ?? null
             );
         } catch (RuntimeException $exception) {
             throw ValidationException::withMessages([
@@ -74,21 +66,18 @@ class OwnerLedgerController extends Controller
 
         return response()->json(
             data: [
-                'transaction' =>
-                    $transaction->load([
-                        'ownerAccount.party',
-                        'building',
-                        'unit',
-                    ]),
+                'transaction' => $transaction->load([
+                    'ownerAccount.party',
+                    'building',
+                    'unit',
+                ]),
 
                 'owner_account' => [
-                    'id' =>
-                        $ownerAccount->id,
+                    'id' => $ownerAccount->id,
 
-                    'balance' =>
-                        $ownerAccount
-                            ->fresh()
-                            ->balance(),
+                    'balance' => $ownerAccount
+                        ->fresh()
+                        ->balance(),
                 ],
             ],
             status: 201

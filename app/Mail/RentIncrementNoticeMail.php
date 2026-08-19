@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\Party;
 use App\Models\RentIncrement;
+use App\Services\ApplicationPresentationFormatter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
@@ -27,10 +28,9 @@ class RentIncrementNoticeMail extends Mailable
 
     public function __construct(
         public RentIncrement $rentIncrement,
-        public \App\Services\ApplicationPresentationFormatter $formatter,
+        public ApplicationPresentationFormatter $formatter,
         public ?Party $managingOrganisation = null
-    ) {
-    }
+    ) {}
 
     /**
      * Define the tenant-facing email subject.

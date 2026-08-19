@@ -17,8 +17,8 @@ use Tests\TestCase;
  */
 class OwnerAccountApiTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -54,14 +54,11 @@ class OwnerAccountApiTest extends TestCase
         ]);
 
         BuildingOwner::create([
-            'building_id' =>
-                $building->id,
+            'building_id' => $building->id,
 
-            'party_id' =>
-                $owner->id,
+            'party_id' => $owner->id,
 
-            'ownership_percentage' =>
-                100.00,
+            'ownership_percentage' => 100.00,
         ]);
 
         $account =
@@ -70,11 +67,9 @@ class OwnerAccountApiTest extends TestCase
                 ->firstOrFail();
 
         $unit = Unit::create([
-            'building_id' =>
-                $building->id,
+            'building_id' => $building->id,
 
-            'name' =>
-                'Unit OA-1',
+            'name' => 'Unit OA-1',
         ]);
 
         return compact(
@@ -94,26 +89,19 @@ class OwnerAccountApiTest extends TestCase
             $this->createContext();
 
         OwnerTransaction::create([
-            'owner_account_id' =>
-                $context['account']->id,
+            'owner_account_id' => $context['account']->id,
 
-            'direction' =>
-                'credit',
+            'direction' => 'credit',
 
-            'category' =>
-                'owner_deposit',
+            'category' => 'owner_deposit',
 
-            'amount' =>
-                5000,
+            'amount' => 5000,
 
-            'transaction_date' =>
-                '2026-08-11',
+            'transaction_date' => '2026-08-11',
 
-            'payment_method' =>
-                'bank_transfer',
+            'payment_method' => 'bank_transfer',
 
-            'deposit_purpose' =>
-                'general_funding',
+            'deposit_purpose' => 'general_funding',
         ]);
 
         $response =
@@ -188,61 +176,43 @@ class OwnerAccountApiTest extends TestCase
 
         $deposit =
             OwnerTransaction::create([
-                'owner_account_id' =>
-                    $context['account']->id,
+                'owner_account_id' => $context['account']->id,
 
-                'building_id' =>
-                    $context['building']->id,
+                'building_id' => $context['building']->id,
 
-                'unit_id' =>
-                    $context['unit']->id,
+                'unit_id' => $context['unit']->id,
 
-                'direction' =>
-                    'credit',
+                'direction' => 'credit',
 
-                'category' =>
-                    'owner_deposit',
+                'category' => 'owner_deposit',
 
-                'amount' =>
-                    7000,
+                'amount' => 7000,
 
-                'transaction_date' =>
-                    '2026-08-10',
+                'transaction_date' => '2026-08-10',
 
-                'payment_method' =>
-                    'bank_transfer',
+                'payment_method' => 'bank_transfer',
 
-                'deposit_purpose' =>
-                    'repair_maintenance',
+                'deposit_purpose' => 'repair_maintenance',
 
-                'reference' =>
-                    'OWNER-API-DEP-001',
+                'reference' => 'OWNER-API-DEP-001',
             ]);
 
         OwnerTransaction::create([
-            'owner_account_id' =>
-                $context['account']->id,
+            'owner_account_id' => $context['account']->id,
 
-            'building_id' =>
-                $context['building']->id,
+            'building_id' => $context['building']->id,
 
-            'unit_id' =>
-                $context['unit']->id,
+            'unit_id' => $context['unit']->id,
 
-            'direction' =>
-                'debit',
+            'direction' => 'debit',
 
-            'category' =>
-                'expense',
+            'category' => 'expense',
 
-            'amount' =>
-                3000,
+            'amount' => 3000,
 
-            'transaction_date' =>
-                '2026-08-11',
+            'transaction_date' => '2026-08-11',
 
-            'reference' =>
-                'OWNER-API-EXP-001',
+            'reference' => 'OWNER-API-EXP-001',
         ]);
 
         $response =
@@ -297,23 +267,17 @@ class OwnerAccountApiTest extends TestCase
             $this->createContext();
 
         OwnerTransaction::create([
-            'owner_account_id' =>
-                $context['account']->id,
+            'owner_account_id' => $context['account']->id,
 
-            'direction' =>
-                'debit',
+            'direction' => 'debit',
 
-            'category' =>
-                'adjustment',
+            'category' => 'adjustment',
 
-            'amount' =>
-                1000,
+            'amount' => 1000,
 
-            'transaction_date' =>
-                '2026-08-11',
+            'transaction_date' => '2026-08-11',
 
-            'notes' =>
-                'Administrative correction.',
+            'notes' => 'Administrative correction.',
         ]);
 
         $response =

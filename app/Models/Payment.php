@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\TenantFundTransaction;
 
 /**
  * Represents money received from a tenant under a Lease.
@@ -81,6 +80,7 @@ class Payment extends Model
     {
         return $this->amount - $this->allocatedAmount();
     }
+
     /**
      * Total unapplied Payment money already classified into tenant-held funds.
      *

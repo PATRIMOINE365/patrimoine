@@ -64,8 +64,7 @@ class MixedTenantOverpaymentUiTestSeeder extends Seeder
             $building = Building::create([
                 'name' => 'UI TEST 08 - Mixed Overpayment Building',
                 'location' => 'Patrimoine Test Data',
-                'notes' =>
-                    'Disposable UI TEST 08 mixed receivable overpayment scenario.',
+                'notes' => 'Disposable UI TEST 08 mixed receivable overpayment scenario.',
             ]);
 
             BuildingOwner::create([
@@ -115,8 +114,7 @@ class MixedTenantOverpaymentUiTestSeeder extends Seeder
                 'management_fee_type' => 'none',
                 'management_fee_value' => 0,
                 'agent_commission_amount' => 0,
-                'notes' =>
-                    'Disposable Patrimoine UI TEST 08 mixed receivable overpayment scenario.',
+                'notes' => 'Disposable Patrimoine UI TEST 08 mixed receivable overpayment scenario.',
             ]);
 
             /*
@@ -137,8 +135,7 @@ class MixedTenantOverpaymentUiTestSeeder extends Seeder
                 'net_amount' => 3000,
                 'vat_amount' => 0,
                 'proration_amount' => null,
-                'notes' =>
-                    'UI TEST 08 outstanding rent receivable.',
+                'notes' => 'UI TEST 08 outstanding rent receivable.',
             ]);
 
             /*
@@ -157,8 +154,7 @@ class MixedTenantOverpaymentUiTestSeeder extends Seeder
                 'amount' => 5000,
                 'transaction_date' => '2026-03-01',
                 'reference' => 'UI-TEST-08-DEPOSIT-5000',
-                'notes' =>
-                    'UI TEST 08 opening Security Deposit balance.',
+                'notes' => 'UI TEST 08 opening Security Deposit balance.',
             ]);
 
             /*
@@ -171,15 +167,13 @@ class MixedTenantOverpaymentUiTestSeeder extends Seeder
                 'amount' => 7000,
                 'deduction_date' => '2026-08-13',
                 'reference' => 'UI-TEST-08-REPAIRS',
-                'notes' =>
-                    'UI TEST 08 Security Deposit debt scenario.',
+                'notes' => 'UI TEST 08 Security Deposit debt scenario.',
             ]);
 
             app(SecurityDepositService::class)->settle(
                 lease: $lease,
                 settlementDate: '2026-08-13',
-                notes:
-                    'UI TEST 08 settlement creating GH₵2,000 tenant debt.'
+                notes: 'UI TEST 08 settlement creating GH₵2,000 tenant debt.'
             );
         });
 

@@ -365,9 +365,9 @@ function renderInvoiceList(
             <div
                 class="
                     rounded-lg border border-dashed
-                    border-slate-200
+                    border-[var(--pm-border)]
                     px-4 py-8 text-center
-                    text-sm text-slate-400
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -447,7 +447,7 @@ function renderInvoiceList(
                         <div
                             class="
                                 flex items-center gap-4
-                                border-b border-slate-100
+                                border-b border-[var(--pm-border)]
                                 py-4 last:border-b-0
                                 first:pt-0 last:pb-0
                             "
@@ -461,7 +461,7 @@ function renderInvoiceList(
                                     class="
                                         truncate text-sm
                                         font-medium
-                                        text-slate-900
+                                        text-[var(--pm-text)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -476,7 +476,7 @@ function renderInvoiceList(
                                                 class="
                                                     mt-1 truncate
                                                     text-xs
-                                                    text-slate-500
+                                                    text-[var(--pm-text-secondary)]
                                                 "
                                             >
                                                 ${escapeHtml(
@@ -493,7 +493,7 @@ function renderInvoiceList(
                                             <div
                                                 class="
                                                     mt-1 text-xs
-                                                    text-slate-400
+                                                    text-[var(--pm-text-muted)]
                                                 "
                                             >
                                                 ${escapeHtml(
@@ -516,7 +516,7 @@ function renderInvoiceList(
                                 class="
                                     shrink-0 text-sm
                                     font-semibold
-                                    text-slate-900
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 ${escapeHtml(

@@ -19,8 +19,7 @@ class ReceiptDocumentService
     public function __construct(
         private ApplicationIdentityService $identity,
         private ApplicationPresentationFormatter $formatter
-    ) {
-    }
+    ) {}
 
     /**
      * Generate the PDF contents for a Payment receipt.
@@ -38,8 +37,7 @@ class ReceiptDocumentService
             [
                 'payment' => $payment,
                 'formatter' => $this->formatter,
-                'managingOrganisation' =>
-                    $this->identity->managingOrganisation(),
+                'managingOrganisation' => $this->identity->managingOrganisation(),
             ]
         )
             ->setPaper('a4')

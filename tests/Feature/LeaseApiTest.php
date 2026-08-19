@@ -3,30 +3,30 @@
 namespace Tests\Feature;
 
 use App\Models\Building;
-use App\Models\Lease;
-use App\Models\Party;
-use App\Models\PartyRole;
-use App\Models\Unit;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-use Tests\Concerns\AuthenticatesApiUser;
-use App\Models\Invoice;
-use Carbon\Carbon;
 use App\Models\BuildingOwner;
+use App\Models\Invoice;
+use App\Models\Lease;
 use App\Models\OwnerAccount;
 use App\Models\OwnerTransaction;
+use App\Models\Party;
+use App\Models\PartyRole;
 use App\Models\Payment;
 use App\Models\PaymentAllocation;
 use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
+use App\Models\Unit;
+use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\AuthenticatesApiUser;
+use Tests\TestCase;
 
 /**
  * Verifies the Patrimoine Lease REST API.
  */
 class LeaseApiTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -89,7 +89,7 @@ class LeaseApiTest extends TestCase
     /**
      * Return a complete valid Lease payload.
      *
-     * @param array<string, mixed> $overrides
+     * @param  array<string, mixed>  $overrides
      * @return array<string, mixed>
      */
     private function validPayload(
@@ -456,20 +456,15 @@ class LeaseApiTest extends TestCase
                 $this->validPayload(
                     $context,
                     [
-                        'advance_payment_amount' =>
-                            60000,
+                        'advance_payment_amount' => 60000,
 
-                        'rent_reserve_amount' =>
-                            15000,
+                        'rent_reserve_amount' => 15000,
 
-                        'rent_increment_type' =>
-                            'none',
+                        'rent_increment_type' => 'none',
 
-                        'rent_increment_value' =>
-                            0,
+                        'rent_increment_value' => 0,
 
-                        'next_rent_increment_date' =>
-                            null,
+                        'next_rent_increment_date' => null,
                     ]
                 )
             );
@@ -510,20 +505,15 @@ class LeaseApiTest extends TestCase
             $this->validPayload(
                 $context,
                 [
-                    'advance_payment_amount' =>
-                        10000,
+                    'advance_payment_amount' => 10000,
 
-                    'rent_reserve_amount' =>
-                        15000,
+                    'rent_reserve_amount' => 15000,
 
-                    'rent_increment_type' =>
-                        'none',
+                    'rent_increment_type' => 'none',
 
-                    'rent_increment_value' =>
-                        0,
+                    'rent_increment_value' => 0,
 
-                    'next_rent_increment_date' =>
-                        null,
+                    'next_rent_increment_date' => null,
                 ]
             )
         )
@@ -547,20 +537,15 @@ class LeaseApiTest extends TestCase
                 $this->validPayload(
                     $context,
                     [
-                        'advance_payment_amount' =>
-                            0,
+                        'advance_payment_amount' => 0,
 
-                        'rent_reserve_amount' =>
-                            0,
+                        'rent_reserve_amount' => 0,
 
-                        'rent_increment_type' =>
-                            'percentage',
+                        'rent_increment_type' => 'percentage',
 
-                        'rent_increment_value' =>
-                            10,
+                        'rent_increment_value' => 10,
 
-                        'next_rent_increment_date' =>
-                            '2027-08-01',
+                        'next_rent_increment_date' => '2027-08-01',
                     ]
                 )
             );
@@ -590,20 +575,15 @@ class LeaseApiTest extends TestCase
             $this->validPayload(
                 $context,
                 [
-                    'advance_payment_amount' =>
-                        0,
+                    'advance_payment_amount' => 0,
 
-                    'rent_reserve_amount' =>
-                        0,
+                    'rent_reserve_amount' => 0,
 
-                    'rent_increment_type' =>
-                        'percentage',
+                    'rent_increment_type' => 'percentage',
 
-                    'rent_increment_value' =>
-                        10,
+                    'rent_increment_value' => 10,
 
-                    'next_rent_increment_date' =>
-                        null,
+                    'next_rent_increment_date' => null,
                 ]
             )
         )
@@ -612,699 +592,656 @@ class LeaseApiTest extends TestCase
                 'next_rent_increment_date',
             ]);
     }
+
     /**
- * Creating a backdated Active Lease reconstructs all rent Invoices that
- * should already exist through the current date.
- */
-public function test_backdated_active_lease_generates_historical_invoices(): void
-{
-    Carbon::setTestNow(
-        Carbon::parse('2026-08-12 12:00:00')
-    );
-
-    try {
-        $context =
-            $this->createContext();
-
-        $response =
-            $this->postJson(
-                '/api/leases',
-                $this->validPayload(
-                    $context,
-                    [
-                        'start_date' =>
-                            '2026-03-01',
-
-                        'end_date' =>
-                            '2027-02-28',
-
-                        'rent_amount' =>
-                            12000,
-
-                        'payment_frequency' =>
-                            'monthly',
-
-                        'due_day' =>
-                            null,
-
-                        'agent_commission_amount' =>
-                            0,
-                    ]
-                )
-            );
-
-        $response
-            ->assertCreated()
-            ->assertJsonCount(
-                6,
-                'invoices'
-            );
-
-        $leaseId =
-            $response->json('id');
-
-        $invoices =
-            Invoice::query()
-                ->where(
-                    'lease_id',
-                    $leaseId
-                )
-                ->orderBy(
-                    'period_start'
-                )
-                ->get();
-
-        $this->assertCount(
-            6,
-            $invoices
+     * Creating a backdated Active Lease reconstructs all rent Invoices that
+     * should already exist through the current date.
+     */
+    public function test_backdated_active_lease_generates_historical_invoices(): void
+    {
+        Carbon::setTestNow(
+            Carbon::parse('2026-08-12 12:00:00')
         );
 
-        $this->assertSame(
-            [
-                '2026-03-01',
-                '2026-04-01',
-                '2026-05-01',
-                '2026-06-01',
-                '2026-07-01',
-                '2026-08-01',
-            ],
-            $invoices
-                ->map(
-                    fn (Invoice $invoice): string =>
-                        $invoice
+        try {
+            $context =
+                $this->createContext();
+
+            $response =
+                $this->postJson(
+                    '/api/leases',
+                    $this->validPayload(
+                        $context,
+                        [
+                            'start_date' => '2026-03-01',
+
+                            'end_date' => '2027-02-28',
+
+                            'rent_amount' => 12000,
+
+                            'payment_frequency' => 'monthly',
+
+                            'due_day' => null,
+
+                            'agent_commission_amount' => 0,
+                        ]
+                    )
+                );
+
+            $response
+                ->assertCreated()
+                ->assertJsonCount(
+                    6,
+                    'invoices'
+                );
+
+            $leaseId =
+                $response->json('id');
+
+            $invoices =
+                Invoice::query()
+                    ->where(
+                        'lease_id',
+                        $leaseId
+                    )
+                    ->orderBy(
+                        'period_start'
+                    )
+                    ->get();
+
+            $this->assertCount(
+                6,
+                $invoices
+            );
+
+            $this->assertSame(
+                [
+                    '2026-03-01',
+                    '2026-04-01',
+                    '2026-05-01',
+                    '2026-06-01',
+                    '2026-07-01',
+                    '2026-08-01',
+                ],
+                $invoices
+                    ->map(
+                        fn (Invoice $invoice): string => $invoice
                             ->period_start
                             ->toDateString()
+                    )
+                    ->all()
+            );
+
+            $this->assertSame(
+                72000,
+                $invoices->sum(
+                    'total_amount'
                 )
-                ->all()
-        );
-
-        $this->assertSame(
-            72000,
-            $invoices->sum(
-                'total_amount'
-            )
-        );
-    } finally {
-        Carbon::setTestNow();
+            );
+        } finally {
+            Carbon::setTestNow();
+        }
     }
-}
 
-/**
- * A current Active Lease creates its current billing period immediately.
- */
-public function test_current_active_lease_generates_current_invoice(): void
-{
-    Carbon::setTestNow(
-        Carbon::parse('2026-08-12 12:00:00')
-    );
+    /**
+     * A current Active Lease creates its current billing period immediately.
+     */
+    public function test_current_active_lease_generates_current_invoice(): void
+    {
+        Carbon::setTestNow(
+            Carbon::parse('2026-08-12 12:00:00')
+        );
 
-    try {
-        $context =
-            $this->createContext();
+        try {
+            $context =
+                $this->createContext();
 
-        $response =
-            $this->postJson(
+            $response =
+                $this->postJson(
+                    '/api/leases',
+                    $this->validPayload(
+                        $context,
+                        [
+                            'start_date' => '2026-08-01',
+
+                            'agent_commission_amount' => 0,
+                        ]
+                    )
+                );
+
+            $response
+                ->assertCreated()
+                ->assertJsonCount(
+                    1,
+                    'invoices'
+                );
+
+            $this->assertDatabaseCount(
+                'invoices',
+                1
+            );
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    /**
+     * A future Active Lease has no billing history yet.
+     */
+    public function test_future_active_lease_does_not_generate_invoice(): void
+    {
+        Carbon::setTestNow(
+            Carbon::parse('2026-08-12 12:00:00')
+        );
+
+        try {
+            $context =
+                $this->createContext();
+
+            $response =
+                $this->postJson(
+                    '/api/leases',
+                    $this->validPayload(
+                        $context,
+                        [
+                            'start_date' => '2026-09-01',
+
+                            'agent_commission_amount' => 0,
+                        ]
+                    )
+                );
+
+            $response
+                ->assertCreated()
+                ->assertJsonCount(
+                    0,
+                    'invoices'
+                );
+
+            $this->assertDatabaseCount(
+                'invoices',
+                0
+            );
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    /**
+     * Draft Leases remain unbilled until they become operational.
+     */
+    public function test_draft_lease_does_not_generate_invoices_on_creation(): void
+    {
+        Carbon::setTestNow(
+            Carbon::parse('2026-08-12 12:00:00')
+        );
+
+        try {
+            $context =
+                $this->createContext();
+
+            $response =
+                $this->postJson(
+                    '/api/leases',
+                    $this->validPayload(
+                        $context,
+                        [
+                            'start_date' => '2026-03-01',
+
+                            'status' => 'draft',
+
+                            'agent_commission_amount' => 0,
+                        ]
+                    )
+                );
+
+            $response
+                ->assertCreated()
+                ->assertJsonCount(
+                    0,
+                    'invoices'
+                );
+
+            $this->assertDatabaseCount(
+                'invoices',
+                0
+            );
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    /**
+     * Creating a backdated active Lease can reconstruct the complete financial
+     * opening position when the contractual Advance Payment had already been
+     * received historically.
+     *
+     * The opening workflow must:
+     *
+     * 1. reconstruct historical rent Invoices;
+     * 2. record the historical tenant Payment;
+     * 3. protect the contractual Rent Reserve;
+     * 4. allocate the remaining received advance FIFO to rent Invoices;
+     * 5. create owner rent entitlement only for rent actually settled;
+     * 6. charge the Managing Organisation fee against collected rent;
+     * 7. charge the one-time Agent commission;
+     * 8. preserve any remaining unpaid historical rent.
+     */
+    public function test_backdated_lease_with_received_advance_initializes_finances(): void
+    {
+        Carbon::setTestNow(
+            Carbon::parse('2026-08-12 12:00:00')
+        );
+
+        try {
+            $context = $this->createContext();
+
+            /*
+             * Financial initialization requires valid Building ownership.
+             *
+             * Patrimoine V1 keeps ownership at Building level, so this
+             * ownership applies automatically to the Unit selected above.
+             */
+            $building = $context['unit']
+                ->building()
+                ->firstOrFail();
+
+            $owner = Party::create([
+                'type' => 'person',
+                'name' => 'Lease Opening Owner',
+                'phone' => '0200000499',
+                'email' => 'lease-opening-owner@example.test',
+            ]);
+
+            PartyRole::create([
+                'party_id' => $owner->id,
+                'role' => 'owner',
+            ]);
+
+            BuildingOwner::create([
+                'building_id' => $building->id,
+                'party_id' => $owner->id,
+                'ownership_percentage' => 100.00,
+            ]);
+
+            /*
+             * Lease begins 1 March 2026.
+             *
+             * At the test date of 12 August 2026, six monthly rent
+             * Invoices should therefore exist:
+             *
+             * March, April, May, June, July and August.
+             *
+             * Monthly rent = GHS 12,000
+             * Historical billed rent = GHS 72,000.
+             *
+             * Historical Advance Payment received = GHS 84,000
+             * Rent Reserve protected             = GHS 36,000
+             * Remaining cash available for rent  = GHS 48,000
+             *
+             * Therefore exactly four GHS 12,000 Invoices should be
+             * settled FIFO.
+             */
+            $response = $this->postJson(
                 '/api/leases',
                 $this->validPayload(
                     $context,
                     [
-                        'start_date' =>
-                            '2026-08-01',
+                        'start_date' => '2026-03-01',
 
-                        'agent_commission_amount' =>
-                            0,
+                        'end_date' => '2027-02-28',
+
+                        'status' => 'active',
+
+                        'rent_amount' => 12000,
+
+                        'payment_frequency' => 'monthly',
+
+                        'due_day' => null,
+
+                        'vat_rate' => 18,
+
+                        'security_deposit_amount' => 0,
+
+                        'advance_payment_amount' => 84000,
+
+                        'rent_reserve_amount' => 36000,
+
+                        /*
+                         * Historical opening-payment information.
+                         *
+                         * These fields deliberately distinguish contractual
+                         * Advance Payment terms from money actually received.
+                         */
+                        'advance_received' => true,
+
+                        'advance_received_date' => '2026-03-01',
+
+                        'advance_received_method' => 'bank_transfer',
+
+                        'advance_received_reference' => 'OPENING-ADVANCE-001',
+
+                        'management_fee_type' => 'percentage',
+
+                        'management_fee_value' => 12,
+
+                        'agent_commission_amount' => 12000,
+
+                        'rent_increment_type' => 'percentage',
+
+                        'rent_increment_value' => 5,
+
+                        'next_rent_increment_date' => '2027-03-01',
                     ]
                 )
             );
 
-        $response
-            ->assertCreated()
-            ->assertJsonCount(
-                1,
-                'invoices'
+            $response->assertCreated();
+
+            $lease = Lease::findOrFail(
+                $response->json('id')
             );
 
-        $this->assertDatabaseCount(
-            'invoices',
-            1
-        );
-    } finally {
-        Carbon::setTestNow();
-    }
-}
+            /*
+             * -------------------------------------------------------------
+             * Historical billing
+             * -------------------------------------------------------------
+             */
 
-/**
- * A future Active Lease has no billing history yet.
- */
-public function test_future_active_lease_does_not_generate_invoice(): void
-{
-    Carbon::setTestNow(
-        Carbon::parse('2026-08-12 12:00:00')
-    );
+            $invoices = Invoice::query()
+                ->where('lease_id', $lease->id)
+                ->orderBy('period_start')
+                ->get();
 
-    try {
-        $context =
-            $this->createContext();
-
-        $response =
-            $this->postJson(
-                '/api/leases',
-                $this->validPayload(
-                    $context,
-                    [
-                        'start_date' =>
-                            '2026-09-01',
-
-                        'agent_commission_amount' =>
-                            0,
-                    ]
-                )
+            $this->assertCount(
+                6,
+                $invoices
             );
 
-        $response
-            ->assertCreated()
-            ->assertJsonCount(
-                0,
-                'invoices'
+            $this->assertSame(
+                72000,
+                (int) $invoices->sum('total_amount')
             );
 
-        $this->assertDatabaseCount(
-            'invoices',
-            0
-        );
-    } finally {
-        Carbon::setTestNow();
-    }
-}
+            /*
+             * -------------------------------------------------------------
+             * Historical Payment
+             * -------------------------------------------------------------
+             *
+             * One Payment represents the GHS 84,000 actually received.
+             */
 
-/**
- * Draft Leases remain unbilled until they become operational.
- */
-public function test_draft_lease_does_not_generate_invoices_on_creation(): void
-{
-    Carbon::setTestNow(
-        Carbon::parse('2026-08-12 12:00:00')
-    );
+            $payment = Payment::query()
+                ->where('lease_id', $lease->id)
+                ->firstOrFail();
 
-    try {
-        $context =
-            $this->createContext();
-
-        $response =
-            $this->postJson(
-                '/api/leases',
-                $this->validPayload(
-                    $context,
-                    [
-                        'start_date' =>
-                            '2026-03-01',
-
-                        'status' =>
-                            'draft',
-
-                        'agent_commission_amount' =>
-                            0,
-                    ]
-                )
+            $this->assertSame(
+                84000,
+                $payment->amount
             );
 
-        $response
-            ->assertCreated()
-            ->assertJsonCount(
-                0,
-                'invoices'
-            );
-
-        $this->assertDatabaseCount(
-            'invoices',
-            0
-        );
-    } finally {
-        Carbon::setTestNow();
-    }
-}
-
-/**
- * Creating a backdated active Lease can reconstruct the complete financial
- * opening position when the contractual Advance Payment had already been
- * received historically.
- *
- * The opening workflow must:
- *
- * 1. reconstruct historical rent Invoices;
- * 2. record the historical tenant Payment;
- * 3. protect the contractual Rent Reserve;
- * 4. allocate the remaining received advance FIFO to rent Invoices;
- * 5. create owner rent entitlement only for rent actually settled;
- * 6. charge the Managing Organisation fee against collected rent;
- * 7. charge the one-time Agent commission;
- * 8. preserve any remaining unpaid historical rent.
- */
-public function test_backdated_lease_with_received_advance_initializes_finances(): void
-{
-    Carbon::setTestNow(
-        Carbon::parse('2026-08-12 12:00:00')
-    );
-
-    try {
-        $context = $this->createContext();
-
-        /*
-         * Financial initialization requires valid Building ownership.
-         *
-         * Patrimoine V1 keeps ownership at Building level, so this
-         * ownership applies automatically to the Unit selected above.
-         */
-        $building = $context['unit']
-            ->building()
-            ->firstOrFail();
-
-        $owner = Party::create([
-            'type' => 'person',
-            'name' => 'Lease Opening Owner',
-            'phone' => '0200000499',
-            'email' => 'lease-opening-owner@example.test',
-        ]);
-
-        PartyRole::create([
-            'party_id' => $owner->id,
-            'role' => 'owner',
-        ]);
-
-        BuildingOwner::create([
-            'building_id' => $building->id,
-            'party_id' => $owner->id,
-            'ownership_percentage' => 100.00,
-        ]);
-
-        /*
-         * Lease begins 1 March 2026.
-         *
-         * At the test date of 12 August 2026, six monthly rent
-         * Invoices should therefore exist:
-         *
-         * March, April, May, June, July and August.
-         *
-         * Monthly rent = GHS 12,000
-         * Historical billed rent = GHS 72,000.
-         *
-         * Historical Advance Payment received = GHS 84,000
-         * Rent Reserve protected             = GHS 36,000
-         * Remaining cash available for rent  = GHS 48,000
-         *
-         * Therefore exactly four GHS 12,000 Invoices should be
-         * settled FIFO.
-         */
-        $response = $this->postJson(
-            '/api/leases',
-            $this->validPayload(
-                $context,
-                [
-                    'start_date' =>
-                        '2026-03-01',
-
-                    'end_date' =>
-                        '2027-02-28',
-
-                    'status' =>
-                        'active',
-
-                    'rent_amount' =>
-                        12000,
-
-                    'payment_frequency' =>
-                        'monthly',
-
-                    'due_day' =>
-                        null,
-
-                    'vat_rate' =>
-                        18,
-
-                    'security_deposit_amount' =>
-                        0,
-
-                    'advance_payment_amount' =>
-                        84000,
-
-                    'rent_reserve_amount' =>
-                        36000,
-
-                    /*
-                     * Historical opening-payment information.
-                     *
-                     * These fields deliberately distinguish contractual
-                     * Advance Payment terms from money actually received.
-                     */
-                    'advance_received' =>
-                        true,
-
-                    'advance_received_date' =>
-                        '2026-03-01',
-
-                    'advance_received_method' =>
-                        'bank_transfer',
-
-                    'advance_received_reference' =>
-                        'OPENING-ADVANCE-001',
-
-                    'management_fee_type' =>
-                        'percentage',
-
-                    'management_fee_value' =>
-                        12,
-
-                    'agent_commission_amount' =>
-                        12000,
-
-                    'rent_increment_type' =>
-                        'percentage',
-
-                    'rent_increment_value' =>
-                        5,
-
-                    'next_rent_increment_date' =>
-                        '2027-03-01',
-                ]
-            )
-        );
-
-        $response->assertCreated();
-
-        $lease = Lease::findOrFail(
-            $response->json('id')
-        );
-
-        /*
-         * -------------------------------------------------------------
-         * Historical billing
-         * -------------------------------------------------------------
-         */
-
-        $invoices = Invoice::query()
-            ->where('lease_id', $lease->id)
-            ->orderBy('period_start')
-            ->get();
-
-        $this->assertCount(
-            6,
-            $invoices
-        );
-
-        $this->assertSame(
-            72000,
-            (int) $invoices->sum('total_amount')
-        );
-
-        /*
-         * -------------------------------------------------------------
-         * Historical Payment
-         * -------------------------------------------------------------
-         *
-         * One Payment represents the GHS 84,000 actually received.
-         */
-
-        $payment = Payment::query()
-            ->where('lease_id', $lease->id)
-            ->firstOrFail();
-
-        $this->assertSame(
-            84000,
-            $payment->amount
-        );
-
-        $this->assertSame(
-            '2026-03-01',
-            $payment->payment_date->toDateString()
-        );
-
-        $this->assertSame(
-            'bank_transfer',
-            $payment->payment_method
-        );
-
-        $this->assertSame(
-            'OPENING-ADVANCE-001',
-            $payment->reference
-        );
-
-        /*
-         * -------------------------------------------------------------
-         * Protected Rent Reserve
-         * -------------------------------------------------------------
-         */
-
-        $reserveAccount = TenantFundAccount::query()
-            ->where('lease_id', $lease->id)
-            ->where('type', 'rent_reserve')
-            ->firstOrFail();
-
-        $this->assertSame(
-            36000,
-            $reserveAccount->balance()
-        );
-
-        $this->assertDatabaseHas(
-            'tenant_fund_transactions',
-            [
-                'tenant_fund_account_id' =>
-                    $reserveAccount->id,
-
-                'payment_id' =>
-                    $payment->id,
-
-                'direction' =>
-                    'credit',
-
-                'category' =>
-                    'reserve_funding',
-
-                'amount' =>
-                    36000,
-            ]
-        );
-
-        /*
-         * -------------------------------------------------------------
-         * FIFO rent allocation
-         * -------------------------------------------------------------
-         *
-         * GHS 84,000 payment
-         * - GHS 36,000 protected reserve
-         * = GHS 48,000 allocatable to historical rent.
-         */
-
-        $this->assertSame(
-            48000,
-            $payment->allocatedAmount()
-        );
-
-        $this->assertSame(
-            36000,
-            $payment->classifiedFundAmount()
-        );
-
-        $this->assertSame(
-            0,
-            $payment->allocatableAmount()
-        );
-
-        $allocations = PaymentAllocation::query()
-            ->where('payment_id', $payment->id)
-            ->with('invoice')
-            ->orderBy('id')
-            ->get();
-
-        $this->assertCount(
-            4,
-            $allocations
-        );
-
-        $this->assertSame(
-            48000,
-            (int) $allocations->sum('amount')
-        );
-
-        /*
-         * FIFO must settle March through June first.
-         */
-        $this->assertSame(
-            [
+            $this->assertSame(
                 '2026-03-01',
-                '2026-04-01',
-                '2026-05-01',
-                '2026-06-01',
-            ],
-            $allocations
-                ->map(
-                    fn (PaymentAllocation $allocation): string =>
-                        $allocation
+                $payment->payment_date->toDateString()
+            );
+
+            $this->assertSame(
+                'bank_transfer',
+                $payment->payment_method
+            );
+
+            $this->assertSame(
+                'OPENING-ADVANCE-001',
+                $payment->reference
+            );
+
+            /*
+             * -------------------------------------------------------------
+             * Protected Rent Reserve
+             * -------------------------------------------------------------
+             */
+
+            $reserveAccount = TenantFundAccount::query()
+                ->where('lease_id', $lease->id)
+                ->where('type', 'rent_reserve')
+                ->firstOrFail();
+
+            $this->assertSame(
+                36000,
+                $reserveAccount->balance()
+            );
+
+            $this->assertDatabaseHas(
+                'tenant_fund_transactions',
+                [
+                    'tenant_fund_account_id' => $reserveAccount->id,
+
+                    'payment_id' => $payment->id,
+
+                    'direction' => 'credit',
+
+                    'category' => 'reserve_funding',
+
+                    'amount' => 36000,
+                ]
+            );
+
+            /*
+             * -------------------------------------------------------------
+             * FIFO rent allocation
+             * -------------------------------------------------------------
+             *
+             * GHS 84,000 payment
+             * - GHS 36,000 protected reserve
+             * = GHS 48,000 allocatable to historical rent.
+             */
+
+            $this->assertSame(
+                48000,
+                $payment->allocatedAmount()
+            );
+
+            $this->assertSame(
+                36000,
+                $payment->classifiedFundAmount()
+            );
+
+            $this->assertSame(
+                0,
+                $payment->allocatableAmount()
+            );
+
+            $allocations = PaymentAllocation::query()
+                ->where('payment_id', $payment->id)
+                ->with('invoice')
+                ->orderBy('id')
+                ->get();
+
+            $this->assertCount(
+                4,
+                $allocations
+            );
+
+            $this->assertSame(
+                48000,
+                (int) $allocations->sum('amount')
+            );
+
+            /*
+             * FIFO must settle March through June first.
+             */
+            $this->assertSame(
+                [
+                    '2026-03-01',
+                    '2026-04-01',
+                    '2026-05-01',
+                    '2026-06-01',
+                ],
+                $allocations
+                    ->map(
+                        fn (PaymentAllocation $allocation): string => $allocation
                             ->invoice
                             ->period_start
                             ->toDateString()
-                )
-                ->all()
-        );
+                    )
+                    ->all()
+            );
 
-        /*
-         * First four Invoices are fully paid.
-         */
-        $this->assertSame(
-            [
-                'paid',
-                'paid',
-                'paid',
-                'paid',
-                'issued',
-                'issued',
-            ],
-            $invoices
-                ->map(
-                    fn (Invoice $invoice): string =>
-                        $invoice
+            /*
+             * First four Invoices are fully paid.
+             */
+            $this->assertSame(
+                [
+                    'paid',
+                    'paid',
+                    'paid',
+                    'paid',
+                    'issued',
+                    'issued',
+                ],
+                $invoices
+                    ->map(
+                        fn (Invoice $invoice): string => $invoice
                             ->fresh()
                             ->status
-                )
-                ->all()
-        );
+                    )
+                    ->all()
+            );
 
-        /*
-         * Remaining historical rent debt:
-         *
-         * GHS 72,000 billed
-         * - GHS 48,000 settled
-         * = GHS 24,000 outstanding.
-         */
-        $this->assertSame(
-            24000,
-            $invoices->sum(
-                fn (Invoice $invoice): int =>
-                    $invoice
+            /*
+             * Remaining historical rent debt:
+             *
+             * GHS 72,000 billed
+             * - GHS 48,000 settled
+             * = GHS 24,000 outstanding.
+             */
+            $this->assertSame(
+                24000,
+                $invoices->sum(
+                    fn (Invoice $invoice): int => $invoice
                         ->fresh()
                         ->outstandingAmount()
-            )
-        );
+                )
+            );
 
-        /*
-         * -------------------------------------------------------------
-         * Owner accounting
-         * -------------------------------------------------------------
-         */
+            /*
+             * -------------------------------------------------------------
+             * Owner accounting
+             * -------------------------------------------------------------
+             */
 
-        $ownerAccount = OwnerAccount::query()
-            ->where(
-                'party_id',
-                $owner->id
-            )
-            ->firstOrFail();
+            $ownerAccount = OwnerAccount::query()
+                ->where(
+                    'party_id',
+                    $owner->id
+                )
+                ->firstOrFail();
 
-        /*
-         * Actual collected rent entitlement:
-         *
-         * GHS 48,000.
-         */
-        $this->assertSame(
-            48000,
-            (int) OwnerTransaction::query()
-                ->where(
-                    'owner_account_id',
-                    $ownerAccount->id
-                )
-                ->where(
-                    'lease_id',
-                    $lease->id
-                )
-                ->where(
-                    'direction',
-                    'credit'
-                )
-                ->where(
-                    'category',
-                    'rent_entitlement'
-                )
-                ->sum('amount')
-        );
+            /*
+             * Actual collected rent entitlement:
+             *
+             * GHS 48,000.
+             */
+            $this->assertSame(
+                48000,
+                (int) OwnerTransaction::query()
+                    ->where(
+                        'owner_account_id',
+                        $ownerAccount->id
+                    )
+                    ->where(
+                        'lease_id',
+                        $lease->id
+                    )
+                    ->where(
+                        'direction',
+                        'credit'
+                    )
+                    ->where(
+                        'category',
+                        'rent_entitlement'
+                    )
+                    ->sum('amount')
+            );
 
-        /*
-         * Managing Organisation fee:
-         *
-         * 12% × GHS 48,000 actually collected
-         * = GHS 5,760.
-         */
-        $this->assertSame(
-            5760,
-            (int) OwnerTransaction::query()
-                ->where(
-                    'owner_account_id',
-                    $ownerAccount->id
-                )
-                ->where(
-                    'lease_id',
-                    $lease->id
-                )
-                ->where(
-                    'direction',
-                    'debit'
-                )
-                ->where(
-                    'category',
-                    'management_fee'
-                )
-                ->sum('amount')
-        );
+            /*
+             * Managing Organisation fee:
+             *
+             * 12% × GHS 48,000 actually collected
+             * = GHS 5,760.
+             */
+            $this->assertSame(
+                5760,
+                (int) OwnerTransaction::query()
+                    ->where(
+                        'owner_account_id',
+                        $ownerAccount->id
+                    )
+                    ->where(
+                        'lease_id',
+                        $lease->id
+                    )
+                    ->where(
+                        'direction',
+                        'debit'
+                    )
+                    ->where(
+                        'category',
+                        'management_fee'
+                    )
+                    ->sum('amount')
+            );
 
-        /*
-         * One-time Agent commission.
-         */
-        $this->assertSame(
-            12000,
-            (int) OwnerTransaction::query()
-                ->where(
-                    'owner_account_id',
-                    $ownerAccount->id
-                )
-                ->where(
-                    'lease_id',
-                    $lease->id
-                )
-                ->where(
-                    'direction',
-                    'debit'
-                )
-                ->where(
-                    'category',
-                    'agent_commission'
-                )
-                ->sum('amount')
-        );
+            /*
+             * One-time Agent commission.
+             */
+            $this->assertSame(
+                12000,
+                (int) OwnerTransaction::query()
+                    ->where(
+                        'owner_account_id',
+                        $ownerAccount->id
+                    )
+                    ->where(
+                        'lease_id',
+                        $lease->id
+                    )
+                    ->where(
+                        'direction',
+                        'debit'
+                    )
+                    ->where(
+                        'category',
+                        'agent_commission'
+                    )
+                    ->sum('amount')
+            );
 
-        /*
-         * Owner funds currently held:
-         *
-         * GHS 48,000 rent entitlement
-         * - GHS 5,760 Managing Organisation fee
-         * - GHS 12,000 Agent commission
-         * = GHS 30,240.
-         */
-        $this->assertSame(
-            30240,
-            $ownerAccount->balance()
-        );
+            /*
+             * Owner funds currently held:
+             *
+             * GHS 48,000 rent entitlement
+             * - GHS 5,760 Managing Organisation fee
+             * - GHS 12,000 Agent commission
+             * = GHS 30,240.
+             */
+            $this->assertSame(
+                30240,
+                $ownerAccount->balance()
+            );
 
-        /*
-         * Finally ensure the protected GHS 36,000 Reserve did NOT
-         * accidentally become owner rent entitlement.
-         */
-        $this->assertSame(
-            36000,
-            $reserveAccount->fresh()->balance()
-        );
-    } finally {
-        Carbon::setTestNow();
+            /*
+             * Finally ensure the protected GHS 36,000 Reserve did NOT
+             * accidentally become owner rent entitlement.
+             */
+            $this->assertSame(
+                36000,
+                $reserveAccount->fresh()->balance()
+            );
+        } finally {
+            Carbon::setTestNow();
+        }
     }
-}
-
-
 
     /**
      * Lease detail exposes actual ledger-derived tenant-fund balances.
@@ -1323,11 +1260,9 @@ public function test_backdated_lease_with_received_advance_initializes_finances(
                 $this->validPayload(
                     $context,
                     [
-                        'advance_payment_amount' =>
-                            0,
+                        'advance_payment_amount' => 0,
 
-                        'rent_reserve_amount' =>
-                            0,
+                        'rent_reserve_amount' => 0,
                     ]
                 )
             );
@@ -1341,49 +1276,36 @@ public function test_backdated_lease_with_received_advance_initializes_finances(
             );
 
         $account =
-            \App\Models\TenantFundAccount::create([
-                'lease_id' =>
-                    $leaseId,
+            TenantFundAccount::create([
+                'lease_id' => $leaseId,
 
-                'type' =>
-                    'consumable_advance',
+                'type' => 'consumable_advance',
 
-                'status' =>
-                    'active',
+                'status' => 'active',
             ]);
 
-        \App\Models\TenantFundTransaction::create([
-            'tenant_fund_account_id' =>
-                $account->id,
+        TenantFundTransaction::create([
+            'tenant_fund_account_id' => $account->id,
 
-            'direction' =>
-                'credit',
+            'direction' => 'credit',
 
-            'category' =>
-                'advance_funding',
+            'category' => 'advance_funding',
 
-            'amount' =>
-                6000,
+            'amount' => 6000,
 
-            'transaction_date' =>
-                '2026-08-01',
+            'transaction_date' => '2026-08-01',
         ]);
 
-        \App\Models\TenantFundTransaction::create([
-            'tenant_fund_account_id' =>
-                $account->id,
+        TenantFundTransaction::create([
+            'tenant_fund_account_id' => $account->id,
 
-            'direction' =>
-                'debit',
+            'direction' => 'debit',
 
-            'category' =>
-                'advance_consumption',
+            'category' => 'advance_consumption',
 
-            'amount' =>
-                1500,
+            'amount' => 1500,
 
-            'transaction_date' =>
-                '2026-08-05',
+            'transaction_date' => '2026-08-05',
         ]);
 
         $this->getJson(
@@ -1403,5 +1325,4 @@ public function test_backdated_lease_with_received_advance_initializes_finances(
                 'tenant_fund_accounts.0.transactions'
             );
     }
-
 }

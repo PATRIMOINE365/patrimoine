@@ -21,6 +21,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Current Patrimoine Release
+    |--------------------------------------------------------------------------
+    |
+    | A user's release announcement becomes unread whenever this value
+    | differs from the release they most recently acknowledged.
+    |
+    */
+
+    'release' => '1.0.4',
+
+    /*
+    |--------------------------------------------------------------------------
     | Supported Languages
     |--------------------------------------------------------------------------
     |

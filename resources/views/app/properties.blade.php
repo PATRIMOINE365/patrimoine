@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Properties — Patrimoine')
+@section('title', __('ui.properties.title'))
 @section('title-i18n', 'properties.title')
 
 @section('content')
 
-<div class="mx-auto max-w-[1600px]">
+<div class="pm-properties-page mx-auto max-w-[1600px]">
 
     {{-- Page Header --}}
     <div
@@ -21,7 +21,7 @@
                     text-patrimoine-700
                 "
             >
-                <span data-i18n="properties.portfolio">Portfolio</span>
+                <span data-i18n="properties.portfolio">{{ __('ui.properties.portfolio') }}</span>
             </p>
 
             <h1
@@ -30,11 +30,11 @@
                     tracking-tight text-slate-950
                 "
             >
-                <span data-i18n="properties.heading">Properties</span>
+                <span data-i18n="properties.heading">{{ __('ui.properties.heading') }}</span>
             </h1>
 
             <p class="mt-2 text-sm text-slate-500">
-                <span data-i18n="properties.page_description">Manage buildings, ownership and individual units.</span>
+                <span data-i18n="properties.page_description">{{ __('ui.properties.page_description') }}</span>
             </p>
         </div>
 
@@ -62,7 +62,7 @@
                     <path d="M5 12h14"/>
                 </svg>
 
-                <span data-i18n="properties.add_property">Add Property</span>
+                <span data-i18n="properties.add_property">{{ __('ui.properties.add_property') }}</span>
             </button>
         </div>
     </div>
@@ -92,7 +92,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                <span data-i18n="properties.buildings">Buildings</span>
+                <span data-i18n="properties.buildings">{{ __('ui.properties.buildings') }}</span>
             </div>
 
             <div
@@ -113,7 +113,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                <span data-i18n="properties.total_units">Total Units</span>
+                <span data-i18n="properties.total_units">{{ __('ui.properties.total_units') }}</span>
             </div>
 
             <div
@@ -134,7 +134,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                <span data-i18n="properties.single_unit_properties">Single-Unit Properties</span>
+                <span data-i18n="properties.single_unit_properties">{{ __('ui.properties.single_unit_properties') }}</span>
             </div>
 
             <div
@@ -155,7 +155,7 @@
             "
         >
             <div class="text-sm text-slate-500">
-                <span data-i18n="properties.multi_unit_properties">Multi-Unit Properties</span>
+                <span data-i18n="properties.multi_unit_properties">{{ __('ui.properties.multi_unit_properties') }}</span>
             </div>
 
             <div
@@ -193,11 +193,11 @@
                         text-slate-950
                     "
                 >
-                    <span data-i18n="properties.property_portfolio">Property Portfolio</span>
+                    <span data-i18n="properties.property_portfolio">{{ __('ui.properties.property_portfolio') }}</span>
                 </h2>
 
                 <p class="mt-1 text-xs text-slate-500">
-                    <span data-i18n="properties.portfolio_description">Buildings and their associated units.</span>
+                    <span data-i18n="properties.portfolio_description">{{ __('ui.properties.portfolio_description') }}</span>
                 </p>
             </div>
 
@@ -206,7 +206,7 @@
                     for="property-search"
                     class="sr-only"
                 >
-                    <span data-i18n="properties.search">Search properties</span>
+                    <span data-i18n="properties.search">{{ __('ui.properties.search') }}</span>
                 </label>
 
                 <div class="relative">
@@ -230,7 +230,7 @@
                         id="property-search"
                         type="search"
                         data-i18n-placeholder="properties.search_placeholder"
-                        placeholder="Search buildings or units..."
+                        placeholder="{{ __('ui.properties.search_placeholder') }}"
                         class="
                             w-full rounded-lg
                             border border-slate-200
@@ -253,7 +253,7 @@
             class="p-5"
         >
             <div class="text-sm text-slate-400">
-                <span data-i18n="properties.loading">Loading properties…</span>
+                <span data-i18n="properties.loading">{{ __('ui.properties.loading') }}</span>
             </div>
         </div>
 
@@ -270,323 +270,342 @@
 
 
 {{-- ================================================================
-     ADD / EDIT PROPERTY MODAL
+     ADD / EDIT PROPERTY DRAWER
      ================================================================ --}}
 
-<div
+<x-drawer
     id="property-modal"
-    class="
-        fixed inset-0 z-[70] hidden
-        overflow-y-auto
-    "
-    aria-hidden="true"
+    backdrop-id="property-modal-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        title-id="property-modal-title"
+        description-id="property-modal-description"
+        close-id="property-modal-close"
+        close-label="Close"
+        close-label-key="properties.close"
+    >
+        <x-slot:title>
+            <span
+                id="property-modal-title-text"
+                data-i18n="properties.add_property"
+            >
+                {{ __('ui.properties.add_property') }}
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span
+                id="property-modal-description-text"
+                data-i18n="properties.add_property_description"
+            >
+                {{ __('ui.properties.add_property_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+<form
+    id="property-form"
+    class="flex min-h-0 flex-1 flex-col"
 >
     <div
-        id="property-modal-backdrop"
         class="
-            fixed inset-0
-            bg-slate-950/50
-            backdrop-blur-[1px]
-        "
-    ></div>
-
-    <div
-        class="
-            relative flex min-h-full
-            items-start justify-center
-            p-4 sm:p-6 lg:p-10
+            min-h-0 flex-1
+            overflow-y-auto
+            px-6 py-6
         "
     >
+        {{-- Form Error --}}
         <div
+            id="property-form-error"
             class="
-                relative w-full max-w-4xl
-                overflow-hidden rounded-2xl
-                bg-white shadow-2xl
+                mb-5 hidden rounded-lg
+                border border-red-200
+                bg-red-50 px-4 py-3
+                text-sm text-red-700
             "
-        >
-            {{-- Header --}}
+        ></div>
+
+        {{-- Property Details --}}
+        <section>
+            <div class="mb-4">
+                <h3
+                    class="
+                        text-sm font-semibold
+                        text-slate-950
+                    "
+                >
+                    <span data-i18n="properties.property_details">{{ __('ui.properties.property_details') }}</span>
+                </h3>
+
+                <p class="mt-1 text-xs text-slate-500">
+                    <span data-i18n="properties.property_details_description">{{ __('ui.properties.property_details_description') }}</span>
+                </p>
+            </div>
+
             <div
                 class="
-                    flex items-start justify-between gap-5
-                    border-b border-slate-100
-                    px-6 py-5
+                    grid grid-cols-1 gap-4
+                "
+            >
+                <div class="">
+                    <label
+                        for="property-name"
+                        class="
+                            mb-1.5 block
+                            text-sm font-medium
+                            text-slate-700
+                        "
+                    >
+                        <span data-i18n="properties.property_name">{{ __('ui.properties.property_name') }}</span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <input
+                        id="property-name"
+                        name="name"
+                        type="text"
+                        required
+                        maxlength="255"
+                        data-i18n-placeholder="{{ __('ui.properties.property_name_placeholder') }}"
+                        placeholder="e.g. Airport Residential Apartments"
+                        class="
+                            w-full rounded-lg
+                            border border-slate-200
+                            px-3.5 py-2.5
+                            text-sm
+                            outline-none transition
+                            focus:border-patrimoine-500
+                            focus:ring-2
+                            focus:ring-patrimoine-100
+                        "
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="property-location"
+                        class="
+                            mb-1.5 block
+                            text-sm font-medium
+                            text-slate-700
+                        "
+                    >
+                        <span data-i18n="properties.location">{{ __('ui.properties.location') }}</span>
+                    </label>
+
+                    <input
+                        id="property-location"
+                        name="location"
+                        type="text"
+                        maxlength="255"
+                        data-i18n-placeholder="{{ __('ui.properties.location_placeholder') }}"
+                        placeholder="e.g. Airport Residential, Accra"
+                        class="
+                            w-full rounded-lg
+                            border border-slate-200
+                            px-3.5 py-2.5
+                            text-sm
+                            outline-none transition
+                            focus:border-patrimoine-500
+                            focus:ring-2
+                            focus:ring-patrimoine-100
+                        "
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="property-address"
+                        class="
+                            mb-1.5 block
+                            text-sm font-medium
+                            text-slate-700
+                        "
+                    >
+                        <span data-i18n="properties.address">{{ __('ui.properties.address') }}</span>
+                    </label>
+
+                    <input
+                        id="property-address"
+                        name="address"
+                        type="text"
+                        data-i18n-placeholder="{{ __('ui.properties.address_placeholder') }}"
+                        placeholder="Street or property address"
+                        class="
+                            w-full rounded-lg
+                            border border-slate-200
+                            px-3.5 py-2.5
+                            text-sm
+                            outline-none transition
+                            focus:border-patrimoine-500
+                            focus:ring-2
+                            focus:ring-patrimoine-100
+                        "
+                    >
+                </div>
+
+                <div class="">
+                    <label
+                        for="property-description"
+                        class="
+                            mb-1.5 block
+                            text-sm font-medium
+                            text-slate-700
+                        "
+                    >
+                        <span data-i18n="properties.description">{{ __('ui.properties.description') }}</span>
+                    </label>
+
+                    <textarea
+                        id="property-description"
+                        name="description"
+                        rows="3"
+                        data-i18n-placeholder="{{ __('ui.properties.optional_property_description') }}"
+                        placeholder="Optional property description"
+                        class="
+                            w-full resize-y rounded-lg
+                            border border-slate-200
+                            px-3.5 py-2.5
+                            text-sm
+                            outline-none transition
+                            focus:border-patrimoine-500
+                            focus:ring-2
+                            focus:ring-patrimoine-100
+                        "
+                    ></textarea>
+                </div>
+            </div>
+        </section>
+
+        {{-- Ownership --}}
+        <section
+            class="
+                mt-8 border-t
+                border-slate-100 pt-7
+            "
+        >
+            <div
+                class="
+                    mb-4 flex flex-col gap-3
+                    sm:flex-row
+                    sm:items-center
+                    sm:justify-between
                 "
             >
                 <div>
-                    <h2
-                        id="property-modal-title"
+                    <h3
                         class="
-                            text-xl font-semibold
-                            tracking-tight text-slate-950
+                            text-sm font-semibold
+                            text-slate-950
                         "
                     >
-                        <span data-i18n="properties.add_property">Add Property</span>
-                    </h2>
+                        <span data-i18n="properties.ownership">{{ __('ui.properties.ownership') }}</span>
+                    </h3>
 
-                    <p
-                        id="property-modal-description"
-                        class="
-                            mt-1 text-sm
-                            text-slate-500
-                        "
-                    >
-                        <span data-i18n="properties.add_property_description">Create a building, define its ownership and add its units.</span>
+                    <p class="mt-1 text-xs text-slate-500">
+                        <span data-i18n="properties.ownership_description">{{ __('ui.properties.ownership_description') }}</span>
                     </p>
                 </div>
 
-                <button
-                    id="property-modal-close"
-                    type="button"
-                    class="
-                        inline-flex h-9 w-9
-                        shrink-0 items-center justify-center
-                        rounded-lg
-                        text-slate-400
-                        transition
-                        hover:bg-slate-100
-                        hover:text-slate-700
-                    "
-                    aria-label="Close"
-                    data-i18n-aria-label="properties.close"
-                >
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <path d="M18 6 6 18"/>
-                        <path d="m6 6 12 12"/>
-                    </svg>
-                </button>
-            </div>
-
-            <form id="property-form">
                 <div
                     class="
-                        max-h-[calc(100vh-12rem)]
-                        overflow-y-auto
-                        px-6 py-6
+                        flex flex-wrap
+                        items-center gap-2
                     "
                 >
-                    {{-- Form Error --}}
                     <div
-                        id="property-form-error"
+                        id="ownership-total"
                         class="
-                            mb-5 hidden rounded-lg
-                            border border-red-200
-                            bg-red-50 px-4 py-3
-                            text-sm text-red-700
-                        "
-                    ></div>
-
-                    {{-- Property Details --}}
-                    <section>
-                        <div class="mb-4">
-                            <h3
-                                class="
-                                    text-sm font-semibold
-                                    text-slate-950
-                                "
-                            >
-                                <span data-i18n="properties.property_details">Property Details</span>
-                            </h3>
-
-                            <p class="mt-1 text-xs text-slate-500">
-                                <span data-i18n="properties.property_details_description">Basic information identifying the building.</span>
-                            </p>
-                        </div>
-
-                        <div
-                            class="
-                                grid gap-4
-                                md:grid-cols-2
-                            "
-                        >
-                            <div class="md:col-span-2">
-                                <label
-                                    for="property-name"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
-                                >
-                                    <span data-i18n="properties.property_name">Property Name</span>
-                                    <span class="text-red-500">*</span>
-                                </label>
-
-                                <input
-                                    id="property-name"
-                                    name="name"
-                                    type="text"
-                                    required
-                                    maxlength="255"
-                                    data-i18n-placeholder="properties.property_name_placeholder"
-                                    placeholder="e.g. Airport Residential Apartments"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
-                                >
-                            </div>
-
-                            <div>
-                                <label
-                                    for="property-location"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
-                                >
-                                    <span data-i18n="properties.location">Location</span>
-                                </label>
-
-                                <input
-                                    id="property-location"
-                                    name="location"
-                                    type="text"
-                                    maxlength="255"
-                                    data-i18n-placeholder="properties.location_placeholder"
-                                    placeholder="e.g. Airport Residential, Accra"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
-                                >
-                            </div>
-
-                            <div>
-                                <label
-                                    for="property-address"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
-                                >
-                                    <span data-i18n="properties.address">Address</span>
-                                </label>
-
-                                <input
-                                    id="property-address"
-                                    name="address"
-                                    type="text"
-                                    data-i18n-placeholder="properties.address_placeholder"
-                                    placeholder="Street or property address"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
-                                >
-                            </div>
-
-                            <div class="md:col-span-2">
-                                <label
-                                    for="property-description"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
-                                >
-                                    <span data-i18n="properties.description">Description</span>
-                                </label>
-
-                                <textarea
-                                    id="property-description"
-                                    name="description"
-                                    rows="3"
-                                    data-i18n-placeholder="properties.optional_property_description"
-                                    placeholder="Optional property description"
-                                    class="
-                                        w-full resize-y rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
-                                ></textarea>
-                            </div>
-                        </div>
-                    </section>
-
-                    {{-- Ownership --}}
-                    <section
-                        class="
-                            mt-8 border-t
-                            border-slate-100 pt-7
+                            rounded-full
+                            bg-slate-100
+                            px-3 py-1.5
+                            text-xs font-semibold
+                            text-slate-600
                         "
                     >
-                        <div
-                            class="
-                                mb-4 flex flex-col gap-3
-                                sm:flex-row
-                                sm:items-center
-                                sm:justify-between
-                            "
-                        >
-                            <div>
-                                <h3
-                                    class="
-                                        text-sm font-semibold
-                                        text-slate-950
-                                    "
-                                >
-                                    <span data-i18n="properties.ownership">Ownership</span>
-                                </h3>
+                        <span data-i18n="properties.total">{{ __('ui.properties.total') }}</span>: 0%
+                    </div>
 
-                                <p class="mt-1 text-xs text-slate-500">
-                                    <span data-i18n="properties.ownership_description">Ownership must total exactly 100%.</span>
-                                </p>
-                            </div>
 
-                            <div
-                                class="
-                                    flex flex-wrap
-                                    items-center gap-2
-                                "
-                            >
-                                <div
-                                    id="ownership-total"
-                                    class="
-                                        rounded-full
-                                        bg-slate-100
-                                        px-3 py-1.5
-                                        text-xs font-semibold
-                                        text-slate-600
-                                    "
-                                >
-                                    <span data-i18n="properties.total">Total</span>: 0%
-                                </div>
+                </div>
+            </div>
 
-                                <button
-                                    id="add-owner-button"
+            <div
+                id="property-owner-rows"
+                class="space-y-3"
+            ></div>
+
+            <div class="mt-3">
+                <button
+                                        id="add-owner-button"
+                                        type="button"
+                                        class="pm-property-section-add-action
+                                            rounded-lg
+                                            border border-slate-200
+                                            bg-white px-3 py-2
+                                            text-xs font-medium
+                                            text-slate-700
+                                            transition
+                                            hover:bg-slate-50
+                                        "
+                                    >
+                                        <span data-i18n="properties.add_owner">{{ __('ui.properties.add_owner') }}</span>
+                                    </button>
+            </div>
+        </section>
+
+        {{-- Units
+
+             This section is shown when creating a Property.
+
+             When editing a Property, app.js hides it because
+             existing Units are managed independently through
+             their own Add/Edit workflow.
+        --}}
+        <section
+            id="property-units-section"
+            class="
+                mt-8 border-t
+                border-slate-100 pt-7
+            "
+        >
+            <div
+                class="
+                    mb-4 flex flex-col gap-3
+                    sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                "
+            >
+                <div>
+                    <h3
+                        class="
+                            text-sm font-semibold
+                            text-slate-950
+                        "
+                    >
+                        <span data-i18n="properties.units">{{ __('ui.properties.units') }}</span>
+                    </h3>
+
+                    <p class="mt-1 text-xs text-slate-500">
+                        <span data-i18n="properties.units_description">{{ __('ui.properties.units_description') }}</span>
+                    </p>
+                </div>
+
+
+            </div>
+
+            <div
+                id="property-unit-rows"
+                class="space-y-3"
+            ></div>
+
+            <div class="mt-3">
+                <button
+                                    id="add-unit-button"
                                     type="button"
-                                    class="
+                                    class="pm-property-section-add-action
                                         rounded-lg
                                         border border-slate-200
                                         bg-white px-3 py-2
@@ -596,127 +615,63 @@
                                         hover:bg-slate-50
                                     "
                                 >
-                                    <span data-i18n="properties.add_owner">+ Add Owner</span>
+                                    <span data-i18n="properties.add_unit">{{ __('ui.properties.add_unit') }}</span>
                                 </button>
-                            </div>
-                        </div>
-
-                        <div
-                            id="property-owner-rows"
-                            class="space-y-3"
-                        ></div>
-                    </section>
-
-                    {{-- Units
-
-                         This section is shown when creating a Property.
-
-                         When editing a Property, app.js hides it because
-                         existing Units are managed independently through
-                         their own Add/Edit workflow.
-                    --}}
-                    <section
-                        id="property-units-section"
-                        class="
-                            mt-8 border-t
-                            border-slate-100 pt-7
-                        "
-                    >
-                        <div
-                            class="
-                                mb-4 flex flex-col gap-3
-                                sm:flex-row
-                                sm:items-center
-                                sm:justify-between
-                            "
-                        >
-                            <div>
-                                <h3
-                                    class="
-                                        text-sm font-semibold
-                                        text-slate-950
-                                    "
-                                >
-                                    <span data-i18n="properties.units">Units</span>
-                                </h3>
-
-                                <p class="mt-1 text-xs text-slate-500">
-                                    <span data-i18n="properties.units_description">Every property must contain at least one leasable unit.</span>
-                                </p>
-                            </div>
-
-                            <button
-                                id="add-unit-button"
-                                type="button"
-                                class="
-                                    rounded-lg
-                                    border border-slate-200
-                                    bg-white px-3 py-2
-                                    text-xs font-medium
-                                    text-slate-700
-                                    transition
-                                    hover:bg-slate-50
-                                "
-                            >
-                                <span data-i18n="properties.add_unit">+ Add Unit</span>
-                            </button>
-                        </div>
-
-                        <div
-                            id="property-unit-rows"
-                            class="space-y-3"
-                        ></div>
-                    </section>
-                </div>
-
-                {{-- Footer --}}
-                <div
-                    class="
-                        flex flex-col-reverse gap-3
-                        border-t border-slate-100
-                        bg-slate-50/70
-                        px-6 py-4
-                        sm:flex-row sm:justify-end
-                    "
-                >
-                    <button
-                        id="property-cancel-button"
-                        type="button"
-                        class="
-                            rounded-lg
-                            border border-slate-200
-                            bg-white px-4 py-2.5
-                            text-sm font-medium
-                            text-slate-700
-                            transition
-                            hover:bg-slate-50
-                        "
-                    >
-                        <span data-i18n="properties.cancel">Cancel</span>
-                    </button>
-
-                    <button
-                        id="property-submit-button"
-                        type="submit"
-                        class="
-                            rounded-lg
-                            bg-patrimoine-950
-                            px-5 py-2.5
-                            text-sm font-medium
-                            text-white
-                            shadow-sm transition
-                            hover:bg-patrimoine-900
-                            disabled:cursor-not-allowed
-                            disabled:opacity-60
-                        "
-                    >
-                        <span data-i18n="properties.create_property">Create Property</span>
-                    </button>
-                </div>
-            </form>
-        </div>
+            </div>
+        </section>
     </div>
-</div>
+
+    {{-- Footer --}}
+    <div
+        class="
+            flex flex-col-reverse gap-3
+            border-t border-slate-100
+            bg-slate-50/70
+            px-6 py-4
+            sm:flex-row sm:justify-end
+        "
+    >
+        <button
+            id="property-cancel-button"
+            type="button"
+            class="
+                rounded-lg
+                border border-slate-200
+                bg-white px-4 py-2.5
+                text-sm font-medium
+                text-slate-700
+                transition
+                hover:bg-slate-50
+            "
+        >
+                    <span data-i18n="properties.cancel">
+                        {{ __('ui.properties.cancel') }}
+                    </span>
+                </button>
+
+        <button
+            id="property-submit-button"
+            type="submit"
+            class="
+                rounded-lg
+                bg-patrimoine-950
+                px-5 py-2.5
+                text-sm font-medium
+                text-white
+                shadow-sm transition
+                hover:bg-patrimoine-900
+                disabled:cursor-not-allowed
+                disabled:opacity-60
+            "
+        >
+                    <span data-i18n="actions.save">
+                        {{ __('ui.actions.save') }}
+                    </span>
+                </button>
+    </div>
+</form>
+
+</x-drawer>
 
 
 {{-- ================================================================
@@ -727,30 +682,29 @@
     id="owner-modal"
     class="
         fixed inset-0 z-[80] hidden
-        overflow-y-auto
     "
     aria-hidden="true"
 >
     <div
         id="owner-modal-backdrop"
         class="
-            fixed inset-0
-            bg-slate-950/60
-            backdrop-blur-[1px]
+            absolute inset-0
+            bg-slate-950/30
         "
     ></div>
 
     <div
         class="
-            relative flex min-h-full
-            items-start justify-center
-            p-4 sm:p-6 lg:p-10
+            absolute inset-y-0 right-0
+            flex w-full justify-end
         "
     >
         <div
             class="
-                relative w-full max-w-2xl
-                overflow-hidden rounded-2xl
+                relative flex h-full
+                w-full max-w-xl
+                flex-col
+                border-l border-slate-200
                 bg-white shadow-2xl
             "
         >
@@ -770,7 +724,7 @@
                             tracking-tight text-slate-950
                         "
                     >
-                        <span data-i18n="properties.create_owner">Create Owner</span>
+                        <span data-i18n="properties.create_owner">{{ __('ui.properties.create_owner') }}</span>
                     </h2>
 
                     <p
@@ -779,7 +733,7 @@
                             text-slate-500
                         "
                     >
-                        <span data-i18n="properties.create_owner_description">Create an Owner Party and assign it to this property.</span>
+                        <span data-i18n="properties.create_owner_description">{{ __('ui.properties.create_owner_description') }}</span>
                     </p>
                 </div>
 
@@ -810,8 +764,17 @@
                 </button>
             </div>
 
-            <form id="owner-form">
-                <div class="px-6 py-6">
+            <form
+                id="owner-form"
+                class="flex min-h-0 flex-1 flex-col"
+            >
+                <div
+                    class="
+                        min-h-0 flex-1
+                        overflow-y-auto
+                        px-6 py-6
+                    "
+                >
 
                     {{-- Error --}}
                     <div
@@ -834,7 +797,7 @@
                                 text-slate-700
                             "
                         >
-                            <span data-i18n="properties.owner_type">Owner Type</span>
+                            <span data-i18n="properties.owner_type">{{ __('ui.properties.owner_type') }}</span>
                             <span class="text-red-500">*</span>
                         </label>
 
@@ -855,21 +818,21 @@
                                 value="person"
                                 data-i18n="properties.person"
                             >
-                                Person
+                                {{ __('ui.properties.person') }}
                             </option>
 
                             <option
                                 value="organisation"
                                 data-i18n="properties.organisation"
                             >
-                                Organisation
+                                {{ __('ui.properties.organisation') }}
                             </option>
 
                             <option
                                 value="association"
                                 data-i18n="properties.association"
                             >
-                                Association
+                                {{ __('ui.properties.association') }}
                             </option>
                         </select>
                     </div>
@@ -888,7 +851,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="properties.full_name">Full Name</span>
+                                <span data-i18n="properties.full_name">{{ __('ui.properties.full_name') }}</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -923,7 +886,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="properties.phone">Phone</span>
+                                    <span data-i18n="properties.phone">{{ __('ui.properties.phone') }}</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -952,7 +915,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="properties.email">Email</span>
+                                    <span data-i18n="properties.email">{{ __('ui.properties.email') }}</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -988,7 +951,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="properties.legal_name">Legal Name</span>
+                                <span data-i18n="properties.legal_name">{{ __('ui.properties.legal_name') }}</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -1017,7 +980,7 @@
                                     text-slate-700
                                 "
                             >
-                                <span data-i18n="properties.contact_person">Contact Person</span>
+                                <span data-i18n="properties.contact_person">{{ __('ui.properties.contact_person') }}</span>
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -1052,7 +1015,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="properties.contact_phone">Contact Phone</span>
+                                    <span data-i18n="properties.contact_phone">{{ __('ui.properties.contact_phone') }}</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -1081,7 +1044,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="properties.contact_email">Contact Email</span>
+                                    <span data-i18n="properties.contact_email">{{ __('ui.properties.contact_email') }}</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -1113,7 +1076,7 @@
                                 text-slate-700
                             "
                         >
-                            <span data-i18n="properties.address">Address</span>
+                            <span data-i18n="properties.address">{{ __('ui.properties.address') }}</span>
                         </label>
 
                         <input
@@ -1155,7 +1118,7 @@
                             hover:bg-slate-50
                         "
                     >
-                        <span data-i18n="properties.cancel">Cancel</span>
+                        <span data-i18n="properties.cancel">{{ __('ui.properties.cancel') }}</span>
                     </button>
 
                     <button
@@ -1173,7 +1136,7 @@
                             disabled:opacity-60
                         "
                     >
-                        <span data-i18n="properties.create_owner">Create Owner</span>
+                        <span data-i18n="properties.create_owner">{{ __('ui.properties.create_owner') }}</span>
                     </button>
                 </div>
             </form>
@@ -1190,30 +1153,30 @@
     id="existing-unit-modal"
     class="
         fixed inset-0 z-[80] hidden
-        overflow-y-auto
     "
     aria-hidden="true"
 >
     <div
         id="existing-unit-modal-backdrop"
         class="
-            fixed inset-0
-            bg-slate-950/60
+            absolute inset-0
+            bg-slate-950/40
             backdrop-blur-[1px]
         "
     ></div>
 
     <div
         class="
-            relative flex min-h-full
-            items-start justify-center
-            p-4 sm:p-6 lg:p-10
+            absolute inset-y-0 right-0
+            flex w-full justify-end
         "
     >
         <div
             class="
-                relative w-full max-w-xl
-                overflow-hidden rounded-2xl
+                relative flex h-full
+                w-full max-w-lg
+                flex-col
+                border-l border-slate-200
                 bg-white shadow-2xl
             "
         >
@@ -1234,7 +1197,7 @@
                             tracking-tight text-slate-950
                         "
                     >
-                        <span data-i18n="properties.add_unit">Add Unit</span>
+                        <span data-i18n="properties.add_unit">{{ __('ui.properties.add_unit') }}</span>
                     </h2>
 
                     <p
@@ -1244,7 +1207,7 @@
                             text-slate-500
                         "
                     >
-                        <span data-i18n="properties.add_unit_description">Add a leasable unit to an existing property.</span>
+                        <span data-i18n="properties.add_unit_description">{{ __('ui.properties.add_unit_description') }}</span>
                     </p>
                 </div>
 
@@ -1275,8 +1238,17 @@
                 </button>
             </div>
 
-            <form id="existing-unit-form">
-                <div class="px-6 py-6">
+            <form
+                id="existing-unit-form"
+                class="flex min-h-0 flex-1 flex-col"
+            >
+                <div
+                    class="
+                        min-h-0 flex-1
+                        overflow-y-auto
+                        px-6 py-6
+                    "
+                >
 
                     {{-- Error --}}
                     <div
@@ -1304,7 +1276,7 @@
                                 text-patrimoine-600
                             "
                         >
-                            <span data-i18n="properties.property">Property</span>
+                            <span data-i18n="properties.property">{{ __('ui.properties.property') }}</span>
                         </div>
 
                         <div
@@ -1333,7 +1305,7 @@
                                 text-slate-700
                             "
                         >
-                            <span data-i18n="properties.unit_name_number">Unit Name / Number</span>
+                            <span data-i18n="properties.unit_name_number">{{ __('ui.properties.unit_name_number') }}</span>
                             <span class="text-red-500">*</span>
                         </label>
 
@@ -1342,7 +1314,7 @@
                             type="text"
                             required
                             maxlength="255"
-                            data-i18n-placeholder="properties.existing_unit_name_placeholder"
+                            data-i18n-placeholder="{{ __('ui.properties.optional_unit_description') }}"
                             placeholder="e.g. Apartment A2"
                             class="
                                 w-full rounded-lg
@@ -1367,7 +1339,7 @@
                                 text-slate-700
                             "
                         >
-                            <span data-i18n="properties.description">Description</span>
+                            <span data-i18n="properties.description">{{ __('ui.properties.description') }}</span>
                         </label>
 
                         <textarea
@@ -1391,49 +1363,29 @@
 
                 {{-- Footer --}}
                 <div
-                    class="
-                        flex items-center
-                        justify-end gap-3
-                        border-t border-slate-100
-                        bg-slate-50
-                        px-6 py-4
-                    "
+                    class="existing-unit-drawer-footer"
                 >
                     <button
                         id="existing-unit-cancel-button"
                         type="button"
-                        class="
-                            rounded-lg
-                            border border-slate-200
-                            bg-white px-4 py-2.5
-                            text-sm font-medium
-                            text-slate-700
-                            transition
-                            hover:bg-slate-50
-                        "
+                        class="pm-button-secondary"
                     >
-                        <span data-i18n="properties.cancel">Cancel</span>
+                        <span data-i18n="properties.cancel">
+                            {{ __('ui.properties.cancel') }}
+                        </span>
                     </button>
 
                     <button
                         id="existing-unit-submit-button"
                         type="submit"
-                        class="
-                            rounded-lg
-                            bg-patrimoine-950
-                            px-5 py-2.5
-                            text-sm font-medium
-                            text-white shadow-sm
-                            transition
-                            hover:bg-patrimoine-900
-                            disabled:cursor-not-allowed
-                            disabled:opacity-60
-                        "
+                        class="pm-button-primary"
                     >
-                        <span data-i18n="properties.add_unit">Add Unit</span>
+                        <span data-i18n="properties.save">
+                            {{ __('ui.properties.save') }}
+                        </span>
                     </button>
                 </div>
-            </form>
+                </form>
         </div>
     </div>
 </div>

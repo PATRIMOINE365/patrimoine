@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\Party;
 use App\Models\Payment;
+use App\Services\ApplicationPresentationFormatter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
@@ -23,10 +24,9 @@ class ReceiptMail extends Mailable
         public Payment $payment,
         public string $pdfContents,
         public string $pdfFilename,
-        public \App\Services\ApplicationPresentationFormatter $formatter,
+        public ApplicationPresentationFormatter $formatter,
         public ?Party $managingOrganisation = null
-    ) {
-    }
+    ) {}
 
     /**
      * Define the receipt email subject.

@@ -4,16 +4,16 @@ namespace Tests\Feature;
 
 use App\Models\Building;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
+use Tests\TestCase;
 
 /**
  * Verifies the Patrimoine Unit REST API.
  */
 class UnitApiTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {

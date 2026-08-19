@@ -510,190 +510,191 @@ class DashboardServiceTest extends TestCase
             $invoices->first()->invoice_number
         );
     }
+
     /**
- * Security Deposit debt must not inflate the Dashboard Rent Due metric.
- */
-public function test_dashboard_rent_due_excludes_security_deposit_debt(): void
-{
-    $context = $this->createPropertyContext();
+     * Security Deposit debt must not inflate the Dashboard Rent Due metric.
+     */
+    public function test_dashboard_rent_due_excludes_security_deposit_debt(): void
+    {
+        $context = $this->createPropertyContext();
 
-    Invoice::create([
-        'lease_id' => $context['lease']->id,
-        'invoice_number' => 'INV-DASH-RENT-DUE',
-        'type' => 'rent',
-        'period_start' => '2026-08-01',
-        'period_end' => '2026-08-31',
-        'issue_date' => '2026-08-01',
-        'due_date' => '2026-08-10',
-        'status' => 'issued',
-        'total_amount' => 5000,
-        'vat_rate' => 0,
-        'net_amount' => 5000,
-        'vat_amount' => 0,
-    ]);
+        Invoice::create([
+            'lease_id' => $context['lease']->id,
+            'invoice_number' => 'INV-DASH-RENT-DUE',
+            'type' => 'rent',
+            'period_start' => '2026-08-01',
+            'period_end' => '2026-08-31',
+            'issue_date' => '2026-08-01',
+            'due_date' => '2026-08-10',
+            'status' => 'issued',
+            'total_amount' => 5000,
+            'vat_rate' => 0,
+            'net_amount' => 5000,
+            'vat_amount' => 0,
+        ]);
 
-    Invoice::create([
-        'lease_id' => $context['lease']->id,
-        'invoice_number' => 'SDD-DASH-DUE-001',
-        'type' => 'security_deposit_debt',
-        'period_start' => '2026-08-01',
-        'period_end' => '2026-08-01',
-        'issue_date' => '2026-08-01',
-        'due_date' => '2026-08-10',
-        'status' => 'issued',
-        'total_amount' => 3000,
-        'vat_rate' => 0,
-        'net_amount' => 3000,
-        'vat_amount' => 0,
-    ]);
+        Invoice::create([
+            'lease_id' => $context['lease']->id,
+            'invoice_number' => 'SDD-DASH-DUE-001',
+            'type' => 'security_deposit_debt',
+            'period_start' => '2026-08-01',
+            'period_end' => '2026-08-01',
+            'issue_date' => '2026-08-01',
+            'due_date' => '2026-08-10',
+            'status' => 'issued',
+            'total_amount' => 3000,
+            'vat_rate' => 0,
+            'net_amount' => 3000,
+            'vat_amount' => 0,
+        ]);
 
-    $this->assertSame(
-        5000,
-        app(DashboardService::class)->rentDueAmount(
+        $this->assertSame(
+            5000,
+            app(DashboardService::class)->rentDueAmount(
+                Carbon::parse('2026-08-11')
+            )
+        );
+    }
+
+    /**
+     * Security Deposit debt must not inflate the Dashboard Rent Overdue metric.
+     */
+    public function test_dashboard_rent_overdue_excludes_security_deposit_debt(): void
+    {
+        $context = $this->createPropertyContext();
+
+        Invoice::create([
+            'lease_id' => $context['lease']->id,
+            'invoice_number' => 'INV-DASH-RENT-OVERDUE',
+            'type' => 'rent',
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-31',
+            'issue_date' => '2026-07-01',
+            'due_date' => '2026-07-05',
+            'status' => 'issued',
+            'total_amount' => 4000,
+            'vat_rate' => 0,
+            'net_amount' => 4000,
+            'vat_amount' => 0,
+        ]);
+
+        Invoice::create([
+            'lease_id' => $context['lease']->id,
+            'invoice_number' => 'SDD-DASH-OVERDUE-001',
+            'type' => 'security_deposit_debt',
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-01',
+            'issue_date' => '2026-07-01',
+            'due_date' => '2026-07-05',
+            'status' => 'issued',
+            'total_amount' => 2500,
+            'vat_rate' => 0,
+            'net_amount' => 2500,
+            'vat_amount' => 0,
+        ]);
+
+        $this->assertSame(
+            4000,
+            app(DashboardService::class)->rentOverdueAmount(
+                Carbon::parse('2026-08-11')
+            )
+        );
+    }
+
+    /**
+     * Dashboard overdue rent list must contain rent invoices only.
+     */
+    public function test_dashboard_overdue_list_excludes_security_deposit_debt(): void
+    {
+        $context = $this->createPropertyContext();
+
+        Invoice::create([
+            'lease_id' => $context['lease']->id,
+            'invoice_number' => 'INV-DASH-OVERDUE-RENT-ONLY',
+            'type' => 'rent',
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-31',
+            'issue_date' => '2026-07-01',
+            'due_date' => '2026-07-05',
+            'status' => 'issued',
+            'total_amount' => 5000,
+            'vat_rate' => 0,
+            'net_amount' => 5000,
+            'vat_amount' => 0,
+        ]);
+
+        Invoice::create([
+            'lease_id' => $context['lease']->id,
+            'invoice_number' => 'SDD-DASH-OVERDUE-LIST',
+            'type' => 'security_deposit_debt',
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-01',
+            'issue_date' => '2026-07-01',
+            'due_date' => '2026-07-05',
+            'status' => 'issued',
+            'total_amount' => 2000,
+            'vat_rate' => 0,
+            'net_amount' => 2000,
+            'vat_amount' => 0,
+        ]);
+
+        $invoices = app(DashboardService::class)->overdueInvoices(
             Carbon::parse('2026-08-11')
-        )
-    );
-}
+        );
 
-/**
- * Security Deposit debt must not inflate the Dashboard Rent Overdue metric.
- */
-public function test_dashboard_rent_overdue_excludes_security_deposit_debt(): void
-{
-    $context = $this->createPropertyContext();
+        $this->assertCount(1, $invoices);
+        $this->assertSame(
+            'INV-DASH-OVERDUE-RENT-ONLY',
+            $invoices->first()->invoice_number
+        );
+    }
 
-    Invoice::create([
-        'lease_id' => $context['lease']->id,
-        'invoice_number' => 'INV-DASH-RENT-OVERDUE',
-        'type' => 'rent',
-        'period_start' => '2026-07-01',
-        'period_end' => '2026-07-31',
-        'issue_date' => '2026-07-01',
-        'due_date' => '2026-07-05',
-        'status' => 'issued',
-        'total_amount' => 4000,
-        'vat_rate' => 0,
-        'net_amount' => 4000,
-        'vat_amount' => 0,
-    ]);
+    /**
+     * Dashboard upcoming rent list must contain rent invoices only.
+     */
+    public function test_dashboard_upcoming_list_excludes_security_deposit_debt(): void
+    {
+        $context = $this->createPropertyContext();
 
-    Invoice::create([
-        'lease_id' => $context['lease']->id,
-        'invoice_number' => 'SDD-DASH-OVERDUE-001',
-        'type' => 'security_deposit_debt',
-        'period_start' => '2026-07-01',
-        'period_end' => '2026-07-01',
-        'issue_date' => '2026-07-01',
-        'due_date' => '2026-07-05',
-        'status' => 'issued',
-        'total_amount' => 2500,
-        'vat_rate' => 0,
-        'net_amount' => 2500,
-        'vat_amount' => 0,
-    ]);
+        Invoice::create([
+            'lease_id' => $context['lease']->id,
+            'invoice_number' => 'INV-DASH-UPCOMING-RENT-ONLY',
+            'type' => 'rent',
+            'period_start' => '2026-08-01',
+            'period_end' => '2026-08-31',
+            'issue_date' => '2026-08-01',
+            'due_date' => '2026-08-15',
+            'status' => 'issued',
+            'total_amount' => 5000,
+            'vat_rate' => 0,
+            'net_amount' => 5000,
+            'vat_amount' => 0,
+        ]);
 
-    $this->assertSame(
-        4000,
-        app(DashboardService::class)->rentOverdueAmount(
-            Carbon::parse('2026-08-11')
-        )
-    );
-}
+        Invoice::create([
+            'lease_id' => $context['lease']->id,
+            'invoice_number' => 'SDD-DASH-UPCOMING-LIST',
+            'type' => 'security_deposit_debt',
+            'period_start' => '2026-08-01',
+            'period_end' => '2026-08-01',
+            'issue_date' => '2026-08-01',
+            'due_date' => '2026-08-15',
+            'status' => 'issued',
+            'total_amount' => 2000,
+            'vat_rate' => 0,
+            'net_amount' => 2000,
+            'vat_amount' => 0,
+        ]);
 
-/**
- * Dashboard overdue rent list must contain rent invoices only.
- */
-public function test_dashboard_overdue_list_excludes_security_deposit_debt(): void
-{
-    $context = $this->createPropertyContext();
+        $invoices = app(DashboardService::class)->upcomingInvoices(
+            Carbon::parse('2026-08-11'),
+            7
+        );
 
-    Invoice::create([
-        'lease_id' => $context['lease']->id,
-        'invoice_number' => 'INV-DASH-OVERDUE-RENT-ONLY',
-        'type' => 'rent',
-        'period_start' => '2026-07-01',
-        'period_end' => '2026-07-31',
-        'issue_date' => '2026-07-01',
-        'due_date' => '2026-07-05',
-        'status' => 'issued',
-        'total_amount' => 5000,
-        'vat_rate' => 0,
-        'net_amount' => 5000,
-        'vat_amount' => 0,
-    ]);
-
-    Invoice::create([
-        'lease_id' => $context['lease']->id,
-        'invoice_number' => 'SDD-DASH-OVERDUE-LIST',
-        'type' => 'security_deposit_debt',
-        'period_start' => '2026-07-01',
-        'period_end' => '2026-07-01',
-        'issue_date' => '2026-07-01',
-        'due_date' => '2026-07-05',
-        'status' => 'issued',
-        'total_amount' => 2000,
-        'vat_rate' => 0,
-        'net_amount' => 2000,
-        'vat_amount' => 0,
-    ]);
-
-    $invoices = app(DashboardService::class)->overdueInvoices(
-        Carbon::parse('2026-08-11')
-    );
-
-    $this->assertCount(1, $invoices);
-    $this->assertSame(
-        'INV-DASH-OVERDUE-RENT-ONLY',
-        $invoices->first()->invoice_number
-    );
-}
-
-/**
- * Dashboard upcoming rent list must contain rent invoices only.
- */
-public function test_dashboard_upcoming_list_excludes_security_deposit_debt(): void
-{
-    $context = $this->createPropertyContext();
-
-    Invoice::create([
-        'lease_id' => $context['lease']->id,
-        'invoice_number' => 'INV-DASH-UPCOMING-RENT-ONLY',
-        'type' => 'rent',
-        'period_start' => '2026-08-01',
-        'period_end' => '2026-08-31',
-        'issue_date' => '2026-08-01',
-        'due_date' => '2026-08-15',
-        'status' => 'issued',
-        'total_amount' => 5000,
-        'vat_rate' => 0,
-        'net_amount' => 5000,
-        'vat_amount' => 0,
-    ]);
-
-    Invoice::create([
-        'lease_id' => $context['lease']->id,
-        'invoice_number' => 'SDD-DASH-UPCOMING-LIST',
-        'type' => 'security_deposit_debt',
-        'period_start' => '2026-08-01',
-        'period_end' => '2026-08-01',
-        'issue_date' => '2026-08-01',
-        'due_date' => '2026-08-15',
-        'status' => 'issued',
-        'total_amount' => 2000,
-        'vat_rate' => 0,
-        'net_amount' => 2000,
-        'vat_amount' => 0,
-    ]);
-
-    $invoices = app(DashboardService::class)->upcomingInvoices(
-        Carbon::parse('2026-08-11'),
-        7
-    );
-
-    $this->assertCount(1, $invoices);
-    $this->assertSame(
-        'INV-DASH-UPCOMING-RENT-ONLY',
-        $invoices->first()->invoice_number
-    );
-}
+        $this->assertCount(1, $invoices);
+        $this->assertSame(
+            'INV-DASH-UPCOMING-RENT-ONLY',
+            $invoices->first()->invoice_number
+        );
+    }
 }

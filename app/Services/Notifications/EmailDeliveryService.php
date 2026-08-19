@@ -39,8 +39,7 @@ class EmailDeliveryService
         private ApplicationIdentityService $identity,
         private ApplicationPresentationFormatter $formatter,
         private ApplicationLocaleService $locale
-    ) {
-    }
+    ) {}
 
     /**
      * Send or resend an Invoice to the tenant.
@@ -81,13 +80,11 @@ class EmailDeliveryService
                     invoice: $invoice,
                     pdfContents: $contents,
                     pdfFilename: $filename,
-                    managingOrganisation:
-                        $this
-                            ->identity
-                            ->managingOrganisation(),
+                    managingOrganisation: $this
+                        ->identity
+                        ->managingOrganisation(),
 
-                    formatter:
-                        $this->formatter
+                    formatter: $this->formatter
                 )
             );
     }
@@ -131,13 +128,11 @@ class EmailDeliveryService
                     payment: $payment,
                     pdfContents: $contents,
                     pdfFilename: $filename,
-                    managingOrganisation:
-                        $this
-                            ->identity
-                            ->managingOrganisation(),
+                    managingOrganisation: $this
+                        ->identity
+                        ->managingOrganisation(),
 
-                    formatter:
-                        $this->formatter
+                    formatter: $this->formatter
                 )
             );
     }
@@ -191,13 +186,11 @@ class EmailDeliveryService
                     invoice: $invoice,
                     pdfContents: $contents,
                     pdfFilename: $filename,
-                    managingOrganisation:
-                        $this
-                            ->identity
-                            ->managingOrganisation(),
+                    managingOrganisation: $this
+                        ->identity
+                        ->managingOrganisation(),
 
-                    formatter:
-                        $this->formatter
+                    formatter: $this->formatter
                 )
             );
     }
@@ -239,16 +232,13 @@ class EmailDeliveryService
             )
             ->send(
                 new RentIncrementNoticeMail(
-                    rentIncrement:
-                        $rentIncrement,
+                    rentIncrement: $rentIncrement,
 
-                    managingOrganisation:
-                        $this
-                            ->identity
-                            ->managingOrganisation(),
+                    managingOrganisation: $this
+                        ->identity
+                        ->managingOrganisation(),
 
-                    formatter:
-                        $this->formatter
+                    formatter: $this->formatter
                 )
             );
     }

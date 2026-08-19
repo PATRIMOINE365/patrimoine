@@ -54,8 +54,7 @@ class StorePartyRequest extends FormRequest
                 'string',
                 'max:255',
                 Rule::requiredIf(
-                    fn (): bool =>
-                        $this->input('type') === 'person'
+                    fn (): bool => $this->input('type') === 'person'
                 ),
             ],
 
@@ -67,12 +66,11 @@ class StorePartyRequest extends FormRequest
                 'string',
                 'max:255',
                 Rule::requiredIf(
-                    fn (): bool =>
-                        in_array(
-                            $this->input('type'),
-                            ['organisation', 'association'],
-                            true
-                        )
+                    fn (): bool => in_array(
+                        $this->input('type'),
+                        ['organisation', 'association'],
+                        true
+                    )
                 ),
             ],
 
@@ -86,8 +84,7 @@ class StorePartyRequest extends FormRequest
                 'string',
                 'max:50',
                 Rule::requiredIf(
-                    fn (): bool =>
-                        $this->input('type') === 'person'
+                    fn (): bool => $this->input('type') === 'person'
                 ),
             ],
 
@@ -102,8 +99,7 @@ class StorePartyRequest extends FormRequest
                 'email',
                 'max:255',
                 Rule::requiredIf(
-                    fn (): bool =>
-                        $this->input('type') === 'person'
+                    fn (): bool => $this->input('type') === 'person'
                 ),
             ],
 
@@ -121,12 +117,11 @@ class StorePartyRequest extends FormRequest
                 'string',
                 'max:255',
                 Rule::requiredIf(
-                    fn (): bool =>
-                        in_array(
-                            $this->input('type'),
-                            ['organisation', 'association'],
-                            true
-                        )
+                    fn (): bool => in_array(
+                        $this->input('type'),
+                        ['organisation', 'association'],
+                        true
+                    )
                 ),
             ],
 
@@ -135,12 +130,11 @@ class StorePartyRequest extends FormRequest
                 'string',
                 'max:50',
                 Rule::requiredIf(
-                    fn (): bool =>
-                        in_array(
-                            $this->input('type'),
-                            ['organisation', 'association'],
-                            true
-                        )
+                    fn (): bool => in_array(
+                        $this->input('type'),
+                        ['organisation', 'association'],
+                        true
+                    )
                 ),
             ],
 
@@ -149,12 +143,11 @@ class StorePartyRequest extends FormRequest
                 'email',
                 'max:255',
                 Rule::requiredIf(
-                    fn (): bool =>
-                        in_array(
-                            $this->input('type'),
-                            ['organisation', 'association'],
-                            true
-                        )
+                    fn (): bool => in_array(
+                        $this->input('type'),
+                        ['organisation', 'association'],
+                        true
+                    )
                 ),
             ],
 

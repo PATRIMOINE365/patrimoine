@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 /**
  * Validate creation of a Patrimoine Building.
@@ -96,7 +97,7 @@ class StoreBuildingRequest extends FormRequest
     /**
      * Validate rules that depend on the complete ownership collection.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  Validator  $validator
      */
     public function after(): array
     {
@@ -109,8 +110,7 @@ class StoreBuildingRequest extends FormRequest
                 $owners = $this->input('owners', []);
 
                 $total = collect($owners)->sum(
-                    fn (array $owner): float =>
-                        (float) $owner['ownership_percentage']
+                    fn (array $owner): float => (float) $owner['ownership_percentage']
                 );
 
                 if (abs($total - 100.0) > 0.001) {

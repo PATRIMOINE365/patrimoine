@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Tenants — Patrimoine')
+@section('title', __('ui.tenants.title'))
 @section('title-i18n', 'tenants.title')
 
 @section('content')
 
 <div
     id="tenant-workspace"
-    class="mx-auto max-w-[1600px]"
+    class="pm-tenants-page mx-auto max-w-[1600px]"
 >
     <div
         class="
@@ -22,7 +22,7 @@
                     text-patrimoine-700
                 "
             >
-                <span data-i18n="tenants.finance">Finance</span>
+                <span data-i18n="tenants.finance">{{ __('ui.tenants.finance') }}</span>
             </p>
 
             <h1
@@ -31,11 +31,11 @@
                     tracking-tight text-slate-950
                 "
             >
-                <span data-i18n="tenants.heading">Tenants</span>
+                <span data-i18n="tenants.heading">{{ __('ui.tenants.heading') }}</span>
             </h1>
 
             <p class="mt-2 text-sm text-slate-500">
-                <span data-i18n="tenants.page_description">Review tenant identity, contact information and lease history.</span>
+                <span data-i18n="tenants.page_description">{{ __('ui.tenants.page_description') }}</span>
             </p>
         </div>
     </div>
@@ -51,38 +51,23 @@
     ></div>
 
     <div
-        class="
-            grid gap-6
-            xl:grid-cols-[380px_minmax(0,1fr)]
-        "
+        class="pm-tenants-workspace"
     >
-        <section
-            class="
-                overflow-hidden rounded-xl
-                border border-slate-200
-                bg-white shadow-sm
-            "
-        >
-            <div
-                class="
-                    border-b border-slate-100
-                    px-5 py-4
-                "
-            >
+        <section class="pm-tenant-directory">
+            <div class="pm-tenant-directory-header">
                 <h2
                     class="
                         text-base font-semibold
                         text-slate-950
                     "
                 >
-                    <span data-i18n="tenants.directory">Tenants</span>
+                    <span data-i18n="tenants.directory">{{ __('ui.tenants.directory') }}</span>
                 </h2>
 
-                <p
-                    id="tenant-result-count"
-                    class="mt-1 text-xs text-slate-500"
-                >
-                    <span data-i18n="tenants.search_description">Search by tenant name, phone or email.</span>
+                <p class="mt-1 text-xs text-slate-500">
+                    <span data-i18n="tenants.search_description">
+                        {{ __('ui.tenants.search_description') }}
+                    </span>
                 </p>
 
                 <div class="mt-4">
@@ -90,36 +75,23 @@
                         for="tenant-search"
                         class="sr-only"
                     >
-                        <span data-i18n="tenants.search">Search Tenants</span>
+                        <span data-i18n="tenants.search">{{ __('ui.tenants.search') }}</span>
                     </label>
 
                     <input
                         id="tenant-search"
                         type="search"
                         autocomplete="off"
-                        placeholder="Search tenants..."
+                        placeholder="{{ __('ui.tenants.search_placeholder') }}"
                         data-i18n-placeholder="tenants.search_placeholder"
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                            transition
-                            focus:border-patrimoine-500
-                            focus:ring-2
-                            focus:ring-patrimoine-100
-                        "
+                        class="pm-input pm-tenant-search-input"
                     >
                 </div>
             </div>
 
             <div
                 id="tenant-list"
-                class="
-                    max-h-[calc(100vh-270px)]
-                    min-h-[420px]
-                    overflow-y-auto
-                "
+                class="pm-tenant-directory-list"
             >
                 <div
                     class="
@@ -127,28 +99,19 @@
                         text-sm text-slate-400
                     "
                 >
-                    <span data-i18n="tenants.loading">Loading tenants…</span>
+                    <span data-i18n="tenants.loading">{{ __('ui.tenants.loading') }}</span>
                 </div>
             </div>
 
             <div
                 id="tenant-pagination"
-                class="
-                    hidden border-t
-                    border-slate-100
-                    px-4 py-3
-                "
+                class="pm-tenant-directory-pagination hidden"
             ></div>
         </section>
 
         <section
             id="tenant-detail"
-            class="
-                min-w-0 overflow-hidden
-                rounded-xl
-                border border-slate-200
-                bg-white shadow-sm
-            "
+            class="pm-tenant-detail-shell"
         >
             <div
                 class="
@@ -185,7 +148,7 @@
                             text-slate-900
                         "
                     >
-                        <span data-i18n="tenants.select_tenant">Select a Tenant</span>
+                        <span data-i18n="tenants.select_tenant">{{ __('ui.tenants.select_tenant') }}</span>
                     </h2>
 
                     <p
@@ -194,7 +157,7 @@
                             text-slate-500
                         "
                     >
-                        <span data-i18n="tenants.select_tenant_description">Choose a tenant to review their details and leases.</span>
+                        <span data-i18n="tenants.select_tenant_description">{{ __('ui.tenants.select_tenant_description') }}</span>
                     </p>
                 </div>
             </div>

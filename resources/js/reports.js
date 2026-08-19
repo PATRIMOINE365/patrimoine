@@ -7,6 +7,13 @@ import {
     translate,
 } from './core.js';
 
+import {
+    dateForApi,
+    dateForDisplay,
+    initializeDateInputs,
+    openDatePicker,
+} from './date-input.js';
+
 /*
 |--------------------------------------------------------------------------
 | Patrimoine Reports Workspace
@@ -63,6 +70,12 @@ export async function initializeReports() {
     initializeSubjectSearch();
 
     initializePeriodControls();
+
+    initializeDateInputs(
+        '[data-report-date-input]'
+    );
+
+    initializeReportDatePickers();
 
     initializeExportActions();
 
@@ -233,23 +246,8 @@ function updateReportTypeUi() {
                     === selectedReportType;
 
                 button.classList.toggle(
-                    'bg-patrimoine-50',
+                    'is-active',
                     active
-                );
-
-                button.classList.toggle(
-                    'text-patrimoine-950',
-                    active
-                );
-
-                button.classList.toggle(
-                    'text-slate-700',
-                    ! active
-                );
-
-                button.classList.toggle(
-                    'hover:bg-slate-50',
-                    ! active
                 );
             }
         );
@@ -749,7 +747,11 @@ function renderSubjectResults(
                     text-sm text-slate-500
                 "
             >
-                No matching records found.
+                ${escapeHtml(
+                    translate(
+                        'reports.no_matching_records'
+                    )
+                )}
             </div>
         `;
 
@@ -950,6 +952,95 @@ function hideSubjectResults() {
 
 /*
 |--------------------------------------------------------------------------
+| Report Date Pickers
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * Keep Patrimoine DD-MM-YYYY display fields while retaining a native
+ * calendar selector.
+ */
+function initializeReportDatePickers() {
+    document
+        .querySelectorAll(
+            '[data-report-date-picker]'
+        )
+        .forEach(
+            (button) => {
+                const fieldId =
+                    button.dataset
+                        .reportDatePicker;
+
+                const visibleInput =
+                    document.getElementById(
+                        fieldId
+                    );
+
+                const picker =
+                    document.getElementById(
+                        `${fieldId}-picker`
+                    );
+
+                if (
+                    ! visibleInput
+                    || ! picker
+                ) {
+                    return;
+                }
+
+                button.addEventListener(
+                    'click',
+                    () => {
+                        const iso =
+                            dateForApi(
+                                visibleInput.value
+                            );
+
+                        if (
+                            /^\d{4}-\d{2}-\d{2}$/.test(
+                                iso
+                            )
+                        ) {
+                            picker.value =
+                                iso;
+                        }
+
+                        if (
+                            typeof picker.showPicker
+                            === 'function'
+                        ) {
+                            picker.showPicker();
+                        } else {
+                            picker.click();
+                        }
+                    }
+                );
+
+                picker.addEventListener(
+                    'change',
+                    () => {
+                        visibleInput.value =
+                            dateForDisplay(
+                                picker.value
+                            );
+
+                        visibleInput.dispatchEvent(
+                            new Event(
+                                'change',
+                                {
+                                    bubbles: true,
+                                }
+                            )
+                        );
+                    }
+                );
+            }
+        );
+}
+
+
+/*
+|--------------------------------------------------------------------------
 | Period and Report Execution
 |--------------------------------------------------------------------------
 */
@@ -990,13 +1081,17 @@ async function runReport() {
     hideReportsError();
 
     const from =
-        fieldValue(
-            'report-from'
+        dateForApi(
+            fieldValue(
+                'report-from'
+            )
         );
 
     const to =
-        fieldValue(
-            'report-to'
+        dateForApi(
+            fieldValue(
+                'report-to'
+            )
         );
 
     if (

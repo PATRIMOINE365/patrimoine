@@ -172,5 +172,4 @@ class Invoice extends Model
     {
         return $this->type === 'security_deposit_debt';
     }
-
 }

@@ -25,8 +25,6 @@ class InvoiceGenerationService
     /**
      * Generate one Invoice for a specific billing period.
      *
-     * @param Lease $lease
-     * @param Carbon $periodStart
      *
      * @throws RuntimeException
      */
@@ -136,8 +134,7 @@ class InvoiceGenerationService
                 */
                 'type' => 'rent',
 
-                'invoice_number' =>
-                    $this->nextInvoiceNumber(),
+                'invoice_number' => $this->nextInvoiceNumber(),
                 'period_start' => $periodStart->toDateString(),
                 'period_end' => $periodEnd->toDateString(),
                 'issue_date' => $periodStart->toDateString(),
@@ -231,22 +228,17 @@ class InvoiceGenerationService
         Carbon $periodStart
     ): Carbon {
         return match ($lease->payment_frequency) {
-            'monthly' =>
-                $periodStart->copy()->addMonthNoOverflow()->subDay(),
+            'monthly' => $periodStart->copy()->addMonthNoOverflow()->subDay(),
 
-            'quarterly' =>
-                $periodStart->copy()->addMonthsNoOverflow(3)->subDay(),
+            'quarterly' => $periodStart->copy()->addMonthsNoOverflow(3)->subDay(),
 
-            'bi_yearly' =>
-                $periodStart->copy()->addMonthsNoOverflow(6)->subDay(),
+            'bi_yearly' => $periodStart->copy()->addMonthsNoOverflow(6)->subDay(),
 
-            'yearly' =>
-                $periodStart->copy()->addYearNoOverflow()->subDay(),
+            'yearly' => $periodStart->copy()->addYearNoOverflow()->subDay(),
 
-            default =>
-                throw new RuntimeException(
-                    'Unsupported Lease payment frequency.'
-                ),
+            default => throw new RuntimeException(
+                'Unsupported Lease payment frequency.'
+            ),
         };
     }
 
@@ -258,22 +250,17 @@ class InvoiceGenerationService
         Carbon $periodStart
     ): Carbon {
         return match ($lease->payment_frequency) {
-            'monthly' =>
-                $periodStart->copy()->addMonthNoOverflow(),
+            'monthly' => $periodStart->copy()->addMonthNoOverflow(),
 
-            'quarterly' =>
-                $periodStart->copy()->addMonthsNoOverflow(3),
+            'quarterly' => $periodStart->copy()->addMonthsNoOverflow(3),
 
-            'bi_yearly' =>
-                $periodStart->copy()->addMonthsNoOverflow(6),
+            'bi_yearly' => $periodStart->copy()->addMonthsNoOverflow(6),
 
-            'yearly' =>
-                $periodStart->copy()->addYearNoOverflow(),
+            'yearly' => $periodStart->copy()->addYearNoOverflow(),
 
-            default =>
-                throw new RuntimeException(
-                    'Unsupported Lease payment frequency.'
-                ),
+            default => throw new RuntimeException(
+                'Unsupported Lease payment frequency.'
+            ),
         };
     }
 
@@ -288,10 +275,9 @@ class InvoiceGenerationService
             'bi_yearly' => 6,
             'yearly' => 12,
 
-            default =>
-                throw new RuntimeException(
-                    'Unsupported Lease payment frequency.'
-                ),
+            default => throw new RuntimeException(
+                'Unsupported Lease payment frequency.'
+            ),
         };
 
         return $lease->rent_amount * $multiplier;

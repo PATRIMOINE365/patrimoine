@@ -27,6 +27,7 @@ use Laravel\Sanctum\HasApiTokens;
     'password',
     'role',
     'is_active',
+    'last_seen_release',
 ])]
 #[Hidden([
     'password',

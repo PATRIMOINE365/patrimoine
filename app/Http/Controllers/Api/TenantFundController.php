@@ -7,11 +7,11 @@ use App\Http\Requests\AllocateTenantFundRequest;
 use App\Models\Payment;
 use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
+use App\Services\ActivityLogService;
+use App\Services\FinancialActivitySnapshotService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use App\Services\ActivityLogService;
-use App\Services\FinancialActivitySnapshotService;
 
 /**
  * Transactional API controller for tenant-held funds.
@@ -127,13 +127,10 @@ class TenantFundController extends Controller
                     'direction' => 'credit',
                     'category' => $category,
                     'amount' => $amount,
-                    'transaction_date' =>
-                        $validated['transaction_date'],
-                    'reference' =>
-                        $validated['reference']
+                    'transaction_date' => $validated['transaction_date'],
+                    'reference' => $validated['reference']
                         ?? $payment->reference,
-                    'notes' =>
-                        $validated['notes']
+                    'notes' => $validated['notes']
                         ?? 'Classified from unapplied tenant Payment.',
                 ]);
             }
@@ -168,8 +165,7 @@ class TenantFundController extends Controller
                     /*
                      * Amount already applied to tenant Invoices.
                      */
-                    'allocated_amount' =>
-                        $payment->allocatedAmount(),
+                    'allocated_amount' => $payment->allocatedAmount(),
 
                     /*
                      * Amount not applied to tenant Invoices.
@@ -177,21 +173,18 @@ class TenantFundController extends Controller
                      * This includes both classified and still-unclassified
                      * tenant money.
                      */
-                    'unallocated_amount' =>
-                        $payment->unallocatedAmount(),
+                    'unallocated_amount' => $payment->unallocatedAmount(),
 
                     /*
                      * Portion of unapplied money already transferred to
                      * Rent Reserve, Consumable Advance or Security Deposit.
                      */
-                    'classified_fund_amount' =>
-                        $this->classifiedFundAmount($payment),
+                    'classified_fund_amount' => $this->classifiedFundAmount($payment),
 
                     /*
                      * Money still awaiting explicit operator classification.
                      */
-                    'remaining_unclassified_amount' =>
-                        $this->remainingUnclassifiedAmount($payment),
+                    'remaining_unclassified_amount' => $this->remainingUnclassifiedAmount($payment),
                 ],
             ],
             status: 201

@@ -60,8 +60,7 @@ class ApplicationIdentityTest extends TestCase
         ]);
 
         ApplicationSetting::create([
-            'managing_organisation_party_id' =>
-                $organisation->id,
+            'managing_organisation_party_id' => $organisation->id,
         ]);
 
         $identity = app(

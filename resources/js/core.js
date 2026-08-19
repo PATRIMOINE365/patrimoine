@@ -235,8 +235,42 @@ export async function parseJsonResponse(
 |
 */
 
+const PRESENTATION_LANGUAGE_STORAGE_KEY =
+    'patrimoine.presentation.language';
+
+/**
+ * Return the last organisation language successfully confirmed by the
+ * public presentation endpoint.
+ *
+ * This cache affects first paint only. The endpoint remains authoritative
+ * and refreshes the value during every new document load.
+ *
+ * @returns {'en'|'fr'}
+ */
+function cachedPresentationLanguage() {
+    try {
+        const language =
+            window.localStorage.getItem(
+                PRESENTATION_LANGUAGE_STORAGE_KEY
+            );
+
+        if (
+            language === 'en'
+            || language === 'fr'
+        ) {
+            return language;
+        }
+    } catch {
+        /*
+         * Browser storage restrictions are non-fatal.
+         */
+    }
+
+    return 'en';
+}
+
 const DEFAULT_PRESENTATION_CONFIGURATION = {
-    language: 'en',
+    language: cachedPresentationLanguage(),
     currency: 'GHS',
     locale: 'en',
     browser_locale: 'en-GB',
@@ -327,6 +361,34 @@ export async function loadPresentationConfiguration() {
                             ),
                         },
                     };
+
+                    const confirmedLanguage =
+                        presentationConfiguration
+                            .language;
+
+                    if (
+                        confirmedLanguage === 'en'
+                        || confirmedLanguage === 'fr'
+                    ) {
+                        try {
+                            window.localStorage.setItem(
+                                PRESENTATION_LANGUAGE_STORAGE_KEY,
+                                confirmedLanguage
+                            );
+                        } catch {
+                            /*
+                             * Storage restrictions must not affect
+                             * presentation loading.
+                             */
+                        }
+
+                        document.documentElement.lang =
+                            confirmedLanguage;
+
+                        document.documentElement.dataset
+                            .presentationLanguage =
+                            confirmedLanguage;
+                    }
 
                     return presentationConfiguration;
                 }
@@ -490,6 +552,9 @@ export function applyTranslations() {
                 );
         }
     }
+
+    document.documentElement.dataset.presentationLanguage =
+        language;
 }
 
 /*
@@ -684,22 +749,44 @@ export function formatDate(
         return String(value);
     }
 
-    return new Intl.DateTimeFormat(
-        presentationConfiguration.browser_locale
-        || 'en-GB',
-        {
-            day:
-                '2-digit',
+    const day =
+        String(
+            date.getDate()
+        ).padStart(
+            2,
+            '0'
+        );
 
-            month:
-                'short',
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(
+            2,
+            '0'
+        );
 
-            year:
-                'numeric',
-        }
-    ).format(
-        date
-    );
+    const year =
+        date.getFullYear();
+
+    const locale =
+        String(
+            presentationConfiguration.browser_locale
+            || 'en-GB'
+        ).toLowerCase();
+
+    /*
+     * Patrimoine date presentation standard:
+     *
+     * French:  DD-MM-YYYY
+     * English: DD/MM/YYYY
+     *
+     * This applies to normal business dates only.
+     * Activity Log timestamps retain their dedicated
+     * locale-aware date-and-time representation.
+     */
+    return locale.startsWith('fr')
+        ? `${day}-${month}-${year}`
+        : `${day}/${month}/${year}`;
 }
 
 /**
@@ -733,24 +820,33 @@ export function formatLongDate(
         return String(value);
     }
 
-    return new Intl.DateTimeFormat(
-        presentationConfiguration.browser_locale
-        || 'en-GB',
-        {
-            weekday:
-                'long',
+    const formattedDate =
+        new Intl.DateTimeFormat(
+            presentationConfiguration.browser_locale
+            || 'en-GB',
+            {
+                weekday:
+                    'long',
 
-            day:
-                'numeric',
+                day:
+                    'numeric',
 
-            month:
-                'long',
+                month:
+                    'long',
 
-            year:
-                'numeric',
-        }
-    ).format(
-        date
+                year:
+                    'numeric',
+            }
+        ).format(
+            date
+        );
+
+    return formattedDate.replace(
+        /(^|\s)(\p{L})/gu,
+        (match) => match.toLocaleUpperCase(
+            presentationConfiguration.browser_locale
+            || 'en-GB'
+        )
     );
 }
 

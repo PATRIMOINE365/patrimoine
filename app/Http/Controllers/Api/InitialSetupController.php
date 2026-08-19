@@ -34,8 +34,7 @@ class InitialSetupController extends Controller
     public function status(): JsonResponse
     {
         return response()->json([
-            'setup_required' =>
-                $this->setupRequired(),
+            'setup_required' => $this->setupRequired(),
         ]);
     }
 
@@ -58,8 +57,7 @@ class InitialSetupController extends Controller
         if (! $this->setupRequired()) {
             return response()->json(
                 [
-                    'message' =>
-                        'Initial setup has already been completed.',
+                    'message' => 'Initial setup has already been completed.',
                 ],
                 409
             );
@@ -78,8 +76,7 @@ class InitialSetupController extends Controller
                  */
                 if (! $this->setupRequired()) {
                     return [
-                        'already_configured' =>
-                            true,
+                        'already_configured' => true,
                     ];
                 }
 
@@ -89,24 +86,21 @@ class InitialSetupController extends Controller
                  */
                 $user =
                     User::create([
-                        'name' =>
+                        'name' => trim(
+                            $validated[
+                                'administrator_name'
+                            ]
+                        ),
+
+                        'email' => mb_strtolower(
                             trim(
                                 $validated[
-                                    'administrator_name'
+                                    'administrator_email'
                                 ]
-                            ),
+                            )
+                        ),
 
-                        'email' =>
-                            mb_strtolower(
-                                trim(
-                                    $validated[
-                                        'administrator_email'
-                                    ]
-                                )
-                            ),
-
-                        'password' =>
-                            $validated[
+                        'password' => $validated[
                                 'administrator_password'
                             ],
 
@@ -114,8 +108,7 @@ class InitialSetupController extends Controller
                          * A fresh V1.0.3 installation always creates the
                          * first application User as Administrator.
                          */
-                        'role' =>
-                            UserRole::Administrator,
+                        'role' => UserRole::Administrator,
                     ]);
 
                 /*
@@ -127,8 +120,7 @@ class InitialSetupController extends Controller
                  * email_verified_at generally mass assignable on User.
                  */
                 $user->forceFill([
-                    'email_verified_at' =>
-                        now(),
+                    'email_verified_at' => now(),
                 ])->save();
 
                 /*
@@ -136,43 +128,35 @@ class InitialSetupController extends Controller
                  */
                 $organisation =
                     Party::create([
-                        'type' =>
-                            'organisation',
+                        'type' => 'organisation',
 
-                        'legal_name' =>
-                            $validated[
+                        'legal_name' => $validated[
                                 'legal_name'
                             ],
 
-                        'address' =>
-                            $validated[
+                        'address' => $validated[
                                 'address'
                             ],
 
-                        'phone' =>
-                            $validated[
+                        'phone' => $validated[
                                 'phone'
                             ]
                             ?? null,
 
-                        'email' =>
-                            $validated[
+                        'email' => $validated[
                                 'email'
                             ]
                             ?? null,
 
-                        'contact_person_name' =>
-                            $validated[
+                        'contact_person_name' => $validated[
                                 'contact_person_name'
                             ],
 
-                        'contact_person_phone' =>
-                            $validated[
+                        'contact_person_phone' => $validated[
                                 'contact_person_phone'
                             ],
 
-                        'contact_person_email' =>
-                            $validated[
+                        'contact_person_email' => $validated[
                                 'contact_person_email'
                             ],
                     ]);
@@ -180,8 +164,7 @@ class InitialSetupController extends Controller
                 $organisation
                     ->roles()
                     ->create([
-                        'role' =>
-                            'managing_organisation',
+                        'role' => 'managing_organisation',
                     ]);
 
                 /*
@@ -190,37 +173,29 @@ class InitialSetupController extends Controller
                  */
                 $settings =
                     ApplicationSetting::create([
-                        'managing_organisation_party_id' =>
-                            $organisation->id,
+                        'managing_organisation_party_id' => $organisation->id,
 
-                        'default_vat_rate' =>
-                            $validated[
+                        'default_vat_rate' => $validated[
                                 'default_vat_rate'
                             ],
 
-                        'language' =>
-                            $validated[
+                        'language' => $validated[
                                 'language'
                             ],
 
-                        'currency' =>
-                            $validated[
+                        'currency' => $validated[
                                 'currency'
                             ],
                     ]);
 
                 return [
-                    'already_configured' =>
-                        false,
+                    'already_configured' => false,
 
-                    'user' =>
-                        $user,
+                    'user' => $user,
 
-                    'organisation' =>
-                        $organisation,
+                    'organisation' => $organisation,
 
-                    'settings' =>
-                        $settings,
+                    'settings' => $settings,
                 ];
             }
         );
@@ -232,8 +207,7 @@ class InitialSetupController extends Controller
         ) {
             return response()->json(
                 [
-                    'message' =>
-                        'Initial setup has already been completed.',
+                    'message' => 'Initial setup has already been completed.',
                 ],
                 409
             );
@@ -241,16 +215,13 @@ class InitialSetupController extends Controller
 
         return response()->json(
             [
-                'message' =>
-                    'Initial setup completed successfully.',
+                'message' => 'Initial setup completed successfully.',
 
-                'language' =>
-                    $result[
+                'language' => $result[
                         'settings'
                     ]->language,
 
-                'currency' =>
-                    $result[
+                'currency' => $result[
                         'settings'
                     ]->currency,
             ],

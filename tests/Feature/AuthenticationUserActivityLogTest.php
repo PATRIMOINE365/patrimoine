@@ -337,8 +337,7 @@ class AuthenticationUserActivityLogTest extends TestCase
                 "/api/users/{$target->id}",
                 [
                     'name' => 'After',
-                    'role' =>
-                        UserRole::Viewer->value,
+                    'role' => UserRole::Viewer->value,
                     'is_active' => false,
                 ]
             )
@@ -354,8 +353,7 @@ class AuthenticationUserActivityLogTest extends TestCase
         $this->assertSame(
             [
                 'name' => 'Before',
-                'role' =>
-                    UserRole::PropertyManager->value,
+                'role' => UserRole::PropertyManager->value,
                 'is_active' => true,
             ],
             $event->before_values
@@ -364,8 +362,7 @@ class AuthenticationUserActivityLogTest extends TestCase
         $this->assertSame(
             [
                 'name' => 'After',
-                'role' =>
-                    UserRole::Viewer->value,
+                'role' => UserRole::Viewer->value,
                 'is_active' => false,
             ],
             $event->after_values
@@ -394,8 +391,7 @@ class AuthenticationUserActivityLogTest extends TestCase
                 "/api/users/{$target->id}",
                 [
                     'name' => 'Same Name',
-                    'role' =>
-                        UserRole::Viewer->value,
+                    'role' => UserRole::Viewer->value,
                     'is_active' => true,
                 ]
             )
@@ -553,8 +549,7 @@ class AuthenticationUserActivityLogTest extends TestCase
                     'email' => $user->email,
                     'token' => $token,
                     'password' => 'NewPassword123!',
-                    'password_confirmation' =>
-                        'NewPassword123!',
+                    'password_confirmation' => 'NewPassword123!',
                 ]
             )
             ->assertOk();
@@ -648,12 +643,9 @@ class AuthenticationUserActivityLogTest extends TestCase
                 '/api/auth/reset-password',
                 [
                     'email' => $user->email,
-                    'token' =>
-                        (string) $query['token'],
-                    'password' =>
-                        'ResetPassword123!',
-                    'password_confirmation' =>
-                        'ResetPassword123!',
+                    'token' => (string) $query['token'],
+                    'password' => 'ResetPassword123!',
+                    'password_confirmation' => 'ResetPassword123!',
                 ]
             )
             ->assertOk();
@@ -678,12 +670,9 @@ class AuthenticationUserActivityLogTest extends TestCase
             ->postJson(
                 '/api/auth/change-password',
                 [
-                    'current_password' =>
-                        'OldPassword123!',
-                    'password' =>
-                        'NewPassword123!',
-                    'password_confirmation' =>
-                        'NewPassword123!',
+                    'current_password' => 'OldPassword123!',
+                    'password' => 'NewPassword123!',
+                    'password_confirmation' => 'NewPassword123!',
                 ]
             )
             ->assertOk();

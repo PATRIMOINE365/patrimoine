@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Parties — Patrimoine')
+@section('title', __('ui.parties.title'))
 @section('title-i18n', 'parties.title')
 
 @section('content')
 
-<div class="mx-auto max-w-[1600px]">
+<div class="pm-page pm-parties-page mx-auto max-w-[1600px]">
 
     {{-- Page header --}}
     <div
@@ -21,7 +21,7 @@
                     text-patrimoine-700
                 "
             >
-                <span data-i18n="parties.contacts_stakeholders">Contacts & Stakeholders</span>
+                <span data-i18n="parties.contacts_stakeholders">{{ __('ui.parties.contacts_stakeholders') }}</span>
             </p>
 
             <h1
@@ -30,11 +30,11 @@
                     tracking-tight text-slate-950
                 "
             >
-                <span data-i18n="parties.heading">Parties</span>
+                <span data-i18n="parties.heading">{{ __('ui.parties.heading') }}</span>
             </h1>
 
             <p class="mt-2 text-sm text-slate-500">
-                <span data-i18n="parties.page_description">Manage owners, tenants, agents, organisations and associations.</span>
+                <span data-i18n="parties.page_description">{{ __('ui.parties.page_description') }}</span>
             </p>
         </div>
 
@@ -61,7 +61,7 @@
                 <path d="M5 12h14"/>
             </svg>
 
-            <span data-i18n="parties.add_party">Add Party</span>
+            <span data-i18n="parties.add_party">{{ __('ui.parties.add_party') }}</span>
         </button>
     </div>
 
@@ -85,12 +85,12 @@
     >
         <div
             class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
+                pm-surface-card pm-parties-stat-card
+                rounded-xl p-5
             "
         >
             <div class="text-sm text-slate-500">
-                <span data-i18n="parties.total_parties">Total Parties</span>
+                <span data-i18n="parties.total_parties">{{ __('ui.parties.total_parties') }}</span>
             </div>
 
             <div
@@ -106,12 +106,12 @@
 
         <div
             class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
+                pm-surface-card pm-parties-stat-card
+                rounded-xl p-5
             "
         >
             <div class="text-sm text-slate-500">
-                <span data-i18n="parties.people">People</span>
+                <span data-i18n="parties.people">{{ __('ui.parties.people') }}</span>
             </div>
 
             <div
@@ -127,12 +127,12 @@
 
         <div
             class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
+                pm-surface-card pm-parties-stat-card
+                rounded-xl p-5
             "
         >
             <div class="text-sm text-slate-500">
-                <span data-i18n="parties.organisations">Organisations</span>
+                <span data-i18n="parties.organisations">{{ __('ui.parties.organisations') }}</span>
             </div>
 
             <div
@@ -148,12 +148,12 @@
 
         <div
             class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
+                pm-surface-card pm-parties-stat-card
+                rounded-xl p-5
             "
         >
             <div class="text-sm text-slate-500">
-                <span data-i18n="parties.multiple_roles">Multiple Roles</span>
+                <span data-i18n="parties.multiple_roles">{{ __('ui.parties.multiple_roles') }}</span>
             </div>
 
             <div
@@ -171,8 +171,8 @@
     {{-- Party portfolio --}}
     <section
         class="
-            rounded-xl border border-slate-200
-            bg-white shadow-sm
+            pm-surface-card pm-parties-directory
+            overflow-hidden rounded-xl
         "
     >
 
@@ -198,11 +198,11 @@
                             text-slate-950
                         "
                     >
-                        <span data-i18n="parties.directory">Party Directory</span>
+                        <span data-i18n="parties.directory">{{ __('ui.parties.directory') }}</span>
                     </h2>
 
                     <p class="mt-1 text-xs text-slate-500">
-                        <span data-i18n="parties.directory_description">People and entities participating in property operations.</span>
+                        <span data-i18n="parties.directory_description">{{ __('ui.parties.directory_description') }}</span>
                     </p>
                 </div>
 
@@ -220,7 +220,7 @@
                             for="party-search"
                             class="sr-only"
                         >
-                            <span data-i18n="parties.search">Search Parties</span>
+                            <span data-i18n="parties.search">{{ __('ui.parties.search') }}</span>
                         </label>
 
                         <div class="relative">
@@ -245,8 +245,9 @@
                                 id="party-search"
                                 type="search"
                                 data-i18n-placeholder="parties.search_placeholder"
-                                placeholder="Search name, email, phone..."
+                                placeholder="{{ __('ui.parties.search_placeholder') }}"
                                 class="
+                                    pm-parties-filter-control
                                     w-full rounded-lg
                                     border border-slate-200
                                     bg-white py-2.5
@@ -268,12 +269,13 @@
                             for="party-type-filter"
                             class="sr-only"
                         >
-                            <span data-i18n="parties.party_type">Party Type</span>
+                            <span data-i18n="parties.party_type">{{ __('ui.parties.party_type') }}</span>
                         </label>
 
                         <select
                             id="party-type-filter"
                             class="
+                                pm-parties-filter-control
                                 w-full rounded-lg
                                 border border-slate-200
                                 bg-white px-3 py-2.5
@@ -288,29 +290,29 @@
                                 value=""
                                 data-i18n="parties.all_types"
                             >
-                                All Types
-                            </option>
+                                {{ __('ui.parties.all_types') }}
+</option>
 
                             <option
                                 value="person"
                                 data-i18n="parties.people"
                             >
-                                People
-                            </option>
+                                {{ __('ui.parties.people') }}
+</option>
 
                             <option
                                 value="organisation"
                                 data-i18n="parties.organisations"
                             >
-                                Organisations
-                            </option>
+                                {{ __('ui.parties.organisations') }}
+</option>
 
                             <option
                                 value="association"
                                 data-i18n="parties.associations"
                             >
-                                Associations
-                            </option>
+                                {{ __('ui.parties.associations') }}
+</option>
                         </select>
                     </div>
 
@@ -320,12 +322,13 @@
                             for="party-role-filter"
                             class="sr-only"
                         >
-                            <span data-i18n="parties.party_role">Party Role</span>
+                            <span data-i18n="parties.party_role">{{ __('ui.parties.party_role') }}</span>
                         </label>
 
                         <select
                             id="party-role-filter"
                             class="
+                                pm-parties-filter-control
                                 w-full rounded-lg
                                 border border-slate-200
                                 bg-white px-3 py-2.5
@@ -340,36 +343,36 @@
                                 value=""
                                 data-i18n="parties.all_roles"
                             >
-                                All Roles
-                            </option>
+                                {{ __('ui.parties.all_roles') }}
+</option>
 
                             <option
                                 value="owner"
                                 data-i18n="parties.owners"
                             >
-                                Owners
-                            </option>
+                                {{ __('ui.parties.owners') }}
+</option>
 
                             <option
                                 value="tenant"
                                 data-i18n="parties.tenants"
                             >
-                                Tenants
-                            </option>
+                                {{ __('ui.parties.tenants') }}
+</option>
 
                             <option
                                 value="agent"
                                 data-i18n="parties.agents"
                             >
-                                Agents
-                            </option>
+                                {{ __('ui.parties.agents') }}
+</option>
 
                             <option
                                 value="managing_organisation"
                                 data-i18n="parties.managing_organisation"
                             >
-                                Managing Organisation
-                            </option>
+                                {{ __('ui.parties.managing_organisation') }}
+</option>
                         </select>
                     </div>
 
@@ -383,7 +386,7 @@
             class="p-5"
         >
             <div class="text-sm text-slate-400">
-                <span data-i18n="parties.loading">Loading parties…</span>
+                <span data-i18n="parties.loading">{{ __('ui.parties.loading') }}</span>
             </div>
         </div>
 
@@ -401,106 +404,38 @@
 </div>
 
 {{-- ================================================================
-     Add / Edit Party Modal
+     Add / Edit Party Drawer
 ================================================================ --}}
 
-<div
+<x-drawer
     id="party-modal"
-    class="
-        fixed inset-0 z-[70]
-        hidden overflow-y-auto
-    "
-    aria-hidden="true"
+    backdrop-id="party-modal-backdrop"
+    width="lg"
 >
-    <div
-        id="party-modal-backdrop"
-        class="
-            fixed inset-0
-            bg-slate-950/50
-            backdrop-blur-[1px]
-        "
-    ></div>
-
-    <div
-        class="
-            relative flex min-h-full
-            items-start justify-center
-            p-4 sm:p-6 lg:p-10
-        "
+    <x-drawer-header
+        title-id="party-modal-title"
+        description-id="party-modal-description"
+        close-id="party-modal-close"
+        close-label="Close"
+        close-label-key="parties.close"
     >
-        <div
-            class="
-                relative w-full max-w-4xl
-                overflow-hidden rounded-2xl
-                bg-white shadow-2xl
-            "
-        >
+        <x-slot:title>
+            <span data-i18n="parties.add_party">{{ __('ui.parties.add_party') }}</span>
+        </x-slot:title>
 
-            {{-- Header --}}
-            <div
-                class="
-                    flex items-start
-                    justify-between gap-5
-                    border-b border-slate-100
-                    px-6 py-5
-                "
-            >
-                <div>
-                    <h2
-                        id="party-modal-title"
-                        class="
-                            text-xl font-semibold
-                            tracking-tight text-slate-950
-                        "
-                    >
-                        <span data-i18n="parties.add_party">Add Party</span>
-                    </h2>
+        <x-slot:description>
+            <span data-i18n="parties.add_party_description">
+                {{ __('ui.parties.add_party_description') }}
+</span>
+        </x-slot:description>
+    </x-drawer-header>
 
-                    <p
-                        id="party-modal-description"
-                        class="mt-1 text-sm text-slate-500"
-                    >
-                        <span data-i18n="parties.add_party_description">Create a person, organisation or association.</span>
-                    </p>
-                </div>
+    <form
+        id="party-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div class="pm-drawer-body">
 
-                <button
-                    id="party-modal-close"
-                    type="button"
-                    aria-label="Close"
-                    data-i18n-aria-label="parties.close"
-                    class="
-                        inline-flex h-9 w-9
-                        shrink-0 items-center
-                        justify-center rounded-lg
-                        text-slate-400
-                        transition
-                        hover:bg-slate-100
-                        hover:text-slate-700
-                    "
-                >
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <path d="M18 6 6 18"/>
-                        <path d="m6 6 12 12"/>
-                    </svg>
-                </button>
-            </div>
-
-            <form id="party-form">
-
-                <div
-                    class="
-                        max-h-[calc(100vh-12rem)]
-                        overflow-y-auto
-                        px-6 py-6
-                    "
-                >
 
                     {{-- Validation errors --}}
                     <div
@@ -522,11 +457,11 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="parties.party_type">Party Type</span>
+                                <span data-i18n="parties.party_type">{{ __('ui.parties.party_type') }}</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                <span data-i18n="parties.party_type_description">Select the legal nature of this Party.</span>
+                                <span data-i18n="parties.party_type_description">{{ __('ui.parties.party_type_description') }}</span>
                             </p>
                         </div>
 
@@ -548,22 +483,22 @@
                                 value="person"
                                 data-i18n="parties.person"
                             >
-                                Person
-                            </option>
+                                {{ __('ui.parties.person') }}
+</option>
 
                             <option
                                 value="organisation"
                                 data-i18n="parties.organisation"
                             >
-                                Organisation
-                            </option>
+                                {{ __('ui.parties.organisation') }}
+</option>
 
                             <option
                                 value="association"
                                 data-i18n="parties.association"
                             >
-                                Association
-                            </option>
+                                {{ __('ui.parties.association') }}
+</option>
                         </select>
                     </section>
 
@@ -585,7 +520,7 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="parties.personal_details">Personal Details</span>
+                                <span data-i18n="parties.personal_details">{{ __('ui.parties.personal_details') }}</span>
                             </h3>
                         </div>
 
@@ -604,7 +539,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.full_name">Full Name</span>
+                                    <span data-i18n="parties.full_name">{{ __('ui.parties.full_name') }}</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -634,7 +569,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.phone">Phone</span>
+                                    <span data-i18n="parties.phone">{{ __('ui.parties.phone') }}</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -664,7 +599,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.email">Email</span>
+                                    <span data-i18n="parties.email">{{ __('ui.parties.email') }}</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -706,7 +641,7 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="parties.organisation_details">Organisation Details</span>
+                                <span data-i18n="parties.organisation_details">{{ __('ui.parties.organisation_details') }}</span>
                             </h3>
                         </div>
 
@@ -725,7 +660,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.legal_name">Legal Name</span>
+                                    <span data-i18n="parties.legal_name">{{ __('ui.parties.legal_name') }}</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -755,7 +690,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.contact_person">Contact Person</span>
+                                    <span data-i18n="parties.contact_person">{{ __('ui.parties.contact_person') }}</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -785,7 +720,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.contact_phone">Contact Phone</span>
+                                    <span data-i18n="parties.contact_phone">{{ __('ui.parties.contact_phone') }}</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -815,7 +750,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.contact_email">Contact Email</span>
+                                    <span data-i18n="parties.contact_email">{{ __('ui.parties.contact_email') }}</span>
                                     <span class="text-red-500">*</span>
                                 </label>
 
@@ -855,11 +790,11 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="parties.contact_identification">Contact & Identification</span>
+                                <span data-i18n="parties.contact_identification">{{ __('ui.parties.contact_identification') }}</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                <span data-i18n="parties.contact_identification_description">Optional secondary contact and identification information.</span>
+                                <span data-i18n="parties.contact_identification_description">{{ __('ui.parties.contact_identification_description') }}</span>
                             </p>
                         </div>
 
@@ -878,7 +813,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.alternate_phone">Alternate Phone</span>
+                                    <span data-i18n="parties.alternate_phone">{{ __('ui.parties.alternate_phone') }}</span>
                                 </label>
 
                                 <input
@@ -907,7 +842,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.id_number">ID Number</span>
+                                    <span data-i18n="parties.id_number">{{ __('ui.parties.id_number') }}</span>
                                 </label>
 
                                 <input
@@ -936,7 +871,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.registration_number">Registration Number</span>
+                                    <span data-i18n="parties.registration_number">{{ __('ui.parties.registration_number') }}</span>
                                 </label>
 
                                 <input
@@ -965,7 +900,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.vat_tin">VAT / TIN</span>
+                                    <span data-i18n="parties.vat_tin">{{ __('ui.parties.vat_tin') }}</span>
                                 </label>
 
                                 <input
@@ -994,7 +929,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.address">Address</span>
+                                    <span data-i18n="parties.address">{{ __('ui.parties.address') }}</span>
                                 </label>
 
                                 <textarea
@@ -1032,11 +967,11 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="parties.roles">Roles</span>
+                                <span data-i18n="parties.roles">{{ __('ui.parties.roles') }}</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                <span data-i18n="parties.roles_description">A Party may perform several functions at the same time.</span>
+                                <span data-i18n="parties.roles_description">{{ __('ui.parties.roles_description') }}</span>
                             </p>
                         </div>
 
@@ -1072,7 +1007,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.owner">Owner</span>
+                                    <span data-i18n="parties.owner">{{ __('ui.parties.owner') }}</span>
                                 </span>
                             </label>
 
@@ -1102,7 +1037,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.tenant">Tenant</span>
+                                    <span data-i18n="parties.tenant">{{ __('ui.parties.tenant') }}</span>
                                 </span>
                             </label>
 
@@ -1132,7 +1067,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.agent">Agent</span>
+                                    <span data-i18n="parties.agent">{{ __('ui.parties.agent') }}</span>
                                 </span>
                             </label>
                         </div>
@@ -1155,11 +1090,11 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="parties.banking_details">Banking Details</span>
+                                <span data-i18n="parties.banking_details">{{ __('ui.parties.banking_details') }}</span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                <span data-i18n="parties.banking_description">Optional. Primarily used for Owners and Agents.</span>
+                                <span data-i18n="parties.banking_description">{{ __('ui.parties.banking_description') }}</span>
                             </p>
                         </div>
 
@@ -1178,7 +1113,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.bank_name">Bank Name</span>
+                                    <span data-i18n="parties.bank_name">{{ __('ui.parties.bank_name') }}</span>
                                 </label>
 
                                 <input
@@ -1207,7 +1142,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.bank_branch">Bank Branch</span>
+                                    <span data-i18n="parties.bank_branch">{{ __('ui.parties.bank_branch') }}</span>
                                 </label>
 
                                 <input
@@ -1236,7 +1171,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.account_name">Account Name</span>
+                                    <span data-i18n="parties.account_name">{{ __('ui.parties.account_name') }}</span>
                                 </label>
 
                                 <input
@@ -1265,7 +1200,7 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="parties.account_number">Account Number</span>
+                                    <span data-i18n="parties.account_number">{{ __('ui.parties.account_number') }}</span>
                                 </label>
 
                                 <input
@@ -1302,14 +1237,14 @@
                                 text-slate-700
                             "
                         >
-                            <span data-i18n="parties.notes">Notes</span>
+                            <span data-i18n="parties.notes">{{ __('ui.parties.notes') }}</span>
                         </label>
 
                         <textarea
                             id="party-notes"
                             rows="4"
                             data-i18n-placeholder="parties.notes_placeholder"
-                            placeholder="Optional internal notes"
+                            placeholder="{{ __('ui.parties.notes_placeholder') }}"
                             class="
                                 w-full resize-y rounded-lg
                                 border border-slate-200
@@ -1322,57 +1257,28 @@
                             "
                         ></textarea>
                     </section>
-
-                </div>
-
-                {{-- Footer --}}
-                <div
-                    class="
-                        flex flex-col-reverse gap-3
-                        border-t border-slate-100
-                        bg-slate-50/70
-                        px-6 py-4
-                        sm:flex-row sm:justify-end
-                    "
-                >
-                    <button
-                        id="party-cancel-button"
-                        type="button"
-                        class="
-                            rounded-lg
-                            border border-slate-200
-                            bg-white px-4 py-2.5
-                            text-sm font-medium
-                            text-slate-700
-                            transition
-                            hover:bg-slate-50
-                        "
-                    >
-                        <span data-i18n="parties.cancel">Cancel</span>
-                    </button>
-
-                    <button
-                        id="party-submit-button"
-                        type="submit"
-                        class="
-                            rounded-lg
-                            bg-patrimoine-950
-                            px-5 py-2.5
-                            text-sm font-medium
-                            text-white
-                            shadow-sm transition
-                            hover:bg-patrimoine-900
-                            disabled:cursor-not-allowed
-                            disabled:opacity-60
-                        "
-                    >
-                        <span data-i18n="parties.create_party">Create Party</span>
-                    </button>
-                </div>
-
-            </form>
         </div>
-    </div>
-</div>
+
+        <x-drawer-footer>
+            <button
+                id="party-cancel-button"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="parties.cancel">{{ __('ui.parties.cancel') }}</span>
+            </button>
+
+            <button
+                id="party-submit-button"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="parties.save">
+                    {{ __('ui.parties.save') }}
+</span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
 
 @endsection

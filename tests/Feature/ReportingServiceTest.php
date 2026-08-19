@@ -176,45 +176,46 @@ class ReportingServiceTest extends TestCase
             'expense',
             'reserve'
         );
+
         return compact(
-    'owner',
-    'tenant',
-    'building',
-    'unit',
-    'lease',
-    'invoice',
-    'payment',
-    'ownerAccount',
-    'expense',
-    'reserve'
-);
+            'owner',
+            'tenant',
+            'building',
+            'unit',
+            'lease',
+            'invoice',
+            'payment',
+            'ownerAccount',
+            'expense',
+            'reserve'
+        );
     }
 
     /**
- * Create a Security Deposit close-out debt Invoice for a Lease.
- *
- * This receivable is deliberately separate from contractual rent and
- * must therefore be reported independently from rent balances.
- */
-private function createSecurityDepositDebtInvoice(
-    Lease $lease,
-    int $amount = 2000
-): Invoice {
-    return Invoice::create([
-        'lease_id' => $lease->id,
-        'invoice_number' => 'SDD-REPORT-001',
-        'type' => 'security_deposit_debt',
-        'period_start' => '2026-08-10',
-        'period_end' => '2026-08-10',
-        'issue_date' => '2026-08-10',
-        'due_date' => '2026-08-10',
-        'status' => 'issued',
-        'total_amount' => $amount,
-        'vat_rate' => 0,
-        'net_amount' => $amount,
-        'vat_amount' => 0,
-    ]);
-}
+     * Create a Security Deposit close-out debt Invoice for a Lease.
+     *
+     * This receivable is deliberately separate from contractual rent and
+     * must therefore be reported independently from rent balances.
+     */
+    private function createSecurityDepositDebtInvoice(
+        Lease $lease,
+        int $amount = 2000
+    ): Invoice {
+        return Invoice::create([
+            'lease_id' => $lease->id,
+            'invoice_number' => 'SDD-REPORT-001',
+            'type' => 'security_deposit_debt',
+            'period_start' => '2026-08-10',
+            'period_end' => '2026-08-10',
+            'issue_date' => '2026-08-10',
+            'due_date' => '2026-08-10',
+            'status' => 'issued',
+            'total_amount' => $amount,
+            'vat_rate' => 0,
+            'net_amount' => $amount,
+            'vat_amount' => 0,
+        ]);
+    }
 
     public function test_owner_report_uses_owner_ledger(): void
     {
@@ -397,208 +398,209 @@ private function createSecurityDepositDebtInvoice(
             $report['summary']['closing_balance']
         );
     }
+
     /**
- * Tenant Statement must distinguish rent from Security Deposit debt.
- */
-public function test_tenant_statement_separates_receivable_types(): void
-{
-    $context = $this->createContext();
-
-    $debtInvoice = $this->createSecurityDepositDebtInvoice(
-        $context['lease']
-    );
-
-    $report = app(TenantStatementService::class)
-        ->generate($context['tenant']);
-
-    /*
-     * Existing generic totals remain the complete tenant receivable
-     * position for backward compatibility.
+     * Tenant Statement must distinguish rent from Security Deposit debt.
      */
-    $this->assertSame(
-        12000,
-        $report['summary']['invoiced']
-    );
+    public function test_tenant_statement_separates_receivable_types(): void
+    {
+        $context = $this->createContext();
 
-    $this->assertSame(
-        6000,
-        $report['summary']['outstanding']
-    );
+        $debtInvoice = $this->createSecurityDepositDebtInvoice(
+            $context['lease']
+        );
 
-    /*
-     * V1.0.1 explicitly separates contractual rent from Security Deposit
-     * close-out debt.
+        $report = app(TenantStatementService::class)
+            ->generate($context['tenant']);
+
+        /*
+         * Existing generic totals remain the complete tenant receivable
+         * position for backward compatibility.
+         */
+        $this->assertSame(
+            12000,
+            $report['summary']['invoiced']
+        );
+
+        $this->assertSame(
+            6000,
+            $report['summary']['outstanding']
+        );
+
+        /*
+         * V1.0.1 explicitly separates contractual rent from Security Deposit
+         * close-out debt.
+         */
+        $this->assertSame(
+            4000,
+            $report['summary']['rent_outstanding']
+        );
+
+        $this->assertSame(
+            2000,
+            $report['summary']['security_deposit_debt_outstanding']
+        );
+
+        $this->assertSame(
+            6000,
+            $report['summary']['total_outstanding']
+        );
+
+        $debtRow = collect($report['invoices'])
+            ->firstWhere('id', $debtInvoice->id);
+
+        $this->assertNotNull($debtRow);
+
+        $this->assertSame(
+            'security_deposit_debt',
+            $debtRow['type']
+        );
+    }
+
+    /**
+     * Managing Organisation report must show separate receivable categories.
      */
-    $this->assertSame(
-        4000,
-        $report['summary']['rent_outstanding']
-    );
+    public function test_managing_organisation_report_separates_receivable_types(): void
+    {
+        $context = $this->createContext();
 
-    $this->assertSame(
-        2000,
-        $report['summary']['security_deposit_debt_outstanding']
-    );
+        $this->createSecurityDepositDebtInvoice(
+            $context['lease']
+        );
 
-    $this->assertSame(
-        6000,
-        $report['summary']['total_outstanding']
-    );
+        $report = app(
+            ManagingOrganisationReportService::class
+        )->generate();
 
-    $debtRow = collect($report['invoices'])
-        ->firstWhere('id', $debtInvoice->id);
+        $this->assertSame(
+            12000,
+            $report['billing']['invoiced']
+        );
 
-    $this->assertNotNull($debtRow);
+        $this->assertSame(
+            10000,
+            $report['billing']['rent_invoiced']
+        );
 
-    $this->assertSame(
-        'security_deposit_debt',
-        $debtRow['type']
-    );
-}
+        $this->assertSame(
+            2000,
+            $report['billing']['security_deposit_debt_invoiced']
+        );
 
-/**
- * Managing Organisation report must show separate receivable categories.
- */
-public function test_managing_organisation_report_separates_receivable_types(): void
-{
-    $context = $this->createContext();
+        $this->assertSame(
+            4000,
+            $report['billing']['rent_outstanding']
+        );
 
-    $this->createSecurityDepositDebtInvoice(
-        $context['lease']
-    );
+        $this->assertSame(
+            2000,
+            $report['billing']['security_deposit_debt_outstanding']
+        );
 
-    $report = app(
-        ManagingOrganisationReportService::class
-    )->generate();
+        $this->assertSame(
+            6000,
+            $report['billing']['total_outstanding']
+        );
+    }
 
-    $this->assertSame(
-        12000,
-        $report['billing']['invoiced']
-    );
+    /**
+     * Building report must show separate receivable categories.
+     */
+    public function test_building_report_separates_receivable_types(): void
+    {
+        $context = $this->createContext();
 
-    $this->assertSame(
-        10000,
-        $report['billing']['rent_invoiced']
-    );
+        $this->createSecurityDepositDebtInvoice(
+            $context['lease']
+        );
 
-    $this->assertSame(
-        2000,
-        $report['billing']['security_deposit_debt_invoiced']
-    );
+        $report = app(BuildingReportService::class)
+            ->generate($context['building']);
 
-    $this->assertSame(
-        4000,
-        $report['billing']['rent_outstanding']
-    );
+        $this->assertSame(
+            12000,
+            $report['summary']['invoiced']
+        );
 
-    $this->assertSame(
-        2000,
-        $report['billing']['security_deposit_debt_outstanding']
-    );
+        $this->assertSame(
+            10000,
+            $report['summary']['rent_invoiced']
+        );
 
-    $this->assertSame(
-        6000,
-        $report['billing']['total_outstanding']
-    );
-}
+        $this->assertSame(
+            2000,
+            $report['summary']['security_deposit_debt_invoiced']
+        );
 
-/**
- * Building report must show separate receivable categories.
- */
-public function test_building_report_separates_receivable_types(): void
-{
-    $context = $this->createContext();
+        $this->assertSame(
+            4000,
+            $report['summary']['rent_outstanding']
+        );
 
-    $this->createSecurityDepositDebtInvoice(
-        $context['lease']
-    );
+        $this->assertSame(
+            2000,
+            $report['summary']['security_deposit_debt_outstanding']
+        );
 
-    $report = app(BuildingReportService::class)
-        ->generate($context['building']);
+        $this->assertSame(
+            6000,
+            $report['summary']['total_outstanding']
+        );
+    }
 
-    $this->assertSame(
-        12000,
-        $report['summary']['invoiced']
-    );
+    /**
+     * Unit report must distinguish rent from Security Deposit debt and expose
+     * the Invoice type in its financial history.
+     */
+    public function test_unit_report_separates_receivable_types(): void
+    {
+        $context = $this->createContext();
 
-    $this->assertSame(
-        10000,
-        $report['summary']['rent_invoiced']
-    );
+        $debtInvoice = $this->createSecurityDepositDebtInvoice(
+            $context['lease']
+        );
 
-    $this->assertSame(
-        2000,
-        $report['summary']['security_deposit_debt_invoiced']
-    );
+        $report = app(UnitReportService::class)
+            ->generate($context['unit']);
 
-    $this->assertSame(
-        4000,
-        $report['summary']['rent_outstanding']
-    );
+        $this->assertSame(
+            12000,
+            $report['summary']['invoiced']
+        );
 
-    $this->assertSame(
-        2000,
-        $report['summary']['security_deposit_debt_outstanding']
-    );
+        $this->assertSame(
+            10000,
+            $report['summary']['rent_invoiced']
+        );
 
-    $this->assertSame(
-        6000,
-        $report['summary']['total_outstanding']
-    );
-}
+        $this->assertSame(
+            2000,
+            $report['summary']['security_deposit_debt_invoiced']
+        );
 
-/**
- * Unit report must distinguish rent from Security Deposit debt and expose
- * the Invoice type in its financial history.
- */
-public function test_unit_report_separates_receivable_types(): void
-{
-    $context = $this->createContext();
+        $this->assertSame(
+            4000,
+            $report['summary']['rent_outstanding']
+        );
 
-    $debtInvoice = $this->createSecurityDepositDebtInvoice(
-        $context['lease']
-    );
+        $this->assertSame(
+            2000,
+            $report['summary']['security_deposit_debt_outstanding']
+        );
 
-    $report = app(UnitReportService::class)
-        ->generate($context['unit']);
+        $this->assertSame(
+            6000,
+            $report['summary']['total_outstanding']
+        );
 
-    $this->assertSame(
-        12000,
-        $report['summary']['invoiced']
-    );
+        $debtRow = collect($report['invoices'])
+            ->firstWhere('id', $debtInvoice->id);
 
-    $this->assertSame(
-        10000,
-        $report['summary']['rent_invoiced']
-    );
+        $this->assertNotNull($debtRow);
 
-    $this->assertSame(
-        2000,
-        $report['summary']['security_deposit_debt_invoiced']
-    );
-
-    $this->assertSame(
-        4000,
-        $report['summary']['rent_outstanding']
-    );
-
-    $this->assertSame(
-        2000,
-        $report['summary']['security_deposit_debt_outstanding']
-    );
-
-    $this->assertSame(
-        6000,
-        $report['summary']['total_outstanding']
-    );
-
-    $debtRow = collect($report['invoices'])
-        ->firstWhere('id', $debtInvoice->id);
-
-    $this->assertNotNull($debtRow);
-
-    $this->assertSame(
-        'security_deposit_debt',
-        $debtRow['type']
-    );
-}
+        $this->assertSame(
+            'security_deposit_debt',
+            $debtRow['type']
+        );
+    }
 }

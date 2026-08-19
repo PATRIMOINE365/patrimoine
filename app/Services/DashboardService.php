@@ -10,6 +10,7 @@ use App\Models\OwnerTransaction;
 use App\Models\Payment;
 use App\Models\Unit;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Provides the read-side calculations used by the Patrimoine dashboard.
@@ -25,10 +26,9 @@ class DashboardService
     /**
      * Return the primary operational and financial dashboard metrics.
      *
-     * @param Carbon|null $asOfDate
-     *     Date against which due/overdue calculations are evaluated.
-     *     Defaults to the current application date.
-     *
+     * @param  Carbon|null  $asOfDate
+     *                                 Date against which due/overdue calculations are evaluated.
+     *                                 Defaults to the current application date.
      * @return array<string, int>
      */
     public function metrics(?Carbon $asOfDate = null): array
@@ -108,18 +108,17 @@ class DashboardService
      *
      * Only the outstanding portion of each Invoice is counted.
      */
-public function rentDueAmount(Carbon $asOfDate): int
-{
-    return Invoice::query()
-        ->where('type', 'rent')
-        ->whereIn('status', ['issued', 'partial'])
-        ->whereDate('due_date', '<=', $asOfDate->toDateString())
-        ->get()
-        ->sum(
-            fn (Invoice $invoice): int =>
-                $invoice->outstandingAmount()
-        );
-}
+    public function rentDueAmount(Carbon $asOfDate): int
+    {
+        return Invoice::query()
+            ->where('type', 'rent')
+            ->whereIn('status', ['issued', 'partial'])
+            ->whereDate('due_date', '<=', $asOfDate->toDateString())
+            ->get()
+            ->sum(
+                fn (Invoice $invoice): int => $invoice->outstandingAmount()
+            );
+    }
 
     /**
      * Return the amount that is overdue as of the requested date.
@@ -128,18 +127,17 @@ public function rentDueAmount(Carbon $asOfDate): int
      * Invoices due exactly on the as-of date belong to rent_due but are
      * not yet included in rent_overdue.
      */
-public function rentOverdueAmount(Carbon $asOfDate): int
-{
-    return Invoice::query()
-        ->where('type', 'rent')
-        ->whereIn('status', ['issued', 'partial'])
-        ->whereDate('due_date', '<', $asOfDate->toDateString())
-        ->get()
-        ->sum(
-            fn (Invoice $invoice): int =>
-                $invoice->outstandingAmount()
-        );
-}
+    public function rentOverdueAmount(Carbon $asOfDate): int
+    {
+        return Invoice::query()
+            ->where('type', 'rent')
+            ->whereIn('status', ['issued', 'partial'])
+            ->whereDate('due_date', '<', $asOfDate->toDateString())
+            ->get()
+            ->sum(
+                fn (Invoice $invoice): int => $invoice->outstandingAmount()
+            );
+    }
 
     /**
      * Return tenant money actually received during a date range.
@@ -178,8 +176,7 @@ public function rentOverdueAmount(Carbon $asOfDate): int
         return OwnerAccount::query()
             ->get()
             ->sum(
-                fn (OwnerAccount $account): int =>
-                    max(0, $account->balance())
+                fn (OwnerAccount $account): int => max(0, $account->balance())
             );
     }
 
@@ -207,18 +204,18 @@ public function rentOverdueAmount(Carbon $asOfDate): int
      *
      * The result is intended for dashboard tables and later API responses.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, Invoice>
+     * @return Collection<int, Invoice>
      */
     public function overdueInvoices(Carbon $asOfDate)
     {
-return Invoice::query()
-    ->with([
-        'lease.tenant',
-        'lease.unit.building',
-    ])
-    ->where('type', 'rent')
-    ->whereIn('status', ['issued', 'partial'])
-    ->whereDate('due_date', '<', $asOfDate->toDateString())
+        return Invoice::query()
+            ->with([
+                'lease.tenant',
+                'lease.unit.building',
+            ])
+            ->where('type', 'rent')
+            ->whereIn('status', ['issued', 'partial'])
+            ->whereDate('due_date', '<', $asOfDate->toDateString())
             ->orderBy('due_date')
             ->orderBy('id')
             ->get();
@@ -230,7 +227,7 @@ return Invoice::query()
      *
      * This powers the dashboard's "upcoming due tenants" view.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, Invoice>
+     * @return Collection<int, Invoice>
      */
     public function upcomingInvoices(
         Carbon $asOfDate,
@@ -238,14 +235,14 @@ return Invoice::query()
     ) {
         $endDate = $asOfDate->copy()->addDays($days);
 
-return Invoice::query()
-    ->with([
-        'lease.tenant',
-        'lease.unit.building',
-    ])
-    ->where('type', 'rent')
-    ->whereIn('status', ['issued', 'partial'])
-    ->whereDate('due_date', '>=', $asOfDate->toDateString())
+        return Invoice::query()
+            ->with([
+                'lease.tenant',
+                'lease.unit.building',
+            ])
+            ->where('type', 'rent')
+            ->whereIn('status', ['issued', 'partial'])
+            ->whereDate('due_date', '>=', $asOfDate->toDateString())
             ->whereDate('due_date', '<=', $endDate->toDateString())
             ->orderBy('due_date')
             ->orderBy('id')

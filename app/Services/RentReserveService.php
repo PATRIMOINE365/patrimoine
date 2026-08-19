@@ -81,30 +81,30 @@ class RentReserveService
                     __('business.rent_reserve.before_notice')
                 );
             }
-if ($invoice->lease_id !== $lease->id) {
-    throw new RuntimeException(
-        __('business.rent_reserve.wrong_invoice_lease')
-    );
-}
+            if ($invoice->lease_id !== $lease->id) {
+                throw new RuntimeException(
+                    __('business.rent_reserve.wrong_invoice_lease')
+                );
+            }
 
-/*
- * Rent Reserve exists specifically to cover contractual rent during the
- * termination-notice period.
- *
- * Non-rent receivables, such as Security Deposit close-out debt, must not
- * consume Rent Reserve or enter the owner rent-entitlement pipeline.
- */
-if (! $invoice->isRentInvoice()) {
-    throw new RuntimeException(
-        __('business.rent_reserve.rent_only')
-    );
-}
+            /*
+             * Rent Reserve exists specifically to cover contractual rent during the
+             * termination-notice period.
+             *
+             * Non-rent receivables, such as Security Deposit close-out debt, must not
+             * consume Rent Reserve or enter the owner rent-entitlement pipeline.
+             */
+            if (! $invoice->isRentInvoice()) {
+                throw new RuntimeException(
+                    __('business.rent_reserve.rent_only')
+                );
+            }
 
-if ($amount <= 0) {
-    throw new RuntimeException(
-        __('business.rent_reserve.amount_positive')
-    );
-}
+            if ($amount <= 0) {
+                throw new RuntimeException(
+                    __('business.rent_reserve.amount_positive')
+                );
+            }
 
             if ($amount > $account->balance()) {
                 throw new RuntimeException(
@@ -191,8 +191,7 @@ if ($amount <= 0) {
         }
 
         $ownershipTotal = (float) $ownerships->sum(
-            fn ($ownership) =>
-                (float) $ownership->ownership_percentage
+            fn ($ownership) => (float) $ownership->ownership_percentage
         );
 
         if (abs($ownershipTotal - 100.0) > 0.001) {

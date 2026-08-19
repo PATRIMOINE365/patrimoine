@@ -122,7 +122,7 @@ class ApplicationPresentationFormatterTest extends TestCase
             );
 
         $this->assertSame(
-            '15 Aug 2026',
+            '15/08/2026',
             $formatter->date(
                 '2026-08-15',
                 'en'
@@ -138,7 +138,7 @@ class ApplicationPresentationFormatterTest extends TestCase
             );
 
         $this->assertSame(
-            '15 août 2026',
+            '15-08-2026',
             $formatter->date(
                 '2026-08-15',
                 'fr'

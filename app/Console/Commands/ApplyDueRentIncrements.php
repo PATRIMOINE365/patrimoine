@@ -200,7 +200,7 @@ class ApplyDueRentIncrements extends Command
                     'Y-m-d'
                 ) !== $asOf
             ) {
-                throw new \InvalidArgumentException();
+                throw new \InvalidArgumentException;
             }
 
             return $date

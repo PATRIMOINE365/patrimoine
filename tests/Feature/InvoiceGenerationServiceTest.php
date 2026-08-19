@@ -23,7 +23,7 @@ class InvoiceGenerationServiceTest extends TestCase
     /**
      * Create a Lease with configurable billing settings.
      *
-     * @param array<string, mixed> $overrides
+     * @param  array<string, mixed>  $overrides
      */
     private function createLease(
         array $overrides = []
@@ -308,8 +308,7 @@ class InvoiceGenerationServiceTest extends TestCase
                 ->orderBy('period_start')
                 ->get()
                 ->map(
-                    fn (Invoice $invoice) =>
-                        $invoice->period_start->toDateString()
+                    fn (Invoice $invoice) => $invoice->period_start->toDateString()
                 )
                 ->all()
         );

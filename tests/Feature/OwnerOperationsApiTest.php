@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ApplicationSetting;
 use App\Models\Building;
 use App\Models\BuildingOwner;
 use App\Models\OwnerAccount;
@@ -11,15 +12,14 @@ use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\AuthenticatesApiUser;
 use Tests\TestCase;
-use App\Models\ApplicationSetting;
 
 /**
  * Verifies transactional owner financial APIs.
  */
 class OwnerOperationsApiTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -537,5 +537,4 @@ class OwnerOperationsApiTest extends TestCase
                 'Aucun fonds n’est disponible pour un paiement à ce propriétaire.'
             );
     }
-
 }

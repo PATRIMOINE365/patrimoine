@@ -9,12 +9,13 @@ use App\Models\Lease;
 use App\Models\Party;
 use App\Models\PartyRole;
 use App\Models\Payment;
+use App\Models\SecurityDepositDeduction;
 use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
 use App\Models\Unit;
+use App\Services\SecurityDepositService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use App\Models\SecurityDepositDeduction;
 
 /**
  * Create disposable operational scenarios used to verify the complete
@@ -78,8 +79,7 @@ class TenantFundUiTestSeeder extends Seeder
             $building = Building::create([
                 'name' => 'UI TEST - Tenant Funds Building',
                 'location' => 'Patrimoine Test Data',
-                'notes' =>
-                    'Disposable records for tenant-fund UI verification.',
+                'notes' => 'Disposable records for tenant-fund UI verification.',
             ]);
 
             BuildingOwner::create([
@@ -89,8 +89,8 @@ class TenantFundUiTestSeeder extends Seeder
             ]);
 
             $this->createMixedRentAndDepositDebtScenario(
-    $building
-);
+                $building
+            );
 
             $this->createUnclassifiedPaymentScenario(
                 $building
@@ -138,8 +138,7 @@ class TenantFundUiTestSeeder extends Seeder
             'payment_date' => '2026-08-13',
             'payment_method' => 'bank_transfer',
             'reference' => 'UI-TEST-UNCLASSIFIED-15000',
-            'notes' =>
-                'UI TEST: GHS 15,000 intentionally left unclassified.',
+            'notes' => 'UI TEST: GHS 15,000 intentionally left unclassified.',
         ]);
     }
 
@@ -174,8 +173,7 @@ class TenantFundUiTestSeeder extends Seeder
             'payment_date' => '2026-08-13',
             'payment_method' => 'bank_transfer',
             'reference' => 'UI-TEST-ADVANCE-18000',
-            'notes' =>
-                'UI TEST: money already classified as Consumable Advance.',
+            'notes' => 'UI TEST: money already classified as Consumable Advance.',
         ]);
 
         $account = TenantFundAccount::create([
@@ -192,8 +190,7 @@ class TenantFundUiTestSeeder extends Seeder
             'amount' => 18000,
             'transaction_date' => '2026-08-13',
             'reference' => 'UI-TEST-ADVANCE-18000',
-            'notes' =>
-                'UI TEST opening Consumable Advance balance.',
+            'notes' => 'UI TEST opening Consumable Advance balance.',
         ]);
     }
 
@@ -230,8 +227,7 @@ class TenantFundUiTestSeeder extends Seeder
             'payment_date' => '2026-08-01',
             'payment_method' => 'bank_transfer',
             'reference' => 'UI-TEST-RESERVE-24000',
-            'notes' =>
-                'UI TEST: money already classified as Rent Reserve.',
+            'notes' => 'UI TEST: money already classified as Rent Reserve.',
         ]);
 
         $account = TenantFundAccount::create([
@@ -248,8 +244,7 @@ class TenantFundUiTestSeeder extends Seeder
             'amount' => 24000,
             'transaction_date' => '2026-08-01',
             'reference' => 'UI-TEST-RESERVE-24000',
-            'notes' =>
-                'UI TEST opening Rent Reserve balance.',
+            'notes' => 'UI TEST opening Rent Reserve balance.',
         ]);
     }
 
@@ -281,8 +276,7 @@ class TenantFundUiTestSeeder extends Seeder
             'payment_date' => '2026-03-01',
             'payment_method' => 'bank_transfer',
             'reference' => 'UI-TEST-DEPOSIT-10000',
-            'notes' =>
-                'UI TEST: money already classified as Security Deposit.',
+            'notes' => 'UI TEST: money already classified as Security Deposit.',
         ]);
 
         $account = TenantFundAccount::create([
@@ -299,197 +293,148 @@ class TenantFundUiTestSeeder extends Seeder
             'amount' => 10000,
             'transaction_date' => '2026-03-01',
             'reference' => 'UI-TEST-DEPOSIT-10000',
-            'notes' =>
-                'UI TEST opening Security Deposit balance.',
+            'notes' => 'UI TEST opening Security Deposit balance.',
         ]);
     }
 
-/**
- * Scenario 07:
- *
- * Verify one Tenant Payment can settle both:
- *
- * - ordinary contractual rent; and
- * - Security Deposit close-out debt.
- *
- * Expected position before collection:
- *
- * - Rent Invoice: GHS 3,000 outstanding;
- * - Security Deposit debt: GHS 2,000 outstanding;
- * - Total tenant obligation: GHS 5,000.
- *
- * The rent Invoice deliberately has the earlier due date so FIFO settles
- * rent first and Security Deposit debt second.
- */
-private function createMixedRentAndDepositDebtScenario(
-    Building $building
-): void {
-    $lease = $this->createLease(
-        building: $building,
-        unitName:
-            'UI TEST 07 - Mixed Rent and Deposit Debt',
-        tenantName:
-            'UI TEST 07 Tenant',
-        tenantPhone:
-            '0209999007',
-        tenantEmail:
-            'ui-test-07-tenant@example.test',
-        status:
-            'terminated',
-        noticeDate:
-            '2026-07-01',
-        securityDepositAmount:
-            5000
-    );
-
-    /*
-     * Create an ordinary rent receivable that predates the Security Deposit
-     * close-out debt. FIFO should therefore settle this Invoice first.
+    /**
+     * Scenario 07:
+     *
+     * Verify one Tenant Payment can settle both:
+     *
+     * - ordinary contractual rent; and
+     * - Security Deposit close-out debt.
+     *
+     * Expected position before collection:
+     *
+     * - Rent Invoice: GHS 3,000 outstanding;
+     * - Security Deposit debt: GHS 2,000 outstanding;
+     * - Total tenant obligation: GHS 5,000.
+     *
+     * The rent Invoice deliberately has the earlier due date so FIFO settles
+     * rent first and Security Deposit debt second.
      */
-    Invoice::create([
-        'lease_id' =>
-            $lease->id,
+    private function createMixedRentAndDepositDebtScenario(
+        Building $building
+    ): void {
+        $lease = $this->createLease(
+            building: $building,
+            unitName: 'UI TEST 07 - Mixed Rent and Deposit Debt',
+            tenantName: 'UI TEST 07 Tenant',
+            tenantPhone: '0209999007',
+            tenantEmail: 'ui-test-07-tenant@example.test',
+            status: 'terminated',
+            noticeDate: '2026-07-01',
+            securityDepositAmount: 5000
+        );
 
-        'invoice_number' =>
-            'UI-TEST-07-RENT-001',
+        /*
+         * Create an ordinary rent receivable that predates the Security Deposit
+         * close-out debt. FIFO should therefore settle this Invoice first.
+         */
+        Invoice::create([
+            'lease_id' => $lease->id,
 
-        'type' =>
-            'rent',
+            'invoice_number' => 'UI-TEST-07-RENT-001',
 
-        'period_start' =>
-            '2026-07-01',
+            'type' => 'rent',
 
-        'period_end' =>
-            '2026-07-31',
+            'period_start' => '2026-07-01',
 
-        'issue_date' =>
-            '2026-07-01',
+            'period_end' => '2026-07-31',
 
-        'due_date' =>
-            '2026-07-01',
+            'issue_date' => '2026-07-01',
 
-        'status' =>
-            'issued',
+            'due_date' => '2026-07-01',
 
-        'total_amount' =>
-            3000,
+            'status' => 'issued',
 
-        'vat_rate' =>
-            0,
+            'total_amount' => 3000,
 
-        'net_amount' =>
-            3000,
+            'vat_rate' => 0,
 
-        'vat_amount' =>
-            0,
+            'net_amount' => 3000,
 
-        'proration_amount' =>
-            null,
+            'vat_amount' => 0,
 
-        'notes' =>
-            'UI TEST 07 ordinary rent receivable.',
-    ]);
+            'proration_amount' => null,
 
-    /*
-     * The tenant originally lodged GHS 5,000 as Security Deposit.
-     */
-    $depositPayment = Payment::create([
-        'lease_id' =>
-            $lease->id,
+            'notes' => 'UI TEST 07 ordinary rent receivable.',
+        ]);
 
-        'amount' =>
-            5000,
+        /*
+         * The tenant originally lodged GHS 5,000 as Security Deposit.
+         */
+        $depositPayment = Payment::create([
+            'lease_id' => $lease->id,
 
-        'payment_date' =>
-            '2026-03-01',
+            'amount' => 5000,
 
-        'payment_method' =>
-            'bank_transfer',
+            'payment_date' => '2026-03-01',
 
-        'reference' =>
-            'UI-TEST-07-DEPOSIT-5000',
+            'payment_method' => 'bank_transfer',
 
-        'notes' =>
-            'UI TEST 07 opening Security Deposit.',
-    ]);
+            'reference' => 'UI-TEST-07-DEPOSIT-5000',
 
-    $depositAccount = TenantFundAccount::create([
-        'lease_id' =>
-            $lease->id,
+            'notes' => 'UI TEST 07 opening Security Deposit.',
+        ]);
 
-        'type' =>
-            'security_deposit',
+        $depositAccount = TenantFundAccount::create([
+            'lease_id' => $lease->id,
 
-        'status' =>
-            'active',
-    ]);
+            'type' => 'security_deposit',
 
-    TenantFundTransaction::create([
-        'tenant_fund_account_id' =>
-            $depositAccount->id,
+            'status' => 'active',
+        ]);
 
-        'payment_id' =>
-            $depositPayment->id,
+        TenantFundTransaction::create([
+            'tenant_fund_account_id' => $depositAccount->id,
 
-        'direction' =>
-            'credit',
+            'payment_id' => $depositPayment->id,
 
-        'category' =>
-            'deposit_funding',
+            'direction' => 'credit',
 
-        'amount' =>
-            5000,
+            'category' => 'deposit_funding',
 
-        'transaction_date' =>
-            '2026-03-01',
+            'amount' => 5000,
 
-        'reference' =>
-            'UI-TEST-07-DEPOSIT-5000',
+            'transaction_date' => '2026-03-01',
 
-        'notes' =>
-            'UI TEST 07 opening Security Deposit balance.',
-    ]);
+            'reference' => 'UI-TEST-07-DEPOSIT-5000',
 
-    /*
-     * GHS 7,000 of final deductions against a GHS 5,000 deposit creates
-     * exactly GHS 2,000 of tenant debt.
-     */
-    \App\Models\SecurityDepositDeduction::create([
-        'lease_id' =>
-            $lease->id,
+            'notes' => 'UI TEST 07 opening Security Deposit balance.',
+        ]);
 
-        'description' =>
-            'UI TEST 07 close-out repairs',
+        /*
+         * GHS 7,000 of final deductions against a GHS 5,000 deposit creates
+         * exactly GHS 2,000 of tenant debt.
+         */
+        SecurityDepositDeduction::create([
+            'lease_id' => $lease->id,
 
-        'amount' =>
-            7000,
+            'description' => 'UI TEST 07 close-out repairs',
 
-        'deduction_date' =>
-            '2026-08-13',
+            'amount' => 7000,
 
-        'reference' =>
-            'UI-TEST-07-DEDUCTION-001',
+            'deduction_date' => '2026-08-13',
 
-        'notes' =>
-            'Creates GHS 2,000 Security Deposit close-out debt.',
-    ]);
+            'reference' => 'UI-TEST-07-DEDUCTION-001',
 
-    /*
-     * Use the real settlement service. This must create the
-     * security_deposit_debt Invoice automatically.
-     */
-    app(
-        \App\Services\SecurityDepositService::class
-    )->settle(
-        lease:
-            $lease,
-        settlementDate:
-            '2026-08-13',
-        notes:
-            'UI TEST 07 mixed receivable scenario.'
-    );
-}
+            'notes' => 'Creates GHS 2,000 Security Deposit close-out debt.',
+        ]);
 
+        /*
+         * Use the real settlement service. This must create the
+         * security_deposit_debt Invoice automatically.
+         */
+        app(
+            SecurityDepositService::class
+        )->settle(
+            lease: $lease,
+            settlementDate: '2026-08-13',
+            notes: 'UI TEST 07 mixed receivable scenario.'
+        );
+    }
 
     /**
      * Create the common Party / Unit / Lease structure used by a scenario.
@@ -527,8 +472,7 @@ private function createMixedRentAndDepositDebtScenario(
             'unit_id' => $unit->id,
             'tenant_id' => $tenant->id,
             'start_date' => '2026-03-01',
-            'end_date' =>
-                $status === 'terminated'
+            'end_date' => $status === 'terminated'
                     ? '2026-07-31'
                     : '2027-02-28',
             'status' => $status,
@@ -537,19 +481,15 @@ private function createMixedRentAndDepositDebtScenario(
             'payment_frequency' => 'monthly',
             'due_day' => 1,
             'vat_rate' => 18.00,
-            'security_deposit_amount' =>
-                $securityDepositAmount,
-            'advance_payment_amount' =>
-                $advanceAmount,
-            'rent_reserve_amount' =>
-                $reserveAmount,
+            'security_deposit_amount' => $securityDepositAmount,
+            'advance_payment_amount' => $advanceAmount,
+            'rent_reserve_amount' => $reserveAmount,
             'rent_increment_type' => 'none',
             'rent_increment_value' => 0,
             'management_fee_type' => 'none',
             'management_fee_value' => 0,
             'agent_commission_amount' => 0,
-            'notes' =>
-                "Disposable Patrimoine tenant-fund UI scenario: {$unitName}.",
+            'notes' => "Disposable Patrimoine tenant-fund UI scenario: {$unitName}.",
         ]);
     }
 
@@ -579,8 +519,7 @@ private function createMixedRentAndDepositDebtScenario(
             'net_amount' => 10169,
             'vat_amount' => 1831,
             'proration_amount' => null,
-            'notes' =>
-                'Disposable outstanding Invoice for tenant-fund UI testing.',
+            'notes' => 'Disposable outstanding Invoice for tenant-fund UI testing.',
         ]);
     }
 }

@@ -218,35 +218,36 @@ class RentReserveServiceTest extends TestCase
             '2026-08-01'
         );
     }
+
     /**
- * Rent Reserve may settle contractual rent only.
- *
- * Security Deposit close-out debt is a separate tenant receivable and
- * must never consume Rent Reserve or create owner rent entitlement.
- */
-public function test_reserve_cannot_settle_security_deposit_debt_invoice(): void
-{
-    $context = $this->createContext();
+     * Rent Reserve may settle contractual rent only.
+     *
+     * Security Deposit close-out debt is a separate tenant receivable and
+     * must never consume Rent Reserve or create owner rent entitlement.
+     */
+    public function test_reserve_cannot_settle_security_deposit_debt_invoice(): void
+    {
+        $context = $this->createContext();
 
-    $context['lease']->update([
-        'status' => 'notice',
-        'termination_notice_date' => '2026-07-15',
-    ]);
+        $context['lease']->update([
+            'status' => 'notice',
+            'termination_notice_date' => '2026-07-15',
+        ]);
 
-    $context['invoice']->update([
-        'type' => 'security_deposit_debt',
-    ]);
+        $context['invoice']->update([
+            'type' => 'security_deposit_debt',
+        ]);
 
-    $this->expectException(RuntimeException::class);
-    $this->expectExceptionMessage(
-        'Rent Reserve can only settle rent invoices.'
-    );
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage(
+            'Rent Reserve can only settle rent invoices.'
+        );
 
-    app(RentReserveService::class)->consume(
-        $context['account'],
-        $context['invoice'],
-        1000,
-        '2026-08-01'
-    );
-}
+        app(RentReserveService::class)->consume(
+            $context['account'],
+            $context['invoice'],
+            1000,
+            '2026-08-01'
+        );
+    }
 }

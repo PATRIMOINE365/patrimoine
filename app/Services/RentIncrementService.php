@@ -103,10 +103,8 @@ class RentIncrementService
                 $newRent =
                     $this->calculateNewRent(
                         oldRent: $oldRent,
-                        incrementType:
-                            $incrementType,
-                        incrementValue:
-                            $numericValue
+                        incrementType: $incrementType,
+                        incrementValue: $numericValue
                     );
 
                 if ($newRent <= $oldRent) {
@@ -117,36 +115,26 @@ class RentIncrementService
 
                 $increment =
                     RentIncrement::create([
-                        'lease_id' =>
-                            $lease->id,
+                        'lease_id' => $lease->id,
 
-                        'old_rent_amount' =>
-                            $oldRent,
+                        'old_rent_amount' => $oldRent,
 
-                        'increment_type' =>
-                            $incrementType,
+                        'increment_type' => $incrementType,
 
-                        'increment_value' =>
-                            $numericValue,
+                        'increment_value' => $numericValue,
 
-                        'new_rent_amount' =>
-                            $newRent,
+                        'new_rent_amount' => $newRent,
 
-                        'effective_date' =>
-                            $effective
-                                ->toDateString(),
+                        'effective_date' => $effective
+                            ->toDateString(),
 
-                        'status' =>
-                            'scheduled',
+                        'status' => 'scheduled',
 
-                        'notification_sent_at' =>
-                            null,
+                        'notification_sent_at' => null,
 
-                        'applied_at' =>
-                            null,
+                        'applied_at' => null,
 
-                        'cancelled_at' =>
-                            null,
+                        'cancelled_at' => null,
                     ]);
 
                 /*
@@ -158,9 +146,8 @@ class RentIncrementService
                  * The scheduled RentIncrement record remains authoritative.
                  */
                 $lease->update([
-                    'next_rent_increment_date' =>
-                        $effective
-                            ->toDateString(),
+                    'next_rent_increment_date' => $effective
+                        ->toDateString(),
                 ]);
 
                 return $increment->refresh();
@@ -267,9 +254,8 @@ class RentIncrementService
                 }
 
                 $lease->update([
-                    'rent_amount' =>
-                        $increment
-                            ->new_rent_amount,
+                    'rent_amount' => $increment
+                        ->new_rent_amount,
 
                     /*
                      * This represents the earliest date on which another
@@ -278,21 +264,18 @@ class RentIncrementService
                      * Reaching this date does not automatically create or
                      * approve another increment.
                      */
-                    'next_rent_increment_date' =>
-                        $effectiveDate
-                            ->copy()
-                            ->addMonthsNoOverflow(
-                                self::MINIMUM_INTERVAL_MONTHS
-                            )
-                            ->toDateString(),
+                    'next_rent_increment_date' => $effectiveDate
+                        ->copy()
+                        ->addMonthsNoOverflow(
+                            self::MINIMUM_INTERVAL_MONTHS
+                        )
+                        ->toDateString(),
                 ]);
 
                 $increment->update([
-                    'status' =>
-                        'applied',
+                    'status' => 'applied',
 
-                    'applied_at' =>
-                        now(),
+                    'applied_at' => now(),
                 ]);
 
                 return $increment->refresh();
@@ -347,11 +330,9 @@ class RentIncrementService
                 }
 
                 $increment->update([
-                    'status' =>
-                        'cancelled',
+                    'status' => 'cancelled',
 
-                    'cancelled_at' =>
-                        now(),
+                    'cancelled_at' => now(),
                 ]);
 
                 /*
@@ -379,8 +360,7 @@ class RentIncrementService
                             ->toDateString()
                 ) {
                     $lease->update([
-                        'next_rent_increment_date' =>
-                            null,
+                        'next_rent_increment_date' => null,
                     ]);
                 }
 
@@ -426,8 +406,7 @@ class RentIncrementService
                 }
 
                 $increment->update([
-                    'notification_sent_at' =>
-                        now(),
+                    'notification_sent_at' => now(),
                 ]);
 
                 return $increment->refresh();
@@ -471,28 +450,25 @@ class RentIncrementService
         return match (
             $incrementType
         ) {
-            'percentage' =>
-                (int) round(
-                    $oldRent
-                    * (
-                        1
-                        + (
-                            $numericValue
-                            / 100
-                        )
-                    )
-                ),
-
-            'fixed' =>
+            'percentage' => (int) round(
                 $oldRent
+                * (
+                    1
+                    + (
+                        $numericValue
+                        / 100
+                    )
+                )
+            ),
+
+            'fixed' => $oldRent
                 + (int) round(
                     $numericValue
                 ),
 
-            default =>
-                throw new RuntimeException(
-                    'Unsupported rent increment type.'
-                ),
+            default => throw new RuntimeException(
+                'Unsupported rent increment type.'
+            ),
         };
     }
 

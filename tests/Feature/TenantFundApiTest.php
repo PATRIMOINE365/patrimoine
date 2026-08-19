@@ -4,22 +4,24 @@ namespace Tests\Feature;
 
 use App\Models\Building;
 use App\Models\BuildingOwner;
+use App\Models\Invoice;
 use App\Models\Lease;
 use App\Models\Party;
 use App\Models\Payment;
+use App\Models\PaymentAllocation;
 use App\Models\TenantFundAccount;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Tests\Concerns\AuthenticatesApiUser;
+use Tests\TestCase;
 
 /**
  * Verifies classification of unapplied tenant Payments into held funds.
  */
 class TenantFundApiTest extends TestCase
 {
-    use RefreshDatabase;
     use AuthenticatesApiUser;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -208,9 +210,9 @@ class TenantFundApiTest extends TestCase
         );
 
         $response->assertUnprocessable()
-                    ->assertJsonValidationErrors([
-                        'amount',
-                    ]);
+            ->assertJsonValidationErrors([
+                'amount',
+            ]);
 
         /*
          * Only GHS 1,000 remained after the first classification.
@@ -229,7 +231,7 @@ class TenantFundApiTest extends TestCase
     {
         $context = $this->createContext(5000);
 
-        $invoice = \App\Models\Invoice::create([
+        $invoice = Invoice::create([
             'lease_id' => $context['lease']->id,
             'invoice_number' => 'INV-FUND-001',
             'period_start' => '2026-08-01',
@@ -243,7 +245,7 @@ class TenantFundApiTest extends TestCase
             'vat_amount' => 0,
         ]);
 
-        \App\Models\PaymentAllocation::create([
+        PaymentAllocation::create([
             'payment_id' => $context['payment']->id,
             'invoice_id' => $invoice->id,
             'amount' => 5000,
@@ -257,9 +259,9 @@ class TenantFundApiTest extends TestCase
                 'transaction_date' => '2026-08-01',
             ]
         )->assertUnprocessable()
-        ->assertJsonValidationErrors([
-            'amount',
-        ]);
+            ->assertJsonValidationErrors([
+                'amount',
+            ]);
 
         $this->assertDatabaseCount(
             'tenant_fund_transactions',

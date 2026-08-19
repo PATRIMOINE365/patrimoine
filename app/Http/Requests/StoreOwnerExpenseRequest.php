@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Unit;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -86,7 +87,7 @@ class StoreOwnerExpenseRequest extends FormRequest
                     return;
                 }
 
-                $belongsToBuilding = \App\Models\Unit::query()
+                $belongsToBuilding = Unit::query()
                     ->where('id', $this->integer('unit_id'))
                     ->where(
                         'building_id',

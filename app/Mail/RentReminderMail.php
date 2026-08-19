@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\Invoice;
 use App\Models\Party;
+use App\Services\ApplicationPresentationFormatter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
@@ -23,10 +24,9 @@ class RentReminderMail extends Mailable
         public Invoice $invoice,
         public string $pdfContents,
         public string $pdfFilename,
-        public \App\Services\ApplicationPresentationFormatter $formatter,
+        public ApplicationPresentationFormatter $formatter,
         public ?Party $managingOrganisation = null
-    ) {
-    }
+    ) {}
 
     /**
      * Define a clear tenant-facing reminder subject.

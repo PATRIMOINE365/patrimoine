@@ -1,12 +1,12 @@
 <?php
 
+use App\Http\Middleware\ApplyApplicationLocale;
+use App\Http\Middleware\EnsureUserHasCapability;
+use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\ApplyApplicationLocale;
 use Illuminate\Http\Request;
-use App\Http\Middleware\EnsureUserHasCapability;
-use App\Http\Middleware\EnsureUserHasRole;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -58,8 +58,7 @@ return Application::configure(basePath: dirname(__DIR__))
          * the client's Accept header.
          */
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request): bool =>
-                $request->is('api/*'),
+            fn (Request $request): bool => $request->is('api/*'),
         );
     })
     ->create();

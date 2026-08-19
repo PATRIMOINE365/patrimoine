@@ -415,16 +415,15 @@ class UserController extends Controller
             'phone' => $user->phone,
             'role' => $user->role->value,
             'is_active' => $user->isActive(),
-            'email_verified' =>
-                $user->email_verified_at !== null,
+            'email_verified' => $user->email_verified_at !== null,
         ];
     }
 
     /**
      * Return only fields whose values actually changed.
      *
-     * @param array<string, mixed> $before
-     * @param array<string, mixed> $after
+     * @param  array<string, mixed>  $before
+     * @param  array<string, mixed>  $after
      * @return array{
      *     0: array<string, mixed>,
      *     1: array<string, mixed>

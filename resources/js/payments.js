@@ -1,11 +1,19 @@
 import {
     apiRequest,
     formatCurrency,
+    getPresentationConfiguration,
     formatDate,
     formatNumber,
     parseJsonResponse,
     translate,
 } from './core.js';
+
+import {
+    dateForApi,
+    dateForDisplay,
+    initializeDateInputs,
+    openDatePicker,
+} from './date-input.js';
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +44,8 @@ let selectedOwnerAccount = null;
 
 let selectedOwnerProperties = [];
 
+let paymentDrawerCloseTimer = null;
+
 /*
 |--------------------------------------------------------------------------
 | Initialization
@@ -56,6 +66,12 @@ export async function initializePayments() {
     if (! list) {
         return false;
     }
+
+    /*
+     * Standardize visible business-date controls before any form or
+     * filter interactions occur.
+     */
+    initializeDateInputs();
 
     initializePaymentFilters();
 
@@ -165,13 +181,17 @@ function buildPaymentRegisterQuery(
         );
 
     const from =
-        fieldValue(
-            'payment-from-filter'
+        dateForApi(
+            fieldValue(
+                'payment-from-filter'
+            )
         );
 
     const to =
-        fieldValue(
-            'payment-to-filter'
+        dateForApi(
+            fieldValue(
+                'payment-to-filter'
+            )
         );
 
     if (source) {
@@ -991,7 +1011,209 @@ async function openAuthenticatedPdf(
 /**
  * Initialize the complete Record Payment modal.
  */
+/**
+ * Initialize the Record Payment DD-MM-YYYY date control while retaining
+ * the browser-native calendar picker.
+ */
+function initializePaymentDateInput() {
+    const textInput =
+        document.getElementById(
+            'payment-date'
+        );
+
+    const pickerButton =
+        document.querySelector(
+            '[data-payment-date-picker="payment-date"]'
+        );
+
+    const nativeInput =
+        document.querySelector(
+            '[data-payment-native-date-picker="payment-date"]'
+        );
+
+    if (
+        ! textInput
+        || ! pickerButton
+        || ! nativeInput
+    ) {
+        return;
+    }
+
+    if (
+        textInput.dataset
+            .paymentDateInitialized
+        === 'true'
+    ) {
+        return;
+    }
+
+    textInput.dataset
+        .paymentDateInitialized =
+        'true';
+
+    const syncNative =
+        () => {
+            const iso =
+                paymentDateForApi(
+                    textInput.value
+                );
+
+            nativeInput.value =
+                /^\d{4}-\d{2}-\d{2}$/
+                    .test(iso)
+                    ? iso
+                    : '';
+        };
+
+    textInput.addEventListener(
+        'blur',
+        () => {
+            const iso =
+                paymentDateForApi(
+                    textInput.value
+                );
+
+            if (
+                /^\d{4}-\d{2}-\d{2}$/
+                    .test(iso)
+            ) {
+                textInput.value =
+                    paymentDateForDisplay(
+                        iso
+                    );
+            }
+
+            syncNative();
+        }
+    );
+
+    pickerButton.addEventListener(
+        'click',
+        () => {
+            openDatePicker(
+                textInput
+            );
+        }
+    );
+
+    nativeInput.addEventListener(
+        'change',
+        () => {
+            if (! nativeInput.value) {
+                return;
+            }
+
+            textInput.value =
+                paymentDateForDisplay(
+                    nativeInput.value
+                );
+
+            textInput.dispatchEvent(
+                new Event(
+                    'change',
+                    {
+                        bubbles: true,
+                    }
+                )
+            );
+        }
+    );
+}
+
+/**
+ * Convert YYYY-MM-DD to DD-MM-YYYY.
+ */
+function paymentDateForDisplay(
+    value
+) {
+    const match =
+        String(
+            value
+            ?? ''
+        ).match(
+            /^(\d{4})-(\d{2})-(\d{2})$/
+        );
+
+    if (! match) {
+        return String(
+            value
+            ?? ''
+        );
+    }
+
+    const separator =
+        document.documentElement.lang
+            ?.toLowerCase()
+            .startsWith('fr')
+            ? '-'
+            : '/';
+
+    return `${match[3]}${separator}${match[2]}${separator}${match[1]}`;
+}
+
+/**
+ * Convert DD-MM-YYYY or DD/MM/YYYY to YYYY-MM-DD.
+ *
+ * Existing ISO values remain unchanged.
+ */
+function paymentDateForApi(
+    value
+) {
+    const normalized =
+        String(
+            value
+            ?? ''
+        ).trim();
+
+    if (
+        /^\d{4}-\d{2}-\d{2}$/
+            .test(normalized)
+    ) {
+        return normalized;
+    }
+
+    const match =
+        normalized.match(
+            /^(\d{2})[-/](\d{2})[-/](\d{4})$/
+        );
+
+    if (! match) {
+        return normalized;
+    }
+
+    return `${match[3]}-${match[2]}-${match[1]}`;
+}
+
+
+/**
+ * Synchronise Record Payment currency markers with the organisation-wide
+ * presentation configuration.
+ *
+ * The configured currency is the source of truth for both Tenant Payments
+ * and Owner Deposits.
+ */
+function synchronizePaymentCurrencyDisplays() {
+    const currency =
+        getPresentationConfiguration()
+            .currency
+        || 'GHS';
+
+    document
+        .querySelectorAll(
+            '#payment-modal [data-currency-display]'
+        )
+        .forEach(
+            (element) => {
+                element.textContent =
+                    currency;
+            }
+        );
+}
+
+
 function initializePaymentModal() {
+    initializePaymentDateInput();
+
     const modal =
         document.getElementById(
             'payment-modal'
@@ -1042,24 +1264,24 @@ function initializePaymentModal() {
             }
         );
 
-    modal.addEventListener(
-        'click',
-        (event) => {
-            if (
-                event.target === modal
-            ) {
+    document
+        .getElementById(
+            'payment-modal-backdrop'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
                 closePaymentModal();
             }
-        }
-    );
+        );
 
     document.addEventListener(
         'keydown',
         (event) => {
             if (
                 event.key === 'Escape'
-                && ! modal.classList.contains(
-                    'hidden'
+                && modal.classList.contains(
+                    'pm-drawer-active'
                 )
             ) {
                 closePaymentModal();
@@ -1115,6 +1337,8 @@ function initializePaymentModal() {
 function openPaymentModal() {
     resetPaymentForm();
 
+    synchronizePaymentCurrencyDisplays();
+
     const modal =
         document.getElementById(
             'payment-modal'
@@ -1124,23 +1348,68 @@ function openPaymentModal() {
         return;
     }
 
+    /*
+     * Cancel an unfinished previous close cycle.
+     */
+    if (paymentDrawerCloseTimer !== null) {
+        window.clearTimeout(
+            paymentDrawerCloseTimer
+        );
+
+        paymentDrawerCloseTimer = null;
+    }
+
     modal.classList.remove(
+        'pm-drawer-open',
+        'pm-drawer-closing'
+    );
+
+    modal.removeAttribute(
         'hidden'
     );
 
     modal.classList.add(
-        'flex'
+        'pm-drawer-active'
+    );
+
+    modal.setAttribute(
+        'aria-hidden',
+        'false'
     );
 
     document.body.classList.add(
         'overflow-hidden'
     );
 
-    document
-        .getElementById(
-            'tenant-payment-search'
-        )
-        ?.focus();
+    const panel =
+        modal.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    /*
+     * Commit the off-screen translateX(100%) state first.
+     */
+    if (panel) {
+        void panel.offsetWidth;
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    modal.classList.add(
+                        'pm-drawer-open'
+                    );
+
+                    document
+                        .getElementById(
+                            'tenant-payment-search'
+                        )
+                        ?.focus();
+                }
+            );
+        }
+    );
 }
 
 /**
@@ -1152,31 +1421,61 @@ function closePaymentModal() {
             'payment-modal'
         );
 
-    if (! modal) {
+    if (
+        ! modal
+        || ! modal.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
         return;
     }
 
-    modal.classList.add(
-        'hidden'
-    );
-
     modal.classList.remove(
-        'flex'
+        'pm-drawer-open'
     );
 
-    document.body.classList.remove(
-        'overflow-hidden'
+    modal.classList.add(
+        'pm-drawer-closing'
     );
 
-    hidePaymentFormError();
-
-    hideSearchResults(
-        'tenant-payment-search-results'
+    modal.setAttribute(
+        'aria-hidden',
+        'true'
     );
 
-    hideSearchResults(
-        'owner-payment-search-results'
-    );
+    if (paymentDrawerCloseTimer !== null) {
+        window.clearTimeout(
+            paymentDrawerCloseTimer
+        );
+    }
+
+    paymentDrawerCloseTimer =
+        window.setTimeout(
+            () => {
+                modal.classList.remove(
+                    'pm-drawer-active',
+                    'pm-drawer-closing'
+                );
+
+                document.body.classList.remove(
+                    'overflow-hidden'
+                );
+
+                hidePaymentFormError();
+
+                hideSearchResults(
+                    'tenant-payment-search-results'
+                );
+
+                hideSearchResults(
+                    'owner-payment-search-results'
+                );
+
+                paymentDrawerCloseTimer =
+                    null;
+            },
+            850
+        );
 }
 
 /**
@@ -1217,7 +1516,9 @@ function resetPaymentForm() {
 
     setFieldValue(
         'payment-date',
-        localToday()
+        paymentDateForDisplay(
+            localToday()
+        )
     );
 
     setFieldValue(
@@ -2611,8 +2912,10 @@ async function submitPayment() {
         );
 
     const paymentDate =
-        fieldValue(
-            'payment-date'
+        paymentDateForApi(
+            fieldValue(
+                'payment-date'
+            )
         );
 
     const method =
@@ -2976,7 +3279,7 @@ function setSubmitting(
                 'payments.recording'
             )
             : translate(
-                'payments.record_payment'
+                'actions.save'
             );
 }
 
@@ -3497,6 +3800,9 @@ function escapeAttribute(
 let tenantFundPaymentId =
     null;
 
+let tenantFundDrawerCloseTimer =
+    null;
+
 /**
  * Listen for Manage Funds actions rendered in the unified Payment Register.
  *
@@ -3538,6 +3844,24 @@ function initializeTenantFundModal() {
 
     document
         .getElementById(
+            'cancel-tenant-fund-button'
+        )
+        ?.addEventListener(
+            'click',
+            closeTenantFundModal
+        );
+
+    document
+        .getElementById(
+            'tenant-fund-modal-backdrop'
+        )
+        ?.addEventListener(
+            'click',
+            closeTenantFundModal
+        );
+
+    document
+        .getElementById(
             'tenant-fund-form'
         )
         ?.addEventListener(
@@ -3556,8 +3880,8 @@ function initializeTenantFundModal() {
             if (
                 event.key === 'Escape'
                 && modal
-                && ! modal.classList.contains(
-                    'hidden'
+                && modal.classList.contains(
+                    'pm-drawer-active'
                 )
             ) {
                 closeTenantFundModal();
@@ -3600,12 +3924,26 @@ async function openTenantFundModal(
         return;
     }
 
+    if (tenantFundDrawerCloseTimer !== null) {
+        window.clearTimeout(
+            tenantFundDrawerCloseTimer
+        );
+
+        tenantFundDrawerCloseTimer =
+            null;
+    }
+
     modal.classList.remove(
+        'pm-drawer-open',
+        'pm-drawer-closing'
+    );
+
+    modal.removeAttribute(
         'hidden'
     );
 
     modal.classList.add(
-        'flex'
+        'pm-drawer-active'
     );
 
     modal.setAttribute(
@@ -3615,6 +3953,27 @@ async function openTenantFundModal(
 
     document.body.classList.add(
         'overflow-hidden'
+    );
+
+    const panel =
+        modal.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    if (panel) {
+        void panel.offsetWidth;
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    modal.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
     );
 
     await loadTenantFundPayment();
@@ -3629,27 +3988,56 @@ function closeTenantFundModal() {
             'tenant-fund-modal'
         );
 
-    modal?.classList.add(
-        'hidden'
+    if (
+        ! modal
+        || ! modal.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
+        return;
+    }
+
+    modal.classList.remove(
+        'pm-drawer-open'
     );
 
-    modal?.classList.remove(
-        'flex'
+    modal.classList.add(
+        'pm-drawer-closing'
     );
 
-    modal?.setAttribute(
+    modal.setAttribute(
         'aria-hidden',
         'true'
     );
 
-    document.body.classList.remove(
-        'overflow-hidden'
-    );
+    if (tenantFundDrawerCloseTimer !== null) {
+        window.clearTimeout(
+            tenantFundDrawerCloseTimer
+        );
+    }
 
-    tenantFundPaymentId =
-        null;
+    tenantFundDrawerCloseTimer =
+        window.setTimeout(
+            () => {
+                modal.classList.remove(
+                    'pm-drawer-active',
+                    'pm-drawer-closing'
+                );
 
-    resetTenantFundModal();
+                document.body.classList.remove(
+                    'overflow-hidden'
+                );
+
+                tenantFundPaymentId =
+                    null;
+
+                resetTenantFundModal();
+
+                tenantFundDrawerCloseTimer =
+                    null;
+            },
+            850
+        );
 }
 
 /**
@@ -3692,6 +4080,14 @@ function resetTenantFundModal() {
     form?.classList.add(
         'hidden'
     );
+
+    document
+        .getElementById(
+            'tenant-fund-submit-button'
+        )
+        ?.classList.remove(
+            'hidden'
+        );
 }
 
 /**
@@ -3856,13 +4252,26 @@ function renderTenantFundPayment(
         'hidden'
     );
 
+    const submitButton =
+        document.getElementById(
+            'tenant-fund-submit-button'
+        );
+
     if (remaining <= 0) {
         complete?.classList.remove(
             'hidden'
         );
 
+        submitButton?.classList.add(
+            'hidden'
+        );
+
         return;
     }
+
+    submitButton?.classList.remove(
+        'hidden'
+    );
 
     form?.classList.remove(
         'hidden'
@@ -3909,12 +4318,14 @@ function renderTenantFundPayment(
         && ! dateInput.value
     ) {
         dateInput.value =
-            String(
-                payment?.payment_date
-                ?? ''
-            ).slice(
-                0,
-                10
+            dateForDisplay(
+                String(
+                    payment?.payment_date
+                    ?? ''
+                ).slice(
+                    0,
+                    10
+                )
             );
     }
 
@@ -3958,8 +4369,10 @@ async function submitTenantFundAllocation(
         );
 
     const transactionDate =
-        fieldValue(
-            'tenant-fund-date'
+        dateForApi(
+            fieldValue(
+                'tenant-fund-date'
+            )
         );
 
     const reference =
@@ -3985,7 +4398,9 @@ async function submitTenantFundAllocation(
                 true;
 
             button.textContent =
-                'Allocating…';
+                translate(
+                    'payments.allocating'
+                );
         }
 
         const response =
@@ -4057,7 +4472,7 @@ async function submitTenantFundAllocation(
 
             button.textContent =
                 translate(
-                    'payments.allocate_funds'
+                    'actions.save'
                 );
         }
     }

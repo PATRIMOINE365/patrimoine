@@ -26,8 +26,7 @@ class InvoiceDocumentService
     public function __construct(
         private ApplicationIdentityService $identity,
         private ApplicationPresentationFormatter $formatter
-    ) {
-    }
+    ) {}
 
     /**
      * Generate the PDF contents for an Invoice.
@@ -50,8 +49,7 @@ class InvoiceDocumentService
             [
                 'invoice' => $invoice,
                 'formatter' => $this->formatter,
-                'managingOrganisation' =>
-                    $this->identity->managingOrganisation(),
+                'managingOrganisation' => $this->identity->managingOrganisation(),
             ]
         )
             ->setPaper('a4')

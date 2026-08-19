@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Leases — Patrimoine')
+@section('title', __('ui.leases.title'))
 @section('title-i18n', 'leases.title')
 
 @section('content')
 
-<div class="mx-auto max-w-[1600px]">
+<div class="pm-leases-page pm-page mx-auto max-w-[1600px]">
 
     {{-- ============================================================
          Page Header
@@ -24,7 +24,9 @@
                     text-patrimoine-700
                 "
             >
-                <span data-i18n="leases.tenancy">Tenancy</span>
+                <span data-i18n="leases.tenancy">
+                    {{ __('ui.leases.tenancy') }}
+                </span>
             </p>
 
             <h1
@@ -33,11 +35,15 @@
                     tracking-tight text-slate-950
                 "
             >
-                <span data-i18n="leases.heading">Leases</span>
+                <span data-i18n="leases.heading">
+                    {{ __('ui.leases.heading') }}
+                </span>
             </h1>
 
             <p class="mt-2 text-sm text-slate-500">
-                <span data-i18n="leases.page_description">Manage tenancy agreements, rent terms and lease lifecycle.</span>
+                <span data-i18n="leases.page_description">
+                    {{ __('ui.leases.page_description') }}
+                </span>
             </p>
         </div>
 
@@ -64,7 +70,9 @@
                 <path d="M5 12h14"/>
             </svg>
 
-            <span data-i18n="leases.add_lease">Add Lease</span>
+            <span data-i18n="leases.add_lease">
+                {{ __('ui.leases.add_lease') }}
+            </span>
         </button>
     </div>
 
@@ -97,7 +105,9 @@
             "
         >
             <div class="text-sm text-slate-500">
-                <span data-i18n="leases.total_leases">Total Leases</span>
+                <span data-i18n="leases.total_leases">
+                    {{ __('ui.leases.total_leases') }}
+                </span>
             </div>
 
             <div
@@ -118,7 +128,9 @@
             "
         >
             <div class="text-sm text-slate-500">
-                <span data-i18n="leases.status_active">Active</span>
+                <span data-i18n="leases.status_active">
+                    {{ __('ui.leases.status_active') }}
+                </span>
             </div>
 
             <div
@@ -139,7 +151,9 @@
             "
         >
             <div class="text-sm text-slate-500">
-                <span data-i18n="leases.in_notice">In Notice</span>
+                <span data-i18n="leases.in_notice">
+                    {{ __('ui.leases.in_notice') }}
+                </span>
             </div>
 
             <div
@@ -160,7 +174,9 @@
             "
         >
             <div class="text-sm text-slate-500">
-                <span data-i18n="leases.status_draft">Draft</span>
+                <span data-i18n="leases.status_draft">
+                    {{ __('ui.leases.status_draft') }}
+                </span>
             </div>
 
             <div
@@ -206,11 +222,15 @@
                             text-slate-950
                         "
                     >
-                        <span data-i18n="leases.register">Lease Register</span>
+                        <span data-i18n="leases.register">
+                            {{ __('ui.leases.register') }}
+                        </span>
                     </h2>
 
                     <p class="mt-1 text-xs text-slate-500">
-                        <span data-i18n="leases.register_description">Current and historical tenancy agreements.</span>
+                        <span data-i18n="leases.register_description">
+                            {{ __('ui.leases.register_description') }}
+                        </span>
                     </p>
                 </div>
 
@@ -226,7 +246,9 @@
                             for="lease-status-filter"
                             class="sr-only"
                         >
-                            <span data-i18n="leases.lease_status">Lease Status</span>
+                            <span data-i18n="leases.lease_status">
+                                {{ __('ui.leases.lease_status') }}
+                            </span>
                         </label>
 
                         <select
@@ -246,35 +268,35 @@
                                         value=""
                                         data-i18n="leases.all_statuses"
                                     >
-                                        All Statuses
+                                        {{ __('ui.leases.all_statuses') }}
                                     </option>
 
                             <option
                                         value="draft"
                                         data-i18n="leases.status_draft"
                                     >
-                                        Draft
+                                        {{ __('ui.leases.status_draft') }}
                                     </option>
 
                             <option
                                         value="active"
                                         data-i18n="leases.status_active"
                                     >
-                                        Active
+                                        {{ __('ui.leases.status_active') }}
                                     </option>
 
                             <option
                                         value="notice"
                                         data-i18n="leases.status_notice"
                                     >
-                                        Notice
+                                        {{ __('ui.leases.status_notice') }}
                                     </option>
 
                             <option
                                         value="terminated"
                                         data-i18n="leases.status_terminated"
                                     >
-                                        Terminated
+                                        {{ __('ui.leases.status_terminated') }}
                                     </option>
                         </select>
                     </div>
@@ -284,7 +306,9 @@
                             for="lease-tenant-filter"
                             class="sr-only"
                         >
-                            <span data-i18n="leases.tenant">Tenant</span>
+                            <span data-i18n="leases.tenant">
+                                {{ __('ui.leases.tenant') }}
+                            </span>
                         </label>
 
                         <select
@@ -304,7 +328,7 @@
                                         value=""
                                         data-i18n="leases.all_tenants"
                                     >
-                                        All Tenants
+                                        {{ __('ui.leases.all_tenants') }}
                                     </option>
                         </select>
                     </div>
@@ -317,7 +341,9 @@
             class="p-5"
         >
             <div class="text-sm text-slate-400">
-                <span data-i18n="leases.loading">Loading leases…</span>
+                <span data-i18n="leases.loading">
+                    {{ __('ui.leases.loading') }}
+                </span>
             </div>
         </div>
 
@@ -335,109 +361,40 @@
 
 
 {{-- ================================================================
-     Add / Edit Lease Modal
+     Add / Edit Lease Drawer
 ================================================================ --}}
 
-<div
+<x-drawer
     id="lease-modal"
-    class="
-        fixed inset-0 z-[70]
-        hidden overflow-y-auto
-    "
-    aria-hidden="true"
+    backdrop-id="lease-modal-backdrop"
+    width="lg"
 >
-    <div
-        id="lease-modal-backdrop"
-        class="
-            fixed inset-0
-            bg-slate-950/50
-            backdrop-blur-[1px]
-        "
-    ></div>
-
-    <div
-        class="
-            relative flex min-h-full
-            items-start justify-center
-            p-4 sm:p-6 lg:p-10
-        "
+    <x-drawer-header
+        title-id="lease-modal-title"
+        description-id="lease-modal-description"
+        close-id="lease-modal-close"
+        close-label="Close"
+        close-label-key="leases.close"
     >
-        <div
-            class="
-                relative w-full max-w-5xl
-                overflow-hidden rounded-2xl
-                bg-white shadow-2xl
-            "
-        >
+        <x-slot:title>
+            <span data-i18n="leases.add_lease">
+                {{ __('ui.leases.add_lease') }}
+            </span>
+        </x-slot:title>
 
-            {{-- Header --}}
+        <x-slot:description>
+            <span data-i18n="leases.add_description">
+                {{ __('ui.leases.add_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
 
-            <div
-                class="
-                    flex items-start justify-between gap-5
-                    border-b border-slate-100
-                    px-6 py-5
-                "
-            >
-                <div>
-                    <h2
-                        id="lease-modal-title"
-                        class="
-                            text-xl font-semibold
-                            tracking-tight text-slate-950
-                        "
-                    >
-                        <span data-i18n="leases.add_lease">Add Lease</span>
-                    </h2>
+    <form
+        id="lease-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div class="pm-lease-drawer-body">
 
-                    <p
-                        id="lease-modal-description"
-                        class="
-                            mt-1 text-sm
-                            text-slate-500
-                        "
-                    >
-                        <span data-i18n="leases.add_description">Create a tenancy agreement for a property unit.</span>
-                    </p>
-                </div>
-
-                <button
-                    id="lease-modal-close"
-                    type="button"
-                    aria-label="Close"
-                    class="
-                        inline-flex h-9 w-9
-                        shrink-0 items-center
-                        justify-center rounded-lg
-                        text-slate-400
-                        transition
-                        hover:bg-slate-100
-                        hover:text-slate-700
-                    "
-
-                    data-i18n-aria-label="leases.close">
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <path d="M18 6 6 18"/>
-                        <path d="m6 6 12 12"/>
-                    </svg>
-                </button>
-            </div>
-
-            <form id="lease-form">
-
-                <div
-                    class="
-                        max-h-[calc(100vh-12rem)]
-                        overflow-y-auto
-                        px-6 py-6
-                    "
-                >
 
                     <div
                         id="lease-form-error"
@@ -461,11 +418,15 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="leases.property_tenant">Property & Tenant</span>
+                                <span data-i18n="leases.property_tenant">
+                                    {{ __('ui.leases.property_tenant') }}
+                                </span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                <span data-i18n="leases.property_tenant_description">Select the leased unit and parties to the agreement.</span>
+                                <span data-i18n="leases.property_tenant_description">
+                                    {{ __('ui.leases.property_tenant_description') }}
+                                </span>
                             </p>
                         </div>
 
@@ -488,11 +449,13 @@
             text-slate-700
         "
     >
-        <span data-i18n="leases.property_unit">Property / Unit</span>
+        <span data-i18n="leases.property_unit">
+            {{ __('ui.leases.property_unit') }}
+        </span>
 
         <x-field-help
                                         label="About Property and Unit"
-                                        data-i18n-field-help="leases.property_unit_help_text"
+                                        text-key="leases.property_unit_help_text"
                                         data-i18n-aria-label="leases.property_unit_help_label"
                                     >
             Search for the specific leasable Unit covered by this agreement.
@@ -536,7 +499,7 @@
                 type="search"
                 autocomplete="off"
                 data-i18n-placeholder="leases.unit_search_placeholder"
-                placeholder="Search property, location, unit or owner…"
+                placeholder="{{ __('ui.leases.unit_search_placeholder') }}"
                 class="
                     w-full rounded-lg
                     border border-slate-200
@@ -612,7 +575,9 @@
                 text-patrimoine-700
             "
         >
-            <span data-i18n="leases.selected_unit">Selected Unit</span>
+            <span data-i18n="leases.selected_unit">
+                {{ __('ui.leases.selected_unit') }}
+            </span>
         </div>
 
         <div
@@ -639,7 +604,9 @@
                 text-slate-500
             "
         >
-            <span data-i18n="leases.ownership">Ownership</span>
+            <span data-i18n="leases.ownership">
+                {{ __('ui.leases.ownership') }}
+            </span>
         </div>
 
         <div
@@ -666,11 +633,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.tenant">Tenant</span>
+                                    <span data-i18n="leases.tenant">
+                                        {{ __('ui.leases.tenant') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Tenant"
-                                        data-i18n-field-help="leases.tenant_help_text"
+                                        text-key="leases.tenant_help_text"
                                         data-i18n-aria-label="leases.tenant_help_label"
                                     >
                                         The Party renting this unit. Patrimoine V1 supports exactly one
@@ -698,7 +667,7 @@
                                         value=""
                                         data-i18n="leases.select_tenant"
                                     >
-                                        Select tenant…
+                                        {{ __('ui.leases.select_tenant') }}
                                     </option>
                                 </select>
                             </div>
@@ -712,11 +681,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.agent">Agent</span>
+                                    <span data-i18n="leases.agent">
+                                        {{ __('ui.leases.agent') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Agent"
-                                        data-i18n-field-help="leases.agent_help_text"
+                                        text-key="leases.agent_help_text"
                                         data-i18n-aria-label="leases.agent_help_label"
                                     >
                                         Optional Party that facilitated or manages this lease transaction.
@@ -742,7 +713,7 @@
                                         value=""
                                         data-i18n="leases.no_agent"
                                     >
-                                        No Agent
+                                        {{ __('ui.leases.no_agent') }}
                                     </option>
                                 </select>
                             </div>
@@ -766,11 +737,15 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="leases.lease_period">Lease Period</span>
+                                <span data-i18n="leases.lease_period">
+                                    {{ __('ui.leases.lease_period') }}
+                                </span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                <span data-i18n="leases.lease_period_description">Define when the agreement takes effect and its current lifecycle state.</span>
+                                <span data-i18n="leases.lease_period_description">
+                                    {{ __('ui.leases.lease_period_description') }}
+                                </span>
                             </p>
                         </div>
 
@@ -789,11 +764,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.start_date">Start Date</span>
+                                    <span data-i18n="leases.start_date">
+                                        {{ __('ui.leases.start_date') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Start Date"
-                                        data-i18n-field-help="leases.start_date_help_text"
+                                        text-key="leases.start_date_help_text"
                                         data-i18n-aria-label="leases.start_date_help_label"
                                     >
                                         The date the lease begins. Unless a Due Day Override is specified,
@@ -803,9 +780,15 @@
                                     <span class="text-red-500">*</span>
                                 </label>
 
-                                <input
+                                <div class="pm-lease-date-control">
+<input
                                     id="lease-start-date"
-                                    type="date"
+                                    data-lease-date-input
+                                    data-pm-date-input
+                                    inputmode="numeric"
+                                    maxlength="10"
+                                    placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                    type="text"
                                     required
                                     class="
                                         w-full rounded-lg
@@ -817,6 +800,41 @@
                                         focus:ring-patrimoine-100
                                     "
                                 >
+    <button
+        type="button"
+        class="pm-lease-date-picker-button"
+        data-lease-date-picker="lease-start-date"
+        aria-label="Choose date"
+    >
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+        >
+            <rect
+                x="3"
+                y="5"
+                width="18"
+                height="16"
+                rx="2"
+            />
+            <path d="M16 3v4"/>
+            <path d="M8 3v4"/>
+            <path d="M3 11h18"/>
+        </svg>
+    </button>
+
+    <input
+        id="lease-start-date-picker"
+        type="date"
+        class="pm-lease-native-date-picker"
+        tabindex="-1"
+        aria-hidden="true"
+        data-lease-native-date-picker="lease-start-date"
+    >
+</div>
                             </div>
 
                             <div>
@@ -828,11 +846,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.end_date">End Date</span>
+                                    <span data-i18n="leases.end_date">
+                                        {{ __('ui.leases.end_date') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About End Date"
-                                        data-i18n-field-help="leases.end_date_help_text"
+                                        text-key="leases.end_date_help_text"
                                         data-i18n-aria-label="leases.end_date_help_label"
                                     >
                                         Optional contractual end date. Leave this blank for a lease without
@@ -840,9 +860,15 @@
                                     </x-field-help>
                                 </label>
 
-                                <input
+                                <div class="pm-lease-date-control">
+<input
                                     id="lease-end-date"
-                                    type="date"
+                                    data-lease-date-input
+                                    data-pm-date-input
+                                    inputmode="numeric"
+                                    maxlength="10"
+                                    placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                    type="text"
                                     class="
                                         w-full rounded-lg
                                         border border-slate-200
@@ -853,6 +879,41 @@
                                         focus:ring-patrimoine-100
                                     "
                                 >
+    <button
+        type="button"
+        class="pm-lease-date-picker-button"
+        data-lease-date-picker="lease-end-date"
+        aria-label="Choose date"
+    >
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+        >
+            <rect
+                x="3"
+                y="5"
+                width="18"
+                height="16"
+                rx="2"
+            />
+            <path d="M16 3v4"/>
+            <path d="M8 3v4"/>
+            <path d="M3 11h18"/>
+        </svg>
+    </button>
+
+    <input
+        id="lease-end-date-picker"
+        type="date"
+        class="pm-lease-native-date-picker"
+        tabindex="-1"
+        aria-hidden="true"
+        data-lease-native-date-picker="lease-end-date"
+    >
+</div>
                             </div>
 
                             <div>
@@ -864,11 +925,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.status">Status</span>
+                                    <span data-i18n="leases.status">
+                                        {{ __('ui.leases.status') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Lease Status"
-                                        data-i18n-field-help="leases.status_help_text"
+                                        text-key="leases.status_help_text"
                                         data-i18n-aria-label="leases.status_help_label"
                                     >
                                         Draft means the lease is prepared but not yet in force.
@@ -897,28 +960,28 @@
                                         value="draft"
                                         data-i18n="leases.status_draft"
                                     >
-                                        Draft
+                                        {{ __('ui.leases.status_draft') }}
                                     </option>
 
                                     <option
                                         value="active"
                                         data-i18n="leases.status_active"
                                     >
-                                        Active
+                                        {{ __('ui.leases.status_active') }}
                                     </option>
 
                                     <option
                                         value="notice"
                                         data-i18n="leases.status_notice"
                                     >
-                                        Notice
+                                        {{ __('ui.leases.status_notice') }}
                                     </option>
 
                                     <option
                                         value="terminated"
                                         data-i18n="leases.status_terminated"
                                     >
-                                        Terminated
+                                        {{ __('ui.leases.status_terminated') }}
                                     </option>
                                 </select>
                             </div>
@@ -932,11 +995,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.notice_date">Notice Date</span>
+                                    <span data-i18n="leases.notice_date">
+                                        {{ __('ui.leases.notice_date') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Notice Date"
-                                        data-i18n-field-help="leases.notice_date_help_text"
+                                        text-key="leases.notice_date_help_text"
                                         data-i18n-aria-label="leases.notice_date_help_label"
                                     >
                                         The date termination notice was received or issued.
@@ -945,9 +1010,15 @@
                                     </x-field-help>
                                 </label>
 
-                                <input
+                                <div class="pm-lease-date-control">
+<input
                                     id="lease-notice-date"
-                                    type="date"
+                                    data-lease-date-input
+                                    data-pm-date-input
+                                    inputmode="numeric"
+                                    maxlength="10"
+                                    placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                    type="text"
                                     class="
                                         w-full rounded-lg
                                         border border-slate-200
@@ -958,6 +1029,41 @@
                                         focus:ring-patrimoine-100
                                     "
                                 >
+    <button
+        type="button"
+        class="pm-lease-date-picker-button"
+        data-lease-date-picker="lease-notice-date"
+        aria-label="Choose date"
+    >
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+        >
+            <rect
+                x="3"
+                y="5"
+                width="18"
+                height="16"
+                rx="2"
+            />
+            <path d="M16 3v4"/>
+            <path d="M8 3v4"/>
+            <path d="M3 11h18"/>
+        </svg>
+    </button>
+
+    <input
+        id="lease-notice-date-picker"
+        type="date"
+        class="pm-lease-native-date-picker"
+        tabindex="-1"
+        aria-hidden="true"
+        data-lease-native-date-picker="lease-notice-date"
+    >
+</div>
                             </div>
                         </div>
                     </section>
@@ -979,11 +1085,15 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="leases.rent_terms">Rent Terms</span>
+                                <span data-i18n="leases.rent_terms">
+                                    {{ __('ui.leases.rent_terms') }}
+                                </span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                <span data-i18n="leases.rent_terms_description">Amounts are VAT inclusive and stored as whole currency units.</span>
+                                <span data-i18n="leases.rent_terms_description">
+                                    {{ __('ui.leases.rent_terms_description') }}
+                                </span>
                             </p>
                         </div>
 
@@ -1002,11 +1112,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.monthly_rent">Monthly Rent</span>
+                                    <span data-i18n="leases.monthly_rent">
+                                        {{ __('ui.leases.monthly_rent') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Monthly Rent"
-                                        data-i18n-field-help="leases.monthly_rent_help_text"
+                                        text-key="leases.monthly_rent_help_text"
                                         data-i18n-aria-label="leases.monthly_rent_help_label"
                                     >
                                     The VAT-inclusive monthly contractual rent for the Unit.
@@ -1045,11 +1157,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.payment_frequency">Payment Frequency</span>
+                                    <span data-i18n="leases.payment_frequency">
+                                        {{ __('ui.leases.payment_frequency') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Payment Frequency"
-                                        data-i18n-field-help="leases.payment_frequency_help_text"
+                                        text-key="leases.payment_frequency_help_text"
                                         data-i18n-aria-label="leases.payment_frequency_help_label"
                                     >
                                         Controls how often the Monthly Rent becomes due:
@@ -1077,28 +1191,28 @@
                                         value="monthly"
                                         data-i18n="leases.monthly"
                                     >
-                                        Monthly
+                                        {{ __('ui.leases.monthly') }}
                                     </option>
 
                                     <option
                                         value="quarterly"
                                         data-i18n="leases.quarterly"
                                     >
-                                        Quarterly
+                                        {{ __('ui.leases.quarterly') }}
                                     </option>
 
                                     <option
                                         value="bi_yearly"
                                         data-i18n="leases.bi_yearly"
                                     >
-                                        Bi-Yearly
+                                        {{ __('ui.leases.bi_yearly') }}
                                     </option>
 
                                     <option
                                         value="yearly"
                                         data-i18n="leases.yearly"
                                     >
-                                        Yearly
+                                        {{ __('ui.leases.yearly') }}
                                     </option>
                                 </select>
                             </div>
@@ -1112,11 +1226,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.due_day_override">Due Day Override</span>
+                                    <span data-i18n="leases.due_day_override">
+                                        {{ __('ui.leases.due_day_override') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Due Day Override"
-                                        data-i18n-field-help="leases.due_day_help_text"
+                                        text-key="leases.due_day_help_text"
                                         data-i18n-aria-label="leases.due_day_help_label"
                                     >
                                         Leave blank to use the day of the Lease Start Date as the rent due day.
@@ -1132,7 +1248,7 @@
                                     max="31"
                                     step="1"
                                     data-i18n-placeholder="leases.from_start_date"
-                                    placeholder="From start date"
+                                    placeholder="{{ __('ui.leases.from_start_date') }}"
                                     class="
                                         w-full rounded-lg
                                         border border-slate-200
@@ -1154,11 +1270,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.vat_rate">VAT Rate %</span>
+                                    <span data-i18n="leases.vat_rate">
+                                        {{ __('ui.leases.vat_rate') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About VAT Rate"
-                                        data-i18n-field-help="leases.vat_rate_help_text"
+                                        text-key="leases.vat_rate_help_text"
                                         data-i18n-aria-label="leases.vat_rate_help_label"
                                     >
                                         Patrimoine treats configured Monthly Rent as VAT inclusive.
@@ -1198,11 +1316,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.proration_override">Proration Override</span>
+                                    <span data-i18n="leases.proration_override">
+                                        {{ __('ui.leases.proration_override') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Proration Override"
-                                        data-i18n-field-help="leases.proration_help_text"
+                                        text-key="leases.proration_help_text"
                                         data-i18n-aria-label="leases.proration_help_label"
                                     >
                                         Leave blank to let Patrimoine calculate the prorated amount
@@ -1218,7 +1338,7 @@
                                     min="0"
                                     step="1"
                                     data-i18n-placeholder="leases.automatic"
-                                    placeholder="Automatic"
+                                    placeholder="{{ __('ui.leases.automatic') }}"
                                     class="
                                         w-full rounded-lg
                                         border border-slate-200
@@ -1240,11 +1360,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.security_deposit">Security Deposit</span>
+                                    <span data-i18n="leases.security_deposit">
+                                        {{ __('ui.leases.security_deposit') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Security Deposit"
-                                        data-i18n-field-help="leases.security_deposit_help_text"
+                                        text-key="leases.security_deposit_help_text"
                                         data-i18n-aria-label="leases.security_deposit_help_label"
                                     >
                                         The contractual security deposit required from the tenant.
@@ -1294,11 +1416,15 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="leases.advance_payment">Advance Payment</span>
+                                <span data-i18n="leases.advance_payment">
+                                    {{ __('ui.leases.advance_payment') }}
+                                </span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                <span data-i18n="leases.advance_payment_description">Record the contractual advance and how much should remain protected as Rent Reserve.</span>
+                                <span data-i18n="leases.advance_payment_description">
+                                    {{ __('ui.leases.advance_payment_description') }}
+                                </span>
                             </p>
                         </div>
 
@@ -1317,11 +1443,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.total_advance_payment">Total Advance Payment</span>
+                                    <span data-i18n="leases.total_advance_payment">
+                                        {{ __('ui.leases.total_advance_payment') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Advance Payment"
-                                        data-i18n-field-help="leases.advance_payment_help_text"
+                                        text-key="leases.advance_payment_help_text"
                                         data-i18n-aria-label="leases.advance_payment_help_label"
                                     >
                                         Total advance rent contractually expected from the Tenant.
@@ -1359,11 +1487,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.rent_reserve">Rent Reserve</span>
+                                    <span data-i18n="leases.rent_reserve">
+                                        {{ __('ui.leases.rent_reserve') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Rent Reserve"
-                                        data-i18n-field-help="leases.rent_reserve_help_text"
+                                        text-key="leases.rent_reserve_help_text"
                                         data-i18n-aria-label="leases.rent_reserve_help_label"
                                     >
                                         Portion of the contractual Advance Payment that should
@@ -1400,11 +1530,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.consumable_advance">Consumable Advance</span>
+                                    <span data-i18n="leases.consumable_advance">
+                                        {{ __('ui.leases.consumable_advance') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Consumable Advance"
-                                        data-i18n-field-help="leases.consumable_advance_help_text"
+                                        text-key="leases.consumable_advance_help_text"
                                         data-i18n-aria-label="leases.consumable_advance_help_label"
                                     >
                                         The contractual portion of Advance Payment that is not
@@ -1468,11 +1600,13 @@
                                             text-slate-900
                                         "
                                     >
-                                        <span data-i18n="leases.advance_already_received">Advance already received</span>
+                                        <span data-i18n="leases.advance_already_received">
+                                            {{ __('ui.leases.advance_already_received') }}
+                                        </span>
 
                                         <x-field-help
                                         label="About Advance already received"
-                                        data-i18n-field-help="leases.advance_received_help_text"
+                                        text-key="leases.advance_received_help_text"
                                         data-i18n-aria-label="leases.advance_received_help_label"
                                     >
                                             Select this only when the contractual Advance Payment
@@ -1490,8 +1624,9 @@
                                             leading-5 text-slate-500
                                         "
                                     >
-                                        <span data-i18n="leases.advance_received_description">Use this when entering an existing or backdated Lease
-                                        for which the tenant already paid the advance.</span>
+                                        <span data-i18n="leases.advance_received_description">
+                                            {{ __('ui.leases.advance_received_description') }}
+                                        </span>
                                     </span>
                                 </span>
                             </label>
@@ -1514,13 +1649,21 @@
                                             text-slate-700
                                         "
                                     >
-                                        <span data-i18n="leases.date_received">Date Received</span>
+                                        <span data-i18n="leases.date_received">
+                                            {{ __('ui.leases.date_received') }}
+                                        </span>
                                         <span class="text-red-500">*</span>
                                     </label>
 
-                                    <input
+                                    <div class="pm-lease-date-control">
+<input
                                         id="lease-advance-received-date"
-                                        type="date"
+                                    data-lease-date-input
+                                    data-pm-date-input
+                                    inputmode="numeric"
+                                    maxlength="10"
+                                    placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                        type="text"
                                         class="
                                             w-full rounded-lg
                                             border border-slate-200
@@ -1531,6 +1674,41 @@
                                             focus:ring-patrimoine-100
                                         "
                                     >
+    <button
+        type="button"
+        class="pm-lease-date-picker-button"
+        data-lease-date-picker="lease-advance-received-date"
+        aria-label="Choose date"
+    >
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+        >
+            <rect
+                x="3"
+                y="5"
+                width="18"
+                height="16"
+                rx="2"
+            />
+            <path d="M16 3v4"/>
+            <path d="M8 3v4"/>
+            <path d="M3 11h18"/>
+        </svg>
+    </button>
+
+    <input
+        id="lease-advance-received-date-picker"
+        type="date"
+        class="pm-lease-native-date-picker"
+        tabindex="-1"
+        aria-hidden="true"
+        data-lease-native-date-picker="lease-advance-received-date"
+    >
+</div>
                                 </div>
 
                                 <div>
@@ -1542,7 +1720,9 @@
                                             text-slate-700
                                         "
                                     >
-                                        <span data-i18n="leases.payment_method">Payment Method</span>
+                                        <span data-i18n="leases.payment_method">
+                                            {{ __('ui.leases.payment_method') }}
+                                        </span>
                                         <span class="text-red-500">*</span>
                                     </label>
 
@@ -1562,28 +1742,28 @@
                                         value=""
                                         data-i18n="leases.select_method"
                                     >
-                                        Select method...
+                                        {{ __('ui.leases.select_method') }}
                                     </option>
 
                                         <option
                                         value="bank_transfer"
                                         data-i18n="leases.bank_transfer"
                                     >
-                                        Bank Transfer
+                                        {{ __('ui.leases.bank_transfer') }}
                                     </option>
 
                                         <option
                                         value="momo"
                                         data-i18n="leases.mobile_money"
                                     >
-                                        Mobile Money
+                                        {{ __('ui.leases.mobile_money') }}
                                     </option>
 
                                         <option
                                         value="cash"
                                         data-i18n="leases.cash"
                                     >
-                                        Cash
+                                        {{ __('ui.leases.cash') }}
                                     </option>
                                     </select>
                                 </div>
@@ -1597,7 +1777,9 @@
                                             text-slate-700
                                         "
                                     >
-                                        <span data-i18n="leases.reference">Reference</span>
+                                        <span data-i18n="leases.reference">
+                                            {{ __('ui.leases.reference') }}
+                                        </span>
                                     </label>
 
                                     <input
@@ -1605,7 +1787,7 @@
                                         type="text"
                                         maxlength="255"
                                         data-i18n-placeholder="leases.optional"
-                                        placeholder="Optional"
+                                        placeholder="{{ __('ui.leases.optional') }}"
                                         class="
                                             w-full rounded-lg
                                             border border-slate-200
@@ -1630,7 +1812,9 @@
                                             text-slate-700
                                         "
                                     >
-                                        <span data-i18n="leases.cash_collector">Cash Collector</span>
+                                        <span data-i18n="leases.cash_collector">
+                                            {{ __('ui.leases.cash_collector') }}
+                                        </span>
                                         <span class="text-red-500">*</span>
                                     </label>
 
@@ -1639,7 +1823,7 @@
                                         type="text"
                                         maxlength="255"
                                         data-i18n-placeholder="leases.cash_collector_placeholder"
-                                        placeholder="Person who received the cash"
+                                        placeholder="{{ __('ui.leases.cash_collector_placeholder') }}"
                                         class="
                                             w-full rounded-lg
                                             border border-slate-200
@@ -1673,11 +1857,15 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="leases.rent_increment">Rent Increment</span>
+                                <span data-i18n="leases.rent_increment">
+                                    {{ __('ui.leases.rent_increment') }}
+                                </span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                <span data-i18n="leases.rent_increment_description">Configure the next contractual rent increase where applicable.</span>
+                                <span data-i18n="leases.rent_increment_description">
+                                    {{ __('ui.leases.rent_increment_description') }}
+                                </span>
                             </p>
                         </div>
 
@@ -1696,11 +1884,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.increment_type">Increment Type</span>
+                                    <span data-i18n="leases.increment_type">
+                                        {{ __('ui.leases.increment_type') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Rent Increment Type"
-                                        data-i18n-field-help="leases.increment_type_help_text"
+                                        text-key="leases.increment_type_help_text"
                                         data-i18n-aria-label="leases.increment_type_help_label"
                                     >
                                         Choose how the next rent increase is defined.
@@ -1727,21 +1917,21 @@
                                         value="none"
                                         data-i18n="leases.none"
                                     >
-                                        None
+                                        {{ __('ui.leases.none') }}
                                     </option>
 
                                     <option
                                         value="percentage"
                                         data-i18n="leases.percentage"
                                     >
-                                        Percentage
+                                        {{ __('ui.leases.percentage') }}
                                     </option>
 
                                     <option
                                         value="fixed"
                                         data-i18n="leases.fixed_amount"
                                     >
-                                        Fixed Amount
+                                        {{ __('ui.leases.fixed_amount') }}
                                     </option>
                                 </select>
                             </div>
@@ -1755,11 +1945,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.increment_value">Increment Value</span>
+                                    <span data-i18n="leases.increment_value">
+                                        {{ __('ui.leases.increment_value') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Rent Increment Value"
-                                        data-i18n-field-help="leases.increment_value_help_text"
+                                        text-key="leases.increment_value_help_text"
                                         data-i18n-aria-label="leases.increment_value_help_label"
                                     >
                                         Enter the rate or amount of the next rent increase.
@@ -1813,11 +2005,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.next_increment_date">Next Increment Date</span>
+                                    <span data-i18n="leases.next_increment_date">
+                                        {{ __('ui.leases.next_increment_date') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Next Rent Increment Date"
-                                        data-i18n-field-help="leases.increment_date_help_text"
+                                        text-key="leases.increment_date_help_text"
                                         data-i18n-aria-label="leases.increment_date_help_label"
                                     >
                                         Date on which the configured increase should first take
@@ -1826,9 +2020,15 @@
                                     </x-field-help>
                                 </label>
 
-                                <input
+                                <div class="pm-lease-date-control">
+<input
                                     id="lease-next-rent-increment-date"
-                                    type="date"
+                                    data-lease-date-input
+                                    data-pm-date-input
+                                    inputmode="numeric"
+                                    maxlength="10"
+                                    placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                    type="text"
                                     disabled
                                     class="
                                         w-full rounded-lg
@@ -1842,6 +2042,41 @@
                                         focus:ring-patrimoine-100
                                     "
                                 >
+    <button
+        type="button"
+        class="pm-lease-date-picker-button"
+        data-lease-date-picker="lease-next-rent-increment-date"
+        aria-label="Choose date"
+    >
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+        >
+            <rect
+                x="3"
+                y="5"
+                width="18"
+                height="16"
+                rx="2"
+            />
+            <path d="M16 3v4"/>
+            <path d="M8 3v4"/>
+            <path d="M3 11h18"/>
+        </svg>
+    </button>
+
+    <input
+        id="lease-next-rent-increment-date-picker"
+        type="date"
+        class="pm-lease-native-date-picker"
+        tabindex="-1"
+        aria-hidden="true"
+        data-lease-native-date-picker="lease-next-rent-increment-date"
+    >
+</div>
                             </div>
                         </div>
                     </section>
@@ -1871,11 +2106,15 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="leases.fees_commission">Fees & Commission</span>
+                                <span data-i18n="leases.fees_commission">
+                                    {{ __('ui.leases.fees_commission') }}
+                                </span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                <span data-i18n="leases.fees_commission_description">Configure the managing organisation fee and one-time Agent commission applicable to this Lease.</span>
+                                <span data-i18n="leases.fees_commission_description">
+                                    {{ __('ui.leases.fees_commission_description') }}
+                                </span>
                             </p>
                         </div>
 
@@ -1894,11 +2133,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.management_fee">Managing Organisation Fee</span>
+                                    <span data-i18n="leases.management_fee">
+                                        {{ __('ui.leases.management_fee') }}
+                                    </span>
 
                                 <x-field-help
                                         label="About Managing Organisation Fee"
-                                        data-i18n-field-help="leases.management_fee_help_text"
+                                        text-key="leases.management_fee_help_text"
                                         data-i18n-aria-label="leases.management_fee_help_label"
                                     >
                                     Defines the fee earned by the Managing Organisation for managing
@@ -1924,21 +2165,21 @@
                                         value="none"
                                         data-i18n="leases.none"
                                     >
-                                        None
+                                        {{ __('ui.leases.none') }}
                                     </option>
 
                                     <option
                                         value="percentage"
                                         data-i18n="leases.percentage"
                                     >
-                                        Percentage
+                                        {{ __('ui.leases.percentage') }}
                                     </option>
 
                                     <option
                                         value="fixed"
                                         data-i18n="leases.fixed_amount"
                                     >
-                                        Fixed Amount
+                                        {{ __('ui.leases.fixed_amount') }}
                                     </option>
                                 </select>
                             </div>
@@ -1952,11 +2193,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.fee_value">Fee Value</span>
+                                    <span data-i18n="leases.fee_value">
+                                        {{ __('ui.leases.fee_value') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Managing Organisation Fee Value"
-                                        data-i18n-field-help="leases.management_fee_value_help_text"
+                                        text-key="leases.management_fee_value_help_text"
                                         data-i18n-aria-label="leases.management_fee_value_help_label"
                                     >
                                         The meaning depends on the Managing Organisation Fee type.
@@ -2008,11 +2251,13 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.agent_commission">Agent Commission</span>
+                                    <span data-i18n="leases.agent_commission">
+                                        {{ __('ui.leases.agent_commission') }}
+                                    </span>
 
                                     <x-field-help
                                         label="About Agent Commission"
-                                        data-i18n-field-help="leases.agent_commission_help_text"
+                                        text-key="leases.agent_commission_help_text"
                                         data-i18n-aria-label="leases.agent_commission_help_label"
                                     >
                                         One-time commission agreed with the Agent for this lease.
@@ -2060,11 +2305,13 @@
                                 text-slate-700
                             "
                         >
-                            <span data-i18n="leases.notes">Notes</span>
+                            <span data-i18n="leases.notes">
+                                {{ __('ui.leases.notes') }}
+                            </span>
 
                             <x-field-help
                                         label="About Lease Notes"
-                                        data-i18n-field-help="leases.notes_help_text"
+                                        text-key="leases.notes_help_text"
                                         data-i18n-aria-label="leases.notes_help_label"
                                     >
                                 Optional internal information about the agreement that does not
@@ -2076,7 +2323,7 @@
                             id="lease-notes"
                             rows="4"
                             data-i18n-placeholder="leases.notes_placeholder"
-                            placeholder="Optional lease notes"
+                            placeholder="{{ __('ui.leases.notes_placeholder') }}"
                             class="
                                 w-full resize-y rounded-lg
                                 border border-slate-200
@@ -2088,58 +2335,32 @@
                             "
                         ></textarea>
                     </section>
-
-                </div>
-
-                {{-- Footer --}}
-
-                <div
-                    class="
-                        flex flex-col-reverse gap-3
-                        border-t border-slate-100
-                        bg-slate-50/70
-                        px-6 py-4
-                        sm:flex-row sm:justify-end
-                    "
-                >
-                    <button
-                        id="lease-cancel-button"
-                        type="button"
-                        class="
-                            rounded-lg
-                            border border-slate-200
-                            bg-white px-4 py-2.5
-                            text-sm font-medium
-                            text-slate-700
-                            hover:bg-slate-50
-                        "
-                    >
-                        <span data-i18n="leases.cancel">Cancel</span>
-                    </button>
-
-                    <button
-                        id="lease-submit-button"
-                        type="submit"
-                        class="
-                            rounded-lg
-                            bg-patrimoine-950
-                            px-5 py-2.5
-                            text-sm font-medium
-                            text-white
-                            shadow-sm transition
-                            hover:bg-patrimoine-900
-                            disabled:cursor-not-allowed
-                            disabled:opacity-60
-                        "
-                    >
-                        <span data-i18n="leases.create_lease">Create Lease</span>
-                    </button>
-                </div>
-
-            </form>
         </div>
-    </div>
-</div>
+
+        <x-drawer-footer>
+            <button
+                id="lease-cancel-button"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="leases.cancel">
+                    {{ __('ui.leases.cancel') }}
+                </span>
+            </button>
+
+            <button
+                id="lease-submit-button"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="leases.save">
+                    {{ __('ui.leases.save') }}
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
 {{-- ================================================================
      Global Lease Field Help Tooltip
 ================================================================ --}}
@@ -2164,107 +2385,32 @@
      Security Deposit Operational Modal
 ================================================================ --}}
 
-<div
+<x-drawer
     id="security-deposit-modal"
-    class="
-        fixed inset-0 z-[80]
-        hidden overflow-y-auto
-    "
-    aria-hidden="true"
+    backdrop-id="security-deposit-modal-backdrop"
+    width="lg"
 >
-    <div
-        id="security-deposit-modal-backdrop"
-        class="
-            fixed inset-0
-            bg-slate-950/50
-            backdrop-blur-[1px]
-        "
-    ></div>
-
-    <div
-        class="
-            relative flex min-h-full
-            items-start justify-center
-            p-4 sm:p-6 lg:p-10
-        "
+    <x-drawer-header
+        title-id="security-deposit-modal-title"
+        description-id="security-deposit-modal-description"
+        close-id="security-deposit-modal-close"
+        close-label="Close"
+        close-label-key="leases.close"
     >
-        <div
-            class="
-                relative w-full max-w-4xl
-                overflow-hidden rounded-2xl
-                bg-white shadow-2xl
-            "
-        >
-            {{-- Header --}}
+        <x-slot:title>
+            <span data-i18n="leases.security_deposit">
+                {{ __('ui.leases.security_deposit') }}
+            </span>
+        </x-slot:title>
 
-            <div
-                class="
-                    flex items-start justify-between gap-5
-                    border-b border-slate-100
-                    px-6 py-5
-                "
-            >
-                <div>
-                    <div
-                        class="
-                            text-xs font-medium uppercase
-                            tracking-wide text-patrimoine-700
-                        "
-                    >
-                        <span data-i18n="leases.security_closeout">Lease Close-out</span>
-                    </div>
+        <x-slot:description>
+            <span data-i18n="leases.security_modal_description">
+                {{ __('ui.leases.security_modal_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
 
-                    <h2
-                        class="
-                            mt-1 text-xl font-semibold
-                            tracking-tight text-slate-950
-                        "
-                    >
-                        <span data-i18n="leases.security_deposit">Security Deposit</span>
-                    </h2>
-
-                    <p
-                        id="security-deposit-modal-description"
-                        class="mt-1 text-sm text-slate-500"
-                    >
-                        <span data-i18n="leases.security_modal_description">Review held funds, itemized deductions and final settlement.</span>
-                    </p>
-                </div>
-
-                <button
-                    id="security-deposit-modal-close"
-                    type="button"
-                    aria-label="Close"
-                    class="
-                        inline-flex h-9 w-9
-                        shrink-0 items-center
-                        justify-center rounded-lg
-                        text-slate-400 transition
-                        hover:bg-slate-100
-                        hover:text-slate-700
-                    "
-
-                    data-i18n-aria-label="leases.close">
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <path d="M18 6 6 18"/>
-                        <path d="m6 6 12 12"/>
-                    </svg>
-                </button>
-            </div>
-
-            <div
-                class="
-                    max-h-[calc(100vh-11rem)]
-                    overflow-y-auto
-                    px-6 py-6
-                "
-            >
+    <div class="pm-security-deposit-drawer-body">
                 <div
                     id="security-deposit-error"
                     class="
@@ -2282,7 +2428,9 @@
                         text-sm text-slate-400
                     "
                 >
-                    <span data-i18n="leases.loading_security_deposit">Loading Security Deposit…</span>
+                    <span data-i18n="leases.loading_security_deposit">
+                        {{ __('ui.leases.loading_security_deposit') }}
+                    </span>
                 </div>
 
                 <div
@@ -2306,7 +2454,9 @@
                                 "
                             >
                                 <div class="text-xs text-slate-500">
-                                    <span data-i18n="leases.contractual_deposit">Contractual Deposit</span>
+                                    <span data-i18n="leases.contractual_deposit">
+                                        {{ __('ui.leases.contractual_deposit') }}
+                                    </span>
                                 </div>
 
                                 <div
@@ -2327,7 +2477,9 @@
                                 "
                             >
                                 <div class="text-xs text-slate-500">
-                                    <span data-i18n="leases.held_balance">Held Balance</span>
+                                    <span data-i18n="leases.held_balance">
+                                        {{ __('ui.leases.held_balance') }}
+                                    </span>
                                 </div>
 
                                 <div
@@ -2348,7 +2500,9 @@
                                 "
                             >
                                 <div class="text-xs text-slate-500">
-                                    <span data-i18n="leases.deductions">Deductions</span>
+                                    <span data-i18n="leases.deductions">
+                                        {{ __('ui.leases.deductions') }}
+                                    </span>
                                 </div>
 
                                 <div
@@ -2369,7 +2523,9 @@
                                 "
                             >
                                 <div class="text-xs text-green-700">
-                                    <span data-i18n="leases.refund">Refund</span>
+                                    <span data-i18n="leases.refund">
+                                        {{ __('ui.leases.refund') }}
+                                    </span>
                                 </div>
 
                                 <div
@@ -2390,7 +2546,9 @@
                                 "
                             >
                                 <div class="text-xs text-red-700">
-                                    <span data-i18n="leases.tenant_debt">Tenant Debt</span>
+                                    <span data-i18n="leases.tenant_debt">
+                                        {{ __('ui.leases.tenant_debt') }}
+                                    </span>
                                 </div>
 
                                 <div
@@ -2441,11 +2599,15 @@
                                         text-slate-950
                                     "
                                 >
-                                    <span data-i18n="leases.itemized_deductions">Itemized Deductions</span>
+                                    <span data-i18n="leases.itemized_deductions">
+                                        {{ __('ui.leases.itemized_deductions') }}
+                                    </span>
                                 </h3>
 
                                 <p class="mt-1 text-xs text-slate-500">
-                                    <span data-i18n="leases.itemized_deductions_description">Charges retained from the tenant's Security Deposit.</span>
+                                    <span data-i18n="leases.itemized_deductions_description">
+                                        {{ __('ui.leases.itemized_deductions_description') }}
+                                    </span>
                                 </p>
                             </div>
                         </div>
@@ -2478,7 +2640,9 @@
                                             text-slate-700
                                         "
                                     >
-                                        <span data-i18n="leases.description">Description</span>
+                                        <span data-i18n="leases.description">
+                                            {{ __('ui.leases.description') }}
+                                        </span>
                                         <span class="text-red-500">*</span>
                                     </label>
 
@@ -2488,7 +2652,7 @@
                                         maxlength="255"
                                         required
                                         data-i18n-placeholder="leases.deduction_description_placeholder"
-                                        placeholder="e.g. Damaged lock"
+                                        placeholder="{{ __('ui.leases.deduction_description_placeholder') }}"
                                         class="
                                             w-full rounded-lg
                                             border border-slate-200
@@ -2510,7 +2674,9 @@
                                             text-slate-700
                                         "
                                     >
-                                        <span data-i18n="leases.amount">Amount</span>
+                                        <span data-i18n="leases.amount">
+                                            {{ __('ui.leases.amount') }}
+                                        </span>
                                         <span class="text-red-500">*</span>
                                     </label>
 
@@ -2541,24 +2707,66 @@
                                             text-slate-700
                                         "
                                     >
-                                        <span data-i18n="leases.deduction_date">Deduction Date</span>
+                                        <span data-i18n="leases.deduction_date">
+                                            {{ __('ui.leases.deduction_date') }}
+                                        </span>
                                         <span class="text-red-500">*</span>
                                     </label>
 
-                                    <input
-                                        id="security-deduction-date"
-                                        type="date"
-                                        required
-                                        class="
-                                            w-full rounded-lg
-                                            border border-slate-200
-                                            bg-white px-3.5 py-2.5
-                                            text-sm outline-none
-                                            focus:border-patrimoine-500
-                                            focus:ring-2
-                                            focus:ring-patrimoine-100
-                                        "
-                                    >
+                                    <div class="pm-security-date-control">
+                                        <input
+                                            id="security-deduction-date"
+                                            type="text"
+                                            data-security-date-input
+                                            inputmode="numeric"
+                                            maxlength="10"
+                                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                            required
+                                            class="
+                                                w-full rounded-lg
+                                                border border-slate-200
+                                                bg-white px-3.5 py-2.5
+                                                text-sm outline-none
+                                                focus:border-patrimoine-500
+                                                focus:ring-2
+                                                focus:ring-patrimoine-100
+                                            "
+                                        >
+
+                                        <button
+                                            type="button"
+                                            class="pm-security-date-picker-button"
+                                            data-security-date-picker="security-deduction-date"
+                                            aria-label="Choose date"
+                                        >
+                                            <svg
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                aria-hidden="true"
+                                            >
+                                                <rect
+                                                    x="3"
+                                                    y="5"
+                                                    width="18"
+                                                    height="16"
+                                                    rx="2"
+                                                />
+                                                <path d="M16 3v4"/>
+                                                <path d="M8 3v4"/>
+                                                <path d="M3 11h18"/>
+                                            </svg>
+                                        </button>
+
+                                        <input
+                                            type="date"
+                                            class="pm-security-native-date-picker"
+                                            tabindex="-1"
+                                            aria-hidden="true"
+                                            data-security-native-date-picker="security-deduction-date"
+                                        >
+                                    </div>
                                 </div>
 
                                 <div>
@@ -2570,7 +2778,9 @@
                                             text-slate-700
                                         "
                                     >
-                                        <span data-i18n="leases.reference">Reference</span>
+                                        <span data-i18n="leases.reference">
+                                            {{ __('ui.leases.reference') }}
+                                        </span>
                                     </label>
 
                                     <input
@@ -2578,7 +2788,7 @@
                                         type="text"
                                         maxlength="255"
                                         data-i18n-placeholder="leases.deduction_reference_placeholder"
-                                        placeholder="Inspection / work order reference"
+                                        placeholder="{{ __('ui.leases.deduction_reference_placeholder') }}"
                                         class="
                                             w-full rounded-lg
                                             border border-slate-200
@@ -2600,14 +2810,16 @@
                                             text-slate-700
                                         "
                                     >
-                                        <span data-i18n="leases.notes">Notes</span>
+                                        <span data-i18n="leases.notes">
+                                            {{ __('ui.leases.notes') }}
+                                        </span>
                                     </label>
 
                                     <input
                                         id="security-deduction-notes"
                                         type="text"
                                         data-i18n-placeholder="leases.optional_details"
-                                        placeholder="Optional details"
+                                        placeholder="{{ __('ui.leases.optional_details') }}"
                                         class="
                                             w-full rounded-lg
                                             border border-slate-200
@@ -2637,7 +2849,9 @@
                                         hover:bg-slate-800
                                     "
                                 >
-                                    <span data-i18n="leases.add_deduction">Add Deduction</span>
+                                    <span data-i18n="leases.add_deduction">
+                                        {{ __('ui.leases.add_deduction') }}
+                                    </span>
                                 </button>
                             </div>
                         </form>
@@ -2659,11 +2873,15 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="leases.final_settlement">Final Settlement</span>
+                                <span data-i18n="leases.final_settlement">
+                                    {{ __('ui.leases.final_settlement') }}
+                                </span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                <span data-i18n="leases.final_settlement_description">Finalize the Security Deposit and create the formal settlement voucher.</span>
+                                <span data-i18n="leases.final_settlement_description">
+                                    {{ __('ui.leases.final_settlement_description') }}
+                                </span>
                             </p>
                         </div>
 
@@ -2690,24 +2908,66 @@
                                             text-slate-700
                                         "
                                     >
-                                        <span data-i18n="leases.settlement_date">Settlement Date</span>
+                                        <span data-i18n="leases.settlement_date">
+                                            {{ __('ui.leases.settlement_date') }}
+                                        </span>
                                         <span class="text-red-500">*</span>
                                     </label>
 
-                                    <input
-                                        id="security-settlement-date"
-                                        type="date"
-                                        required
-                                        class="
-                                            w-full rounded-lg
-                                            border border-slate-200
-                                            px-3.5 py-2.5
-                                            text-sm outline-none
-                                            focus:border-patrimoine-500
-                                            focus:ring-2
-                                            focus:ring-patrimoine-100
-                                        "
-                                    >
+                                    <div class="pm-security-date-control">
+                                        <input
+                                            id="security-settlement-date"
+                                            type="text"
+                                            data-security-date-input
+                                            inputmode="numeric"
+                                            maxlength="10"
+                                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                            required
+                                            class="
+                                                w-full rounded-lg
+                                                border border-slate-200
+                                                px-3.5 py-2.5
+                                                text-sm outline-none
+                                                focus:border-patrimoine-500
+                                                focus:ring-2
+                                                focus:ring-patrimoine-100
+                                            "
+                                        >
+
+                                        <button
+                                            type="button"
+                                            class="pm-security-date-picker-button"
+                                            data-security-date-picker="security-settlement-date"
+                                            aria-label="Choose date"
+                                        >
+                                            <svg
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                aria-hidden="true"
+                                            >
+                                                <rect
+                                                    x="3"
+                                                    y="5"
+                                                    width="18"
+                                                    height="16"
+                                                    rx="2"
+                                                />
+                                                <path d="M16 3v4"/>
+                                                <path d="M8 3v4"/>
+                                                <path d="M3 11h18"/>
+                                            </svg>
+                                        </button>
+
+                                        <input
+                                            type="date"
+                                            class="pm-security-native-date-picker"
+                                            tabindex="-1"
+                                            aria-hidden="true"
+                                            data-security-native-date-picker="security-settlement-date"
+                                        >
+                                    </div>
                                 </div>
 
                                 <div>
@@ -2719,14 +2979,16 @@
                                             text-slate-700
                                         "
                                     >
-                                        <span data-i18n="leases.notes">Notes</span>
+                                        <span data-i18n="leases.notes">
+                                            {{ __('ui.leases.notes') }}
+                                        </span>
                                     </label>
 
                                     <input
                                         id="security-settlement-notes"
                                         type="text"
                                         data-i18n-placeholder="leases.closeout_notes_placeholder"
-                                        placeholder="Optional close-out notes"
+                                        placeholder="{{ __('ui.leases.closeout_notes_placeholder') }}"
                                         class="
                                             w-full rounded-lg
                                             border border-slate-200
@@ -2749,8 +3011,9 @@
                                     text-amber-800
                                 "
                             >
-                                <span data-i18n="leases.final_settlement_warning">Final settlement is irreversible. Once confirmed,
-                                no additional Security Deposit deductions can be added.</span>
+                                <span data-i18n="leases.final_settlement_warning">
+                                    {{ __('ui.leases.final_settlement_warning') }}
+                                </span>
                             </div>
 
                             <div
@@ -2769,7 +3032,9 @@
                                         hover:bg-patrimoine-900
                                     "
                                 >
-                                    <span data-i18n="leases.finalize_settlement">Finalize Settlement</span>
+                                    <span data-i18n="leases.finalize_settlement">
+                                        {{ __('ui.leases.finalize_settlement') }}
+                                    </span>
                                 </button>
                             </div>
                         </form>
@@ -2797,7 +3062,9 @@
                                             text-green-900
                                         "
                                     >
-                                        <span data-i18n="leases.security_deposit_settled">Security Deposit Settled</span>
+                                        <span data-i18n="leases.security_deposit_settled">
+                                            {{ __('ui.leases.security_deposit_settled') }}
+                                        </span>
                                     </div>
 
                                     <div
@@ -2827,122 +3094,47 @@
                                         disabled:opacity-60
                                     "
                                 >
-                                    <span data-i18n="leases.download_voucher">Download Voucher</span>
+                                    <span data-i18n="leases.download_voucher">
+                                        {{ __('ui.leases.download_voucher') }}
+                                    </span>
                                 </button>
                             </div>
                         </div>
                     </section>
                 </div>
-            </div>
-        </div>
     </div>
-</div>
+</x-drawer>
 
 {{-- ================================================================
      Tenant Funds Operational Modal
 ================================================================ --}}
 
-<div
+<x-drawer
     id="tenant-funds-modal"
-    class="
-        fixed inset-0 z-[85]
-        hidden overflow-y-auto
-    "
-    aria-hidden="true"
+    backdrop-id="tenant-funds-modal-backdrop"
+    width="lg"
 >
-    <div
-        id="tenant-funds-modal-backdrop"
-        class="
-            fixed inset-0
-            bg-slate-950/50
-            backdrop-blur-[1px]
-        "
-    ></div>
-
-    <div
-        class="
-            relative flex min-h-full
-            items-start justify-center
-            p-4 sm:p-6 lg:p-10
-        "
+    <x-drawer-header
+        title-id="tenant-funds-modal-title"
+        description-id="tenant-funds-modal-description"
+        close-id="tenant-funds-modal-close"
+        close-label="Close"
+        close-label-key="leases.close"
     >
-        <div
-            class="
-                relative w-full max-w-5xl
-                overflow-hidden rounded-2xl
-                bg-white shadow-2xl
-            "
-        >
-            {{-- Header --}}
+        <x-slot:title>
+            <span data-i18n="leases.tenant_funds">
+                {{ __('ui.leases.tenant_funds') }}
+            </span>
+        </x-slot:title>
 
-            <div
-                class="
-                    flex items-start justify-between gap-5
-                    border-b border-slate-100
-                    px-6 py-5
-                "
-            >
-                <div>
-                    <div
-                        class="
-                            text-xs font-medium uppercase
-                            tracking-wide text-patrimoine-700
-                        "
-                    >
-                        <span data-i18n="leases.tenant_money">Tenant Money</span>
-                    </div>
+        <x-slot:description>
+            <span data-i18n="leases.tenant_funds_modal_description">
+                {{ __('ui.leases.tenant_funds_modal_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
 
-                    <h2
-                        class="
-                            mt-1 text-xl font-semibold
-                            tracking-tight text-slate-950
-                        "
-                    >
-                        <span data-i18n="leases.tenant_funds">Tenant Funds</span>
-                    </h2>
-
-                    <p
-                        id="tenant-funds-modal-description"
-                        class="mt-1 text-sm text-slate-500"
-                    >
-                        <span data-i18n="leases.tenant_funds_modal_description">Review actual held balances and apply eligible funds to rent.</span>
-                    </p>
-                </div>
-
-                <button
-                    id="tenant-funds-modal-close"
-                    type="button"
-                    aria-label="Close"
-                    class="
-                        inline-flex h-9 w-9
-                        shrink-0 items-center
-                        justify-center rounded-lg
-                        text-slate-400 transition
-                        hover:bg-slate-100
-                        hover:text-slate-700
-                    "
-
-                    data-i18n-aria-label="leases.close">
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <path d="M18 6 6 18"/>
-                        <path d="m6 6 12 12"/>
-                    </svg>
-                </button>
-            </div>
-
-            <div
-                class="
-                    max-h-[calc(100vh-11rem)]
-                    overflow-y-auto
-                    px-6 py-6
-                "
-            >
+    <div class="pm-tenant-funds-drawer-body">
                 <div
                     id="tenant-funds-error"
                     class="
@@ -2960,7 +3152,9 @@
                         text-sm text-slate-400
                     "
                 >
-                    <span data-i18n="leases.loading_tenant_funds">Loading tenant funds…</span>
+                    <span data-i18n="leases.loading_tenant_funds">
+                        {{ __('ui.leases.loading_tenant_funds') }}
+                    </span>
                 </div>
 
                 <div
@@ -2984,7 +3178,9 @@
                                 "
                             >
                                 <div class="text-xs text-slate-500">
-                                    <span data-i18n="leases.rent_reserve">Rent Reserve</span>
+                                    <span data-i18n="leases.rent_reserve">
+                                        {{ __('ui.leases.rent_reserve') }}
+                                    </span>
                                 </div>
 
                                 <div
@@ -3004,7 +3200,9 @@
                                         leading-5 text-slate-500
                                     "
                                 >
-                                    <span data-i18n="leases.reserve_protected_short">Protected until termination notice.</span>
+                                    <span data-i18n="leases.reserve_protected_short">
+                                        {{ __('ui.leases.reserve_protected_short') }}
+                                    </span>
                                 </p>
                             </div>
 
@@ -3016,7 +3214,9 @@
                                 "
                             >
                                 <div class="text-xs text-slate-500">
-                                    <span data-i18n="leases.consumable_advance">Consumable Advance</span>
+                                    <span data-i18n="leases.consumable_advance">
+                                        {{ __('ui.leases.consumable_advance') }}
+                                    </span>
                                 </div>
 
                                 <div
@@ -3035,7 +3235,9 @@
                                         leading-5 text-slate-500
                                     "
                                 >
-                                    <span data-i18n="leases.consumable_advance_description">Available tenant advance that may be applied to rent.</span>
+                                    <span data-i18n="leases.consumable_advance_description">
+                                        {{ __('ui.leases.consumable_advance_description') }}
+                                    </span>
                                 </p>
                             </div>
 
@@ -3047,7 +3249,9 @@
                                 "
                             >
                                 <div class="text-xs text-slate-500">
-                                    <span data-i18n="leases.security_deposit">Security Deposit</span>
+                                    <span data-i18n="leases.security_deposit">
+                                        {{ __('ui.leases.security_deposit') }}
+                                    </span>
                                 </div>
 
                                 <div
@@ -3060,17 +3264,7 @@
                                     —
                                 </div>
 
-                                <button
-                                    id="tenant-funds-security-manage"
-                                    type="button"
-                                    class="
-                                        mt-3 text-xs font-semibold
-                                        text-patrimoine-700
-                                        hover:text-patrimoine-950
-                                    "
-                                >
-                                    <span data-i18n="leases.manage_security_deposit">Manage Security Deposit →</span>
-                                </button>
+
                             </div>
                         </div>
                     </section>
@@ -3090,11 +3284,15 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="leases.apply_rent_reserve">Apply Rent Reserve</span>
+                                <span data-i18n="leases.apply_rent_reserve">
+                                    {{ __('ui.leases.apply_rent_reserve') }}
+                                </span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                <span data-i18n="leases.apply_reserve_description">Rent Reserve becomes consumable after termination notice and may settle an outstanding Invoice.</span>
+                                <span data-i18n="leases.apply_reserve_description">
+                                    {{ __('ui.leases.apply_reserve_description') }}
+                                </span>
                             </p>
                         </div>
 
@@ -3124,7 +3322,9 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.outstanding_invoice">Outstanding Invoice</span>
+                                    <span data-i18n="leases.outstanding_invoice">
+                                        {{ __('ui.leases.outstanding_invoice') }}
+                                    </span>
                                 </label>
 
                                 <select
@@ -3148,7 +3348,9 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.amount">Amount</span>
+                                    <span data-i18n="leases.amount">
+                                        {{ __('ui.leases.amount') }}
+                                    </span>
                                 </label>
 
                                 <input
@@ -3175,12 +3377,19 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.date">Date</span>
+                                    <span data-i18n="leases.date">
+                                        {{ __('ui.leases.date') }}
+                                    </span>
                                 </label>
 
-                                <input
+                                <div class="pm-tenant-funds-date-control">
+<input
                                     id="tenant-funds-reserve-date"
-                                    type="date"
+                            data-tenant-funds-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                    type="text"
                                     required
                                     class="
                                         w-full rounded-lg
@@ -3189,6 +3398,35 @@
                                         text-sm
                                     "
                                 >
+
+    <button
+        type="button"
+        class="pm-tenant-funds-date-picker-button"
+        data-tenant-funds-date-picker="tenant-funds-reserve-date"
+        aria-label="Choose date"
+    >
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+        >
+            <rect x="3" y="5" width="18" height="16" rx="2"/>
+            <path d="M16 3v4"/>
+            <path d="M8 3v4"/>
+            <path d="M3 11h18"/>
+        </svg>
+    </button>
+
+    <input
+        type="date"
+        class="pm-tenant-funds-native-date-picker"
+        tabindex="-1"
+        aria-hidden="true"
+        data-tenant-funds-native-date-picker="tenant-funds-reserve-date"
+    >
+</div>
                             </div>
 
                             <div class="md:col-span-4">
@@ -3203,7 +3441,9 @@
                                         disabled:opacity-50
                                     "
                                 >
-                                    <span data-i18n="leases.apply_rent_reserve">Apply Rent Reserve</span>
+                                    <span data-i18n="leases.apply_rent_reserve">
+                                        {{ __('ui.leases.apply_rent_reserve') }}
+                                    </span>
                                 </button>
                             </div>
                         </form>
@@ -3224,11 +3464,15 @@
                                     text-slate-950
                                 "
                             >
-                                <span data-i18n="leases.apply_consumable_advance">Apply Consumable Advance</span>
+                                <span data-i18n="leases.apply_consumable_advance">
+                                    {{ __('ui.leases.apply_consumable_advance') }}
+                                </span>
                             </h3>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                <span data-i18n="leases.apply_advance_description">Apply available Consumable Advance against an outstanding rent Invoice.</span>
+                                <span data-i18n="leases.apply_advance_description">
+                                    {{ __('ui.leases.apply_advance_description') }}
+                                </span>
                             </p>
                         </div>
 
@@ -3258,7 +3502,9 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.outstanding_invoice">Outstanding Invoice</span>
+                                    <span data-i18n="leases.outstanding_invoice">
+                                        {{ __('ui.leases.outstanding_invoice') }}
+                                    </span>
                                 </label>
 
                                 <select
@@ -3282,7 +3528,9 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.amount">Amount</span>
+                                    <span data-i18n="leases.amount">
+                                        {{ __('ui.leases.amount') }}
+                                    </span>
                                 </label>
 
                                 <input
@@ -3309,12 +3557,19 @@
                                         text-slate-700
                                     "
                                 >
-                                    <span data-i18n="leases.date">Date</span>
+                                    <span data-i18n="leases.date">
+                                        {{ __('ui.leases.date') }}
+                                    </span>
                                 </label>
 
-                                <input
+                                <div class="pm-tenant-funds-date-control">
+<input
                                     id="tenant-funds-advance-date"
-                                    type="date"
+                            data-tenant-funds-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                    type="text"
                                     required
                                     class="
                                         w-full rounded-lg
@@ -3323,6 +3578,35 @@
                                         text-sm
                                     "
                                 >
+
+    <button
+        type="button"
+        class="pm-tenant-funds-date-picker-button"
+        data-tenant-funds-date-picker="tenant-funds-advance-date"
+        aria-label="Choose date"
+    >
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+        >
+            <rect x="3" y="5" width="18" height="16" rx="2"/>
+            <path d="M16 3v4"/>
+            <path d="M8 3v4"/>
+            <path d="M3 11h18"/>
+        </svg>
+    </button>
+
+    <input
+        type="date"
+        class="pm-tenant-funds-native-date-picker"
+        tabindex="-1"
+        aria-hidden="true"
+        data-tenant-funds-native-date-picker="tenant-funds-advance-date"
+    >
+</div>
                             </div>
 
                             <div class="md:col-span-4">
@@ -3337,13 +3621,13 @@
                                         disabled:opacity-50
                                     "
                                 >
-                                    <span data-i18n="leases.apply_consumable_advance">Apply Consumable Advance</span>
+                                    <span data-i18n="leases.apply_consumable_advance">
+                                        {{ __('ui.leases.apply_consumable_advance') }}
+                                    </span>
                                 </button>
                             </div>
                         </form>
                     </section>
                 </div>
-            </div>
-        </div>
     </div>
-</div>
+</x-drawer>
