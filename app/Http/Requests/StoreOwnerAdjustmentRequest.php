@@ -3,12 +3,21 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 /**
- * Validate an exceptional manual owner-ledger adjustment.
+ * Validate a V1.0.5 Owner Account Adjustment.
  *
- * Adjustments must always carry an explicit reason for auditability.
+ * The operator supplies the balance that should exist.
+ *
+ * Patrimoine derives:
+ *
+ * - the difference;
+ * - credit/debit direction;
+ * - absolute adjustment amount;
+ * - today's effective date.
+ *
+ * Direction, delta amount and transaction date are therefore deliberately
+ * absent from the public Adjustment command.
  */
 class StoreOwnerAdjustmentRequest extends FormRequest
 {
@@ -23,23 +32,9 @@ class StoreOwnerAdjustmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'direction' => [
-                'required',
-                Rule::in([
-                    'credit',
-                    'debit',
-                ]),
-            ],
-
-            'amount' => [
+            'corrected_balance' => [
                 'required',
                 'integer',
-                'gt:0',
-            ],
-
-            'transaction_date' => [
-                'required',
-                'date',
             ],
 
             'reason' => [

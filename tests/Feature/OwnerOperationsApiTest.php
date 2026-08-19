@@ -375,18 +375,32 @@ class OwnerOperationsApiTest extends TestCase
      */
     public function test_owner_adjustment_can_be_recorded(): void
     {
-        $context = $this->createContext();
+        $context =
+            $this->createContext();
 
-        $response = $this->postJson(
-            "/api/owner-accounts/{$context['account']->id}/adjustments",
-            [
-                'direction' => 'debit',
-                'amount' => 2000,
-                'transaction_date' => '2026-08-11',
-                'reason' => 'Correction of overstated owner funds.',
-                'reference' => 'ADJ-API-001',
-            ]
-        );
+        $ownerAccount =
+            $context['account'];
+
+        /*
+         * V1.0.5 Adjustment semantics:
+         *
+         * The caller supplies the correct final balance.
+         * Patrimoine derives direction and delta and uses today.
+         */
+        $response =
+            $this->postJson(
+                "/api/owner-accounts/{$ownerAccount->id}/adjustments",
+                [
+                    'corrected_balance' =>
+                        2500,
+
+                    'reason' =>
+                        'Correct verified Owner balance.',
+
+                    'reference' =>
+                        'OWNER-ADJ-001',
+                ]
+            );
 
         $response
             ->assertCreated()
@@ -395,9 +409,36 @@ class OwnerOperationsApiTest extends TestCase
                 'adjustment'
             )
             ->assertJsonPath(
+                'transaction.direction',
+                'credit'
+            )
+            ->assertJsonPath(
+                'transaction.amount',
+                2500
+            )
+            ->assertJsonPath(
+                'adjustment.previous_balance',
+                0
+            )
+            ->assertJsonPath(
+                'adjustment.corrected_balance',
+                2500
+            )
+            ->assertJsonPath(
+                'adjustment.difference',
+                2500
+            )
+            ->assertJsonPath(
                 'owner_account.balance',
-                -2000
+                2500
             );
+
+        $this->assertSame(
+            2500,
+            $ownerAccount
+                ->fresh()
+                ->balance()
+        );
     }
 
     /**
