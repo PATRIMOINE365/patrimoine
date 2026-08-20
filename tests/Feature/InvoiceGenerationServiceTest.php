@@ -8,6 +8,8 @@ use App\Models\Lease;
 use App\Models\Party;
 use App\Models\Unit;
 use App\Services\InvoiceGenerationService;
+use App\Services\LeaseTerms\LeaseExtendService;
+use App\Services\LeaseTerms\LeaseTermVersionService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use RuntimeException;
@@ -340,6 +342,440 @@ class InvoiceGenerationServiceTest extends TestCase
         $this->assertDatabaseCount(
             'invoices',
             3
+        );
+    }
+
+    /**
+     * Extending a Lease must not cause a subsequently generated historical
+     * Invoice to inherit the newest contractual terms.
+     */
+    public function test_extend_preserves_historical_billing_terms(): void
+    {
+        $lease = $this->createLease([
+            'start_date' => '2026-10-01',
+
+            'end_date' => '2026-12-31',
+
+            'rent_amount' => 11800,
+
+            'payment_frequency' => 'monthly',
+
+            'due_day' => 5,
+
+            'vat_rate' => 18,
+        ]);
+
+        app(
+            LeaseTermVersionService::class
+        )->ensureBaseline(
+            $lease
+        );
+
+        app(
+            LeaseExtendService::class
+        )->extend(
+            lease: $lease,
+            validated: [
+                'effective_from' => '2027-01-01',
+
+                'end_date' => '2027-12-31',
+
+                'rent_amount' => 20000,
+
+                'payment_frequency' => 'monthly',
+
+                'due_day' => 15,
+
+                'vat_rate' => 0,
+
+                'rent_increment_type' => 'none',
+
+                'rent_increment_value' => 0,
+
+                'next_rent_increment_date' => null,
+
+                'notes' => '2027 terms',
+            ]
+        );
+
+        $service =
+            app(
+                InvoiceGenerationService::class
+            );
+
+        /*
+         * This Invoice is generated AFTER Extend, but belongs to the old
+         * contractual period and therefore must use the old version.
+         */
+        $historical =
+            $service->generate(
+                $lease,
+                Carbon::parse(
+                    '2026-12-01'
+                )
+            );
+
+        $current =
+            $service->generate(
+                $lease,
+                Carbon::parse(
+                    '2027-01-01'
+                )
+            );
+
+        $this->assertSame(
+            11800,
+            $historical->total_amount
+        );
+
+        $this->assertSame(
+            '18.00',
+            $historical->vat_rate
+        );
+
+        $this->assertSame(
+            10000,
+            $historical->net_amount
+        );
+
+        $this->assertSame(
+            1800,
+            $historical->vat_amount
+        );
+
+        $this->assertSame(
+            '2026-12-05',
+            $historical
+                ->due_date
+                ->toDateString()
+        );
+
+        $this->assertSame(
+            '2026-12-31',
+            $historical
+                ->period_end
+                ->toDateString()
+        );
+
+        $this->assertSame(
+            20000,
+            $current->total_amount
+        );
+
+        $this->assertSame(
+            '0.00',
+            $current->vat_rate
+        );
+
+        $this->assertSame(
+            20000,
+            $current->net_amount
+        );
+
+        $this->assertSame(
+            0,
+            $current->vat_amount
+        );
+
+        $this->assertSame(
+            '2027-01-15',
+            $current
+                ->due_date
+                ->toDateString()
+        );
+
+        $this->assertSame(
+            '2027-01-31',
+            $current
+                ->period_end
+                ->toDateString()
+        );
+    }
+
+    /**
+     * An Invoice already issued before Extend is an immutable historical
+     * financial snapshot and must not be regenerated or rewritten.
+     */
+    public function test_extend_does_not_rewrite_existing_issued_invoice(): void
+    {
+        $lease = $this->createLease([
+            'start_date' => '2026-10-01',
+
+            'end_date' => '2026-12-31',
+
+            'rent_amount' => 10000,
+
+            'payment_frequency' => 'monthly',
+
+            'due_day' => 1,
+
+            'vat_rate' => 0,
+        ]);
+
+        app(
+            LeaseTermVersionService::class
+        )->ensureBaseline(
+            $lease
+        );
+
+        $invoice =
+            app(
+                InvoiceGenerationService::class
+            )->generate(
+                $lease,
+                Carbon::parse(
+                    '2026-12-01'
+                )
+            );
+
+        $before = [
+            'id' => $invoice->id,
+
+            'invoice_number' => $invoice->invoice_number,
+
+            'period_start' => $invoice
+                ->period_start
+                ->toDateString(),
+
+            'period_end' => $invoice
+                ->period_end
+                ->toDateString(),
+
+            'issue_date' => $invoice
+                ->issue_date
+                ->toDateString(),
+
+            'due_date' => $invoice
+                ->due_date
+                ->toDateString(),
+
+            'status' => $invoice->status,
+
+            'total_amount' => $invoice->total_amount,
+
+            'net_amount' => $invoice->net_amount,
+
+            'vat_amount' => $invoice->vat_amount,
+
+            'vat_rate' => $invoice->vat_rate,
+        ];
+
+        app(
+            LeaseExtendService::class
+        )->extend(
+            lease: $lease,
+            validated: [
+                'effective_from' => '2027-01-01',
+
+                'end_date' => '2027-12-31',
+
+                'rent_amount' => 25000,
+
+                'payment_frequency' => 'quarterly',
+
+                'due_day' => 20,
+
+                'vat_rate' => 18,
+
+                'rent_increment_type' => 'none',
+
+                'rent_increment_value' => 0,
+
+                'next_rent_increment_date' => null,
+
+                'notes' => 'Changed after historical Invoice',
+            ]
+        );
+
+        $invoice->refresh();
+
+        $after = [
+            'id' => $invoice->id,
+
+            'invoice_number' => $invoice->invoice_number,
+
+            'period_start' => $invoice
+                ->period_start
+                ->toDateString(),
+
+            'period_end' => $invoice
+                ->period_end
+                ->toDateString(),
+
+            'issue_date' => $invoice
+                ->issue_date
+                ->toDateString(),
+
+            'due_date' => $invoice
+                ->due_date
+                ->toDateString(),
+
+            'status' => $invoice->status,
+
+            'total_amount' => $invoice->total_amount,
+
+            'net_amount' => $invoice->net_amount,
+
+            'vat_amount' => $invoice->vat_amount,
+
+            'vat_rate' => $invoice->vat_rate,
+        ];
+
+        $this->assertSame(
+            $before,
+            $after
+        );
+    }
+
+    /**
+     * generateDueInvoices() must cross a term-version boundary using the
+     * historical cadence before Extend and the new cadence afterward.
+     */
+    public function test_due_generation_switches_frequency_at_extension_boundary(): void
+    {
+        $lease = $this->createLease([
+            'start_date' => '2026-10-01',
+
+            'end_date' => '2026-12-31',
+
+            'rent_amount' => 10000,
+
+            'payment_frequency' => 'monthly',
+
+            'due_day' => 1,
+
+            'vat_rate' => 0,
+        ]);
+
+        app(
+            LeaseTermVersionService::class
+        )->ensureBaseline(
+            $lease
+        );
+
+        app(
+            LeaseExtendService::class
+        )->extend(
+            lease: $lease,
+            validated: [
+                'effective_from' => '2027-01-01',
+
+                'end_date' => '2027-12-31',
+
+                /*
+                 * rent_amount remains Patrimoine's monthly base amount.
+                 * Quarterly Invoice = 3 × monthly base.
+                 */
+                'rent_amount' => 12000,
+
+                'payment_frequency' => 'quarterly',
+
+                'due_day' => 10,
+
+                'vat_rate' => 0,
+
+                'rent_increment_type' => 'none',
+
+                'rent_increment_value' => 0,
+
+                'next_rent_increment_date' => null,
+
+                'notes' => 'Quarterly from 2027',
+            ]
+        );
+
+        app(
+            InvoiceGenerationService::class
+        )->generateDueInvoices(
+            $lease,
+            Carbon::parse(
+                '2027-04-01'
+            )
+        );
+
+        $invoices =
+            Invoice::query()
+                ->where(
+                    'lease_id',
+                    $lease->id
+                )
+                ->orderBy(
+                    'period_start'
+                )
+                ->get();
+
+        $this->assertCount(
+            5,
+            $invoices
+        );
+
+        $this->assertSame(
+            [
+                [
+                    'start' => '2026-10-01',
+
+                    'end' => '2026-10-31',
+
+                    'amount' => 10000,
+
+                    'due' => '2026-10-01',
+                ],
+                [
+                    'start' => '2026-11-01',
+
+                    'end' => '2026-11-30',
+
+                    'amount' => 10000,
+
+                    'due' => '2026-11-01',
+                ],
+                [
+                    'start' => '2026-12-01',
+
+                    'end' => '2026-12-31',
+
+                    'amount' => 10000,
+
+                    'due' => '2026-12-01',
+                ],
+                [
+                    'start' => '2027-01-01',
+
+                    'end' => '2027-03-31',
+
+                    'amount' => 36000,
+
+                    'due' => '2027-01-10',
+                ],
+                [
+                    'start' => '2027-04-01',
+
+                    'end' => '2027-06-30',
+
+                    'amount' => 36000,
+
+                    'due' => '2027-04-10',
+                ],
+            ],
+            $invoices
+                ->map(
+                    fn (Invoice $invoice): array => [
+                        'start' => $invoice
+                            ->period_start
+                            ->toDateString(),
+
+                        'end' => $invoice
+                            ->period_end
+                            ->toDateString(),
+
+                        'amount' => $invoice->total_amount,
+
+                        'due' => $invoice
+                            ->due_date
+                            ->toDateString(),
+                    ]
+                )
+                ->all()
         );
     }
 }

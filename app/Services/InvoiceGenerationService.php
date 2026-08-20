@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-
 use App\Models\Invoice;
-use App\Services\Accounting\RentInvoiceJournalService;
 use App\Models\Lease;
+use App\Services\Accounting\RentInvoiceJournalService;
+use App\Services\LeaseTerms\LeaseBillingTermsResolver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -25,9 +25,9 @@ use RuntimeException;
 class InvoiceGenerationService
 {
     public function __construct(
-        private readonly RentInvoiceJournalService $rentInvoiceJournal
-    ) {
-    }
+        private readonly RentInvoiceJournalService $rentInvoiceJournal,
+        private readonly LeaseBillingTermsResolver $billingTerms
+    ) {}
 
     /**
      * Generate one Invoice for a specific billing period.
@@ -57,8 +57,19 @@ class InvoiceGenerationService
                 ->copy()
                 ->startOfDay();
 
-            $periodEnd = $this->periodEnd(
+            /*
+             * V1.0.5 Phase 8D:
+             * Billing must use the contractual terms that applied to this
+             * billing period. Extending a Lease must never rewrite the
+             * financial meaning of an earlier period.
+             */
+            $billingLease = $this->billingTerms->resolve(
                 $lease,
+                $periodStart
+            );
+
+            $periodEnd = $this->periodEnd(
+                $billingLease,
                 $periodStart
             );
 
@@ -75,8 +86,8 @@ class InvoiceGenerationService
              * Do not generate a period beginning after the contractual end.
              */
             if (
-                $lease->end_date !== null
-                && $periodStart->gt($lease->end_date)
+                $billingLease->end_date !== null
+                && $periodStart->gt($billingLease->end_date)
             ) {
                 throw new RuntimeException(
                     'Billing period falls after the Lease end date.'
@@ -104,10 +115,12 @@ class InvoiceGenerationService
                 );
             }
 
-            $baseAmount = $this->periodRentAmount($lease);
+            $baseAmount = $this->periodRentAmount(
+                $billingLease
+            );
 
             $prorationAmount = $this->prorationAmount(
-                $lease,
+                $billingLease,
                 $periodStart,
                 $periodEnd,
                 $baseAmount
@@ -125,11 +138,11 @@ class InvoiceGenerationService
              */
             [$netAmount, $vatAmount] = $this->splitVatInclusiveAmount(
                 $grossAmount,
-                (float) $lease->vat_rate
+                (float) $billingLease->vat_rate
             );
 
             $dueDate = $this->dueDate(
-                $lease,
+                $billingLease,
                 $periodStart
             );
 
@@ -148,7 +161,7 @@ class InvoiceGenerationService
                 'due_date' => $dueDate->toDateString(),
                 'status' => 'issued',
                 'total_amount' => $grossAmount,
-                'vat_rate' => $lease->vat_rate,
+                'vat_rate' => $billingLease->vat_rate,
                 'net_amount' => $netAmount,
                 'vat_amount' => $vatAmount,
                 'proration_amount' => $prorationAmount,
@@ -200,15 +213,20 @@ class InvoiceGenerationService
         $generated = [];
 
         while ($periodStart->lte($throughDate)) {
+            $billingLease = $this->billingTerms->resolve(
+                $lease,
+                $periodStart
+            );
+
             if (
-                $lease->end_date !== null
-                && $periodStart->gt($lease->end_date)
+                $billingLease->end_date !== null
+                && $periodStart->gt($billingLease->end_date)
             ) {
                 break;
             }
 
             $periodEnd = $this->periodEnd(
-                $lease,
+                $billingLease,
                 $periodStart
             );
 
@@ -232,7 +250,7 @@ class InvoiceGenerationService
             }
 
             $periodStart = $this->nextPeriodStart(
-                $lease,
+                $billingLease,
                 $periodStart
             );
         }
