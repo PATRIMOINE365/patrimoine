@@ -14,6 +14,7 @@ use App\Services\BusinessRecordDeletionService;
 use App\Services\LeaseHistory\LeaseFinancialHistoryService;
 use App\Services\LeaseInitializationService;
 use App\Services\LeaseTermination\LeaseTerminationInitiationService;
+use App\Services\LeaseTermination\LeaseTerminationSettlementService;
 use App\Services\LeaseTerms\LeaseExtendService;
 use App\Services\LeaseTerms\LeaseTermVersionService;
 use Illuminate\Http\JsonResponse;
@@ -307,6 +308,35 @@ class LeaseController extends Controller
                 $lease
             )
         );
+    }
+
+    /**
+     * Return the current V1.0.5 termination settlement position.
+     *
+     * This endpoint is intentionally read only.
+     *
+     * It does not apply Tenant funds, create deductions, issue refunds,
+     * complete termination, or otherwise mutate financial state.
+     */
+    public function terminationSettlement(
+        Lease $lease,
+        LeaseTerminationSettlementService $settlement
+    ): JsonResponse {
+        try {
+            return response()->json(
+                $settlement->calculate(
+                    $lease
+                )
+            );
+        } catch (\RuntimeException $exception) {
+            return response()->json(
+                [
+                    'message' =>
+                        $exception->getMessage(),
+                ],
+                422
+            );
+        }
     }
 
     /**

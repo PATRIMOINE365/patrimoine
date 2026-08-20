@@ -220,6 +220,11 @@ Route::middleware('auth:sanctum')->group(
                     [LeaseController::class, 'financialHistory']
                 );
 
+            Route::get(
+                'leases/{lease}/termination-settlement',
+                [LeaseController::class, 'terminationSettlement']
+            );
+
                 Route::get(
                     'dashboard',
                     [DashboardController::class, 'summary']
