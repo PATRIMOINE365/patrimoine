@@ -348,6 +348,23 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 /*
+                 * V1.0.5 Lease Delete is a specific lifecycle exception to
+                 * the general Administrator-only business-delete rule.
+                 *
+                 * Administrator + Property Manager may preview/execute it;
+                 * Viewer remains read-only.
+                 */
+                Route::get(
+                    'leases/{lease}/deletion-impact',
+                    [LeaseController::class, 'deletionImpact']
+                );
+
+                Route::delete(
+                    'leases/{lease}',
+                    [LeaseController::class, 'destroy']
+                );
+
+                /*
                  * Resending an existing business document is an explicit
                  * operational action and is therefore unavailable to Viewer.
                  */
@@ -390,10 +407,6 @@ Route::middleware('auth:sanctum')->group(
                     [UnitController::class, 'destroy']
                 );
 
-                Route::delete(
-                    'leases/{lease}',
-                    [LeaseController::class, 'destroy']
-                );
             }
         );
 

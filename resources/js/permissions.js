@@ -66,6 +66,7 @@ const CAPABILITY_SELECTORS = {
         '#add-lease-button',
         '[data-extend-lease]',
         '[data-terminate-lease]',
+        '[data-delete-lease]',
         '#termination-settlement-complete',
         '#termination-settlement-cancel',
 
@@ -105,7 +106,6 @@ const CAPABILITY_SELECTORS = {
         '[data-delete-building]',
         '[data-delete-unit]',
         '[data-delete-party]',
-        '[data-delete-lease]',
     ],
 
     manage_settings: [

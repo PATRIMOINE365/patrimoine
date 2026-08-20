@@ -11,6 +11,8 @@ use App\Models\Lease;
 use App\Services\ActivityLogService;
 use App\Services\BusinessActivitySnapshotService;
 use App\Services\BusinessRecordDeletionService;
+use App\Services\LeaseDeletion\LeaseDeletionService;
+use App\Services\LeaseDeletion\LeaseDeletionRestorationPlanService;
 use App\Services\LeaseHistory\LeaseFinancialHistoryService;
 use App\Services\LeaseInitializationService;
 use App\Services\LeaseTermination\LeaseTerminationCancellationService;
@@ -819,45 +821,61 @@ class LeaseController extends Controller
     }
 
     /**
-     * Delete only an unreferenced Lease.
+     * Return the authoritative read-only destructive-deletion impact.
      *
-     * Database restrictions protect invoices, payments and financial
-     * history from being removed accidentally.
+     * This endpoint performs no mutation. The final DELETE request rebuilds
+     * and revalidates the plan again under lock, so this preview is never
+     * treated as authorization to delete stale state.
+     */
+    public function deletionImpact(
+        Lease $lease,
+        LeaseDeletionRestorationPlanService $plans
+    ): JsonResponse {
+        return response()->json(
+            $plans->plan(
+                $lease
+            )
+        );
+    }
+
+    /**
+     * Permanently delete a Lease through the V1.0.5 controlled destructive
+     * deletion workflow.
      */
     public function destroy(
         Request $request,
         Lease $lease,
-        BusinessRecordDeletionService $deletions,
-        ActivityLogService $activityLog,
-        BusinessActivitySnapshotService $snapshots
+        LeaseDeletionService $deletions
     ): JsonResponse {
-        $targetId = $lease->id;
-        $targetLabel =
-            $snapshots->leaseLabel($lease);
-        $snapshot =
-            $snapshots->lease($lease);
+        $validated = $request->validate([
+            'reason' => [
+                'required',
+                'string',
+                'max:2000',
+            ],
+            'confirmation' => [
+                'required',
+                'string',
+            ],
+            'current_password' => [
+                'required',
+                'string',
+            ],
+        ]);
 
-        $message =
-            $deletions->deleteLease(
-                $lease
-            );
+        $actor = $request->user();
 
-        if ($message !== null) {
-            return response()->json(
-                [
-                    'message' => $message,
-                ],
-                409
-            );
+        if (! $actor instanceof \App\Models\User) {
+            abort(401);
         }
 
-        $activityLog->record(
-            action: 'lease.deleted',
+        $deletions->delete(
+            lease: $lease,
+            actor: $actor,
             request: $request,
-            entityType: 'lease',
-            entityId: $targetId,
-            entityLabel: $targetLabel,
-            snapshot: $snapshot,
+            reason: $validated['reason'],
+            confirmation: $validated['confirmation'],
+            currentPassword: $validated['current_password'],
         );
 
         return response()->json(

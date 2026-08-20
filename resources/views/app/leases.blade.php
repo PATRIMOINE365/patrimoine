@@ -3306,6 +3306,454 @@
     </form>
 </x-drawer>
 
+
+{{-- ================================================================
+     Destructive Lease Delete Drawer
+================================================================ --}}
+
+<x-drawer
+    id="lease-delete-modal"
+    backdrop-id="lease-delete-modal-backdrop"
+    panel-class="max-w-2xl"
+>
+    <x-slot:header>
+        <div class="min-w-0">
+            <p
+                class="
+                    text-xs font-semibold uppercase
+                    tracking-[0.14em]
+                    text-red-600
+                "
+                data-i18n="leases.delete_destructive_action"
+            >
+                Destructive action
+            </p>
+
+            <h2
+                class="
+                    mt-1 text-xl font-semibold
+                    text-slate-950
+                "
+                data-i18n="leases.delete_lease"
+            >
+                Delete Lease
+            </h2>
+        </div>
+
+        <button
+            id="lease-delete-modal-close"
+            type="button"
+            class="pm-drawer-close"
+            aria-label="Close"
+        >
+            &times;
+        </button>
+    </x-slot:header>
+
+    <form
+        id="lease-delete-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div
+            class="
+                min-h-0 flex-1 space-y-6
+                overflow-y-auto px-6 py-6
+            "
+        >
+            <div
+                id="lease-delete-error"
+                class="
+                    hidden rounded-xl
+                    border border-red-200
+                    bg-red-50 px-4 py-3
+                    text-sm text-red-700
+                "
+                role="alert"
+            ></div>
+
+            <section
+                class="
+                    rounded-xl border
+                    border-slate-200
+                    bg-slate-50 p-4
+                "
+            >
+                <h3
+                    class="
+                        text-sm font-semibold
+                        text-slate-950
+                    "
+                    data-i18n="leases.delete_context"
+                >
+                    Lease being deleted
+                </h3>
+
+                <dl
+                    class="
+                        mt-4 grid grid-cols-1
+                        gap-3 text-sm
+                        sm:grid-cols-2
+                    "
+                >
+                    <div>
+                        <dt
+                            class="text-slate-500"
+                            data-i18n="leases.lease"
+                        >
+                            Lease
+                        </dt>
+                        <dd
+                            id="lease-delete-context-reference"
+                            class="font-medium text-slate-950"
+                        ></dd>
+                    </div>
+
+                    <div>
+                        <dt
+                            class="text-slate-500"
+                            data-i18n="leases.tenant"
+                        >
+                            Tenant
+                        </dt>
+                        <dd
+                            id="lease-delete-context-tenant"
+                            class="font-medium text-slate-950"
+                        ></dd>
+                    </div>
+
+                    <div>
+                        <dt
+                            class="text-slate-500"
+                            data-i18n="leases.building"
+                        >
+                            Building
+                        </dt>
+                        <dd
+                            id="lease-delete-context-building"
+                            class="font-medium text-slate-950"
+                        ></dd>
+                    </div>
+
+                    <div>
+                        <dt
+                            class="text-slate-500"
+                            data-i18n="leases.unit"
+                        >
+                            Unit
+                        </dt>
+                        <dd
+                            id="lease-delete-context-unit"
+                            class="font-medium text-slate-950"
+                        ></dd>
+                    </div>
+                </dl>
+            </section>
+
+            <section>
+                <h3
+                    class="
+                        text-sm font-semibold
+                        text-slate-950
+                    "
+                    data-i18n="leases.delete_impact_title"
+                >
+                    Deletion impact
+                </h3>
+
+                <p
+                    class="
+                        mt-1 text-sm leading-6
+                        text-slate-600
+                    "
+                    data-i18n="leases.delete_impact_description"
+                >
+                    Patrimoine will permanently remove the Lease and
+                    its operational financial history while preserving
+                    the required accounting and audit evidence.
+                </p>
+
+                <div
+                    id="lease-delete-loading"
+                    class="
+                        mt-4 rounded-xl
+                        border border-slate-200
+                        px-4 py-5
+                        text-sm text-slate-500
+                    "
+                    data-i18n="leases.delete_impact_loading"
+                >
+                    Calculating deletion impact…
+                </div>
+
+                <div
+                    id="lease-delete-impact"
+                    class="mt-4 hidden"
+                >
+                    <dl
+                        class="
+                            grid grid-cols-1 gap-3
+                            sm:grid-cols-2
+                        "
+                    >
+                        <div class="rounded-xl border border-slate-200 p-4">
+                            <dt data-i18n="leases.delete_impact_invoices">
+                                Invoices
+                            </dt>
+                            <dd
+                                id="lease-delete-impact-invoices"
+                                class="mt-1 text-lg font-semibold"
+                            >0</dd>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-200 p-4">
+                            <dt data-i18n="leases.delete_impact_payments">
+                                Payments
+                            </dt>
+                            <dd
+                                id="lease-delete-impact-payments"
+                                class="mt-1 text-lg font-semibold"
+                            >0</dd>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-200 p-4">
+                            <dt data-i18n="leases.delete_impact_allocations">
+                                Allocations
+                            </dt>
+                            <dd
+                                id="lease-delete-impact-allocations"
+                                class="mt-1 text-lg font-semibold"
+                            >0</dd>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-200 p-4">
+                            <dt data-i18n="leases.delete_impact_receipts">
+                                Withdrawal receipts
+                            </dt>
+                            <dd
+                                id="lease-delete-impact-receipts"
+                                class="mt-1 text-lg font-semibold"
+                            >0</dd>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-200 p-4">
+                            <dt data-i18n="leases.delete_impact_security">
+                                Security Deposit
+                            </dt>
+                            <dd
+                                id="lease-delete-impact-security"
+                                class="mt-1 font-semibold"
+                            ></dd>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-200 p-4">
+                            <dt data-i18n="leases.delete_impact_reserve">
+                                Rent Reserve
+                            </dt>
+                            <dd
+                                id="lease-delete-impact-rent-reserve"
+                                class="mt-1 font-semibold"
+                            ></dd>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-200 p-4">
+                            <dt data-i18n="leases.delete_impact_consumable">
+                                Consumable Advance
+                            </dt>
+                            <dd
+                                id="lease-delete-impact-consumable"
+                                class="mt-1 font-semibold"
+                            ></dd>
+                        </div>
+
+                        <div
+                            class="
+                                rounded-xl border
+                                border-slate-300 p-4
+                            "
+                        >
+                            <dt data-i18n="leases.delete_impact_outstanding">
+                                Invoice outstanding
+                            </dt>
+                            <dd
+                                id="lease-delete-impact-total"
+                                class="mt-1 font-semibold"
+                            ></dd>
+                        </div>
+
+                        <div
+                            class="
+                                rounded-xl border
+                                border-slate-200 p-4
+                            "
+                        >
+                            <dt data-i18n="leases.delete_impact_reversals">
+                                Journal reversals
+                            </dt>
+                            <dd
+                                id="lease-delete-impact-reversals"
+                                class="mt-1 text-lg font-semibold"
+                            >0</dd>
+                        </div>
+
+                        <div
+                            class="
+                                rounded-xl border
+                                border-slate-200 p-4
+                            "
+                        >
+                            <dt data-i18n="leases.delete_impact_owner">
+                                Owner Lease effect
+                            </dt>
+                            <dd
+                                id="lease-delete-impact-owner"
+                                class="mt-1 font-semibold"
+                            ></dd>
+                        </div>
+                    </dl>
+
+                    <div
+                        id="lease-delete-blockers"
+                        class="
+                            mt-4 hidden rounded-xl
+                            border border-red-200
+                            bg-red-50 px-4 py-3
+                            text-sm text-red-700
+                        "
+                    ></div>
+                </div>
+            </section>
+
+            <section
+                class="
+                    space-y-4 rounded-xl
+                    border border-red-200
+                    bg-red-50/50 p-4
+                "
+            >
+                <div>
+                    <label
+                        for="lease-delete-reason"
+                        class="
+                            block text-sm font-medium
+                            text-slate-900
+                        "
+                        data-i18n="leases.delete_reason"
+                    >
+                        Deletion reason
+                    </label>
+
+                    <textarea
+                        id="lease-delete-reason"
+                        rows="4"
+                        maxlength="2000"
+                        required
+                        class="
+                            mt-2 w-full resize-y
+                            rounded-lg border
+                            border-slate-300
+                            px-3.5 py-2.5
+                            text-sm outline-none
+                            focus:border-red-500
+                            focus:ring-2
+                            focus:ring-red-100
+                        "
+                    ></textarea>
+                </div>
+
+                <div>
+                    <label
+                        for="lease-delete-confirmation"
+                        class="
+                            block text-sm font-medium
+                            text-slate-900
+                        "
+                        data-i18n="leases.delete_confirmation_label"
+                    >
+                        Type DELETE to confirm
+                    </label>
+
+                    <input
+                        id="lease-delete-confirmation"
+                        type="text"
+                        autocomplete="off"
+                        required
+                        class="
+                            mt-2 w-full rounded-lg
+                            border border-slate-300
+                            px-3.5 py-2.5
+                            text-sm outline-none
+                            focus:border-red-500
+                            focus:ring-2
+                            focus:ring-red-100
+                        "
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="lease-delete-password"
+                        class="
+                            block text-sm font-medium
+                            text-slate-900
+                        "
+                        data-i18n="leases.delete_password"
+                    >
+                        Current password
+                    </label>
+
+                    <input
+                        id="lease-delete-password"
+                        type="password"
+                        autocomplete="current-password"
+                        required
+                        class="
+                            mt-2 w-full rounded-lg
+                            border border-slate-300
+                            px-3.5 py-2.5
+                            text-sm outline-none
+                            focus:border-red-500
+                            focus:ring-2
+                            focus:ring-red-100
+                        "
+                    >
+                </div>
+            </section>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                id="lease-delete-cancel"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="leases.cancel">
+                    Cancel
+                </span>
+            </button>
+
+            <button
+                id="lease-delete-submit"
+                type="submit"
+                disabled
+                class="
+                    inline-flex items-center
+                    justify-center rounded-lg
+                    bg-red-600 px-4 py-2.5
+                    text-sm font-semibold text-white
+                    transition
+                    hover:bg-red-700
+                    disabled:cursor-not-allowed
+                    disabled:opacity-50
+                "
+            >
+                <span data-i18n="leases.delete_permanently">
+                    Delete permanently
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
 {{-- ================================================================
      Global Lease Field Help Tooltip
 ================================================================ --}}

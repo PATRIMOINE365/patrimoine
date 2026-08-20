@@ -11,24 +11,37 @@ use App\Models\Party;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 /**
- * Freeze V1.0.3 business-record deletion integrity decisions.
+ * Preserve business-record deletion integrity rules while exercising the
+ * V1.0.5 controlled destructive Lease deletion workflow.
  */
 class BusinessRecordDeletionIntegrityTest extends TestCase
 {
     use RefreshDatabase;
 
+    private User $administrator;
+
     protected function setUp(): void
     {
         parent::setUp();
 
-        Sanctum::actingAs(
+        $this->administrator =
             User::factory()->create([
-                'role' => UserRole::Administrator,
-            ])
+                'role' =>
+                    UserRole::Administrator,
+
+                'password' =>
+                    Hash::make(
+                        'Password123!'
+                    ),
+            ]);
+
+        Sanctum::actingAs(
+            $this->administrator
         );
     }
 
@@ -190,72 +203,26 @@ class BusinessRecordDeletionIntegrityTest extends TestCase
         );
     }
 
-    public function test_active_lease_must_be_terminated_not_deleted(): void
+    public function test_active_lease_can_be_destructively_deleted_when_safe(): void
     {
-        $tenant = $this->party('Active Tenant');
-
-        $lease = $this->lease(
-            $this->unit(),
-            $tenant,
-            status: 'active'
-        );
-
-        $this
-            ->deleteJson(
-                "/api/leases/{$lease->id}"
-            )
-            ->assertStatus(409)
-            ->assertJsonPath(
-                'message',
-                'Only an unused draft Lease can be deleted. Use the termination workflow for an active or notice Lease; terminated Leases are retained as history.'
+        $tenant =
+            $this->party(
+                'Active Tenant'
             );
 
-        $this->assertDatabaseHas(
-            'leases',
-            [
-                'id' => $lease->id,
-                'status' => 'active',
-            ]
-        );
-    }
-
-    public function test_terminated_lease_is_retained_as_history(): void
-    {
-        $tenant = $this->party('Former Tenant');
-
-        $lease = $this->lease(
-            $this->unit(),
-            $tenant,
-            status: 'terminated'
-        );
+        $lease =
+            $this->lease(
+                $this->unit(),
+                $tenant,
+                status: 'active'
+            );
 
         $this
             ->deleteJson(
-                "/api/leases/{$lease->id}"
-            )
-            ->assertStatus(409);
-
-        $this->assertDatabaseHas(
-            'leases',
-            [
-                'id' => $lease->id,
-            ]
-        );
-    }
-
-    public function test_unused_draft_lease_can_be_deleted(): void
-    {
-        $tenant = $this->party('Draft Tenant');
-
-        $lease = $this->lease(
-            $this->unit(),
-            $tenant,
-            status: 'draft'
-        );
-
-        $this
-            ->deleteJson(
-                "/api/leases/{$lease->id}"
+                "/api/leases/{$lease->id}",
+                $this->leaseDeletionPayload(
+                    'Active Lease was created in error.'
+                )
             )
             ->assertNoContent();
 
@@ -267,42 +234,30 @@ class BusinessRecordDeletionIntegrityTest extends TestCase
         );
     }
 
-    public function test_draft_lease_with_financial_history_cannot_be_deleted(): void
+    public function test_terminated_lease_can_be_destructively_deleted_when_safe(): void
     {
-        $tenant = $this->party('Financial Tenant');
+        $tenant =
+            $this->party(
+                'Former Tenant'
+            );
 
-        $lease = $this->lease(
-            $this->unit(),
-            $tenant,
-            status: 'draft'
-        );
-
-        Invoice::create([
-            'lease_id' => $lease->id,
-            'invoice_number' => 'DELETE-I-0001',
-            'type' => 'rent',
-            'period_start' => '2026-08-01',
-            'period_end' => '2026-08-31',
-            'issue_date' => '2026-08-01',
-            'due_date' => '2026-08-01',
-            'status' => 'draft',
-            'total_amount' => 1000,
-            'vat_rate' => 18,
-            'net_amount' => 847,
-            'vat_amount' => 153,
-        ]);
+        $lease =
+            $this->lease(
+                $this->unit(),
+                $tenant,
+                status: 'terminated'
+            );
 
         $this
             ->deleteJson(
-                "/api/leases/{$lease->id}"
+                "/api/leases/{$lease->id}",
+                $this->leaseDeletionPayload(
+                    'Terminated Lease was entered in error.'
+                )
             )
-            ->assertStatus(409)
-            ->assertJsonPath(
-                'message',
-                'This draft Lease cannot be deleted because contractual or financial history references it. Keep the Lease record.'
-            );
+            ->assertNoContent();
 
-        $this->assertDatabaseHas(
+        $this->assertDatabaseMissing(
             'leases',
             [
                 'id' => $lease->id,
@@ -310,32 +265,174 @@ class BusinessRecordDeletionIntegrityTest extends TestCase
         );
     }
 
-    public function test_delete_integrity_message_renders_in_french(): void
+    public function test_unused_draft_lease_can_be_deleted_with_strong_confirmation(): void
+    {
+        $tenant =
+            $this->party(
+                'Draft Tenant'
+            );
+
+        $lease =
+            $this->lease(
+                $this->unit(),
+                $tenant,
+                status: 'draft'
+            );
+
+        $this
+            ->deleteJson(
+                "/api/leases/{$lease->id}",
+                $this->leaseDeletionPayload(
+                    'Draft Lease was created in error.'
+                )
+            )
+            ->assertNoContent();
+
+        $this->assertDatabaseMissing(
+            'leases',
+            [
+                'id' => $lease->id,
+            ]
+        );
+    }
+
+    public function test_attributable_financial_history_is_removed_by_controlled_lease_deletion(): void
+    {
+        $tenant =
+            $this->party(
+                'Financial Tenant'
+            );
+
+        $lease =
+            $this->lease(
+                $this->unit(),
+                $tenant,
+                status: 'draft'
+            );
+
+        $invoice =
+            Invoice::create([
+                'lease_id' =>
+                    $lease->id,
+
+                'invoice_number' =>
+                    'DELETE-I-0001',
+
+                'type' =>
+                    'rent',
+
+                'period_start' =>
+                    '2026-08-01',
+
+                'period_end' =>
+                    '2026-08-31',
+
+                'issue_date' =>
+                    '2026-08-01',
+
+                'due_date' =>
+                    '2026-08-01',
+
+                'status' =>
+                    'draft',
+
+                'total_amount' =>
+                    1000,
+
+                'vat_rate' =>
+                    18,
+
+                'net_amount' =>
+                    847,
+
+                'vat_amount' =>
+                    153,
+            ]);
+
+        $this
+            ->deleteJson(
+                "/api/leases/{$lease->id}",
+                $this->leaseDeletionPayload(
+                    'Lease and attributable invoice were created in error.'
+                )
+            )
+            ->assertNoContent();
+
+        $this->assertDatabaseMissing(
+            'leases',
+            [
+                'id' => $lease->id,
+            ]
+        );
+
+        $this->assertDatabaseMissing(
+            'invoices',
+            [
+                'id' => $invoice->id,
+            ]
+        );
+    }
+
+    public function test_lease_delete_confirmation_validation_renders_in_french(): void
     {
         ApplicationSetting::create([
-            'language' => 'fr',
-            'currency' => 'GHS',
+            'language' =>
+                'fr',
+
+            'currency' =>
+                'GHS',
         ]);
 
         app()->setLocale('fr');
 
-        $tenant = $this->party('Locataire');
+        $tenant =
+            $this->party(
+                'Locataire'
+            );
 
-        $lease = $this->lease(
-            $this->unit(),
-            $tenant,
-            status: 'active'
-        );
+        $lease =
+            $this->lease(
+                $this->unit(),
+                $tenant,
+                status: 'active'
+            );
 
         $this
             ->deleteJson(
-                "/api/leases/{$lease->id}"
+                "/api/leases/{$lease->id}",
+                []
             )
-            ->assertStatus(409)
+            ->assertStatus(422)
             ->assertJsonPath(
-                'message',
-                'Seul un bail brouillon inutilisé peut être supprimé. Utilisez la procédure de résiliation pour un bail actif ou en préavis ; les baux résiliés sont conservés comme historique.'
+                'errors.reason.0',
+                'Le champ reason est obligatoire.'
             );
+
+        $this->assertDatabaseHas(
+            'leases',
+            [
+                'id' =>
+                    $lease->id,
+            ]
+        );
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function leaseDeletionPayload(
+        string $reason
+    ): array {
+        return [
+            'reason' =>
+                $reason,
+
+            'confirmation' =>
+                'DELETE',
+
+            'current_password' =>
+                'Password123!',
+        ];
     }
 
     private function party(string $name): Party
