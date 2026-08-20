@@ -74,6 +74,21 @@ class InvoiceGenerationService
             );
 
             /*
+             * V1.0.5 Phase 9B:
+             * A Lease under controlled termination has a hard billing
+             * boundary. No rent period may begin after the Termination Date.
+             */
+            if (
+                $lease->status === 'notice'
+                && $lease->termination_date !== null
+                && $periodStart->gt($lease->termination_date)
+            ) {
+                throw new RuntimeException(
+                    'Billing period falls after the Lease termination date.'
+                );
+            }
+
+            /*
              * Do not generate billing before the Lease begins.
              */
             if ($periodEnd->lt($lease->start_date)) {
@@ -127,6 +142,54 @@ class InvoiceGenerationService
             );
 
             $grossAmount = $prorationAmount ?? $baseAmount;
+
+            /*
+             * V1.0.5 Phase 9B:
+             * If this billing period contains the controlled Termination
+             * Date, apply the frozen final-rent rule.
+             *
+             * full:
+             *   charge the complete contractual billing period.
+             *
+             * none:
+             *   preserve an operational zero-value Invoice for the final
+             *   period. Zero-value rent Invoices do not create Journal
+             *   movements.
+             *
+             * prorate:
+             *   charge only the inclusive portion of this billing period
+             *   through the Termination Date.
+             */
+            if (
+                $lease->status === 'notice'
+                && $lease->termination_date !== null
+                && $periodStart->lte($lease->termination_date)
+                && $periodEnd->gte($lease->termination_date)
+            ) {
+                $grossAmount = match (
+                    $lease->termination_final_rent_mode
+                ) {
+                    'full' => $baseAmount,
+
+                    'none' => 0,
+
+                    'prorate' => $this->terminationProrationAmount(
+                        $baseAmount,
+                        $periodStart,
+                        $periodEnd,
+                        $lease->termination_date
+                    ),
+
+                    default => throw new RuntimeException(
+                        'Lease termination final rent mode is invalid.'
+                    ),
+                };
+
+                $prorationAmount =
+                    $lease->termination_final_rent_mode === 'full'
+                        ? null
+                        : $grossAmount;
+            }
 
             /*
              * VAT-inclusive billing:
@@ -225,6 +288,14 @@ class InvoiceGenerationService
                 break;
             }
 
+            if (
+                $lease->status === 'notice'
+                && $lease->termination_date !== null
+                && $periodStart->gt($lease->termination_date)
+            ) {
+                break;
+            }
+
             $periodEnd = $this->periodEnd(
                 $billingLease,
                 $periodStart
@@ -319,6 +390,29 @@ class InvoiceGenerationService
         };
 
         return $lease->rent_amount * $multiplier;
+    }
+
+    /**
+     * Calculate the inclusive final-period rent through termination.
+     *
+     * Patrimoine monetary values remain whole currency units.
+     */
+    private function terminationProrationAmount(
+        int $baseAmount,
+        Carbon $periodStart,
+        Carbon $periodEnd,
+        Carbon $terminationDate
+    ): int {
+        $periodDays =
+            $periodStart->diffInDays($periodEnd) + 1;
+
+        $chargeableDays =
+            $periodStart->diffInDays($terminationDate) + 1;
+
+        return (int) round(
+            $baseAmount
+            * ($chargeableDays / $periodDays)
+        );
     }
 
     /**
