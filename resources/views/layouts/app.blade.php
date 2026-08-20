@@ -348,33 +348,7 @@
 
 
 
-                <a
-                    href="/payments"
-                    class="
-                        {{
-                            request()->is('payments')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                        }}
-                        flex items-center gap-3
-                        rounded-lg px-3 py-2.5
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
-                        <rect x="2" y="5" width="20" height="14" rx="2"/>
-                        <line x1="2" y1="10" x2="22" y2="10"/>
-                    </svg>
 
-                    <span data-i18n="navigation.payments">{{ __('ui.navigation.payments') }}</span>
-                </a>
             </div>
 
             <p

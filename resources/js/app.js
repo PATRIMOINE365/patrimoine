@@ -52,10 +52,6 @@ import {
 } from './leases.js';
 
 import {
-    initializePayments,
-} from './payments.js';
-
-import {
     initializeOwners,
 } from './owners.js';
 
@@ -163,10 +159,7 @@ document.addEventListener(
         await initializeParties();
 
         await initializeLeases();
-
-        await initializePayments();
-
-        await initializeOwners();
+await initializeOwners();
 
         await initializeTenants();
 
