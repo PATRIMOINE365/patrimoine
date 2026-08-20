@@ -34,6 +34,788 @@ let tenantSearchTimer = null;
 let tenantPage = 1;
 let selectedTenantId = null;
 
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.5 Apply Security Deposit — Contextual Eligibility
+|--------------------------------------------------------------------------
+|
+| Apply Security Deposit is NOT a fourth primary Tenant action.
+| It is revealed contextually on a Lease only when the server-derived
+| Lease detail shows:
+|
+| - a positive Security Deposit balance; and
+| - at least one outstanding Rent or Security Deposit Debt invoice.
+|
+| The backend remains authoritative and revalidates everything when the
+| actual application is eventually submitted.
+|
+*/
+
+
+/**
+ * Reveal contextual Apply Security Deposit buttons for eligible Leases.
+ */
+async function initializeSecurityDepositApplicationActions() {
+    if (
+        ! browserCan(
+            'manage_finance'
+        )
+    ) {
+        return;
+    }
+
+    const button =
+        document.getElementById(
+            'tenant-apply-security-deposit'
+        );
+
+    if (! button) {
+        return;
+    }
+
+    /*
+     * Begin hidden. Eligibility must be proven from authoritative
+     * Lease detail before this financial action becomes available.
+     */
+    button.classList.add(
+        'hidden'
+    );
+
+    delete button.dataset.leaseId;
+    delete button.dataset.securityDepositBalance;
+    delete button.dataset.eligibleInvoiceCount;
+
+    const eligibleLeases = [];
+
+    for (
+        const summary
+        of selectedTenantLeases
+    ) {
+        const leaseId =
+            Number(
+                summary?.id
+                ?? 0
+            );
+
+        if (
+            ! Number.isInteger(
+                leaseId
+            )
+            || leaseId <= 0
+            || summary?.status === 'draft'
+        ) {
+            continue;
+        }
+
+        try {
+            const lease =
+                await tenantLeaseDetail(
+                    leaseId
+                );
+
+            const eligibility =
+                securityDepositApplicationEligibility(
+                    lease
+                );
+
+            if (! eligibility.eligible) {
+                continue;
+            }
+
+            eligibleLeases.push({
+                lease,
+                eligibility,
+            });
+        } catch {
+            /*
+             * Eligibility discovery is presentation-only.
+             * Backend validation remains authoritative.
+             */
+        }
+    }
+
+    /*
+     * The current drawer operates against one specific Lease.
+     *
+     * Do not guess when more than one Lease is eligible. We expose the
+     * header action only when its Lease context is unambiguous.
+     */
+    if (
+        eligibleLeases.length !== 1
+    ) {
+        return;
+    }
+
+    const {
+        lease,
+        eligibility,
+    } = eligibleLeases[0];
+
+    button.dataset.leaseId =
+        String(
+            lease.id
+        );
+
+    button.dataset.securityDepositBalance =
+        String(
+            eligibility.heldBalance
+        );
+
+    button.dataset.eligibleInvoiceCount =
+        String(
+            eligibility.invoices.length
+        );
+
+    button.classList.remove(
+        'hidden'
+    );
+}
+
+
+/**
+ * Evaluate Security Deposit application eligibility from authoritative
+ * Lease-detail data.
+ *
+ * @param {object|null} lease
+ * @returns {{
+ *     eligible: boolean,
+ *     heldBalance: number,
+ *     invoices: Array<object>
+ * }}
+ */
+function securityDepositApplicationEligibility(
+    lease
+) {
+    if (
+        ! lease
+        || lease?.status === 'draft'
+    ) {
+        return {
+            eligible: false,
+            heldBalance: 0,
+            invoices: [],
+        };
+    }
+
+    const securityDepositAccount =
+        tenantFundAccounts(
+            lease
+        ).find(
+            (account) =>
+                account?.type
+                === 'security_deposit'
+        );
+
+    const heldBalance =
+        securityDepositAccount
+            ? tenantFundBalance(
+                securityDepositAccount
+            )
+            : 0;
+
+    const invoices =
+        (
+            Array.isArray(
+                lease?.invoices
+            )
+                ? lease.invoices
+                : []
+        ).filter(
+            (invoice) => {
+                const type =
+                    String(
+                        invoice?.type
+                        ?? ''
+                    );
+
+                const outstanding =
+                    Number(
+                        invoice?.outstanding_amount
+                        ?? invoice?.outstanding
+                        ?? 0
+                    );
+
+                return [
+                    'rent',
+                    'security_deposit_debt',
+                ].includes(type)
+                    && outstanding > 0;
+            }
+        );
+
+    return {
+        eligible:
+            heldBalance > 0
+            && invoices.length > 0,
+
+        heldBalance,
+
+        invoices,
+    };
+}
+
+
+
+/**
+ * Open Apply Security Deposit for one eligible Lease.
+ *
+ * @param {number} leaseId
+ */
+async function openSecurityDepositApplicationDrawer(
+    leaseId
+) {
+    hideTenantTransactionError(
+        'tenant-security-application-error'
+    );
+
+    const form =
+        document.getElementById(
+            'tenant-security-application-form'
+        );
+
+    form?.reset();
+
+    const leaseField =
+        document.getElementById(
+            'tenant-security-application-lease-id'
+        );
+
+    if (leaseField) {
+        leaseField.value =
+            String(
+                leaseId
+            );
+    }
+
+    setElementText(
+        'tenant-security-application-tenant-context',
+        tenantDisplayName(
+            selectedTenant
+        )
+    );
+
+    setElementText(
+        'tenant-security-application-property-context',
+        translate(
+            'tenants.loading_details'
+        )
+    );
+
+    const heldBalance =
+        document.getElementById(
+            'tenant-security-application-held-balance'
+        );
+
+    if (heldBalance) {
+        heldBalance.textContent = '—';
+
+        delete heldBalance.dataset
+            .rawBalance;
+    }
+
+    setElementText(
+        'tenant-security-application-invoice-balance',
+        '—'
+    );
+
+    setElementText(
+        'tenant-security-application-resulting-deposit',
+        '—'
+    );
+
+    setElementText(
+        'tenant-security-application-resulting-receivable',
+        '—'
+    );
+
+    const invoiceSelect =
+        document.getElementById(
+            'tenant-security-application-invoice'
+        );
+
+    if (invoiceSelect) {
+        invoiceSelect.innerHTML =
+            `<option value="">${escapeHtml(
+                translate(
+                    'tenants.select_receivable'
+                )
+            )}</option>`;
+
+        invoiceSelect.disabled =
+            true;
+    }
+
+    setTenantTransactionToday(
+        'tenant-security-application-date'
+    );
+
+    openTenantTransactionDrawer(
+        'tenant-security-application-drawer'
+    );
+
+    try {
+        const lease =
+            await tenantLeaseDetail(
+                leaseId
+            );
+
+        const eligibility =
+            securityDepositApplicationEligibility(
+                lease
+            );
+
+        if (! eligibility.eligible) {
+            throw new Error(
+                translate(
+                    'tenants.security_application_not_available'
+                )
+            );
+        }
+
+        setElementText(
+            'tenant-security-application-property-context',
+            tenantLeaseLabel(
+                lease
+            )
+        );
+
+        if (heldBalance) {
+            heldBalance.dataset.rawBalance =
+                String(
+                    eligibility.heldBalance
+                );
+
+            heldBalance.textContent =
+                formatCurrency(
+                    eligibility.heldBalance
+                );
+        }
+
+        if (invoiceSelect) {
+            invoiceSelect.disabled =
+                false;
+
+            eligibility.invoices.forEach(
+                (invoice) => {
+                    const option =
+                        document.createElement(
+                            'option'
+                        );
+
+                    const outstanding =
+                        Number(
+                            invoice?.outstanding_amount
+                            ?? invoice?.outstanding
+                            ?? 0
+                        );
+
+                    option.value =
+                        String(
+                            invoice.id
+                        );
+
+                    option.dataset.outstanding =
+                        String(
+                            outstanding
+                        );
+
+                    option.textContent =
+                        `${
+                            invoice?.invoice_number
+                            ?? `#${invoice.id}`
+                        } · ${
+                            securityDepositReceivableLabel(
+                                invoice?.type
+                            )
+                        } · ${
+                            formatCurrency(
+                                outstanding
+                            )
+                        }`;
+
+                    invoiceSelect.appendChild(
+                        option
+                    );
+                }
+            );
+        }
+
+        updateSecurityDepositApplicationPreview();
+    } catch (error) {
+        showTenantTransactionError(
+            'tenant-security-application-error',
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'tenants.security_application_not_available'
+                )
+        );
+    }
+}
+
+
+/**
+ * Localized receivable type.
+ *
+ * @param {string|null|undefined} type
+ * @returns {string}
+ */
+function securityDepositReceivableLabel(
+    type
+) {
+    const normalized =
+        String(
+            type
+            ?? ''
+        );
+
+    if (normalized === 'rent') {
+        return translate(
+            'tenants.invoice_type.rent'
+        );
+    }
+
+    if (
+        normalized
+        === 'security_deposit_debt'
+    ) {
+        return translate(
+            'tenants.invoice_type.security_deposit_debt'
+        );
+    }
+
+    return capitalizeWords(
+        normalized
+    );
+}
+
+
+/**
+ * Update Apply Security Deposit preview.
+ */
+function updateSecurityDepositApplicationPreview() {
+    const invoice =
+        selectedTransactionOption(
+            'tenant-security-application-invoice'
+        );
+
+    const heldBalance =
+        Number(
+            document
+                .getElementById(
+                    'tenant-security-application-held-balance'
+                )
+                ?.dataset
+                .rawBalance
+            ?? NaN
+        );
+
+    const outstanding =
+        invoice
+            ? Number(
+                invoice.dataset.outstanding
+                ?? 0
+            )
+            : null;
+
+    const amount =
+        integerInputValue(
+            'tenant-security-application-amount'
+        );
+
+    setElementText(
+        'tenant-security-application-invoice-balance',
+        outstanding !== null
+            ? formatCurrency(
+                outstanding
+            )
+            : '—'
+    );
+
+    if (
+        ! Number.isFinite(
+            heldBalance
+        )
+        || outstanding === null
+        || amount === null
+        || amount <= 0
+    ) {
+        setElementText(
+            'tenant-security-application-resulting-deposit',
+            '—'
+        );
+
+        setElementText(
+            'tenant-security-application-resulting-receivable',
+            '—'
+        );
+
+        return;
+    }
+
+    setElementText(
+        'tenant-security-application-resulting-deposit',
+        formatCurrency(
+            Math.max(
+                0,
+                heldBalance - amount
+            )
+        )
+    );
+
+    setElementText(
+        'tenant-security-application-resulting-receivable',
+        formatCurrency(
+            Math.max(
+                0,
+                outstanding - amount
+            )
+        )
+    );
+}
+
+
+
+/**
+ * Submit held Security Deposit against the selected Lease receivable.
+ *
+ * @param {SubmitEvent} event
+ */
+async function submitSecurityDepositApplication(
+    event
+) {
+    event.preventDefault();
+
+    hideTenantTransactionError(
+        'tenant-security-application-error'
+    );
+
+    const leaseId =
+        requiredPositiveIntegerValue(
+            'tenant-security-application-lease-id'
+        );
+
+    const invoice =
+        selectedTransactionOption(
+            'tenant-security-application-invoice'
+        );
+
+    const invoiceId =
+        Number(
+            invoice?.value
+            ?? 0
+        );
+
+    const amount =
+        requiredPositiveIntegerValue(
+            'tenant-security-application-amount'
+        );
+
+    const transactionDate =
+        transactionDateForApi(
+            'tenant-security-application-date'
+        );
+
+    const notes =
+        nullableTrimmedValue(
+            'tenant-security-application-notes'
+        );
+
+    const outstanding =
+        Number(
+            invoice?.dataset.outstanding
+            ?? 0
+        );
+
+    const heldBalance =
+        Number(
+            document
+                .getElementById(
+                    'tenant-security-application-held-balance'
+                )
+                ?.dataset.rawBalance
+            ?? 0
+        );
+
+    if (
+        ! leaseId
+        || ! Number.isInteger(
+            invoiceId
+        )
+        || invoiceId <= 0
+        || ! amount
+        || ! transactionDate
+    ) {
+        showTenantTransactionError(
+            'tenant-security-application-error',
+            translate(
+                'tenants.transaction_required_fields'
+            )
+        );
+
+        return;
+    }
+
+    /*
+     * Browser guards improve UX only.
+     * Backend locking/validation remains authoritative.
+     */
+    if (
+        heldBalance > 0
+        && amount > heldBalance
+    ) {
+        showTenantTransactionError(
+            'tenant-security-application-error',
+            translate(
+                'tenants.security_application_exceeds_deposit'
+            )
+        );
+
+        return;
+    }
+
+    if (
+        outstanding > 0
+        && amount > outstanding
+    ) {
+        showTenantTransactionError(
+            'tenant-security-application-error',
+            translate(
+                'tenants.security_application_exceeds_receivable'
+            )
+        );
+
+        return;
+    }
+
+    const submitButton =
+        document.getElementById(
+            'tenant-security-application-submit'
+        );
+
+    await withTenantTransactionSubmitLock(
+        submitButton,
+        async () => {
+            try {
+                await postTenantTransaction(
+                    `/api/leases/${encodeURIComponent(
+                        leaseId
+                    )}/security-deposit/apply`,
+                    {
+                        invoice_id:
+                            invoiceId,
+
+                        amount,
+
+                        transaction_date:
+                            transactionDate,
+
+                        notes,
+                    }
+                );
+
+                closeTenantTransactionDrawer(
+                    'tenant-security-application-drawer'
+                );
+
+                await refreshSelectedTenantAfterTransaction();
+
+                showTenantTransactionSuccess(
+                    translate(
+                        'tenants.security_application_recorded'
+                    )
+                );
+            } catch (error) {
+                showTenantTransactionError(
+                    'tenant-security-application-error',
+                    tenantTransactionErrorMessage(
+                        error
+                    )
+                );
+            }
+        }
+    );
+}
+
+
+/**
+ * Register Apply Security Deposit static drawer controls once.
+ */
+function initializeSecurityDepositApplicationControls() {
+    document
+        .getElementById(
+            'tenant-detail'
+        )
+        ?.addEventListener(
+            'click',
+            async (event) => {
+                const button =
+                    event.target.closest(
+                        '[data-apply-security-deposit-header]'
+                    );
+
+                if (
+                    ! button
+                    || ! browserCan(
+                        'manage_finance'
+                    )
+                ) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                const leaseId =
+                    Number(
+                        button.dataset.leaseId
+                        ?? 0
+                    );
+
+                if (
+                    ! Number.isInteger(
+                        leaseId
+                    )
+                    || leaseId <= 0
+                ) {
+                    return;
+                }
+
+                await openSecurityDepositApplicationDrawer(
+                    leaseId
+                );
+            }
+        );
+
+    document
+        .getElementById(
+            'tenant-security-application-form'
+        )
+        ?.addEventListener(
+            'submit',
+            submitSecurityDepositApplication
+        );
+
+    document
+        .getElementById(
+            'tenant-security-application-invoice'
+        )
+        ?.addEventListener(
+            'change',
+            updateSecurityDepositApplicationPreview
+        );
+
+    document
+        .getElementById(
+            'tenant-security-application-amount'
+        )
+        ?.addEventListener(
+            'input',
+            updateSecurityDepositApplicationPreview
+        );
+}
+
+
 /*
 |--------------------------------------------------------------------------
 | V1.0.5 Tenant Transaction State
@@ -73,6 +855,8 @@ export async function initializeTenants() {
     initializeTenantSearch();
 
     initializeTenantTransactionControls();
+
+    initializeSecurityDepositApplicationControls();
 
     initializeDateInputs(
         '[data-pm-date-input]'
@@ -695,27 +1479,29 @@ function renderTenantDetail(
                             : ''
                     }
 
-                    <a
-                        href="/reports?type=tenant&tenant_id=${encodeURIComponent(
-                            tenant.id
-                        )}"
-                        class="
-                            inline-flex items-center
-                            rounded-lg border
-                            border-slate-200
-                            bg-white px-3.5 py-2.5
-                            text-sm font-medium
-                            text-slate-700
-                            transition
-                            hover:bg-slate-50
-                        "
-                    >
-                        ${escapeHtml(
-                            translate(
-                                'tenants.tenant_statement'
-                            )
-                        )}
-                    </a>
+                    ${
+                        browserCan(
+                            'manage_finance'
+                        )
+                            ? `
+                                <button
+                                    type="button"
+                                    id="tenant-apply-security-deposit"
+                                    data-apply-security-deposit-header
+                                    class="
+                                        hidden
+                                        pm-button-secondary
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        translate(
+                                            'tenants.apply_security_deposit'
+                                        )
+                                    )}
+                                </button>
+                            `
+                            : ''
+                    }
                 </div>
             </div>
         </div>
@@ -896,6 +1682,7 @@ function renderTenantDetail(
     initializeTenantInvoiceActions();
     initializeTenantReceiptActions();
     initializeTenantTransactionActionButtons();
+    initializeSecurityDepositApplicationActions();
 }
 
 
@@ -2670,6 +3457,8 @@ function renderTenantLeases(
                                         )
                                     )}
                                 </span>
+
+                                }
                             </div>
                         </div>
                     </article>
@@ -3398,6 +4187,7 @@ function initializeTenantTransactionControls() {
         'deposit',
         'withdrawal',
         'adjustment',
+        'security-application',
     ].forEach(
         (action) => {
             document
@@ -3610,7 +4400,8 @@ function initializeTenantTransactionControls() {
                 .querySelectorAll(
                     '#tenant-deposit-drawer.pm-drawer-active, '
                     + '#tenant-withdrawal-drawer.pm-drawer-active, '
-                    + '#tenant-adjustment-drawer.pm-drawer-active'
+                    + '#tenant-adjustment-drawer.pm-drawer-active, '
+                    + '#tenant-security-application-drawer.pm-drawer-active'
                 )
                 .forEach(
                     (drawer) => {

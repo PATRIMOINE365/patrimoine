@@ -11208,3 +11208,124 @@ html[data-theme="light"] :is(
 }
 
 /* V1.0.5 TENANT TRANSACTION DRAWER SIZING END */
+
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.5 Apply Security Deposit eligibility visibility
+|--------------------------------------------------------------------------
+|
+| The shared .pm-button-secondary primitive declares display:inline-flex
+| later than Tailwind's .hidden utility. Therefore the eligibility button
+| needs an explicit hidden-state rule so an ineligible Lease can never
+| expose the action visually.
+|
+| JavaScript removes the hidden class only after authoritative Lease-detail
+| eligibility has been confirmed.
+|
+*/
+
+[data-apply-security-deposit].hidden {
+    display: none !important;
+}
+
+
+/* V1.0.5 APPLY SECURITY DEPOSIT DRAWER */
+
+#tenant-security-application-drawer {
+    color: var(--pm-text);
+}
+
+#tenant-security-application-drawer :is(
+    .text-slate-950,
+    .text-slate-900,
+    .text-slate-800,
+    .text-slate-700
+) {
+    color: var(--pm-text) !important;
+}
+
+#tenant-security-application-drawer :is(
+    .text-slate-600,
+    .text-slate-500,
+    .text-slate-400
+) {
+    color: var(--pm-text-muted) !important;
+}
+
+#tenant-security-application-drawer :is(
+    .border-slate-100,
+    .border-slate-200,
+    .border-slate-300
+) {
+    border-color: var(--pm-border) !important;
+}
+
+#tenant-security-application-drawer :is(
+    .bg-slate-50,
+    .bg-slate-100,
+    .bg-white
+) {
+    background: var(--pm-surface-subtle) !important;
+}
+
+#tenant-security-application-drawer .bg-red-50 {
+    background: var(--pm-danger-background) !important;
+}
+
+#tenant-security-application-drawer .border-red-200 {
+    border-color: var(--pm-danger-border) !important;
+}
+
+#tenant-security-application-drawer .text-red-700 {
+    color: var(--pm-danger-text) !important;
+}
+
+#tenant-security-application-drawer .pm-drawer-footer {
+    display: grid !important;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+}
+
+#tenant-security-application-drawer
+.pm-drawer-footer
+:is(
+    .pm-button-secondary,
+    .pm-button-primary
+) {
+    display: inline-flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 3rem !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding-inline: 1rem !important;
+}
+
+html[data-theme="dark"]
+#tenant-security-application-drawer {
+    color-scheme: dark;
+}
+
+html[data-theme="light"]
+#tenant-security-application-drawer {
+    color-scheme: light;
+}
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.5 Tenant header Security Deposit action
+|--------------------------------------------------------------------------
+|
+| pm-button-secondary declares display:inline-flex, so explicitly preserve
+| the eligibility-driven hidden state for this contextual financial action.
+|
+*/
+
+[data-apply-security-deposit-header].hidden {
+    display: none !important;
+}

@@ -1116,4 +1116,279 @@
     </form>
 </x-drawer>
 
+
+<x-drawer
+    id="tenant-security-application-drawer"
+    backdrop-id="tenant-security-application-drawer-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="tenant-security-application-drawer-close"
+        close-label="{{ __('ui.tenants.close') }}"
+        close-label-key="tenants.close"
+    >
+        <x-slot:title>
+            <span data-i18n="tenants.apply_security_deposit">
+                {{ __('ui.tenants.apply_security_deposit') }}
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="tenants.apply_security_deposit_description">
+                {{ __('ui.tenants.apply_security_deposit_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="tenant-security-application-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <input
+            id="tenant-security-application-lease-id"
+            type="hidden"
+        >
+
+        <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+            <div
+                id="tenant-security-application-error"
+                class="
+                    mb-5 hidden rounded-xl
+                    border border-red-200
+                    bg-red-50 px-4 py-3
+                    text-sm text-red-700
+                "
+            ></div>
+
+            <div
+                class="
+                    mb-5 rounded-xl
+                    border border-slate-200
+                    bg-slate-50
+                    px-4 py-4
+                "
+            >
+                <div
+                    class="
+                        text-xs font-medium uppercase
+                        tracking-wide text-slate-500
+                    "
+                    data-i18n="tenants.transaction_context"
+                >
+                    {{ __('ui.tenants.transaction_context') }}
+                </div>
+
+                <div
+                    id="tenant-security-application-tenant-context"
+                    class="mt-2 text-sm font-semibold text-slate-950"
+                >
+                    —
+                </div>
+
+                <div
+                    id="tenant-security-application-property-context"
+                    class="mt-1 text-sm text-slate-500"
+                >
+                    —
+                </div>
+            </div>
+
+            <div class="space-y-5">
+                <div>
+                    <div
+                        class="mb-1.5 text-sm font-medium text-slate-700"
+                        data-i18n="tenants.security_deposit_available"
+                    >
+                        {{ __('ui.tenants.security_deposit_available') }}
+                    </div>
+
+                    <div
+                        id="tenant-security-application-held-balance"
+                        class="
+                            rounded-xl
+                            border border-slate-200
+                            bg-slate-50
+                            px-4 py-3
+                            text-lg font-semibold text-slate-950
+                        "
+                    >
+                        —
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-security-application-invoice"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.receivable">
+                            {{ __('ui.tenants.receivable') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <select
+                        id="tenant-security-application-invoice"
+                        required
+                        disabled
+                        class="pm-input"
+                    >
+                        <option value="">
+                            {{ __('ui.tenants.select_receivable') }}
+                        </option>
+                    </select>
+                </div>
+
+                <div
+                    class="
+                        rounded-xl
+                        border border-slate-200
+                        bg-slate-50 p-4
+                    "
+                >
+                    <div
+                        class="text-xs text-slate-500"
+                        data-i18n="tenants.receivable_outstanding"
+                    >
+                        {{ __('ui.tenants.receivable_outstanding') }}
+                    </div>
+
+                    <div
+                        id="tenant-security-application-invoice-balance"
+                        class="mt-1 font-semibold text-slate-950"
+                    >
+                        —
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-security-application-amount"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.transaction_amount">
+                            {{ __('ui.tenants.transaction_amount') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <input
+                        id="tenant-security-application-amount"
+                        type="number"
+                        min="1"
+                        step="1"
+                        required
+                        class="pm-input"
+                    >
+                </div>
+
+                <div
+                    class="
+                        grid gap-3 rounded-xl
+                        border border-slate-200
+                        bg-slate-50 p-4
+                        sm:grid-cols-2
+                    "
+                >
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="tenants.resulting_security_deposit"
+                        >
+                            {{ __('ui.tenants.resulting_security_deposit') }}
+                        </div>
+
+                        <div
+                            id="tenant-security-application-resulting-deposit"
+                            class="mt-1 font-semibold text-slate-950"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="tenants.resulting_receivable"
+                        >
+                            {{ __('ui.tenants.resulting_receivable') }}
+                        </div>
+
+                        <div
+                            id="tenant-security-application-resulting-receivable"
+                            class="mt-1 font-semibold text-slate-950"
+                        >
+                            —
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-security-application-date"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.transaction_date">
+                            {{ __('ui.tenants.transaction_date') }}
+                        </span>
+                        <span class="text-red-500">*</span>
+                    </label>
+
+                    <input
+                        id="tenant-security-application-date"
+                        type="text"
+                        required
+                        data-pm-date-input
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-security-application-notes"
+                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                        <span data-i18n="tenants.notes">
+                            {{ __('ui.tenants.notes') }}
+                        </span>
+
+                        <span class="text-xs text-slate-400">
+                            {{ __('ui.tenants.optional') }}
+                        </span>
+                    </label>
+
+                    <textarea
+                        id="tenant-security-application-notes"
+                        rows="4"
+                        maxlength="2000"
+                        class="pm-input"
+                    ></textarea>
+                </div>
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                type="button"
+                data-close-tenant-transaction="tenant-security-application-drawer"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="tenants.cancel">
+                    {{ __('ui.tenants.cancel') }}
+                </span>
+            </button>
+
+            <button
+                id="tenant-security-application-submit"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="actions.save">
+                    {{ __('ui.actions.save') }}
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
 @endsection
