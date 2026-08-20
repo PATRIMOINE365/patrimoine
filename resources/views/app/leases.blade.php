@@ -2362,6 +2362,536 @@
 </x-drawer>
 
 {{-- ================================================================
+     Controlled Lease Extend Drawer
+================================================================ --}}
+
+<x-drawer
+    id="lease-extend-modal"
+    backdrop-id="lease-extend-modal-backdrop"
+    width="lg"
+>
+    <x-drawer-header
+        title-id="lease-extend-modal-title"
+        description-id="lease-extend-modal-description"
+        close-id="lease-extend-modal-close"
+        close-label="Close"
+        close-label-key="leases.close"
+    >
+        <x-slot:title>
+            <span data-i18n="leases.extend_lease">
+                Extend Lease
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="leases.extend_description">
+                Create a new contractual term period while preserving the Lease and its history.
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="lease-extend-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div class="flex-1 overflow-y-auto px-6 py-6">
+            <div
+                id="lease-extend-error"
+                class="
+                    mb-5 hidden rounded-lg
+                    border border-red-200
+                    bg-red-50 px-4 py-3
+                    text-sm text-red-700
+                "
+            ></div>
+
+            <section>
+                <h3
+                    class="
+                        text-sm font-semibold
+                        uppercase tracking-wide
+                        text-slate-500
+                    "
+                    data-i18n="leases.current_terms"
+                >
+                    Current Terms
+                </h3>
+
+                <div
+                    class="
+                        mt-4 grid gap-4
+                        sm:grid-cols-2
+                    "
+                >
+                    <div>
+                        <div
+                            class="text-xs font-medium text-slate-500"
+                            data-i18n="leases.monthly_rent"
+                        >
+                            Monthly Rent
+                        </div>
+                        <div
+                            id="lease-extend-current-rent"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs font-medium text-slate-500"
+                            data-i18n="leases.payment_frequency"
+                        >
+                            Payment Frequency
+                        </div>
+                        <div
+                            id="lease-extend-current-frequency"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs font-medium text-slate-500"
+                            data-i18n="leases.end_date"
+                        >
+                            End Date
+                        </div>
+                        <div
+                            id="lease-extend-current-end-date"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs font-medium text-slate-500"
+                            data-i18n="leases.due_day"
+                        >
+                            Due Day
+                        </div>
+                        <div
+                            id="lease-extend-current-due-day"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section
+                class="
+                    mt-8 border-t
+                    border-slate-100 pt-7
+                "
+            >
+                <h3
+                    class="
+                        text-sm font-semibold
+                        uppercase tracking-wide
+                        text-slate-500
+                    "
+                    data-i18n="leases.new_terms"
+                >
+                    New Terms
+                </h3>
+
+                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label
+                            for="lease-extend-effective-from"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.effective_from">
+                                Effective From
+                            </span>
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            id="lease-extend-effective-from"
+                            data-pm-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            type="text"
+                            required
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-extend-end-date"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.end_date">
+                                End Date
+                            </span>
+                        </label>
+
+                        <input
+                            id="lease-extend-end-date"
+                            data-pm-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            type="text"
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-extend-rent"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.monthly_rent">
+                                Monthly Rent
+                            </span>
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            id="lease-extend-rent"
+                            type="number"
+                            min="0"
+                            step="1"
+                            required
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-extend-frequency"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.payment_frequency">
+                                Payment Frequency
+                            </span>
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <select
+                            id="lease-extend-frequency"
+                            required
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                bg-white px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                            <option value="monthly" data-i18n="leases.monthly">
+                                Monthly
+                            </option>
+                            <option value="quarterly" data-i18n="leases.quarterly">
+                                Quarterly
+                            </option>
+                            <option value="bi_yearly" data-i18n="leases.bi_yearly">
+                                Bi-yearly
+                            </option>
+                            <option value="yearly" data-i18n="leases.yearly">
+                                Yearly
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-extend-due-day"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.due_day">
+                                Due Day
+                            </span>
+                        </label>
+
+                        <input
+                            id="lease-extend-due-day"
+                            type="number"
+                            min="1"
+                            max="31"
+                            step="1"
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-extend-vat-rate"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.vat_rate">
+                                VAT Rate
+                            </span>
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            id="lease-extend-vat-rate"
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.01"
+                            required
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+                </div>
+            </section>
+
+            <section
+                class="
+                    mt-8 border-t
+                    border-slate-100 pt-7
+                "
+            >
+                <h3
+                    class="
+                        text-sm font-semibold
+                        uppercase tracking-wide
+                        text-slate-500
+                    "
+                    data-i18n="leases.rent_increment"
+                >
+                    Rent Increment
+                </h3>
+
+                <div class="mt-4 grid gap-4 sm:grid-cols-3">
+                    <div>
+                        <label
+                            for="lease-extend-increment-type"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                            data-i18n="leases.increment_type"
+                        >
+                            Increment Type
+                        </label>
+
+                        <select
+                            id="lease-extend-increment-type"
+                            required
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                bg-white px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                            <option value="none" data-i18n="leases.none">
+                                None
+                            </option>
+                            <option value="percentage" data-i18n="leases.percentage">
+                                Percentage
+                            </option>
+                            <option value="fixed" data-i18n="leases.fixed_amount">
+                                Fixed Amount
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-extend-increment-value"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                            data-i18n="leases.increment_value"
+                        >
+                            Increment Value
+                        </label>
+
+                        <input
+                            id="lease-extend-increment-value"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            required
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-extend-next-increment-date"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                            data-i18n="leases.next_increment_date"
+                        >
+                            Next Increment Date
+                        </label>
+
+                        <input
+                            id="lease-extend-next-increment-date"
+                            data-pm-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            type="text"
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+                </div>
+            </section>
+
+            <section
+                class="
+                    mt-8 border-t
+                    border-slate-100 pt-7
+                "
+            >
+                <label
+                    for="lease-extend-notes"
+                    class="
+                        mb-1.5 block
+                        text-sm font-medium
+                        text-slate-700
+                    "
+                    data-i18n="leases.notes"
+                >
+                    Notes
+                </label>
+
+                <textarea
+                    id="lease-extend-notes"
+                    rows="4"
+                    class="
+                        w-full resize-y rounded-lg
+                        border border-slate-200
+                        px-3.5 py-2.5
+                        text-sm outline-none
+                        focus:border-patrimoine-500
+                        focus:ring-2
+                        focus:ring-patrimoine-100
+                    "
+                ></textarea>
+            </section>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                id="lease-extend-cancel"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="leases.cancel">
+                    Cancel
+                </span>
+            </button>
+
+            <button
+                id="lease-extend-submit"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="leases.extend_lease">
+                    Extend Lease
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+{{-- ================================================================
      Global Lease Field Help Tooltip
 ================================================================ --}}
 

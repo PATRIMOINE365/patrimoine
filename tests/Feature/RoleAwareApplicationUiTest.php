@@ -145,7 +145,7 @@ class RoleAwareApplicationUiTest extends TestCase
                 '#add-party-button',
                 '[data-edit-party]',
                 '#add-lease-button',
-                '[data-edit-lease]',
+                '[data-extend-lease]',
                 '#record-payment-button',
                 '#owner-record-deposit-button',
                 '#owner-record-expense-button',

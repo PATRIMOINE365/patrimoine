@@ -11,7 +11,6 @@
 | - status and tenant filtering;
 | - pagination;
 | - Lease creation;
-| - Lease editing;
 | - Lease deletion;
 | - Unit selection;
 | - Tenant and Agent Party selection;
@@ -63,22 +62,25 @@ let availableTenants =
 let availableAgents =
     [];
 
-let leaseFormMode =
-    'create';
-
-let editingLeaseId =
-    null;
-
 let defaultVatRate =
     '18.00';
 
 /*
- * Pending Add/Edit Lease drawer close cleanup.
+ * Pending Add Lease drawer close cleanup.
  *
  * Reopening before the 800ms closing transition completes must cancel
  * this timer so stale cleanup cannot close a newly reopened drawer.
  */
 let leaseDrawerCloseTimer =
+    null;
+
+/*
+ * Controlled V1.0.5 Extend drawer state.
+ */
+let leaseExtendDrawerCloseTimer =
+    null;
+
+let extendingLeaseId =
     null;
 
 /*
@@ -109,6 +111,8 @@ export async function initializeLeases() {
     initializeLeaseFilters();
 
     initializeLeaseForm();
+
+    initializeLeaseExtendDrawer();
 
     initializeSecurityDepositModal();
 
@@ -1557,28 +1561,34 @@ function leaseCard(lease) {
                         )}
                     </button>
 
-                    <button
-                        type="button"
-                        data-edit-lease
-                        data-lease-id="${escapeHtml(
-                            lease.id
-                        )}"
-                        class="
-                            rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2
-                            text-sm font-medium
-                            text-slate-700
-                            transition
-                            hover:bg-slate-50
-                        "
-                    >
-                        ${escapeHtml(
-                            translate(
-                                'leases.edit'
-                            )
-                        )}
-                    </button>
+                    ${
+                        lease.status !== 'notice'
+                            ? `
+                                <button
+                                    type="button"
+                                    data-extend-lease
+                                    data-lease-id="${escapeHtml(
+                                        lease.id
+                                    )}"
+                                    class="
+                                        rounded-lg
+                                        border border-slate-200
+                                        bg-white px-3.5 py-2
+                                        text-sm font-medium
+                                        text-slate-700
+                                        transition
+                                        hover:bg-slate-50
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        translate(
+                                            'leases.extend'
+                                        )
+                                    )}
+                                </button>
+                            `
+                            : ''
+                    }
 
                     <button
                         type="button"
@@ -1765,32 +1775,14 @@ function attachLeaseActionListeners(
 
     container
         .querySelectorAll(
-            '[data-security-deposit]'
+            '[data-extend-lease]'
         )
         .forEach(
             (button) => {
                 button.addEventListener(
                     'click',
                     () => {
-                        openSecurityDepositModal(
-                            button.dataset
-                                .leaseId
-                        );
-                    }
-                );
-            }
-        );
-
-    container
-        .querySelectorAll(
-            '[data-edit-lease]'
-        )
-        .forEach(
-            (button) => {
-                button.addEventListener(
-                    'click',
-                    () => {
-                        openEditLeaseModal(
+                        openExtendLeaseModal(
                             button.dataset
                                 .leaseId
                         );
@@ -2504,12 +2496,6 @@ function initializeLeaseForm() {
 }
 
 function openCreateLeaseModal() {
-    leaseFormMode =
-        'create';
-
-    editingLeaseId =
-        null;
-
     resetLeaseForm();
 
     /*
@@ -2536,84 +2522,19 @@ function openCreateLeaseModal() {
     showLeaseModal();
 }
 
-async function openEditLeaseModal(
-    leaseId
-) {
-    const numericLeaseId =
-        Number(
-            leaseId
-        );
-
-    if (
-        ! Number.isInteger(
-            numericLeaseId
-        )
-        || numericLeaseId <= 0
-    ) {
-        return;
-    }
-
-    resetLeaseForm();
-
-    leaseFormMode =
-        'edit';
-
-    editingLeaseId =
-        numericLeaseId;
-
-    configureLeaseModal();
-
-    showLeaseModal();
-
-    try {
-        const response =
-            await apiRequest(
-                `/api/leases/${numericLeaseId}`
-            );
-
-        const lease =
-            await parseJsonResponse(
-                response
-            );
-
-        populateLeaseForm(
-            lease
-        );
-    } catch (error) {
-        showLeaseFormError(
-            error instanceof Error
-                ? error.message
-                : translate(
-                    'leases.unable_load_one'
-                )
-        );
-    }
-}
-
 function configureLeaseModal() {
-    const editing =
-        leaseFormMode === 'edit';
-
     setText(
         'lease-modal-title',
-        editing
-            ? translate(
-                'leases.edit_lease'
-            )
-            : translate(
-                'leases.add_lease'
-            )
+        translate(
+            'leases.add_lease'
+        )
     );
 
     setText(
         'lease-modal-description',
-        editing
-            ? translate(
-                'leases.edit_description'
-            )
-            : translate(
-                'leases.add_description'
-            )
+        translate(
+            'leases.add_description'
+        )
     );
 
     setText(
@@ -2751,12 +2672,6 @@ function closeLeaseModal() {
                         'overflow-hidden'
                     );
                 }
-
-                leaseFormMode =
-                    'create';
-
-                editingLeaseId =
-                    null;
 
                 resetLeaseForm();
 
@@ -3404,6 +3319,572 @@ function updateManagementFeeControls() {
 }
 
 
+
+/*
+|--------------------------------------------------------------------------
+| Controlled Lease Extend
+|--------------------------------------------------------------------------
+*/
+
+function initializeLeaseExtendDrawer() {
+    const form =
+        document.getElementById(
+            'lease-extend-form'
+        );
+
+    if (! form) {
+        return;
+    }
+
+    form.addEventListener(
+        'submit',
+        submitLeaseExtendForm
+    );
+
+    document
+        .getElementById(
+            'lease-extend-cancel'
+        )
+        ?.addEventListener(
+            'click',
+            closeLeaseExtendModal
+        );
+
+    document
+        .getElementById(
+            'lease-extend-modal-close'
+        )
+        ?.addEventListener(
+            'click',
+            closeLeaseExtendModal
+        );
+
+    document
+        .getElementById(
+            'lease-extend-modal-backdrop'
+        )
+        ?.addEventListener(
+            'click',
+            closeLeaseExtendModal
+        );
+
+    document
+        .getElementById(
+            'lease-extend-increment-type'
+        )
+        ?.addEventListener(
+            'change',
+            updateLeaseExtendIncrementControls
+        );
+
+    document.addEventListener(
+        'keydown',
+        (event) => {
+            const drawer =
+                document.getElementById(
+                    'lease-extend-modal'
+                );
+
+            if (
+                event.key === 'Escape'
+                && drawer?.classList.contains(
+                    'pm-drawer-active'
+                )
+            ) {
+                closeLeaseExtendModal();
+            }
+        }
+    );
+}
+
+function openExtendLeaseModal(
+    leaseId
+) {
+    const numericLeaseId =
+        Number(
+            leaseId
+        );
+
+    if (
+        ! Number.isInteger(
+            numericLeaseId
+        )
+        || numericLeaseId <= 0
+    ) {
+        return;
+    }
+
+    const lease =
+        loadedLeasesById.get(
+            String(
+                numericLeaseId
+            )
+        );
+
+    if (! lease) {
+        return;
+    }
+
+    const drawer =
+        document.getElementById(
+            'lease-extend-modal'
+        );
+
+    if (! drawer) {
+        return;
+    }
+
+    if (
+        leaseExtendDrawerCloseTimer
+        !== null
+    ) {
+        window.clearTimeout(
+            leaseExtendDrawerCloseTimer
+        );
+
+        leaseExtendDrawerCloseTimer =
+            null;
+    }
+
+    extendingLeaseId =
+        numericLeaseId;
+
+    hideLeaseExtendError();
+
+    setText(
+        'lease-extend-current-rent',
+        formatCurrency(
+            lease.rent_amount ?? 0
+        )
+    );
+
+    setText(
+        'lease-extend-current-frequency',
+        frequencyLabel(
+            lease.payment_frequency
+        )
+    );
+
+    setText(
+        'lease-extend-current-end-date',
+        lease.end_date
+            ? dateForDisplay(
+                String(
+                    lease.end_date
+                ).slice(
+                    0,
+                    10
+                )
+            )
+            : '—'
+    );
+
+    setText(
+        'lease-extend-current-due-day',
+        lease.due_day
+            ?? lease.start_date?.slice(
+                8,
+                10
+            )
+            ?? '—'
+    );
+
+    /*
+     * Effective From is intentionally not guessed.
+     *
+     * The user chooses the contractual boundary explicitly.
+     */
+    setFormValue(
+        'lease-extend-effective-from',
+        ''
+    );
+
+    setFormValue(
+        'lease-extend-end-date',
+        dateInputValue(
+            lease.end_date
+        )
+    );
+
+    setFormValue(
+        'lease-extend-rent',
+        lease.rent_amount
+    );
+
+    setFormValue(
+        'lease-extend-frequency',
+        lease.payment_frequency
+    );
+
+    setFormValue(
+        'lease-extend-due-day',
+        lease.due_day
+    );
+
+    setFormValue(
+        'lease-extend-vat-rate',
+        lease.vat_rate
+    );
+
+    setFormValue(
+        'lease-extend-increment-type',
+        lease.rent_increment_type
+            ?? 'none'
+    );
+
+    setFormValue(
+        'lease-extend-increment-value',
+        lease.rent_increment_value
+            ?? 0
+    );
+
+    setFormValue(
+        'lease-extend-next-increment-date',
+        dateInputValue(
+            lease.next_rent_increment_date
+        )
+    );
+
+    setFormValue(
+        'lease-extend-notes',
+        lease.notes
+    );
+
+    updateLeaseExtendIncrementControls();
+
+    drawer.classList.remove(
+        'hidden',
+        'pm-drawer-closing'
+    );
+
+    drawer.removeAttribute(
+        'hidden'
+    );
+
+    drawer.classList.add(
+        'pm-drawer-active'
+    );
+
+    drawer.setAttribute(
+        'aria-hidden',
+        'false'
+    );
+
+    document.body.classList.add(
+        'overflow-hidden'
+    );
+
+    const panel =
+        drawer.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    if (panel) {
+        void panel.getBoundingClientRect();
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    drawer.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
+    );
+}
+
+function closeLeaseExtendModal() {
+    const drawer =
+        document.getElementById(
+            'lease-extend-modal'
+        );
+
+    if (
+        ! drawer
+        || ! drawer.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
+        return;
+    }
+
+    drawer.classList.remove(
+        'pm-drawer-open'
+    );
+
+    drawer.classList.add(
+        'pm-drawer-closing'
+    );
+
+    drawer.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+
+    if (
+        leaseExtendDrawerCloseTimer
+        !== null
+    ) {
+        window.clearTimeout(
+            leaseExtendDrawerCloseTimer
+        );
+    }
+
+    leaseExtendDrawerCloseTimer =
+        window.setTimeout(
+            () => {
+                drawer.classList.remove(
+                    'pm-drawer-active',
+                    'pm-drawer-closing'
+                );
+
+                leaseExtendDrawerCloseTimer =
+                    null;
+
+                extendingLeaseId =
+                    null;
+
+                document
+                    .getElementById(
+                        'lease-extend-form'
+                    )
+                    ?.reset();
+
+                hideLeaseExtendError();
+
+                const anotherDrawerOpen =
+                    document.querySelector(
+                        '.pm-drawer.pm-drawer-active'
+                    );
+
+                if (! anotherDrawerOpen) {
+                    document.body.classList.remove(
+                        'overflow-hidden'
+                    );
+                }
+            },
+            850
+        );
+}
+
+function hideLeaseExtendError() {
+    const element =
+        document.getElementById(
+            'lease-extend-error'
+        );
+
+    if (! element) {
+        return;
+    }
+
+    element.textContent =
+        '';
+
+    element.classList.add(
+        'hidden'
+    );
+}
+
+function showLeaseExtendError(
+    message
+) {
+    const element =
+        document.getElementById(
+            'lease-extend-error'
+        );
+
+    if (! element) {
+        return;
+    }
+
+    element.textContent =
+        message;
+
+    element.classList.remove(
+        'hidden'
+    );
+}
+
+function updateLeaseExtendIncrementControls() {
+    const type =
+        formValue(
+            'lease-extend-increment-type'
+        );
+
+    const value =
+        document.getElementById(
+            'lease-extend-increment-value'
+        );
+
+    const date =
+        document.getElementById(
+            'lease-extend-next-increment-date'
+        );
+
+    const disabled =
+        type === 'none';
+
+    if (value) {
+        value.disabled =
+            disabled;
+
+        if (disabled) {
+            value.value =
+                '0';
+        }
+    }
+
+    if (date) {
+        date.disabled =
+            disabled;
+
+        if (disabled) {
+            date.value =
+                '';
+        }
+    }
+}
+
+function buildLeaseExtendPayload() {
+    return {
+        effective_from:
+            dateForApi(
+                formValue(
+                    'lease-extend-effective-from'
+                )
+            ),
+
+        end_date:
+            nullableDateValue(
+                'lease-extend-end-date'
+            ),
+
+        rent_amount:
+            Number(
+                formValue(
+                    'lease-extend-rent'
+                )
+            ),
+
+        payment_frequency:
+            formValue(
+                'lease-extend-frequency'
+            ),
+
+        due_day:
+            nullableInteger(
+                'lease-extend-due-day'
+            ),
+
+        vat_rate:
+            Number(
+                formValue(
+                    'lease-extend-vat-rate'
+                )
+            ),
+
+        rent_increment_type:
+            formValue(
+                'lease-extend-increment-type'
+            ),
+
+        rent_increment_value:
+            Number(
+                formValue(
+                    'lease-extend-increment-value'
+                )
+            ),
+
+        next_rent_increment_date:
+            nullableDateValue(
+                'lease-extend-next-increment-date'
+            ),
+
+        notes:
+            nullableFormValue(
+                'lease-extend-notes'
+            ),
+    };
+}
+
+async function submitLeaseExtendForm(
+    event
+) {
+    event.preventDefault();
+
+    const form =
+        document.getElementById(
+            'lease-extend-form'
+        );
+
+    const submitButton =
+        document.getElementById(
+            'lease-extend-submit'
+        );
+
+    if (
+        ! form
+        || ! submitButton
+        || ! Number.isInteger(
+            extendingLeaseId
+        )
+    ) {
+        return;
+    }
+
+    hideLeaseExtendError();
+
+    if (! form.reportValidity()) {
+        return;
+    }
+
+    const payload =
+        buildLeaseExtendPayload();
+
+    try {
+        submitButton.disabled =
+            true;
+
+        const response =
+            await apiRequest(
+                `/api/leases/${extendingLeaseId}/extend`,
+                {
+                    method:
+                        'POST',
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        ),
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        closeLeaseExtendModal();
+
+        await loadLeases(
+            1
+        );
+    } catch (error) {
+        showLeaseExtendError(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'leases.unable_update'
+                )
+        );
+    } finally {
+        submitButton.disabled =
+            false;
+    }
+}
+
 /*
 |--------------------------------------------------------------------------
 | Submission
@@ -3437,12 +3918,6 @@ async function submitLeaseForm(
     if (! form.reportValidity()) {
         return;
     }
-
-    const editing =
-        leaseFormMode === 'edit'
-        && Number.isInteger(
-            editingLeaseId
-        );
 
     const payload =
         buildLeasePayload();
@@ -3481,27 +3956,16 @@ async function submitLeaseForm(
             true;
 
         submitButton.textContent =
-            editing
-                ? translate(
-                    'leases.saving_changes'
-                )
-                : translate(
-                    'leases.creating'
-                );
-
-        const endpoint =
-            editing
-                ? `/api/leases/${editingLeaseId}`
-                : '/api/leases';
+            translate(
+                'leases.creating'
+            );
 
         const response =
             await apiRequest(
-                endpoint,
+                '/api/leases',
                 {
                     method:
-                        editing
-                            ? 'PATCH'
-                            : 'POST',
+                        'POST',
 
                     body:
                         JSON.stringify(
@@ -3523,14 +3987,8 @@ async function submitLeaseForm(
         showLeaseFormError(
             error instanceof Error
                 ? error.message
-                : (
-                    editing
-                        ? translate(
-                            'leases.unable_update'
-                        )
-                        : translate(
-                            'leases.unable_create'
-                        )
+                : translate(
+                    'leases.unable_create'
                 )
         );
     } finally {
