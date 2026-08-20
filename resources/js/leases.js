@@ -5910,6 +5910,8 @@ async function openLeaseDeleteDrawer(
             true;
     }
 
+    drawer.hidden = false;
+
     drawer.classList.remove(
         'hidden',
         'pm-drawer-closing'
@@ -6042,6 +6044,8 @@ function closeLeaseDeleteDrawer() {
                     'pm-drawer-active',
                     'pm-drawer-closing'
                 );
+
+                drawer.hidden = true;
 
                 deletingLeaseId =
                     null;

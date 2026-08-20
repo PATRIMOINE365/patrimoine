@@ -3314,41 +3314,30 @@
 <x-drawer
     id="lease-delete-modal"
     backdrop-id="lease-delete-modal-backdrop"
-    panel-class="max-w-2xl"
+    width="lg"
 >
-    <x-slot:header>
-        <div class="min-w-0">
-            <p
-                class="
-                    text-xs font-semibold uppercase
-                    tracking-[0.14em]
-                    text-red-600
-                "
-                data-i18n="leases.delete_destructive_action"
-            >
-                Destructive action
-            </p>
-
-            <h2
-                class="
-                    mt-1 text-xl font-semibold
-                    text-slate-950
-                "
+    <x-drawer-header
+        title-id="lease-delete-modal-title"
+        description-id="lease-delete-modal-description"
+        close-id="lease-delete-modal-close"
+        close-label="Close"
+        close-label-key="leases.close"
+    >
+        <x-slot:title>
+            <span
+                class="text-red-600"
                 data-i18n="leases.delete_lease"
             >
                 Delete Lease
-            </h2>
-        </div>
+            </span>
+        </x-slot:title>
 
-        <button
-            id="lease-delete-modal-close"
-            type="button"
-            class="pm-drawer-close"
-            aria-label="Close"
-        >
-            &times;
-        </button>
-    </x-slot:header>
+        <x-slot:description>
+            <span data-i18n="leases.delete_destructive_action">
+                Destructive action
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
 
     <form
         id="lease-delete-form"
@@ -3358,15 +3347,16 @@
             class="
                 min-h-0 flex-1 space-y-6
                 overflow-y-auto px-6 py-6
+                text-[var(--pm-text)]
             "
         >
             <div
                 id="lease-delete-error"
                 class="
                     hidden rounded-xl
-                    border border-red-200
-                    bg-red-50 px-4 py-3
-                    text-sm text-red-700
+                    border border-red-300/70
+                    bg-red-500/10 px-4 py-3
+                    text-sm text-red-600
                 "
                 role="alert"
             ></div>
@@ -3374,14 +3364,14 @@
             <section
                 class="
                     rounded-xl border
-                    border-slate-200
-                    bg-slate-50 p-4
+                    border-[var(--pm-border)]
+                    bg-[var(--pm-surface-muted)] p-4
                 "
             >
                 <h3
                     class="
                         text-sm font-semibold
-                        text-slate-950
+                        text-[var(--pm-text)]
                     "
                     data-i18n="leases.delete_context"
                 >
@@ -3397,53 +3387,53 @@
                 >
                     <div>
                         <dt
-                            class="text-slate-500"
+                            class="text-[var(--pm-text-muted)]"
                             data-i18n="leases.lease"
                         >
                             Lease
                         </dt>
                         <dd
                             id="lease-delete-context-reference"
-                            class="font-medium text-slate-950"
+                            class="font-medium text-[var(--pm-text)]"
                         ></dd>
                     </div>
 
                     <div>
                         <dt
-                            class="text-slate-500"
+                            class="text-[var(--pm-text-muted)]"
                             data-i18n="leases.tenant"
                         >
                             Tenant
                         </dt>
                         <dd
                             id="lease-delete-context-tenant"
-                            class="font-medium text-slate-950"
+                            class="font-medium text-[var(--pm-text)]"
                         ></dd>
                     </div>
 
                     <div>
                         <dt
-                            class="text-slate-500"
-                            data-i18n="leases.building"
+                            class="text-[var(--pm-text-muted)]"
+                            data-i18n="leases.property"
                         >
-                            Building
+                            Property
                         </dt>
                         <dd
                             id="lease-delete-context-building"
-                            class="font-medium text-slate-950"
+                            class="font-medium text-[var(--pm-text)]"
                         ></dd>
                     </div>
 
                     <div>
                         <dt
-                            class="text-slate-500"
+                            class="text-[var(--pm-text-muted)]"
                             data-i18n="leases.unit"
                         >
                             Unit
                         </dt>
                         <dd
                             id="lease-delete-context-unit"
-                            class="font-medium text-slate-950"
+                            class="font-medium text-[var(--pm-text)]"
                         ></dd>
                     </div>
                 </dl>
@@ -3453,7 +3443,7 @@
                 <h3
                     class="
                         text-sm font-semibold
-                        text-slate-950
+                        text-[var(--pm-text)]
                     "
                     data-i18n="leases.delete_impact_title"
                 >
@@ -3463,7 +3453,7 @@
                 <p
                     class="
                         mt-1 text-sm leading-6
-                        text-slate-600
+                        text-[var(--pm-text-muted)]
                     "
                     data-i18n="leases.delete_impact_description"
                 >
@@ -3475,10 +3465,11 @@
                 <div
                     id="lease-delete-loading"
                     class="
-                        mt-4 rounded-xl
-                        border border-slate-200
-                        px-4 py-5
-                        text-sm text-slate-500
+                        mt-4 rounded-xl border
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface-muted)]
+                        px-4 py-5 text-sm
+                        text-[var(--pm-text-muted)]
                     "
                     data-i18n="leases.delete_impact_loading"
                 >
@@ -3495,119 +3486,54 @@
                             sm:grid-cols-2
                         "
                     >
-                        <div class="rounded-xl border border-slate-200 p-4">
-                            <dt data-i18n="leases.delete_impact_invoices">
-                                Invoices
-                            </dt>
-                            <dd
-                                id="lease-delete-impact-invoices"
-                                class="mt-1 text-lg font-semibold"
-                            >0</dd>
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_invoices">Invoices</dt>
+                            <dd id="lease-delete-impact-invoices" class="mt-1 text-lg font-semibold">0</dd>
                         </div>
 
-                        <div class="rounded-xl border border-slate-200 p-4">
-                            <dt data-i18n="leases.delete_impact_payments">
-                                Payments
-                            </dt>
-                            <dd
-                                id="lease-delete-impact-payments"
-                                class="mt-1 text-lg font-semibold"
-                            >0</dd>
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_payments">Payments</dt>
+                            <dd id="lease-delete-impact-payments" class="mt-1 text-lg font-semibold">0</dd>
                         </div>
 
-                        <div class="rounded-xl border border-slate-200 p-4">
-                            <dt data-i18n="leases.delete_impact_allocations">
-                                Allocations
-                            </dt>
-                            <dd
-                                id="lease-delete-impact-allocations"
-                                class="mt-1 text-lg font-semibold"
-                            >0</dd>
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_allocations">Allocations</dt>
+                            <dd id="lease-delete-impact-allocations" class="mt-1 text-lg font-semibold">0</dd>
                         </div>
 
-                        <div class="rounded-xl border border-slate-200 p-4">
-                            <dt data-i18n="leases.delete_impact_receipts">
-                                Withdrawal receipts
-                            </dt>
-                            <dd
-                                id="lease-delete-impact-receipts"
-                                class="mt-1 text-lg font-semibold"
-                            >0</dd>
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_receipts">Withdrawal receipts</dt>
+                            <dd id="lease-delete-impact-receipts" class="mt-1 text-lg font-semibold">0</dd>
                         </div>
 
-                        <div class="rounded-xl border border-slate-200 p-4">
-                            <dt data-i18n="leases.delete_impact_security">
-                                Security Deposit
-                            </dt>
-                            <dd
-                                id="lease-delete-impact-security"
-                                class="mt-1 font-semibold"
-                            ></dd>
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_security">Security Deposit balance</dt>
+                            <dd id="lease-delete-impact-security" class="mt-1 font-semibold"></dd>
                         </div>
 
-                        <div class="rounded-xl border border-slate-200 p-4">
-                            <dt data-i18n="leases.delete_impact_reserve">
-                                Rent Reserve
-                            </dt>
-                            <dd
-                                id="lease-delete-impact-rent-reserve"
-                                class="mt-1 font-semibold"
-                            ></dd>
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_reserve">Rent Reserve balance</dt>
+                            <dd id="lease-delete-impact-rent-reserve" class="mt-1 font-semibold"></dd>
                         </div>
 
-                        <div class="rounded-xl border border-slate-200 p-4">
-                            <dt data-i18n="leases.delete_impact_consumable">
-                                Consumable Advance
-                            </dt>
-                            <dd
-                                id="lease-delete-impact-consumable"
-                                class="mt-1 font-semibold"
-                            ></dd>
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_consumable">Consumable Advance balance</dt>
+                            <dd id="lease-delete-impact-consumable" class="mt-1 font-semibold"></dd>
                         </div>
 
-                        <div
-                            class="
-                                rounded-xl border
-                                border-slate-300 p-4
-                            "
-                        >
-                            <dt data-i18n="leases.delete_impact_outstanding">
-                                Invoice outstanding
-                            </dt>
-                            <dd
-                                id="lease-delete-impact-total"
-                                class="mt-1 font-semibold"
-                            ></dd>
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_outstanding">Invoice outstanding</dt>
+                            <dd id="lease-delete-impact-total" class="mt-1 font-semibold"></dd>
                         </div>
 
-                        <div
-                            class="
-                                rounded-xl border
-                                border-slate-200 p-4
-                            "
-                        >
-                            <dt data-i18n="leases.delete_impact_reversals">
-                                Journal reversals
-                            </dt>
-                            <dd
-                                id="lease-delete-impact-reversals"
-                                class="mt-1 text-lg font-semibold"
-                            >0</dd>
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_reversals">Journal reversals</dt>
+                            <dd id="lease-delete-impact-reversals" class="mt-1 text-lg font-semibold">0</dd>
                         </div>
 
-                        <div
-                            class="
-                                rounded-xl border
-                                border-slate-200 p-4
-                            "
-                        >
-                            <dt data-i18n="leases.delete_impact_owner">
-                                Owner Lease effect
-                            </dt>
-                            <dd
-                                id="lease-delete-impact-owner"
-                                class="mt-1 font-semibold"
-                            ></dd>
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_owner">Owner Lease effect</dt>
+                            <dd id="lease-delete-impact-owner" class="mt-1 font-semibold"></dd>
                         </div>
                     </dl>
 
@@ -3615,9 +3541,9 @@
                         id="lease-delete-blockers"
                         class="
                             mt-4 hidden rounded-xl
-                            border border-red-200
-                            bg-red-50 px-4 py-3
-                            text-sm text-red-700
+                            border border-red-300/70
+                            bg-red-500/10 px-4 py-3
+                            text-sm text-red-600
                         "
                     ></div>
                 </div>
@@ -3626,8 +3552,8 @@
             <section
                 class="
                     space-y-4 rounded-xl
-                    border border-red-200
-                    bg-red-50/50 p-4
+                    border border-red-300/60
+                    bg-red-500/5 p-4
                 "
             >
                 <div>
@@ -3635,7 +3561,7 @@
                         for="lease-delete-reason"
                         class="
                             block text-sm font-medium
-                            text-slate-900
+                            text-[var(--pm-text)]
                         "
                         data-i18n="leases.delete_reason"
                     >
@@ -3648,14 +3574,14 @@
                         maxlength="2000"
                         required
                         class="
-                            mt-2 w-full resize-y
-                            rounded-lg border
-                            border-slate-300
-                            px-3.5 py-2.5
-                            text-sm outline-none
+                            mt-2 w-full resize-y rounded-lg
+                            border border-[var(--pm-border)]
+                            bg-[var(--pm-surface)]
+                            px-3.5 py-2.5 text-sm
+                            text-[var(--pm-text)]
+                            outline-none
                             focus:border-red-500
-                            focus:ring-2
-                            focus:ring-red-100
+                            focus:ring-2 focus:ring-red-500/20
                         "
                     ></textarea>
                 </div>
@@ -3665,7 +3591,7 @@
                         for="lease-delete-confirmation"
                         class="
                             block text-sm font-medium
-                            text-slate-900
+                            text-[var(--pm-text)]
                         "
                         data-i18n="leases.delete_confirmation_label"
                     >
@@ -3679,12 +3605,13 @@
                         required
                         class="
                             mt-2 w-full rounded-lg
-                            border border-slate-300
-                            px-3.5 py-2.5
-                            text-sm outline-none
+                            border border-[var(--pm-border)]
+                            bg-[var(--pm-surface)]
+                            px-3.5 py-2.5 text-sm
+                            text-[var(--pm-text)]
+                            outline-none
                             focus:border-red-500
-                            focus:ring-2
-                            focus:ring-red-100
+                            focus:ring-2 focus:ring-red-500/20
                         "
                     >
                 </div>
@@ -3694,7 +3621,7 @@
                         for="lease-delete-password"
                         class="
                             block text-sm font-medium
-                            text-slate-900
+                            text-[var(--pm-text)]
                         "
                         data-i18n="leases.delete_password"
                     >
@@ -3708,12 +3635,13 @@
                         required
                         class="
                             mt-2 w-full rounded-lg
-                            border border-slate-300
-                            px-3.5 py-2.5
-                            text-sm outline-none
+                            border border-[var(--pm-border)]
+                            bg-[var(--pm-surface)]
+                            px-3.5 py-2.5 text-sm
+                            text-[var(--pm-text)]
+                            outline-none
                             focus:border-red-500
-                            focus:ring-2
-                            focus:ring-red-100
+                            focus:ring-2 focus:ring-red-500/20
                         "
                     >
                 </div>
