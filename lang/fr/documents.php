@@ -2,6 +2,20 @@
 
 return [
 
+
+    'termination_notice' => [
+        'title' => 'Avis de résiliation du bail',
+        'tenant' => 'Locataire',
+        'building' => 'Immeuble',
+        'unit' => 'Unité',
+        'lease' => 'Bail',
+        'notice_date' => 'Date de préavis',
+        'termination_date' => 'Date de résiliation',
+        'body' => 'Un préavis formel de résiliation a été enregistré le :notice_date. Le bail doit prendre fin le :termination_date.',
+        'footer' => 'Ce document enregistre le préavis de résiliation conservé dans Patrimoine.',
+    ],
+
+
     'withdrawal_receipt' => [
         'title' => 'Reçu de retrait',
         'receipt_number' => 'Numéro de reçu',

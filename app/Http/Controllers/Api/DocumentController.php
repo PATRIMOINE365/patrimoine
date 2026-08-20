@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\AdjustmentVoucher;
 use App\Models\Invoice;
+use App\Models\Lease;
 use App\Models\OwnerTransaction;
 use App\Models\Payment;
 use App\Models\SecurityDepositSettlement;
@@ -15,6 +16,7 @@ use App\Services\Documents\InvoiceDocumentService;
 use App\Services\Documents\OwnerDepositReceiptDocumentService;
 use App\Services\Documents\ReceiptDocumentService;
 use App\Services\Documents\SecurityDepositVoucherDocumentService;
+use App\Services\Documents\TerminationNoticeDocumentService;
 use App\Services\Documents\WithdrawalReceiptDocumentService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -28,6 +30,55 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class DocumentController extends Controller
 {
+    /**
+     * Download the formal notice for a Lease whose termination
+     * workflow is currently in progress.
+     */
+    public function terminationNotice(
+        Request $request,
+        Lease $lease,
+        TerminationNoticeDocumentService $service,
+        ActivityLogService $activityLog
+    ): Response {
+        try {
+            $contents = $service->generate($lease);
+            $filename = $service->filename($lease);
+        } catch (RuntimeException $exception) {
+            throw ValidationException::withMessages([
+                'lease' => [
+                    $exception->getMessage(),
+                ],
+            ]);
+        }
+
+        $activityLog->record(
+            action: 'lease.termination_notice_downloaded',
+            request: $request,
+            entityType: 'lease',
+            entityId: $lease->id,
+            entityLabel: "Lease #{$lease->id}",
+            metadata: [
+                'document_type' => 'termination_notice',
+                'format' => 'pdf',
+                'filename' => $filename,
+                'notice_date' => $lease->termination_notice_date?->toDateString(),
+                'termination_date' => $lease->termination_date?->toDateString(),
+            ],
+        );
+
+        return response(
+            $contents,
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="'
+                    .$filename
+                    .'"',
+                'Content-Length' => strlen($contents),
+            ]
+        );
+    }
+
     /**
      * Download an Invoice PDF.
      */

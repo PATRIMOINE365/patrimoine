@@ -483,6 +483,11 @@ Route::middleware('auth:sanctum')->group(
         Route::middleware('capability:export_reports')->group(
             function (): void {
                 Route::get(
+                    'leases/{lease}/termination-notice/pdf',
+                    [DocumentController::class, 'terminationNotice']
+                );
+
+                Route::get(
                     'invoices/{invoice}/pdf',
                     [DocumentController::class, 'invoice']
                 );
