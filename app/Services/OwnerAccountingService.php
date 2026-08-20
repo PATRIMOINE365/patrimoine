@@ -8,6 +8,7 @@ use App\Models\OwnerAccount;
 use App\Models\OwnerExpense;
 use App\Models\OwnerTransaction;
 use App\Models\PaymentAllocation;
+use App\Services\Accounting\OwnerFinancialJournalService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -24,6 +25,11 @@ use RuntimeException;
  */
 class OwnerAccountingService
 {
+    public function __construct(
+        private readonly OwnerFinancialJournalService $journal
+    ) {
+    }
+
     /**
      * Allocate a property expense to Building owners.
      *
@@ -106,6 +112,11 @@ class OwnerAccountingService
                 ]);
             }
 
+            $this->journal->postExpense(
+                $expense,
+                $transactions
+            );
+
             return $transactions;
         });
     }
@@ -142,7 +153,19 @@ class OwnerAccountingService
                 ->get();
 
             if ($existingTransactions->isNotEmpty()) {
-                return $existingTransactions->all();
+                $transactions =
+                    $existingTransactions->all();
+
+                /*
+                 * Journal posting is idempotent. This also safely repairs a
+                 * retry where the operational entitlement already exists.
+                 */
+                $this->journal->postRentEntitlement(
+                    $allocation,
+                    $transactions
+                );
+
+                return $transactions;
             }
 
             $invoice = $allocation->invoice()
@@ -226,6 +249,11 @@ class OwnerAccountingService
                     'notes' => 'Owner share of tenant rent actually collected.',
                 ]);
             }
+
+            $this->journal->postRentEntitlement(
+                $allocation,
+                $transactions
+            );
 
             return $transactions;
         });
@@ -331,19 +359,27 @@ class OwnerAccountingService
                     return [];
                 }
 
-                return $this->allocateOwnerDebit(
-                    building: $lease->unit->building,
-                    amount: $feeAmount,
-                    category: 'management_fee',
-                    transactionDate: $allocation->payment->payment_date->toDateString(),
-                    leaseId: $lease->id,
-                    unitId: $lease->unit_id,
-                    invoiceId: $invoice->id,
-                    paymentAllocationId: $allocation->id,
-                    reference: $allocation->payment->reference
-                        ?? $invoice->invoice_number,
-                    notes: 'Management fee charged against tenant rent actually collected.'
+                $transactions =
+                    $this->allocateOwnerDebit(
+                        building: $lease->unit->building,
+                        amount: $feeAmount,
+                        category: 'management_fee',
+                        transactionDate: $allocation->payment->payment_date->toDateString(),
+                        leaseId: $lease->id,
+                        unitId: $lease->unit_id,
+                        invoiceId: $invoice->id,
+                        paymentAllocationId: $allocation->id,
+                        reference: $allocation->payment->reference
+                            ?? $invoice->invoice_number,
+                        notes: 'Management fee charged against tenant rent actually collected.'
+                    );
+
+                $this->journal->postManagementFee(
+                    $allocation,
+                    $transactions
                 );
+
+                return $transactions;
             }
         );
     }
@@ -382,15 +418,23 @@ class OwnerAccountingService
 
             $building = $lease->unit()->with('building.ownerships')->firstOrFail()->building;
 
-            return $this->allocateOwnerDebit(
-                building: $building,
-                amount: $lease->agent_commission_amount,
-                category: 'agent_commission',
-                transactionDate: $lease->start_date->toDateString(),
-                leaseId: $lease->id,
-                unitId: $lease->unit_id,
-                notes: 'One-time Agent commission charged at Lease commencement.'
+            $transactions =
+                $this->allocateOwnerDebit(
+                    building: $building,
+                    amount: $lease->agent_commission_amount,
+                    category: 'agent_commission',
+                    transactionDate: $lease->start_date->toDateString(),
+                    leaseId: $lease->id,
+                    unitId: $lease->unit_id,
+                    notes: 'One-time Agent commission charged at Lease commencement.'
+                );
+
+            $this->journal->postAgentCommission(
+                $lease,
+                $transactions
             );
+
+            return $transactions;
         });
     }
 

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\OwnerAccount;
 use App\Models\OwnerTransaction;
 use App\Models\User;
+use App\Services\Accounting\OwnerFinancialJournalService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -21,6 +22,11 @@ use RuntimeException;
  */
 class OwnerLedgerService
 {
+    public function __construct(
+        private readonly OwnerFinancialJournalService $journal
+    ) {
+    }
+
     /**
      * Record actual money received from an owner.
      *
@@ -105,7 +111,7 @@ class OwnerLedgerService
                     ->lockForUpdate()
                     ->findOrFail($account->id);
 
-                return OwnerTransaction::create([
+                $transaction = OwnerTransaction::create([
                     'owner_account_id' => $account->id,
 
                     'building_id' => $buildingId,
@@ -150,6 +156,16 @@ class OwnerLedgerService
                     'notes' => $notes
                         ?? 'Funds deposited by owner.',
                 ]);
+
+                /*
+                 * Operational Owner ledger + Financial Journal are one
+                 * transaction. Before cutover this is intentionally a no-op.
+                 */
+                $this->journal->postDeposit(
+                    $transaction
+                );
+
+                return $transaction;
             }
         );
     }

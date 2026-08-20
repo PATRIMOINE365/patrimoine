@@ -41,21 +41,52 @@ class OwnerLedgerController extends Controller
         $validated = $request->validated();
 
         try {
-            $transaction = $service->recordDeposit(
-                account: $ownerAccount,
-                amount: (int) $validated['amount'],
-                transactionDate: $validated['transaction_date'],
-                paymentMethod: $validated['payment_method'],
-                depositPurpose: $validated['deposit_purpose'],
-                buildingId: $validated['building_id'] ?? null,
-                unitId: $validated['unit_id'] ?? null,
-                reference: $validated['reference'] ?? null,
-                cashReceiverUser: (
-                    $validated['payment_method'] === 'cash'
-                        ? $request->user()
-                        : null
-                ),
-                notes: $validated['notes'] ?? null
+            $transaction = DB::transaction(
+                function () use (
+                    $request,
+                    $ownerAccount,
+                    $service,
+                    $activityLog,
+                    $activitySnapshots,
+                    $validated,
+                ): OwnerTransaction {
+                    $transaction =
+                        $service->recordDeposit(
+                            account: $ownerAccount,
+                            amount: (int) $validated['amount'],
+                            transactionDate: $validated['transaction_date'],
+                            paymentMethod: $validated['payment_method'],
+                            depositPurpose: $validated['deposit_purpose'],
+                            buildingId: $validated['building_id'] ?? null,
+                            unitId: $validated['unit_id'] ?? null,
+                            reference: $validated['reference'] ?? null,
+                            cashReceiverUser: (
+                                $validated['payment_method'] === 'cash'
+                                    ? $request->user()
+                                    : null
+                            ),
+                            notes: $validated['notes'] ?? null
+                        );
+
+                    /*
+                     * OwnerTransaction + Financial Journal + Activity Log
+                     * form one human financial action.
+                     */
+                    $activityLog->record(
+                        action: 'owner_deposit.recorded',
+                        request: $request,
+                        entityType: 'owner_transaction',
+                        entityId: $transaction->id,
+                        entityLabel: 'Owner deposit #'.$transaction->id,
+                        snapshot:
+                            $activitySnapshots
+                                ->ownerTransaction(
+                                    $transaction
+                                ),
+                    );
+
+                    return $transaction;
+                }
             );
         } catch (RuntimeException $exception) {
             throw ValidationException::withMessages([
@@ -64,15 +95,6 @@ class OwnerLedgerController extends Controller
                 ],
             ]);
         }
-
-        $activityLog->record(
-            action: 'owner_deposit.recorded',
-            request: $request,
-            entityType: 'owner_transaction',
-            entityId: $transaction->id,
-            entityLabel: 'Owner deposit #'.$transaction->id,
-            snapshot: $activitySnapshots->ownerTransaction($transaction),
-        );
 
         return response()->json(
             data: [

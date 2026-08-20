@@ -156,9 +156,19 @@ class AccountingEventMap
                     SystemChartOfAccounts::MANAGEMENT_FEE_INCOME,
             ],
 
+            /*
+             * Agent commission is contractually charged to the Owners by the
+             * existing operational Owner ledger.
+             *
+             * Therefore recognition reduces Owner Funds Payable and creates
+             * the liability owed to the Agent.
+             *
+             * Payment of that liability, if/when introduced as a separate
+             * operational workflow, will be a distinct Journal event.
+             */
             self::EVENT_AGENT_COMMISSION => [
                 'debit' =>
-                    SystemChartOfAccounts::AGENT_COMMISSION_EXPENSE,
+                    SystemChartOfAccounts::OWNER_FUNDS_PAYABLE,
 
                 'credit' =>
                     SystemChartOfAccounts::AGENT_COMMISSION_PAYABLE,
