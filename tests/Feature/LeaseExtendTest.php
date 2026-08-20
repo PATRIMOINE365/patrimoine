@@ -234,12 +234,174 @@ class LeaseExtendTest extends TestCase
         );
     }
 
-    public function test_terminated_lease_is_not_reactivated_by_core_extend_step(): void
+    public function test_terminated_lease_can_be_reactivated_through_extend(): void
+    {
+        [$lease, $user] =
+            $this->leaseFixture([
+                'status' => 'terminated',
+                'termination_notice_date' => '2026-11-01',
+            ]);
+
+        Sanctum::actingAs($user);
+
+        app(
+            LeaseTermVersionService::class
+        )->ensureBaseline($lease);
+
+        $leaseId =
+            $lease->id;
+
+        $this->postJson(
+            "/api/leases/{$lease->id}/extend",
+            $this->payload([
+                'effective_from' => '2027-01-01',
+                'end_date' => '2027-12-31',
+                'rent_amount' => 2400,
+            ])
+        )->assertOk();
+
+        $lease->refresh();
+
+        $this->assertSame(
+            $leaseId,
+            $lease->id
+        );
+
+        $this->assertSame(
+            'active',
+            $lease->status
+        );
+
+        $this->assertNull(
+            $lease->termination_notice_date
+        );
+
+        $this->assertSame(
+            2400,
+            $lease->rent_amount
+        );
+
+        $this->assertSame(
+            2,
+            $lease->termVersions()->count()
+        );
+
+        $this->assertDatabaseHas(
+            'activity_logs',
+            [
+                'action' => 'lease.extended',
+                'entity_type' => 'lease',
+                'entity_id' => $lease->id,
+            ]
+        );
+    }
+
+    public function test_terminated_lease_reactivation_is_blocked_by_active_occupancy_conflict(): void
     {
         [$lease, $user] =
             $this->leaseFixture([
                 'status' => 'terminated',
             ]);
+
+        Lease::create([
+            'unit_id' => $lease->unit_id,
+            'tenant_id' => $lease->tenant_id,
+            'agent_id' => null,
+            'start_date' => '2027-01-01',
+            'end_date' => '2027-12-31',
+            'status' => 'active',
+            'termination_notice_date' => null,
+            'rent_amount' => 3000,
+            'payment_frequency' => 'monthly',
+            'due_day' => 1,
+            'vat_rate' => 18,
+            'proration_amount' => 0,
+            'security_deposit_amount' => 0,
+            'advance_payment_amount' => 0,
+            'rent_reserve_amount' => 0,
+            'rent_increment_type' => 'none',
+            'rent_increment_value' => 0,
+            'next_rent_increment_date' => null,
+            'management_fee_type' => 'none',
+            'management_fee_value' => 0,
+            'agent_commission_amount' => 0,
+            'notes' => 'Conflicting active Lease',
+        ]);
+
+        Sanctum::actingAs($user);
+
+        app(
+            LeaseTermVersionService::class
+        )->ensureBaseline($lease);
+
+        $response =
+            $this->postJson(
+                "/api/leases/{$lease->id}/extend",
+                $this->payload()
+            );
+
+        $response->assertStatus(422);
+
+        $this->assertSame(
+            'terminated',
+            $lease->fresh()->status
+        );
+
+        $this->assertSame(
+            1,
+            $lease->termVersions()->count()
+        );
+
+        $this->assertSame(
+            0,
+            ActivityLog::query()
+                ->where(
+                    'action',
+                    'lease.extended'
+                )
+                ->where(
+                    'entity_type',
+                    'lease'
+                )
+                ->where(
+                    'entity_id',
+                    $lease->id
+                )
+                ->count()
+        );
+    }
+
+    public function test_terminated_lease_reactivation_ignores_draft_lease_on_same_unit(): void
+    {
+        [$lease, $user] =
+            $this->leaseFixture([
+                'status' => 'terminated',
+            ]);
+
+        Lease::create([
+            'unit_id' => $lease->unit_id,
+            'tenant_id' => $lease->tenant_id,
+            'agent_id' => null,
+            'start_date' => '2028-01-01',
+            'end_date' => '2028-12-31',
+            'status' => 'draft',
+            'termination_notice_date' => null,
+            'rent_amount' => 3000,
+            'payment_frequency' => 'monthly',
+            'due_day' => 1,
+            'vat_rate' => 18,
+            'proration_amount' => 0,
+            'security_deposit_amount' => 0,
+            'advance_payment_amount' => 0,
+            'rent_reserve_amount' => 0,
+            'rent_increment_type' => 'none',
+            'rent_increment_value' => 0,
+            'next_rent_increment_date' => null,
+            'management_fee_type' => 'none',
+            'management_fee_value' => 0,
+            'agent_commission_amount' => 0,
+            'notes' => 'Future draft Lease',
+        ]);
 
         Sanctum::actingAs($user);
 
@@ -250,17 +412,11 @@ class LeaseExtendTest extends TestCase
         $this->postJson(
             "/api/leases/{$lease->id}/extend",
             $this->payload()
-        )
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(
-                'lease'
-            );
+        )->assertOk();
 
         $this->assertSame(
-            'terminated',
-            $lease
-                ->fresh()
-                ->status
+            'active',
+            $lease->fresh()->status
         );
     }
 

@@ -40,8 +40,7 @@ class LeaseExtendService
 
     public function __construct(
         private readonly LeaseTermVersionService $termVersions
-    ) {
-    }
+    ) {}
 
     /**
      * Apply a controlled extension while preserving the superseded
@@ -69,6 +68,46 @@ class LeaseExtendService
                         ->whereKey($lease->id)
                         ->lockForUpdate()
                         ->firstOrFail();
+
+                $reactivating =
+                    $lease->status === 'terminated';
+
+                /*
+                 * Reactivation is permitted only when this Unit has no other
+                 * operationally occupying Lease. Lock all Lease rows for the
+                 * Unit so concurrent lifecycle operations cannot both claim
+                 * the same Unit.
+                 *
+                 * Draft and terminated Leases do not occupy the Unit.
+                 * A Lease under termination notice remains operational until
+                 * termination is completed and therefore still conflicts.
+                 */
+                if ($reactivating) {
+                    $unitLeases =
+                        Lease::query()
+                            ->where(
+                                'unit_id',
+                                $lease->unit_id
+                            )
+                            ->lockForUpdate()
+                            ->get();
+
+                    $occupancyConflict =
+                        $unitLeases->contains(
+                            fn (Lease $candidate): bool => $candidate->id !== $lease->id
+                                && in_array(
+                                    $candidate->status,
+                                    ['active', 'notice'],
+                                    true
+                                )
+                        );
+
+                    if ($occupancyConflict) {
+                        throw new RuntimeException(
+                            'This terminated Lease cannot be reactivated because the Unit is occupied by another Lease.'
+                        );
+                    }
+                }
 
                 $this->termVersions->ensureBaseline(
                     $lease
@@ -168,7 +207,19 @@ class LeaseExtendService
 
                 /*
                  * Lease remains the operational source for current terms.
+                 *
+                 * Reactivation restores lifecycle state only. It deliberately
+                 * does not recreate, reverse or rewrite historical financial
+                 * transactions. Those records remain historical truth.
                  */
+                if ($reactivating) {
+                    $attributes['status'] =
+                        'active';
+
+                    $attributes['termination_notice_date'] =
+                        null;
+                }
+
                 $lease->update(
                     $attributes
                 );
@@ -194,18 +245,16 @@ class LeaseExtendService
                         $latest->id
                     )
                     ->update([
-                        'effective_to' =>
-                            $effectiveFrom
-                                ->subDay()
-                                ->toDateString(),
+                        'effective_to' => $effectiveFrom
+                            ->subDay()
+                            ->toDateString(),
                     ]);
 
                 $this->termVersions->append(
                     lease: $lease,
                     eventType: 'extension',
-                    effectiveFrom:
-                        $effectiveFrom
-                            ->toDateString(),
+                    effectiveFrom: $effectiveFrom
+                        ->toDateString(),
                     terms: $newTerms,
                     actor: $actor
                 );

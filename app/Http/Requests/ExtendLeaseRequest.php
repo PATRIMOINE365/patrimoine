@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -122,24 +123,15 @@ class ExtendLeaseRequest extends FormRequest
                 }
 
                 /*
-                 * Phase 8B establishes normal controlled extension first.
-                 * Reactivation of a fully Terminated Lease requires the
-                 * separate occupancy/financial safeguards frozen for Phase 8
-                 * and is deliberately not approximated here.
+                 * A fully Terminated Lease may be reactivated through the
+                 * controlled Extend workflow. The mutation service performs
+                 * the authoritative occupancy-conflict check while holding
+                 * the relevant database locks.
                  */
-                if ($lease->status === 'terminated') {
-                    $validator->errors()->add(
-                        'lease',
-                        'Terminated Lease reactivation is not available through this Extend step yet.'
-                    );
-
-                    return;
-                }
-
                 if (
                     ! in_array(
                         $lease->status,
-                        ['draft', 'active'],
+                        ['draft', 'active', 'terminated'],
                         true
                     )
                 ) {
@@ -152,12 +144,12 @@ class ExtendLeaseRequest extends FormRequest
                 }
 
                 $effectiveFrom =
-                    \Carbon\CarbonImmutable::parse(
+                    CarbonImmutable::parse(
                         $this->input('effective_from')
                     )->startOfDay();
 
                 $startDate =
-                    \Carbon\CarbonImmutable::parse(
+                    CarbonImmutable::parse(
                         $lease->start_date
                     )->startOfDay();
 
@@ -170,7 +162,7 @@ class ExtendLeaseRequest extends FormRequest
 
                 if ($this->filled('end_date')) {
                     $endDate =
-                        \Carbon\CarbonImmutable::parse(
+                        CarbonImmutable::parse(
                             $this->input('end_date')
                         )->startOfDay();
 
