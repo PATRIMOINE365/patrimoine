@@ -403,9 +403,10 @@ class LeaseApiTest extends TestCase
     }
 
     /**
-     * Existing Lease can be moved into termination notice state.
+     * V1.0.5 termination lifecycle transitions are no longer available
+     * through the generic Lease update endpoint.
      */
-    public function test_lease_can_be_updated_to_notice(): void
+    public function test_generic_lease_update_cannot_initiate_termination_notice(): void
     {
         $context = $this->createContext();
 
@@ -413,6 +414,8 @@ class LeaseApiTest extends TestCase
             '/api/leases',
             $this->validPayload($context)
         );
+
+        $leaseResponse->assertCreated();
 
         $leaseId = $leaseResponse->json('id');
 
@@ -428,17 +431,15 @@ class LeaseApiTest extends TestCase
         );
 
         $response
-            ->assertOk()
-            ->assertJsonPath('status', 'notice');
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'status',
+            ]);
 
-        /*
-        * MySQL stores the date-cast value with a midnight time component,
-        * while Laravel exposes it as a date through the Lease model.
-        */
         $this->assertDatabaseHas('leases', [
             'id' => $leaseId,
-            'status' => 'notice',
-            'termination_notice_date' => '2026-08-15 00:00:00',
+            'status' => 'active',
+            'termination_notice_date' => null,
         ]);
     }
 

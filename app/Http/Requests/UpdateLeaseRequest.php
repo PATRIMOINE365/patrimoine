@@ -293,6 +293,27 @@ class UpdateLeaseRequest extends FormRequest
 
     private function validateNoticeState($validator): void
     {
+        $lease = $this->route('lease');
+
+        /*
+         * V1.0.5 Phase 9:
+         * An existing Lease may no longer enter termination notice through
+         * generic editing. The dedicated termination workflow owns that
+         * lifecycle transition and its required metadata.
+         */
+        if (
+            $lease !== null
+            && $lease->status !== 'notice'
+            && $this->input('status') === 'notice'
+        ) {
+            $validator->errors()->add(
+                'status',
+                'Use the controlled termination workflow to place a Lease under termination notice.'
+            );
+
+            return;
+        }
+
         if (
             $this->input('status') === 'notice'
             && ! $this->filled('termination_notice_date')

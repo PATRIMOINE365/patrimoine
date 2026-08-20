@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExtendLeaseRequest;
+use App\Http\Requests\InitiateLeaseTerminationRequest;
 use App\Http\Requests\StoreLeaseRequest;
 use App\Http\Requests\UpdateLeaseRequest;
 use App\Models\Lease;
@@ -12,6 +13,7 @@ use App\Services\BusinessActivitySnapshotService;
 use App\Services\BusinessRecordDeletionService;
 use App\Services\LeaseHistory\LeaseFinancialHistoryService;
 use App\Services\LeaseInitializationService;
+use App\Services\LeaseTermination\LeaseTerminationInitiationService;
 use App\Services\LeaseTerms\LeaseExtendService;
 use App\Services\LeaseTerms\LeaseTermVersionService;
 use Illuminate\Http\JsonResponse;
@@ -525,8 +527,7 @@ class LeaseController extends Controller
         } catch (\RuntimeException $exception) {
             return response()->json(
                 [
-                    'message' =>
-                        $exception->getMessage(),
+                    'message' => $exception->getMessage(),
                 ],
                 422
             );
@@ -555,17 +556,15 @@ class LeaseController extends Controller
             request: $request,
             entityType: 'lease',
             entityId: $lease->id,
-            entityLabel:
-                $snapshots->leaseLabel(
-                    $lease
-                ),
+            entityLabel: $snapshots->leaseLabel(
+                $lease
+            ),
             before: $before,
             after: $after,
             metadata: [
-                'effective_from' =>
-                    $request->validated(
-                        'effective_from'
-                    ),
+                'effective_from' => $request->validated(
+                    'effective_from'
+                ),
             ],
         );
 
@@ -579,6 +578,63 @@ class LeaseController extends Controller
                 'tenantFundAccounts.transactions',
                 'termVersions',
             ])
+        );
+    }
+
+    /**
+     * Initiate the controlled Lease termination workflow.
+     *
+     * This operation establishes termination intent only. Financial
+     * settlement, final-period billing, documents and completion belong
+     * to later controlled termination checkpoints.
+     */
+    public function initiateTermination(
+        InitiateLeaseTerminationRequest $request,
+        Lease $lease,
+        LeaseTerminationInitiationService $terminations,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
+    ): JsonResponse {
+        $validated = $request->validated();
+
+        $before = $snapshots->lease(
+            $lease->load([
+                'unit.building',
+                'tenant',
+                'agent',
+            ])
+        );
+
+        $lease = $terminations->initiate(
+            lease: $lease,
+            noticeDate: $validated['notice_date'],
+            terminationDate: $validated['termination_date'],
+            finalRentMode: $validated['final_rent_mode']
+        );
+
+        $lease->load([
+            'unit.building',
+            'tenant',
+            'agent',
+        ]);
+
+        $activityLog->record(
+            action: 'lease.termination_initiated',
+            request: $request,
+            entityType: 'lease',
+            entityId: $lease->id,
+            entityLabel: $snapshots->leaseLabel($lease),
+            snapshot: $snapshots->lease($lease),
+            metadata: [
+                'before' => $before,
+                'notice_date' => $lease->termination_notice_date?->toDateString(),
+                'termination_date' => $lease->termination_date?->toDateString(),
+                'final_rent_mode' => $lease->termination_final_rent_mode,
+            ],
+        );
+
+        return response()->json(
+            $lease
         );
     }
 
