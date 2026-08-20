@@ -138,15 +138,25 @@ class SecurityDepositController extends Controller
         }
 
         /*
-         * Deductions are part of final Lease close-out.
+         * V1.0.5 termination settlement records itemized Security Deposit
+         * deductions while the Lease is still Termination in Progress.
          *
-         * Prevent an active tenancy from accumulating final-settlement
-         * deductions accidentally.
+         * Completion happens only after the financial settlement is fully
+         * resolved, therefore requiring an already-Terminated Lease here
+         * would make the controlled termination workflow impossible.
+         *
+         * Preserve support for historically Terminated Leases using this
+         * pre-existing close-out endpoint, while ordinary active/draft
+         * Leases remain ineligible.
          */
-        if (
-            $lease->status
-            !== 'terminated'
-        ) {
+        $deductionAllowed =
+            $lease->status === 'terminated'
+            || (
+                $lease->status === 'notice'
+                && $lease->termination_completed_at === null
+            );
+
+        if (! $deductionAllowed) {
             throw ValidationException::withMessages([
                 'security_deposit' => [
                     __('business.security_deposit.deductions_terminated_only'),
