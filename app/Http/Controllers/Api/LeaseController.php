@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ExtendLeaseRequest;
 use App\Http\Requests\StoreLeaseRequest;
 use App\Http\Requests\UpdateLeaseRequest;
 use App\Models\Lease;
@@ -11,6 +12,7 @@ use App\Services\BusinessActivitySnapshotService;
 use App\Services\BusinessRecordDeletionService;
 use App\Services\LeaseHistory\LeaseFinancialHistoryService;
 use App\Services\LeaseInitializationService;
+use App\Services\LeaseTerms\LeaseExtendService;
 use App\Services\LeaseTerms\LeaseTermVersionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -484,6 +486,98 @@ class LeaseController extends Controller
                 'invoices',
                 'payments.allocations.invoice',
                 'tenantFundAccounts.transactions',
+            ])
+        );
+    }
+
+    /**
+     * Extend the current contractual terms of one Lease.
+     *
+     * Extend deliberately has its own endpoint rather than reusing generic
+     * Lease update because V1.0.5 permits only Rent Terms, Rent Increment
+     * and Notes to change through this lifecycle action.
+     */
+    public function extend(
+        ExtendLeaseRequest $request,
+        Lease $lease,
+        LeaseExtendService $extensions,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
+    ): JsonResponse {
+        $beforeSnapshot =
+            $snapshots->lease(
+                $lease
+                    ->fresh()
+                    ->load([
+                        'unit.building',
+                        'tenant',
+                        'agent',
+                    ])
+            );
+
+        try {
+            $lease =
+                $extensions->extend(
+                    lease: $lease,
+                    validated: $request->validated(),
+                    actor: $request->user()
+                );
+        } catch (\RuntimeException $exception) {
+            return response()->json(
+                [
+                    'message' =>
+                        $exception->getMessage(),
+                ],
+                422
+            );
+        }
+
+        $lease =
+            $lease->load([
+                'unit.building',
+                'tenant',
+                'agent',
+            ]);
+
+        $afterSnapshot =
+            $snapshots->lease(
+                $lease
+            );
+
+        [$before, $after] =
+            $snapshots->changes(
+                $beforeSnapshot,
+                $afterSnapshot
+            );
+
+        $activityLog->record(
+            action: 'lease.extended',
+            request: $request,
+            entityType: 'lease',
+            entityId: $lease->id,
+            entityLabel:
+                $snapshots->leaseLabel(
+                    $lease
+                ),
+            before: $before,
+            after: $after,
+            metadata: [
+                'effective_from' =>
+                    $request->validated(
+                        'effective_from'
+                    ),
+            ],
+        );
+
+        return response()->json(
+            $lease->load([
+                'unit.building.ownerships.party',
+                'tenant',
+                'agent',
+                'invoices',
+                'payments.allocations.invoice',
+                'tenantFundAccounts.transactions',
+                'termVersions',
             ])
         );
     }

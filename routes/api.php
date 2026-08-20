@@ -322,6 +322,11 @@ Route::middleware('auth:sanctum')->group(
                     [LeaseController::class, 'update']
                 );
 
+                Route::post(
+                    'leases/{lease}/extend',
+                    [LeaseController::class, 'extend']
+                );
+
                 /*
                  * Resending an existing business document is an explicit
                  * operational action and is therefore unavailable to Viewer.
