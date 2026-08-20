@@ -49,4 +49,9 @@ enum UserCapability: string
      * View/export the V1.0.3 Activity Log.
      */
     case ViewActivityLog = 'view_activity_log';
+
+    /**
+     * View/export the immutable V1.0.5 Financial Journal.
+     */
+    case ViewFinancialJournal = 'view_financial_journal';
 }

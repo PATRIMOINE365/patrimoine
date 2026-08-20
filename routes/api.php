@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\ConsumableAdvanceController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\EmailController;
+use App\Http\Controllers\Api\FinancialJournalController;
 use App\Http\Controllers\Api\InitialSetupController;
 use App\Http\Controllers\Api\LeaseController;
 use App\Http\Controllers\Api\LeaseFinancialHistoryExportController;
@@ -673,6 +674,32 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'reports/payments',
                     PaymentReportController::class
+                );
+            }
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Financial Journal
+        |--------------------------------------------------------------------------
+        |
+        | Administrator-only immutable accounting history.
+        |
+        | Reading, searching and filtering Journal entries are passive
+        | operations. No write, edit, reversal or delete routes exist here.
+        |
+        */
+
+        Route::middleware('capability:view_financial_journal')->group(
+            function (): void {
+                Route::get(
+                    'financial-journal',
+                    [FinancialJournalController::class, 'index']
+                );
+
+                Route::get(
+                    'financial-journal/{journalEntry}',
+                    [FinancialJournalController::class, 'show']
                 );
             }
         );

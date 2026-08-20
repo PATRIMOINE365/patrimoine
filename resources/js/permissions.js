@@ -22,6 +22,7 @@ const ROLE_CAPABILITIES = {
         'manage_settings',
         'manage_users',
         'view_activity_log',
+        'view_financial_journal',
     ]),
 
     property_manager: new Set([
