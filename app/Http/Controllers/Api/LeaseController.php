@@ -11,6 +11,7 @@ use App\Services\BusinessActivitySnapshotService;
 use App\Services\BusinessRecordDeletionService;
 use App\Services\LeaseHistory\LeaseFinancialHistoryService;
 use App\Services\LeaseInitializationService;
+use App\Services\LeaseTerms\LeaseTermVersionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -185,6 +186,7 @@ class LeaseController extends Controller
     public function store(
         StoreLeaseRequest $request,
         LeaseInitializationService $initializer,
+        LeaseTermVersionService $termVersions,
         ActivityLogService $activityLog,
         BusinessActivitySnapshotService $snapshots
     ): JsonResponse {
@@ -224,6 +226,7 @@ class LeaseController extends Controller
                 $leaseAttributes,
                 $openingFinancialData,
                 $initializer,
+                $termVersions,
                 $activityLog,
                 $request,
                 $snapshots
@@ -235,6 +238,14 @@ class LeaseController extends Controller
                 $initializer->initialize(
                     lease: $lease,
                     openingFinancialData: $openingFinancialData
+                );
+
+                /*
+                 * Preserve the initial contractual state before any future
+                 * Extend operation can supersede it.
+                 */
+                $termVersions->ensureBaseline(
+                    $lease->refresh()
                 );
 
                 $lease = $lease

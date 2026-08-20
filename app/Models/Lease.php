@@ -221,6 +221,16 @@ class Lease extends Model
     }
 
     /**
+     * Immutable contractual term history for this Lease.
+     */
+    public function termVersions(): HasMany
+    {
+        return $this->hasMany(
+            LeaseTermVersion::class
+        )->orderBy('version_number');
+    }
+
+    /**
      * Historical and scheduled rent increments for this Lease.
      *
      * The Lease stores only the current contractual rent. RentIncrement records
