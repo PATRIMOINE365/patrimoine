@@ -1026,10 +1026,27 @@ class LeaseDeletionImpactService
                 'consolidated_owner_opening_balance';
         }
 
+        /*
+         * Opening-balance source_type may be stored using either:
+         *
+         * - snake_case identifiers such as tenant_fund_account; or
+         * - model-class identifiers such as
+         *   App\\Models\\TenantFundAccount.
+         *
+         * Normalize separators so both authoritative source conventions
+         * classify identically.
+         */
+        $normalizedSourceType =
+            str_replace(
+                ['_', '-', '\\'],
+                '',
+                $sourceType
+            );
+
         if (
             str_contains(
-                $sourceType,
-                'tenant_fund'
+                $normalizedSourceType,
+                'tenantfund'
             )
         ) {
             return
