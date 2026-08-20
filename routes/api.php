@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\EmailController;
 use App\Http\Controllers\Api\FinancialJournalController;
+use App\Http\Controllers\Api\FinancialJournalExportController;
 use App\Http\Controllers\Api\InitialSetupController;
 use App\Http\Controllers\Api\LeaseController;
 use App\Http\Controllers\Api\LeaseFinancialHistoryExportController;
@@ -695,6 +696,21 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'financial-journal',
                     [FinancialJournalController::class, 'index']
+                );
+
+                Route::get(
+                    'financial-journal/pdf',
+                    [FinancialJournalExportController::class, 'pdf']
+                );
+
+                Route::get(
+                    'financial-journal/csv',
+                    [FinancialJournalExportController::class, 'csv']
+                );
+
+                Route::get(
+                    'financial-journal/xlsx',
+                    [FinancialJournalExportController::class, 'xlsx']
                 );
 
                 Route::get(
