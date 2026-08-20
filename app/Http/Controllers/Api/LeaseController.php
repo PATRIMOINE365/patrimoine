@@ -9,6 +9,7 @@ use App\Models\Lease;
 use App\Services\ActivityLogService;
 use App\Services\BusinessActivitySnapshotService;
 use App\Services\BusinessRecordDeletionService;
+use App\Services\LeaseHistory\LeaseFinancialHistoryService;
 use App\Services\LeaseInitializationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -272,6 +273,24 @@ class LeaseController extends Controller
                 'tenantFundAccounts.transactions',
             ]),
             status: 201
+        );
+    }
+
+    /**
+     * Return the canonical chronological operational financial history
+     * for one Lease.
+     *
+     * Historical presentation is owned by LeaseFinancialHistoryService so
+     * the API and browser never reconstruct financial semantics separately.
+     */
+    public function financialHistory(
+        Lease $lease,
+        LeaseFinancialHistoryService $history
+    ): JsonResponse {
+        return response()->json(
+            $history->generate(
+                $lease
+            )
         );
     }
 

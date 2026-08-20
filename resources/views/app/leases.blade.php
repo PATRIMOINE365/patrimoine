@@ -3105,6 +3105,64 @@
     </div>
 </x-drawer>
 
+
+{{-- ================================================================
+     Lease Financial History
+================================================================ --}}
+
+<x-drawer
+    id="lease-financial-history-modal"
+    backdrop-id="lease-financial-history-modal-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        title-id="lease-financial-history-modal-title"
+        description-id="lease-financial-history-modal-description"
+        close-id="lease-financial-history-modal-close"
+        close-label="Close"
+        close-label-key="leases.close"
+    >
+        <x-slot:title>
+            <span data-i18n="leases.financial_history">
+                {{ __('ui.leases.financial_history') }}
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="leases.financial_history_description">
+                {{ __('ui.leases.financial_history_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <div class="pm-lease-financial-history-drawer-body overflow-y-auto px-5 py-5">
+        <div
+            id="lease-financial-history-error"
+            class="
+                mb-5 hidden rounded-lg
+                border border-red-200
+                bg-red-50 px-4 py-3
+                text-sm text-red-700
+            "
+        ></div>
+
+        <div
+            id="lease-financial-history-loading"
+            class="py-12 text-center text-sm text-slate-400"
+        >
+            <span data-i18n="leases.financial_history_loading">
+                {{ __('ui.leases.financial_history_loading') }}
+            </span>
+        </div>
+
+        <div
+            id="lease-financial-history-content"
+            class="hidden space-y-4"
+        ></div>
+    </div>
+</x-drawer>
+
+
 {{-- ================================================================
      Tenant Funds Operational Modal
 ================================================================ --}}

@@ -11329,3 +11329,48 @@ html[data-theme="light"]
 [data-apply-security-deposit-header].hidden {
     display: none !important;
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| Phase 6 — Lease Financial History Theme
+|--------------------------------------------------------------------------
+|
+| Financial History must follow Patrimoine semantic surface/text tokens.
+| Do not hard-code light-only Slate backgrounds into dynamically rendered
+| history events.
+|
+*/
+
+.pm-lease-financial-history-event {
+    border-color: var(--pm-border);
+    background: var(--pm-surface);
+    color: var(--pm-text);
+}
+
+.pm-lease-financial-history-empty {
+    border-color: var(--pm-border);
+    background: var(--pm-surface-subtle);
+}
+
+.pm-lease-financial-history-title {
+    color: var(--pm-text);
+}
+
+.pm-lease-financial-history-muted {
+    color: var(--pm-text-muted);
+}
+
+.pm-lease-financial-history-document {
+    border-color: var(--pm-border);
+    background: var(--pm-surface);
+    color: var(--pm-text-secondary);
+}
+
+.pm-lease-financial-history-document:hover {
+    border-color: var(--pm-border-strong);
+    background: var(--pm-hover);
+    color: var(--pm-text);
+}
+
+/* END PHASE 6 LEASE FINANCIAL HISTORY THEME */

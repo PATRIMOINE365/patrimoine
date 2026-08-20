@@ -80,6 +80,13 @@ let defaultVatRate =
  */
 let leaseDrawerCloseTimer =
     null;
+
+/*
+ * Financial History drawer state.
+ */
+let leaseFinancialHistoryDrawerCloseTimer =
+    null;
+
 /*
 |--------------------------------------------------------------------------
 | Public Initializer
@@ -104,6 +111,8 @@ export async function initializeLeases() {
     initializeLeaseForm();
 
     initializeSecurityDepositModal();
+
+    initializeLeaseFinancialHistoryModal();
 
     /*
      * Register operational Tenant Funds controls.
@@ -1217,8 +1226,8 @@ function renderLeases(payload) {
             >
                 <div
                     class="
+                        pm-lease-financial-history-title
                         text-sm font-medium
-                        text-slate-900
                     "
                 >
                     ${escapeHtml(
@@ -1230,8 +1239,8 @@ function renderLeases(payload) {
 
                 <div
                     class="
+                        pm-lease-financial-history-muted
                         mt-1 text-sm
-                        text-slate-500
                     "
                 >
                     ${escapeHtml(
@@ -1481,6 +1490,29 @@ function leaseCard(lease) {
                 >
                     <button
                         type="button"
+                        data-financial-history
+                        data-lease-id="${escapeHtml(
+                            lease.id
+                        )}"
+                        class="
+                            rounded-lg
+                            border border-slate-200
+                            bg-white px-3.5 py-2
+                            text-sm font-medium
+                            text-slate-700
+                            transition
+                            hover:bg-slate-50
+                        "
+                    >
+                        ${escapeHtml(
+                            translate(
+                                'leases.financial_history'
+                            )
+                        )}
+                    </button>
+
+                    <button
+                        type="button"
                         data-tenant-funds
                         data-lease-id="${escapeHtml(
                             lease.id
@@ -1677,6 +1709,24 @@ function frequencyLabel(frequency) {
 function attachLeaseActionListeners(
     container
 ) {
+    container
+        .querySelectorAll(
+            '[data-financial-history]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        openLeaseFinancialHistoryModal(
+                            button.dataset
+                                .leaseId
+                        );
+                    }
+                );
+            }
+        );
+
     container
         .querySelectorAll(
             '[data-tenant-funds]'
@@ -4117,6 +4167,965 @@ function initializeSecurityDepositModal() {
         }
     );
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| Lease Financial History
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * Register Financial History drawer controls.
+ */
+function initializeLeaseFinancialHistoryModal() {
+    document
+        .getElementById(
+            'lease-financial-history-modal-close'
+        )
+        ?.addEventListener(
+            'click',
+            closeLeaseFinancialHistoryModal
+        );
+
+    document
+        .getElementById(
+            'lease-financial-history-modal-backdrop'
+        )
+        ?.addEventListener(
+            'click',
+            closeLeaseFinancialHistoryModal
+        );
+
+    document.addEventListener(
+        'keydown',
+        (event) => {
+            const drawer =
+                document.getElementById(
+                    'lease-financial-history-modal'
+                );
+
+            if (
+                event.key === 'Escape'
+                && drawer?.classList.contains(
+                    'pm-drawer-active'
+                )
+            ) {
+                closeLeaseFinancialHistoryModal();
+            }
+        }
+    );
+}
+
+/**
+ * Open and load the canonical financial history for one Lease.
+ */
+async function openLeaseFinancialHistoryModal(
+    leaseId
+) {
+    const numericLeaseId =
+        Number(
+            leaseId
+        );
+
+    if (
+        ! Number.isInteger(
+            numericLeaseId
+        )
+        || numericLeaseId <= 0
+    ) {
+        return;
+    }
+
+    resetLeaseFinancialHistoryModal();
+
+    const lease =
+        loadedLeasesById.get(
+            String(
+                numericLeaseId
+            )
+        );
+
+    setText(
+        'lease-financial-history-modal-description',
+        [
+            lease?.unit?.building?.name,
+            lease?.unit?.name,
+            partyDisplayName(
+                lease?.tenant
+            ),
+        ]
+            .filter(Boolean)
+            .join(' · ')
+        || translate(
+            'leases.financial_history_description'
+        )
+    );
+
+    showLeaseFinancialHistoryDrawer();
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/leases/${numericLeaseId}/financial-history`
+            );
+
+        const payload =
+            await parseJsonResponse(
+                response
+            );
+
+        renderLeaseFinancialHistory(
+            {
+                ...payload,
+
+                export_lease_id:
+                    numericLeaseId,
+            }
+        );
+    } catch (error) {
+        showLeaseFinancialHistoryError(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'leases.financial_history_unable_load'
+                )
+        );
+    }
+}
+
+function showLeaseFinancialHistoryDrawer() {
+    const drawer =
+        document.getElementById(
+            'lease-financial-history-modal'
+        );
+
+    if (! drawer) {
+        return;
+    }
+
+    if (
+        leaseFinancialHistoryDrawerCloseTimer
+        !== null
+    ) {
+        window.clearTimeout(
+            leaseFinancialHistoryDrawerCloseTimer
+        );
+
+        leaseFinancialHistoryDrawerCloseTimer =
+            null;
+    }
+
+    drawer.classList.remove(
+        'hidden',
+        'pm-drawer-open',
+        'pm-drawer-closing'
+    );
+
+    drawer.removeAttribute(
+        'hidden'
+    );
+
+    drawer.classList.add(
+        'pm-drawer-active'
+    );
+
+    drawer.setAttribute(
+        'aria-hidden',
+        'false'
+    );
+
+    document.body.classList.add(
+        'overflow-hidden'
+    );
+
+    const panel =
+        drawer.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    if (panel) {
+        void panel.getBoundingClientRect();
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    drawer.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
+    );
+}
+
+function closeLeaseFinancialHistoryModal() {
+    const drawer =
+        document.getElementById(
+            'lease-financial-history-modal'
+        );
+
+    if (
+        ! drawer
+        || ! drawer.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
+        return;
+    }
+
+    drawer.classList.remove(
+        'pm-drawer-open'
+    );
+
+    drawer.classList.add(
+        'pm-drawer-closing'
+    );
+
+    drawer.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+
+    if (
+        leaseFinancialHistoryDrawerCloseTimer
+        !== null
+    ) {
+        window.clearTimeout(
+            leaseFinancialHistoryDrawerCloseTimer
+        );
+    }
+
+    leaseFinancialHistoryDrawerCloseTimer =
+        window.setTimeout(
+            () => {
+                drawer.classList.remove(
+                    'pm-drawer-active',
+                    'pm-drawer-closing'
+                );
+
+                leaseFinancialHistoryDrawerCloseTimer =
+                    null;
+
+                const anotherDrawerOpen =
+                    document.querySelector(
+                        '.pm-drawer.pm-drawer-active'
+                    );
+
+                if (! anotherDrawerOpen) {
+                    document.body.classList.remove(
+                        'overflow-hidden'
+                    );
+                }
+
+                resetLeaseFinancialHistoryModal();
+            },
+            850
+        );
+}
+
+function resetLeaseFinancialHistoryModal() {
+    const loading =
+        document.getElementById(
+            'lease-financial-history-loading'
+        );
+
+    const content =
+        document.getElementById(
+            'lease-financial-history-content'
+        );
+
+    const error =
+        document.getElementById(
+            'lease-financial-history-error'
+        );
+
+    loading?.classList.remove(
+        'hidden'
+    );
+
+    content?.classList.add(
+        'hidden'
+    );
+
+    if (content) {
+        content.innerHTML = '';
+    }
+
+    error?.classList.add(
+        'hidden'
+    );
+
+    if (error) {
+        error.textContent = '';
+    }
+}
+
+function showLeaseFinancialHistoryError(
+    message
+) {
+    document
+        .getElementById(
+            'lease-financial-history-loading'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    const error =
+        document.getElementById(
+            'lease-financial-history-error'
+        );
+
+    if (! error) {
+        return;
+    }
+
+    error.textContent =
+        message;
+
+    error.classList.remove(
+        'hidden'
+    );
+}
+
+
+/**
+ * Download one Lease Financial History export through authenticated API.
+ */
+async function downloadLeaseFinancialHistoryExport(
+    leaseId,
+    format
+) {
+    const numericLeaseId =
+        Number(
+            leaseId
+        );
+
+    if (
+        ! Number.isInteger(
+            numericLeaseId
+        )
+        || numericLeaseId <= 0
+        || ! [
+            'pdf',
+            'xlsx',
+            'csv',
+        ].includes(
+            format
+        )
+    ) {
+        return;
+    }
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/leases/${numericLeaseId}/financial-history/${format}`
+            );
+
+        if (! response.ok) {
+            throw new Error(
+                translate(
+                    'leases.financial_history_unable_load'
+                )
+            );
+        }
+
+        const blob =
+            await response.blob();
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        const link =
+            document.createElement(
+                'a'
+            );
+
+        link.href =
+            url;
+
+        link.download =
+            `lease-financial-history-${numericLeaseId}.${format}`;
+
+        document.body.appendChild(
+            link
+        );
+
+        link.click();
+        link.remove();
+
+        window.setTimeout(
+            () => {
+                URL.revokeObjectURL(
+                    url
+                );
+            },
+            60000
+        );
+    } catch (error) {
+        showLeaseFinancialHistoryError(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'leases.financial_history_unable_load'
+                )
+        );
+    }
+}
+
+
+/**
+ * Render the three frozen Phase 6 history export actions.
+ */
+function leaseFinancialHistoryExportActions(
+    leaseId
+) {
+    const numericLeaseId =
+        Number(
+            leaseId
+        );
+
+    if (
+        ! Number.isInteger(
+            numericLeaseId
+        )
+        || numericLeaseId <= 0
+    ) {
+        return '';
+    }
+
+    return `
+        <div
+            class="
+                pm-lease-financial-history-exports
+                mb-4 grid grid-cols-3 gap-2
+            "
+        >
+            <button
+                type="button"
+                data-financial-history-export="pdf"
+                data-lease-id="${escapeHtml(
+                    numericLeaseId
+                )}"
+                class="pm-button-secondary w-full"
+            >
+                ${escapeHtml(
+                    translate(
+                        'leases.financial_history_export_pdf'
+                    )
+                )}
+            </button>
+
+            <button
+                type="button"
+                data-financial-history-export="xlsx"
+                data-lease-id="${escapeHtml(
+                    numericLeaseId
+                )}"
+                class="pm-button-secondary w-full"
+            >
+                ${escapeHtml(
+                    translate(
+                        'leases.financial_history_export_excel'
+                    )
+                )}
+            </button>
+
+            <button
+                type="button"
+                data-financial-history-export="csv"
+                data-lease-id="${escapeHtml(
+                    numericLeaseId
+                )}"
+                class="pm-button-secondary w-full"
+            >
+                ${escapeHtml(
+                    translate(
+                        'leases.financial_history_export_csv'
+                    )
+                )}
+            </button>
+        </div>
+    `;
+}
+
+
+/**
+ * Wire Financial History export actions after dynamic rendering.
+ */
+function initializeLeaseFinancialHistoryExportActions(
+    container
+) {
+    container
+        ?.querySelectorAll(
+            '[data-financial-history-export]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        await downloadLeaseFinancialHistoryExport(
+                            button.dataset.leaseId,
+                            button.dataset.financialHistoryExport
+                        );
+                    }
+                );
+            }
+        );
+}
+
+
+function renderLeaseFinancialHistory(
+    payload
+) {
+    const loading =
+        document.getElementById(
+            'lease-financial-history-loading'
+        );
+
+    const content =
+        document.getElementById(
+            'lease-financial-history-content'
+        );
+
+    if (! content) {
+        return;
+    }
+
+    loading?.classList.add(
+        'hidden'
+    );
+
+    const events =
+        Array.isArray(
+            payload?.events
+        )
+            ? payload.events
+            : [];
+
+    if (events.length === 0) {
+        content.innerHTML = `
+            ${leaseFinancialHistoryExportActions(
+                payload?.export_lease_id
+            )}
+
+            <div
+                class="
+                    pm-lease-financial-history-empty
+                    rounded-xl border border-dashed
+                    px-6 py-12 text-center
+                "
+            >
+                <div
+                    class="
+                        text-sm font-medium
+                        text-slate-900
+                    "
+                >
+                    ${escapeHtml(
+                        translate(
+                            'leases.financial_history_empty'
+                        )
+                    )}
+                </div>
+
+                <div
+                    class="
+                        mt-1 text-sm
+                        text-slate-500
+                    "
+                >
+                    ${escapeHtml(
+                        translate(
+                            'leases.financial_history_empty_description'
+                        )
+                    )}
+                </div>
+            </div>
+        `;
+
+        content.classList.remove(
+            'hidden'
+        );
+
+        initializeLeaseFinancialHistoryExportActions(
+            content
+        );
+
+        return;
+    }
+
+    content.innerHTML =
+        leaseFinancialHistoryExportActions(
+            payload?.export_lease_id
+        )
+        + events
+            .map(
+                leaseFinancialHistoryEvent
+            )
+            .join('');
+
+    content.classList.remove(
+        'hidden'
+    );
+
+    initializeLeaseFinancialHistoryExportActions(
+        content
+    );
+
+    content
+        .querySelectorAll(
+            '[data-financial-history-document]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        openLeaseFinancialHistoryDocument(
+                            button.dataset.endpoint
+                        );
+                    }
+                );
+            }
+        );
+}
+
+function leaseFinancialHistoryEvent(
+    event
+) {
+    const reference =
+        event.reference
+            ? `
+                <div
+                    class="
+                        pm-lease-financial-history-muted
+                        mt-1 text-xs
+                    "
+                >
+                    ${escapeHtml(
+                        translate(
+                            'leases.financial_history_reference'
+                        )
+                    )}:
+                    ${escapeHtml(
+                        event.reference
+                    )}
+                </div>
+            `
+            : '';
+
+    const method =
+        event.payment_method
+            ? `
+                <div
+                    class="
+                        pm-lease-financial-history-muted
+                        mt-1 text-xs
+                    "
+                >
+                    ${escapeHtml(
+                        translate(
+                            'leases.financial_history_payment_method'
+                        )
+                    )}:
+                    ${escapeHtml(
+                        financialHistoryPaymentMethodLabel(
+                            event.payment_method
+                        )
+                    )}
+                </div>
+            `
+            : '';
+
+    const fund =
+        event.fund_type
+            ? `
+                <div
+                    class="
+                        pm-lease-financial-history-muted
+                        mt-1 text-xs
+                    "
+                >
+                    ${escapeHtml(
+                        translate(
+                            'leases.financial_history_fund'
+                        )
+                    )}:
+                    ${escapeHtml(
+                        financialHistoryFundLabel(
+                            event.fund_type
+                        )
+                    )}
+                </div>
+            `
+            : '';
+
+    const documentButton =
+        event.document?.endpoint
+            ? `
+                <button
+                    type="button"
+                    data-financial-history-document
+                    data-endpoint="${escapeHtml(
+                        event.document.endpoint
+                    )}"
+                    class="
+                        pm-lease-financial-history-document
+                        mt-3 inline-flex
+                        items-center rounded-lg
+                        border px-3 py-2
+                        text-xs font-medium
+                        transition
+                    "
+                >
+                    ${escapeHtml(
+                        translate(
+                            'leases.financial_history_open_document'
+                        )
+                    )}
+                </button>
+            `
+            : '';
+
+    return `
+        <article
+            class="
+                pm-lease-financial-history-event
+                rounded-xl border p-4
+            "
+        >
+            <div
+                class="
+                    flex items-start
+                    justify-between gap-4
+                "
+            >
+                <div class="min-w-0">
+                    <div
+                        class="
+                            pm-lease-financial-history-title
+                            text-sm font-semibold
+                        "
+                    >
+                        ${escapeHtml(
+                            financialHistoryEventLabel(
+                                event
+                            )
+                        )}
+                    </div>
+
+                    <div
+                        class="
+                            pm-lease-financial-history-muted
+                            mt-1 text-xs
+                        "
+                    >
+                        ${escapeHtml(
+                            formatDate(
+                                event.occurred_on
+                            )
+                        )}
+                    </div>
+
+                    ${reference}
+                    ${method}
+                    ${fund}
+                </div>
+
+                <div
+                    class="
+                        pm-lease-financial-history-title
+                        shrink-0 text-right
+                        text-sm font-semibold
+                    "
+                >
+                    ${escapeHtml(
+                        formatCurrency(
+                            Number(
+                                event.amount
+                                ?? 0
+                            )
+                        )
+                    )}
+                </div>
+            </div>
+
+            ${documentButton}
+        </article>
+    `;
+}
+
+function financialHistoryEventLabel(
+    event
+) {
+    const key =
+        {
+            invoice:
+                'leases.financial_history_event_invoice',
+
+            payment:
+                'leases.financial_history_event_payment',
+
+            fund_deposit:
+                'leases.financial_history_event_fund_deposit',
+
+            rent_reserve_consumption:
+                'leases.financial_history_event_rent_reserve_consumption',
+
+            advance_consumption:
+                'leases.financial_history_event_advance_consumption',
+
+            withdrawal:
+                'leases.financial_history_event_withdrawal',
+
+            adjustment:
+                'leases.financial_history_event_adjustment',
+
+            security_deposit_application:
+                'leases.financial_history_event_security_application',
+
+            security_deposit_deduction:
+                'leases.financial_history_event_security_deduction',
+
+            security_deposit_settlement:
+                'leases.financial_history_event_security_settlement',
+
+            security_deposit_movement:
+                'leases.financial_history_event_security_movement',
+
+            fund_movement:
+                'leases.financial_history_event_fund_movement',
+        }[event.event_type];
+
+    if (key) {
+        return translate(
+            key
+        );
+    }
+
+    return String(
+        event.description
+        || event.event_type
+        || ''
+    );
+}
+
+function financialHistoryFundLabel(
+    type
+) {
+    const key =
+        {
+            rent_reserve:
+                'leases.financial_history_fund_rent_reserve',
+
+            consumable_advance:
+                'leases.financial_history_fund_consumable_advance',
+
+            security_deposit:
+                'leases.financial_history_fund_security_deposit',
+        }[type];
+
+    return key
+        ? translate(
+            key
+        )
+        : String(
+            type || ''
+        );
+}
+
+function financialHistoryPaymentMethodLabel(
+    method
+) {
+    const key =
+        {
+            cash:
+                'leases.financial_history_method_cash',
+
+            bank_transfer:
+                'leases.financial_history_method_bank_transfer',
+
+            mobile_money:
+                'leases.financial_history_method_mobile_payment',
+
+            momo:
+                'leases.financial_history_method_mobile_payment',
+        }[method];
+
+    return key
+        ? translate(
+            key
+        )
+        : String(
+            method || ''
+        );
+}
+
+/**
+ * Fetch and open an authenticated financial document.
+ */
+async function openLeaseFinancialHistoryDocument(
+    endpoint
+) {
+    if (! endpoint) {
+        return;
+    }
+
+    try {
+        const response =
+            await apiRequest(
+                endpoint
+            );
+
+        if (! response.ok) {
+            throw new Error(
+                translate(
+                    'leases.financial_history_unable_open_document'
+                )
+            );
+        }
+
+        const blob =
+            await response.blob();
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        window.open(
+            url,
+            '_blank',
+            'noopener,noreferrer'
+        );
+
+        window.setTimeout(
+            () => {
+                URL.revokeObjectURL(
+                    url
+                );
+            },
+            60000
+        );
+    } catch (error) {
+        showLeaseFinancialHistoryError(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'leases.financial_history_unable_open_document'
+                )
+        );
+    }
+}
+
 
 /**
  * Open the operational Security Deposit view for one Lease.

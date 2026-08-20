@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\EmailController;
 use App\Http\Controllers\Api\InitialSetupController;
 use App\Http\Controllers\Api\LeaseController;
+use App\Http\Controllers\Api\LeaseFinancialHistoryExportController;
 use App\Http\Controllers\Api\ManagingOrganisationController;
 use App\Http\Controllers\Api\OwnerAccountController;
 use App\Http\Controllers\Api\OwnerExpenseController;
@@ -210,6 +211,11 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'leases/{lease}',
                     [LeaseController::class, 'show']
+                );
+
+                Route::get(
+                    'leases/{lease}/financial-history',
+                    [LeaseController::class, 'financialHistory']
                 );
 
                 Route::get(
@@ -487,6 +493,21 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'security-deposit-settlements/{settlement}/voucher',
                     [DocumentController::class, 'securityDepositVoucher']
+                );
+
+                Route::get(
+                    'leases/{lease}/financial-history/pdf',
+                    [LeaseFinancialHistoryExportController::class, 'pdf']
+                );
+
+                Route::get(
+                    'leases/{lease}/financial-history/csv',
+                    [LeaseFinancialHistoryExportController::class, 'csv']
+                );
+
+                Route::get(
+                    'leases/{lease}/financial-history/xlsx',
+                    [LeaseFinancialHistoryExportController::class, 'xlsx']
                 );
 
                 Route::get(
