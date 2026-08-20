@@ -344,4 +344,53 @@ class ReportExportTest extends TestCase
             $contents
         );
     }
+
+    public function test_all_generic_report_xlsx_exports_can_be_downloaded(): void
+    {
+        $context = $this->createContext();
+
+        $uris = [
+            "/api/reports/owners/{$context['owner']->id}/xlsx",
+            "/api/reports/buildings/{$context['building']->id}/xlsx",
+            "/api/reports/units/{$context['unit']->id}/xlsx",
+            "/api/reports/tenants/{$context['tenant']->id}/xlsx",
+            '/api/reports/managing-organisation/xlsx',
+        ];
+
+        foreach ($uris as $uri) {
+            $response = $this->get($uri);
+
+            $response
+                ->assertOk()
+                ->assertHeader(
+                    'content-type',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                );
+
+            /*
+             * XLSX is an OPC/ZIP document and therefore begins with PK.
+             */
+            $this->assertStringStartsWith(
+                'PK',
+                $response->getContent()
+            );
+        }
+    }
+
+    public function test_generic_xlsx_export_accepts_report_date_range(): void
+    {
+        $context = $this->createContext();
+
+        $response = $this->get(
+            "/api/reports/owners/{$context['owner']->id}/xlsx"
+            .'?from=2026-08-06&to=2026-08-31'
+        );
+
+        $response->assertOk();
+
+        $this->assertStringStartsWith(
+            'PK',
+            $response->getContent()
+        );
+    }
 }

@@ -373,8 +373,8 @@
                         for="tenant-deposit-method"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="tenants.payment_method">
-                            {{ __('ui.tenants.payment_method') }}
+                        <span data-i18n="tenants.payment_method_label">
+                            {{ __('ui.tenants.payment_method_label') }}
                         </span>
                         <span class="text-red-500">*</span>
                     </label>
@@ -718,8 +718,8 @@
                         for="tenant-withdrawal-method"
                         class="mb-1.5 block text-sm font-medium text-slate-700"
                     >
-                        <span data-i18n="tenants.payment_method">
-                            {{ __('ui.tenants.payment_method') }}
+                        <span data-i18n="tenants.payment_method_label">
+                            {{ __('ui.tenants.payment_method_label') }}
                         </span>
                         <span class="text-red-500">*</span>
                     </label>

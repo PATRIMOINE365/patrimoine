@@ -21,6 +21,8 @@ use App\Http\Controllers\Api\PartyController;
 use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PaymentRegisterController;
+use App\Http\Controllers\Api\PaymentReportController;
+use App\Http\Controllers\Api\PaymentReportExportController;
 use App\Http\Controllers\Api\RentReserveController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReportExportController;
@@ -511,6 +513,21 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 Route::get(
+                    'reports/payments/pdf',
+                    [PaymentReportExportController::class, 'pdf']
+                );
+
+                Route::get(
+                    'reports/payments/csv',
+                    [PaymentReportExportController::class, 'csv']
+                );
+
+                Route::get(
+                    'reports/payments/xlsx',
+                    [PaymentReportExportController::class, 'xlsx']
+                );
+
+                Route::get(
                     'reports/owners/{party}/pdf',
                     [ReportExportController::class, 'ownerPdf']
                 );
@@ -518,6 +535,11 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'reports/owners/{party}/csv',
                     [ReportExportController::class, 'ownerCsv']
+                );
+
+                Route::get(
+                    'reports/owners/{party}/xlsx',
+                    [ReportExportController::class, 'ownerXlsx']
                 );
 
                 Route::get(
@@ -531,6 +553,11 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 Route::get(
+                    'reports/buildings/{building}/xlsx',
+                    [ReportExportController::class, 'buildingXlsx']
+                );
+
+                Route::get(
                     'reports/units/{unit}/pdf',
                     [ReportExportController::class, 'unitPdf']
                 );
@@ -538,6 +565,11 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'reports/units/{unit}/csv',
                     [ReportExportController::class, 'unitCsv']
+                );
+
+                Route::get(
+                    'reports/units/{unit}/xlsx',
+                    [ReportExportController::class, 'unitXlsx']
                 );
 
                 Route::get(
@@ -551,6 +583,11 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 Route::get(
+                    'reports/tenants/{party}/xlsx',
+                    [ReportExportController::class, 'tenantXlsx']
+                );
+
+                Route::get(
                     'reports/managing-organisation/pdf',
                     [ReportExportController::class, 'managingOrganisationPdf']
                 );
@@ -558,6 +595,11 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'reports/managing-organisation/csv',
                     [ReportExportController::class, 'managingOrganisationCsv']
+                );
+
+                Route::get(
+                    'reports/managing-organisation/xlsx',
+                    [ReportExportController::class, 'managingOrganisationXlsx']
                 );
 
                 Route::get(
@@ -583,6 +625,11 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'reports/managing-organisation',
                     [ReportController::class, 'managingOrganisation']
+                );
+
+                Route::get(
+                    'reports/payments',
+                    PaymentReportController::class
                 );
             }
         );

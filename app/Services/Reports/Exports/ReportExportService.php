@@ -5,6 +5,8 @@ namespace App\Services\Reports\Exports;
 use App\Services\ApplicationIdentityService;
 use App\Services\ApplicationPresentationFormatter;
 use Barryvdh\DomPDF\Facade\Pdf;
+use OpenSpout\Common\Entity\Row;
+use OpenSpout\Writer\XLSX\Writer;
 
 /**
  * Converts an already-calculated Patrimoine report into downloadable
@@ -505,5 +507,99 @@ class ReportExportService
                 $value
             )
         );
+    }
+
+    /**
+     * Render the same flattened report representation used by CSV
+     * as a native XLSX workbook.
+     */
+    public function xlsx(array $report): string
+    {
+        $csv = $this->csv($report);
+
+        $stream = fopen('php://temp', 'w+b');
+
+        if ($stream === false) {
+            throw new \RuntimeException(
+                'Unable to create temporary XLSX stream.'
+            );
+        }
+
+        /*
+         * OpenSpout writes to a filesystem path, so create a temporary file
+         * and return its bytes after the workbook has been closed.
+         */
+        $path = tempnam(
+            sys_get_temp_dir(),
+            'patrimoine-report-'
+        );
+
+        if ($path === false) {
+            fclose($stream);
+
+            throw new \RuntimeException(
+                'Unable to create temporary XLSX file.'
+            );
+        }
+
+        try {
+            $writer = new Writer;
+            $writer->openToFile($path);
+
+            $csvStream = fopen('php://temp', 'w+b');
+
+            if ($csvStream === false) {
+                throw new \RuntimeException(
+                    'Unable to create temporary CSV stream.'
+                );
+            }
+
+            fwrite($csvStream, $csv);
+            rewind($csvStream);
+
+            while (
+                ($values = fgetcsv(
+                    $csvStream,
+                    null,
+                    ',',
+                    '"',
+                    ''
+                )) !== false
+            ) {
+                /*
+                 * Keep the generic export faithful to CSV presentation.
+                 * Empty separator rows are retained.
+                 */
+                $writer->addRow(
+                    Row::fromValues(
+                        array_map(
+                            static fn ($value) => $value === null ? '' : $value,
+                            $values
+                        )
+                    )
+                );
+            }
+
+            fclose($csvStream);
+            $writer->close();
+
+            $contents = file_get_contents($path);
+
+            if ($contents === false) {
+                throw new \RuntimeException(
+                    'Unable to read generated XLSX file.'
+                );
+            }
+
+            return $contents;
+        } finally {
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+
+            if (is_file($path)) {
+                @unlink($path);
+            }
+        }
     }
 }
