@@ -114,6 +114,7 @@ class InvoiceGenerationService
              */
             $duplicateExists = Invoice::query()
                 ->where('lease_id', $lease->id)
+                ->where('status', '!=', 'cancelled')
                 ->whereDate(
                     'period_start',
                     $periodStart->toDateString()
@@ -303,6 +304,7 @@ class InvoiceGenerationService
 
             $exists = Invoice::query()
                 ->where('lease_id', $lease->id)
+                ->where('status', '!=', 'cancelled')
                 ->whereDate(
                     'period_start',
                     $periodStart->toDateString()

@@ -337,6 +337,16 @@ Route::middleware('auth:sanctum')->group(
                     [LeaseController::class, 'initiateTermination']
                 );
 
+                Route::post(
+                    'leases/{lease}/termination/complete',
+                    [LeaseController::class, 'completeTermination']
+                );
+
+                Route::post(
+                    'leases/{lease}/termination/cancel',
+                    [LeaseController::class, 'cancelTermination']
+                );
+
                 /*
                  * Resending an existing business document is an explicit
                  * operational action and is therefore unavailable to Viewer.

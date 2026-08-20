@@ -13,6 +13,8 @@ use App\Services\BusinessActivitySnapshotService;
 use App\Services\BusinessRecordDeletionService;
 use App\Services\LeaseHistory\LeaseFinancialHistoryService;
 use App\Services\LeaseInitializationService;
+use App\Services\LeaseTermination\LeaseTerminationCancellationService;
+use App\Services\LeaseTermination\LeaseTerminationCompletionService;
 use App\Services\LeaseTermination\LeaseTerminationInitiationService;
 use App\Services\LeaseTermination\LeaseTerminationSettlementService;
 use App\Services\LeaseTerms\LeaseExtendService;
@@ -337,6 +339,154 @@ class LeaseController extends Controller
                 422
             );
         }
+    }
+
+    /**
+     * Complete the controlled V1.0.5 Lease termination workflow.
+     *
+     * Completion is permitted only when the authoritative settlement
+     * calculator reports that no financial blockers remain.
+     */
+    public function completeTermination(
+        Request $request,
+        Lease $lease,
+        LeaseTerminationCompletionService $completion,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
+    ): JsonResponse {
+        $lease->load([
+            'unit.building',
+            'tenant',
+            'agent',
+        ]);
+
+        $before =
+            $snapshots->lease(
+                $lease
+            );
+
+        try {
+            $lease =
+                $completion->complete(
+                    $lease
+                );
+        } catch (\RuntimeException $exception) {
+            return response()->json(
+                [
+                    'message' =>
+                        $exception->getMessage(),
+                ],
+                422
+            );
+        }
+
+        $lease->load([
+            'unit.building',
+            'tenant',
+            'agent',
+        ]);
+
+        $activityLog->record(
+            action: 'lease.termination_completed',
+            request: $request,
+            entityType: 'lease',
+            entityId: $lease->id,
+            entityLabel:
+                $snapshots->leaseLabel(
+                    $lease
+                ),
+            snapshot:
+                $snapshots->lease(
+                    $lease
+                ),
+            metadata: [
+                'before' =>
+                    $before,
+
+                'termination_date' =>
+                    $lease
+                        ->termination_date
+                        ?->toDateString(),
+
+                'termination_completed_at' =>
+                    $lease
+                        ->termination_completed_at
+                        ?->toIso8601String(),
+            ],
+        );
+
+        return response()->json(
+            $lease
+        );
+    }
+
+    /**
+     * Cancel an in-progress controlled Lease termination.
+     *
+     * Cancellation restores the Lease lifecycle state while preserving
+     * immutable financial history created during termination initiation.
+     */
+    public function cancelTermination(
+        Request $request,
+        Lease $lease,
+        LeaseTerminationCancellationService $cancellation,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
+    ): JsonResponse {
+        $lease->load([
+            'unit.building',
+            'tenant',
+            'agent',
+        ]);
+
+        $before =
+            $snapshots->lease(
+                $lease
+            );
+
+        try {
+            $lease =
+                $cancellation->cancel(
+                    $lease
+                );
+        } catch (\RuntimeException|\InvalidArgumentException $exception) {
+            return response()->json(
+                [
+                    'message' =>
+                        $exception->getMessage(),
+                ],
+                422
+            );
+        }
+
+        $lease->load([
+            'unit.building',
+            'tenant',
+            'agent',
+        ]);
+
+        $activityLog->record(
+            action: 'lease.termination_cancelled',
+            request: $request,
+            entityType: 'lease',
+            entityId: $lease->id,
+            entityLabel:
+                $snapshots->leaseLabel(
+                    $lease
+                ),
+            snapshot:
+                $snapshots->lease(
+                    $lease
+                ),
+            metadata: [
+                'before' =>
+                    $before,
+            ],
+        );
+
+        return response()->json(
+            $lease
+        );
     }
 
     /**
