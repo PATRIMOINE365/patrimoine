@@ -3457,8 +3457,6 @@ function renderTenantLeases(
                                         )
                                     )}
                                 </span>
-
-                                }
                             </div>
                         </div>
                     </article>
