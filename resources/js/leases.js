@@ -125,6 +125,8 @@ export async function initializeLeases() {
 
     initializeLeaseTerminationDrawer();
 
+    initializeTerminationSettlementDrawer();
+
     initializeSecurityDepositModal();
 
     initializeLeaseFinancialHistoryModal();
@@ -1573,6 +1575,35 @@ function leaseCard(lease) {
                     </button>
 
                     ${
+                        lease.status === 'notice'
+                            ? `
+                                <button
+                                    type="button"
+                                    data-termination-settlement
+                                    data-lease-id="${escapeHtml(
+                                        lease.id
+                                    )}"
+                                    class="
+                                        rounded-lg
+                                        border border-amber-200
+                                        bg-amber-50 px-3.5 py-2
+                                        text-sm font-medium
+                                        text-amber-800
+                                        transition
+                                        hover:bg-amber-100
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        translate(
+                                            'leases.termination_settlement'
+                                        )
+                                    )}
+                                </button>
+                            `
+                            : ''
+                    }
+
+                    ${
                         !['notice', 'terminated'].includes(
                             lease.status
                         )
@@ -1807,6 +1838,24 @@ function attachLeaseActionListeners(
                     'click',
                     () => {
                         openSecurityDepositModal(
+                            button.dataset
+                                .leaseId
+                        );
+                    }
+                );
+            }
+        );
+
+    container
+        .querySelectorAll(
+            '[data-termination-settlement]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        openTerminationSettlementModal(
                             button.dataset
                                 .leaseId
                         );
@@ -3379,6 +3428,863 @@ function updateManagementFeeControls() {
 }
 
 
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Controlled Lease Termination Settlement
+|--------------------------------------------------------------------------
+|
+| This drawer is read-oriented.
+|
+| The LeaseTerminationSettlementService remains authoritative for every
+| amount and blocker. The Lease page deliberately does not reproduce
+| Tenant Deposit / Withdrawal / Adjustment workflows.
+|
+*/
+
+let terminationSettlementLeaseId =
+    null;
+
+let terminationSettlementCloseTimer =
+    null;
+
+
+function initializeTerminationSettlementDrawer() {
+    document
+        .getElementById(
+            'termination-settlement-modal-close'
+        )
+        ?.addEventListener(
+            'click',
+            closeTerminationSettlementModal
+        );
+
+    document
+        .getElementById(
+            'termination-settlement-modal-backdrop'
+        )
+        ?.addEventListener(
+            'click',
+            closeTerminationSettlementModal
+        );
+
+    document
+        .getElementById(
+            'termination-settlement-tenant-link'
+        )
+        ?.addEventListener(
+            'click',
+            openTerminationSettlementTenant
+        );
+
+    document
+        .getElementById(
+            'termination-settlement-notice'
+        )
+        ?.addEventListener(
+            'click',
+            openTerminationSettlementNotice
+        );
+
+    document
+        .getElementById(
+            'termination-settlement-cancel'
+        )
+        ?.addEventListener(
+            'click',
+            cancelLeaseTerminationFromSettlement
+        );
+
+    document
+        .getElementById(
+            'termination-settlement-complete'
+        )
+        ?.addEventListener(
+            'click',
+            completeLeaseTerminationFromSettlement
+        );
+
+    document.addEventListener(
+        'keydown',
+        (event) => {
+            const drawer =
+                document.getElementById(
+                    'termination-settlement-modal'
+                );
+
+            if (
+                event.key === 'Escape'
+                && drawer?.classList.contains(
+                    'pm-drawer-active'
+                )
+            ) {
+                closeTerminationSettlementModal();
+            }
+        }
+    );
+}
+
+
+async function openTerminationSettlementModal(
+    leaseId
+) {
+    const numericLeaseId =
+        Number(
+            leaseId
+        );
+
+    if (
+        ! Number.isInteger(
+            numericLeaseId
+        )
+        || numericLeaseId <= 0
+    ) {
+        return;
+    }
+
+    const drawer =
+        document.getElementById(
+            'termination-settlement-modal'
+        );
+
+    if (! drawer) {
+        return;
+    }
+
+    terminationSettlementLeaseId =
+        numericLeaseId;
+
+    if (
+        terminationSettlementCloseTimer
+        !== null
+    ) {
+        window.clearTimeout(
+            terminationSettlementCloseTimer
+        );
+
+        terminationSettlementCloseTimer =
+            null;
+    }
+
+    resetTerminationSettlementDrawer();
+
+    drawer.classList.remove(
+        'hidden',
+        'pm-drawer-closing'
+    );
+
+    drawer.removeAttribute(
+        'hidden'
+    );
+
+    drawer.classList.add(
+        'pm-drawer-active'
+    );
+
+    drawer.setAttribute(
+        'aria-hidden',
+        'false'
+    );
+
+    document.body.classList.add(
+        'overflow-hidden'
+    );
+
+    const panel =
+        drawer.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    if (panel) {
+        void panel.getBoundingClientRect();
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    drawer.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
+    );
+
+    await loadTerminationSettlement();
+}
+
+
+function closeTerminationSettlementModal() {
+    const drawer =
+        document.getElementById(
+            'termination-settlement-modal'
+        );
+
+    if (
+        ! drawer
+        || ! drawer.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
+        return;
+    }
+
+    drawer.classList.remove(
+        'pm-drawer-open'
+    );
+
+    drawer.classList.add(
+        'pm-drawer-closing'
+    );
+
+    drawer.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+
+    if (
+        terminationSettlementCloseTimer
+        !== null
+    ) {
+        window.clearTimeout(
+            terminationSettlementCloseTimer
+        );
+    }
+
+    terminationSettlementCloseTimer =
+        window.setTimeout(
+            () => {
+                drawer.classList.remove(
+                    'pm-drawer-active',
+                    'pm-drawer-closing'
+                );
+
+                terminationSettlementCloseTimer =
+                    null;
+
+                terminationSettlementLeaseId =
+                    null;
+
+                const anotherDrawerOpen =
+                    document.querySelector(
+                        '.pm-drawer.pm-drawer-active'
+                    );
+
+                if (! anotherDrawerOpen) {
+                    document.body.classList.remove(
+                        'overflow-hidden'
+                    );
+                }
+            },
+            850
+        );
+}
+
+
+function resetTerminationSettlementDrawer() {
+    document
+        .getElementById(
+            'termination-settlement-error'
+        )
+        ?.classList
+        .add(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'termination-settlement-loading'
+        )
+        ?.classList
+        .remove(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'termination-settlement-content'
+        )
+        ?.classList
+        .add(
+            'hidden'
+        );
+
+    const complete =
+        document.getElementById(
+            'termination-settlement-complete'
+        );
+
+    if (complete) {
+        complete.disabled =
+            true;
+    }
+}
+
+
+async function loadTerminationSettlement() {
+    if (
+        ! Number.isInteger(
+            terminationSettlementLeaseId
+        )
+    ) {
+        return;
+    }
+
+    const errorBox =
+        document.getElementById(
+            'termination-settlement-error'
+        );
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/leases/${terminationSettlementLeaseId}/termination-settlement`
+            );
+
+        const payload =
+            await parseJsonResponse(
+                response
+            );
+
+        renderTerminationSettlement(
+            payload
+        );
+
+        document
+            .getElementById(
+                'termination-settlement-loading'
+            )
+            ?.classList
+            .add(
+                'hidden'
+            );
+
+        document
+            .getElementById(
+                'termination-settlement-content'
+            )
+            ?.classList
+            .remove(
+                'hidden'
+            );
+    } catch (error) {
+        document
+            .getElementById(
+                'termination-settlement-loading'
+            )
+            ?.classList
+            .add(
+                'hidden'
+            );
+
+        if (errorBox) {
+            errorBox.textContent =
+                error instanceof Error
+                    ? error.message
+                    : translate(
+                        'leases.termination_settlement_load_failed'
+                    );
+
+            errorBox.classList.remove(
+                'hidden'
+            );
+        }
+    }
+}
+
+
+function renderTerminationSettlement(
+    payload
+) {
+    const lease =
+        payload?.lease
+        ?? {};
+
+    const debt =
+        payload?.debt
+        ?? {};
+
+    const funds =
+        payload?.funds
+        ?? {};
+
+    const security =
+        payload?.security_deposit
+        ?? {};
+
+    const settlement =
+        payload?.settlement
+        ?? {};
+
+    setText(
+        'termination-settlement-lease',
+        `#${lease.id ?? terminationSettlementLeaseId}`
+    );
+
+    setText(
+        'termination-settlement-tenant',
+        lease.tenant
+        ?? '—'
+    );
+
+    setText(
+        'termination-settlement-building',
+        lease.building
+        ?? '—'
+    );
+
+    setText(
+        'termination-settlement-unit',
+        lease.unit
+        ?? '—'
+    );
+
+    setText(
+        'termination-settlement-notice-date',
+        lease.termination_notice_date
+            ? dateForDisplay(
+                lease.termination_notice_date
+            )
+            : '—'
+    );
+
+    setText(
+        'termination-settlement-date',
+        lease.termination_date
+            ? dateForDisplay(
+                lease.termination_date
+            )
+            : '—'
+    );
+
+    setText(
+        'termination-settlement-debt',
+        formatCurrency(
+            Number(
+                debt.total_outstanding
+                ?? 0
+            )
+        )
+    );
+
+    setText(
+        'termination-settlement-rent-reserve',
+        formatCurrency(
+            Number(
+                funds.rent_reserve_remaining
+                ?? 0
+            )
+        )
+    );
+
+    setText(
+        'termination-settlement-consumable-advance',
+        formatCurrency(
+            Number(
+                funds.consumable_advance_remaining
+                ?? 0
+            )
+        )
+    );
+
+    setText(
+        'termination-settlement-security',
+        formatCurrency(
+            Number(
+                funds.security_deposit_held
+                ?? 0
+            )
+        )
+    );
+
+    setText(
+        'termination-settlement-deductions',
+        formatCurrency(
+            Number(
+                security.deduction_total
+                ?? 0
+            )
+        )
+    );
+
+    setText(
+        'termination-settlement-other-funds',
+        formatCurrency(
+            Number(
+                funds.other_tenant_funds_balance
+                ?? 0
+            )
+        )
+    );
+
+    setText(
+        'termination-settlement-owed',
+        formatCurrency(
+            Number(
+                settlement.amount_still_owed_by_tenant
+                ?? 0
+            )
+        )
+    );
+
+    setText(
+        'termination-settlement-refund',
+        formatCurrency(
+            Number(
+                settlement.potential_refundable_amount
+                ?? 0
+            )
+        )
+    );
+
+    renderTerminationSettlementBlockers(
+        settlement.blockers
+    );
+
+    const tenantButton =
+        document.getElementById(
+            'termination-settlement-tenant-link'
+        );
+
+    if (tenantButton) {
+        tenantButton.dataset.tenantId =
+            lease.tenant_id
+                ? String(
+                    lease.tenant_id
+                )
+                : '';
+
+        tenantButton.disabled =
+            ! lease.tenant_id;
+    }
+
+    const complete =
+        document.getElementById(
+            'termination-settlement-complete'
+        );
+
+    if (complete) {
+        complete.disabled =
+            settlement.can_complete
+            !== true;
+    }
+
+    const notice =
+        document.getElementById(
+            'termination-settlement-notice'
+        );
+
+    if (notice) {
+        notice.disabled =
+            ! terminationSettlementLeaseId;
+    }
+}
+
+
+function renderTerminationSettlementBlockers(
+    blockers
+) {
+    const container =
+        document.getElementById(
+            'termination-settlement-blockers'
+        );
+
+    if (! container) {
+        return;
+    }
+
+    const items =
+        Array.isArray(
+            blockers
+        )
+            ? blockers
+            : [];
+
+    if (items.length === 0) {
+        container.innerHTML = `
+            <div
+                class="
+                    rounded-xl
+                    border border-green-200
+                    bg-green-50 px-4 py-3
+                    text-sm text-green-800
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'leases.termination_no_blockers'
+                    )
+                )}
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = `
+        <div
+            class="
+                rounded-xl
+                border border-amber-200
+                bg-amber-50 px-4 py-4
+            "
+        >
+            <div
+                class="
+                    text-sm font-semibold
+                    text-amber-900
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'leases.termination_unresolved_items'
+                    )
+                )}
+            </div>
+
+            <ul
+                class="
+                    mt-2 list-disc space-y-1
+                    pl-5 text-sm text-amber-800
+                "
+            >
+                ${
+                    items
+                        .map(
+                            (blocker) => `
+                                <li>
+                                    ${escapeHtml(
+                                        blocker?.message
+                                        ?? translate(
+                                            'leases.termination_unresolved_item'
+                                        )
+                                    )}
+                                    ${
+                                        Number(
+                                            blocker?.amount
+                                            ?? 0
+                                        ) > 0
+                                            ? ` — ${escapeHtml(
+                                                formatCurrency(
+                                                    Number(
+                                                        blocker.amount
+                                                    )
+                                                )
+                                            )}`
+                                            : ''
+                                    }
+                                </li>
+                            `
+                        )
+                        .join('')
+                }
+            </ul>
+        </div>
+    `;
+}
+
+
+function openTerminationSettlementTenant() {
+    const button =
+        document.getElementById(
+            'termination-settlement-tenant-link'
+        );
+
+    const tenantId =
+        button?.dataset
+            ?.tenantId;
+
+    if (! tenantId) {
+        return;
+    }
+
+    window.location.href =
+        `/tenants?tenant_id=${encodeURIComponent(
+            tenantId
+        )}`;
+}
+
+
+async function openTerminationSettlementNotice() {
+    if (
+        ! Number.isInteger(
+            terminationSettlementLeaseId
+        )
+    ) {
+        return;
+    }
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/leases/${terminationSettlementLeaseId}/termination-notice/pdf`
+            );
+
+        if (! response.ok) {
+            throw new Error(
+                translate(
+                    'leases.termination_notice_unable_open'
+                )
+            );
+        }
+
+        const blob =
+            await response.blob();
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        window.open(
+            url,
+            '_blank',
+            'noopener,noreferrer'
+        );
+
+        window.setTimeout(
+            () => {
+                URL.revokeObjectURL(
+                    url
+                );
+            },
+            60000
+        );
+    } catch (error) {
+        window.alert(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'leases.termination_notice_unable_open'
+                )
+        );
+    }
+}
+
+
+async function cancelLeaseTerminationFromSettlement() {
+    if (
+        ! Number.isInteger(
+            terminationSettlementLeaseId
+        )
+    ) {
+        return;
+    }
+
+    if (
+        ! window.confirm(
+            translate(
+                'leases.confirm_cancel_termination'
+            )
+        )
+    ) {
+        return;
+    }
+
+    const button =
+        document.getElementById(
+            'termination-settlement-cancel'
+        );
+
+    try {
+        if (button) {
+            button.disabled =
+                true;
+        }
+
+        const response =
+            await apiRequest(
+                `/api/leases/${terminationSettlementLeaseId}/termination/cancel`,
+                {
+                    method:
+                        'POST',
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        closeTerminationSettlementModal();
+
+        await loadLeases();
+    } catch (error) {
+        window.alert(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'leases.termination_cancel_failed'
+                )
+        );
+    } finally {
+        if (button) {
+            button.disabled =
+                false;
+        }
+    }
+}
+
+
+async function completeLeaseTerminationFromSettlement() {
+    if (
+        ! Number.isInteger(
+            terminationSettlementLeaseId
+        )
+    ) {
+        return;
+    }
+
+    const button =
+        document.getElementById(
+            'termination-settlement-complete'
+        );
+
+    if (
+        button?.disabled
+        || ! window.confirm(
+            translate(
+                'leases.confirm_complete_termination'
+            )
+        )
+    ) {
+        return;
+    }
+
+    try {
+        button.disabled =
+            true;
+
+        const response =
+            await apiRequest(
+                `/api/leases/${terminationSettlementLeaseId}/termination/complete`,
+                {
+                    method:
+                        'POST',
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        closeTerminationSettlementModal();
+
+        await loadLeases();
+    } catch (error) {
+        window.alert(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'leases.termination_complete_failed'
+                )
+        );
+
+        await loadTerminationSettlement();
+    }
+}
 
 
 /*
@@ -6546,9 +7452,17 @@ function renderSecurityDepositPosition(
         position?.settlement
         ?? null;
 
+    const terminationInProgress =
+        lease?.status
+        === 'notice';
+
     const terminated =
         lease?.status
         === 'terminated';
+
+    const deductionsAllowed =
+        terminationInProgress
+        || terminated;
 
     const deductionForm =
         document.getElementById(
@@ -6623,11 +7537,11 @@ function renderSecurityDepositPosition(
         return;
     }
 
-    if (! terminated) {
+    if (! deductionsAllowed) {
         if (lifecycle) {
             lifecycle.textContent =
                 translate(
-                    'leases.security_available_after_termination'
+                    'leases.security_available_during_termination'
                 );
 
             lifecycle.classList.remove(
@@ -6638,13 +7552,32 @@ function renderSecurityDepositPosition(
         return;
     }
 
+    /*
+     * V1.0.5 permits itemized Security Deposit deductions while
+     * termination is in progress.
+     */
     deductionForm?.classList.remove(
         'hidden'
     );
 
-    settlementForm?.classList.remove(
-        'hidden'
-    );
+    /*
+     * The existing final Security Deposit settlement remains available
+     * only after the Lease has actually completed termination.
+     */
+    if (terminated) {
+        settlementForm?.classList.remove(
+            'hidden'
+        );
+    } else if (lifecycle) {
+        lifecycle.textContent =
+            translate(
+                'leases.security_deductions_during_termination'
+            );
+
+        lifecycle.classList.remove(
+            'hidden'
+        );
+    }
 
     /*
      * Default operational dates to today while still allowing the Property

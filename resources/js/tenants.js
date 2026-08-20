@@ -997,6 +997,13 @@ async function loadTenants(
             return;
         }
 
+        const requestedTenantId =
+            new URLSearchParams(
+                window.location.search
+            ).get(
+                'tenant_id'
+            );
+
         const selectedTenantStillVisible =
             tenants.some(
                 (tenant) =>
@@ -1007,10 +1014,20 @@ async function loadTenants(
                     )
             );
 
+        /*
+         * An explicit Tenant deep-link wins even when that Tenant is not
+         * present in the current directory page. selectTenant() loads the
+         * Party directly by ID, so the hand-off remains deterministic for
+         * large Tenant directories.
+         */
         const tenantToSelect =
-            selectedTenantStillVisible
-                ? selectedTenantId
-                : tenants[0].id;
+            requestedTenantId
+                ? requestedTenantId
+                : (
+                    selectedTenantStillVisible
+                        ? selectedTenantId
+                        : tenants[0].id
+                );
 
         await selectTenant(
             tenantToSelect

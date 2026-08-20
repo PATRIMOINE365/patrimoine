@@ -119,4 +119,159 @@ class LeaseTerminationUiTest extends TestCase
             );
         }
     }
+
+
+    public function test_termination_in_progress_ui_exposes_settlement_workflow(): void
+    {
+        $javascript =
+            file_get_contents(
+                resource_path(
+                    'js/leases.js'
+                )
+            );
+
+        $blade =
+            file_get_contents(
+                resource_path(
+                    'views/app/leases.blade.php'
+                )
+            );
+
+        $this->assertStringContainsString(
+            'data-termination-settlement',
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            '/termination-settlement',
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            '/termination/complete',
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            '/termination/cancel',
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            'id="termination-settlement-modal"',
+            $blade
+        );
+
+        $this->assertStringContainsString(
+            'id="termination-settlement-blockers"',
+            $blade
+        );
+
+        $this->assertStringContainsString(
+            'id="termination-settlement-complete"',
+            $blade
+        );
+
+        $this->assertStringContainsString(
+            'id="termination-settlement-cancel"',
+            $blade
+        );
+    }
+
+    public function test_termination_settlement_hands_financial_resolution_to_tenant_workspace(): void
+    {
+        $leaseJavascript =
+            file_get_contents(
+                resource_path(
+                    'js/leases.js'
+                )
+            );
+
+        $tenantJavascript =
+            file_get_contents(
+                resource_path(
+                    'js/tenants.js'
+                )
+            );
+
+        $this->assertStringContainsString(
+            '/tenants?tenant_id=',
+            $leaseJavascript
+        );
+
+        $this->assertStringContainsString(
+            "'tenant_id'",
+            $tenantJavascript
+        );
+
+        $this->assertStringContainsString(
+            'requestedTenantId',
+            $tenantJavascript
+        );
+    }
+
+    public function test_security_deposit_deductions_are_available_during_notice_but_final_settlement_remains_terminated_only(): void
+    {
+        $javascript =
+            file_get_contents(
+                resource_path(
+                    'js/leases.js'
+                )
+            );
+
+        $this->assertStringContainsString(
+            'const terminationInProgress',
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            'const deductionsAllowed',
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            'deductionForm?.classList.remove',
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            'if (terminated)',
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            'settlementForm?.classList.remove',
+            $javascript
+        );
+    }
+
+    public function test_settlement_mutations_are_classified_for_browser_rbac(): void
+    {
+        $permissions =
+            file_get_contents(
+                resource_path(
+                    'js/permissions.js'
+                )
+            );
+
+        $this->assertStringContainsString(
+            '#termination-settlement-complete',
+            $permissions
+        );
+
+        $this->assertStringContainsString(
+            '#termination-settlement-cancel',
+            $permissions
+        );
+
+        /*
+         * The Settlement action itself remains readable for Viewer because
+         * the settlement endpoint is intentionally read-only.
+         */
+        $this->assertStringNotContainsString(
+            "'[data-termination-settlement]'",
+            $permissions
+        );
+    }
+
 }

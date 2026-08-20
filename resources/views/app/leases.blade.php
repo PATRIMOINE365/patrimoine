@@ -4051,6 +4051,394 @@
 </x-drawer>
 
 
+
+{{-- ================================================================
+     V1.0.5 Lease Termination Settlement
+================================================================ --}}
+
+<x-drawer
+    id="termination-settlement-modal"
+    backdrop-id="termination-settlement-modal-backdrop"
+    width="lg"
+>
+    <x-drawer-header
+        title-id="termination-settlement-modal-title"
+        description-id="termination-settlement-modal-description"
+        close-id="termination-settlement-modal-close"
+        close-label="Close"
+        close-label-key="leases.close"
+    >
+        <x-slot:title>
+            <span data-i18n="leases.termination_settlement">
+                Termination Settlement
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="leases.termination_settlement_description">
+                Review the financial position and resolve every blocker before completing termination.
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <div class="overflow-y-auto px-5 py-5">
+        <div
+            id="termination-settlement-error"
+            class="
+                mb-5 hidden rounded-lg
+                border border-red-200
+                bg-red-50 px-4 py-3
+                text-sm text-red-700
+            "
+        ></div>
+
+        <div
+            id="termination-settlement-loading"
+            class="
+                py-12 text-center
+                text-sm text-slate-400
+            "
+        >
+            <span data-i18n="leases.termination_settlement_loading">
+                Loading settlement…
+            </span>
+        </div>
+
+        <div
+            id="termination-settlement-content"
+            class="hidden space-y-6"
+        >
+            {{-- Lease Context --}}
+            <section
+                class="
+                    rounded-xl border
+                    border-slate-200
+                    bg-slate-50 p-5
+                "
+            >
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <div class="text-xs text-slate-500">
+                            <span data-i18n="leases.lease">
+                                Lease
+                            </span>
+                        </div>
+
+                        <div
+                            id="termination-settlement-lease"
+                            class="
+                                mt-1 text-sm font-semibold
+                                text-slate-950
+                            "
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-xs text-slate-500">
+                            <span data-i18n="leases.tenant">
+                                Tenant
+                            </span>
+                        </div>
+
+                        <div
+                            id="termination-settlement-tenant"
+                            class="
+                                mt-1 text-sm font-semibold
+                                text-slate-950
+                            "
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-xs text-slate-500">
+                            <span data-i18n="leases.property">
+                                Property
+                            </span>
+                        </div>
+
+                        <div
+                            id="termination-settlement-building"
+                            class="
+                                mt-1 text-sm font-medium
+                                text-slate-800
+                            "
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-xs text-slate-500">
+                            <span data-i18n="leases.unit">
+                                Unit
+                            </span>
+                        </div>
+
+                        <div
+                            id="termination-settlement-unit"
+                            class="
+                                mt-1 text-sm font-medium
+                                text-slate-800
+                            "
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-xs text-slate-500">
+                            <span data-i18n="leases.notice_date">
+                                Notice Date
+                            </span>
+                        </div>
+
+                        <div
+                            id="termination-settlement-notice-date"
+                            class="
+                                mt-1 text-sm font-medium
+                                text-slate-800
+                            "
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-xs text-slate-500">
+                            <span data-i18n="leases.termination_date">
+                                Termination / Vacate Date
+                            </span>
+                        </div>
+
+                        <div
+                            id="termination-settlement-date"
+                            class="
+                                mt-1 text-sm font-medium
+                                text-slate-800
+                            "
+                        >
+                            —
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {{-- Financial Position --}}
+            <section>
+                <h3
+                    class="
+                        text-sm font-semibold
+                        text-slate-950
+                    "
+                >
+                    <span data-i18n="leases.termination_financial_position">
+                        Financial Position
+                    </span>
+                </h3>
+
+                <div
+                    class="
+                        mt-4 grid gap-3
+                        sm:grid-cols-2
+                        lg:grid-cols-4
+                    "
+                >
+                    @foreach ([
+                        [
+                            'termination-settlement-debt',
+                            'leases.outstanding_debt',
+                            'Outstanding Debt',
+                        ],
+                        [
+                            'termination-settlement-rent-reserve',
+                            'leases.rent_reserve',
+                            'Rent Reserve',
+                        ],
+                        [
+                            'termination-settlement-consumable-advance',
+                            'leases.consumable_advance',
+                            'Consumable Advance',
+                        ],
+                        [
+                            'termination-settlement-security',
+                            'leases.security_deposit',
+                            'Security Deposit',
+                        ],
+                        [
+                            'termination-settlement-deductions',
+                            'leases.security_deposit_deductions',
+                            'Security Deposit Deductions',
+                        ],
+                        [
+                            'termination-settlement-other-funds',
+                            'leases.other_tenant_funds',
+                            'Other Tenant Funds',
+                        ],
+                        [
+                            'termination-settlement-owed',
+                            'leases.amount_still_owed',
+                            'Amount Still Owed',
+                        ],
+                        [
+                            'termination-settlement-refund',
+                            'leases.final_refundable_amount',
+                            'Potential Refundable Amount',
+                        ],
+                    ] as [$id, $key, $label])
+                        <div
+                            class="
+                                rounded-xl border
+                                border-slate-200
+                                bg-white p-4
+                            "
+                        >
+                            <div class="text-xs text-slate-500">
+                                <span data-i18n="{{ $key }}">
+                                    {{ $label }}
+                                </span>
+                            </div>
+
+                            <div
+                                id="{{ $id }}"
+                                class="
+                                    mt-2 text-lg font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                —
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+
+            {{-- Completion Blockers --}}
+            <section>
+                <div
+                    id="termination-settlement-blockers"
+                ></div>
+            </section>
+
+            {{-- Operational hand-off --}}
+            <section
+                class="
+                    rounded-xl border
+                    border-slate-200
+                    bg-slate-50 p-4
+                "
+            >
+                <p
+                    class="
+                        text-sm leading-6
+                        text-slate-600
+                    "
+                >
+                    <span data-i18n="leases.termination_resolve_from_tenant">
+                        Resolve debt, held funds and refunds from the Tenant workspace. Financial operations are not duplicated on the Lease page.
+                    </span>
+                </p>
+
+                <div class="mt-4 flex flex-wrap gap-3">
+                    <button
+                        id="termination-settlement-tenant-link"
+                        type="button"
+                        class="
+                            rounded-lg
+                            bg-patrimoine-950
+                            px-4 py-2.5
+                            text-sm font-medium
+                            text-white
+                            hover:bg-patrimoine-900
+                            disabled:cursor-not-allowed
+                            disabled:opacity-50
+                        "
+                    >
+                        <span data-i18n="leases.go_to_tenant">
+                            Go to Tenant
+                        </span>
+                    </button>
+
+                    <button
+                        id="termination-settlement-notice"
+                        type="button"
+                        class="
+                            rounded-lg border
+                            border-slate-300
+                            bg-white px-4 py-2.5
+                            text-sm font-medium
+                            text-slate-700
+                            hover:bg-slate-50
+                            disabled:cursor-not-allowed
+                            disabled:opacity-50
+                        "
+                    >
+                        <span data-i18n="leases.open_termination_notice">
+                            Open Termination Notice
+                        </span>
+                    </button>
+                </div>
+            </section>
+
+            {{-- Lifecycle controls --}}
+            <section
+                class="
+                    border-t border-slate-200
+                    pt-5
+                "
+            >
+                <div
+                    class="
+                        flex flex-col-reverse gap-3
+                        sm:flex-row sm:justify-end
+                    "
+                >
+                    <button
+                        id="termination-settlement-cancel"
+                        type="button"
+                        class="
+                            rounded-lg border
+                            border-red-300
+                            bg-white px-4 py-2.5
+                            text-sm font-medium
+                            text-red-700
+                            hover:bg-red-50
+                        "
+                    >
+                        <span data-i18n="leases.cancel_termination">
+                            Cancel Termination
+                        </span>
+                    </button>
+
+                    <button
+                        id="termination-settlement-complete"
+                        type="button"
+                        disabled
+                        class="
+                            rounded-lg
+                            bg-patrimoine-950
+                            px-4 py-2.5
+                            text-sm font-medium
+                            text-white
+                            hover:bg-patrimoine-900
+                            disabled:cursor-not-allowed
+                            disabled:opacity-50
+                        "
+                    >
+                        <span data-i18n="leases.complete_termination">
+                            Complete Termination
+                        </span>
+                    </button>
+                </div>
+            </section>
+        </div>
+    </div>
+</x-drawer>
+
+
 {{-- ================================================================
      Lease Financial History
 ================================================================ --}}
