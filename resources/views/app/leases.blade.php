@@ -2361,6 +2361,421 @@
     </form>
 </x-drawer>
 
+
+{{-- ================================================================
+     Controlled Lease Termination Drawer
+================================================================ --}}
+
+<x-drawer
+    id="lease-termination-modal"
+    backdrop-id="lease-termination-modal-backdrop"
+    width="lg"
+>
+    <x-drawer-header
+        title-id="lease-termination-modal-title"
+        description-id="lease-termination-modal-description"
+        close-id="lease-termination-modal-close"
+        close-label="Close"
+        close-label-key="leases.close"
+    >
+        <x-slot:title>
+            <span data-i18n="leases.terminate_lease">
+                Terminate Lease
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="leases.termination_description">
+                Record notice, define the vacate date and choose the final rental treatment.
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="lease-termination-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div class="flex-1 overflow-y-auto px-6 py-6">
+            <div
+                id="lease-termination-error"
+                class="
+                    mb-5 hidden rounded-lg
+                    border border-red-200
+                    bg-red-50 px-4 py-3
+                    text-sm text-red-700
+                "
+            ></div>
+
+            <section>
+                <h3
+                    class="
+                        text-sm font-semibold
+                        uppercase tracking-wide
+                        text-slate-500
+                    "
+                    data-i18n="leases.lease_context"
+                >
+                    Lease Context
+                </h3>
+
+                <div
+                    class="
+                        mt-4 grid gap-4
+                        rounded-xl border
+                        border-slate-200
+                        bg-slate-50 p-4
+                        sm:grid-cols-2
+                    "
+                >
+                    <div>
+                        <div class="text-xs text-slate-500">
+                            <span data-i18n="leases.lease">
+                                Lease
+                            </span>
+                        </div>
+                        <div
+                            id="lease-termination-context-reference"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="leases.tenant"
+                        >
+                            Tenant
+                        </div>
+                        <div
+                            id="lease-termination-context-tenant"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="leases.property"
+                        >
+                            Property
+                        </div>
+                        <div
+                            id="lease-termination-context-building"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="leases.unit"
+                        >
+                            Unit
+                        </div>
+                        <div
+                            id="lease-termination-context-unit"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="leases.status"
+                        >
+                            Status
+                        </div>
+                        <div
+                            id="lease-termination-context-status"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section
+                class="
+                    mt-8 border-t
+                    border-slate-100 pt-7
+                "
+            >
+                <h3
+                    class="
+                        text-sm font-semibold
+                        uppercase tracking-wide
+                        text-slate-500
+                    "
+                    data-i18n="leases.termination_details"
+                >
+                    Termination Details
+                </h3>
+
+                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label
+                            for="lease-termination-notice-date"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.notice_date">
+                                Notice Date
+                            </span>
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            id="lease-termination-notice-date"
+                            data-pm-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            type="text"
+                            required
+                            placeholder="DD-MM-YYYY"
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-termination-date"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.termination_date">
+                                Termination / Vacate Date
+                            </span>
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            id="lease-termination-date"
+                            data-pm-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            type="text"
+                            required
+                            placeholder="DD-MM-YYYY"
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+                </div>
+            </section>
+
+            <section
+                class="
+                    mt-8 border-t
+                    border-slate-100 pt-7
+                "
+            >
+                <h3
+                    class="
+                        text-sm font-semibold
+                        uppercase tracking-wide
+                        text-slate-500
+                    "
+                    data-i18n="leases.final_rent_treatment"
+                >
+                    Final Rental Period
+                </h3>
+
+                <div class="mt-4 space-y-3">
+                    <label
+                        class="
+                            flex items-start gap-3
+                            rounded-xl border border-slate-200
+                            p-4
+                        "
+                    >
+                        <input
+                            type="radio"
+                            name="lease-termination-final-rent-mode"
+                            value="prorate"
+                            checked
+                            class="mt-1"
+                        >
+
+                        <span>
+                            <span
+                                class="block text-sm font-medium text-slate-900"
+                                data-i18n="leases.final_rent_prorate"
+                            >
+                                Prorate final period
+                            </span>
+
+                            <span
+                                class="mt-1 block text-xs text-slate-500"
+                                data-i18n="leases.final_rent_prorate_help"
+                            >
+                                Charge rent only through the selected termination date.
+                            </span>
+                        </span>
+                    </label>
+
+                    <label
+                        class="
+                            flex items-start gap-3
+                            rounded-xl border border-slate-200
+                            p-4
+                        "
+                    >
+                        <input
+                            type="radio"
+                            name="lease-termination-final-rent-mode"
+                            value="full"
+                            class="mt-1"
+                        >
+
+                        <span>
+                            <span
+                                class="block text-sm font-medium text-slate-900"
+                                data-i18n="leases.final_rent_full"
+                            >
+                                Charge full period
+                            </span>
+
+                            <span
+                                class="mt-1 block text-xs text-slate-500"
+                                data-i18n="leases.final_rent_full_help"
+                            >
+                                Charge the full contractual billing period containing the termination date.
+                            </span>
+                        </span>
+                    </label>
+
+                    <label
+                        class="
+                            flex items-start gap-3
+                            rounded-xl border border-slate-200
+                            p-4
+                        "
+                    >
+                        <input
+                            type="radio"
+                            name="lease-termination-final-rent-mode"
+                            value="none"
+                            class="mt-1"
+                        >
+
+                        <span>
+                            <span
+                                class="block text-sm font-medium text-slate-900"
+                                data-i18n="leases.final_rent_none"
+                            >
+                                No final rent
+                            </span>
+
+                            <span
+                                class="mt-1 block text-xs text-slate-500"
+                                data-i18n="leases.final_rent_none_help"
+                            >
+                                Do not charge rent for the final partial billing period.
+                            </span>
+                        </span>
+                    </label>
+                </div>
+            </section>
+
+            <section
+                id="lease-termination-notice-actions"
+                class="
+                    mt-8 hidden
+                    border-t border-slate-100 pt-7
+                "
+            >
+                <h3
+                    class="
+                        text-sm font-semibold
+                        uppercase tracking-wide
+                        text-slate-500
+                    "
+                    data-i18n="leases.termination_notice"
+                >
+                    Termination Notice
+                </h3>
+
+                <p
+                    class="mt-2 text-sm text-slate-600"
+                    data-i18n="leases.termination_notice_ready"
+                >
+                    The Termination Notice has been generated and is ready to open.
+                </p>
+
+                <button
+                    id="lease-termination-open-notice"
+                    type="button"
+                    class="
+                        mt-4
+                        rounded-lg border border-slate-200
+                        bg-white px-3.5 py-2
+                        text-sm font-medium
+                        text-slate-700
+                        transition
+                        hover:bg-slate-50
+                    "
+                >
+                    <span data-i18n="leases.open_termination_notice">
+                        Open Termination Notice
+                    </span>
+                </button>
+            </section>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                id="lease-termination-cancel"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="leases.cancel">
+                    Cancel
+                </span>
+            </button>
+
+            <button
+                id="lease-termination-submit"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="leases.initiate_termination">
+                    Initiate Termination
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
 {{-- ================================================================
      Controlled Lease Extend Drawer
 ================================================================ --}}

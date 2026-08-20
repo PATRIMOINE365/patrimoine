@@ -84,6 +84,15 @@ let extendingLeaseId =
     null;
 
 /*
+ * Controlled V1.0.5 Termination drawer state.
+ */
+let leaseTerminationDrawerCloseTimer =
+    null;
+
+let terminatingLeaseId =
+    null;
+
+/*
  * Financial History drawer state.
  */
 let leaseFinancialHistoryDrawerCloseTimer =
@@ -113,6 +122,8 @@ export async function initializeLeases() {
     initializeLeaseForm();
 
     initializeLeaseExtendDrawer();
+
+    initializeLeaseTerminationDrawer();
 
     initializeSecurityDepositModal();
 
@@ -1562,6 +1573,37 @@ function leaseCard(lease) {
                     </button>
 
                     ${
+                        !['notice', 'terminated'].includes(
+                            lease.status
+                        )
+                            ? `
+                                <button
+                                    type="button"
+                                    data-terminate-lease
+                                    data-lease-id="${escapeHtml(
+                                        lease.id
+                                    )}"
+                                    class="
+                                        rounded-lg
+                                        border border-amber-200
+                                        bg-white px-3.5 py-2
+                                        text-sm font-medium
+                                        text-amber-700
+                                        transition
+                                        hover:bg-amber-50
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        translate(
+                                            'leases.terminate'
+                                        )
+                                    )}
+                                </button>
+                            `
+                            : ''
+                    }
+
+                    ${
                         lease.status !== 'notice'
                             ? `
                                 <button
@@ -1765,6 +1807,24 @@ function attachLeaseActionListeners(
                     'click',
                     () => {
                         openSecurityDepositModal(
+                            button.dataset
+                                .leaseId
+                        );
+                    }
+                );
+            }
+        );
+
+    container
+        .querySelectorAll(
+            '[data-terminate-lease]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        openLeaseTerminationModal(
                             button.dataset
                                 .leaseId
                         );
@@ -3319,6 +3379,529 @@ function updateManagementFeeControls() {
 }
 
 
+
+
+/*
+|--------------------------------------------------------------------------
+| Controlled Lease Termination
+|--------------------------------------------------------------------------
+*/
+
+function initializeLeaseTerminationDrawer() {
+    const form =
+        document.getElementById(
+            'lease-termination-form'
+        );
+
+    if (! form) {
+        return;
+    }
+
+    form.addEventListener(
+        'submit',
+        submitLeaseTerminationForm
+    );
+
+    document
+        .getElementById(
+            'lease-termination-cancel'
+        )
+        ?.addEventListener(
+            'click',
+            closeLeaseTerminationModal
+        );
+
+    document
+        .getElementById(
+            'lease-termination-modal-close'
+        )
+        ?.addEventListener(
+            'click',
+            closeLeaseTerminationModal
+        );
+
+    document
+        .getElementById(
+            'lease-termination-modal-backdrop'
+        )
+        ?.addEventListener(
+            'click',
+            closeLeaseTerminationModal
+        );
+
+    document
+        .getElementById(
+            'lease-termination-open-notice'
+        )
+        ?.addEventListener(
+            'click',
+            openLeaseTerminationNotice
+        );
+
+    document.addEventListener(
+        'keydown',
+        (event) => {
+            const drawer =
+                document.getElementById(
+                    'lease-termination-modal'
+                );
+
+            if (
+                event.key === 'Escape'
+                && drawer?.classList.contains(
+                    'pm-drawer-active'
+                )
+            ) {
+                closeLeaseTerminationModal();
+            }
+        }
+    );
+}
+
+function openLeaseTerminationModal(
+    leaseId
+) {
+    const numericLeaseId =
+        Number(
+            leaseId
+        );
+
+    if (
+        ! Number.isInteger(
+            numericLeaseId
+        )
+        || numericLeaseId <= 0
+    ) {
+        return;
+    }
+
+    const lease =
+        loadedLeasesById.get(
+            String(
+                numericLeaseId
+            )
+        );
+
+    if (! lease) {
+        return;
+    }
+
+    const drawer =
+        document.getElementById(
+            'lease-termination-modal'
+        );
+
+    if (! drawer) {
+        return;
+    }
+
+    if (
+        leaseTerminationDrawerCloseTimer
+        !== null
+    ) {
+        window.clearTimeout(
+            leaseTerminationDrawerCloseTimer
+        );
+
+        leaseTerminationDrawerCloseTimer =
+            null;
+    }
+
+    terminatingLeaseId =
+        numericLeaseId;
+
+    hideLeaseTerminationError();
+
+    setText(
+        'lease-termination-context-reference',
+        lease.reference
+            ?? `#${lease.id}`
+    );
+
+    setText(
+        'lease-termination-context-tenant',
+        lease.tenant?.name
+            ?? '—'
+    );
+
+    setText(
+        'lease-termination-context-building',
+        lease.unit?.building?.name
+            ?? '—'
+    );
+
+    setText(
+        'lease-termination-context-unit',
+        lease.unit?.name
+            ?? '—'
+    );
+
+    setText(
+        'lease-termination-context-status',
+        statusLabel(
+            lease.status
+        )
+    );
+
+    setFormValue(
+        'lease-termination-notice-date',
+        ''
+    );
+
+    setFormValue(
+        'lease-termination-date',
+        ''
+    );
+
+    const prorate =
+        document.querySelector(
+            'input[name="lease-termination-final-rent-mode"][value="prorate"]'
+        );
+
+    if (prorate) {
+        prorate.checked =
+            true;
+    }
+
+    document
+        .getElementById(
+            'lease-termination-notice-actions'
+        )
+        ?.classList
+        .add(
+            'hidden'
+        );
+
+    drawer.classList.remove(
+        'hidden',
+        'pm-drawer-closing'
+    );
+
+    drawer.removeAttribute(
+        'hidden'
+    );
+
+    drawer.classList.add(
+        'pm-drawer-active'
+    );
+
+    drawer.setAttribute(
+        'aria-hidden',
+        'false'
+    );
+
+    document.body.classList.add(
+        'overflow-hidden'
+    );
+
+    const panel =
+        drawer.querySelector(
+            '.pm-drawer-panel'
+        );
+
+    if (panel) {
+        void panel.getBoundingClientRect();
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            window.requestAnimationFrame(
+                () => {
+                    drawer.classList.add(
+                        'pm-drawer-open'
+                    );
+                }
+            );
+        }
+    );
+}
+
+function closeLeaseTerminationModal() {
+    const drawer =
+        document.getElementById(
+            'lease-termination-modal'
+        );
+
+    if (
+        ! drawer
+        || ! drawer.classList.contains(
+            'pm-drawer-active'
+        )
+    ) {
+        return;
+    }
+
+    drawer.classList.remove(
+        'pm-drawer-open'
+    );
+
+    drawer.classList.add(
+        'pm-drawer-closing'
+    );
+
+    drawer.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+
+    if (
+        leaseTerminationDrawerCloseTimer
+        !== null
+    ) {
+        window.clearTimeout(
+            leaseTerminationDrawerCloseTimer
+        );
+    }
+
+    leaseTerminationDrawerCloseTimer =
+        window.setTimeout(
+            () => {
+                drawer.classList.remove(
+                    'pm-drawer-active',
+                    'pm-drawer-closing'
+                );
+
+                leaseTerminationDrawerCloseTimer =
+                    null;
+
+                terminatingLeaseId =
+                    null;
+
+                document
+                    .getElementById(
+                        'lease-termination-form'
+                    )
+                    ?.reset();
+
+                hideLeaseTerminationError();
+
+                const anotherDrawerOpen =
+                    document.querySelector(
+                        '.pm-drawer.pm-drawer-active'
+                    );
+
+                if (! anotherDrawerOpen) {
+                    document.body.classList.remove(
+                        'overflow-hidden'
+                    );
+                }
+            },
+            850
+        );
+}
+
+function hideLeaseTerminationError() {
+    const element =
+        document.getElementById(
+            'lease-termination-error'
+        );
+
+    if (! element) {
+        return;
+    }
+
+    element.textContent =
+        '';
+
+    element.classList.add(
+        'hidden'
+    );
+}
+
+function showLeaseTerminationError(
+    message
+) {
+    const element =
+        document.getElementById(
+            'lease-termination-error'
+        );
+
+    if (! element) {
+        return;
+    }
+
+    element.textContent =
+        message;
+
+    element.classList.remove(
+        'hidden'
+    );
+}
+
+async function submitLeaseTerminationForm(
+    event
+) {
+    event.preventDefault();
+
+    const form =
+        document.getElementById(
+            'lease-termination-form'
+        );
+
+    const submitButton =
+        document.getElementById(
+            'lease-termination-submit'
+        );
+
+    if (
+        ! form
+        || ! submitButton
+        || ! Number.isInteger(
+            terminatingLeaseId
+        )
+    ) {
+        return;
+    }
+
+    hideLeaseTerminationError();
+
+    if (! form.reportValidity()) {
+        return;
+    }
+
+    const noticeDate =
+        dateForApi(
+            formValue(
+                'lease-termination-notice-date'
+            )
+        );
+
+    const terminationDate =
+        dateForApi(
+            formValue(
+                'lease-termination-date'
+            )
+        );
+
+    const mode =
+        document.querySelector(
+            'input[name="lease-termination-final-rent-mode"]:checked'
+        )?.value;
+
+    if (
+        ! noticeDate
+        || ! terminationDate
+        || ! mode
+    ) {
+        showLeaseTerminationError(
+            translate(
+                'leases.termination_required_fields'
+            )
+        );
+
+        return;
+    }
+
+    try {
+        submitButton.disabled =
+            true;
+
+        const response =
+            await apiRequest(
+                `/api/leases/${terminatingLeaseId}/termination`,
+                {
+                    method:
+                        'POST',
+
+                    body:
+                        JSON.stringify({
+                            notice_date:
+                                noticeDate,
+
+                            termination_date:
+                                terminationDate,
+
+                            final_rent_mode:
+                                mode,
+                        }),
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        document
+            .getElementById(
+                'lease-termination-notice-actions'
+            )
+            ?.classList
+            .remove(
+                'hidden'
+            );
+
+        await loadLeases(
+            1
+        );
+    } catch (error) {
+        showLeaseTerminationError(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'leases.termination_failed'
+                )
+        );
+    } finally {
+        submitButton.disabled =
+            false;
+    }
+}
+
+async function openLeaseTerminationNotice() {
+    if (
+        ! Number.isInteger(
+            terminatingLeaseId
+        )
+    ) {
+        return;
+    }
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/leases/${terminatingLeaseId}/termination-notice/pdf`
+            );
+
+        if (! response.ok) {
+            throw new Error(
+                translate(
+                    'leases.termination_notice_unable_open'
+                )
+            );
+        }
+
+        const blob =
+            await response.blob();
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        window.open(
+            url,
+            '_blank',
+            'noopener,noreferrer'
+        );
+
+        window.setTimeout(
+            () => {
+                URL.revokeObjectURL(
+                    url
+                );
+            },
+            60000
+        );
+    } catch (error) {
+        showLeaseTerminationError(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'leases.termination_notice_unable_open'
+                )
+        );
+    }
+}
 
 /*
 |--------------------------------------------------------------------------

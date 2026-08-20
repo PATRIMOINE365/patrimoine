@@ -65,6 +65,7 @@ const CAPABILITY_SELECTORS = {
 
         '#add-lease-button',
         '[data-extend-lease]',
+        '[data-terminate-lease]',
 
         /*
          * Manual resend actions are operational actions, not passive reads.
