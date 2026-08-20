@@ -9,7 +9,8 @@ use RuntimeException;
 class LeaseTerminationInitiationService
 {
     public function __construct(
-        private readonly LeaseTerminationStateService $state
+        private readonly LeaseTerminationStateService $state,
+        private readonly LeaseTerminationInvoiceService $invoices
     ) {}
 
     public function initiate(
@@ -50,6 +51,22 @@ class LeaseTerminationInitiationService
                     'termination_previous_status' => $previousStatus,
                     'termination_completed_at' => null,
                 ]);
+
+                /*
+                 * V1.0.5 Phase 9C:
+                 *
+                 * Entering termination notice immediately establishes the
+                 * Lease billing boundary. Reconciliation is intentionally
+                 * performed inside this same database transaction so the
+                 * lifecycle change and safe Invoice cleanup are atomic.
+                 *
+                 * Financially touched Invoices remain preserved by the
+                 * reconciliation service for explicit settlement/correction.
+                 */
+                $this->invoices->reconcile(
+                    $lease->refresh(),
+                    auth()->id()
+                );
 
                 return $lease->refresh();
             }

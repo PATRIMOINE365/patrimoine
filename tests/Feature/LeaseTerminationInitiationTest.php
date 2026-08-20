@@ -4,8 +4,11 @@ namespace Tests\Feature;
 
 use App\Enums\UserRole;
 use App\Models\Building;
+use App\Models\Invoice;
 use App\Models\Lease;
 use App\Models\Party;
+use App\Models\Payment;
+use App\Models\PaymentAllocation;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -275,6 +278,102 @@ class LeaseTerminationInitiationTest extends TestCase
             $lease->fresh()->status
         );
     }
+
+
+    public function test_initiating_termination_cancels_untouched_future_rent_invoice(): void
+    {
+        $lease = $this->lease();
+
+        $invoice = Invoice::create([
+            'lease_id' => $lease->id,
+            'type' => 'rent',
+            'invoice_number' => 'INV-INIT-FUTURE',
+            'period_start' => '2026-10-01',
+            'period_end' => '2026-10-31',
+            'issue_date' => '2026-10-01',
+            'due_date' => '2026-10-01',
+            'status' => 'issued',
+            'total_amount' => 3100,
+            'vat_rate' => 0,
+            'net_amount' => 3100,
+            'vat_amount' => 0,
+            'proration_amount' => null,
+        ]);
+
+        $this
+            ->actingAs($this->propertyManager())
+            ->postJson(
+                "/api/leases/{$lease->id}/termination",
+                [
+                    'notice_date' => '2026-08-20',
+                    'termination_date' => '2026-09-30',
+                    'final_rent_mode' => 'full',
+                ]
+            )
+            ->assertOk();
+
+        $this->assertSame(
+            'cancelled',
+            $invoice->fresh()->status
+        );
+    }
+
+    public function test_initiating_termination_preserves_financially_touched_future_invoice(): void
+    {
+        $lease = $this->lease();
+
+        $invoice = Invoice::create([
+            'lease_id' => $lease->id,
+            'type' => 'rent',
+            'invoice_number' => 'INV-INIT-TOUCHED',
+            'period_start' => '2026-10-01',
+            'period_end' => '2026-10-31',
+            'issue_date' => '2026-10-01',
+            'due_date' => '2026-10-01',
+            'status' => 'issued',
+            'total_amount' => 3100,
+            'vat_rate' => 0,
+            'net_amount' => 3100,
+            'vat_amount' => 0,
+            'proration_amount' => null,
+        ]);
+
+        $payment = Payment::create([
+            'lease_id' => $lease->id,
+            'payment_date' => '2026-08-10',
+            'amount' => 1000,
+            'payment_method' => 'cash',
+        ]);
+
+        PaymentAllocation::create([
+            'payment_id' => $payment->id,
+            'invoice_id' => $invoice->id,
+            'amount' => 1000,
+        ]);
+
+        $this
+            ->actingAs($this->propertyManager())
+            ->postJson(
+                "/api/leases/{$lease->id}/termination",
+                [
+                    'notice_date' => '2026-08-20',
+                    'termination_date' => '2026-09-30',
+                    'final_rent_mode' => 'prorate',
+                ]
+            )
+            ->assertOk();
+
+        $this->assertSame(
+            'issued',
+            $invoice->fresh()->status
+        );
+
+        $this->assertSame(
+            1000,
+            $invoice->fresh()->paymentPaidAmount()
+        );
+    }
+
 
     private function propertyManager(): User
     {
