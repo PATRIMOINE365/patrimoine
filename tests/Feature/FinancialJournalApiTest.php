@@ -939,4 +939,114 @@ class FinancialJournalApiTest extends TestCase
                 now(),
         ]);
     }
+
+    public function test_administrator_can_read_financial_journal_filter_options(): void
+    {
+        $entry =
+            $this->entry([
+                'transaction_type' =>
+                    'owner_deposit',
+            ]);
+
+        $account =
+            $this->account(
+                SystemChartOfAccounts::BANK
+            );
+
+        $this->line(
+            $entry,
+            $account,
+            debit: 1000
+        );
+
+        Sanctum::actingAs(
+            $this->administrator()
+        );
+
+        $response =
+            $this
+                ->getJson(
+                    '/api/financial-journal/filter-options'
+                )
+                ->assertOk();
+
+        $response
+            ->assertJsonPath(
+                'entry_kinds.0',
+                JournalEntry::KIND_FINANCIAL
+            )
+            ->assertJsonFragment([
+                'transaction_types' => [
+                    'owner_deposit',
+                ],
+            ])
+            ->assertJsonFragment([
+                'id' =>
+                    $account->id,
+
+                'code' =>
+                    $account->code,
+
+                'name' =>
+                    $account->name,
+            ]);
+    }
+
+    public function test_property_manager_and_viewer_cannot_read_financial_journal_filter_options(): void
+    {
+        foreach (
+            [
+                UserRole::PropertyManager,
+                UserRole::Viewer,
+            ] as $role
+        ) {
+            Sanctum::actingAs(
+                $this->user(
+                    $role
+                )
+            );
+
+            $this
+                ->getJson(
+                    '/api/financial-journal/filter-options'
+                )
+                ->assertForbidden();
+        }
+    }
+
+    public function test_financial_journal_filter_options_are_passive_reads(): void
+    {
+        $entry =
+            $this->entry([
+                'transaction_type' =>
+                    'owner_expense',
+            ]);
+
+        $account =
+            $this->account(
+                SystemChartOfAccounts::BANK
+            );
+
+        $this->line(
+            $entry,
+            $account,
+            debit: 500
+        );
+
+        Sanctum::actingAs(
+            $this->administrator()
+        );
+
+        $this
+            ->getJson(
+                '/api/financial-journal/filter-options'
+            )
+            ->assertOk();
+
+        $this->assertDatabaseCount(
+            'activity_logs',
+            0
+        );
+    }
+
 }

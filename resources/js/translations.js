@@ -273,6 +273,12 @@ export const translations = {
         'navigation.activity_log':
             'Activity Log',
 
+        'navigation.financial_journal':
+            'Financial Journal',
+
+        'navigation.financial_journal_description':
+            'Permanent accounting record',
+
         'navigation.users':
             'Users',
 
@@ -282,6 +288,172 @@ export const translations = {
             'Property Manager',
         'roles.viewer':
             'Viewer',
+
+        'financial_journal.title':
+            'Financial Journal — Patrimoine',
+
+        'financial_journal.administration':
+            'Administration',
+
+        'financial_journal.heading':
+            'Financial Journal',
+
+        'financial_journal.description':
+            "Review Patrimoine's permanent double-entry accounting record.",
+
+        'financial_journal.loading':
+            'Loading Financial Journal...',
+
+        'financial_journal.search':
+            'Search',
+
+        'financial_journal.search_placeholder':
+            'Journal number, description, actor, account or source...',
+
+        'financial_journal.from':
+            'From',
+
+        'financial_journal.to':
+            'To',
+
+        'financial_journal.entry_kind':
+            'Entry Kind',
+
+        'financial_journal.all_entry_kinds':
+            'All Entry Kinds',
+
+        'financial_journal.kind_financial':
+            'Financial',
+
+        'financial_journal.kind_reversal':
+            'Reversal',
+
+        'financial_journal.kind_informational':
+            'Informational',
+
+        'financial_journal.transaction_type':
+            'Transaction Type',
+
+        'financial_journal.all_transaction_types':
+            'All Transaction Types',
+
+        'financial_journal.account':
+            'Account',
+
+        'financial_journal.all_accounts':
+            'All Accounts',
+
+        'financial_journal.clear_filters':
+            'Clear Filters',
+
+        'financial_journal.export_pdf':
+            'PDF',
+
+        'financial_journal.export_csv':
+            'CSV',
+
+        'financial_journal.export_xlsx':
+            'XLSX',
+
+        'financial_journal.exporting':
+            'Exporting...',
+
+        'financial_journal.unable_export':
+            'Unable to export the Financial Journal.',
+
+        'financial_journal.unable_load':
+            'Unable to load the Financial Journal.',
+
+        'financial_journal.none_found':
+            'No Journal entries found',
+
+        'financial_journal.none_found_description':
+            'No Journal entries match the selected filters.',
+
+        'financial_journal.view_details':
+            'View Details',
+
+        'financial_journal.page_of':
+            'Page :current of :last',
+
+        'financial_journal.previous':
+            'Previous',
+
+        'financial_journal.next':
+            'Next',
+
+        'financial_journal.close':
+            'Close',
+
+        'financial_journal.detail_heading':
+            'Journal Entry',
+
+        'financial_journal.detail_description':
+            'Immutable accounting transaction details.',
+
+        'financial_journal.loading_detail':
+            'Loading Journal entry...',
+
+        'financial_journal.unable_load_detail':
+            'Unable to load Journal entry details.',
+
+        'financial_journal.debit':
+            'Debit',
+
+        'financial_journal.credit':
+            'Credit',
+
+        'financial_journal.actor':
+            'Actor',
+
+        'financial_journal.source':
+            'Source',
+
+        'financial_journal.balance_status':
+            'Balance Status',
+
+        'financial_journal.balanced':
+            'Balanced',
+
+        'financial_journal.unbalanced':
+            'Unbalanced',
+
+        'financial_journal.description_label':
+            'Description',
+
+        'financial_journal.accounting_lines':
+            'Accounting Lines',
+
+        'financial_journal.line_count':
+            ':count line(s)',
+
+        'financial_journal.no_lines':
+            'This informational entry has no accounting lines.',
+
+        'financial_journal.total_debit':
+            'Total Debit',
+
+        'financial_journal.total_credit':
+            'Total Credit',
+
+        'financial_journal.reversal_context':
+            'Reversal Information',
+
+        'financial_journal.reversal_of':
+            'Reversal Of',
+
+        'financial_journal.reversed_by':
+            'Reversed By',
+
+        'financial_journal.reversal_reason':
+            'Reversal Reason',
+
+        'financial_journal.reversed':
+            'Reversed',
+
+        'financial_journal.not_available':
+            'Not available',
+
 
         'activity_log.title':
             'Activity Log — Patrimoine',
@@ -2305,6 +2477,12 @@ export const translations = {
         'navigation.activity_log':
             'Journal d’activité',
 
+        'navigation.financial_journal':
+            'Journal financier',
+
+        'navigation.financial_journal_description':
+            'Registre comptable permanent',
+
         'navigation.users':
             'Utilisateurs',
 
@@ -2314,6 +2492,172 @@ export const translations = {
             'Gestionnaire immobilier',
         'roles.viewer':
             'Consultation',
+
+        'financial_journal.title':
+            'Journal financier — Patrimoine',
+
+        'financial_journal.administration':
+            'Administration',
+
+        'financial_journal.heading':
+            'Journal financier',
+
+        'financial_journal.description':
+            'Consultez le registre comptable permanent en partie double de Patrimoine.',
+
+        'financial_journal.loading':
+            'Chargement du journal financier...',
+
+        'financial_journal.search':
+            'Rechercher',
+
+        'financial_journal.search_placeholder':
+            'Numéro du journal, description, acteur, compte ou source...',
+
+        'financial_journal.from':
+            'Du',
+
+        'financial_journal.to':
+            'Au',
+
+        'financial_journal.entry_kind':
+            'Type d’écriture',
+
+        'financial_journal.all_entry_kinds':
+            'Tous les types d’écriture',
+
+        'financial_journal.kind_financial':
+            'Financière',
+
+        'financial_journal.kind_reversal':
+            'Contre-passation',
+
+        'financial_journal.kind_informational':
+            'Informationnelle',
+
+        'financial_journal.transaction_type':
+            'Type de transaction',
+
+        'financial_journal.all_transaction_types':
+            'Tous les types de transaction',
+
+        'financial_journal.account':
+            'Compte',
+
+        'financial_journal.all_accounts':
+            'Tous les comptes',
+
+        'financial_journal.clear_filters':
+            'Effacer les filtres',
+
+        'financial_journal.export_pdf':
+            'PDF',
+
+        'financial_journal.export_csv':
+            'CSV',
+
+        'financial_journal.export_xlsx':
+            'XLSX',
+
+        'financial_journal.exporting':
+            'Exportation...',
+
+        'financial_journal.unable_export':
+            'Impossible d’exporter le journal financier.',
+
+        'financial_journal.unable_load':
+            'Impossible de charger le journal financier.',
+
+        'financial_journal.none_found':
+            'Aucune écriture trouvée',
+
+        'financial_journal.none_found_description':
+            'Aucune écriture ne correspond aux filtres sélectionnés.',
+
+        'financial_journal.view_details':
+            'Voir les détails',
+
+        'financial_journal.page_of':
+            'Page :current sur :last',
+
+        'financial_journal.previous':
+            'Précédent',
+
+        'financial_journal.next':
+            'Suivant',
+
+        'financial_journal.close':
+            'Fermer',
+
+        'financial_journal.detail_heading':
+            'Écriture du journal',
+
+        'financial_journal.detail_description':
+            'Détails immuables de la transaction comptable.',
+
+        'financial_journal.loading_detail':
+            'Chargement de l’écriture...',
+
+        'financial_journal.unable_load_detail':
+            'Impossible de charger les détails de l’écriture.',
+
+        'financial_journal.debit':
+            'Débit',
+
+        'financial_journal.credit':
+            'Crédit',
+
+        'financial_journal.actor':
+            'Acteur',
+
+        'financial_journal.source':
+            'Source',
+
+        'financial_journal.balance_status':
+            'État d’équilibre',
+
+        'financial_journal.balanced':
+            'Équilibrée',
+
+        'financial_journal.unbalanced':
+            'Non équilibrée',
+
+        'financial_journal.description_label':
+            'Description',
+
+        'financial_journal.accounting_lines':
+            'Lignes comptables',
+
+        'financial_journal.line_count':
+            ':count ligne(s)',
+
+        'financial_journal.no_lines':
+            'Cette écriture informationnelle ne contient aucune ligne comptable.',
+
+        'financial_journal.total_debit':
+            'Total débit',
+
+        'financial_journal.total_credit':
+            'Total crédit',
+
+        'financial_journal.reversal_context':
+            'Informations de contre-passation',
+
+        'financial_journal.reversal_of':
+            'Contre-passation de',
+
+        'financial_journal.reversed_by':
+            'Contre-passée par',
+
+        'financial_journal.reversal_reason':
+            'Motif de contre-passation',
+
+        'financial_journal.reversed':
+            'Contre-passée',
+
+        'financial_journal.not_available':
+            'Non disponible',
+
 
         'activity_log.title':
             'Journal d’activité — Patrimoine',

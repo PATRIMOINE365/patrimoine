@@ -699,6 +699,11 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 Route::get(
+                    'financial-journal/filter-options',
+                    [FinancialJournalController::class, 'filterOptions']
+                );
+
+                Route::get(
                     'financial-journal/pdf',
                     [FinancialJournalExportController::class, 'pdf']
                 );

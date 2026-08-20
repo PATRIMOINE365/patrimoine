@@ -120,6 +120,10 @@ const CAPABILITY_SELECTORS = {
     view_activity_log: [
         '[data-requires-capability="view_activity_log"]',
     ],
+
+    view_financial_journal: [
+        '[data-requires-capability="view_financial_journal"]',
+    ],
 };
 
 /**
@@ -195,6 +199,9 @@ function redirectRestrictedWorkspace() {
 
         '/activity-log':
             'view_activity_log',
+
+        '/financial-journal':
+            'view_financial_journal',
     }[
         window.location.pathname
     ];

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\JournalEntry;
+use App\Models\JournalLine;
 use App\Services\FinancialJournalQueryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -132,6 +133,82 @@ class FinancialJournalController extends Controller
         return response()->json(
             $entries
         );
+    }
+
+    /**
+     * Read-only browser filter options derived from immutable Journal data.
+     */
+    public function filterOptions(): JsonResponse
+    {
+        $transactionTypes =
+            JournalEntry::query()
+                ->whereNotNull(
+                    'transaction_type'
+                )
+                ->where(
+                    'transaction_type',
+                    '!=',
+                    ''
+                )
+                ->distinct()
+                ->orderBy(
+                    'transaction_type'
+                )
+                ->pluck(
+                    'transaction_type'
+                )
+                ->values();
+
+        $accounts =
+            JournalLine::query()
+                ->select([
+                    'accounting_account_id',
+                    'account_code_snapshot',
+                    'account_name_snapshot',
+                ])
+                ->distinct()
+                ->orderBy(
+                    'account_code_snapshot'
+                )
+                ->orderBy(
+                    'account_name_snapshot'
+                )
+                ->get()
+                ->map(
+                    static fn (
+                        JournalLine $line
+                    ): array => [
+                        'id' =>
+                            $line->accounting_account_id,
+
+                        'code' =>
+                            $line->account_code_snapshot,
+
+                        'name' =>
+                            $line->account_name_snapshot,
+                    ]
+                )
+                ->unique(
+                    static fn (
+                        array $account
+                    ): string =>
+                        (string) $account['id']
+                )
+                ->values();
+
+        return response()->json([
+            'entry_kinds' => [
+                JournalEntry::KIND_FINANCIAL,
+                JournalEntry::KIND_REVERSAL,
+                JournalEntry::KIND_INFORMATIONAL,
+            ],
+
+            'transaction_types' =>
+                $transactionTypes,
+
+            'accounts' =>
+                $accounts,
+        ]);
     }
 
     public function show(

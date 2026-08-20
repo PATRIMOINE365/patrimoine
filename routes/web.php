@@ -86,6 +86,11 @@ Route::view(
 )->name('activity-log');
 
 Route::view(
+    '/financial-journal',
+    'app.financial-journal'
+)->name('financial-journal');
+
+Route::view(
     '/users',
     'app.users'
 )->name('users');

@@ -78,6 +78,8 @@ return [
         'sign_out_description' => 'Sign out of Patrimoine',
         'activity_log' => 'Activity Log',
         'activity_log_description' => 'Track and review events',
+        'financial_journal' => 'Financial Journal',
+        'financial_journal_description' => 'Permanent accounting record',
         'users' => 'Users',
         'users_description' => 'Manage users and their access',
     ],
@@ -153,8 +155,8 @@ return [
         'entity_type' => 'Record Type',
         'entity_type_placeholder' => 'e.g. payment',
         'clear_filters' => 'Clear Filters',
-        'export_pdf' => 'Export PDF',
-        'export_csv' => 'Export CSV',
+        'export_pdf' => 'PDF',
+        'export_csv' => 'CSV',
         'exporting' => 'Exporting...',
         'unable_export' => 'Unable to export Activity Log.',
         'loading' => 'Loading activity...',
@@ -1426,4 +1428,13 @@ return [
         'session_expired' => 'Your session has expired. Please sign in again.',
         'request_failed' => 'The request could not be completed.',
     ],
+
+    'financial_journal' => [
+        'title' => 'Financial Journal — Patrimoine',
+        'administration' => 'Administration',
+        'heading' => 'Financial Journal',
+        'description' => "Review Patrimoine's permanent double-entry accounting record.",
+        'loading' => 'Loading Financial Journal...',
+    ],
+
 ];

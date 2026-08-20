@@ -78,6 +78,8 @@ return [
         'sign_out_description' => 'Quitter Patrimoine',
         'activity_log' => 'Journal d’activité',
         'activity_log_description' => 'Suivre et consulter les événements',
+        'financial_journal' => 'Journal financier',
+        'financial_journal_description' => 'Registre comptable permanent',
         'users' => 'Utilisateurs',
         'users_description' => 'Gérer les utilisateurs et leurs accès',
     ],
@@ -153,8 +155,8 @@ return [
         'entity_type' => 'Type d’enregistrement',
         'entity_type_placeholder' => 'ex. payment',
         'clear_filters' => 'Effacer les filtres',
-        'export_pdf' => 'Exporter en PDF',
-        'export_csv' => 'Exporter en CSV',
+        'export_pdf' => 'PDF',
+        'export_csv' => 'CSV',
         'exporting' => 'Export en cours...',
         'unable_export' => 'Impossible d’exporter le journal d’activité.',
         'loading' => 'Chargement du journal d’activité...',
@@ -1426,4 +1428,13 @@ return [
         'close' => 'Fermer',
 
     ],
+
+    'financial_journal' => [
+        'title' => 'Journal financier — Patrimoine',
+        'administration' => 'Administration',
+        'heading' => 'Journal financier',
+        'description' => 'Consultez le registre comptable permanent en partie double de Patrimoine.',
+        'loading' => 'Chargement du journal financier...',
+    ],
+
 ];

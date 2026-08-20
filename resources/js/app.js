@@ -76,6 +76,10 @@ import {
 } from './activity-log.js';
 
 import {
+    initializeFinancialJournal,
+} from './financial-journal.js';
+
+import {
     initializeChangePassword,
     initializeForgotPassword,
     initializeInvitation,
@@ -170,6 +174,8 @@ await initializeOwners();
         await initializeUsers();
 
         await initializeActivityLog();
+
+        await initializeFinancialJournal();
 
         initializeChangePassword();
     }
