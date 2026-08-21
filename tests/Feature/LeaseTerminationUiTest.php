@@ -210,6 +210,11 @@ class LeaseTerminationUiTest extends TestCase
         );
     }
 
+    /*
+     * V1.0.7: the standalone lease security-deposit drawer was retired;
+     * deductions are recorded inside the termination-settlement drawer,
+     * shown during notice and after termination.
+     */
     public function test_security_deposit_deductions_are_available_during_notice_but_final_settlement_remains_terminated_only(): void
     {
         $javascript =
@@ -219,6 +224,31 @@ class LeaseTerminationUiTest extends TestCase
                 )
             );
 
+        $blade =
+            file_get_contents(
+                resource_path(
+                    'views/app/leases.blade.php'
+                )
+            );
+
+        // The deduction form lives in the termination-settlement drawer…
+        $this->assertStringContainsString(
+            'termination-deduction-section',
+            $blade
+        );
+
+        $this->assertStringContainsString(
+            'termination-deduction-submit',
+            $blade
+        );
+
+        // …posting to the existing deduction endpoint…
+        $this->assertStringContainsString(
+            '/security-deposit/deductions',
+            $javascript
+        );
+
+        // …with availability driven by the lease lifecycle stage.
         $this->assertStringContainsString(
             'const terminationInProgress',
             $javascript
@@ -229,19 +259,10 @@ class LeaseTerminationUiTest extends TestCase
             $javascript
         );
 
-        $this->assertStringContainsString(
-            'deductionForm?.classList.remove',
-            $javascript
-        );
-
-        $this->assertStringContainsString(
-            'if (terminated)',
-            $javascript
-        );
-
-        $this->assertStringContainsString(
-            'settlementForm?.classList.remove',
-            $javascript
+        // The retired standalone drawer must not resurface.
+        $this->assertStringNotContainsString(
+            'security-deposit-modal',
+            $blade
         );
     }
 

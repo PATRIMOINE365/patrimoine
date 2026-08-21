@@ -3431,6 +3431,148 @@ function initializeTerminationSettlementDrawer() {
             }
         }
     );
+
+    /*
+     * V1.0.7: Security Deposit deductions are recorded inside the
+     * termination workflow (the standalone security-deposit drawer was
+     * retired). The API allows them during notice and after termination,
+     * until a settlement exists; its 422 message surfaces inline.
+     */
+    document
+        .getElementById(
+            'termination-deduction-submit'
+        )
+        ?.addEventListener(
+            'click',
+            submitTerminationDeduction
+        );
+}
+
+
+/**
+ * Record one itemized Security Deposit deduction for the Lease currently
+ * open in the termination-settlement drawer, then reload the settlement
+ * so the deduction total and refundable amount update immediately.
+ */
+async function submitTerminationDeduction() {
+    if (
+        ! Number.isInteger(
+            terminationSettlementLeaseId
+        )
+    ) {
+        return;
+    }
+
+    const errorBox =
+        document.getElementById(
+            'termination-deduction-error'
+        );
+
+    errorBox?.classList.add(
+        'hidden'
+    );
+
+    const description =
+        formValue(
+            'termination-deduction-description'
+        ).trim();
+
+    const amount =
+        Number(
+            formValue(
+                'termination-deduction-amount'
+            )
+        );
+
+    const deductionDate =
+        formValue(
+            'termination-deduction-date'
+        );
+
+    if (
+        description === ''
+        || ! Number.isInteger(amount)
+        || amount <= 0
+        || deductionDate === ''
+    ) {
+        if (errorBox) {
+            errorBox.textContent =
+                translate(
+                    'leases.deduction_fields_required'
+                );
+
+            errorBox.classList.remove(
+                'hidden'
+            );
+        }
+
+        return;
+    }
+
+    const submit =
+        document.getElementById(
+            'termination-deduction-submit'
+        );
+
+    if (submit) {
+        submit.disabled = true;
+    }
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/leases/${terminationSettlementLeaseId}/security-deposit/deductions`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        description,
+                        amount,
+                        deduction_date: deductionDate,
+                    }),
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        const descriptionField =
+            document.getElementById(
+                'termination-deduction-description'
+            );
+
+        const amountField =
+            document.getElementById(
+                'termination-deduction-amount'
+            );
+
+        if (descriptionField) {
+            descriptionField.value = '';
+        }
+
+        if (amountField) {
+            amountField.value = '';
+        }
+
+        await loadTerminationSettlement();
+    } catch (error) {
+        if (errorBox) {
+            errorBox.textContent =
+                error instanceof Error
+                    ? error.message
+                    : translate(
+                        'leases.deduction_record_failed'
+                    );
+
+            errorBox.classList.remove(
+                'hidden'
+            );
+        }
+    } finally {
+        if (submit) {
+            submit.disabled = false;
+        }
+    }
 }
 
 
@@ -3616,6 +3758,48 @@ function renderTerminationSettlement(
     const security =
         payload?.security_deposit
         ?? {};
+
+    /*
+     * Deductions are available while termination is in progress (notice)
+     * and after termination. Final settlement completion itself remains
+     * terminated-only, enforced by the completion blockers and the API;
+     * a post-settlement deduction attempt is rejected server-side and its
+     * message surfaces in the deduction error box.
+     */
+    const terminated =
+        lease.status === 'terminated';
+
+    const terminationInProgress =
+        lease.status === 'notice';
+
+    const deductionsAllowed =
+        terminated
+        || terminationInProgress;
+
+    document
+        .getElementById(
+            'termination-deduction-section'
+        )
+        ?.classList
+        .toggle(
+            'hidden',
+            ! deductionsAllowed
+        );
+
+    const deductionDate =
+        document.getElementById(
+            'termination-deduction-date'
+        );
+
+    if (
+        deductionDate
+        && deductionDate.value === ''
+    ) {
+        deductionDate.value =
+            new Date()
+                .toISOString()
+                .slice(0, 10);
+    }
 
     const settlement =
         payload?.settlement

@@ -17,6 +17,18 @@
 export const translations = {
     en: {
         /* ---- V1.0.7 additions ---- */
+        'leases.record_deduction':
+            'Record a security deposit deduction',
+        'leases.record_deduction_description':
+            'Itemized deductions reduce the refundable deposit before settlement.',
+        'leases.deduction_description':
+            'Description',
+        'leases.deduction_amount':
+            'Amount',
+        'leases.deduction_fields_required':
+            'Provide a description, a whole amount greater than zero, and a date.',
+        'leases.deduction_record_failed':
+            'Unable to record the deduction.',
         'release.summary_line':
             'This update brings new features and improvements across Patrimoine.',
         'release.view_details':
@@ -2680,6 +2692,18 @@ export const translations = {
 
     fr: {
         /* ---- V1.0.7 additions ---- */
+        'leases.record_deduction':
+            'Enregistrer une retenue sur caution',
+        'leases.record_deduction_description':
+            'Les retenues détaillées réduisent la caution remboursable avant le règlement.',
+        'leases.deduction_description':
+            'Description',
+        'leases.deduction_amount':
+            'Montant',
+        'leases.deduction_fields_required':
+            'Renseignez une description, un montant entier supérieur à zéro et une date.',
+        'leases.deduction_record_failed':
+            'Impossible d\'enregistrer la retenue.',
         'release.summary_line':
             'Cette mise à jour apporte de nouvelles fonctionnalités et des améliorations dans tout Patrimoine.',
         'release.view_details':

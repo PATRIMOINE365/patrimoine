@@ -635,6 +635,12 @@ return [
     ],
     'leases' => [
         /* ---- V1.0.7 additions ---- */
+        'record_deduction' => 'Enregistrer une retenue sur caution',
+        'record_deduction_description' => 'Les retenues détaillées réduisent la caution remboursable avant le règlement.',
+        'deduction_description' => 'Description',
+        'deduction_amount' => 'Montant',
+        'deduction_fields_required' => 'Renseignez une description, un montant entier supérieur à zéro et une date.',
+        'deduction_record_failed' => 'Impossible d\'enregistrer la retenue.',
         'building' => 'Immeuble',
         'all_buildings' => 'Tous les immeubles',
         'all_frequencies' => 'Toutes les fréquences',

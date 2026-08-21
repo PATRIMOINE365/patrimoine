@@ -3529,6 +3529,117 @@
                 </div>
             </section>
 
+            {{--
+                V1.0.7: Security Deposit deductions are recorded HERE, inside
+                the termination workflow they belong to (the standalone lease
+                security-deposit drawer was retired). The API allows
+                deductions while the Lease is in notice or terminated and no
+                settlement exists yet.
+            --}}
+            <section
+                id="termination-deduction-section"
+                data-requires-capability="manage_finance"
+                class="rbac-hidden pm-card p-4"
+            >
+                <div class="text-sm font-semibold text-[var(--pm-text)]">
+                    <span data-i18n="leases.record_deduction">
+                        Record a security deposit deduction
+                    </span>
+                </div>
+
+                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
+                    <span data-i18n="leases.record_deduction_description">
+                        Itemized deductions reduce the refundable deposit before settlement.
+                    </span>
+                </p>
+
+                <div
+                    id="termination-deduction-error"
+                    class="
+                        mt-3 hidden rounded-lg
+                        border border-[var(--pm-danger-border)]
+                        bg-[var(--pm-danger-background)] px-3 py-2
+                        text-xs text-[var(--pm-danger-text)]
+                    "
+                ></div>
+
+                <div
+                    class="
+                        mt-3 grid gap-3
+                        sm:grid-cols-2
+                    "
+                >
+                    <div class="sm:col-span-2">
+                        <label
+                            for="termination-deduction-description"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="leases.deduction_description">
+                                Description
+                            </span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
+                        </label>
+
+                        <input
+                            id="termination-deduction-description"
+                            type="text"
+                            maxlength="255"
+                            class="pm-input"
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="termination-deduction-amount"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="leases.deduction_amount">
+                                Amount
+                            </span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
+                        </label>
+
+                        <input
+                            id="termination-deduction-amount"
+                            type="number"
+                            min="1"
+                            step="1"
+                            class="pm-input"
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="termination-deduction-date"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="leases.deduction_date">
+                                Deduction date
+                            </span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
+                        </label>
+
+                        <input
+                            id="termination-deduction-date"
+                            type="date"
+                            class="pm-input"
+                        >
+                    </div>
+                </div>
+
+                <div class="mt-3 flex justify-end">
+                    <button
+                        id="termination-deduction-submit"
+                        type="button"
+                        class="pm-button-primary"
+                    >
+                        <span data-i18n="leases.add_deduction">
+                            Add deduction
+                        </span>
+                    </button>
+                </div>
+            </section>
+
             {{-- Completion Blockers --}}
             <section>
                 <div

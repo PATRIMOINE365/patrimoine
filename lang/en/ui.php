@@ -487,6 +487,12 @@ return [
     ],
     'leases' => [
         /* ---- V1.0.7 additions ---- */
+        'record_deduction' => 'Record a security deposit deduction',
+        'record_deduction_description' => 'Itemized deductions reduce the refundable deposit before settlement.',
+        'deduction_description' => 'Description',
+        'deduction_amount' => 'Amount',
+        'deduction_fields_required' => 'Provide a description, a whole amount greater than zero, and a date.',
+        'deduction_record_failed' => 'Unable to record the deduction.',
         'building' => 'Building',
         'all_buildings' => 'All buildings',
         'all_frequencies' => 'All frequencies',
