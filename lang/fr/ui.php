@@ -261,7 +261,13 @@ return [
         'next' => 'Suivant',
     ],
     'actions' => [
+        /*
+         * Shared drawer footer vocabulary. Every drawer footer uses these
+         * three keys — do not add per-page cancel/save/close variants.
+         */
         'save' => 'Enregistrer',
+        'cancel' => 'Annuler',
+        'close' => 'Fermer',
     ],
     'settings' => [
         'title' => 'Paramètres — Patrimoine',
@@ -673,6 +679,7 @@ return [
         'rent_terms_description' => 'Les montants incluent la TVA et sont enregistrés en unités monétaires entières.',
         'monthly_rent' => 'Loyer mensuel',
         'payment_frequency' => 'Fréquence de paiement',
+        'due_day' => 'Jour d’échéance',
         'due_day_override' => 'Jour d’échéance personnalisé',
         'vat_rate' => 'Taux de TVA %',
         'proration_override' => 'Prorata personnalisé',

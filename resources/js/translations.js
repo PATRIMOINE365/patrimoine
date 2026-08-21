@@ -615,6 +615,10 @@ export const translations = {
 
         'actions.save':
             'Save',
+        'actions.cancel':
+            'Cancel',
+        'actions.close':
+            'Close',
         'users.close':
             'Close',
         'users.save_changes':
@@ -1052,6 +1056,7 @@ export const translations = {
         'leases.rent_terms_description': 'Amounts are VAT inclusive and stored as whole currency units.',
         'leases.monthly_rent': 'Monthly Rent',
         'leases.payment_frequency': 'Payment Frequency',
+        'leases.due_day': 'Due Day',
         'leases.due_day_override': 'Due Day Override',
         'leases.vat_rate': 'VAT Rate %',
         'leases.proration_override': 'Proration Override',
@@ -2819,6 +2824,10 @@ export const translations = {
 
         'actions.save':
             'Enregistrer',
+        'actions.cancel':
+            'Annuler',
+        'actions.close':
+            'Fermer',
         'users.close':
             'Fermer',
         'users.save_changes':
@@ -3589,6 +3598,7 @@ export const translations = {
         'leases.rent_terms_description': 'Les montants incluent la TVA et sont enregistrés en unités monétaires entières.',
         'leases.monthly_rent': 'Loyer mensuel',
         'leases.payment_frequency': 'Fréquence de paiement',
+        'leases.due_day': 'Jour d’échéance',
         'leases.due_day_override': 'Jour d’échéance personnalisé',
         'leases.vat_rate': 'Taux de TVA %',
         'leases.proration_override': 'Prorata personnalisé',

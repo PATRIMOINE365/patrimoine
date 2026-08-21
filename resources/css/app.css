@@ -79,6 +79,13 @@ html[data-theme="light"] {
     --pm-info-background: #eff6ff;
     --pm-info-border: #bfdbfe;
     --pm-info-text: #1d4ed8;
+
+    /* Brand accent for highlighted text (eyebrows, active states). */
+    --pm-accent: #3f6e54;
+
+    /* Solid destructive action surface (delete buttons). */
+    --pm-danger-solid: #dc2626;
+    --pm-danger-solid-hover: #b91c1c;
 }
 
 html[data-theme="dark"] {
@@ -122,6 +129,13 @@ html[data-theme="dark"] {
     --pm-info-background: #172331;
     --pm-info-border: #294866;
     --pm-info-text: #9cc9f2;
+
+    /* Brand accent for highlighted text (eyebrows, active states). */
+    --pm-accent: #73a587;
+
+    /* Solid destructive action surface (delete buttons). */
+    --pm-danger-solid: #b42323;
+    --pm-danger-solid-hover: #d33030;
 }
 
 html {
@@ -282,7 +296,8 @@ select.pm-input {
    -------------------------------------------------------------------------- */
 
 .pm-button-primary,
-.pm-button-secondary {
+.pm-button-secondary,
+.pm-button-danger {
     display: inline-flex;
     min-height: 2.625rem;
     align-items: center;
@@ -327,6 +342,27 @@ select.pm-input {
     border-color: var(--pm-border-strong);
     background: var(--pm-hover);
     color: var(--pm-text);
+}
+
+/*
+ * Destructive primary action (permanent deletes, cancellations of record).
+ * Use in place of .pm-button-primary — never alongside it in one footer.
+ */
+.pm-button-danger {
+    border: 1px solid var(--pm-danger-solid);
+    background: var(--pm-danger-solid);
+    color: white;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.08);
+}
+
+.pm-button-danger:hover:not(:disabled) {
+    border-color: var(--pm-danger-solid-hover);
+    background: var(--pm-danger-solid-hover);
+}
+
+.pm-button-danger:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
 }
 
 /* --------------------------------------------------------------------------
@@ -478,7 +514,8 @@ select.pm-input {
 
 /* V1.0.4 Drawer Footer Button Balance */
 .pm-drawer-footer .pm-button-primary,
-.pm-drawer-footer .pm-button-secondary {
+.pm-drawer-footer .pm-button-secondary,
+.pm-drawer-footer .pm-button-danger {
     min-width: 7.25rem;
 }
 
@@ -491,7 +528,9 @@ select.pm-input {
 .pm-drawer[data-drawer-width="sm"] .pm-drawer-footer
 .pm-button-primary,
 .pm-drawer[data-drawer-width="sm"] .pm-drawer-footer
-.pm-button-secondary {
+.pm-button-secondary,
+.pm-drawer[data-drawer-width="sm"] .pm-drawer-footer
+.pm-button-danger {
     flex: 1 1 0;
     min-width: 0;
     min-height: 3rem;

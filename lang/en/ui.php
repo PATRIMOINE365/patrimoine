@@ -261,7 +261,13 @@ return [
         'next' => 'Next',
     ],
     'actions' => [
+        /*
+         * Shared drawer footer vocabulary. Every drawer footer uses these
+         * three keys — do not add per-page cancel/save/close variants.
+         */
         'save' => 'Save',
+        'cancel' => 'Cancel',
+        'close' => 'Close',
     ],
     'settings' => [
         'title' => 'Settings — Patrimoine',
@@ -557,6 +563,7 @@ return [
         'rent_terms_description' => 'Amounts are VAT inclusive and stored as whole currency units.',
         'monthly_rent' => 'Monthly Rent',
         'payment_frequency' => 'Payment Frequency',
+        'due_day' => 'Due Day',
         'due_day_override' => 'Due Day Override',
         'vat_rate' => 'VAT Rate %',
         'proration_override' => 'Proration Override',

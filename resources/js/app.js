@@ -163,7 +163,8 @@ document.addEventListener(
         await initializeParties();
 
         await initializeLeases();
-await initializeOwners();
+
+        await initializeOwners();
 
         await initializeTenants();
 

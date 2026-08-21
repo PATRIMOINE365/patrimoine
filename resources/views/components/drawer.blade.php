@@ -1,3 +1,12 @@
+{{--
+    Right-side editing drawer — the only overlay primitive in Patrimoine.
+
+    Exactly two sizes exist (docs/DESIGN.md):
+      sm — 28rem — single-record forms and read-only detail views
+      lg — 42rem — multi-section workflows (lease lifecycle)
+
+    Do not reintroduce other widths or size a drawer via CSS overrides.
+--}}
 @props([
     'id',
     'backdropId' => null,
@@ -7,9 +16,6 @@
 @php
     $widthClass = match ($width) {
         'sm' => 'max-w-md',
-        'md' => 'max-w-lg',
-        'xl' => 'max-w-3xl',
-        '2xl' => 'max-w-4xl',
         default => 'max-w-2xl',
     };
 @endphp

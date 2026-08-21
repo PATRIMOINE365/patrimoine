@@ -966,3 +966,175 @@ export function nullableFormValue(
         ? null
         : value;
 }
+
+/* --------------------------------------------------------------------------
+   Drawer lifecycle (v1.0.6)
+   --------------------------------------------------------------------------
+
+   The single shared implementation of the right-side drawer open/close
+   state machine. Page modules must use these helpers instead of
+   re-implementing the pm-drawer-active / pm-drawer-open / pm-drawer-closing
+   sequence locally.
+
+   Lifecycle:
+     open  — clear stale classes, unhide, activate, then (double rAF so the
+             browser has painted the off-screen position) slide in.
+     close — slide out, then after the CSS transition finishes deactivate
+             and re-hide the element.
+
+   The close timer per drawer is tracked in a WeakMap so an open during an
+   in-flight close cancels it cleanly.
+   -------------------------------------------------------------------------- */
+
+/** Matches the .pm-drawer-panel transition duration in app.css (800ms). */
+const DRAWER_TRANSITION_MS = 820;
+
+/** In-flight close timers, keyed by drawer element. */
+const drawerCloseTimers = new WeakMap();
+
+/**
+ * Resolve a drawer reference (element or element id) to an element.
+ *
+ * @param {HTMLElement|string} drawer
+ * @returns {HTMLElement|null}
+ */
+function resolveDrawer(drawer) {
+    return typeof drawer === 'string'
+        ? document.getElementById(drawer)
+        : drawer;
+}
+
+/**
+ * Open a right-side drawer.
+ *
+ * @param {HTMLElement|string} drawer element or id
+ */
+export function openDrawer(drawer) {
+    const element = resolveDrawer(drawer);
+
+    if (! element) {
+        return;
+    }
+
+    // Cancel an in-flight close so reopening is always clean.
+    const pendingClose = drawerCloseTimers.get(element);
+
+    if (pendingClose) {
+        window.clearTimeout(pendingClose);
+        drawerCloseTimers.delete(element);
+    }
+
+    element.classList.remove('pm-drawer-open', 'pm-drawer-closing');
+    element.removeAttribute('hidden');
+    element.classList.add('pm-drawer-active');
+    element.setAttribute('aria-hidden', 'false');
+
+    // Keep the page behind the drawer from scrolling.
+    document.body.classList.add('overflow-hidden');
+
+    // Two frames: first paints the off-screen position, second transitions.
+    window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+            element.classList.add('pm-drawer-open');
+        });
+    });
+}
+
+/**
+ * Close a right-side drawer.
+ *
+ * @param {HTMLElement|string} drawer element or id
+ * @param {{onClosed?: () => void}} [options] callback after the slide-out
+ */
+export function closeDrawer(drawer, options = {}) {
+    const element = resolveDrawer(drawer);
+
+    if (! element || ! element.classList.contains('pm-drawer-active')) {
+        return;
+    }
+
+    element.classList.remove('pm-drawer-open');
+    element.classList.add('pm-drawer-closing');
+    element.setAttribute('aria-hidden', 'true');
+
+    const finish = () => {
+        drawerCloseTimers.delete(element);
+
+        element.classList.remove('pm-drawer-active', 'pm-drawer-closing');
+        element.setAttribute('hidden', '');
+
+        // Only release page scroll once no other drawer remains open.
+        if (! document.querySelector('.pm-drawer.pm-drawer-active:not(.pm-drawer-closing)')) {
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        if (typeof options.onClosed === 'function') {
+            options.onClosed();
+        }
+    };
+
+    drawerCloseTimers.set(
+        element,
+        window.setTimeout(finish, DRAWER_TRANSITION_MS)
+    );
+}
+
+/**
+ * Wire a drawer's standard interactions in one call.
+ *
+ * Openers and closers are element ids (missing ids are ignored so pages
+ * can share one wiring path across role-dependent markup). The backdrop
+ * click and the Escape key also close the drawer.
+ *
+ * @param {HTMLElement|string} drawer element or id
+ * @param {{
+ *   openers?: string[],
+ *   closers?: string[],
+ *   onOpen?: () => void,
+ *   onClose?: () => void,
+ * }} [options]
+ */
+export function wireDrawer(drawer, options = {}) {
+    const element = resolveDrawer(drawer);
+
+    if (! element) {
+        return;
+    }
+
+    const open = () => {
+        openDrawer(element);
+
+        if (typeof options.onOpen === 'function') {
+            options.onOpen();
+        }
+    };
+
+    const close = () => {
+        closeDrawer(element, { onClosed: options.onClose });
+    };
+
+    for (const id of options.openers ?? []) {
+        document.getElementById(id)?.addEventListener('click', open);
+    }
+
+    for (const id of options.closers ?? []) {
+        document.getElementById(id)?.addEventListener('click', close);
+    }
+
+    // A click on the translucent backdrop dismisses the drawer.
+    element.querySelector('.pm-drawer-backdrop')
+        ?.addEventListener('click', close);
+
+    // Escape dismisses the drawer while it is open.
+    document.addEventListener('keydown', (event) => {
+        if (
+            event.key === 'Escape'
+            && element.classList.contains('pm-drawer-active')
+            && ! element.classList.contains('pm-drawer-closing')
+        ) {
+            close();
+        }
+    });
+
+    return { open, close };
+}
