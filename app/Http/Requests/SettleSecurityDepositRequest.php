@@ -31,6 +31,20 @@ class SettleSecurityDepositRequest extends FormRequest
                 'date',
             ],
 
+            /*
+             * The authoritative refund amount is calculated by
+             * SecurityDepositService.
+             *
+             * The channel is therefore request-level optional. After the
+             * accounting cutover, the service requires it only when the
+             * settlement genuinely produces an outgoing refund.
+             */
+            'refund_payment_method' => [
+                'nullable',
+                'string',
+                'in:cash,bank_transfer,momo',
+            ],
+
             'notes' => [
                 'nullable',
                 'string',

@@ -2361,6 +2361,1327 @@
     </form>
 </x-drawer>
 
+
+{{-- ================================================================
+     Controlled Lease Termination Drawer
+================================================================ --}}
+
+<x-drawer
+    id="lease-termination-modal"
+    backdrop-id="lease-termination-modal-backdrop"
+    width="lg"
+>
+    <x-drawer-header
+        title-id="lease-termination-modal-title"
+        description-id="lease-termination-modal-description"
+        close-id="lease-termination-modal-close"
+        close-label="Close"
+        close-label-key="leases.close"
+    >
+        <x-slot:title>
+            <span data-i18n="leases.terminate_lease">
+                Terminate Lease
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="leases.termination_description">
+                Record notice, define the vacate date and choose the final rental treatment.
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="lease-termination-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div class="flex-1 overflow-y-auto px-6 py-6">
+            <div
+                id="lease-termination-error"
+                class="
+                    mb-5 hidden rounded-lg
+                    border border-red-200
+                    bg-red-50 px-4 py-3
+                    text-sm text-red-700
+                "
+            ></div>
+
+            <section>
+                <h3
+                    class="
+                        text-sm font-semibold
+                        uppercase tracking-wide
+                        text-slate-500
+                    "
+                    data-i18n="leases.lease_context"
+                >
+                    Lease Context
+                </h3>
+
+                <div
+                    class="
+                        mt-4 grid gap-4
+                        rounded-xl border
+                        border-slate-200
+                        bg-slate-50 p-4
+                        sm:grid-cols-2
+                    "
+                >
+                    <div>
+                        <div class="text-xs text-slate-500">
+                            <span data-i18n="leases.lease">
+                                Lease
+                            </span>
+                        </div>
+                        <div
+                            id="lease-termination-context-reference"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="leases.tenant"
+                        >
+                            Tenant
+                        </div>
+                        <div
+                            id="lease-termination-context-tenant"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="leases.property"
+                        >
+                            Property
+                        </div>
+                        <div
+                            id="lease-termination-context-building"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="leases.unit"
+                        >
+                            Unit
+                        </div>
+                        <div
+                            id="lease-termination-context-unit"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-slate-500"
+                            data-i18n="leases.status"
+                        >
+                            Status
+                        </div>
+                        <div
+                            id="lease-termination-context-status"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section
+                class="
+                    mt-8 border-t
+                    border-slate-100 pt-7
+                "
+            >
+                <h3
+                    class="
+                        text-sm font-semibold
+                        uppercase tracking-wide
+                        text-slate-500
+                    "
+                    data-i18n="leases.termination_details"
+                >
+                    Termination Details
+                </h3>
+
+                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label
+                            for="lease-termination-notice-date"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.notice_date">
+                                Notice Date
+                            </span>
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            id="lease-termination-notice-date"
+                            data-pm-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            type="text"
+                            required
+                            placeholder="DD-MM-YYYY"
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-termination-date"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.termination_date">
+                                Termination / Vacate Date
+                            </span>
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            id="lease-termination-date"
+                            data-pm-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            type="text"
+                            required
+                            placeholder="DD-MM-YYYY"
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+                </div>
+            </section>
+
+            <section
+                class="
+                    mt-8 border-t
+                    border-slate-100 pt-7
+                "
+            >
+                <h3
+                    class="
+                        text-sm font-semibold
+                        uppercase tracking-wide
+                        text-slate-500
+                    "
+                    data-i18n="leases.final_rent_treatment"
+                >
+                    Final Rental Period
+                </h3>
+
+                <div class="mt-4 space-y-3">
+                    <label
+                        class="
+                            flex items-start gap-3
+                            rounded-xl border border-slate-200
+                            p-4
+                        "
+                    >
+                        <input
+                            type="radio"
+                            name="lease-termination-final-rent-mode"
+                            value="prorate"
+                            checked
+                            class="mt-1"
+                        >
+
+                        <span>
+                            <span
+                                class="block text-sm font-medium text-slate-900"
+                                data-i18n="leases.final_rent_prorate"
+                            >
+                                Prorate final period
+                            </span>
+
+                            <span
+                                class="mt-1 block text-xs text-slate-500"
+                                data-i18n="leases.final_rent_prorate_help"
+                            >
+                                Charge rent only through the selected termination date.
+                            </span>
+                        </span>
+                    </label>
+
+                    <label
+                        class="
+                            flex items-start gap-3
+                            rounded-xl border border-slate-200
+                            p-4
+                        "
+                    >
+                        <input
+                            type="radio"
+                            name="lease-termination-final-rent-mode"
+                            value="full"
+                            class="mt-1"
+                        >
+
+                        <span>
+                            <span
+                                class="block text-sm font-medium text-slate-900"
+                                data-i18n="leases.final_rent_full"
+                            >
+                                Charge full period
+                            </span>
+
+                            <span
+                                class="mt-1 block text-xs text-slate-500"
+                                data-i18n="leases.final_rent_full_help"
+                            >
+                                Charge the full contractual billing period containing the termination date.
+                            </span>
+                        </span>
+                    </label>
+
+                    <label
+                        class="
+                            flex items-start gap-3
+                            rounded-xl border border-slate-200
+                            p-4
+                        "
+                    >
+                        <input
+                            type="radio"
+                            name="lease-termination-final-rent-mode"
+                            value="none"
+                            class="mt-1"
+                        >
+
+                        <span>
+                            <span
+                                class="block text-sm font-medium text-slate-900"
+                                data-i18n="leases.final_rent_none"
+                            >
+                                No final rent
+                            </span>
+
+                            <span
+                                class="mt-1 block text-xs text-slate-500"
+                                data-i18n="leases.final_rent_none_help"
+                            >
+                                Do not charge rent for the final partial billing period.
+                            </span>
+                        </span>
+                    </label>
+                </div>
+            </section>
+
+            <section
+                id="lease-termination-notice-actions"
+                class="
+                    mt-8 hidden
+                    border-t border-slate-100 pt-7
+                "
+            >
+                <h3
+                    class="
+                        text-sm font-semibold
+                        uppercase tracking-wide
+                        text-slate-500
+                    "
+                    data-i18n="leases.termination_notice"
+                >
+                    Termination Notice
+                </h3>
+
+                <p
+                    class="mt-2 text-sm text-slate-600"
+                    data-i18n="leases.termination_notice_ready"
+                >
+                    The Termination Notice has been generated and is ready to open.
+                </p>
+
+                <button
+                    id="lease-termination-open-notice"
+                    type="button"
+                    class="
+                        mt-4
+                        rounded-lg border border-slate-200
+                        bg-white px-3.5 py-2
+                        text-sm font-medium
+                        text-slate-700
+                        transition
+                        hover:bg-slate-50
+                    "
+                >
+                    <span data-i18n="leases.open_termination_notice">
+                        Open Termination Notice
+                    </span>
+                </button>
+            </section>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                id="lease-termination-cancel"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="leases.cancel">
+                    Cancel
+                </span>
+            </button>
+
+            <button
+                id="lease-termination-submit"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="leases.initiate_termination">
+                    Initiate Termination
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+{{-- ================================================================
+     Controlled Lease Extend Drawer
+================================================================ --}}
+
+<x-drawer
+    id="lease-extend-modal"
+    backdrop-id="lease-extend-modal-backdrop"
+    width="lg"
+>
+    <x-drawer-header
+        title-id="lease-extend-modal-title"
+        description-id="lease-extend-modal-description"
+        close-id="lease-extend-modal-close"
+        close-label="Close"
+        close-label-key="leases.close"
+    >
+        <x-slot:title>
+            <span data-i18n="leases.extend_lease">
+                Extend Lease
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="leases.extend_description">
+                Create a new contractual term period while preserving the Lease and its history.
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="lease-extend-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div class="flex-1 overflow-y-auto px-6 py-6">
+            <div
+                id="lease-extend-error"
+                class="
+                    mb-5 hidden rounded-lg
+                    border border-red-200
+                    bg-red-50 px-4 py-3
+                    text-sm text-red-700
+                "
+            ></div>
+
+            <section>
+                <h3
+                    class="
+                        text-sm font-semibold
+                        uppercase tracking-wide
+                        text-slate-500
+                    "
+                    data-i18n="leases.current_terms"
+                >
+                    Current Terms
+                </h3>
+
+                <div
+                    class="
+                        mt-4 grid gap-4
+                        sm:grid-cols-2
+                    "
+                >
+                    <div>
+                        <div
+                            class="text-xs font-medium text-slate-500"
+                            data-i18n="leases.monthly_rent"
+                        >
+                            Monthly Rent
+                        </div>
+                        <div
+                            id="lease-extend-current-rent"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs font-medium text-slate-500"
+                            data-i18n="leases.payment_frequency"
+                        >
+                            Payment Frequency
+                        </div>
+                        <div
+                            id="lease-extend-current-frequency"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs font-medium text-slate-500"
+                            data-i18n="leases.end_date"
+                        >
+                            End Date
+                        </div>
+                        <div
+                            id="lease-extend-current-end-date"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs font-medium text-slate-500"
+                            data-i18n="leases.due_day"
+                        >
+                            Due Day
+                        </div>
+                        <div
+                            id="lease-extend-current-due-day"
+                            class="mt-1 text-sm font-semibold text-slate-900"
+                        >
+                            —
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section
+                class="
+                    mt-8 border-t
+                    border-slate-100 pt-7
+                "
+            >
+                <h3
+                    class="
+                        text-sm font-semibold
+                        uppercase tracking-wide
+                        text-slate-500
+                    "
+                    data-i18n="leases.new_terms"
+                >
+                    New Terms
+                </h3>
+
+                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label
+                            for="lease-extend-effective-from"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.effective_from">
+                                Effective From
+                            </span>
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            id="lease-extend-effective-from"
+                            data-pm-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            type="text"
+                            required
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-extend-end-date"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.end_date">
+                                End Date
+                            </span>
+                        </label>
+
+                        <input
+                            id="lease-extend-end-date"
+                            data-pm-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            type="text"
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-extend-rent"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.monthly_rent">
+                                Monthly Rent
+                            </span>
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            id="lease-extend-rent"
+                            type="number"
+                            min="0"
+                            step="1"
+                            required
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-extend-frequency"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.payment_frequency">
+                                Payment Frequency
+                            </span>
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <select
+                            id="lease-extend-frequency"
+                            required
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                bg-white px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                            <option value="monthly" data-i18n="leases.monthly">
+                                Monthly
+                            </option>
+                            <option value="quarterly" data-i18n="leases.quarterly">
+                                Quarterly
+                            </option>
+                            <option value="bi_yearly" data-i18n="leases.bi_yearly">
+                                Bi-yearly
+                            </option>
+                            <option value="yearly" data-i18n="leases.yearly">
+                                Yearly
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-extend-due-day"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.due_day">
+                                Due Day
+                            </span>
+                        </label>
+
+                        <input
+                            id="lease-extend-due-day"
+                            type="number"
+                            min="1"
+                            max="31"
+                            step="1"
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-extend-vat-rate"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                        >
+                            <span data-i18n="leases.vat_rate">
+                                VAT Rate
+                            </span>
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            id="lease-extend-vat-rate"
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.01"
+                            required
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+                </div>
+            </section>
+
+            <section
+                class="
+                    mt-8 border-t
+                    border-slate-100 pt-7
+                "
+            >
+                <h3
+                    class="
+                        text-sm font-semibold
+                        uppercase tracking-wide
+                        text-slate-500
+                    "
+                    data-i18n="leases.rent_increment"
+                >
+                    Rent Increment
+                </h3>
+
+                <div class="mt-4 grid gap-4 sm:grid-cols-3">
+                    <div>
+                        <label
+                            for="lease-extend-increment-type"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                            data-i18n="leases.increment_type"
+                        >
+                            Increment Type
+                        </label>
+
+                        <select
+                            id="lease-extend-increment-type"
+                            required
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                bg-white px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                            <option value="none" data-i18n="leases.none">
+                                None
+                            </option>
+                            <option value="percentage" data-i18n="leases.percentage">
+                                Percentage
+                            </option>
+                            <option value="fixed" data-i18n="leases.fixed_amount">
+                                Fixed Amount
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-extend-increment-value"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                            data-i18n="leases.increment_value"
+                        >
+                            Increment Value
+                        </label>
+
+                        <input
+                            id="lease-extend-increment-value"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            required
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="lease-extend-next-increment-date"
+                            class="
+                                mb-1.5 block
+                                text-sm font-medium
+                                text-slate-700
+                            "
+                            data-i18n="leases.next_increment_date"
+                        >
+                            Next Increment Date
+                        </label>
+
+                        <input
+                            id="lease-extend-next-increment-date"
+                            data-pm-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            type="text"
+                            class="
+                                w-full rounded-lg
+                                border border-slate-200
+                                px-3.5 py-2.5
+                                text-sm outline-none
+                                focus:border-patrimoine-500
+                                focus:ring-2
+                                focus:ring-patrimoine-100
+                            "
+                        >
+                    </div>
+                </div>
+            </section>
+
+            <section
+                class="
+                    mt-8 border-t
+                    border-slate-100 pt-7
+                "
+            >
+                <label
+                    for="lease-extend-notes"
+                    class="
+                        mb-1.5 block
+                        text-sm font-medium
+                        text-slate-700
+                    "
+                    data-i18n="leases.notes"
+                >
+                    Notes
+                </label>
+
+                <textarea
+                    id="lease-extend-notes"
+                    rows="4"
+                    class="
+                        w-full resize-y rounded-lg
+                        border border-slate-200
+                        px-3.5 py-2.5
+                        text-sm outline-none
+                        focus:border-patrimoine-500
+                        focus:ring-2
+                        focus:ring-patrimoine-100
+                    "
+                ></textarea>
+            </section>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                id="lease-extend-cancel"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="leases.cancel">
+                    Cancel
+                </span>
+            </button>
+
+            <button
+                id="lease-extend-submit"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="leases.extend_lease">
+                    Extend Lease
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+
+{{-- ================================================================
+     Destructive Lease Delete Drawer
+================================================================ --}}
+
+<x-drawer
+    id="lease-delete-modal"
+    backdrop-id="lease-delete-modal-backdrop"
+    width="lg"
+>
+    <x-drawer-header
+        title-id="lease-delete-modal-title"
+        description-id="lease-delete-modal-description"
+        close-id="lease-delete-modal-close"
+        close-label="Close"
+        close-label-key="leases.close"
+    >
+        <x-slot:title>
+            <span
+                class="text-red-600"
+                data-i18n="leases.delete_lease"
+            >
+                Delete Lease
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="leases.delete_destructive_action">
+                Destructive action
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="lease-delete-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div
+            class="
+                min-h-0 flex-1 space-y-6
+                overflow-y-auto px-6 py-6
+                text-[var(--pm-text)]
+            "
+        >
+            <div
+                id="lease-delete-error"
+                class="
+                    hidden rounded-xl
+                    border border-red-300/70
+                    bg-red-500/10 px-4 py-3
+                    text-sm text-red-600
+                "
+                role="alert"
+            ></div>
+
+            <section
+                class="
+                    rounded-xl border
+                    border-[var(--pm-border)]
+                    bg-[var(--pm-surface-muted)] p-4
+                "
+            >
+                <h3
+                    class="
+                        text-sm font-semibold
+                        text-[var(--pm-text)]
+                    "
+                    data-i18n="leases.delete_context"
+                >
+                    Lease being deleted
+                </h3>
+
+                <dl
+                    class="
+                        mt-4 grid grid-cols-1
+                        gap-3 text-sm
+                        sm:grid-cols-2
+                    "
+                >
+                    <div>
+                        <dt
+                            class="text-[var(--pm-text-muted)]"
+                            data-i18n="leases.lease"
+                        >
+                            Lease
+                        </dt>
+                        <dd
+                            id="lease-delete-context-reference"
+                            class="font-medium text-[var(--pm-text)]"
+                        ></dd>
+                    </div>
+
+                    <div>
+                        <dt
+                            class="text-[var(--pm-text-muted)]"
+                            data-i18n="leases.tenant"
+                        >
+                            Tenant
+                        </dt>
+                        <dd
+                            id="lease-delete-context-tenant"
+                            class="font-medium text-[var(--pm-text)]"
+                        ></dd>
+                    </div>
+
+                    <div>
+                        <dt
+                            class="text-[var(--pm-text-muted)]"
+                            data-i18n="leases.property"
+                        >
+                            Property
+                        </dt>
+                        <dd
+                            id="lease-delete-context-building"
+                            class="font-medium text-[var(--pm-text)]"
+                        ></dd>
+                    </div>
+
+                    <div>
+                        <dt
+                            class="text-[var(--pm-text-muted)]"
+                            data-i18n="leases.unit"
+                        >
+                            Unit
+                        </dt>
+                        <dd
+                            id="lease-delete-context-unit"
+                            class="font-medium text-[var(--pm-text)]"
+                        ></dd>
+                    </div>
+                </dl>
+            </section>
+
+            <section>
+                <h3
+                    class="
+                        text-sm font-semibold
+                        text-[var(--pm-text)]
+                    "
+                    data-i18n="leases.delete_impact_title"
+                >
+                    Deletion impact
+                </h3>
+
+                <p
+                    class="
+                        mt-1 text-sm leading-6
+                        text-[var(--pm-text-muted)]
+                    "
+                    data-i18n="leases.delete_impact_description"
+                >
+                    Patrimoine will permanently remove the Lease and
+                    its operational financial history while preserving
+                    the required accounting and audit evidence.
+                </p>
+
+                <div
+                    id="lease-delete-loading"
+                    class="
+                        mt-4 rounded-xl border
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface-muted)]
+                        px-4 py-5 text-sm
+                        text-[var(--pm-text-muted)]
+                    "
+                    data-i18n="leases.delete_impact_loading"
+                >
+                    Calculating deletion impact…
+                </div>
+
+                <div
+                    id="lease-delete-impact"
+                    class="mt-4 hidden"
+                >
+                    <dl
+                        class="
+                            grid grid-cols-1 gap-3
+                            sm:grid-cols-2
+                        "
+                    >
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_invoices">Invoices</dt>
+                            <dd id="lease-delete-impact-invoices" class="mt-1 text-lg font-semibold">0</dd>
+                        </div>
+
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_payments">Payments</dt>
+                            <dd id="lease-delete-impact-payments" class="mt-1 text-lg font-semibold">0</dd>
+                        </div>
+
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_allocations">Allocations</dt>
+                            <dd id="lease-delete-impact-allocations" class="mt-1 text-lg font-semibold">0</dd>
+                        </div>
+
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_receipts">Withdrawal receipts</dt>
+                            <dd id="lease-delete-impact-receipts" class="mt-1 text-lg font-semibold">0</dd>
+                        </div>
+
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_security">Security Deposit balance</dt>
+                            <dd id="lease-delete-impact-security" class="mt-1 font-semibold"></dd>
+                        </div>
+
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_reserve">Rent Reserve balance</dt>
+                            <dd id="lease-delete-impact-rent-reserve" class="mt-1 font-semibold"></dd>
+                        </div>
+
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_consumable">Consumable Advance balance</dt>
+                            <dd id="lease-delete-impact-consumable" class="mt-1 font-semibold"></dd>
+                        </div>
+
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_outstanding">Invoice outstanding</dt>
+                            <dd id="lease-delete-impact-total" class="mt-1 font-semibold"></dd>
+                        </div>
+
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_reversals">Journal reversals</dt>
+                            <dd id="lease-delete-impact-reversals" class="mt-1 text-lg font-semibold">0</dd>
+                        </div>
+
+                        <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
+                            <dt data-i18n="leases.delete_impact_owner">Owner Lease effect</dt>
+                            <dd id="lease-delete-impact-owner" class="mt-1 font-semibold"></dd>
+                        </div>
+                    </dl>
+
+                    <div
+                        id="lease-delete-blockers"
+                        class="
+                            mt-4 hidden rounded-xl
+                            border border-red-300/70
+                            bg-red-500/10 px-4 py-3
+                            text-sm text-red-600
+                        "
+                    ></div>
+                </div>
+            </section>
+
+            <section
+                class="
+                    space-y-4 rounded-xl
+                    border border-red-300/60
+                    bg-red-500/5 p-4
+                "
+            >
+                <div>
+                    <label
+                        for="lease-delete-reason"
+                        class="
+                            block text-sm font-medium
+                            text-[var(--pm-text)]
+                        "
+                        data-i18n="leases.delete_reason"
+                    >
+                        Deletion reason
+                    </label>
+
+                    <textarea
+                        id="lease-delete-reason"
+                        rows="4"
+                        maxlength="2000"
+                        required
+                        class="
+                            mt-2 w-full resize-y rounded-lg
+                            border border-[var(--pm-border)]
+                            bg-[var(--pm-surface)]
+                            px-3.5 py-2.5 text-sm
+                            text-[var(--pm-text)]
+                            outline-none
+                            focus:border-red-500
+                            focus:ring-2 focus:ring-red-500/20
+                        "
+                    ></textarea>
+                </div>
+
+                <div>
+                    <label
+                        for="lease-delete-confirmation"
+                        class="
+                            block text-sm font-medium
+                            text-[var(--pm-text)]
+                        "
+                        data-i18n="leases.delete_confirmation_label"
+                    >
+                        Type DELETE to confirm
+                    </label>
+
+                    <input
+                        id="lease-delete-confirmation"
+                        type="text"
+                        autocomplete="off"
+                        required
+                        class="
+                            mt-2 w-full rounded-lg
+                            border border-[var(--pm-border)]
+                            bg-[var(--pm-surface)]
+                            px-3.5 py-2.5 text-sm
+                            text-[var(--pm-text)]
+                            outline-none
+                            focus:border-red-500
+                            focus:ring-2 focus:ring-red-500/20
+                        "
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="lease-delete-password"
+                        class="
+                            block text-sm font-medium
+                            text-[var(--pm-text)]
+                        "
+                        data-i18n="leases.delete_password"
+                    >
+                        Current password
+                    </label>
+
+                    <input
+                        id="lease-delete-password"
+                        type="password"
+                        autocomplete="current-password"
+                        required
+                        class="
+                            mt-2 w-full rounded-lg
+                            border border-[var(--pm-border)]
+                            bg-[var(--pm-surface)]
+                            px-3.5 py-2.5 text-sm
+                            text-[var(--pm-text)]
+                            outline-none
+                            focus:border-red-500
+                            focus:ring-2 focus:ring-red-500/20
+                        "
+                    >
+                </div>
+            </section>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                id="lease-delete-cancel"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="leases.cancel">
+                    Cancel
+                </span>
+            </button>
+
+            <button
+                id="lease-delete-submit"
+                type="submit"
+                disabled
+                class="
+                    inline-flex items-center
+                    justify-center rounded-lg
+                    bg-red-600 px-4 py-2.5
+                    text-sm font-semibold text-white
+                    transition
+                    hover:bg-red-700
+                    disabled:cursor-not-allowed
+                    disabled:opacity-50
+                "
+            >
+                <span data-i18n="leases.delete_permanently">
+                    Delete permanently
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
 {{-- ================================================================
      Global Lease Field Help Tooltip
 ================================================================ --}}
@@ -3104,6 +4425,452 @@
                 </div>
     </div>
 </x-drawer>
+
+
+
+{{-- ================================================================
+     V1.0.5 Lease Termination Settlement
+================================================================ --}}
+
+<x-drawer
+    id="termination-settlement-modal"
+    backdrop-id="termination-settlement-modal-backdrop"
+    width="lg"
+>
+    <x-drawer-header
+        title-id="termination-settlement-modal-title"
+        description-id="termination-settlement-modal-description"
+        close-id="termination-settlement-modal-close"
+        close-label="Close"
+        close-label-key="leases.close"
+    >
+        <x-slot:title>
+            <span data-i18n="leases.termination_settlement">
+                Termination Settlement
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="leases.termination_settlement_description">
+                Review the financial position and resolve every blocker before completing termination.
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <div class="overflow-y-auto px-5 py-5">
+        <div
+            id="termination-settlement-error"
+            class="
+                mb-5 hidden rounded-lg
+                border border-red-200
+                bg-red-50 px-4 py-3
+                text-sm text-red-700
+            "
+        ></div>
+
+        <div
+            id="termination-settlement-loading"
+            class="
+                py-12 text-center
+                text-sm text-slate-400
+            "
+        >
+            <span data-i18n="leases.termination_settlement_loading">
+                Loading settlement…
+            </span>
+        </div>
+
+        <div
+            id="termination-settlement-content"
+            class="hidden space-y-6"
+        >
+            {{-- Lease Context --}}
+            <section
+                class="
+                    rounded-xl border
+                    border-slate-200
+                    bg-slate-50 p-5
+                "
+            >
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <div class="text-xs text-slate-500">
+                            <span data-i18n="leases.lease">
+                                Lease
+                            </span>
+                        </div>
+
+                        <div
+                            id="termination-settlement-lease"
+                            class="
+                                mt-1 text-sm font-semibold
+                                text-slate-950
+                            "
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-xs text-slate-500">
+                            <span data-i18n="leases.tenant">
+                                Tenant
+                            </span>
+                        </div>
+
+                        <div
+                            id="termination-settlement-tenant"
+                            class="
+                                mt-1 text-sm font-semibold
+                                text-slate-950
+                            "
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-xs text-slate-500">
+                            <span data-i18n="leases.property">
+                                Property
+                            </span>
+                        </div>
+
+                        <div
+                            id="termination-settlement-building"
+                            class="
+                                mt-1 text-sm font-medium
+                                text-slate-800
+                            "
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-xs text-slate-500">
+                            <span data-i18n="leases.unit">
+                                Unit
+                            </span>
+                        </div>
+
+                        <div
+                            id="termination-settlement-unit"
+                            class="
+                                mt-1 text-sm font-medium
+                                text-slate-800
+                            "
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-xs text-slate-500">
+                            <span data-i18n="leases.notice_date">
+                                Notice Date
+                            </span>
+                        </div>
+
+                        <div
+                            id="termination-settlement-notice-date"
+                            class="
+                                mt-1 text-sm font-medium
+                                text-slate-800
+                            "
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-xs text-slate-500">
+                            <span data-i18n="leases.termination_date">
+                                Termination / Vacate Date
+                            </span>
+                        </div>
+
+                        <div
+                            id="termination-settlement-date"
+                            class="
+                                mt-1 text-sm font-medium
+                                text-slate-800
+                            "
+                        >
+                            —
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {{-- Financial Position --}}
+            <section>
+                <h3
+                    class="
+                        text-sm font-semibold
+                        text-slate-950
+                    "
+                >
+                    <span data-i18n="leases.termination_financial_position">
+                        Financial Position
+                    </span>
+                </h3>
+
+                <div
+                    class="
+                        mt-4 grid gap-3
+                        sm:grid-cols-2
+                        lg:grid-cols-4
+                    "
+                >
+                    @foreach ([
+                        [
+                            'termination-settlement-debt',
+                            'leases.outstanding_debt',
+                            'Outstanding Debt',
+                        ],
+                        [
+                            'termination-settlement-rent-reserve',
+                            'leases.rent_reserve',
+                            'Rent Reserve',
+                        ],
+                        [
+                            'termination-settlement-consumable-advance',
+                            'leases.consumable_advance',
+                            'Consumable Advance',
+                        ],
+                        [
+                            'termination-settlement-security',
+                            'leases.security_deposit',
+                            'Security Deposit',
+                        ],
+                        [
+                            'termination-settlement-deductions',
+                            'leases.security_deposit_deductions',
+                            'Security Deposit Deductions',
+                        ],
+                        [
+                            'termination-settlement-other-funds',
+                            'leases.other_tenant_funds',
+                            'Other Tenant Funds',
+                        ],
+                        [
+                            'termination-settlement-owed',
+                            'leases.amount_still_owed',
+                            'Amount Still Owed',
+                        ],
+                        [
+                            'termination-settlement-refund',
+                            'leases.final_refundable_amount',
+                            'Potential Refundable Amount',
+                        ],
+                    ] as [$id, $key, $label])
+                        <div
+                            class="
+                                rounded-xl border
+                                border-slate-200
+                                bg-white p-4
+                            "
+                        >
+                            <div class="text-xs text-slate-500">
+                                <span data-i18n="{{ $key }}">
+                                    {{ $label }}
+                                </span>
+                            </div>
+
+                            <div
+                                id="{{ $id }}"
+                                class="
+                                    mt-2 text-lg font-semibold
+                                    text-slate-950
+                                "
+                            >
+                                —
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+
+            {{-- Completion Blockers --}}
+            <section>
+                <div
+                    id="termination-settlement-blockers"
+                ></div>
+            </section>
+
+            {{-- Operational hand-off --}}
+            <section
+                class="
+                    rounded-xl border
+                    border-slate-200
+                    bg-slate-50 p-4
+                "
+            >
+                <p
+                    class="
+                        text-sm leading-6
+                        text-slate-600
+                    "
+                >
+                    <span data-i18n="leases.termination_resolve_from_tenant">
+                        Resolve debt, held funds and refunds from the Tenant workspace. Financial operations are not duplicated on the Lease page.
+                    </span>
+                </p>
+
+                <div class="mt-4 flex flex-wrap gap-3">
+                    <button
+                        id="termination-settlement-tenant-link"
+                        type="button"
+                        class="
+                            rounded-lg
+                            bg-patrimoine-950
+                            px-4 py-2.5
+                            text-sm font-medium
+                            text-white
+                            hover:bg-patrimoine-900
+                            disabled:cursor-not-allowed
+                            disabled:opacity-50
+                        "
+                    >
+                        <span data-i18n="leases.go_to_tenant">
+                            Go to Tenant
+                        </span>
+                    </button>
+
+                    <button
+                        id="termination-settlement-notice"
+                        type="button"
+                        class="
+                            rounded-lg border
+                            border-slate-300
+                            bg-white px-4 py-2.5
+                            text-sm font-medium
+                            text-slate-700
+                            hover:bg-slate-50
+                            disabled:cursor-not-allowed
+                            disabled:opacity-50
+                        "
+                    >
+                        <span data-i18n="leases.open_termination_notice">
+                            Open Termination Notice
+                        </span>
+                    </button>
+                </div>
+            </section>
+
+            {{-- Lifecycle controls --}}
+            <section
+                class="
+                    border-t border-slate-200
+                    pt-5
+                "
+            >
+                <div
+                    class="
+                        flex flex-col-reverse gap-3
+                        sm:flex-row sm:justify-end
+                    "
+                >
+                    <button
+                        id="termination-settlement-cancel"
+                        type="button"
+                        class="
+                            rounded-lg border
+                            border-red-300
+                            bg-white px-4 py-2.5
+                            text-sm font-medium
+                            text-red-700
+                            hover:bg-red-50
+                        "
+                    >
+                        <span data-i18n="leases.cancel_termination">
+                            Cancel Termination
+                        </span>
+                    </button>
+
+                    <button
+                        id="termination-settlement-complete"
+                        type="button"
+                        disabled
+                        class="
+                            rounded-lg
+                            bg-patrimoine-950
+                            px-4 py-2.5
+                            text-sm font-medium
+                            text-white
+                            hover:bg-patrimoine-900
+                            disabled:cursor-not-allowed
+                            disabled:opacity-50
+                        "
+                    >
+                        <span data-i18n="leases.complete_termination">
+                            Complete Termination
+                        </span>
+                    </button>
+                </div>
+            </section>
+        </div>
+    </div>
+</x-drawer>
+
+
+{{-- ================================================================
+     Lease Financial History
+================================================================ --}}
+
+<x-drawer
+    id="lease-financial-history-modal"
+    backdrop-id="lease-financial-history-modal-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        title-id="lease-financial-history-modal-title"
+        description-id="lease-financial-history-modal-description"
+        close-id="lease-financial-history-modal-close"
+        close-label="Close"
+        close-label-key="leases.close"
+    >
+        <x-slot:title>
+            <span data-i18n="leases.financial_history">
+                {{ __('ui.leases.financial_history') }}
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="leases.financial_history_description">
+                {{ __('ui.leases.financial_history_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <div class="pm-lease-financial-history-drawer-body overflow-y-auto px-5 py-5">
+        <div
+            id="lease-financial-history-error"
+            class="
+                mb-5 hidden rounded-lg
+                border border-red-200
+                bg-red-50 px-4 py-3
+                text-sm text-red-700
+            "
+        ></div>
+
+        <div
+            id="lease-financial-history-loading"
+            class="py-12 text-center text-sm text-slate-400"
+        >
+            <span data-i18n="leases.financial_history_loading">
+                {{ __('ui.leases.financial_history_loading') }}
+            </span>
+        </div>
+
+        <div
+            id="lease-financial-history-content"
+            class="hidden space-y-4"
+        ></div>
+    </div>
+</x-drawer>
+
 
 {{-- ================================================================
      Tenant Funds Operational Modal

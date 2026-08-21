@@ -23,6 +23,7 @@ class SecurityDepositSettlement extends Model
         'deposit_amount',
         'deduction_amount',
         'refund_amount',
+        'refund_payment_method',
         'tenant_debt_amount',
         'debt_invoice_id',
         'settlement_date',

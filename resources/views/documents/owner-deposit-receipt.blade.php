@@ -264,14 +264,14 @@
                     {{ $transaction->reference }}
                 @endif
 
-                @if($transaction->collector_name)
+                @if(($transaction->cash_receiver_name ?? $transaction->collector_name))
                     <br>
 
                     <strong>
                         {{ __('documents.owner_deposit_receipt.collector') }}:
                     </strong>
 
-                    {{ $transaction->collector_name }}
+                    {{ ($transaction->cash_receiver_name ?? $transaction->collector_name) }}
                 @endif
             </td>
         </tr>

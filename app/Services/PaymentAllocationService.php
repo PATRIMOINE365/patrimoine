@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Invoice;
+
+
+use App\Services\Accounting\RentReceiptJournalService;use App\Models\Invoice;
 use App\Models\Payment;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -42,8 +44,9 @@ class PaymentAllocationService
      * contractual rent.
      */
     public function __construct(
-        private readonly OwnerAccountingService $ownerAccountingService
-    ) {}
+        private readonly OwnerAccountingService $ownerAccountingService,
+        private readonly RentReceiptJournalService $rentReceiptJournal
+) {}
 
     /**
      * Allocate all currently available funds from a Payment.
@@ -141,6 +144,18 @@ class PaymentAllocationService
 
                                 'amount' => $allocationAmount,
                             ]);
+
+        /*
+         * V1.0.5 Phase 3:
+         *
+         * Journal only the amount actually allocated to a rent Invoice.
+         * Unallocated money and Tenant fund classifications are separate
+         * accounting events and must not be treated as rent receipts.
+         */
+        $this->rentReceiptJournal->postAllocation(
+            $allocation
+        );
+
 
                     /*
                      * Only contractual rent enters the Owner rent-accounting

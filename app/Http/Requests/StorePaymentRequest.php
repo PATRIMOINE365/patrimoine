@@ -72,19 +72,6 @@ class StorePaymentRequest extends FormRequest
                 'max:255',
             ],
 
-            /*
-             * Cash payments require the collector to be recorded for
-             * accountability. Electronic payments do not.
-             */
-            'collector_name' => [
-                'nullable',
-                'string',
-                'max:255',
-                Rule::requiredIf(
-                    fn (): bool => $this->input('payment_method') === 'cash'
-                ),
-            ],
-
             'notes' => [
                 'nullable',
                 'string',

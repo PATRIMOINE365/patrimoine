@@ -273,6 +273,12 @@ export const translations = {
         'navigation.activity_log':
             'Activity Log',
 
+        'navigation.financial_journal':
+            'Financial Journal',
+
+        'navigation.financial_journal_description':
+            'Permanent accounting record',
+
         'navigation.users':
             'Users',
 
@@ -282,6 +288,172 @@ export const translations = {
             'Property Manager',
         'roles.viewer':
             'Viewer',
+
+        'financial_journal.title':
+            'Financial Journal — Patrimoine',
+
+        'financial_journal.administration':
+            'Administration',
+
+        'financial_journal.heading':
+            'Financial Journal',
+
+        'financial_journal.description':
+            "Review Patrimoine's permanent double-entry accounting record.",
+
+        'financial_journal.loading':
+            'Loading Financial Journal...',
+
+        'financial_journal.search':
+            'Search',
+
+        'financial_journal.search_placeholder':
+            'Journal number, description, actor, account or source...',
+
+        'financial_journal.from':
+            'From',
+
+        'financial_journal.to':
+            'To',
+
+        'financial_journal.entry_kind':
+            'Entry Kind',
+
+        'financial_journal.all_entry_kinds':
+            'All Entry Kinds',
+
+        'financial_journal.kind_financial':
+            'Financial',
+
+        'financial_journal.kind_reversal':
+            'Reversal',
+
+        'financial_journal.kind_informational':
+            'Informational',
+
+        'financial_journal.transaction_type':
+            'Transaction Type',
+
+        'financial_journal.all_transaction_types':
+            'All Transaction Types',
+
+        'financial_journal.account':
+            'Account',
+
+        'financial_journal.all_accounts':
+            'All Accounts',
+
+        'financial_journal.clear_filters':
+            'Clear Filters',
+
+        'financial_journal.export_pdf':
+            'PDF',
+
+        'financial_journal.export_csv':
+            'CSV',
+
+        'financial_journal.export_xlsx':
+            'XLSX',
+
+        'financial_journal.exporting':
+            'Exporting...',
+
+        'financial_journal.unable_export':
+            'Unable to export the Financial Journal.',
+
+        'financial_journal.unable_load':
+            'Unable to load the Financial Journal.',
+
+        'financial_journal.none_found':
+            'No Journal entries found',
+
+        'financial_journal.none_found_description':
+            'No Journal entries match the selected filters.',
+
+        'financial_journal.view_details':
+            'View Details',
+
+        'financial_journal.page_of':
+            'Page :current of :last',
+
+        'financial_journal.previous':
+            'Previous',
+
+        'financial_journal.next':
+            'Next',
+
+        'financial_journal.close':
+            'Close',
+
+        'financial_journal.detail_heading':
+            'Journal Entry',
+
+        'financial_journal.detail_description':
+            'Immutable accounting transaction details.',
+
+        'financial_journal.loading_detail':
+            'Loading Journal entry...',
+
+        'financial_journal.unable_load_detail':
+            'Unable to load Journal entry details.',
+
+        'financial_journal.debit':
+            'Debit',
+
+        'financial_journal.credit':
+            'Credit',
+
+        'financial_journal.actor':
+            'Actor',
+
+        'financial_journal.source':
+            'Source',
+
+        'financial_journal.balance_status':
+            'Balance Status',
+
+        'financial_journal.balanced':
+            'Balanced',
+
+        'financial_journal.unbalanced':
+            'Unbalanced',
+
+        'financial_journal.description_label':
+            'Description',
+
+        'financial_journal.accounting_lines':
+            'Accounting Lines',
+
+        'financial_journal.line_count':
+            ':count line(s)',
+
+        'financial_journal.no_lines':
+            'This informational entry has no accounting lines.',
+
+        'financial_journal.total_debit':
+            'Total Debit',
+
+        'financial_journal.total_credit':
+            'Total Credit',
+
+        'financial_journal.reversal_context':
+            'Reversal Information',
+
+        'financial_journal.reversal_of':
+            'Reversal Of',
+
+        'financial_journal.reversed_by':
+            'Reversed By',
+
+        'financial_journal.reversal_reason':
+            'Reversal Reason',
+
+        'financial_journal.reversed':
+            'Reversed',
+
+        'financial_journal.not_available':
+            'Not available',
+
 
         'activity_log.title':
             'Activity Log — Patrimoine',
@@ -649,6 +821,41 @@ export const translations = {
         'parties.create_party': 'Create Party',
         'parties.save': 'Save',
 
+        'leases.financial_history': 'Financial History',
+
+        'leases.financial_history_export_pdf': 'PDF',
+
+        'leases.financial_history_export_excel': 'Excel',
+
+        'leases.financial_history_export_csv': 'CSV',
+        'leases.financial_history_description': 'Chronological financial activity for this Lease.',
+        'leases.financial_history_loading': 'Loading financial history…',
+        'leases.financial_history_unable_load': 'Unable to load financial history.',
+        'leases.financial_history_empty': 'No financial history',
+        'leases.financial_history_empty_description': 'No financial events have been recorded for this Lease.',
+        'leases.financial_history_reference': 'Reference',
+        'leases.financial_history_payment_method': 'Payment Method',
+        'leases.financial_history_fund': 'Fund',
+        'leases.financial_history_open_document': 'Open Document',
+        'leases.financial_history_unable_open_document': 'Unable to open document.',
+        'leases.financial_history_event_invoice': 'Invoice',
+        'leases.financial_history_event_payment': 'Tenant Payment',
+        'leases.financial_history_event_fund_deposit': 'Fund Deposit',
+        'leases.financial_history_event_rent_reserve_consumption': 'Rent Reserve Applied',
+        'leases.financial_history_event_advance_consumption': 'Consumable Advance Applied',
+        'leases.financial_history_event_withdrawal': 'Withdrawal',
+        'leases.financial_history_event_adjustment': 'Adjustment',
+        'leases.financial_history_event_security_application': 'Security Deposit Applied',
+        'leases.financial_history_event_security_deduction': 'Security Deposit Deduction',
+        'leases.financial_history_event_security_settlement': 'Security Deposit Settlement',
+        'leases.financial_history_event_security_movement': 'Security Deposit Movement',
+        'leases.financial_history_event_fund_movement': 'Fund Movement',
+        'leases.financial_history_fund_rent_reserve': 'Rent Reserve',
+        'leases.financial_history_fund_consumable_advance': 'Consumable Advance',
+        'leases.financial_history_fund_security_deposit': 'Security Deposit',
+        'leases.financial_history_method_cash': 'Cash',
+        'leases.financial_history_method_bank_transfer': 'Bank Transfer',
+        'leases.financial_history_method_mobile_payment': 'Mobile Payment',
         'leases.unable_initialize': 'Unable to initialize Leases.',
         'leases.all_tenants': 'All Tenants',
         'leases.select_tenant': 'Select tenant…',
@@ -670,7 +877,57 @@ export const translations = {
         'leases.tenant_funds': 'Tenant Funds',
         'leases.manage_security_deposit': 'Security Deposit',
         'leases.edit': 'Edit',
+        'leases.extend': 'Extend',
+        'leases.terminate': 'Terminate',
+        'leases.terminate_lease': 'Terminate Lease',
+        'leases.termination_description': 'Record notice, define the vacate date and choose the final rental treatment.',
+        'leases.lease_context': 'Lease Context',
+        'leases.lease': 'Lease',
+        'leases.termination_details': 'Termination Details',
+        'leases.termination_date': 'Termination / Vacate Date',
+        'leases.final_rent_treatment': 'Final Rental Period',
+        'leases.final_rent_prorate': 'Prorate final period',
+        'leases.final_rent_prorate_help': 'Charge rent only through the selected termination date.',
+        'leases.final_rent_full': 'Charge full period',
+        'leases.final_rent_full_help': 'Charge the full contractual billing period containing the termination date.',
+        'leases.final_rent_none': 'No final rent',
+        'leases.final_rent_none_help': 'Do not charge rent for the final partial billing period.',
+        'leases.initiate_termination': 'Initiate Termination',
+        'leases.termination_required_fields': 'Notice Date, Termination Date and final rental treatment are required.',
+        'leases.termination_failed': 'Unable to initiate Lease termination.',
+        'leases.termination_notice': 'Termination Notice',
+        'leases.termination_notice_ready': 'The Termination Notice has been generated and is ready to open.',
+        'leases.open_termination_notice': 'Open Termination Notice',
+        'leases.termination_notice_unable_open': 'Unable to open the Termination Notice.',
+        'leases.extend_lease': 'Extend Lease',
+        'leases.extend_description': 'Create a new contractual term period while preserving the Lease and its history.',
+        'leases.current_terms': 'Current Terms',
+        'leases.new_terms': 'New Terms',
+        'leases.effective_from': 'Effective From',
         'leases.delete': 'Delete',
+        'leases.delete_lease': 'Delete Lease',
+        'leases.delete_destructive_action': 'Destructive action',
+        'leases.delete_context': 'Lease being deleted',
+        'leases.delete_impact_title': 'Deletion impact',
+        'leases.delete_impact_description': 'Patrimoine will permanently remove the Lease and its operational financial history while preserving the required accounting and audit evidence.',
+        'leases.delete_impact_loading': 'Calculating deletion impact…',
+        'leases.delete_impact_failed': 'Unable to calculate the Lease deletion impact.',
+        'leases.delete_impact_invoices': 'Invoices',
+        'leases.delete_impact_payments': 'Payments',
+        'leases.delete_impact_allocations': 'Allocations',
+        'leases.delete_impact_receipts': 'Withdrawal receipts',
+        'leases.delete_impact_security': 'Security Deposit balance',
+        'leases.delete_impact_reserve': 'Rent Reserve balance',
+        'leases.delete_impact_consumable': 'Consumable Advance balance',
+        'leases.delete_impact_outstanding': 'Invoice outstanding',
+        'leases.delete_impact_reversals': 'Journal reversals',
+        'leases.delete_impact_owner': 'Owner Lease effect',
+        'leases.delete_impact_safe': 'The complete impact is classified and this Lease is eligible for controlled deletion.',
+        'leases.delete_blocked': 'This Lease cannot be deleted safely.',
+        'leases.delete_reason': 'Deletion reason',
+        'leases.delete_confirmation_label': 'Type DELETE to confirm',
+        'leases.delete_password': 'Current password',
+        'leases.delete_permanently': 'Delete permanently',
         'leases.status_draft': 'Draft',
         'leases.status_active': 'Active',
         'leases.status_notice': 'Notice',
@@ -698,12 +955,42 @@ export const translations = {
         'leases.unable_update': 'Unable to update Lease.',
         'leases.unable_create': 'Unable to create Lease.',
         'leases.this_lease': 'this Lease',
-        'leases.delete_financial_history_warning': 'Only an unused draft Lease can be deleted. Active or notice Leases must use termination, and terminated Leases remain as history.',
+        'leases.delete_financial_history_warning': 'Deleting a Lease is permanent and may remove records that belong exclusively to that Lease. Review the impact carefully before continuing.',
+        'leases.delete_reason_prompt': 'Reason for deleting this Lease:',
+        'leases.delete_reason_required': 'A deletion reason is required.',
+        'leases.delete_confirmation_prompt': 'Type DELETE exactly to confirm:',
+        'leases.delete_confirmation_invalid': 'You must type DELETE exactly.',
+        'leases.delete_password_prompt': 'Enter your current password:',
+        'leases.delete_password_required': 'Your current password is required.',
+        'leases.delete_final_confirmation': 'Permanently delete this Lease? This action cannot be undone.',
         'leases.unable_delete': 'Unable to delete Lease.',
         'leases.security_review_description': 'Review held funds, deductions and final settlement.',
         'leases.unable_load_security_deposit': 'Unable to load Security Deposit.',
         'leases.voucher': 'Voucher',
-        'leases.security_available_after_termination': 'Final Security Deposit deductions and settlement become available once the Lease is terminated.',
+        'leases.security_available_after_termination': 'Security Deposit deductions are available during termination. Final settlement remains controlled until the Lease financial position is resolved.',
+        'leases.security_available_during_termination': 'Security Deposit deductions become available once termination is in progress.',
+        'leases.security_deductions_during_termination': 'Itemized deductions may be recorded while termination is in progress. Final Security Deposit settlement remains available after termination is completed.',
+        'leases.termination_settlement': 'Termination Settlement',
+        'leases.termination_settlement_description': 'Review the financial position and resolve every blocker before completing termination.',
+        'leases.termination_settlement_loading': 'Loading settlement…',
+        'leases.termination_settlement_load_failed': 'Unable to load the termination settlement.',
+        'leases.termination_financial_position': 'Financial Position',
+        'leases.outstanding_debt': 'Outstanding Debt',
+        'leases.security_deposit_deductions': 'Security Deposit Deductions',
+        'leases.other_tenant_funds': 'Other Tenant Funds',
+        'leases.amount_still_owed': 'Amount Still Owed',
+        'leases.final_refundable_amount': 'Potential Refundable Amount',
+        'leases.termination_unresolved_items': 'Items that must be resolved',
+        'leases.termination_unresolved_item': 'Unresolved settlement item',
+        'leases.termination_no_blockers': 'No unresolved financial blockers remain. Termination can be completed.',
+        'leases.termination_resolve_from_tenant': 'Resolve debt, held funds and refunds from the Tenant workspace. Financial operations are not duplicated on the Lease page.',
+        'leases.go_to_tenant': 'Go to Tenant',
+        'leases.complete_termination': 'Complete Termination',
+        'leases.cancel_termination': 'Cancel Termination',
+        'leases.confirm_complete_termination': 'Complete this Lease termination? The Lease will become inactive and Unit occupancy will be recalculated.',
+        'leases.confirm_cancel_termination': 'Cancel this Lease termination and restore its previous operational state?',
+        'leases.termination_complete_failed': 'Unable to complete termination.',
+        'leases.termination_cancel_failed': 'Unable to cancel termination.',
         'leases.no_deductions': 'No deductions recorded.',
         'leases.date': 'Date',
         'leases.description': 'Description',
@@ -784,13 +1071,13 @@ export const translations = {
         'leases.advance_received_description': 'Use this when entering an existing or backdated Lease for which the tenant already paid the advance.',
         'leases.date_received': 'Date Received',
         'leases.payment_method': 'Payment Method',
-        'leases.cash_collector': 'Cash Collector',
+        'leases.cash_collector': 'Cash Receiver',
         'leases.select_method': 'Select method...',
         'leases.bank_transfer': 'Bank Transfer',
         'leases.mobile_money': 'Mobile Payment',
         'leases.cash': 'Cash',
         'leases.optional': 'Optional',
-        'leases.cash_collector_placeholder': 'Person who received the cash',
+        'leases.cash_collector_placeholder': 'Automatically set to the logged-in User',
         'leases.rent_increment': 'Rent Increment',
         'leases.rent_increment_description': 'Configure the next contractual rent increase where applicable.',
         'leases.increment_type': 'Increment Type',
@@ -928,7 +1215,7 @@ export const translations = {
         'payments.validation_amount': 'Enter a valid Payment amount greater than zero.',
         'payments.validation_date': 'Payment Date is required.',
         'payments.validation_method': 'Select a valid Payment Method.',
-        'payments.validation_collector': 'Collector is required for cash payments.',
+        'payments.validation_collector': 'Cash Receiver could not be determined for this cash payment.',
         'payments.unable_to_record': 'Unable to record payment.',
         'payments.select_tenant_required': 'Search for and select a Tenant.',
         'payments.select_lease_required': 'Select the Lease / Property against which the Tenant payment was received.',
@@ -994,7 +1281,7 @@ export const translations = {
         'owners.no_specific_unit': 'No specific Unit',
         'owners.select_building_first': 'Select a Building first',
         'owners.invalid_deposit_amount': 'Enter a valid deposit amount greater than zero.',
-        'owners.collector_required': 'Collector is required for cash deposits.',
+        'owners.collector_required': 'Cash Receiver could not be determined for this cash deposit.',
         'owners.recording': 'Recording…',
         'owners.record_deposit': 'Record Deposit',
         'owners.unable_to_record_deposit': 'Unable to record Owner deposit.',
@@ -1054,6 +1341,7 @@ export const translations = {
         'reports.run_report': 'Run Report',
         'reports.pdf': 'PDF',
         'reports.csv': 'CSV',
+        'reports.xlsx': 'XLSX',
         'reports.initial_prompt': 'Select a report type and run the report.',
         'reports.not_tenant': 'The selected Party is not a Tenant.',
         'reports.unable_to_open_tenant_statement': 'Unable to open the Tenant Statement.',
@@ -1131,6 +1419,32 @@ export const translations = {
         'reports.receivables': 'Receivables',
         'reports.held_funds': 'Held Funds',
         'reports.payments': 'Payments',
+        'reports.payments_report_summary': 'Historical tenant payments and receipts.',
+        'reports.payments_report': 'Payments Report',
+        'reports.payments_report_description': 'Read-only historical tenant payments and receipt access.',
+        'reports.payment_filters': 'Payment Filters',
+        'reports.payment_filters_description': 'Leave any filter blank to include all matching records.',
+        'reports.all_tenants': 'All tenants',
+        'reports.lease': 'Lease',
+        'reports.all_leases': 'All leases',
+        'reports.all_buildings': 'All buildings',
+        'reports.all_units': 'All units',
+        'reports.all_payment_methods': 'All payment methods',
+        'reports.payment_method_label': 'Payment Method',
+        'reports.payment_method_cash': 'Cash',
+        'reports.payment_method_bank': 'Bank',
+        'reports.payment_method_mobile': 'Mobile Payment',
+        'reports.cash_receiver': 'Cash Receiver',
+        'reports.cash_receiver_placeholder': 'Search receiver name',
+        'reports.payment_reference': 'Payment / Reference',
+        'reports.payment_reference_placeholder': 'Payment ID or reference',
+        'reports.payment_count': 'Payments',
+        'reports.total_received': 'Total Received',
+        'reports.payment_number': 'Payment',
+        'reports.property': 'Property',
+        'reports.receipt': 'Receipt',
+        'reports.no_payments_found': 'No payments match the selected filters.',
+        'reports.unable_to_load_payment_filters': 'Unable to load Payment Report filters.',
         'reports.reporting_period': 'Reporting Period',
         'reports.reporting_period_all_history': 'Reporting Period: All available history',
         'reports.beginning': 'Beginning',
@@ -1243,6 +1557,20 @@ export const translations = {
         'tenants.payment_method.cash': 'Cash',
         'tenants.payment_method.bank_transfer': 'Bank Transfer',
         'tenants.payment_method.momo': 'Mobile Payment',
+        'tenants.apply_security_deposit': 'Apply Security Deposit',
+        'tenants.apply_security_deposit_description': 'Apply held Security Deposit against an outstanding Lease receivable.',
+        'tenants.security_deposit_available': 'Security Deposit Available',
+        'tenants.receivable': 'Receivable',
+        'tenants.select_receivable': 'Select Receivable…',
+        'tenants.receivable_outstanding': 'Receivable Outstanding',
+        'tenants.resulting_security_deposit': 'Remaining Security Deposit',
+        'tenants.resulting_receivable': 'Remaining Receivable',
+        'tenants.security_application_not_available': 'Security Deposit cannot currently be applied for this Lease.',
+        'tenants.security_application_recorded': 'Security Deposit applied successfully.',
+        'tenants.security_application_exceeds_deposit': 'The amount cannot exceed the available Security Deposit balance.',
+        'tenants.security_application_exceeds_receivable': 'The amount cannot exceed the selected receivable outstanding balance.',
+        'tenants.invoice_type.rent': 'Rent',
+        'tenants.invoice_type.security_deposit_debt': 'Security Deposit Debt',
         'tenants.payment_method.mobile_payment': 'Mobile Payment',
 
         'tenants.fund_type.rent_reserve': 'Rent Reserve',
@@ -1330,6 +1658,56 @@ export const translations = {
         'tenants.next': 'Next',
         'tenants.loading': 'Loading tenants…',
         'tenants.loading_details': 'Loading Tenant details…',
+        'tenants.deposit': 'Deposit',
+        'tenants.deposit_description': 'Record money received from the selected Tenant.',
+        'tenants.withdrawal': 'Withdrawal',
+        'tenants.withdrawal_description': 'Pay available Tenant funds back to the selected Tenant.',
+        'tenants.adjustment': 'Adjustment',
+        'tenants.adjustment_description': 'Correct a Tenant financial account to the balance that should exist.',
+        'tenants.adjustment_warning': 'Use Adjustment only for accounting corrections. Normal receipts and payouts should use Deposit or Withdrawal.',
+        'tenants.transaction_context': 'Transaction Context',
+        'tenants.lease': 'Lease',
+        'tenants.select_lease': 'Select Lease…',
+        'tenants.select_lease_first': 'Select a Lease first',
+        'tenants.lease_first_help': 'Deposit and Withdrawal are recorded against a specific Lease.',
+        'tenants.destination': 'Destination',
+        'tenants.account': 'Account',
+        'tenants.select_account': 'Select Account…',
+        'tenants.current_balance': 'Current Balance',
+        'tenants.transaction_amount': 'Transaction Amount',
+        'tenants.payment_method_label': 'Payment Method',
+        'tenants.resulting_balance': 'Resulting Balance',
+        'tenants.correct_balance': 'Correct Balance',
+        'tenants.calculated_adjustment': 'Calculated Adjustment',
+        'tenants.payment_method': 'Payment Method',
+        'tenants.cash_receiver': 'Cash Receiver',
+        'tenants.cash_receiver_automatic': 'Automatically set to the logged-in User',
+        'tenants.cash_receiver_help': 'For Cash, the logged-in User is automatically recorded as Cash Receiver and cannot be changed.',
+        'tenants.transaction_date': 'Transaction Date',
+        'tenants.reference': 'Reference',
+        'tenants.notes': 'Notes',
+        'tenants.optional': '(Optional)',
+        'tenants.reason': 'Reason',
+        'tenants.adjustment_reason_placeholder': 'Explain why this account balance must be corrected…',
+        'tenants.cancel': 'Cancel',
+        'tenants.close': 'Close',
+        'tenants.rent_payment': 'Rent Payment',
+        'tenants.no_eligible_accounts': 'No eligible destinations are available for this Lease.',
+        'tenants.no_withdrawable_funds': 'This Lease has no Tenant funds available for withdrawal.',
+        'tenants.unable_to_load_accounts': 'Unable to load Tenant financial accounts.',
+        'tenants.select_lease_context': 'Select a Lease or account to see the Building and Unit context.',
+        'tenants.transaction_required_fields': 'Complete all required transaction fields.',
+        'tenants.adjustment_required_fields': 'Select an account, enter the correct balance, and provide a reason.',
+        'tenants.withdrawal_exceeds_balance': 'Withdrawal cannot exceed the available balance.',
+        'tenants.invalid_account': 'The selected account is not valid for this transaction.',
+        'tenants.transaction_failed': 'Unable to complete the transaction.',
+        'tenants.rent_payment_recorded': 'Rent payment recorded successfully.',
+        'tenants.deposit_recorded': 'Deposit recorded successfully.',
+        'tenants.withdrawal_recorded': 'Withdrawal recorded successfully.',
+        'tenants.adjustment_recorded': 'Adjustment recorded successfully.',
+
+
+
         'owners.title': 'Owners — Patrimoine',
         'owners.finance': 'Finance',
         'owners.heading': 'Owners',
@@ -1424,8 +1802,8 @@ export const translations = {
         'payments.payment_date': 'Payment Date',
         'payments.reference_label': 'Reference',
         'payments.reference_placeholder': 'Transaction or deposit reference',
-        'payments.collector_placeholder': 'Name of person who received the cash',
-        'payments.collector_help': 'Required for cash payments for accountability.',
+        'payments.collector_placeholder': 'Automatically set to the logged-in User',
+        'payments.collector_help': 'Automatically set to the logged-in User for cash payments.',
         'payments.notes': 'Notes',
         'payments.cancel': 'Cancel',
         'payments.manage_funds_description': 'Classify unapplied tenant money into held funds.',
@@ -2099,6 +2477,12 @@ export const translations = {
         'navigation.activity_log':
             'Journal d’activité',
 
+        'navigation.financial_journal':
+            'Journal financier',
+
+        'navigation.financial_journal_description':
+            'Registre comptable permanent',
+
         'navigation.users':
             'Utilisateurs',
 
@@ -2108,6 +2492,172 @@ export const translations = {
             'Gestionnaire immobilier',
         'roles.viewer':
             'Consultation',
+
+        'financial_journal.title':
+            'Journal financier — Patrimoine',
+
+        'financial_journal.administration':
+            'Administration',
+
+        'financial_journal.heading':
+            'Journal financier',
+
+        'financial_journal.description':
+            'Consultez le registre comptable permanent en partie double de Patrimoine.',
+
+        'financial_journal.loading':
+            'Chargement du journal financier...',
+
+        'financial_journal.search':
+            'Rechercher',
+
+        'financial_journal.search_placeholder':
+            'Numéro du journal, description, acteur, compte ou source...',
+
+        'financial_journal.from':
+            'Du',
+
+        'financial_journal.to':
+            'Au',
+
+        'financial_journal.entry_kind':
+            'Type d’écriture',
+
+        'financial_journal.all_entry_kinds':
+            'Tous les types d’écriture',
+
+        'financial_journal.kind_financial':
+            'Financière',
+
+        'financial_journal.kind_reversal':
+            'Contre-passation',
+
+        'financial_journal.kind_informational':
+            'Informationnelle',
+
+        'financial_journal.transaction_type':
+            'Type de transaction',
+
+        'financial_journal.all_transaction_types':
+            'Tous les types de transaction',
+
+        'financial_journal.account':
+            'Compte',
+
+        'financial_journal.all_accounts':
+            'Tous les comptes',
+
+        'financial_journal.clear_filters':
+            'Effacer les filtres',
+
+        'financial_journal.export_pdf':
+            'PDF',
+
+        'financial_journal.export_csv':
+            'CSV',
+
+        'financial_journal.export_xlsx':
+            'XLSX',
+
+        'financial_journal.exporting':
+            'Exportation...',
+
+        'financial_journal.unable_export':
+            'Impossible d’exporter le journal financier.',
+
+        'financial_journal.unable_load':
+            'Impossible de charger le journal financier.',
+
+        'financial_journal.none_found':
+            'Aucune écriture trouvée',
+
+        'financial_journal.none_found_description':
+            'Aucune écriture ne correspond aux filtres sélectionnés.',
+
+        'financial_journal.view_details':
+            'Voir les détails',
+
+        'financial_journal.page_of':
+            'Page :current sur :last',
+
+        'financial_journal.previous':
+            'Précédent',
+
+        'financial_journal.next':
+            'Suivant',
+
+        'financial_journal.close':
+            'Fermer',
+
+        'financial_journal.detail_heading':
+            'Écriture du journal',
+
+        'financial_journal.detail_description':
+            'Détails immuables de la transaction comptable.',
+
+        'financial_journal.loading_detail':
+            'Chargement de l’écriture...',
+
+        'financial_journal.unable_load_detail':
+            'Impossible de charger les détails de l’écriture.',
+
+        'financial_journal.debit':
+            'Débit',
+
+        'financial_journal.credit':
+            'Crédit',
+
+        'financial_journal.actor':
+            'Acteur',
+
+        'financial_journal.source':
+            'Source',
+
+        'financial_journal.balance_status':
+            'État d’équilibre',
+
+        'financial_journal.balanced':
+            'Équilibrée',
+
+        'financial_journal.unbalanced':
+            'Non équilibrée',
+
+        'financial_journal.description_label':
+            'Description',
+
+        'financial_journal.accounting_lines':
+            'Lignes comptables',
+
+        'financial_journal.line_count':
+            ':count ligne(s)',
+
+        'financial_journal.no_lines':
+            'Cette écriture informationnelle ne contient aucune ligne comptable.',
+
+        'financial_journal.total_debit':
+            'Total débit',
+
+        'financial_journal.total_credit':
+            'Total crédit',
+
+        'financial_journal.reversal_context':
+            'Informations de contre-passation',
+
+        'financial_journal.reversal_of':
+            'Contre-passation de',
+
+        'financial_journal.reversed_by':
+            'Contre-passée par',
+
+        'financial_journal.reversal_reason':
+            'Motif de contre-passation',
+
+        'financial_journal.reversed':
+            'Contre-passée',
+
+        'financial_journal.not_available':
+            'Non disponible',
+
 
         'activity_log.title':
             'Journal d’activité — Patrimoine',
@@ -2808,6 +3358,41 @@ export const translations = {
         'parties.create_party': 'Créer la partie',
         'parties.save': 'Enregistrer',
 
+        'leases.financial_history': 'Historique financier',
+
+        'leases.financial_history_export_pdf': 'PDF',
+
+        'leases.financial_history_export_excel': 'Excel',
+
+        'leases.financial_history_export_csv': 'CSV',
+        'leases.financial_history_description': 'Activité financière chronologique de ce bail.',
+        'leases.financial_history_loading': 'Chargement de l’historique financier…',
+        'leases.financial_history_unable_load': 'Impossible de charger l’historique financier.',
+        'leases.financial_history_empty': 'Aucun historique financier',
+        'leases.financial_history_empty_description': 'Aucun événement financier n’a été enregistré pour ce bail.',
+        'leases.financial_history_reference': 'Référence',
+        'leases.financial_history_payment_method': 'Mode de paiement',
+        'leases.financial_history_fund': 'Fonds',
+        'leases.financial_history_open_document': 'Ouvrir le document',
+        'leases.financial_history_unable_open_document': 'Impossible d’ouvrir le document.',
+        'leases.financial_history_event_invoice': 'Facture',
+        'leases.financial_history_event_payment': 'Paiement du locataire',
+        'leases.financial_history_event_fund_deposit': 'Dépôt de fonds',
+        'leases.financial_history_event_rent_reserve_consumption': 'Réserve de loyer appliquée',
+        'leases.financial_history_event_advance_consumption': 'Avance consommable appliquée',
+        'leases.financial_history_event_withdrawal': 'Retrait',
+        'leases.financial_history_event_adjustment': 'Ajustement',
+        'leases.financial_history_event_security_application': 'Dépôt de garantie appliqué',
+        'leases.financial_history_event_security_deduction': 'Déduction du dépôt de garantie',
+        'leases.financial_history_event_security_settlement': 'Règlement du dépôt de garantie',
+        'leases.financial_history_event_security_movement': 'Mouvement du dépôt de garantie',
+        'leases.financial_history_event_fund_movement': 'Mouvement de fonds',
+        'leases.financial_history_fund_rent_reserve': 'Réserve de loyer',
+        'leases.financial_history_fund_consumable_advance': 'Avance consommable',
+        'leases.financial_history_fund_security_deposit': 'Dépôt de garantie',
+        'leases.financial_history_method_cash': 'Espèces',
+        'leases.financial_history_method_bank_transfer': 'Virement bancaire',
+        'leases.financial_history_method_mobile_payment': 'Paiement mobile',
         'leases.unable_initialize': 'Impossible d’initialiser les baux.',
         'leases.all_tenants': 'Tous les locataires',
         'leases.select_tenant': 'Sélectionner un locataire…',
@@ -2829,7 +3414,57 @@ export const translations = {
         'leases.tenant_funds': 'Fonds du locataire',
         'leases.manage_security_deposit': 'Dépôt de garantie',
         'leases.edit': 'Modifier',
+        'leases.extend': 'Prolonger',
+        'leases.terminate': 'Résilier',
+        'leases.terminate_lease': 'Résilier le bail',
+        'leases.termination_description': 'Enregistrez le préavis, définissez la date de départ et choisissez le traitement du dernier loyer.',
+        'leases.lease_context': 'Contexte du bail',
+        'leases.lease': 'Bail',
+        'leases.termination_details': 'Détails de la résiliation',
+        'leases.termination_date': 'Date de résiliation / départ',
+        'leases.final_rent_treatment': 'Dernière période de loyer',
+        'leases.final_rent_prorate': 'Proratiser la dernière période',
+        'leases.final_rent_prorate_help': 'Facturer le loyer uniquement jusqu’à la date de résiliation sélectionnée.',
+        'leases.final_rent_full': 'Facturer la période complète',
+        'leases.final_rent_full_help': 'Facturer toute la période contractuelle contenant la date de résiliation.',
+        'leases.final_rent_none': 'Aucun loyer final',
+        'leases.final_rent_none_help': 'Ne pas facturer de loyer pour la dernière période partielle.',
+        'leases.initiate_termination': 'Initier la résiliation',
+        'leases.termination_required_fields': 'La date de préavis, la date de résiliation et le traitement du dernier loyer sont obligatoires.',
+        'leases.termination_failed': 'Impossible d’initier la résiliation du bail.',
+        'leases.termination_notice': 'Avis de résiliation',
+        'leases.termination_notice_ready': 'L’avis de résiliation a été généré et peut être ouvert.',
+        'leases.open_termination_notice': 'Ouvrir l’avis de résiliation',
+        'leases.termination_notice_unable_open': 'Impossible d’ouvrir l’avis de résiliation.',
+        'leases.extend_lease': 'Prolonger le bail',
+        'leases.extend_description': 'Créez une nouvelle période contractuelle tout en conservant le bail et son historique.',
+        'leases.current_terms': 'Conditions actuelles',
+        'leases.new_terms': 'Nouvelles conditions',
+        'leases.effective_from': 'Prise d’effet',
         'leases.delete': 'Supprimer',
+        'leases.delete_lease': 'Supprimer le bail',
+        'leases.delete_destructive_action': 'Action destructive',
+        'leases.delete_context': 'Bail à supprimer',
+        'leases.delete_impact_title': 'Impact de la suppression',
+        'leases.delete_impact_description': 'Patrimoine supprimera définitivement le bail et son historique financier opérationnel tout en conservant les éléments comptables et d’audit requis.',
+        'leases.delete_impact_loading': 'Calcul de l’impact de la suppression…',
+        'leases.delete_impact_failed': 'Impossible de calculer l’impact de la suppression du bail.',
+        'leases.delete_impact_invoices': 'Factures',
+        'leases.delete_impact_payments': 'Paiements',
+        'leases.delete_impact_allocations': 'Affectations',
+        'leases.delete_impact_receipts': 'Reçus de retrait',
+        'leases.delete_impact_security': 'Solde du dépôt de garantie',
+        'leases.delete_impact_reserve': 'Solde de la réserve de loyer',
+        'leases.delete_impact_consumable': 'Solde de l’avance consommable',
+        'leases.delete_impact_outstanding': 'Solde des factures impayées',
+        'leases.delete_impact_reversals': 'Contre-passations du journal',
+        'leases.delete_impact_owner': 'Effet du bail sur le propriétaire',
+        'leases.delete_impact_safe': 'L’impact complet est classifié et ce bail est admissible à la suppression contrôlée.',
+        'leases.delete_blocked': 'Ce bail ne peut pas être supprimé en toute sécurité.',
+        'leases.delete_reason': 'Motif de suppression',
+        'leases.delete_confirmation_label': 'Saisissez DELETE pour confirmer',
+        'leases.delete_password': 'Mot de passe actuel',
+        'leases.delete_permanently': 'Supprimer définitivement',
         'leases.status_draft': 'En cours',
         'leases.status_active': 'Actif',
         'leases.status_notice': 'Préavis',
@@ -2857,12 +3492,42 @@ export const translations = {
         'leases.unable_update': 'Impossible de mettre à jour le bail.',
         'leases.unable_create': 'Impossible de créer le bail.',
         'leases.this_lease': 'ce bail',
-        'leases.delete_financial_history_warning': 'Seul un bail brouillon inutilisé peut être supprimé. Les baux actifs ou en préavis doivent être résiliés, et les baux résiliés restent conservés comme historique.',
+        'leases.delete_financial_history_warning': 'La suppression d’un bail est définitive et peut supprimer les données appartenant exclusivement à ce bail. Examinez attentivement l’impact avant de continuer.',
+        'leases.delete_reason_prompt': 'Motif de la suppression de ce bail :',
+        'leases.delete_reason_required': 'Un motif de suppression est obligatoire.',
+        'leases.delete_confirmation_prompt': 'Saisissez exactement DELETE pour confirmer :',
+        'leases.delete_confirmation_invalid': 'Vous devez saisir exactement DELETE.',
+        'leases.delete_password_prompt': 'Saisissez votre mot de passe actuel :',
+        'leases.delete_password_required': 'Votre mot de passe actuel est obligatoire.',
+        'leases.delete_final_confirmation': 'Supprimer définitivement ce bail ? Cette action est irréversible.',
         'leases.unable_delete': 'Impossible de supprimer le bail.',
         'leases.security_review_description': 'Consultez les fonds détenus, les déductions et le règlement final.',
         'leases.unable_load_security_deposit': 'Impossible de charger le dépôt de garantie.',
         'leases.voucher': 'Bon',
-        'leases.security_available_after_termination': 'Les déductions finales du dépôt de garantie et le règlement deviennent disponibles une fois le bail résilié.',
+        'leases.security_available_after_termination': 'Les déductions du dépôt de garantie sont disponibles pendant la résiliation. Le règlement final reste contrôlé jusqu’à la résolution de la situation financière du bail.',
+        'leases.security_available_during_termination': 'Les déductions du dépôt de garantie deviennent disponibles lorsque la résiliation est en cours.',
+        'leases.security_deductions_during_termination': 'Les déductions détaillées peuvent être enregistrées pendant la résiliation. Le règlement final du dépôt de garantie reste disponible après la fin de la résiliation.',
+        'leases.termination_settlement': 'Règlement de résiliation',
+        'leases.termination_settlement_description': 'Examinez la situation financière et résolvez chaque blocage avant de terminer la résiliation.',
+        'leases.termination_settlement_loading': 'Chargement du règlement…',
+        'leases.termination_settlement_load_failed': 'Impossible de charger le règlement de résiliation.',
+        'leases.termination_financial_position': 'Situation financière',
+        'leases.outstanding_debt': 'Dette impayée',
+        'leases.security_deposit_deductions': 'Déductions sur le dépôt de garantie',
+        'leases.other_tenant_funds': 'Autres fonds du locataire',
+        'leases.amount_still_owed': 'Montant restant dû',
+        'leases.final_refundable_amount': 'Montant potentiellement remboursable',
+        'leases.termination_unresolved_items': 'Éléments à résoudre',
+        'leases.termination_unresolved_item': 'Élément de règlement non résolu',
+        'leases.termination_no_blockers': 'Aucun blocage financier non résolu. La résiliation peut être terminée.',
+        'leases.termination_resolve_from_tenant': 'Réglez les dettes, fonds détenus et remboursements depuis l’espace Locataire. Les opérations financières ne sont pas dupliquées sur la page du bail.',
+        'leases.go_to_tenant': 'Voir le locataire',
+        'leases.complete_termination': 'Terminer la résiliation',
+        'leases.cancel_termination': 'Annuler la résiliation',
+        'leases.confirm_complete_termination': 'Terminer cette résiliation de bail ? Le bail deviendra inactif et l’occupation de l’unité sera recalculée.',
+        'leases.confirm_cancel_termination': 'Annuler cette résiliation et restaurer l’état opérationnel précédent du bail ?',
+        'leases.termination_complete_failed': 'Impossible de terminer la résiliation.',
+        'leases.termination_cancel_failed': 'Impossible d’annuler la résiliation.',
         'leases.no_deductions': 'Aucune déduction enregistrée.',
         'leases.date': 'Date',
         'leases.description': 'Description',
@@ -2943,13 +3608,13 @@ export const translations = {
         'leases.advance_received_description': 'Utilisez cette option lors de la saisie d’un bail existant ou antidaté pour lequel le locataire a déjà payé l’avance.',
         'leases.date_received': 'Date de réception',
         'leases.payment_method': 'Mode de paiement',
-        'leases.cash_collector': 'Encaisseur',
+        'leases.cash_collector': 'Réceptionnaire des espèces',
         'leases.select_method': 'Sélectionner un mode...',
         'leases.bank_transfer': 'Virement bancaire',
         'leases.mobile_money': 'Paiement mobile',
         'leases.cash': 'Espèces',
         'leases.optional': 'Facultatif',
-        'leases.cash_collector_placeholder': 'Personne ayant reçu les espèces',
+        'leases.cash_collector_placeholder': 'Défini automatiquement selon l’utilisateur connecté',
         'leases.rent_increment': 'Augmentation du loyer',
         'leases.rent_increment_description': 'Configurez la prochaine augmentation contractuelle du loyer, le cas échéant.',
         'leases.increment_type': 'Type d’augmentation',
@@ -3213,6 +3878,7 @@ export const translations = {
         'reports.run_report': 'Générer le rapport',
         'reports.pdf': 'PDF',
         'reports.csv': 'CSV',
+        'reports.xlsx': 'XLSX',
         'reports.initial_prompt': 'Sélectionnez un type de rapport puis générez le rapport.',
         'reports.not_tenant': "La partie sélectionnée n'est pas un locataire.",
         'reports.unable_to_open_tenant_statement': "Impossible d'ouvrir le relevé du locataire.",
@@ -3290,6 +3956,32 @@ export const translations = {
         'reports.receivables': 'Créances',
         'reports.held_funds': 'Fonds détenus',
         'reports.payments': 'Paiements',
+        'reports.payments_report_summary': 'Historique des paiements des locataires et des reçus.',
+        'reports.payments_report': 'Rapport des paiements',
+        'reports.payments_report_description': 'Historique en lecture seule des paiements des locataires avec accès aux reçus.',
+        'reports.payment_filters': 'Filtres des paiements',
+        'reports.payment_filters_description': 'Laissez un filtre vide pour inclure tous les enregistrements correspondants.',
+        'reports.all_tenants': 'Tous les locataires',
+        'reports.lease': 'Bail',
+        'reports.all_leases': 'Tous les baux',
+        'reports.all_buildings': 'Tous les immeubles',
+        'reports.all_units': 'Toutes les unités',
+        'reports.all_payment_methods': 'Tous les modes de paiement',
+        'reports.payment_method_label': 'Mode de paiement',
+        'reports.payment_method_cash': 'Espèces',
+        'reports.payment_method_bank': 'Banque',
+        'reports.payment_method_mobile': 'Paiement mobile',
+        'reports.cash_receiver': 'Encaisseur',
+        'reports.cash_receiver_placeholder': 'Rechercher l’encaisseur',
+        'reports.payment_reference': 'Paiement / Référence',
+        'reports.payment_reference_placeholder': 'ID du paiement ou référence',
+        'reports.payment_count': 'Paiements',
+        'reports.total_received': 'Total reçu',
+        'reports.payment_number': 'Paiement',
+        'reports.property': 'Bien',
+        'reports.receipt': 'Reçu',
+        'reports.no_payments_found': 'Aucun paiement ne correspond aux filtres sélectionnés.',
+        'reports.unable_to_load_payment_filters': 'Impossible de charger les filtres du rapport des paiements.',
         'reports.reporting_period': 'Période du rapport',
         'reports.reporting_period_all_history': "Période du rapport : tout l'historique disponible",
         'reports.beginning': 'Début',
@@ -3402,6 +4094,20 @@ export const translations = {
         'tenants.payment_method.cash': 'Espèces',
         'tenants.payment_method.bank_transfer': 'Virement bancaire',
         'tenants.payment_method.momo': 'Paiement mobile',
+        'tenants.apply_security_deposit': 'Affecter le dépôt de garantie',
+        'tenants.apply_security_deposit_description': 'Affectez le dépôt de garantie détenu à une créance impayée du bail.',
+        'tenants.security_deposit_available': 'Dépôt de garantie disponible',
+        'tenants.receivable': 'Créance',
+        'tenants.select_receivable': 'Sélectionner une créance…',
+        'tenants.receivable_outstanding': 'Créance impayée',
+        'tenants.resulting_security_deposit': 'Dépôt de garantie restant',
+        'tenants.resulting_receivable': 'Créance restante',
+        'tenants.security_application_not_available': 'Le dépôt de garantie ne peut pas être affecté pour ce bail actuellement.',
+        'tenants.security_application_recorded': 'Dépôt de garantie affecté avec succès.',
+        'tenants.security_application_exceeds_deposit': 'Le montant ne peut pas dépasser le solde disponible du dépôt de garantie.',
+        'tenants.security_application_exceeds_receivable': 'Le montant ne peut pas dépasser le solde impayé de la créance sélectionnée.',
+        'tenants.invoice_type.rent': 'Loyer',
+        'tenants.invoice_type.security_deposit_debt': 'Dette de dépôt de garantie',
         'tenants.payment_method.mobile_payment': 'Paiement mobile',
 
         'tenants.fund_type.rent_reserve': 'Réserve de loyer',
@@ -3489,6 +4195,56 @@ export const translations = {
         'tenants.next': 'Suivant',
         'tenants.loading': 'Chargement des locataires…',
         'tenants.loading_details': 'Chargement des détails du locataire…',
+        'tenants.deposit': 'Dépôt',
+        'tenants.deposit_description': 'Enregistrez les fonds reçus du locataire sélectionné.',
+        'tenants.withdrawal': 'Retrait',
+        'tenants.withdrawal_description': 'Versez au locataire sélectionné les fonds disponibles qui lui sont dus.',
+        'tenants.adjustment': 'Ajustement',
+        'tenants.adjustment_description': 'Corrigez un compte financier du locataire au solde qui devrait exister.',
+        'tenants.adjustment_warning': 'Utilisez l’ajustement uniquement pour les corrections comptables. Les encaissements et versements normaux doivent utiliser Dépôt ou Retrait.',
+        'tenants.transaction_context': 'Contexte de la transaction',
+        'tenants.lease': 'Bail',
+        'tenants.select_lease': 'Sélectionner un bail…',
+        'tenants.select_lease_first': 'Sélectionnez d’abord un bail',
+        'tenants.lease_first_help': 'Le dépôt et le retrait sont enregistrés pour un bail spécifique.',
+        'tenants.destination': 'Destination',
+        'tenants.account': 'Compte',
+        'tenants.select_account': 'Sélectionner un compte…',
+        'tenants.current_balance': 'Solde actuel',
+        'tenants.transaction_amount': 'Montant de la transaction',
+        'tenants.payment_method_label': 'Mode de paiement',
+        'tenants.resulting_balance': 'Solde résultant',
+        'tenants.correct_balance': 'Solde correct',
+        'tenants.calculated_adjustment': 'Ajustement calculé',
+        'tenants.payment_method': 'Mode de paiement',
+        'tenants.cash_receiver': 'Réceptionnaire des espèces',
+        'tenants.cash_receiver_automatic': 'Défini automatiquement sur l’utilisateur connecté',
+        'tenants.cash_receiver_help': 'Pour les espèces, l’utilisateur connecté est automatiquement enregistré comme réceptionnaire et ne peut pas être modifié.',
+        'tenants.transaction_date': 'Date de la transaction',
+        'tenants.reference': 'Référence',
+        'tenants.notes': 'Notes',
+        'tenants.optional': '(Facultatif)',
+        'tenants.reason': 'Motif',
+        'tenants.adjustment_reason_placeholder': 'Expliquez pourquoi le solde de ce compte doit être corrigé…',
+        'tenants.cancel': 'Annuler',
+        'tenants.close': 'Fermer',
+        'tenants.rent_payment': 'Paiement du loyer',
+        'tenants.no_eligible_accounts': 'Aucune destination admissible n’est disponible pour ce bail.',
+        'tenants.no_withdrawable_funds': 'Ce bail ne dispose d’aucun fonds locataire pouvant être retiré.',
+        'tenants.unable_to_load_accounts': 'Impossible de charger les comptes financiers du locataire.',
+        'tenants.select_lease_context': 'Sélectionnez un bail ou un compte pour afficher le contexte immeuble et unité.',
+        'tenants.transaction_required_fields': 'Renseignez tous les champs obligatoires de la transaction.',
+        'tenants.adjustment_required_fields': 'Sélectionnez un compte, saisissez le solde correct et indiquez un motif.',
+        'tenants.withdrawal_exceeds_balance': 'Le retrait ne peut pas dépasser le solde disponible.',
+        'tenants.invalid_account': 'Le compte sélectionné n’est pas valide pour cette transaction.',
+        'tenants.transaction_failed': 'Impossible d’effectuer la transaction.',
+        'tenants.rent_payment_recorded': 'Paiement du loyer enregistré avec succès.',
+        'tenants.deposit_recorded': 'Dépôt enregistré avec succès.',
+        'tenants.withdrawal_recorded': 'Retrait enregistré avec succès.',
+        'tenants.adjustment_recorded': 'Ajustement enregistré avec succès.',
+
+
+
         'owners.title': 'Propriétaires — Patrimoine',
         'owners.finance': 'Finance',
         'owners.heading': 'Propriétaires',
@@ -3583,8 +4339,8 @@ export const translations = {
         'payments.payment_date': 'Date du paiement',
         'payments.reference_label': 'Référence',
         'payments.reference_placeholder': 'Référence de l’opération ou du dépôt',
-        'payments.collector_placeholder': 'Nom de la personne ayant reçu les espèces',
-        'payments.collector_help': 'Obligatoire pour les paiements en espèces à des fins de traçabilité.',
+        'payments.collector_placeholder': 'Défini automatiquement selon l’utilisateur connecté',
+        'payments.collector_help': 'Défini automatiquement selon l’utilisateur connecté pour les paiements en espèces.',
         'payments.notes': 'Notes',
         'payments.cancel': 'Annuler',
         'payments.manage_funds_description': 'Classez les fonds non affectés du locataire dans les fonds détenus.',

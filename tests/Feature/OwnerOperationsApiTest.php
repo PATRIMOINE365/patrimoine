@@ -240,13 +240,20 @@ class OwnerOperationsApiTest extends TestCase
     }
 
     /**
-     * Cash received from an owner must identify the collector.
+     * Cash owner deposits automatically attribute receipt to the
+     * authenticated User without requiring a typed collector.
      */
-    public function test_cash_owner_deposit_requires_collector(): void
+    public function test_cash_owner_deposit_uses_authenticated_user_as_cash_receiver(): void
     {
         $context = $this->createContext();
 
-        $this->postJson(
+        $user = \App\Models\User::factory()->create([
+            'name' => 'Owner Cash Receiver',
+        ]);
+
+        $this->actingAs($user);
+
+        $response = $this->postJson(
             "/api/owner-accounts/{$context['account']->id}/deposits",
             [
                 'amount' => 5000,
@@ -256,19 +263,55 @@ class OwnerOperationsApiTest extends TestCase
                 'building_id' => $context['building']->id,
                 'unit_id' => $context['unit']->id,
             ]
-        )
-            ->assertUnprocessable()
-            ->assertJsonValidationErrors([
-                'collector_name',
-            ]);
+        );
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath(
+                'transaction.cash_receiver_user_id',
+                $user->id
+            )
+            ->assertJsonPath(
+                'transaction.cash_receiver_name',
+                'Owner Cash Receiver'
+            )
+            ->assertJsonPath(
+                'transaction.collector_name',
+                null
+            )
+            ->assertJsonPath(
+                'owner_account.balance',
+                5000
+            );
+
+        $this->assertDatabaseHas('owner_transactions', [
+            'owner_account_id' => $context['account']->id,
+            'building_id' => $context['building']->id,
+            'unit_id' => $context['unit']->id,
+            'category' => 'owner_deposit',
+            'direction' => 'credit',
+            'amount' => 5000,
+            'payment_method' => 'cash',
+            'deposit_purpose' => 'repair_maintenance',
+            'cash_receiver_user_id' => $user->id,
+            'cash_receiver_name' => 'Owner Cash Receiver',
+            'collector_name' => null,
+        ]);
     }
 
     /**
-     * A cash owner deposit may be recorded when its collector is supplied.
+     * Typed legacy collector information cannot override the
+     * authenticated User for a cash owner deposit.
      */
-    public function test_cash_owner_deposit_can_be_recorded_with_collector(): void
+    public function test_cash_owner_deposit_ignores_typed_legacy_collector_name(): void
     {
         $context = $this->createContext();
+
+        $user = \App\Models\User::factory()->create([
+            'name' => 'Authenticated Owner Receiver',
+        ]);
+
+        $this->actingAs($user);
 
         $response = $this->postJson(
             "/api/owner-accounts/{$context['account']->id}/deposits",
@@ -279,7 +322,7 @@ class OwnerOperationsApiTest extends TestCase
                 'deposit_purpose' => 'repair_maintenance',
                 'building_id' => $context['building']->id,
                 'unit_id' => $context['unit']->id,
-                'collector_name' => 'Property Manager',
+                'collector_name' => 'Fake Typed Collector',
                 'reference' => 'DEP-CASH-001',
             ]
         );
@@ -295,8 +338,16 @@ class OwnerOperationsApiTest extends TestCase
                 'repair_maintenance'
             )
             ->assertJsonPath(
+                'transaction.cash_receiver_user_id',
+                $user->id
+            )
+            ->assertJsonPath(
+                'transaction.cash_receiver_name',
+                'Authenticated Owner Receiver'
+            )
+            ->assertJsonPath(
                 'transaction.collector_name',
-                'Property Manager'
+                null
             )
             ->assertJsonPath(
                 'owner_account.balance',
@@ -312,7 +363,9 @@ class OwnerOperationsApiTest extends TestCase
             'amount' => 2500,
             'payment_method' => 'cash',
             'deposit_purpose' => 'repair_maintenance',
-            'collector_name' => 'Property Manager',
+            'cash_receiver_user_id' => $user->id,
+            'cash_receiver_name' => 'Authenticated Owner Receiver',
+            'collector_name' => null,
             'reference' => 'DEP-CASH-001',
         ]);
     }
@@ -322,18 +375,32 @@ class OwnerOperationsApiTest extends TestCase
      */
     public function test_owner_adjustment_can_be_recorded(): void
     {
-        $context = $this->createContext();
+        $context =
+            $this->createContext();
 
-        $response = $this->postJson(
-            "/api/owner-accounts/{$context['account']->id}/adjustments",
-            [
-                'direction' => 'debit',
-                'amount' => 2000,
-                'transaction_date' => '2026-08-11',
-                'reason' => 'Correction of overstated owner funds.',
-                'reference' => 'ADJ-API-001',
-            ]
-        );
+        $ownerAccount =
+            $context['account'];
+
+        /*
+         * V1.0.5 Adjustment semantics:
+         *
+         * The caller supplies the correct final balance.
+         * Patrimoine derives direction and delta and uses today.
+         */
+        $response =
+            $this->postJson(
+                "/api/owner-accounts/{$ownerAccount->id}/adjustments",
+                [
+                    'corrected_balance' =>
+                        2500,
+
+                    'reason' =>
+                        'Correct verified Owner balance.',
+
+                    'reference' =>
+                        'OWNER-ADJ-001',
+                ]
+            );
 
         $response
             ->assertCreated()
@@ -342,9 +409,36 @@ class OwnerOperationsApiTest extends TestCase
                 'adjustment'
             )
             ->assertJsonPath(
+                'transaction.direction',
+                'credit'
+            )
+            ->assertJsonPath(
+                'transaction.amount',
+                2500
+            )
+            ->assertJsonPath(
+                'adjustment.previous_balance',
+                0
+            )
+            ->assertJsonPath(
+                'adjustment.corrected_balance',
+                2500
+            )
+            ->assertJsonPath(
+                'adjustment.difference',
+                2500
+            )
+            ->assertJsonPath(
                 'owner_account.balance',
-                -2000
+                2500
             );
+
+        $this->assertSame(
+            2500,
+            $ownerAccount
+                ->fresh()
+                ->balance()
+        );
     }
 
     /**

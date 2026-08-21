@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Invoice;
 use App\Models\Lease;
+use App\Services\Accounting\RentInvoiceJournalService;
+use App\Services\LeaseTerms\LeaseBillingTermsResolver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -22,6 +24,11 @@ use RuntimeException;
  */
 class InvoiceGenerationService
 {
+    public function __construct(
+        private readonly RentInvoiceJournalService $rentInvoiceJournal,
+        private readonly LeaseBillingTermsResolver $billingTerms
+    ) {}
+
     /**
      * Generate one Invoice for a specific billing period.
      *
@@ -50,10 +57,36 @@ class InvoiceGenerationService
                 ->copy()
                 ->startOfDay();
 
-            $periodEnd = $this->periodEnd(
+            /*
+             * V1.0.5 Phase 8D:
+             * Billing must use the contractual terms that applied to this
+             * billing period. Extending a Lease must never rewrite the
+             * financial meaning of an earlier period.
+             */
+            $billingLease = $this->billingTerms->resolve(
                 $lease,
                 $periodStart
             );
+
+            $periodEnd = $this->periodEnd(
+                $billingLease,
+                $periodStart
+            );
+
+            /*
+             * V1.0.5 Phase 9B:
+             * A Lease under controlled termination has a hard billing
+             * boundary. No rent period may begin after the Termination Date.
+             */
+            if (
+                $lease->status === 'notice'
+                && $lease->termination_date !== null
+                && $periodStart->gt($lease->termination_date)
+            ) {
+                throw new RuntimeException(
+                    'Billing period falls after the Lease termination date.'
+                );
+            }
 
             /*
              * Do not generate billing before the Lease begins.
@@ -68,8 +101,8 @@ class InvoiceGenerationService
              * Do not generate a period beginning after the contractual end.
              */
             if (
-                $lease->end_date !== null
-                && $periodStart->gt($lease->end_date)
+                $billingLease->end_date !== null
+                && $periodStart->gt($billingLease->end_date)
             ) {
                 throw new RuntimeException(
                     'Billing period falls after the Lease end date.'
@@ -81,6 +114,7 @@ class InvoiceGenerationService
              */
             $duplicateExists = Invoice::query()
                 ->where('lease_id', $lease->id)
+                ->where('status', '!=', 'cancelled')
                 ->whereDate(
                     'period_start',
                     $periodStart->toDateString()
@@ -97,16 +131,66 @@ class InvoiceGenerationService
                 );
             }
 
-            $baseAmount = $this->periodRentAmount($lease);
+            $baseAmount = $this->periodRentAmount(
+                $billingLease
+            );
 
             $prorationAmount = $this->prorationAmount(
-                $lease,
+                $billingLease,
                 $periodStart,
                 $periodEnd,
                 $baseAmount
             );
 
             $grossAmount = $prorationAmount ?? $baseAmount;
+
+            /*
+             * V1.0.5 Phase 9B:
+             * If this billing period contains the controlled Termination
+             * Date, apply the frozen final-rent rule.
+             *
+             * full:
+             *   charge the complete contractual billing period.
+             *
+             * none:
+             *   preserve an operational zero-value Invoice for the final
+             *   period. Zero-value rent Invoices do not create Journal
+             *   movements.
+             *
+             * prorate:
+             *   charge only the inclusive portion of this billing period
+             *   through the Termination Date.
+             */
+            if (
+                $lease->status === 'notice'
+                && $lease->termination_date !== null
+                && $periodStart->lte($lease->termination_date)
+                && $periodEnd->gte($lease->termination_date)
+            ) {
+                $grossAmount = match (
+                    $lease->termination_final_rent_mode
+                ) {
+                    'full' => $baseAmount,
+
+                    'none' => 0,
+
+                    'prorate' => $this->terminationProrationAmount(
+                        $baseAmount,
+                        $periodStart,
+                        $periodEnd,
+                        $lease->termination_date
+                    ),
+
+                    default => throw new RuntimeException(
+                        'Lease termination final rent mode is invalid.'
+                    ),
+                };
+
+                $prorationAmount =
+                    $lease->termination_final_rent_mode === 'full'
+                        ? null
+                        : $grossAmount;
+            }
 
             /*
              * VAT-inclusive billing:
@@ -118,11 +202,11 @@ class InvoiceGenerationService
              */
             [$netAmount, $vatAmount] = $this->splitVatInclusiveAmount(
                 $grossAmount,
-                (float) $lease->vat_rate
+                (float) $billingLease->vat_rate
             );
 
             $dueDate = $this->dueDate(
-                $lease,
+                $billingLease,
                 $periodStart
             );
 
@@ -141,12 +225,25 @@ class InvoiceGenerationService
                 'due_date' => $dueDate->toDateString(),
                 'status' => 'issued',
                 'total_amount' => $grossAmount,
-                'vat_rate' => $lease->vat_rate,
+                'vat_rate' => $billingLease->vat_rate,
                 'net_amount' => $netAmount,
                 'vat_amount' => $vatAmount,
                 'proration_amount' => $prorationAmount,
                 'notes' => null,
             ]);
+
+            /*
+             * V1.0.5 Phase 3:
+             * Mirror only newly-created post-cutover rent Invoices into the
+             * immutable Financial Journal. Before cutover this is a no-op.
+             *
+             * This call remains inside the Invoice database transaction so
+             * Invoice creation and Journal posting succeed or roll back
+             * together.
+             */
+            $this->rentInvoiceJournal->post(
+                $invoice
+            );
 
             return $invoice->refresh();
         });
@@ -180,20 +277,34 @@ class InvoiceGenerationService
         $generated = [];
 
         while ($periodStart->lte($throughDate)) {
+            $billingLease = $this->billingTerms->resolve(
+                $lease,
+                $periodStart
+            );
+
             if (
-                $lease->end_date !== null
-                && $periodStart->gt($lease->end_date)
+                $billingLease->end_date !== null
+                && $periodStart->gt($billingLease->end_date)
+            ) {
+                break;
+            }
+
+            if (
+                $lease->status === 'notice'
+                && $lease->termination_date !== null
+                && $periodStart->gt($lease->termination_date)
             ) {
                 break;
             }
 
             $periodEnd = $this->periodEnd(
-                $lease,
+                $billingLease,
                 $periodStart
             );
 
             $exists = Invoice::query()
                 ->where('lease_id', $lease->id)
+                ->where('status', '!=', 'cancelled')
                 ->whereDate(
                     'period_start',
                     $periodStart->toDateString()
@@ -212,7 +323,7 @@ class InvoiceGenerationService
             }
 
             $periodStart = $this->nextPeriodStart(
-                $lease,
+                $billingLease,
                 $periodStart
             );
         }
@@ -281,6 +392,29 @@ class InvoiceGenerationService
         };
 
         return $lease->rent_amount * $multiplier;
+    }
+
+    /**
+     * Calculate the inclusive final-period rent through termination.
+     *
+     * Patrimoine monetary values remain whole currency units.
+     */
+    private function terminationProrationAmount(
+        int $baseAmount,
+        Carbon $periodStart,
+        Carbon $periodEnd,
+        Carbon $terminationDate
+    ): int {
+        $periodDays =
+            $periodStart->diffInDays($periodEnd) + 1;
+
+        $chargeableDays =
+            $periodStart->diffInDays($terminationDate) + 1;
+
+        return (int) round(
+            $baseAmount
+            * ($chargeableDays / $periodDays)
+        );
     }
 
     /**

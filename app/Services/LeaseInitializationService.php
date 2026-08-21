@@ -171,9 +171,30 @@ class LeaseInitializationService
                     'advance_received_reference'
                 ] ?? null,
 
-            'collector_name' => $data[
-                    'advance_received_collector'
-                ] ?? null,
+            /*
+             * V1.0.5 historical opening-payment attribution.
+             *
+             * This payment reconstructs money that was received before the
+             * Lease was entered into Patrimoine. It must therefore NOT be
+             * attributed to the currently authenticated User.
+             *
+             * For historical cash, preserve the supplied receiver name as a
+             * frozen snapshot only. There is deliberately no User relationship
+             * because Patrimoine cannot safely infer which User, if any,
+             * received the historical cash.
+             *
+             * Electronic historical payments have no Cash Receiver.
+             *
+             * collector_name is legacy-only and is not populated by new
+             * V1.0.5 records.
+             */
+            'cash_receiver_user_id' => null,
+
+            'cash_receiver_name' => (
+                ($data['advance_received_method'] ?? null) === 'cash'
+                    ? ($data['advance_received_collector'] ?? null)
+                    : null
+            ),
 
             'notes' => 'Historical Advance Payment recorded during Lease opening.',
             'is_opening_advance' => true,

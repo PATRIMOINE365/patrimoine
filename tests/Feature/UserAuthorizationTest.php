@@ -69,6 +69,11 @@ class UserAuthorizationTest extends TestCase
                 UserCapability::ViewActivityLog
             )
         );
+        $this->assertFalse(
+            UserRole::PropertyManager->allows(
+                UserCapability::ViewFinancialJournal
+            )
+        );
 
         $this->assertTrue(
             UserRole::Viewer->allows(
@@ -108,6 +113,11 @@ class UserAuthorizationTest extends TestCase
         $this->assertFalse(
             UserRole::Viewer->allows(
                 UserCapability::ViewActivityLog
+            )
+        );
+        $this->assertFalse(
+            UserRole::Viewer->allows(
+                UserCapability::ViewFinancialJournal
             )
         );
     }

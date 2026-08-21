@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Payment;
 use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
+use App\Services\Accounting\TenantFundFundingJournalService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -20,6 +21,11 @@ use RuntimeException;
  */
 class TenantFundAllocationService
 {
+    public function __construct(
+        private readonly TenantFundFundingJournalService $tenantFundFundingJournal
+    ) {
+    }
+
     /**
      * Classify part of a Payment into a tenant-held fund.
      */
@@ -90,17 +96,48 @@ class TenantFundAllocationService
                     );
                 }
 
-                return TenantFundTransaction::create([
-                    'tenant_fund_account_id' => $account->id,
-                    'payment_id' => $payment->id,
-                    'direction' => 'credit',
-                    'category' => $category,
-                    'amount' => $amount,
-                    'transaction_date' => $transactionDate,
-                    'reference' => $reference ?? $payment->reference,
-                    'notes' => $notes
-                        ?? 'Classified from tenant Payment.',
-                ]);
+                $transaction =
+                    TenantFundTransaction::create([
+                        'tenant_fund_account_id' =>
+                            $account->id,
+
+                        'payment_id' =>
+                            $payment->id,
+
+                        'direction' =>
+                            'credit',
+
+                        'category' =>
+                            $category,
+
+                        'amount' =>
+                            $amount,
+
+                        'transaction_date' =>
+                            $transactionDate,
+
+                        'reference' =>
+                            $reference
+                            ?? $payment->reference,
+
+                        'notes' =>
+                            $notes
+                            ?? 'Classified from tenant Payment.',
+                    ]);
+
+                /*
+                 * V1.0.5 Phase 3:
+                 *
+                 * The persisted classification and its Financial Journal
+                 * posting share this database transaction. Before cutover
+                 * the Journal integration is deliberately a no-op.
+                 */
+                $this->tenantFundFundingJournal
+                    ->post(
+                        $transaction
+                    );
+
+                return $transaction;
             }
         );
     }

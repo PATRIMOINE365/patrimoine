@@ -33,6 +33,10 @@ class Lease extends Model
         'end_date',
         'status',
         'termination_notice_date',
+        'termination_date',
+        'termination_final_rent_mode',
+        'termination_previous_status',
+        'termination_completed_at',
         'rent_amount',
         'payment_frequency',
         'due_day',
@@ -83,6 +87,8 @@ class Lease extends Model
             'start_date' => 'date',
             'end_date' => 'date',
             'termination_notice_date' => 'date',
+            'termination_date' => 'date',
+            'termination_completed_at' => 'datetime',
             'next_rent_increment_date' => 'date',
 
             'rent_amount' => 'integer',
@@ -218,6 +224,16 @@ class Lease extends Model
         return $this->hasOne(
             SecurityDepositSettlement::class
         );
+    }
+
+    /**
+     * Immutable contractual term history for this Lease.
+     */
+    public function termVersions(): HasMany
+    {
+        return $this->hasMany(
+            LeaseTermVersion::class
+        )->orderBy('version_number');
     }
 
     /**

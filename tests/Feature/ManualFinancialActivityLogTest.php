@@ -444,20 +444,33 @@ class ManualFinancialActivityLogTest extends TestCase
 
     public function test_owner_adjustment_is_logged(): void
     {
-        $context = $this->financialContext();
+        $context =
+            $this->financialContext();
 
         $this->postJson(
             "/api/owner-accounts/{$context['owner_account']->id}/adjustments",
             [
-                'direction' => 'debit',
-                'amount' => 750,
-                'transaction_date' => '2026-08-16',
-                'reason' => 'Manual accounting correction.',
-                'reference' => 'ADJ-ACT-M-001',
+                /*
+                 * V1.0.5 Adjustment semantics:
+                 *
+                 * The operator supplies the balance that should exist.
+                 * Patrimoine calculates the signed difference and uses
+                 * today's date automatically.
+                 */
+                'corrected_balance' =>
+                    -1500,
+
+                'reason' =>
+                    'Manual accounting correction.',
+
+                'reference' =>
+                    'ADJ-ACT-M-001',
             ]
         )->assertCreated();
 
-        $event = ActivityLog::query()->sole();
+        $event =
+            ActivityLog::query()
+                ->sole();
 
         $this->assertSame(
             'owner_adjustment.recorded',
@@ -465,13 +478,36 @@ class ManualFinancialActivityLogTest extends TestCase
         );
 
         $this->assertSame(
-            'adjustment',
-            $event->snapshot['category']
+            'owner_transaction',
+            $event->entity_type
         );
 
         $this->assertSame(
-            'debit',
-            $event->snapshot['direction']
+            0,
+            $event->snapshot[
+                'previous_balance'
+            ]
+        );
+
+        $this->assertSame(
+            -1500,
+            $event->snapshot[
+                'corrected_balance'
+            ]
+        );
+
+        $this->assertSame(
+            -1500,
+            $event->snapshot[
+                'difference'
+            ]
+        );
+
+        $this->assertSame(
+            'Manual accounting correction.',
+            $event->snapshot[
+                'reason'
+            ]
         );
     }
 

@@ -9,6 +9,7 @@ use App\Services\ActivityLogService;
 use App\Services\FinancialActivitySnapshotService;
 use App\Services\OwnerPayoutService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
 
@@ -31,13 +32,51 @@ class OwnerPayoutController extends Controller
         $validated = $request->validated();
 
         try {
-            $payout = $service->create(
-                account: $ownerAccount,
-                amount: (int) $validated['amount'],
-                payoutDate: $validated['payout_date'],
-                paymentMethod: $validated['payment_method'],
-                reference: $validated['reference'] ?? null,
-                notes: $validated['notes'] ?? null
+            $payout = DB::transaction(
+                function () use (
+                    $request,
+                    $ownerAccount,
+                    $service,
+                    $activityLog,
+                    $validated,
+                ) {
+                    $payout =
+                        $service->create(
+                            account: $ownerAccount,
+                            amount: (int) $validated['amount'],
+                            payoutDate: $validated['payout_date'],
+                            paymentMethod: $validated['payment_method'],
+                            reference: $validated['reference'] ?? null,
+                            notes: $validated['notes'] ?? null
+                        );
+
+                    $payout->load([
+                        'ownerAccount.party',
+                        'allocations.ownerTransaction',
+                    ]);
+
+                    /*
+                     * OwnerPayout + payout allocations + OwnerTransaction +
+                     * Financial Journal + Activity Log are atomic.
+                     */
+                    $activityLog->record(
+                        action: 'owner_payout.recorded',
+                        request: $request,
+                        entityType: 'owner_payout',
+                        entityId: $payout->id,
+                        entityLabel: 'Owner payout #'.$payout->id,
+                        snapshot: collect(
+                            $payout->getAttributes()
+                        )
+                            ->except([
+                                'created_at',
+                                'updated_at',
+                            ])
+                            ->all(),
+                    );
+
+                    return $payout;
+                }
             );
         } catch (RuntimeException $exception) {
             throw ValidationException::withMessages([
@@ -47,30 +86,24 @@ class OwnerPayoutController extends Controller
             ]);
         }
 
-        $payout->load([
-            'ownerAccount.party',
-            'allocations.ownerTransaction',
-        ]);
-
-        $activityLog->record(
-            action: 'owner_payout.recorded',
-            request: $request,
-            entityType: 'owner_payout',
-            entityId: $payout->id,
-            entityLabel: 'Owner payout #'.$payout->id,
-            snapshot: collect($payout->getAttributes())
-                ->except(['created_at', 'updated_at'])
-                ->all(),
-        );
-
         return response()->json(
             data: [
-                'payout' => $payout,
-                'allocated_amount' => $payout->allocatedAmount(),
-                'unallocated_amount' => $payout->unallocatedAmount(),
-                'owner_balance' => $ownerAccount->fresh()->balance(),
+                'payout' =>
+                    $payout,
+
+                'allocated_amount' =>
+                    $payout->allocatedAmount(),
+
+                'unallocated_amount' =>
+                    $payout->unallocatedAmount(),
+
+                'owner_balance' =>
+                    $ownerAccount
+                        ->fresh()
+                        ->balance(),
             ],
             status: 201
         );
     }
+
 }

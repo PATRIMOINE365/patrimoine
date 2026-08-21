@@ -369,12 +369,12 @@ $allocatedAmount =
                     {{ $payment->reference }}
                 @endif
 
-                @if($payment->collector_name)
+                @if(($payment->cash_receiver_name ?? $payment->collector_name))
                     <br>
                     <strong>
                         {{ __('documents.receipt.collector') }}:
                     </strong>
-                    {{ $payment->collector_name }}
+                    {{ ($payment->cash_receiver_name ?? $payment->collector_name) }}
                 @endif
             </td>
         </tr>

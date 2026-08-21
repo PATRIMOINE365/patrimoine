@@ -44,6 +44,9 @@ let activePdfEndpoint =
 let activeCsvEndpoint =
     null;
 
+let activeXlsxEndpoint =
+    null;
+
 /*
 |--------------------------------------------------------------------------
 | Initialization
@@ -78,6 +81,8 @@ export async function initializeReports() {
     initializeReportDatePickers();
 
     initializeExportActions();
+
+    initializePaymentReportFilters();
 
     updateReportTypeUi();
 
@@ -258,8 +263,12 @@ function updateReportTypeUi() {
         );
 
     if (
-        selectedReportType
-        === 'managing-organisation'
+        [
+            'managing-organisation',
+            'payments',
+        ].includes(
+            selectedReportType
+        )
     ) {
         subjectSection
             ?.classList
@@ -272,6 +281,23 @@ function updateReportTypeUi() {
             .remove(
                 'hidden'
             );
+    }
+
+    document
+        .getElementById(
+            'payment-report-filters'
+        )
+        ?.classList.toggle(
+            'hidden',
+            selectedReportType
+                !== 'payments'
+        );
+
+    if (
+        selectedReportType
+        === 'payments'
+    ) {
+        loadPaymentReportFilterOptions();
     }
 
     updateSubjectLabels();
@@ -404,6 +430,14 @@ function updateReportHeader() {
 
             subtitle:
                 translate('reports.tenant_statement_description'),
+        },
+
+        payments: {
+            title:
+                translate('reports.payments_report'),
+
+            subtitle:
+                translate('reports.payments_report_description'),
         },
     };
 
@@ -1039,6 +1073,300 @@ function initializeReportDatePickers() {
 }
 
 
+
+/*
+|--------------------------------------------------------------------------
+| Payments Report Filters
+|--------------------------------------------------------------------------
+*/
+
+let paymentReportOptionsLoaded =
+    false;
+
+
+function initializePaymentReportFilters() {
+    [
+        'payment-report-tenant',
+        'payment-report-lease',
+        'payment-report-building',
+        'payment-report-unit',
+        'payment-report-method',
+        'payment-report-cash-receiver',
+        'payment-report-reference',
+    ].forEach(
+        (id) => {
+            const field =
+                document.getElementById(
+                    id
+                );
+
+            field?.addEventListener(
+                'change',
+                updateRunButton
+            );
+        }
+    );
+}
+
+
+async function loadPaymentReportFilterOptions() {
+    if (paymentReportOptionsLoaded) {
+        return;
+    }
+
+    paymentReportOptionsLoaded =
+        true;
+
+    try {
+        const [
+            tenantsResponse,
+            leasesResponse,
+            buildingsResponse,
+            unitsResponse,
+        ] = await Promise.all([
+            apiRequest(
+                '/api/parties?role=tenant&per_page=500'
+            ),
+            apiRequest(
+                '/api/leases?per_page=500'
+            ),
+            apiRequest(
+                '/api/buildings?per_page=500'
+            ),
+            apiRequest(
+                '/api/units?per_page=500'
+            ),
+        ]);
+
+        const [
+            tenantsPayload,
+            leasesPayload,
+            buildingsPayload,
+            unitsPayload,
+        ] = await Promise.all([
+            parseJsonResponse(
+                tenantsResponse
+            ),
+            parseJsonResponse(
+                leasesResponse
+            ),
+            parseJsonResponse(
+                buildingsResponse
+            ),
+            parseJsonResponse(
+                unitsResponse
+            ),
+        ]);
+
+        populatePaymentReportSelect(
+            'payment-report-tenant',
+            collectionRows(
+                tenantsPayload
+            ),
+            (tenant) =>
+                partyDisplayName(
+                    tenant
+                )
+        );
+
+        populatePaymentReportSelect(
+            'payment-report-lease',
+            collectionRows(
+                leasesPayload
+            ),
+            (lease) =>
+                [
+                    `#${lease.id}`,
+                    partyDisplayName(
+                        lease?.tenant
+                        ?? {}
+                    ),
+                    lease?.unit?.building?.name,
+                    lease?.unit?.name,
+                ]
+                    .filter(Boolean)
+                    .join(' · ')
+        );
+
+        populatePaymentReportSelect(
+            'payment-report-building',
+            collectionRows(
+                buildingsPayload
+            ),
+            (building) =>
+                building?.name
+                ?? `#${building.id}`
+        );
+
+        populatePaymentReportSelect(
+            'payment-report-unit',
+            collectionRows(
+                unitsPayload
+            ),
+            (unit) =>
+                [
+                    unit?.building?.name,
+                    unit?.name
+                    ?? `#${unit.id}`,
+                ]
+                    .filter(Boolean)
+                    .join(' · ')
+        );
+    } catch (error) {
+        paymentReportOptionsLoaded =
+            false;
+
+        showReportsError(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'reports.unable_to_load_payment_filters'
+                )
+        );
+    }
+}
+
+
+function collectionRows(
+    payload
+) {
+    if (Array.isArray(payload)) {
+        return payload;
+    }
+
+    if (
+        Array.isArray(
+            payload?.data
+        )
+    ) {
+        return payload.data;
+    }
+
+    return [];
+}
+
+
+function populatePaymentReportSelect(
+    id,
+    rows,
+    labelBuilder
+) {
+    const select =
+        document.getElementById(
+            id
+        );
+
+    if (! select) {
+        return;
+    }
+
+    const firstOption =
+        select.options[0]
+            ?.cloneNode(
+                true
+            );
+
+    select.innerHTML = '';
+
+    if (firstOption) {
+        select.appendChild(
+            firstOption
+        );
+    }
+
+    rows.forEach(
+        (row) => {
+            const option =
+                document.createElement(
+                    'option'
+                );
+
+            option.value =
+                String(
+                    row.id
+                );
+
+            option.textContent =
+                labelBuilder(
+                    row
+                );
+
+            select.appendChild(
+                option
+            );
+        }
+    );
+}
+
+
+function paymentReportQuery(
+    from,
+    to
+) {
+    const query =
+        new URLSearchParams();
+
+    const values = {
+        from,
+        to,
+
+        tenant_id:
+            fieldValue(
+                'payment-report-tenant'
+            ),
+
+        lease_id:
+            fieldValue(
+                'payment-report-lease'
+            ),
+
+        building_id:
+            fieldValue(
+                'payment-report-building'
+            ),
+
+        unit_id:
+            fieldValue(
+                'payment-report-unit'
+            ),
+
+        payment_method:
+            fieldValue(
+                'payment-report-method'
+            ),
+
+        cash_receiver:
+            fieldValue(
+                'payment-report-cash-receiver'
+            ),
+
+        reference:
+            fieldValue(
+                'payment-report-reference'
+            ),
+    };
+
+    Object.entries(
+        values
+    ).forEach(
+        ([key, value]) => {
+            if (
+                value !== null
+                && value !== undefined
+                && String(value).trim() !== ''
+            ) {
+                query.set(
+                    key,
+                    value
+                );
+            }
+        }
+    );
+
+    return query;
+}
+
+
 /*
 |--------------------------------------------------------------------------
 | Period and Report Execution
@@ -1069,8 +1397,12 @@ function updateRunButton() {
     }
 
     const needsSubject =
-        selectedReportType
-        !== 'managing-organisation';
+        ! [
+            'managing-organisation',
+            'payments',
+        ].includes(
+            selectedReportType
+        );
 
     button.disabled =
         needsSubject
@@ -1107,8 +1439,12 @@ async function runReport() {
     }
 
     if (
-        selectedReportType
-        !== 'managing-organisation'
+        ! [
+            'managing-organisation',
+            'payments',
+        ].includes(
+            selectedReportType
+        )
         && ! selectedSubject
     ) {
         showReportsError(
@@ -1132,6 +1468,9 @@ async function runReport() {
 
     activeCsvEndpoint =
         endpoints.csv;
+
+    activeXlsxEndpoint =
+        endpoints.xlsx;
 
     showReportLoading();
 
@@ -1169,16 +1508,30 @@ function buildReportEndpoints(
     to
 ) {
     const query =
-        new URLSearchParams();
+        selectedReportType
+        === 'payments'
+            ? paymentReportQuery(
+                from,
+                to
+            )
+            : new URLSearchParams();
 
-    if (from) {
+    if (
+        selectedReportType
+        !== 'payments'
+        && from
+    ) {
         query.set(
             'from',
             from
         );
     }
 
-    if (to) {
+    if (
+        selectedReportType
+        !== 'payments'
+        && to
+    ) {
         query.set(
             'to',
             to
@@ -1219,6 +1572,12 @@ function buildReportEndpoints(
 
             break;
 
+        case 'payments':
+            base =
+                '/api/reports/payments';
+
+            break;
+
         default:
             base =
                 '/api/reports/managing-organisation';
@@ -1233,6 +1592,9 @@ function buildReportEndpoints(
 
         csv:
             `${base}/csv${suffix}`,
+
+        xlsx:
+            `${base}/xlsx${suffix}`,
     };
 }
 
@@ -1276,12 +1638,310 @@ function renderReport(
 
             break;
 
+        case 'payments':
+            renderPaymentReport(
+                report
+            );
+
+            break;
+
         default:
             renderManagingOrganisationReport(
                 report
             );
     }
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| Payments Report
+|--------------------------------------------------------------------------
+*/
+
+function renderPaymentReport(
+    report
+) {
+    const summary =
+        report?.summary
+        ?? {};
+
+    const payments =
+        Array.isArray(
+            report?.payments
+        )
+            ? report.payments
+            : [];
+
+    const body =
+        payments.length > 0
+            ? payments
+                .map(
+                    (payment) => `
+                        <tr>
+                            <td class="px-4 py-3 text-sm text-slate-700">
+                                ${escapeHtml(
+                                    formatDate(
+                                        payment.payment_date
+                                    )
+                                )}
+                            </td>
+
+                            <td class="px-4 py-3 text-sm text-slate-700">
+                                ${escapeHtml(
+                                    payment.payment_number
+                                    ?? `PAY-${payment.id}`
+                                )}
+                            </td>
+
+                            <td class="px-4 py-3 text-sm text-slate-700">
+                                ${escapeHtml(
+                                    payment?.tenant?.name
+                                    ?? '—'
+                                )}
+                            </td>
+
+                            <td class="px-4 py-3 text-sm text-slate-700">
+                                ${escapeHtml(
+                                    [
+                                        payment?.building?.name,
+                                        payment?.unit?.name,
+                                    ]
+                                        .filter(Boolean)
+                                        .join(' · ')
+                                    || '—'
+                                )}
+                            </td>
+
+                            <td class="px-4 py-3 text-sm text-slate-700">
+                                ${escapeHtml(
+                                    translatedDomainValue(
+                                        'payment_method',
+                                        payment.payment_method
+                                    )
+                                )}
+                            </td>
+
+                            <td class="px-4 py-3 text-sm text-slate-700">
+                                ${escapeHtml(
+                                    payment.cash_receiver_name
+                                    || '—'
+                                )}
+                            </td>
+
+                            <td class="px-4 py-3 text-sm text-slate-700">
+                                ${escapeHtml(
+                                    payment.reference
+                                    || '—'
+                                )}
+                            </td>
+
+                            <td
+                                class="
+                                    px-4 py-3
+                                    text-right text-sm
+                                    font-medium text-slate-900
+                                "
+                            >
+                                ${escapeHtml(
+                                    formatCurrency(
+                                        payment.amount
+                                        ?? 0
+                                    )
+                                )}
+                            </td>
+
+                            <td class="px-4 py-3">
+                                <button
+                                    type="button"
+                                    data-payment-report-receipt="${escapeHtml(
+                                        payment.receipt_endpoint
+                                        ?? ''
+                                    )}"
+                                    class="
+                                        pm-button-secondary
+                                        whitespace-nowrap text-xs
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        translate(
+                                            'reports.receipt'
+                                        )
+                                    )}
+                                </button>
+                            </td>
+                        </tr>
+                    `
+                )
+                .join('')
+            : `
+                <tr>
+                    <td
+                        colspan="9"
+                        class="
+                            px-4 py-10
+                            text-center text-sm
+                            text-slate-500
+                        "
+                    >
+                        ${escapeHtml(
+                            translate(
+                                'reports.no_payments_found'
+                            )
+                        )}
+                    </td>
+                </tr>
+            `;
+
+    renderReportHtml(`
+        ${metricGrid([
+            [
+                translate(
+                    'reports.payment_count'
+                ),
+                numberFormat(
+                    summary.payment_count
+                    ?? 0
+                ),
+            ],
+            [
+                translate(
+                    'reports.total_received'
+                ),
+                formatCurrency(
+                    summary.total_received
+                    ?? 0
+                ),
+            ],
+        ])}
+
+        ${reportSection(
+            translate(
+                'reports.payments'
+            ),
+            `
+                <div
+                    class="
+                        overflow-x-auto
+                        rounded-xl
+                        border border-slate-200
+                    "
+                >
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                ${paymentReportHeading(
+                                    translate('reports.date')
+                                )}
+
+                                ${paymentReportHeading(
+                                    translate(
+                                        'reports.payment_number'
+                                    )
+                                )}
+
+                                ${paymentReportHeading(
+                                    translate('reports.tenant')
+                                )}
+
+                                ${paymentReportHeading(
+                                    translate('reports.property')
+                                )}
+
+                                ${paymentReportHeading(
+                                    translate(
+                                        'reports.payment_method_label'
+                                    )
+                                )}
+
+                                ${paymentReportHeading(
+                                    translate(
+                                        'reports.cash_receiver'
+                                    )
+                                )}
+
+                                ${paymentReportHeading(
+                                    translate('reports.reference')
+                                )}
+
+                                ${paymentReportHeading(
+                                    translate('reports.amount'),
+                                    true
+                                )}
+
+                                ${paymentReportHeading(
+                                    translate('reports.receipt')
+                                )}
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-slate-100 bg-white">
+                            ${body}
+                        </tbody>
+                    </table>
+                </div>
+            `
+        )}
+    `);
+
+    initializePaymentReportReceiptActions();
+}
+
+
+function paymentReportHeading(
+    label,
+    right = false
+) {
+    return `
+        <th
+            scope="col"
+            class="
+                whitespace-nowrap
+                px-4 py-3
+                ${
+                    right
+                        ? 'text-right'
+                        : 'text-left'
+                }
+                text-xs font-semibold
+                uppercase tracking-wide
+                text-slate-500
+            "
+        >
+            ${escapeHtml(label)}
+        </th>
+    `;
+}
+
+
+function initializePaymentReportReceiptActions() {
+    document
+        .querySelectorAll(
+            '[data-payment-report-receipt]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        const endpoint =
+                            button.dataset
+                                .paymentReportReceipt;
+
+                        if (! endpoint) {
+                            return;
+                        }
+
+                        await openAuthenticatedDocument(
+                            endpoint,
+                            'application/pdf'
+                        );
+                    }
+                );
+            }
+        );
+}
+
 
 /*
 |--------------------------------------------------------------------------
@@ -2831,6 +3491,25 @@ function initializeExportActions() {
 
     document
         .getElementById(
+            'report-xlsx-button'
+        )
+        ?.addEventListener(
+            'click',
+            async () => {
+                if (
+                    activeXlsxEndpoint
+                ) {
+                    await downloadAuthenticatedDocument(
+                        activeXlsxEndpoint,
+                        'report.xlsx',
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    );
+                }
+            }
+        );
+
+    document
+        .getElementById(
             'report-csv-button'
         )
         ?.addEventListener(
@@ -2905,7 +3584,8 @@ async function openAuthenticatedDocument(
 
 async function downloadAuthenticatedDocument(
     endpoint,
-    fallbackFilename
+    fallbackFilename,
+    accept = 'text/csv'
 ) {
     hideReportsError();
 
@@ -2916,7 +3596,7 @@ async function downloadAuthenticatedDocument(
                 {
                     headers: {
                         Accept:
-                            'text/csv',
+                            accept,
                     },
                 }
             );
@@ -2994,41 +3674,62 @@ function filenameFromDisposition(
 }
 
 function showExportActions() {
-    document
-        .getElementById(
-            'report-export-actions'
-        )
-        ?.classList
-        .remove(
-            'hidden'
-        );
-
-    document
-        .getElementById(
-            'report-export-actions'
-        )
-        ?.classList
-        .add(
-            'flex'
-        );
-}
-
-function hideExportActions() {
     const actions =
         document.getElementById(
             'report-export-actions'
         );
 
-    actions
-        ?.classList
-        .add(
+    if (! actions) {
+        return;
+    }
+
+    actions.classList.remove(
+        'hidden'
+    );
+
+    document
+        .getElementById(
+            'report-pdf-button'
+        )
+        ?.classList.toggle(
+            'hidden',
+            ! activePdfEndpoint
+        );
+
+    document
+        .getElementById(
+            'report-xlsx-button'
+        )
+        ?.classList.toggle(
+            'hidden',
+            ! activeXlsxEndpoint
+        );
+
+    document
+        .getElementById(
+            'report-csv-button'
+        )
+        ?.classList.toggle(
+            'hidden',
+            ! activeCsvEndpoint
+        );
+}
+
+function hideExportActions() {
+    document
+        .getElementById(
+            'report-export-actions'
+        )
+        ?.classList.add(
             'hidden'
         );
 
-    actions
-        ?.classList
-        .remove(
-            'flex'
+    document
+        .getElementById(
+            'report-xlsx-button'
+        )
+        ?.classList.add(
+            'hidden'
         );
 }
 
@@ -3088,6 +3789,9 @@ function clearReportOutput() {
         null;
 
     activeCsvEndpoint =
+        null;
+
+    activeXlsxEndpoint =
         null;
 
     hideExportActions();

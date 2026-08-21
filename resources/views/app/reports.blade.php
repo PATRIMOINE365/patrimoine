@@ -236,6 +236,38 @@
                     </div>
                 </button>
 
+                <button
+                    type="button"
+                    data-report-type="payments"
+                    class="
+                        report-type-button
+                        mt-1 flex w-full
+                        items-start gap-3
+                        rounded-lg px-3 py-3
+                        text-left text-slate-700
+                        transition hover:bg-slate-50
+                    "
+                >
+                    <div class="min-w-0">
+                        <div class="text-sm font-semibold">
+                            <span data-i18n="reports.payments">
+                                {{ __('ui.reports.payments') }}
+                            </span>
+                        </div>
+
+                        <div
+                            class="
+                                mt-1 text-xs
+                                text-slate-500
+                            "
+                        >
+                            <span data-i18n="reports.payments_report_summary">
+                                {{ __('ui.reports.payments_report_summary') }}
+                            </span>
+                        </div>
+                    </div>
+                </button>
+
             </div>
 
             {{-- ====================================================
@@ -351,7 +383,182 @@
                 </div>
             </div>
 
-            {{-- ====================================================
+
+            <div
+                id="payment-report-filters"
+                class="
+                    hidden border-t
+                    border-slate-100 p-4
+                "
+            >
+                <div class="text-sm font-medium text-slate-700">
+                    <span data-i18n="reports.payment_filters">
+                        {{ __('ui.reports.payment_filters') }}
+                    </span>
+                </div>
+
+                <p class="mt-1 text-xs text-slate-500">
+                    <span data-i18n="reports.payment_filters_description">
+                        {{ __('ui.reports.payment_filters_description') }}
+                    </span>
+                </p>
+
+                <div class="mt-4 space-y-3">
+                    <div>
+                        <label
+                            for="payment-report-tenant"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="reports.tenant">
+                                {{ __('ui.reports.tenant') }}
+                            </span>
+                        </label>
+
+                        <select
+                            id="payment-report-tenant"
+                            class="pm-input"
+                        >
+                            <option value="">
+                                {{ __('ui.reports.all_tenants') }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label
+                            for="payment-report-lease"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="reports.lease">
+                                {{ __('ui.reports.lease') }}
+                            </span>
+                        </label>
+
+                        <select
+                            id="payment-report-lease"
+                            class="pm-input"
+                        >
+                            <option value="">
+                                {{ __('ui.reports.all_leases') }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label
+                            for="payment-report-building"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="reports.building">
+                                {{ __('ui.reports.building') }}
+                            </span>
+                        </label>
+
+                        <select
+                            id="payment-report-building"
+                            class="pm-input"
+                        >
+                            <option value="">
+                                {{ __('ui.reports.all_buildings') }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label
+                            for="payment-report-unit"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="reports.unit">
+                                {{ __('ui.reports.unit') }}
+                            </span>
+                        </label>
+
+                        <select
+                            id="payment-report-unit"
+                            class="pm-input"
+                        >
+                            <option value="">
+                                {{ __('ui.reports.all_units') }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label
+                            for="payment-report-method"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="reports.payment_method_label">
+                                {{ __('ui.reports.payment_method_label') }}
+                            </span>
+                        </label>
+
+                        <select
+                            id="payment-report-method"
+                            class="pm-input"
+                        >
+                            <option value="">
+                                {{ __('ui.reports.all_payment_methods') }}
+                            </option>
+
+                            <option value="cash">
+                                {{ __('ui.reports.payment_method_cash') }}
+                            </option>
+
+                            <option value="bank_transfer">
+                                {{ __('ui.reports.payment_method_bank') }}
+                            </option>
+
+                            <option value="momo">
+                                {{ __('ui.reports.payment_method_mobile') }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label
+                            for="payment-report-cash-receiver"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="reports.cash_receiver">
+                                {{ __('ui.reports.cash_receiver') }}
+                            </span>
+                        </label>
+
+                        <input
+                            id="payment-report-cash-receiver"
+                            type="search"
+                            autocomplete="off"
+                            class="pm-input"
+                            placeholder="{{ __('ui.reports.cash_receiver_placeholder') }}"
+                            data-i18n-placeholder="reports.cash_receiver_placeholder"
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="payment-report-reference"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="reports.payment_reference">
+                                {{ __('ui.reports.payment_reference') }}
+                            </span>
+                        </label>
+
+                        <input
+                            id="payment-report-reference"
+                            type="search"
+                            autocomplete="off"
+                            class="pm-input"
+                            placeholder="{{ __('ui.reports.payment_reference_placeholder') }}"
+                            data-i18n-placeholder="reports.payment_reference_placeholder"
+                        >
+                    </div>
+                </div>
+            </div>
+
+{{-- ====================================================
                  Report Period
             ==================================================== --}}
 
@@ -607,6 +814,19 @@
                         class="pm-button-secondary"
                     >
                         <span data-i18n="reports.pdf">{{ __('ui.reports.pdf') }}</span>
+                    </button>
+
+                    <button
+                        id="report-xlsx-button"
+                        type="button"
+                        class="
+                            pm-button-secondary
+                            hidden
+                        "
+                    >
+                        <span data-i18n="reports.xlsx">
+                            {{ __('ui.reports.xlsx') }}
+                        </span>
                     </button>
 
                     <button

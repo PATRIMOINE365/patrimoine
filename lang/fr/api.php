@@ -90,6 +90,8 @@ return [
     ],
 
     'deletion' => [
+        'lease_confirmation_invalid' => 'Saisissez exactement DELETE pour confirmer la suppression du bail.',
+        'lease_cannot_delete' => 'Le bail :id ne peut pas être supprimé en toute sécurité.',
         'party_managing_organisation' => 'L’organisation gestionnaire configurée ne peut pas être supprimée. Modifiez plutôt la configuration de l’organisation gestionnaire.',
         'party_referenced' => 'Cette partie ne peut pas être supprimée car elle est référencée par un bail, une propriété, un mandat d’agence ou un historique financier. Conservez-la afin que les données historiques restent compréhensibles.',
         'building_has_units' => 'Cet immeuble ne peut pas être supprimé tant qu’il contient des unités. Supprimez d’abord uniquement les unités sans référence ; les unités ayant un bail ou un historique financier doivent être conservées.',

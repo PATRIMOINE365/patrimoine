@@ -1,6 +1,49 @@
 <?php
 
 return [
+
+
+    'termination_notice' => [
+        'title' => 'Lease Termination Notice',
+        'tenant' => 'Tenant',
+        'building' => 'Building',
+        'unit' => 'Unit',
+        'lease' => 'Lease',
+        'notice_date' => 'Notice Date',
+        'termination_date' => 'Termination Date',
+        'body' => 'Formal notice of termination was recorded on :notice_date. The Lease is scheduled to terminate on :termination_date.',
+        'footer' => 'This document records the termination notice held by Patrimoine.',
+    ],
+
+
+    'withdrawal_receipt' => [
+        'title' => 'Withdrawal Receipt',
+        'receipt_number' => 'Receipt Number',
+        'tenant' => 'Tenant',
+        'lease' => 'Lease',
+        'building' => 'Building',
+        'unit' => 'Unit',
+        'fund' => 'Fund',
+        'amount' => 'Amount',
+        'payment_method' => 'Payment Method',
+        'date' => 'Date',
+        'reference' => 'Reference',
+        'notes' => 'Notes',
+        'performed_by' => 'Performed By',
+    ],
+    'adjustment_voucher' => [
+        'title' => 'Adjustment Voucher',
+        'voucher_number' => 'Voucher Number',
+        'date' => 'Date',
+        'context' => 'Context',
+        'account' => 'Account',
+        'previous_balance' => 'Previous Balance',
+        'corrected_balance' => 'Corrected Balance',
+        'difference' => 'Adjustment Difference',
+        'reason' => 'Reason',
+        'performed_by' => 'Performed By',
+    ],
+
     'common' => [
         'property_management' => 'Property Management',
         'vat_tin' => 'VAT/TIN',
@@ -20,7 +63,7 @@ return [
         'payment_date' => 'Payment Date',
         'method' => 'Method',
         'reference' => 'Reference',
-        'collector' => 'Collector',
+        'collector' => 'Cash Receiver',
         'amount_received' => 'Amount Received',
         'property' => 'Property',
         'building' => 'Building',
@@ -56,7 +99,7 @@ return [
         'payment_date' => 'Payment Date',
         'method' => 'Method',
         'reference' => 'Reference',
-        'collector' => 'Collector',
+        'collector' => 'Cash Receiver',
         'amount_received' => 'Amount Received',
         'deposit_details' => 'Deposit Details',
         'purpose_label' => 'Purpose',

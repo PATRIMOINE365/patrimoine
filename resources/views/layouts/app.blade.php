@@ -348,33 +348,7 @@
 
 
 
-                <a
-                    href="/payments"
-                    class="
-                        {{
-                            request()->is('payments')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                        }}
-                        flex items-center gap-3
-                        rounded-lg px-3 py-2.5
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
-                        <rect x="2" y="5" width="20" height="14" rx="2"/>
-                        <line x1="2" y1="10" x2="22" y2="10"/>
-                    </svg>
 
-                    <span data-i18n="navigation.payments">{{ __('ui.navigation.payments') }}</span>
-                </a>
             </div>
 
             <p
@@ -554,6 +528,45 @@
                 </a>
 
                 <a
+                    href="/financial-journal"
+                    data-requires-capability="view_financial_journal"
+                    class="pm-sidebar-manage-item"
+                >
+                    <div class="pm-sidebar-manage-icon">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            aria-hidden="true"
+                        >
+                            <path d="M4 5h16"/>
+                            <path d="M4 10h16"/>
+                            <path d="M4 15h16"/>
+                            <path d="M4 20h16"/>
+                            <path d="M8 3v4"/>
+                            <path d="M16 3v4"/>
+                        </svg>
+                    </div>
+
+                    <div class="min-w-0">
+                        <div
+                            class="pm-sidebar-manage-title"
+                            data-i18n="navigation.financial_journal"
+                        >
+                            {{ __('ui.navigation.financial_journal') }}
+                        </div>
+
+                        <div
+                            class="pm-sidebar-manage-description"
+                            data-i18n="navigation.financial_journal_description"
+                        >
+                            {{ __('ui.navigation.financial_journal_description') }}
+                        </div>
+                    </div>
+                </a>
+
+                <a
                     href="/users"
                     data-requires-capability="manage_users"
                     class="pm-sidebar-manage-item"
@@ -628,7 +641,7 @@
                 type="button"
                 class="
                     pm-sidebar-manage-toggle
-                    {{ request()->is('activity-log') || request()->is('settings')
+                    {{ request()->is('activity-log') || request()->is('financial-journal') || request()->is('settings')
                         ? 'pm-sidebar-manage-toggle-active'
                         : ''
                     }}

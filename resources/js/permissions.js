@@ -22,6 +22,7 @@ const ROLE_CAPABILITIES = {
         'manage_settings',
         'manage_users',
         'view_activity_log',
+        'view_financial_journal',
     ]),
 
     property_manager: new Set([
@@ -64,7 +65,11 @@ const CAPABILITY_SELECTORS = {
         '[data-edit-party]',
 
         '#add-lease-button',
-        '[data-edit-lease]',
+        '[data-extend-lease]',
+        '[data-terminate-lease]',
+        '[data-delete-lease]',
+        '#termination-settlement-complete',
+        '#termination-settlement-cancel',
 
         /*
          * Manual resend actions are operational actions, not passive reads.
@@ -90,6 +95,11 @@ const CAPABILITY_SELECTORS = {
 
         '#security-deposit-deduction-form',
         '#security-deposit-settlement-form',
+
+        '#tenant-transaction-actions',
+        '#tenant-deposit-form',
+        '#tenant-withdrawal-form',
+        '#tenant-adjustment-form',
     ],
 
     delete_records: [
@@ -97,7 +107,6 @@ const CAPABILITY_SELECTORS = {
         '[data-delete-building]',
         '[data-delete-unit]',
         '[data-delete-party]',
-        '[data-delete-lease]',
     ],
 
     manage_settings: [
@@ -110,6 +119,10 @@ const CAPABILITY_SELECTORS = {
 
     view_activity_log: [
         '[data-requires-capability="view_activity_log"]',
+    ],
+
+    view_financial_journal: [
+        '[data-requires-capability="view_financial_journal"]',
     ],
 };
 
@@ -186,6 +199,9 @@ function redirectRestrictedWorkspace() {
 
         '/activity-log':
             'view_activity_log',
+
+        '/financial-journal':
+            'view_financial_journal',
     }[
         window.location.pathname
     ];

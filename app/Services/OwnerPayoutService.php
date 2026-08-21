@@ -6,6 +6,7 @@ use App\Models\OwnerAccount;
 use App\Models\OwnerPayout;
 use App\Models\OwnerPayoutAllocation;
 use App\Models\OwnerTransaction;
+use App\Services\Accounting\OwnerFinancialJournalService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -35,6 +36,11 @@ use RuntimeException;
  */
 class OwnerPayoutService
 {
+    public function __construct(
+        private readonly OwnerFinancialJournalService $journal
+    ) {
+    }
+
     /**
      * Create and allocate an owner payout.
      *
@@ -256,17 +262,26 @@ class OwnerPayoutService
              * OwnerPayoutAllocation records provide source attribution;
              * this OwnerTransaction provides the actual accounting debit.
              */
-            OwnerTransaction::create([
-                'owner_account_id' => $account->id,
-                'direction' => 'debit',
-                'category' => 'payout',
-                'amount' => $amount,
-                'transaction_date' => $payoutDate,
-                'reference' => $reference,
-                'notes' => $notes ?? 'Owner payout.',
-            ]);
+            $ledgerTransaction =
+                OwnerTransaction::create([
+                    'owner_account_id' => $account->id,
+                    'direction' => 'debit',
+                    'category' => 'payout',
+                    'amount' => $amount,
+                    'transaction_date' => $payoutDate,
+                    'payment_method' => $paymentMethod,
+                    'reference' => $reference,
+                    'notes' => $notes ?? 'Owner payout.',
+                ]);
 
-            return $payout->refresh();
+            $payout->refresh();
+
+            $this->journal->postPayout(
+                $payout,
+                $ledgerTransaction
+            );
+
+            return $payout;
         });
     }
 }

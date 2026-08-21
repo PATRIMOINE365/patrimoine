@@ -1,6 +1,49 @@
 <?php
 
 return [
+
+
+    'termination_notice' => [
+        'title' => 'Avis de résiliation du bail',
+        'tenant' => 'Locataire',
+        'building' => 'Immeuble',
+        'unit' => 'Unité',
+        'lease' => 'Bail',
+        'notice_date' => 'Date de préavis',
+        'termination_date' => 'Date de résiliation',
+        'body' => 'Un préavis formel de résiliation a été enregistré le :notice_date. Le bail doit prendre fin le :termination_date.',
+        'footer' => 'Ce document enregistre le préavis de résiliation conservé dans Patrimoine.',
+    ],
+
+
+    'withdrawal_receipt' => [
+        'title' => 'Reçu de retrait',
+        'receipt_number' => 'Numéro de reçu',
+        'tenant' => 'Locataire',
+        'lease' => 'Bail',
+        'building' => 'Immeuble',
+        'unit' => 'Unité',
+        'fund' => 'Fonds',
+        'amount' => 'Montant',
+        'payment_method' => 'Mode de paiement',
+        'date' => 'Date',
+        'reference' => 'Référence',
+        'notes' => 'Notes',
+        'performed_by' => 'Effectué par',
+    ],
+    'adjustment_voucher' => [
+        'title' => 'Bon d’ajustement',
+        'voucher_number' => 'Numéro du bon',
+        'date' => 'Date',
+        'context' => 'Contexte',
+        'account' => 'Compte',
+        'previous_balance' => 'Solde précédent',
+        'corrected_balance' => 'Solde corrigé',
+        'difference' => 'Différence d’ajustement',
+        'reason' => 'Motif',
+        'performed_by' => 'Effectué par',
+    ],
+
     'common' => [
         'property_management' => 'Gestion immobilière',
         'vat_tin' => 'TVA/NIF',
@@ -20,7 +63,7 @@ return [
         'payment_date' => 'Date de paiement',
         'method' => 'Mode de paiement',
         'reference' => 'Référence',
-        'collector' => 'Encaisseur',
+        'collector' => 'Réceptionnaire des espèces',
         'amount_received' => 'Montant reçu',
         'property' => 'Propriété',
         'building' => 'Immeuble',
@@ -56,7 +99,7 @@ return [
         'payment_date' => 'Date de paiement',
         'method' => 'Mode de paiement',
         'reference' => 'Référence',
-        'collector' => 'Encaisseur',
+        'collector' => 'Réceptionnaire des espèces',
         'amount_received' => 'Montant reçu',
         'deposit_details' => 'Détails du dépôt',
         'purpose_label' => 'Objet',

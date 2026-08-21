@@ -3,13 +3,24 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ExtendLeaseRequest;
+use App\Http\Requests\InitiateLeaseTerminationRequest;
 use App\Http\Requests\StoreLeaseRequest;
 use App\Http\Requests\UpdateLeaseRequest;
 use App\Models\Lease;
 use App\Services\ActivityLogService;
 use App\Services\BusinessActivitySnapshotService;
 use App\Services\BusinessRecordDeletionService;
+use App\Services\LeaseDeletion\LeaseDeletionService;
+use App\Services\LeaseDeletion\LeaseDeletionRestorationPlanService;
+use App\Services\LeaseHistory\LeaseFinancialHistoryService;
 use App\Services\LeaseInitializationService;
+use App\Services\LeaseTermination\LeaseTerminationCancellationService;
+use App\Services\LeaseTermination\LeaseTerminationCompletionService;
+use App\Services\LeaseTermination\LeaseTerminationInitiationService;
+use App\Services\LeaseTermination\LeaseTerminationSettlementService;
+use App\Services\LeaseTerms\LeaseExtendService;
+use App\Services\LeaseTerms\LeaseTermVersionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -184,6 +195,7 @@ class LeaseController extends Controller
     public function store(
         StoreLeaseRequest $request,
         LeaseInitializationService $initializer,
+        LeaseTermVersionService $termVersions,
         ActivityLogService $activityLog,
         BusinessActivitySnapshotService $snapshots
     ): JsonResponse {
@@ -223,6 +235,7 @@ class LeaseController extends Controller
                 $leaseAttributes,
                 $openingFinancialData,
                 $initializer,
+                $termVersions,
                 $activityLog,
                 $request,
                 $snapshots
@@ -234,6 +247,14 @@ class LeaseController extends Controller
                 $initializer->initialize(
                     lease: $lease,
                     openingFinancialData: $openingFinancialData
+                );
+
+                /*
+                 * Preserve the initial contractual state before any future
+                 * Extend operation can supersede it.
+                 */
+                $termVersions->ensureBaseline(
+                    $lease->refresh()
                 );
 
                 $lease = $lease
@@ -272,6 +293,201 @@ class LeaseController extends Controller
                 'tenantFundAccounts.transactions',
             ]),
             status: 201
+        );
+    }
+
+    /**
+     * Return the canonical chronological operational financial history
+     * for one Lease.
+     *
+     * Historical presentation is owned by LeaseFinancialHistoryService so
+     * the API and browser never reconstruct financial semantics separately.
+     */
+    public function financialHistory(
+        Lease $lease,
+        LeaseFinancialHistoryService $history
+    ): JsonResponse {
+        return response()->json(
+            $history->generate(
+                $lease
+            )
+        );
+    }
+
+    /**
+     * Return the current V1.0.5 termination settlement position.
+     *
+     * This endpoint is intentionally read only.
+     *
+     * It does not apply Tenant funds, create deductions, issue refunds,
+     * complete termination, or otherwise mutate financial state.
+     */
+    public function terminationSettlement(
+        Lease $lease,
+        LeaseTerminationSettlementService $settlement
+    ): JsonResponse {
+        try {
+            return response()->json(
+                $settlement->calculate(
+                    $lease
+                )
+            );
+        } catch (\RuntimeException $exception) {
+            return response()->json(
+                [
+                    'message' =>
+                        $exception->getMessage(),
+                ],
+                422
+            );
+        }
+    }
+
+    /**
+     * Complete the controlled V1.0.5 Lease termination workflow.
+     *
+     * Completion is permitted only when the authoritative settlement
+     * calculator reports that no financial blockers remain.
+     */
+    public function completeTermination(
+        Request $request,
+        Lease $lease,
+        LeaseTerminationCompletionService $completion,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
+    ): JsonResponse {
+        $lease->load([
+            'unit.building',
+            'tenant',
+            'agent',
+        ]);
+
+        $before =
+            $snapshots->lease(
+                $lease
+            );
+
+        try {
+            $lease =
+                $completion->complete(
+                    $lease
+                );
+        } catch (\RuntimeException $exception) {
+            return response()->json(
+                [
+                    'message' =>
+                        $exception->getMessage(),
+                ],
+                422
+            );
+        }
+
+        $lease->load([
+            'unit.building',
+            'tenant',
+            'agent',
+        ]);
+
+        $activityLog->record(
+            action: 'lease.termination_completed',
+            request: $request,
+            entityType: 'lease',
+            entityId: $lease->id,
+            entityLabel:
+                $snapshots->leaseLabel(
+                    $lease
+                ),
+            snapshot:
+                $snapshots->lease(
+                    $lease
+                ),
+            metadata: [
+                'before' =>
+                    $before,
+
+                'termination_date' =>
+                    $lease
+                        ->termination_date
+                        ?->toDateString(),
+
+                'termination_completed_at' =>
+                    $lease
+                        ->termination_completed_at
+                        ?->toIso8601String(),
+            ],
+        );
+
+        return response()->json(
+            $lease
+        );
+    }
+
+    /**
+     * Cancel an in-progress controlled Lease termination.
+     *
+     * Cancellation restores the Lease lifecycle state while preserving
+     * immutable financial history created during termination initiation.
+     */
+    public function cancelTermination(
+        Request $request,
+        Lease $lease,
+        LeaseTerminationCancellationService $cancellation,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
+    ): JsonResponse {
+        $lease->load([
+            'unit.building',
+            'tenant',
+            'agent',
+        ]);
+
+        $before =
+            $snapshots->lease(
+                $lease
+            );
+
+        try {
+            $lease =
+                $cancellation->cancel(
+                    $lease
+                );
+        } catch (\RuntimeException|\InvalidArgumentException $exception) {
+            return response()->json(
+                [
+                    'message' =>
+                        $exception->getMessage(),
+                ],
+                422
+            );
+        }
+
+        $lease->load([
+            'unit.building',
+            'tenant',
+            'agent',
+        ]);
+
+        $activityLog->record(
+            action: 'lease.termination_cancelled',
+            request: $request,
+            entityType: 'lease',
+            entityId: $lease->id,
+            entityLabel:
+                $snapshots->leaseLabel(
+                    $lease
+                ),
+            snapshot:
+                $snapshots->lease(
+                    $lease
+                ),
+            metadata: [
+                'before' =>
+                    $before,
+            ],
+        );
+
+        return response()->json(
+            $lease
         );
     }
 
@@ -459,45 +675,207 @@ class LeaseController extends Controller
     }
 
     /**
-     * Delete only an unreferenced Lease.
+     * Extend the current contractual terms of one Lease.
      *
-     * Database restrictions protect invoices, payments and financial
-     * history from being removed accidentally.
+     * Extend deliberately has its own endpoint rather than reusing generic
+     * Lease update because V1.0.5 permits only Rent Terms, Rent Increment
+     * and Notes to change through this lifecycle action.
+     */
+    public function extend(
+        ExtendLeaseRequest $request,
+        Lease $lease,
+        LeaseExtendService $extensions,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
+    ): JsonResponse {
+        $beforeSnapshot =
+            $snapshots->lease(
+                $lease
+                    ->fresh()
+                    ->load([
+                        'unit.building',
+                        'tenant',
+                        'agent',
+                    ])
+            );
+
+        try {
+            $lease =
+                $extensions->extend(
+                    lease: $lease,
+                    validated: $request->validated(),
+                    actor: $request->user()
+                );
+        } catch (\RuntimeException $exception) {
+            return response()->json(
+                [
+                    'message' => $exception->getMessage(),
+                ],
+                422
+            );
+        }
+
+        $lease =
+            $lease->load([
+                'unit.building',
+                'tenant',
+                'agent',
+            ]);
+
+        $afterSnapshot =
+            $snapshots->lease(
+                $lease
+            );
+
+        [$before, $after] =
+            $snapshots->changes(
+                $beforeSnapshot,
+                $afterSnapshot
+            );
+
+        $activityLog->record(
+            action: 'lease.extended',
+            request: $request,
+            entityType: 'lease',
+            entityId: $lease->id,
+            entityLabel: $snapshots->leaseLabel(
+                $lease
+            ),
+            before: $before,
+            after: $after,
+            metadata: [
+                'effective_from' => $request->validated(
+                    'effective_from'
+                ),
+            ],
+        );
+
+        return response()->json(
+            $lease->load([
+                'unit.building.ownerships.party',
+                'tenant',
+                'agent',
+                'invoices',
+                'payments.allocations.invoice',
+                'tenantFundAccounts.transactions',
+                'termVersions',
+            ])
+        );
+    }
+
+    /**
+     * Initiate the controlled Lease termination workflow.
+     *
+     * This operation establishes termination intent only. Financial
+     * settlement, final-period billing, documents and completion belong
+     * to later controlled termination checkpoints.
+     */
+    public function initiateTermination(
+        InitiateLeaseTerminationRequest $request,
+        Lease $lease,
+        LeaseTerminationInitiationService $terminations,
+        ActivityLogService $activityLog,
+        BusinessActivitySnapshotService $snapshots
+    ): JsonResponse {
+        $validated = $request->validated();
+
+        $before = $snapshots->lease(
+            $lease->load([
+                'unit.building',
+                'tenant',
+                'agent',
+            ])
+        );
+
+        $lease = $terminations->initiate(
+            lease: $lease,
+            noticeDate: $validated['notice_date'],
+            terminationDate: $validated['termination_date'],
+            finalRentMode: $validated['final_rent_mode']
+        );
+
+        $lease->load([
+            'unit.building',
+            'tenant',
+            'agent',
+        ]);
+
+        $activityLog->record(
+            action: 'lease.termination_initiated',
+            request: $request,
+            entityType: 'lease',
+            entityId: $lease->id,
+            entityLabel: $snapshots->leaseLabel($lease),
+            snapshot: $snapshots->lease($lease),
+            metadata: [
+                'before' => $before,
+                'notice_date' => $lease->termination_notice_date?->toDateString(),
+                'termination_date' => $lease->termination_date?->toDateString(),
+                'final_rent_mode' => $lease->termination_final_rent_mode,
+            ],
+        );
+
+        return response()->json(
+            $lease
+        );
+    }
+
+    /**
+     * Return the authoritative read-only destructive-deletion impact.
+     *
+     * This endpoint performs no mutation. The final DELETE request rebuilds
+     * and revalidates the plan again under lock, so this preview is never
+     * treated as authorization to delete stale state.
+     */
+    public function deletionImpact(
+        Lease $lease,
+        LeaseDeletionRestorationPlanService $plans
+    ): JsonResponse {
+        return response()->json(
+            $plans->plan(
+                $lease
+            )
+        );
+    }
+
+    /**
+     * Permanently delete a Lease through the V1.0.5 controlled destructive
+     * deletion workflow.
      */
     public function destroy(
         Request $request,
         Lease $lease,
-        BusinessRecordDeletionService $deletions,
-        ActivityLogService $activityLog,
-        BusinessActivitySnapshotService $snapshots
+        LeaseDeletionService $deletions
     ): JsonResponse {
-        $targetId = $lease->id;
-        $targetLabel =
-            $snapshots->leaseLabel($lease);
-        $snapshot =
-            $snapshots->lease($lease);
+        $validated = $request->validate([
+            'reason' => [
+                'required',
+                'string',
+                'max:2000',
+            ],
+            'confirmation' => [
+                'required',
+                'string',
+            ],
+            'current_password' => [
+                'required',
+                'string',
+            ],
+        ]);
 
-        $message =
-            $deletions->deleteLease(
-                $lease
-            );
+        $actor = $request->user();
 
-        if ($message !== null) {
-            return response()->json(
-                [
-                    'message' => $message,
-                ],
-                409
-            );
+        if (! $actor instanceof \App\Models\User) {
+            abort(401);
         }
 
-        $activityLog->record(
-            action: 'lease.deleted',
+        $deletions->delete(
+            lease: $lease,
+            actor: $actor,
             request: $request,
-            entityType: 'lease',
-            entityId: $targetId,
-            entityLabel: $targetLabel,
-            snapshot: $snapshot,
+            reason: $validated['reason'],
+            confirmation: $validated['confirmation'],
+            currentPassword: $validated['current_password'],
         );
 
         return response()->json(

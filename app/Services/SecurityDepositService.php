@@ -7,6 +7,8 @@ use App\Models\Lease;
 use App\Models\SecurityDepositSettlement;
 use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
+use App\Services\Accounting\AccountingRuntimeGate;
+use App\Services\Accounting\SecurityDepositSettlementJournalService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -25,19 +27,27 @@ use RuntimeException;
  */
 class SecurityDepositService
 {
+    public function __construct(
+        private readonly AccountingRuntimeGate $runtimeGate,
+        private readonly SecurityDepositSettlementJournalService $settlementJournal
+    ) {
+    }
+
     /**
      * Settle the Security Deposit for a Lease.
      */
     public function settle(
         Lease $lease,
         string $settlementDate,
-        ?string $notes = null
+        ?string $notes = null,
+        ?string $refundPaymentMethod = null
     ): SecurityDepositSettlement {
         return DB::transaction(
             function () use (
                 $lease,
                 $settlementDate,
-                $notes
+                $notes,
+                $refundPaymentMethod
             ): SecurityDepositSettlement {
                 $lease->refresh();
 
@@ -114,6 +124,53 @@ class SecurityDepositService
                         - $depositAmount
                     );
 
+                $refundPaymentMethod =
+                    $refundPaymentMethod !== null
+                        ? trim($refundPaymentMethod)
+                        : null;
+
+                if ($refundPaymentMethod === '') {
+                    $refundPaymentMethod = null;
+                }
+
+                /*
+                 * A post-cutover refund must identify the asset channel that
+                 * actually leaves Patrimoine.
+                 *
+                 * Before cutover no Financial Journal transaction is posted,
+                 * so legacy/pre-cutover settlement behaviour remains intact.
+                 */
+                if (
+                    $refundAmount > 0
+                    && $this->runtimeGate->enabled()
+                    && $refundPaymentMethod === null
+                ) {
+                    throw new RuntimeException(
+                        'Security Deposit refund payment method is required.'
+                    );
+                }
+
+                /*
+                 * Reject unsupported direct service calls as well as HTTP
+                 * calls. The request already validates the same domain.
+                 */
+                if (
+                    $refundPaymentMethod !== null
+                    && ! in_array(
+                        $refundPaymentMethod,
+                        [
+                            'cash',
+                            'bank_transfer',
+                            'momo',
+                        ],
+                        true
+                    )
+                ) {
+                    throw new RuntimeException(
+                        'Unsupported Security Deposit refund payment method.'
+                    );
+                }
+
                 /*
                  * Create the immutable settlement snapshot first.
                  *
@@ -130,6 +187,11 @@ class SecurityDepositService
                         'deduction_amount' => $deductionAmount,
 
                         'refund_amount' => $refundAmount,
+
+                        'refund_payment_method' =>
+                            $refundAmount > 0
+                                ? $refundPaymentMethod
+                                : null,
 
                         'tenant_debt_amount' => $tenantDebtAmount,
 
@@ -213,6 +275,17 @@ class SecurityDepositService
                     $settlement->update([
                         'debt_invoice_id' => $debtInvoice->id,
                     ]);
+
+                    /*
+                     * The operational receivable and its immutable Journal
+                     * entry are committed atomically by this outer database
+                     * transaction.
+                     */
+                    $this->settlementJournal
+                        ->postDebtInvoice(
+                            $debtInvoice,
+                            $settlement
+                        );
                 }
 
                 /*
@@ -233,21 +306,28 @@ class SecurityDepositService
                     $depositUsedForDeductions
                     > 0
                 ) {
-                    TenantFundTransaction::create([
-                        'tenant_fund_account_id' => $account->id,
+                    $deductionTransaction =
+                        TenantFundTransaction::create([
+                            'tenant_fund_account_id' => $account->id,
 
-                        'direction' => 'debit',
+                            'direction' => 'debit',
 
-                        'category' => 'deposit_deduction',
+                            'category' => 'deposit_deduction',
 
-                        'amount' => $depositUsedForDeductions,
+                            'amount' => $depositUsedForDeductions,
 
-                        'transaction_date' => $settlementDate,
+                            'transaction_date' => $settlementDate,
 
-                        'reference' => $voucherNumber,
+                            'reference' => $voucherNumber,
 
-                        'notes' => 'Security deposit deductions applied during final settlement.',
-                    ]);
+                            'notes' => 'Security deposit deductions applied during final settlement.',
+                        ]);
+
+                    $this->settlementJournal
+                        ->postApplied(
+                            $deductionTransaction,
+                            $settlement
+                        );
                 }
 
                 /*
@@ -257,21 +337,28 @@ class SecurityDepositService
                  * transaction so accounting and document histories reconcile.
                  */
                 if ($refundAmount > 0) {
-                    TenantFundTransaction::create([
-                        'tenant_fund_account_id' => $account->id,
+                    $refundTransaction =
+                        TenantFundTransaction::create([
+                            'tenant_fund_account_id' => $account->id,
 
-                        'direction' => 'debit',
+                            'direction' => 'debit',
 
-                        'category' => 'refund',
+                            'category' => 'refund',
 
-                        'amount' => $refundAmount,
+                            'amount' => $refundAmount,
 
-                        'transaction_date' => $settlementDate,
+                            'transaction_date' => $settlementDate,
 
-                        'reference' => $voucherNumber,
+                            'reference' => $voucherNumber,
 
-                        'notes' => 'Security deposit refund issued during final settlement.',
-                    ]);
+                            'notes' => 'Security deposit refund issued during final settlement.',
+                        ]);
+
+                    $this->settlementJournal
+                        ->postRefund(
+                            $refundTransaction,
+                            $settlement
+                        );
                 }
 
                 return $settlement

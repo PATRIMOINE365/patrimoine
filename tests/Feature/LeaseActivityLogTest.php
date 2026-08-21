@@ -10,6 +10,7 @@ use App\Models\Party;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -222,7 +223,17 @@ class LeaseActivityLogTest extends TestCase
 
         $this
             ->deleteJson(
-                "/api/leases/{$leaseId}"
+                "/api/leases/{$leaseId}",
+                [
+                    'reason' =>
+                        'Lease was created in error.',
+
+                    'confirmation' =>
+                        'DELETE',
+
+                    'current_password' =>
+                        'Password123!',
+                ]
             )
             ->assertNoContent();
 
@@ -244,34 +255,79 @@ class LeaseActivityLogTest extends TestCase
         );
     }
 
-    public function test_blocked_active_lease_delete_creates_no_event(): void
+    public function test_failed_strong_confirmation_creates_no_delete_event(): void
     {
         [$tenant, $unit] =
             $this->tenantAndUnit();
 
         $lease = Lease::create([
-            'unit_id' => $unit->id,
-            'tenant_id' => $tenant->id,
-            'start_date' => '2026-08-01',
-            'status' => 'active',
-            'rent_amount' => 5000,
-            'payment_frequency' => 'monthly',
-            'vat_rate' => 18,
-            'security_deposit_amount' => 0,
-            'advance_payment_amount' => 0,
-            'rent_reserve_amount' => 0,
-            'management_fee_type' => 'none',
-            'management_fee_value' => 0,
-            'agent_commission_amount' => 0,
+            'unit_id' =>
+                $unit->id,
+
+            'tenant_id' =>
+                $tenant->id,
+
+            'start_date' =>
+                '2026-08-01',
+
+            'status' =>
+                'active',
+
+            'rent_amount' =>
+                5000,
+
+            'payment_frequency' =>
+                'monthly',
+
+            'vat_rate' =>
+                18,
+
+            'security_deposit_amount' =>
+                0,
+
+            'advance_payment_amount' =>
+                0,
+
+            'rent_reserve_amount' =>
+                0,
+
+            'management_fee_type' =>
+                'none',
+
+            'management_fee_value' =>
+                0,
+
+            'agent_commission_amount' =>
+                0,
         ]);
 
-        Sanctum::actingAs($this->administrator());
+        Sanctum::actingAs(
+            $this->administrator()
+        );
 
         $this
             ->deleteJson(
-                "/api/leases/{$lease->id}"
+                "/api/leases/{$lease->id}",
+                [
+                    'reason' =>
+                        'Attempted delete.',
+
+                    'confirmation' =>
+                        'delete',
+
+                    'current_password' =>
+                        'Password123!',
+                ]
             )
-            ->assertStatus(409);
+            ->assertStatus(422);
+
+        $this->assertDatabaseHas(
+            'leases',
+            [
+                'id' =>
+                    $lease->id,
+            ]
+        );
 
         $this->assertDatabaseCount(
             'activity_logs',
@@ -313,9 +369,19 @@ class LeaseActivityLogTest extends TestCase
     private function administrator(): User
     {
         return User::factory()->create([
-            'role' => UserRole::Administrator,
-            'is_active' => true,
-            'email_verified_at' => now(),
+            'role' =>
+                UserRole::Administrator,
+
+            'is_active' =>
+                true,
+
+            'email_verified_at' =>
+                now(),
+
+            'password' =>
+                Hash::make(
+                    'Password123!'
+                ),
         ]);
     }
 }

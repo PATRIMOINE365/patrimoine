@@ -29,7 +29,9 @@ class FinancialActivitySnapshotService
             'payment_date' => $payment->payment_date?->toDateString(),
             'payment_method' => $payment->payment_method,
             'reference' => $payment->reference,
-            'collector_name' => $payment->collector_name,
+            'collector_name' =>
+                $payment->cash_receiver_name
+                ?? $payment->collector_name,
             'notes' => $payment->notes,
         ];
     }

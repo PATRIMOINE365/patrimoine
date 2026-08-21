@@ -9,8 +9,11 @@ use App\Http\Controllers\Api\ConsumableAdvanceController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\EmailController;
+use App\Http\Controllers\Api\FinancialJournalController;
+use App\Http\Controllers\Api\FinancialJournalExportController;
 use App\Http\Controllers\Api\InitialSetupController;
 use App\Http\Controllers\Api\LeaseController;
+use App\Http\Controllers\Api\LeaseFinancialHistoryExportController;
 use App\Http\Controllers\Api\ManagingOrganisationController;
 use App\Http\Controllers\Api\OwnerAccountController;
 use App\Http\Controllers\Api\OwnerExpenseController;
@@ -20,11 +23,15 @@ use App\Http\Controllers\Api\PartyController;
 use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PaymentRegisterController;
+use App\Http\Controllers\Api\PaymentReportController;
+use App\Http\Controllers\Api\PaymentReportExportController;
 use App\Http\Controllers\Api\RentReserveController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReportExportController;
 use App\Http\Controllers\Api\SecurityDepositController;
 use App\Http\Controllers\Api\TenantFundController;
+use App\Http\Controllers\Api\TenantFundDepositController;
+use App\Http\Controllers\Api\TenantFundWithdrawalController;
 use App\Http\Controllers\Api\UnitController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -211,6 +218,16 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 Route::get(
+                    'leases/{lease}/financial-history',
+                    [LeaseController::class, 'financialHistory']
+                );
+
+            Route::get(
+                'leases/{lease}/termination-settlement',
+                [LeaseController::class, 'terminationSettlement']
+            );
+
+                Route::get(
                     'dashboard',
                     [DashboardController::class, 'summary']
                 );
@@ -312,6 +329,43 @@ Route::middleware('auth:sanctum')->group(
                     [LeaseController::class, 'update']
                 );
 
+                Route::post(
+                    'leases/{lease}/extend',
+                    [LeaseController::class, 'extend']
+                );
+
+                Route::post(
+                    'leases/{lease}/termination',
+                    [LeaseController::class, 'initiateTermination']
+                );
+
+                Route::post(
+                    'leases/{lease}/termination/complete',
+                    [LeaseController::class, 'completeTermination']
+                );
+
+                Route::post(
+                    'leases/{lease}/termination/cancel',
+                    [LeaseController::class, 'cancelTermination']
+                );
+
+                /*
+                 * V1.0.5 Lease Delete is a specific lifecycle exception to
+                 * the general Administrator-only business-delete rule.
+                 *
+                 * Administrator + Property Manager may preview/execute it;
+                 * Viewer remains read-only.
+                 */
+                Route::get(
+                    'leases/{lease}/deletion-impact',
+                    [LeaseController::class, 'deletionImpact']
+                );
+
+                Route::delete(
+                    'leases/{lease}',
+                    [LeaseController::class, 'destroy']
+                );
+
                 /*
                  * Resending an existing business document is an explicit
                  * operational action and is therefore unavailable to Viewer.
@@ -355,10 +409,6 @@ Route::middleware('auth:sanctum')->group(
                     [UnitController::class, 'destroy']
                 );
 
-                Route::delete(
-                    'leases/{lease}',
-                    [LeaseController::class, 'destroy']
-                );
             }
         );
 
@@ -384,6 +434,26 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 Route::post(
+                    'tenant-fund-deposits',
+                    [TenantFundDepositController::class, 'store']
+                );
+
+                Route::post(
+                    'tenant-fund-withdrawals',
+                    [TenantFundWithdrawalController::class, 'store']
+                );
+
+                Route::get(
+                    'withdrawal-receipts/{withdrawalReceipt}/pdf',
+                    [DocumentController::class, 'withdrawalReceipt']
+                );
+
+                Route::post(
+                    'tenant-funds/{tenantFundAccount}/adjustments',
+                    [TenantFundController::class, 'adjustment']
+                );
+
+                Route::post(
                     'tenant-funds/{tenantFundAccount}/consume-rent',
                     [RentReserveController::class, 'consume']
                 );
@@ -396,6 +466,11 @@ Route::middleware('auth:sanctum')->group(
                 Route::post(
                     'leases/{lease}/security-deposit/deductions',
                     [SecurityDepositController::class, 'addDeduction']
+                );
+
+                Route::post(
+                    'leases/{lease}/security-deposit/apply',
+                    [SecurityDepositController::class, 'apply']
                 );
 
                 Route::post(
@@ -438,6 +513,11 @@ Route::middleware('auth:sanctum')->group(
         Route::middleware('capability:export_reports')->group(
             function (): void {
                 Route::get(
+                    'leases/{lease}/termination-notice/pdf',
+                    [DocumentController::class, 'terminationNotice']
+                );
+
+                Route::get(
                     'invoices/{invoice}/pdf',
                     [DocumentController::class, 'invoice']
                 );
@@ -453,8 +533,43 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 Route::get(
+                    'adjustment-vouchers/{adjustmentVoucher}/pdf',
+                    [DocumentController::class, 'adjustmentVoucher']
+                );
+
+                Route::get(
                     'security-deposit-settlements/{settlement}/voucher',
                     [DocumentController::class, 'securityDepositVoucher']
+                );
+
+                Route::get(
+                    'leases/{lease}/financial-history/pdf',
+                    [LeaseFinancialHistoryExportController::class, 'pdf']
+                );
+
+                Route::get(
+                    'leases/{lease}/financial-history/csv',
+                    [LeaseFinancialHistoryExportController::class, 'csv']
+                );
+
+                Route::get(
+                    'leases/{lease}/financial-history/xlsx',
+                    [LeaseFinancialHistoryExportController::class, 'xlsx']
+                );
+
+                Route::get(
+                    'reports/payments/pdf',
+                    [PaymentReportExportController::class, 'pdf']
+                );
+
+                Route::get(
+                    'reports/payments/csv',
+                    [PaymentReportExportController::class, 'csv']
+                );
+
+                Route::get(
+                    'reports/payments/xlsx',
+                    [PaymentReportExportController::class, 'xlsx']
                 );
 
                 Route::get(
@@ -468,6 +583,11 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 Route::get(
+                    'reports/owners/{party}/xlsx',
+                    [ReportExportController::class, 'ownerXlsx']
+                );
+
+                Route::get(
                     'reports/buildings/{building}/pdf',
                     [ReportExportController::class, 'buildingPdf']
                 );
@@ -475,6 +595,11 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'reports/buildings/{building}/csv',
                     [ReportExportController::class, 'buildingCsv']
+                );
+
+                Route::get(
+                    'reports/buildings/{building}/xlsx',
+                    [ReportExportController::class, 'buildingXlsx']
                 );
 
                 Route::get(
@@ -488,6 +613,11 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 Route::get(
+                    'reports/units/{unit}/xlsx',
+                    [ReportExportController::class, 'unitXlsx']
+                );
+
+                Route::get(
                     'reports/tenants/{party}/pdf',
                     [ReportExportController::class, 'tenantPdf']
                 );
@@ -498,6 +628,11 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 Route::get(
+                    'reports/tenants/{party}/xlsx',
+                    [ReportExportController::class, 'tenantXlsx']
+                );
+
+                Route::get(
                     'reports/managing-organisation/pdf',
                     [ReportExportController::class, 'managingOrganisationPdf']
                 );
@@ -505,6 +640,11 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'reports/managing-organisation/csv',
                     [ReportExportController::class, 'managingOrganisationCsv']
+                );
+
+                Route::get(
+                    'reports/managing-organisation/xlsx',
+                    [ReportExportController::class, 'managingOrganisationXlsx']
                 );
 
                 Route::get(
@@ -530,6 +670,57 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'reports/managing-organisation',
                     [ReportController::class, 'managingOrganisation']
+                );
+
+                Route::get(
+                    'reports/payments',
+                    PaymentReportController::class
+                );
+            }
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Financial Journal
+        |--------------------------------------------------------------------------
+        |
+        | Administrator-only immutable accounting history.
+        |
+        | Reading, searching and filtering Journal entries are passive
+        | operations. No write, edit, reversal or delete routes exist here.
+        |
+        */
+
+        Route::middleware('capability:view_financial_journal')->group(
+            function (): void {
+                Route::get(
+                    'financial-journal',
+                    [FinancialJournalController::class, 'index']
+                );
+
+                Route::get(
+                    'financial-journal/filter-options',
+                    [FinancialJournalController::class, 'filterOptions']
+                );
+
+                Route::get(
+                    'financial-journal/pdf',
+                    [FinancialJournalExportController::class, 'pdf']
+                );
+
+                Route::get(
+                    'financial-journal/csv',
+                    [FinancialJournalExportController::class, 'csv']
+                );
+
+                Route::get(
+                    'financial-journal/xlsx',
+                    [FinancialJournalExportController::class, 'xlsx']
+                );
+
+                Route::get(
+                    'financial-journal/{journalEntry}',
+                    [FinancialJournalController::class, 'show']
                 );
             }
         );

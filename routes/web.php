@@ -66,11 +66,6 @@ Route::view(
 )->name('leases');
 
 Route::view(
-    '/payments',
-    'app.payments'
-)->name('payments');
-
-Route::view(
     '/owners',
     'app.owners'
 )->name('owners');
@@ -89,6 +84,11 @@ Route::view(
     '/activity-log',
     'app.activity-log'
 )->name('activity-log');
+
+Route::view(
+    '/financial-journal',
+    'app.financial-journal'
+)->name('financial-journal');
 
 Route::view(
     '/users',

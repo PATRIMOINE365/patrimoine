@@ -52,10 +52,6 @@ import {
 } from './leases.js';
 
 import {
-    initializePayments,
-} from './payments.js';
-
-import {
     initializeOwners,
 } from './owners.js';
 
@@ -78,6 +74,10 @@ import {
 import {
     initializeActivityLog,
 } from './activity-log.js';
+
+import {
+    initializeFinancialJournal,
+} from './financial-journal.js';
 
 import {
     initializeChangePassword,
@@ -163,10 +163,7 @@ document.addEventListener(
         await initializeParties();
 
         await initializeLeases();
-
-        await initializePayments();
-
-        await initializeOwners();
+await initializeOwners();
 
         await initializeTenants();
 
@@ -177,6 +174,8 @@ document.addEventListener(
         await initializeUsers();
 
         await initializeActivityLog();
+
+        await initializeFinancialJournal();
 
         initializeChangePassword();
     }

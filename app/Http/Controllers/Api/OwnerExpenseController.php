@@ -27,48 +27,78 @@ class OwnerExpenseController extends Controller
         ActivityLogService $activityLog,
         FinancialActivitySnapshotService $activitySnapshots
     ): JsonResponse {
-        $result = DB::transaction(
-            function () use ($request, $service): array {
-                $expense = OwnerExpense::create(
-                    $request->validated()
-                );
+        try {
+            $result = DB::transaction(
+                function () use (
+                    $request,
+                    $service,
+                    $activityLog,
+                    $activitySnapshots,
+                ): array {
+                    $expense =
+                        OwnerExpense::create(
+                            $request->validated()
+                        );
 
-                try {
-                    $transactions = $service->allocateExpense(
+                    try {
+                        $transactions =
+                            $service->allocateExpense(
+                                $expense
+                            );
+                    } catch (RuntimeException $exception) {
+                        throw ValidationException::withMessages([
+                            'expense' => [
+                                $exception->getMessage(),
+                            ],
+                        ]);
+                    }
+
+                    $expense =
                         $expense
+                            ->refresh()
+                            ->load([
+                                'building',
+                                'unit',
+                            ]);
+
+                    /*
+                     * OwnerExpense + allocated OwnerTransactions +
+                     * Financial Journal + Activity Log are atomic.
+                     */
+                    $activityLog->record(
+                        action: 'owner_expense.recorded',
+                        request: $request,
+                        entityType: 'owner_expense',
+                        entityId: $expense->id,
+                        entityLabel: 'Owner expense #'.$expense->id,
+                        snapshot:
+                            $activitySnapshots
+                                ->ownerExpense(
+                                    $expense
+                                ),
                     );
-                } catch (RuntimeException $exception) {
-                    throw ValidationException::withMessages([
-                        'expense' => [
-                            $exception->getMessage(),
-                        ],
-                    ]);
+
+                    return [
+                        'expense' =>
+                            $expense,
+
+                        'owner_transactions' =>
+                            $transactions,
+                    ];
                 }
-
-                return [
-                    'expense' => $expense->refresh()->load([
-                        'building',
-                        'unit',
-                    ]),
-                    'owner_transactions' => $transactions,
-                ];
-            }
-        );
-
-        $expense = $result['expense'];
-
-        $activityLog->record(
-            action: 'owner_expense.recorded',
-            request: $request,
-            entityType: 'owner_expense',
-            entityId: $expense->id,
-            entityLabel: 'Owner expense #'.$expense->id,
-            snapshot: $activitySnapshots->ownerExpense($expense),
-        );
+            );
+        } catch (RuntimeException $exception) {
+            throw ValidationException::withMessages([
+                'expense' => [
+                    $exception->getMessage(),
+                ],
+            ]);
+        }
 
         return response()->json(
             data: $result,
             status: 201
         );
     }
+
 }

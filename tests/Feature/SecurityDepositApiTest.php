@@ -37,6 +37,66 @@ class SecurityDepositApiTest extends TestCase
      *     account: TenantFundAccount
      * }
      */
+
+    public function test_security_deposit_deduction_is_allowed_during_termination_in_progress(): void
+    {
+        $context = $this->createContext();
+
+        $lease = $context['lease'];
+
+        $lease->forceFill([
+            'status' => 'notice',
+            'termination_completed_at' => null,
+        ])->save();
+
+        $this->postJson(
+            "/api/leases/{$lease->id}/security-deposit/deductions",
+            [
+                'description' => 'Termination repairs',
+                'amount' => 2500,
+                'deduction_date' => '2026-08-20',
+            ]
+        )->assertCreated();
+
+        $this->assertDatabaseHas(
+            'security_deposit_deductions',
+            [
+                'lease_id' => $lease->id,
+                'description' => 'Termination repairs',
+                'amount' => 2500,
+            ]
+        );
+    }
+
+    public function test_security_deposit_deduction_remains_blocked_for_active_lease(): void
+    {
+        $context = $this->createContext();
+
+        $lease = $context['lease'];
+
+        $lease->forceFill([
+            'status' => 'active',
+            'termination_completed_at' => null,
+        ])->save();
+
+        $this->postJson(
+            "/api/leases/{$lease->id}/security-deposit/deductions",
+            [
+                'description' => 'Should not be allowed',
+                'amount' => 2500,
+                'deduction_date' => '2026-08-20',
+            ]
+        )->assertUnprocessable();
+
+        $this->assertDatabaseMissing(
+            'security_deposit_deductions',
+            [
+                'lease_id' => $lease->id,
+                'description' => 'Should not be allowed',
+            ]
+        );
+    }
+
     private function createContext(
         int $depositAmount = 10000,
         string $status = 'terminated'
@@ -555,4 +615,28 @@ class SecurityDepositApiTest extends TestCase
                 'Aucun compte de dépôt de garantie n’existe pour ce bail.'
             );
     }
+
+    public function test_security_deposit_settlement_rejects_invalid_refund_payment_method(): void
+    {
+        $context =
+            $this->createContext(
+                10000
+            );
+
+        $this->postJson(
+            "/api/leases/{$context['lease']->id}/security-deposit/settle",
+            [
+                'settlement_date' =>
+                    '2026-08-11',
+
+                'refund_payment_method' =>
+                    'cheque',
+            ]
+        )
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'refund_payment_method',
+            ]);
+    }
+
 }

@@ -28,6 +28,8 @@ class OwnerTransaction extends Model
         'payment_method',
         'deposit_purpose',
         'collector_name',
+        'cash_receiver_user_id',
+        'cash_receiver_name',
         'reference',
         'notes',
     ];
@@ -83,5 +85,13 @@ class OwnerTransaction extends Model
     public function paymentAllocation(): BelongsTo
     {
         return $this->belongsTo(PaymentAllocation::class);
+    }
+
+    public function cashReceiver()
+    {
+        return $this->belongsTo(
+            User::class,
+            'cash_receiver_user_id'
+        );
     }
 }

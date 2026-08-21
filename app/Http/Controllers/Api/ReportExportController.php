@@ -18,7 +18,7 @@ use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
 /**
- * PDF and CSV export endpoints for Patrimoine formal reports.
+ * PDF, XLSX and CSV export endpoints for Patrimoine formal reports.
  *
  * All accounting values originate from the same report services used
  * by the JSON API. This controller only chooses the output format.
@@ -100,6 +100,35 @@ class ReportExportController extends Controller
         );
     }
 
+    public function ownerXlsx(
+        Request $request,
+        Party $party,
+        OwnerReportService $reports,
+        ReportExportService $exports,
+        ActivityLogService $activityLog
+    ): Response {
+        [$from, $to] = $this->validatedPeriod($request);
+
+        $contents = $exports->xlsx(
+            $reports->generate($party, $from, $to)
+        );
+
+        $filename = "owner-report-{$party->id}.xlsx";
+
+        $this->recordExport(
+            $activityLog,
+            $request,
+            'owner',
+            'xlsx',
+            $filename,
+            'party',
+            $party->id,
+            $this->partyLabel($party)
+        );
+
+        return $this->xlsxResponse($contents, $filename);
+    }
+
     public function buildingPdf(
         Request $request,
         Building $building,
@@ -173,6 +202,35 @@ class ReportExportController extends Controller
             $contents,
             $filename
         );
+    }
+
+    public function buildingXlsx(
+        Request $request,
+        Building $building,
+        BuildingReportService $reports,
+        ReportExportService $exports,
+        ActivityLogService $activityLog
+    ): Response {
+        [$from, $to] = $this->validatedPeriod($request);
+
+        $contents = $exports->xlsx(
+            $reports->generate($building, $from, $to)
+        );
+
+        $filename = "building-report-{$building->id}.xlsx";
+
+        $this->recordExport(
+            $activityLog,
+            $request,
+            'building',
+            'xlsx',
+            $filename,
+            'building',
+            $building->id,
+            $building->name
+        );
+
+        return $this->xlsxResponse($contents, $filename);
     }
 
     public function unitPdf(
@@ -250,6 +308,35 @@ class ReportExportController extends Controller
         );
     }
 
+    public function unitXlsx(
+        Request $request,
+        Unit $unit,
+        UnitReportService $reports,
+        ReportExportService $exports,
+        ActivityLogService $activityLog
+    ): Response {
+        [$from, $to] = $this->validatedPeriod($request);
+
+        $contents = $exports->xlsx(
+            $reports->generate($unit, $from, $to)
+        );
+
+        $filename = "unit-report-{$unit->id}.xlsx";
+
+        $this->recordExport(
+            $activityLog,
+            $request,
+            'unit',
+            'xlsx',
+            $filename,
+            'unit',
+            $unit->id,
+            $unit->name
+        );
+
+        return $this->xlsxResponse($contents, $filename);
+    }
+
     public function tenantPdf(
         Request $request,
         Party $party,
@@ -325,6 +412,35 @@ class ReportExportController extends Controller
         );
     }
 
+    public function tenantXlsx(
+        Request $request,
+        Party $party,
+        TenantStatementService $reports,
+        ReportExportService $exports,
+        ActivityLogService $activityLog
+    ): Response {
+        [$from, $to] = $this->validatedPeriod($request);
+
+        $contents = $exports->xlsx(
+            $reports->generate($party, $from, $to)
+        );
+
+        $filename = "tenant-statement-{$party->id}.xlsx";
+
+        $this->recordExport(
+            $activityLog,
+            $request,
+            'tenant_statement',
+            'xlsx',
+            $filename,
+            'party',
+            $party->id,
+            $this->partyLabel($party)
+        );
+
+        return $this->xlsxResponse($contents, $filename);
+    }
+
     public function managingOrganisationPdf(
         Request $request,
         ManagingOrganisationReportService $reports,
@@ -388,6 +504,31 @@ class ReportExportController extends Controller
             $contents,
             $filename
         );
+    }
+
+    public function managingOrganisationXlsx(
+        Request $request,
+        ManagingOrganisationReportService $reports,
+        ReportExportService $exports,
+        ActivityLogService $activityLog
+    ): Response {
+        [$from, $to] = $this->validatedPeriod($request);
+
+        $contents = $exports->xlsx(
+            $reports->generate($from, $to)
+        );
+
+        $filename = 'managing-organisation-report.xlsx';
+
+        $this->recordExport(
+            $activityLog,
+            $request,
+            'managing_organisation',
+            'xlsx',
+            $filename
+        );
+
+        return $this->xlsxResponse($contents, $filename);
     }
 
     /**
@@ -477,6 +618,20 @@ class ReportExportController extends Controller
             [
                 'Content-Type' => 'application/pdf',
 
+                'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            ]
+        );
+    }
+
+    private function xlsxResponse(
+        string $contents,
+        string $filename
+    ): Response {
+        return response(
+            $contents,
+            200,
+            [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                 'Content-Disposition' => 'attachment; filename="'.$filename.'"',
             ]
         );

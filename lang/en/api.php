@@ -90,6 +90,8 @@ return [
     ],
 
     'deletion' => [
+        'lease_confirmation_invalid' => 'Type DELETE exactly to confirm Lease deletion.',
+        'lease_cannot_delete' => 'Lease :id cannot be deleted safely.',
         'party_managing_organisation' => 'The configured Managing Organisation cannot be deleted. Change the Managing Organisation configuration instead.',
         'party_referenced' => 'This Party cannot be deleted because it is referenced by Lease, ownership, agency or financial history. Keep the Party so historical records remain understandable.',
         'building_has_units' => 'This Building cannot be deleted while it still contains Units. Delete only unreferenced Units first; Units with Lease or financial history must be retained.',
