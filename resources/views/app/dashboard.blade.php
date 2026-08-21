@@ -63,7 +63,7 @@
         "
     ></div>
 
-    {{-- Main metrics --}}
+    {{-- Row 1 — occupancy hero band + money tiles --}}
     <div
         class="
             grid gap-4
@@ -71,87 +71,160 @@
             xl:grid-cols-4
         "
     >
-        <div class="pm-card p-5">
+        <div
+            class="
+                pm-card p-5
+                sm:col-span-2
+                xl:col-span-1
+            "
+        >
             <div class="text-sm text-[var(--pm-text-muted)]">
-                <span data-i18n="dashboard.buildings">
-                    {{ __('ui.dashboard.buildings') }}
+                <span data-i18n="dashboard.occupancy_rate">
+                    {{ __('ui.dashboard.occupancy_rate') }}
                 </span>
             </div>
 
             <div
-                id="metric-buildings"
+                id="metric-occupancy-rate"
                 class="
-                    mt-3 text-3xl font-semibold
+                    mt-3 text-4xl font-semibold
                     tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
             </div>
-        </div>
 
-        <div class="pm-card p-5">
-            <div class="text-sm text-[var(--pm-text-muted)]">
+            <div
+                class="
+                    mt-3 h-2 w-full overflow-hidden
+                    rounded-full
+                    bg-[var(--pm-surface-muted)]
+                "
+            >
+                <div
+                    id="occupancy-meter"
+                    class="
+                        h-2 w-0 rounded-full
+                        bg-[var(--pm-primary)]
+                        transition-[width] duration-500
+                    "
+                ></div>
+            </div>
+
+            <div
+                class="
+                    mt-4 flex flex-wrap items-center
+                    gap-x-4 gap-y-1 text-sm
+                "
+            >
+                <div class="text-[var(--pm-text-secondary)]">
+                    <span
+                        id="metric-occupied"
+                        class="
+                            font-semibold
+                            text-[var(--pm-text)]
+                        "
+                    >—</span>
+
+                    <span data-i18n="dashboard.occupied">
+                        {{ __('ui.dashboard.occupied') }}
+                    </span>
+                </div>
+
+                <div class="text-[var(--pm-text-secondary)]">
+                    <span
+                        id="metric-vacant"
+                        class="
+                            font-semibold
+                            text-[var(--pm-text)]
+                        "
+                    >—</span>
+
+                    <span data-i18n="dashboard.vacant">
+                        {{ __('ui.dashboard.vacant') }}
+                    </span>
+                </div>
+            </div>
+
+            <div
+                class="
+                    mt-2 flex flex-wrap items-center
+                    gap-x-4 gap-y-1 text-xs
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                <div>
+                    <span id="metric-vacant-commercial">—</span>
+
+                    <span data-i18n="dashboard.vacant_commercial">
+                        {{ __('ui.dashboard.vacant_commercial') }}
+                    </span>
+                </div>
+
+                <div>
+                    <span id="metric-vacant-residential">—</span>
+
+                    <span data-i18n="dashboard.vacant_residential">
+                        {{ __('ui.dashboard.vacant_residential') }}
+                    </span>
+                </div>
+            </div>
+
+            <div
+                class="
+                    mt-4 border-t
+                    border-[var(--pm-border-subtle)]
+                    pt-3 text-xs
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                <span
+                    id="metric-buildings"
+                    class="
+                        font-medium
+                        text-[var(--pm-text-secondary)]
+                    "
+                >—</span>
+
+                <span data-i18n="dashboard.buildings">
+                    {{ __('ui.dashboard.buildings') }}
+                </span>
+
+                <span class="mx-1">·</span>
+
+                <span
+                    id="metric-units"
+                    class="
+                        font-medium
+                        text-[var(--pm-text-secondary)]
+                    "
+                >—</span>
+
                 <span data-i18n="dashboard.total_units">
                     {{ __('ui.dashboard.total_units') }}
                 </span>
             </div>
-
-            <div
-                id="metric-units"
-                class="
-                    mt-3 text-3xl font-semibold
-                    tracking-tight text-[var(--pm-text)]
-                "
-            >
-                —
-            </div>
         </div>
 
         <div class="pm-card p-5">
             <div class="text-sm text-[var(--pm-text-muted)]">
-                <span data-i18n="dashboard.occupied_units">
-                    {{ __('ui.dashboard.occupied_units') }}
+                <span data-i18n="dashboard.rent_overdue">
+                    {{ __('ui.dashboard.rent_overdue') }}
                 </span>
             </div>
 
             <div
-                id="metric-occupied"
+                id="metric-rent-overdue"
                 class="
-                    mt-3 text-3xl font-semibold
-                    tracking-tight text-[var(--pm-text)]
+                    mt-3 text-2xl font-semibold
+                    tracking-tight
+                    text-[var(--pm-danger-text)]
                 "
             >
                 —
             </div>
         </div>
 
-        <div class="pm-card p-5">
-            <div class="text-sm text-[var(--pm-text-muted)]">
-                <span data-i18n="dashboard.vacant_units">
-                    {{ __('ui.dashboard.vacant_units') }}
-                </span>
-            </div>
-
-            <div
-                id="metric-vacant"
-                class="
-                    mt-3 text-3xl font-semibold
-                    tracking-tight text-[var(--pm-text)]
-                "
-            >
-                —
-            </div>
-        </div>
-    </div>
-
-    {{-- Financial metrics --}}
-    <div
-        class="
-            mt-4 grid gap-4
-            sm:grid-cols-2
-            xl:grid-cols-4
-        "
-    >
         <div class="pm-card p-5">
             <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.rent_due">
@@ -172,24 +245,6 @@
 
         <div class="pm-card p-5">
             <div class="text-sm text-[var(--pm-text-muted)]">
-                <span data-i18n="dashboard.rent_overdue">
-                    {{ __('ui.dashboard.rent_overdue') }}
-                </span>
-            </div>
-
-            <div
-                id="metric-rent-overdue"
-                class="
-                    mt-3 text-2xl font-semibold
-                    tracking-tight text-[var(--pm-text)]
-                "
-            >
-                —
-            </div>
-        </div>
-
-        <div class="pm-card p-5">
-            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.collected_this_month">
                     {{ __('ui.dashboard.collected_this_month') }}
                 </span>
@@ -199,25 +254,8 @@
                 id="metric-collected"
                 class="
                     mt-3 text-2xl font-semibold
-                    tracking-tight text-[var(--pm-text)]
-                "
-            >
-                —
-            </div>
-        </div>
-
-        <div class="pm-card p-5">
-            <div class="text-sm text-[var(--pm-text-muted)]">
-                <span data-i18n="dashboard.owner_funds_held">
-                    {{ __('ui.dashboard.owner_funds_held') }}
-                </span>
-            </div>
-
-            <div
-                id="metric-owner-funds"
-                class="
-                    mt-3 text-2xl font-semibold
-                    tracking-tight text-[var(--pm-text)]
+                    tracking-tight
+                    text-[var(--pm-success-text)]
                 "
             >
                 —
@@ -225,6 +263,135 @@
         </div>
     </div>
 
+    {{-- Row 2 — collections trend + funds held --}}
+    <div
+        class="
+            mt-6 grid gap-6
+            xl:grid-cols-3
+        "
+    >
+        <section
+            class="
+                pm-card
+                xl:col-span-2
+            "
+        >
+            <div
+                class="
+                    border-b border-[var(--pm-border-subtle)]
+                    px-5 py-4
+                "
+            >
+                <h2
+                    class="
+                        text-base font-semibold
+                        text-[var(--pm-text)]
+                    "
+                >
+                    <span data-i18n="dashboard.collections_trend">
+                        {{ __('ui.dashboard.collections_trend') }}
+                    </span>
+                </h2>
+
+                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
+                    <span data-i18n="dashboard.collections_trend_description">
+                        {{ __('ui.dashboard.collections_trend_description') }}
+                    </span>
+                </p>
+            </div>
+
+            <div
+                id="collections-chart"
+                class="p-5"
+            >
+                <div class="text-sm text-[var(--pm-text-subtle)]">
+                    <span data-i18n="dashboard.loading">
+                        {{ __('ui.dashboard.loading') }}
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pm-card">
+            <div
+                class="
+                    border-b border-[var(--pm-border-subtle)]
+                    px-5 py-4
+                "
+            >
+                <h2
+                    class="
+                        text-base font-semibold
+                        text-[var(--pm-text)]
+                    "
+                >
+                    <span data-i18n="dashboard.funds_held">
+                        {{ __('ui.dashboard.funds_held') }}
+                    </span>
+                </h2>
+
+                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
+                    <span data-i18n="dashboard.funds_held_description">
+                        {{ __('ui.dashboard.funds_held_description') }}
+                    </span>
+                </p>
+            </div>
+
+            <div class="grid gap-4 p-5">
+                <div
+                    class="
+                        rounded-xl border
+                        border-[var(--pm-border-subtle)]
+                        bg-[var(--pm-surface-subtle)]
+                        p-4
+                    "
+                >
+                    <div class="text-sm text-[var(--pm-text-muted)]">
+                        <span data-i18n="dashboard.owner_funds_held">
+                            {{ __('ui.dashboard.owner_funds_held') }}
+                        </span>
+                    </div>
+
+                    <div
+                        id="metric-owner-funds"
+                        class="
+                            mt-2 text-2xl font-semibold
+                            tracking-tight text-[var(--pm-text)]
+                        "
+                    >
+                        —
+                    </div>
+                </div>
+
+                <div
+                    class="
+                        rounded-xl border
+                        border-[var(--pm-border-subtle)]
+                        bg-[var(--pm-surface-subtle)]
+                        p-4
+                    "
+                >
+                    <div class="text-sm text-[var(--pm-text-muted)]">
+                        <span data-i18n="dashboard.tenant_funds_held">
+                            {{ __('ui.dashboard.tenant_funds_held') }}
+                        </span>
+                    </div>
+
+                    <div
+                        id="metric-tenant-funds"
+                        class="
+                            mt-2 text-2xl font-semibold
+                            tracking-tight text-[var(--pm-text)]
+                        "
+                    >
+                        —
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    {{-- Row 3 — overdue + upcoming rent --}}
     <div
         class="
             mt-6 grid gap-6
@@ -295,6 +462,104 @@
 
             <div
                 id="upcoming-list"
+                class="p-5"
+            >
+                <div class="text-sm text-[var(--pm-text-subtle)]">
+                    <span data-i18n="dashboard.loading">
+                        {{ __('ui.dashboard.loading') }}
+                    </span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    {{-- Row 4 — expiring leases + upcoming increments --}}
+    <div
+        class="
+            mt-6 grid gap-6
+            lg:grid-cols-2
+        "
+    >
+        <section class="pm-card">
+            <div
+                class="
+                    flex items-start justify-between
+                    gap-3 border-b
+                    border-[var(--pm-border-subtle)]
+                    px-5 py-4
+                "
+            >
+                <div>
+                    <h2
+                        class="
+                            text-base font-semibold
+                            text-[var(--pm-text)]
+                        "
+                    >
+                        <span data-i18n="dashboard.expiring_leases">
+                            {{ __('ui.dashboard.expiring_leases') }}
+                        </span>
+                    </h2>
+
+                    <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
+                        <span data-i18n="dashboard.expiring_leases_description">
+                            {{ __('ui.dashboard.expiring_leases_description') }}
+                        </span>
+                    </p>
+                </div>
+
+                <span
+                    id="expiring-count"
+                    class="
+                        hidden shrink-0 rounded-full
+                        border px-2.5 py-0.5
+                        text-xs font-semibold
+                        border-[var(--pm-warning-border)]
+                        bg-[var(--pm-warning-background)]
+                        text-[var(--pm-warning-text)]
+                    "
+                ></span>
+            </div>
+
+            <div
+                id="expiring-list"
+                class="p-5"
+            >
+                <div class="text-sm text-[var(--pm-text-subtle)]">
+                    <span data-i18n="dashboard.loading">
+                        {{ __('ui.dashboard.loading') }}
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pm-card">
+            <div
+                class="
+                    border-b border-[var(--pm-border-subtle)]
+                    px-5 py-4
+                "
+            >
+                <h2
+                    class="
+                        text-base font-semibold
+                        text-[var(--pm-text)]
+                    "
+                >
+                    <span data-i18n="dashboard.upcoming_increments">
+                        {{ __('ui.dashboard.upcoming_increments') }}
+                    </span>
+                </h2>
+
+                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
+                    <span data-i18n="dashboard.upcoming_increments_description">
+                        {{ __('ui.dashboard.upcoming_increments_description') }}
+                    </span>
+                </p>
+            </div>
+
+            <div
+                id="increments-list"
                 class="p-5"
             >
                 <div class="text-sm text-[var(--pm-text-subtle)]">

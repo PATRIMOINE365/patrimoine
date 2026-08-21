@@ -182,8 +182,8 @@
                 <div
                     class="
                         grid w-full gap-3
-                        sm:grid-cols-3
-                        xl:w-auto
+                        sm:grid-cols-2
+                        xl:w-auto xl:grid-cols-4
                     "
                 >
 
@@ -317,8 +317,80 @@
                         </select>
                     </div>
 
+                    {{-- Has email (client-side, mail-delivery hygiene) --}}
+                    <div>
+                        <label
+                            for="party-email-filter"
+                            class="sr-only"
+                        >
+                            <span data-i18n="parties.has_email">{{ __('ui.parties.has_email') }}</span>
+                        </label>
+
+                        <select
+                            id="party-email-filter"
+                            class="pm-input"
+                        >
+                            <option
+                                value=""
+                                data-i18n="parties.has_email_all"
+                            >
+                                {{ __('ui.parties.has_email_all') }}
+</option>
+
+                            <option
+                                value="yes"
+                                data-i18n="parties.has_email_yes"
+                            >
+                                {{ __('ui.parties.has_email_yes') }}
+</option>
+
+                            <option
+                                value="no"
+                                data-i18n="parties.has_email_no"
+                            >
+                                {{ __('ui.parties.has_email_no') }}
+</option>
+                        </select>
+                    </div>
+
                 </div>
             </div>
+
+            {{--
+                Presentation-only surname sort: reorders the currently
+                loaded page in the browser; server ordering is unchanged.
+            --}}
+            <label
+                for="party-sort-surname"
+                class="
+                    mt-3 flex cursor-pointer
+                    items-center gap-2
+                "
+            >
+                <input
+                    id="party-sort-surname"
+                    type="checkbox"
+                    class="
+                        h-4 w-4 rounded
+                        border-[var(--pm-border-strong)]
+                        text-[var(--pm-accent)]
+                        focus:ring-patrimoine-500
+                    "
+                >
+
+                <span
+                    class="
+                        text-sm font-medium
+                        text-[var(--pm-text-secondary)]
+                    "
+                >
+                    <span data-i18n="parties.sort_by_surname">{{ __('ui.parties.sort_by_surname') }}</span>
+                </span>
+
+                <span class="text-xs text-[var(--pm-text-muted)]">
+                    <span data-i18n="parties.sort_presentation_only">{{ __('ui.parties.sort_presentation_only') }}</span>
+                </span>
+            </label>
         </div>
 
         {{-- Records --}}
@@ -462,17 +534,41 @@
                                 md:grid-cols-2
                             "
                         >
-                            <div class="md:col-span-2">
+                            {{--
+                                V1.0.7 structured person names.
+
+                                given_names + surname are the stored source
+                                of truth; the display name is composed
+                                server-side on save.
+                            --}}
+                            <div>
                                 <label
-                                    for="party-name"
+                                    for="party-given-names"
                                     class="pm-field-label"
                                 >
-                                    <span data-i18n="parties.full_name">{{ __('ui.parties.full_name') }}</span>
+                                    <span data-i18n="parties.given_names">{{ __('ui.parties.given_names') }}</span>
                                     <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <input
-                                    id="party-name"
+                                    id="party-given-names"
+                                    type="text"
+                                    maxlength="255"
+                                    class="pm-input"
+                                >
+                            </div>
+
+                            <div>
+                                <label
+                                    for="party-surname"
+                                    class="pm-field-label"
+                                >
+                                    <span data-i18n="parties.surname">{{ __('ui.parties.surname') }}</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
+                                </label>
+
+                                <input
+                                    id="party-surname"
                                     type="text"
                                     maxlength="255"
                                     class="pm-input"
@@ -990,6 +1086,104 @@
             </button>
         </x-drawer-footer>
     </form>
+</x-drawer>
+
+{{-- ================================================================
+     Delete Party Confirm Drawer
+================================================================ --}}
+
+<x-drawer
+    id="party-delete-modal"
+    backdrop-id="party-delete-modal-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        title-id="party-delete-modal-title"
+        description-id="party-delete-modal-description"
+        close-id="party-delete-modal-close"
+        close-label="Close"
+        close-label-key="parties.close"
+    >
+        <x-slot:title>
+            <span
+                class="text-[var(--pm-danger-text)]"
+                data-i18n="parties.delete_party"
+            >
+                {{ __('ui.parties.delete_party') }}
+</span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="parties.delete_party_description">
+                {{ __('ui.parties.delete_party_description') }}
+</span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <div
+        class="
+            min-h-0 flex-1
+            overflow-y-auto px-6 py-6
+            text-[var(--pm-text)]
+        "
+    >
+
+        {{-- Server rejection (409) reason --}}
+        <div
+            id="party-delete-error"
+            class="
+                mb-5 hidden rounded-lg
+                border border-[var(--pm-danger-border)]
+                bg-[var(--pm-danger-background)] px-4 py-3
+                text-sm text-[var(--pm-danger-text)]
+            "
+            role="alert"
+        ></div>
+
+        <div
+            class="
+                rounded-xl border
+                border-[var(--pm-border)]
+                bg-[var(--pm-surface-muted)] p-4
+            "
+        >
+            <div class="text-sm text-[var(--pm-text-muted)]">
+                <span data-i18n="parties.delete_party_prompt">{{ __('ui.parties.delete_party_prompt') }}</span>
+            </div>
+
+            <div
+                id="party-delete-name"
+                class="
+                    mt-1 text-sm font-semibold
+                    text-[var(--pm-text)]
+                "
+            ></div>
+        </div>
+
+        <p class="mt-4 text-xs text-[var(--pm-text-muted)]">
+            <span data-i18n="parties.delete_restriction">{{ __('ui.parties.delete_restriction') }}</span>
+        </p>
+    </div>
+
+    <x-drawer-footer>
+        <button
+            id="party-delete-cancel"
+            type="button"
+            class="pm-button-secondary"
+        >
+            <span data-i18n="actions.cancel">{{ __('ui.actions.cancel') }}</span>
+        </button>
+
+        <button
+            id="party-delete-confirm"
+            type="button"
+            class="pm-button-danger"
+        >
+            <span data-i18n="parties.delete_party">
+                {{ __('ui.parties.delete_party') }}
+</span>
+        </button>
+    </x-drawer-footer>
 </x-drawer>
 
 @endsection

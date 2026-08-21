@@ -272,6 +272,99 @@
                     </div>
                 </button>
 
+                <button
+                    type="button"
+                    data-report-type="occupancy"
+                    class="
+                        report-type-button
+                        flex w-full
+                        items-start gap-3
+                        rounded-lg px-3 py-3
+                        text-left transition
+                    "
+                >
+                    <div class="min-w-0">
+                        <div class="text-sm font-semibold">
+                            <span data-i18n="reports.occupancy_report">
+                                {{ __('ui.reports.occupancy_report') }}
+                            </span>
+                        </div>
+
+                        <div
+                            class="
+                                mt-1 text-xs
+                                text-[var(--pm-text-muted)]
+                            "
+                        >
+                            <span data-i18n="reports.occupancy_report_summary">
+                                {{ __('ui.reports.occupancy_report_summary') }}
+                            </span>
+                        </div>
+                    </div>
+                </button>
+
+                <button
+                    type="button"
+                    data-report-type="arrears"
+                    class="
+                        report-type-button
+                        flex w-full
+                        items-start gap-3
+                        rounded-lg px-3 py-3
+                        text-left transition
+                    "
+                >
+                    <div class="min-w-0">
+                        <div class="text-sm font-semibold">
+                            <span data-i18n="reports.arrears_report">
+                                {{ __('ui.reports.arrears_report') }}
+                            </span>
+                        </div>
+
+                        <div
+                            class="
+                                mt-1 text-xs
+                                text-[var(--pm-text-muted)]
+                            "
+                        >
+                            <span data-i18n="reports.arrears_report_summary">
+                                {{ __('ui.reports.arrears_report_summary') }}
+                            </span>
+                        </div>
+                    </div>
+                </button>
+
+                <button
+                    type="button"
+                    data-report-type="funds"
+                    class="
+                        report-type-button
+                        flex w-full
+                        items-start gap-3
+                        rounded-lg px-3 py-3
+                        text-left transition
+                    "
+                >
+                    <div class="min-w-0">
+                        <div class="text-sm font-semibold">
+                            <span data-i18n="reports.funds_report">
+                                {{ __('ui.reports.funds_report') }}
+                            </span>
+                        </div>
+
+                        <div
+                            class="
+                                mt-1 text-xs
+                                text-[var(--pm-text-muted)]
+                            "
+                        >
+                            <span data-i18n="reports.funds_report_summary">
+                                {{ __('ui.reports.funds_report_summary') }}
+                            </span>
+                        </div>
+                    </div>
+                </button>
+
             </div>
 
             {{-- ====================================================
@@ -565,6 +658,8 @@
                     px-5 py-4
                 "
             >
+                <div id="report-period-fields">
+
                 <div class="text-sm font-medium text-[var(--pm-text-secondary)]">
                     <span data-i18n="reports.reporting_period">{{ __('ui.reports.reporting_period') }}</span>
                 </div>
@@ -718,6 +813,97 @@
                         </div>
                     </div>
 
+                </div>
+
+                </div>
+
+                {{-- ================================================
+                     As-of Reference Date
+
+                     Portfolio snapshot reports (Occupancy, Arrears
+                     Aging) use one reference date instead of a
+                     From/To period. Hidden for all other types.
+                ================================================ --}}
+
+                <div
+                    id="report-asof-field"
+                    class="hidden"
+                >
+                    <div class="text-sm font-medium text-[var(--pm-text-secondary)]">
+                        <span data-i18n="reports.as_of_heading">{{ __('ui.reports.as_of_heading') }}</span>
+                    </div>
+
+                    <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
+                        <span data-i18n="reports.as_of_description">{{ __('ui.reports.as_of_description') }}</span>
+                    </p>
+
+                    <div class="mt-4">
+                        <label
+                            for="report-as-of"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="reports.as_of">{{ __('ui.reports.as_of') }}</span>
+                        </label>
+
+                        <div class="relative">
+                            <input
+                                id="report-as-of"
+                                type="text"
+                                inputmode="numeric"
+                                placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                maxlength="10"
+                                autocomplete="off"
+                                data-report-date-input
+                                data-pm-date-input
+                                class="pm-input pr-11"
+                            >
+
+                            <button
+                                type="button"
+                                data-report-date-picker="report-as-of"
+                                aria-label="Select date"
+                                class="
+                                    absolute inset-y-0 right-0
+                                    flex w-10 items-center
+                                    justify-center
+                                    text-[var(--pm-text-subtle)]
+                                    transition
+                                    hover:text-[var(--pm-text-secondary)]
+                                "
+                            >
+                                <svg
+                                    class="h-4 w-4"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <rect
+                                        x="3"
+                                        y="5"
+                                        width="18"
+                                        height="16"
+                                        rx="2"
+                                    />
+                                    <path d="M16 3v4"/>
+                                    <path d="M8 3v4"/>
+                                    <path d="M3 11h18"/>
+                                </svg>
+                            </button>
+
+                            <input
+                                id="report-as-of-picker"
+                                type="date"
+                                tabindex="-1"
+                                aria-hidden="true"
+                                class="
+                                    pointer-events-none
+                                    absolute h-px w-px
+                                    overflow-hidden opacity-0
+                                "
+                            >
+                        </div>
+                    </div>
                 </div>
 
                 <button

@@ -71,6 +71,18 @@
         "
     ></div>
 
+    {{-- Activity Feedback Banner --}}
+    <div
+        id="properties-banner"
+        class="
+            mb-6 hidden rounded-xl
+            border border-[var(--pm-success-border)]
+            bg-[var(--pm-success-background)] px-4 py-3
+            text-sm text-[var(--pm-success-text)]
+        "
+        role="status"
+    ></div>
+
     {{-- Portfolio Summary --}}
     <div
         class="
@@ -169,38 +181,81 @@
                 </p>
             </div>
 
-            <div class="w-full sm:w-80">
-                <label
-                    for="property-search"
-                    class="sr-only"
-                >
-                    <span data-i18n="properties.search">{{ __('ui.properties.search') }}</span>
-                </label>
-
-                <div class="relative">
-                    <svg
-                        class="
-                            pointer-events-none absolute
-                            left-3 top-1/2 h-4 w-4
-                            -translate-y-1/2
-                            text-[var(--pm-text-subtle)]
-                        "
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
+            <div
+                class="
+                    flex w-full flex-col gap-3
+                    sm:w-auto sm:flex-row
+                    sm:items-center
+                "
+            >
+                <div class="w-full sm:w-72">
+                    <label
+                        for="property-search"
+                        class="sr-only"
                     >
-                        <circle cx="11" cy="11" r="8"/>
-                        <path d="m21 21-4.35-4.35"/>
-                    </svg>
+                        <span data-i18n="properties.search">{{ __('ui.properties.search') }}</span>
+                    </label>
 
-                    <input
-                        id="property-search"
-                        type="search"
-                        data-i18n-placeholder="properties.search_placeholder"
-                        placeholder="{{ __('ui.properties.search_placeholder') }}"
-                        class="pm-input pl-9"
+                    <div class="relative">
+                        <svg
+                            class="
+                                pointer-events-none absolute
+                                left-3 top-1/2 h-4 w-4
+                                -translate-y-1/2
+                                text-[var(--pm-text-subtle)]
+                            "
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+
+                        <input
+                            id="property-search"
+                            type="search"
+                            data-i18n-placeholder="properties.search_placeholder"
+                            placeholder="{{ __('ui.properties.search_placeholder') }}"
+                            class="pm-input pl-9"
+                        >
+                    </div>
+                </div>
+
+                <div class="w-full sm:w-48">
+                    <label
+                        for="property-classification-filter"
+                        class="sr-only"
                     >
+                        <span data-i18n="properties.filter_units_label">{{ __('ui.properties.filter_units_label') }}</span>
+                    </label>
+
+                    <select
+                        id="property-classification-filter"
+                        class="pm-input"
+                    >
+                        <option
+                            value="all"
+                            data-i18n="properties.filter_all_units"
+                        >
+                            {{ __('ui.properties.filter_all_units') }}
+                        </option>
+
+                        <option
+                            value="commercial"
+                            data-i18n="properties.commercial"
+                        >
+                            {{ __('ui.properties.commercial') }}
+                        </option>
+
+                        <option
+                            value="residential"
+                            data-i18n="properties.residential"
+                        >
+                            {{ __('ui.properties.residential') }}
+                        </option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -642,21 +697,45 @@
                 id="owner-person-fields"
                 class="space-y-4"
             >
-                <div>
-                    <label
-                        for="owner-name"
-                        class="pm-field-label"
-                    >
-                        <span data-i18n="properties.full_name">{{ __('ui.properties.full_name') }}</span>
-                        <span class="text-[var(--pm-danger-text)]">*</span>
-                    </label>
+                <div
+                    class="
+                        grid gap-4
+                        sm:grid-cols-2
+                    "
+                >
+                    <div>
+                        <label
+                            for="owner-given-names"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="properties.given_names">{{ __('ui.properties.given_names') }}</span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
+                        </label>
 
-                    <input
-                        id="owner-name"
-                        type="text"
-                        maxlength="255"
-                        class="pm-input"
-                    >
+                        <input
+                            id="owner-given-names"
+                            type="text"
+                            maxlength="255"
+                            class="pm-input"
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="owner-surname"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="properties.surname">{{ __('ui.properties.surname') }}</span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
+                        </label>
+
+                        <input
+                            id="owner-surname"
+                            type="text"
+                            maxlength="255"
+                            class="pm-input"
+                        >
+                    </div>
                 </div>
 
                 <div
@@ -942,6 +1021,51 @@
                     class="pm-input resize-y"
                 ></textarea>
             </div>
+
+            {{-- Commercial Classification --}}
+            <label
+                for="existing-unit-commercial"
+                class="
+                    mt-4 flex cursor-pointer
+                    items-start gap-3 rounded-xl
+                    border border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)]
+                    px-4 py-3
+                "
+            >
+                <input
+                    id="existing-unit-commercial"
+                    type="checkbox"
+                    class="
+                        mt-0.5 h-4 w-4 rounded
+                        border-[var(--pm-border-strong)]
+                        text-[var(--pm-accent)]
+                        focus:ring-patrimoine-500
+                    "
+                >
+
+                <span class="min-w-0">
+                    <span
+                        class="
+                            block text-sm font-medium
+                            text-[var(--pm-text)]
+                        "
+                        data-i18n="properties.commercial_unit"
+                    >
+                        {{ __('ui.properties.commercial_unit') }}
+                    </span>
+
+                    <span
+                        class="
+                            mt-0.5 block text-xs
+                            text-[var(--pm-text-muted)]
+                        "
+                        data-i18n="properties.commercial_unit_help"
+                    >
+                        {{ __('ui.properties.commercial_unit_help') }}
+                    </span>
+                </span>
+            </label>
         </div>
 
         {{-- Footer --}}
@@ -963,6 +1087,269 @@
             >
                 <span data-i18n="actions.save">
                     {{ __('ui.actions.save') }}
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+
+</x-drawer>
+
+
+{{-- ================================================================
+     DELETE PROPERTY CONFIRMATION DRAWER
+     ================================================================ --}}
+
+<x-drawer
+    id="delete-property-modal"
+    backdrop-id="delete-property-modal-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="delete-property-modal-close"
+        close-label="Close"
+        close-label-key="properties.close"
+    >
+        <x-slot:title>
+            <span data-i18n="properties.delete_property">{{ __('ui.properties.delete_property') }}</span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="properties.delete_property_description">{{ __('ui.properties.delete_property_description') }}</span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="delete-property-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div
+            class="
+                min-h-0 flex-1
+                overflow-y-auto
+                px-6 py-6
+            "
+        >
+
+            {{-- Error / Blocked Reason --}}
+            <div
+                id="delete-property-error"
+                class="
+                    mb-5 hidden rounded-lg
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
+                "
+            ></div>
+
+            {{-- Target Property --}}
+            <div
+                class="
+                    rounded-xl
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)]
+                    px-4 py-3
+                "
+            >
+                <div
+                    class="
+                        text-xs font-medium
+                        text-[var(--pm-danger-text)]
+                    "
+                >
+                    <span data-i18n="properties.property">{{ __('ui.properties.property') }}</span>
+                </div>
+
+                <div
+                    id="delete-property-name"
+                    class="
+                        mt-1 text-sm font-semibold
+                        text-[var(--pm-text)]
+                    "
+                >
+                    —
+                </div>
+            </div>
+
+            <p
+                class="
+                    mt-4 text-sm
+                    text-[var(--pm-text-secondary)]
+                "
+            >
+                <span data-i18n="properties.delete_property_warning">{{ __('ui.properties.delete_property_warning') }}</span>
+            </p>
+
+            {{-- Typed-Name Confirmation --}}
+            <div class="mt-4">
+                <label
+                    for="delete-property-confirmation"
+                    class="pm-field-label"
+                >
+                    <span data-i18n="properties.type_name_to_confirm">{{ __('ui.properties.type_name_to_confirm') }}</span>
+                    <span class="text-[var(--pm-danger-text)]">*</span>
+                </label>
+
+                <input
+                    id="delete-property-confirmation"
+                    type="text"
+                    autocomplete="off"
+                    required
+                    class="pm-input"
+                >
+            </div>
+        </div>
+
+        {{-- Footer --}}
+        <x-drawer-footer>
+            <button
+                id="delete-property-cancel-button"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
+                </span>
+            </button>
+
+            <button
+                id="delete-property-submit-button"
+                type="submit"
+                disabled
+                class="pm-button-danger"
+            >
+                <span data-i18n="properties.delete_property">
+                    {{ __('ui.properties.delete_property') }}
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+
+</x-drawer>
+
+
+{{-- ================================================================
+     DELETE UNIT CONFIRMATION DRAWER
+     ================================================================ --}}
+
+<x-drawer
+    id="delete-unit-modal"
+    backdrop-id="delete-unit-modal-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="delete-unit-modal-close"
+        close-label="Close"
+        close-label-key="properties.close"
+    >
+        <x-slot:title>
+            <span data-i18n="properties.delete_unit">{{ __('ui.properties.delete_unit') }}</span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="properties.delete_unit_description">{{ __('ui.properties.delete_unit_description') }}</span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="delete-unit-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div
+            class="
+                min-h-0 flex-1
+                overflow-y-auto
+                px-6 py-6
+            "
+        >
+
+            {{-- Error / Blocked Reason --}}
+            <div
+                id="delete-unit-error"
+                class="
+                    mb-5 hidden rounded-lg
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
+                "
+            ></div>
+
+            {{-- Target Unit --}}
+            <div
+                class="
+                    rounded-xl
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)]
+                    px-4 py-3
+                "
+            >
+                <div
+                    class="
+                        text-xs font-medium
+                        text-[var(--pm-danger-text)]
+                    "
+                >
+                    <span data-i18n="properties.unit">{{ __('ui.properties.unit') }}</span>
+                </div>
+
+                <div
+                    id="delete-unit-name"
+                    class="
+                        mt-1 text-sm font-semibold
+                        text-[var(--pm-text)]
+                    "
+                >
+                    —
+                </div>
+
+                <div
+                    class="
+                        mt-3 text-xs font-medium
+                        text-[var(--pm-danger-text)]
+                    "
+                >
+                    <span data-i18n="properties.property">{{ __('ui.properties.property') }}</span>
+                </div>
+
+                <div
+                    id="delete-unit-building-name"
+                    class="
+                        mt-1 text-sm font-semibold
+                        text-[var(--pm-text)]
+                    "
+                >
+                    —
+                </div>
+            </div>
+
+            <p
+                class="
+                    mt-4 text-sm
+                    text-[var(--pm-text-secondary)]
+                "
+            >
+                <span data-i18n="properties.delete_unit_warning">{{ __('ui.properties.delete_unit_warning') }}</span>
+            </p>
+        </div>
+
+        {{-- Footer --}}
+        <x-drawer-footer>
+            <button
+                id="delete-unit-cancel-button"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
+                </span>
+            </button>
+
+            <button
+                id="delete-unit-submit-button"
+                type="submit"
+                class="pm-button-danger"
+            >
+                <span data-i18n="properties.delete_unit">
+                    {{ __('ui.properties.delete_unit') }}
                 </span>
             </button>
         </x-drawer-footer>

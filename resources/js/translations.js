@@ -16,6 +16,456 @@
 
 export const translations = {
     en: {
+        /* ---- V1.0.7 additions ---- */
+        'release.summary_line':
+            'This update brings new features and improvements across Patrimoine.',
+        'release.view_details':
+            'View the full update log',
+        'dashboard.occupancy_rate':
+            'Occupancy Rate',
+        'dashboard.occupied':
+            'Occupied',
+        'dashboard.vacant':
+            'Vacant',
+        'dashboard.vacant_commercial':
+            'Commercial vacant',
+        'dashboard.vacant_residential':
+            'Residential vacant',
+        'dashboard.collections_trend':
+            'Collections Trend',
+        'dashboard.collections_trend_description':
+            'Rent collected over the last six months.',
+        'dashboard.funds_held':
+            'Funds Held',
+        'dashboard.funds_held_description':
+            'Balances currently held on behalf of owners and tenants.',
+        'dashboard.tenant_funds_held':
+            'Tenant Funds Held',
+        'dashboard.expiring_leases':
+            'Expiring Leases',
+        'dashboard.expiring_leases_description':
+            'Leases ending within the next 90 days.',
+        'dashboard.upcoming_increments':
+            'Upcoming Rent Increments',
+        'dashboard.upcoming_increments_description':
+            'Rent increases taking effect within the next 60 days.',
+        'dashboard.ends':
+            'Ends',
+        'dashboard.effective':
+            'Effective',
+        'dashboard.no_expiring_leases':
+            'No leases expire within the next 90 days.',
+        'dashboard.no_increments':
+            'No rent increments are scheduled.',
+        'dashboard.no_collections':
+            'No collections recorded yet.',
+        'parties.given_names':
+            'Given names',
+        'parties.surname':
+            'Surname',
+        'parties.has_email':
+            'Has email',
+        'parties.has_email_all':
+            'Email: All',
+        'parties.has_email_yes':
+            'Has email',
+        'parties.has_email_no':
+            'No email',
+        'parties.sort_by_surname':
+            'Sort by surname',
+        'parties.sort_presentation_only':
+            'Display only — sorts the loaded page',
+        'parties.delete_party':
+            'Delete Party',
+        'parties.delete_party_description':
+            'This action is permanent and cannot be undone.',
+        'parties.delete_party_prompt':
+            'You are about to delete:',
+        'parties.deleting_party':
+            'Deleting…',
+        'reports.occupancy_report':
+            'Occupancy',
+        'reports.occupancy_report_summary':
+            'Portfolio-wide occupancy and vacancy by building.',
+        'reports.occupancy_report_description':
+            'Occupied and vacant units across the portfolio, split by classification and building.',
+        'reports.arrears_report':
+            'Arrears aging',
+        'reports.arrears_report_summary':
+            'Outstanding tenant balances by age bucket.',
+        'reports.arrears_report_description':
+            'Outstanding invoices grouped into aging buckets per tenant.',
+        'reports.funds_report':
+            'Funds held',
+        'reports.funds_report_summary':
+            'Tenant and owner funds currently held.',
+        'reports.funds_report_description':
+            'Rent reserves, consumable advances, security deposits and owner balances held.',
+        'reports.as_of_heading':
+            'Reference date',
+        'reports.as_of_description':
+            'Optional snapshot date. Leave empty for today.',
+        'reports.as_of':
+            'As of',
+        'reports.occupied':
+            'Occupied',
+        'reports.vacant':
+            'Vacant',
+        'reports.occupancy_rate':
+            'Occupancy rate',
+        'reports.occupancy_by_classification':
+            'Commercial vs residential',
+        'reports.commercial':
+            'Commercial',
+        'reports.residential':
+            'Residential',
+        'reports.commercial_units':
+            'Commercial units',
+        'reports.aging_current':
+            'Current',
+        'reports.aging_31_60':
+            '31-60 days',
+        'reports.aging_61_90':
+            '61-90 days',
+        'reports.aging_over_90':
+            'Over 90 days',
+        'reports.total_arrears':
+            'Total arrears',
+        'reports.open_invoices':
+            'Open invoices',
+        'reports.tenants_in_arrears':
+            'Tenants in arrears',
+        'reports.total_held':
+            'Total held',
+        'reports.owner_funds':
+            'Owner funds',
+        'reports.balance':
+            'Balance',
+        'reports.account_count':
+            ':count accounts',
+        'properties.filter_units_label':
+            'Filter units by classification',
+        'properties.filter_all_units':
+            'All units',
+        'properties.commercial':
+            'Commercial',
+        'properties.residential':
+            'Residential',
+        'properties.classification':
+            'Classification',
+        'properties.actions':
+            'Actions',
+        'properties.delete':
+            'Delete',
+        'properties.no_units_match_filter':
+            'No units match the current filter.',
+        'properties.commercial_unit':
+            'Commercial unit',
+        'properties.commercial_unit_help':
+            'Mark this unit as leased for business or commercial use.',
+        'properties.given_names':
+            'Given names',
+        'properties.surname':
+            'Surname',
+        'properties.delete_property':
+            'Delete property',
+        'properties.delete_property_description':
+            'Permanently remove this property and its records.',
+        'properties.delete_property_warning':
+            'This action cannot be undone. Properties with dependent records cannot be deleted.',
+        'properties.type_name_to_confirm':
+            'Type the property name to confirm',
+        'properties.deleting':
+            'Deleting…',
+        'properties.property_deleted':
+            'Property deleted.',
+        'properties.unable_to_delete_property':
+            'Unable to delete the property.',
+        'properties.delete_unit':
+            'Delete unit',
+        'properties.delete_unit_description':
+            'Permanently remove this unit from its property.',
+        'properties.delete_unit_warning':
+            'This action cannot be undone. Units with dependent records cannot be deleted.',
+        'properties.unit_deleted':
+            'Unit deleted.',
+        'properties.unable_to_delete_unit':
+            'Unable to delete the unit.',
+        'properties.property_created':
+            'Property created.',
+        'properties.property_updated':
+            'Property updated.',
+        'properties.unit_added':
+            'Unit added.',
+        'properties.unit_updated':
+            'Unit updated.',
+        'owners.accounts':
+            'Accounts',
+        'owners.owner_accounts_title':
+            'Owner Accounts',
+        'owners.owner_accounts_description':
+            'Consolidated financial position for this Property Owner.',
+        'owners.consolidated_account_note':
+            'Each owner has one consolidated account: every property, deposit, expense and payout settles into this single balance.',
+        'owners.recent_activity':
+            'Recent Activity',
+        'owners.recent_activity_description':
+            'Latest ledger movements already loaded for this owner.',
+        'owners.date':
+            'Date',
+        'owners.type':
+            'Type',
+        'owners.expense_bill_title':
+            'Record Expense Bill',
+        'owners.expense_bill_description':
+            'Bill one or more expense lines directly to this Property Owner\'s consolidated account.',
+        'owners.property_expense_switch_hint':
+            'Need to record an expense against a specific Building instead?',
+        'owners.bill_date':
+            'Bill Date',
+        'owners.expense_lines':
+            'Expense Lines',
+        'owners.add_line':
+            'Add line',
+        'owners.bill_total':
+            'Bill Total',
+        'owners.line_description_placeholder':
+            'e.g. Plumbing repair',
+        'owners.remove_line':
+            'Remove line',
+        'owners.expense_bill_lines_required':
+            'Add at least one expense line.',
+        'owners.expense_bill_line_invalid':
+            'Every line needs a description and a whole amount greater than zero.',
+        'owners.unable_to_record_bill':
+            'Unable to record the expense bill.',
+        'owners.expense_bill_recorded':
+            'Expense bill {number} recorded.',
+        'owners.download_bill':
+            'Download bill',
+        'owners.email_to_owner':
+            'Email to owner',
+        'owners.sending_email':
+            'Sending…',
+        'owners.email_sent':
+            'The bill was emailed to the owner.',
+        'owners.email_failed':
+            'Unable to email the bill.',
+        'shell.help':
+            'Help',
+        'shell.update_log':
+            'Update log',
+        'notifications.loading':
+            'Loading notifications…',
+        'notifications.unable_load':
+            'Unable to load notifications.',
+        'notifications.empty':
+            'You\'re all caught up.',
+        'notifications.rent_overdue_title':
+            'Overdue rent',
+        'notifications.rent_overdue_body':
+            '{count} unpaid invoices — {amount} outstanding',
+        'notifications.rent_overdue_body_one':
+            '1 unpaid invoice — {amount} outstanding',
+        'notifications.rent_due_soon_title':
+            'Rent due soon',
+        'notifications.rent_due_soon_body':
+            '{count} invoices due within 7 days — {amount}',
+        'notifications.rent_due_soon_body_one':
+            '1 invoice due within 7 days — {amount}',
+        'notifications.leases_expiring_title':
+            'Leases expiring',
+        'notifications.leases_expiring_body':
+            '{count} leases end within 90 days',
+        'notifications.leases_expiring_body_one':
+            '1 lease ends within 90 days',
+        'notifications.increments_upcoming_title':
+            'Upcoming rent increments',
+        'notifications.increments_upcoming_body':
+            '{count} rent increments take effect within 60 days',
+        'notifications.increments_upcoming_body_one':
+            '1 rent increment takes effect within 60 days',
+        'notifications.release_notes_title':
+            'What\'s new in Patrimoine v{release}',
+        'notifications.release_notes_body':
+            'See what changed in this update.',
+        'settings.about':
+            'About',
+        'settings.application_version':
+            'Application version',
+        'settings.view_update_log':
+            'View update log',
+        'settings.backup_restore':
+            'Data backup & restore',
+        'settings.backup_restore_description':
+            'Export the Registry as restorable backup files, or restore a previous backup.',
+        'settings.backup_financial_note':
+            'Financial history (payments, invoices, journal and funds) is not part of backups. It cannot be exported or restored here.',
+        'settings.export_heading':
+            'Export',
+        'settings.entity_parties':
+            'Parties',
+        'settings.entity_buildings':
+            'Buildings',
+        'settings.entity_units':
+            'Units',
+        'settings.entity_leases':
+            'Leases',
+        'settings.entity_full':
+            'Full backup (all entities)',
+        'settings.export_full':
+            'Full backup (XLSX)',
+        'settings.export_pdf_review':
+            'PDF review',
+        'settings.exporting':
+            'Exporting…',
+        'settings.unable_export':
+            'Unable to export the Registry.',
+        'settings.import_heading':
+            'Import / restore',
+        'settings.import_file':
+            'Backup file',
+        'settings.import_entity':
+            'Data set',
+        'settings.dry_run':
+            'Dry run (validate without saving)',
+        'settings.dry_run_help':
+            'Runs the full import and reports the result without changing any data.',
+        'settings.run_import':
+            'Run import',
+        'settings.importing':
+            'Importing…',
+        'settings.import_select_file':
+            'Choose a backup file first.',
+        'settings.import_result_heading':
+            'Import result',
+        'settings.import_dry_run_notice':
+            'Dry run — no data was changed.',
+        'settings.import_created':
+            'Created',
+        'settings.import_updated':
+            'Updated',
+        'settings.import_unchanged':
+            'Unchanged',
+        'settings.import_skipped':
+            'Skipped',
+        'settings.import_skipped_row':
+            'Row {row}: {reason}',
+        'settings.unable_import':
+            'Unable to import the backup.',
+        'users.given_names':
+            'Given names',
+        'users.surname':
+            'Surname',
+        'activity_log.export_xlsx':
+            'Export XLSX',
+        'leases.building':
+            'Building',
+        'leases.all_buildings':
+            'All buildings',
+        'leases.all_frequencies':
+            'All frequencies',
+        'leases.expiring_before':
+            'Expiring before',
+        'leases.rent_increments':
+            'Rent increments',
+        'leases.rent_increments_description':
+            'Review scheduled, applied and cancelled rent increases for this Lease.',
+        'leases.rent_increments_loading':
+            'Loading rent increments…',
+        'leases.no_rent_increments':
+            'No rent increments recorded for this Lease.',
+        'leases.increments_unable_load':
+            'Unable to load rent increments.',
+        'leases.schedule_increment':
+            'Schedule increment',
+        'leases.schedule_increment_description':
+            'The new rent takes effect automatically on the effective date.',
+        'leases.effective_date':
+            'Effective date',
+        'leases.increment_status_scheduled':
+            'Scheduled',
+        'leases.increment_status_applied':
+            'Applied',
+        'leases.increment_status_cancelled':
+            'Cancelled',
+        'leases.notification_sent':
+            'Notification sent',
+        'leases.applied_on':
+            'Applied on',
+        'leases.cancelled_on':
+            'Cancelled on',
+        'leases.cancel_increment':
+            'Cancel increment',
+        'leases.confirm_cancel_increment':
+            'Cancel this scheduled rent increment?',
+        'leases.increment_invalid_date':
+            'Enter a valid effective date.',
+        'leases.increment_schedule_failed':
+            'Unable to schedule the rent increment.',
+        'leases.increment_cancel_failed':
+            'Unable to cancel the rent increment.',
+        'tenants.accounts':
+            'Accounts',
+        'tenants.accounts_description':
+            'All fund accounts held for this Tenant across their leases.',
+        'tenants.account_status.active':
+            'Active',
+        'tenants.account_status.closed':
+            'Closed',
+        'tenants.all_leases':
+            'All leases',
+        'tenants.any_account_help':
+            'Accounts from all of this Tenant\'s leases are listed; optionally narrow the list by lease.',
+        'tenants.loading_accounts':
+            'Loading accounts…',
+        'tenants.no_accounts':
+            'No fund accounts exist for this Tenant.',
+        'tenants.total_held_funds':
+            'Total held funds',
+        'tenants.transfer':
+            'Transfer',
+        'tenants.transfer_description':
+            'Move held funds between two of this Tenant\'s accounts. A reason is required.',
+        'tenants.source_account':
+            'Source Account',
+        'tenants.destination_account':
+            'Destination Account',
+        'tenants.select_source_account':
+            'Select source account…',
+        'tenants.select_destination_account':
+            'Select destination account…',
+        'tenants.source_balance':
+            'Source Balance',
+        'tenants.destination_balance':
+            'Destination Balance',
+        'tenants.resulting_source_balance':
+            'Resulting Source Balance',
+        'tenants.resulting_destination_balance':
+            'Resulting Destination Balance',
+        'tenants.transfer_reason_placeholder':
+            'Explain why these funds are being moved…',
+        'tenants.transfer_required_fields':
+            'Complete all required transfer fields, including the reason.',
+        'tenants.transfer_same_account':
+            'Source and destination accounts must be different.',
+        'tenants.transfer_exceeds_balance':
+            'The amount cannot exceed the source account balance.',
+        'tenants.no_transferable_accounts':
+            'At least two active fund accounts are required for a Transfer.',
+        'tenants.transfer_recorded':
+            'Transfer recorded successfully.',
+        'tenants.download_voucher':
+            'Download voucher',
+        'tenants.download_receipt':
+            'Download receipt',
+        'tenants.unable_to_open_document':
+            'Unable to open document.',
+        'tenants.adjustment_no_change':
+            'The corrected balance is already the current balance.',
+        'tenants.adjustment_negative_balance':
+            'Tenant fund balances cannot be adjusted below zero.',
+        /* ---- end V1.0.7 additions ---- */
         'product.property_management':
             'Property Management',
 
@@ -2229,6 +2679,456 @@ export const translations = {
     },
 
     fr: {
+        /* ---- V1.0.7 additions ---- */
+        'release.summary_line':
+            'Cette mise à jour apporte de nouvelles fonctionnalités et des améliorations dans tout Patrimoine.',
+        'release.view_details':
+            'Voir le journal complet des mises à jour',
+        'dashboard.occupancy_rate':
+            'Taux d\'occupation',
+        'dashboard.occupied':
+            'Occupées',
+        'dashboard.vacant':
+            'Vacantes',
+        'dashboard.vacant_commercial':
+            'Commerciaux vacants',
+        'dashboard.vacant_residential':
+            'Résidentiels vacants',
+        'dashboard.collections_trend':
+            'Tendance des encaissements',
+        'dashboard.collections_trend_description':
+            'Loyers encaissés au cours des six derniers mois.',
+        'dashboard.funds_held':
+            'Fonds détenus',
+        'dashboard.funds_held_description':
+            'Soldes actuellement détenus pour le compte des propriétaires et des locataires.',
+        'dashboard.tenant_funds_held':
+            'Fonds locataires détenus',
+        'dashboard.expiring_leases':
+            'Baux arrivant à échéance',
+        'dashboard.expiring_leases_description':
+            'Baux se terminant dans les 90 prochains jours.',
+        'dashboard.upcoming_increments':
+            'Augmentations de loyer à venir',
+        'dashboard.upcoming_increments_description':
+            'Augmentations de loyer prenant effet dans les 60 prochains jours.',
+        'dashboard.ends':
+            'Fin',
+        'dashboard.effective':
+            'Effectif le',
+        'dashboard.no_expiring_leases':
+            'Aucun bail n\'expire dans les 90 prochains jours.',
+        'dashboard.no_increments':
+            'Aucune augmentation de loyer n\'est prévue.',
+        'dashboard.no_collections':
+            'Aucun encaissement enregistré pour le moment.',
+        'parties.given_names':
+            'Prénoms',
+        'parties.surname':
+            'Nom de famille',
+        'parties.has_email':
+            'E-mail renseigné',
+        'parties.has_email_all':
+            'E-mail : Tous',
+        'parties.has_email_yes':
+            'Avec e-mail',
+        'parties.has_email_no':
+            'Sans e-mail',
+        'parties.sort_by_surname':
+            'Trier par nom de famille',
+        'parties.sort_presentation_only':
+            'Affichage uniquement — trie la page chargée',
+        'parties.delete_party':
+            'Supprimer la partie',
+        'parties.delete_party_description':
+            'Cette action est définitive et irréversible.',
+        'parties.delete_party_prompt':
+            'Vous êtes sur le point de supprimer :',
+        'parties.deleting_party':
+            'Suppression…',
+        'reports.occupancy_report':
+            'Occupation',
+        'reports.occupancy_report_summary':
+            'Occupation et vacance de l\'ensemble du portefeuille par immeuble.',
+        'reports.occupancy_report_description':
+            'Unités occupées et vacantes du portefeuille, réparties par classification et par immeuble.',
+        'reports.arrears_report':
+            'Balance âgée des impayés',
+        'reports.arrears_report_summary':
+            'Soldes locataires impayés par tranche d\'ancienneté.',
+        'reports.arrears_report_description':
+            'Factures impayées regroupées par tranches d\'ancienneté pour chaque locataire.',
+        'reports.funds_report':
+            'Fonds détenus',
+        'reports.funds_report_summary':
+            'Fonds des locataires et des propriétaires actuellement détenus.',
+        'reports.funds_report_description':
+            'Réserves de loyer, avances sur consommables, cautions et soldes propriétaires détenus.',
+        'reports.as_of_heading':
+            'Date de référence',
+        'reports.as_of_description':
+            'Date de situation facultative. Laissez vide pour aujourd\'hui.',
+        'reports.as_of':
+            'Au',
+        'reports.occupied':
+            'Occupées',
+        'reports.vacant':
+            'Vacantes',
+        'reports.occupancy_rate':
+            'Taux d\'occupation',
+        'reports.occupancy_by_classification':
+            'Commercial vs résidentiel',
+        'reports.commercial':
+            'Commercial',
+        'reports.residential':
+            'Résidentiel',
+        'reports.commercial_units':
+            'Unités commerciales',
+        'reports.aging_current':
+            'Courant',
+        'reports.aging_31_60':
+            '31-60 jours',
+        'reports.aging_61_90':
+            '61-90 jours',
+        'reports.aging_over_90':
+            'Plus de 90 jours',
+        'reports.total_arrears':
+            'Total des impayés',
+        'reports.open_invoices':
+            'Factures ouvertes',
+        'reports.tenants_in_arrears':
+            'Locataires en impayés',
+        'reports.total_held':
+            'Total détenu',
+        'reports.owner_funds':
+            'Fonds des propriétaires',
+        'reports.balance':
+            'Solde',
+        'reports.account_count':
+            ':count comptes',
+        'properties.filter_units_label':
+            'Filtrer les unités par type',
+        'properties.filter_all_units':
+            'Toutes les unités',
+        'properties.commercial':
+            'Commercial',
+        'properties.residential':
+            'Résidentiel',
+        'properties.classification':
+            'Classification',
+        'properties.actions':
+            'Actions',
+        'properties.delete':
+            'Supprimer',
+        'properties.no_units_match_filter':
+            'Aucune unité ne correspond au filtre actuel.',
+        'properties.commercial_unit':
+            'Unité commerciale',
+        'properties.commercial_unit_help':
+            'Marquer cette unité comme louée à usage professionnel ou commercial.',
+        'properties.given_names':
+            'Prénoms',
+        'properties.surname':
+            'Nom de famille',
+        'properties.delete_property':
+            'Supprimer la propriété',
+        'properties.delete_property_description':
+            'Supprimer définitivement cette propriété et ses enregistrements.',
+        'properties.delete_property_warning':
+            'Cette action est irréversible. Les propriétés avec des enregistrements liés ne peuvent pas être supprimées.',
+        'properties.type_name_to_confirm':
+            'Saisissez le nom de la propriété pour confirmer',
+        'properties.deleting':
+            'Suppression…',
+        'properties.property_deleted':
+            'Propriété supprimée.',
+        'properties.unable_to_delete_property':
+            'Impossible de supprimer la propriété.',
+        'properties.delete_unit':
+            'Supprimer l\'unité',
+        'properties.delete_unit_description':
+            'Supprimer définitivement cette unité de sa propriété.',
+        'properties.delete_unit_warning':
+            'Cette action est irréversible. Les unités avec des enregistrements liés ne peuvent pas être supprimées.',
+        'properties.unit_deleted':
+            'Unité supprimée.',
+        'properties.unable_to_delete_unit':
+            'Impossible de supprimer l\'unité.',
+        'properties.property_created':
+            'Propriété créée.',
+        'properties.property_updated':
+            'Propriété mise à jour.',
+        'properties.unit_added':
+            'Unité ajoutée.',
+        'properties.unit_updated':
+            'Unité mise à jour.',
+        'owners.accounts':
+            'Comptes',
+        'owners.owner_accounts_title':
+            'Comptes du propriétaire',
+        'owners.owner_accounts_description':
+            'Situation financière consolidée de ce propriétaire.',
+        'owners.consolidated_account_note':
+            'Chaque propriétaire dispose d\'un compte consolidé unique : tous ses immeubles, dépôts, dépenses et versements se règlent sur ce même solde.',
+        'owners.recent_activity':
+            'Activité récente',
+        'owners.recent_activity_description':
+            'Derniers mouvements du grand livre déjà chargés pour ce propriétaire.',
+        'owners.date':
+            'Date',
+        'owners.type':
+            'Type',
+        'owners.expense_bill_title':
+            'Enregistrer une facture de dépenses',
+        'owners.expense_bill_description':
+            'Facturez une ou plusieurs lignes de dépenses directement sur le compte consolidé de ce propriétaire.',
+        'owners.property_expense_switch_hint':
+            'Besoin d\'enregistrer une dépense sur un immeuble précis ?',
+        'owners.bill_date':
+            'Date de la facture',
+        'owners.expense_lines':
+            'Lignes de dépense',
+        'owners.add_line':
+            'Ajouter une ligne',
+        'owners.bill_total':
+            'Total de la facture',
+        'owners.line_description_placeholder':
+            'p. ex. Réparation de plomberie',
+        'owners.remove_line':
+            'Supprimer la ligne',
+        'owners.expense_bill_lines_required':
+            'Ajoutez au moins une ligne de dépense.',
+        'owners.expense_bill_line_invalid':
+            'Chaque ligne doit comporter une description et un montant entier supérieur à zéro.',
+        'owners.unable_to_record_bill':
+            'Impossible d\'enregistrer la facture de dépenses.',
+        'owners.expense_bill_recorded':
+            'Facture de dépenses {number} enregistrée.',
+        'owners.download_bill':
+            'Télécharger la facture',
+        'owners.email_to_owner':
+            'Envoyer au propriétaire',
+        'owners.sending_email':
+            'Envoi…',
+        'owners.email_sent':
+            'La facture a été envoyée au propriétaire par e-mail.',
+        'owners.email_failed':
+            'Impossible d\'envoyer la facture par e-mail.',
+        'shell.help':
+            'Aide',
+        'shell.update_log':
+            'Journal des mises à jour',
+        'notifications.loading':
+            'Chargement des notifications…',
+        'notifications.unable_load':
+            'Impossible de charger les notifications.',
+        'notifications.empty':
+            'Vous êtes à jour.',
+        'notifications.rent_overdue_title':
+            'Loyers en retard',
+        'notifications.rent_overdue_body':
+            '{count} factures impayées — {amount} à recouvrer',
+        'notifications.rent_overdue_body_one':
+            '1 facture impayée — {amount} à recouvrer',
+        'notifications.rent_due_soon_title':
+            'Loyers bientôt dus',
+        'notifications.rent_due_soon_body':
+            '{count} factures dues sous 7 jours — {amount}',
+        'notifications.rent_due_soon_body_one':
+            '1 facture due sous 7 jours — {amount}',
+        'notifications.leases_expiring_title':
+            'Baux arrivant à échéance',
+        'notifications.leases_expiring_body':
+            '{count} baux se terminent sous 90 jours',
+        'notifications.leases_expiring_body_one':
+            '1 bail se termine sous 90 jours',
+        'notifications.increments_upcoming_title':
+            'Augmentations de loyer à venir',
+        'notifications.increments_upcoming_body':
+            '{count} augmentations de loyer prennent effet sous 60 jours',
+        'notifications.increments_upcoming_body_one':
+            '1 augmentation de loyer prend effet sous 60 jours',
+        'notifications.release_notes_title':
+            'Nouveautés de Patrimoine v{release}',
+        'notifications.release_notes_body':
+            'Découvrez les changements de cette mise à jour.',
+        'settings.about':
+            'À propos',
+        'settings.application_version':
+            'Version de l\'application',
+        'settings.view_update_log':
+            'Voir le journal des mises à jour',
+        'settings.backup_restore':
+            'Sauvegarde et restauration des données',
+        'settings.backup_restore_description':
+            'Exportez le registre sous forme de fichiers de sauvegarde restaurables, ou restaurez une sauvegarde précédente.',
+        'settings.backup_financial_note':
+            'L\'historique financier (paiements, factures, journal et fonds) ne fait pas partie des sauvegardes. Il ne peut être ni exporté ni restauré ici.',
+        'settings.export_heading':
+            'Exportation',
+        'settings.entity_parties':
+            'Parties',
+        'settings.entity_buildings':
+            'Immeubles',
+        'settings.entity_units':
+            'Unités',
+        'settings.entity_leases':
+            'Baux',
+        'settings.entity_full':
+            'Sauvegarde complète (toutes les entités)',
+        'settings.export_full':
+            'Sauvegarde complète (XLSX)',
+        'settings.export_pdf_review':
+            'Révision PDF',
+        'settings.exporting':
+            'Exportation…',
+        'settings.unable_export':
+            'Impossible d\'exporter le registre.',
+        'settings.import_heading':
+            'Importation / restauration',
+        'settings.import_file':
+            'Fichier de sauvegarde',
+        'settings.import_entity':
+            'Jeu de données',
+        'settings.dry_run':
+            'Simulation (valider sans enregistrer)',
+        'settings.dry_run_help':
+            'Exécute l\'importation complète et présente le résultat sans modifier aucune donnée.',
+        'settings.run_import':
+            'Lancer l\'importation',
+        'settings.importing':
+            'Importation…',
+        'settings.import_select_file':
+            'Choisissez d\'abord un fichier de sauvegarde.',
+        'settings.import_result_heading':
+            'Résultat de l\'importation',
+        'settings.import_dry_run_notice':
+            'Simulation — aucune donnée n\'a été modifiée.',
+        'settings.import_created':
+            'Créés',
+        'settings.import_updated':
+            'Mis à jour',
+        'settings.import_unchanged':
+            'Inchangés',
+        'settings.import_skipped':
+            'Ignorés',
+        'settings.import_skipped_row':
+            'Ligne {row} : {reason}',
+        'settings.unable_import':
+            'Impossible d\'importer la sauvegarde.',
+        'users.given_names':
+            'Prénoms',
+        'users.surname':
+            'Nom de famille',
+        'activity_log.export_xlsx':
+            'Exporter en XLSX',
+        'leases.building':
+            'Immeuble',
+        'leases.all_buildings':
+            'Tous les immeubles',
+        'leases.all_frequencies':
+            'Toutes les fréquences',
+        'leases.expiring_before':
+            'Expire avant le',
+        'leases.rent_increments':
+            'Augmentations du loyer',
+        'leases.rent_increments_description':
+            'Consultez les augmentations de loyer programmées, appliquées et annulées pour ce bail.',
+        'leases.rent_increments_loading':
+            'Chargement des augmentations du loyer…',
+        'leases.no_rent_increments':
+            'Aucune augmentation du loyer enregistrée pour ce bail.',
+        'leases.increments_unable_load':
+            'Impossible de charger les augmentations du loyer.',
+        'leases.schedule_increment':
+            'Programmer une augmentation',
+        'leases.schedule_increment_description':
+            'Le nouveau loyer prend effet automatiquement à la date d\'effet.',
+        'leases.effective_date':
+            'Date d\'effet',
+        'leases.increment_status_scheduled':
+            'Programmée',
+        'leases.increment_status_applied':
+            'Appliquée',
+        'leases.increment_status_cancelled':
+            'Annulée',
+        'leases.notification_sent':
+            'Notification envoyée',
+        'leases.applied_on':
+            'Appliquée le',
+        'leases.cancelled_on':
+            'Annulée le',
+        'leases.cancel_increment':
+            'Annuler l\'augmentation',
+        'leases.confirm_cancel_increment':
+            'Annuler cette augmentation du loyer programmée ?',
+        'leases.increment_invalid_date':
+            'Saisissez une date d\'effet valide.',
+        'leases.increment_schedule_failed':
+            'Impossible de programmer l\'augmentation du loyer.',
+        'leases.increment_cancel_failed':
+            'Impossible d\'annuler l\'augmentation du loyer.',
+        'tenants.accounts':
+            'Comptes',
+        'tenants.accounts_description':
+            'Tous les comptes de fonds détenus pour ce locataire sur l\'ensemble de ses baux.',
+        'tenants.account_status.active':
+            'Actif',
+        'tenants.account_status.closed':
+            'Clôturé',
+        'tenants.all_leases':
+            'Tous les baux',
+        'tenants.any_account_help':
+            'Les comptes de tous les baux de ce locataire sont proposés ; filtrez éventuellement par bail.',
+        'tenants.loading_accounts':
+            'Chargement des comptes…',
+        'tenants.no_accounts':
+            'Aucun compte de fonds n\'existe pour ce locataire.',
+        'tenants.total_held_funds':
+            'Total des fonds détenus',
+        'tenants.transfer':
+            'Transfert',
+        'tenants.transfer_description':
+            'Déplacer des fonds détenus entre deux comptes de ce locataire. Un motif est obligatoire.',
+        'tenants.source_account':
+            'Compte source',
+        'tenants.destination_account':
+            'Compte de destination',
+        'tenants.select_source_account':
+            'Sélectionnez le compte source…',
+        'tenants.select_destination_account':
+            'Sélectionnez le compte de destination…',
+        'tenants.source_balance':
+            'Solde du compte source',
+        'tenants.destination_balance':
+            'Solde du compte de destination',
+        'tenants.resulting_source_balance':
+            'Solde source résultant',
+        'tenants.resulting_destination_balance':
+            'Solde destination résultant',
+        'tenants.transfer_reason_placeholder':
+            'Expliquez pourquoi ces fonds sont déplacés…',
+        'tenants.transfer_required_fields':
+            'Renseignez tous les champs obligatoires du transfert, y compris le motif.',
+        'tenants.transfer_same_account':
+            'Les comptes source et destination doivent être différents.',
+        'tenants.transfer_exceeds_balance':
+            'Le montant ne peut pas dépasser le solde du compte source.',
+        'tenants.no_transferable_accounts':
+            'Au moins deux comptes de fonds actifs sont nécessaires pour un transfert.',
+        'tenants.transfer_recorded':
+            'Transfert enregistré avec succès.',
+        'tenants.download_voucher':
+            'Télécharger le justificatif',
+        'tenants.download_receipt':
+            'Télécharger le reçu',
+        'tenants.unable_to_open_document':
+            'Impossible d\'ouvrir le document.',
+        'tenants.adjustment_no_change':
+            'Le solde corrigé est déjà identique au solde actuel.',
+        'tenants.adjustment_negative_balance':
+            'Les soldes de fonds locataire ne peuvent pas être ajustés en dessous de zéro.',
+        /* ---- end V1.0.7 additions ---- */
         'product.property_management':
             'Gestion immobilière',
 

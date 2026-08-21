@@ -26,6 +26,36 @@ import {
 |
 */
 
+/*
+ * Report types that cover the whole portfolio and therefore skip the
+ * subject-picker step entirely.
+ */
+const SUBJECTLESS_REPORT_TYPES = [
+    'managing-organisation',
+    'payments',
+    'occupancy',
+    'arrears',
+    'funds',
+];
+
+/*
+ * Portfolio snapshot reports replace the From/To period pair with a
+ * single optional as-of reference date.
+ */
+const AS_OF_REPORT_TYPES = [
+    'occupancy',
+    'arrears',
+];
+
+/*
+ * Report types that never use the From/To reporting period fields.
+ */
+const PERIODLESS_REPORT_TYPES = [
+    'occupancy',
+    'arrears',
+    'funds',
+];
+
 let selectedReportType =
     'managing-organisation';
 
@@ -263,10 +293,7 @@ function updateReportTypeUi() {
         );
 
     if (
-        [
-            'managing-organisation',
-            'payments',
-        ].includes(
+        SUBJECTLESS_REPORT_TYPES.includes(
             selectedReportType
         )
     ) {
@@ -291,6 +318,28 @@ function updateReportTypeUi() {
             'hidden',
             selectedReportType
                 !== 'payments'
+        );
+
+    document
+        .getElementById(
+            'report-period-fields'
+        )
+        ?.classList.toggle(
+            'hidden',
+            PERIODLESS_REPORT_TYPES.includes(
+                selectedReportType
+            )
+        );
+
+    document
+        .getElementById(
+            'report-asof-field'
+        )
+        ?.classList.toggle(
+            'hidden',
+            ! AS_OF_REPORT_TYPES.includes(
+                selectedReportType
+            )
         );
 
     if (
@@ -438,6 +487,30 @@ function updateReportHeader() {
 
             subtitle:
                 translate('reports.payments_report_description'),
+        },
+
+        occupancy: {
+            title:
+                translate('reports.occupancy_report'),
+
+            subtitle:
+                translate('reports.occupancy_report_description'),
+        },
+
+        arrears: {
+            title:
+                translate('reports.arrears_report'),
+
+            subtitle:
+                translate('reports.arrears_report_description'),
+        },
+
+        funds: {
+            title:
+                translate('reports.funds_report'),
+
+            subtitle:
+                translate('reports.funds_report_description'),
         },
     };
 
@@ -1397,10 +1470,7 @@ function updateRunButton() {
     }
 
     const needsSubject =
-        ! [
-            'managing-organisation',
-            'payments',
-        ].includes(
+        ! SUBJECTLESS_REPORT_TYPES.includes(
             selectedReportType
         );
 
@@ -1427,7 +1497,10 @@ async function runReport() {
         );
 
     if (
-        from
+        ! PERIODLESS_REPORT_TYPES.includes(
+            selectedReportType
+        )
+        && from
         && to
         && from > to
     ) {
@@ -1439,10 +1512,7 @@ async function runReport() {
     }
 
     if (
-        ! [
-            'managing-organisation',
-            'payments',
-        ].includes(
+        ! SUBJECTLESS_REPORT_TYPES.includes(
             selectedReportType
         )
         && ! selectedSubject
@@ -1507,35 +1577,61 @@ function buildReportEndpoints(
     from,
     to
 ) {
-    const query =
+    let query;
+
+    if (
         selectedReportType
         === 'payments'
-            ? paymentReportQuery(
+    ) {
+        query =
+            paymentReportQuery(
                 from,
                 to
+            );
+    } else if (
+        PERIODLESS_REPORT_TYPES.includes(
+            selectedReportType
+        )
+    ) {
+        query =
+            new URLSearchParams();
+
+        if (
+            AS_OF_REPORT_TYPES.includes(
+                selectedReportType
             )
-            : new URLSearchParams();
+        ) {
+            const asOf =
+                dateForApi(
+                    fieldValue(
+                        'report-as-of'
+                    )
+                );
 
-    if (
-        selectedReportType
-        !== 'payments'
-        && from
-    ) {
-        query.set(
-            'from',
-            from
-        );
-    }
+            if (asOf) {
+                query.set(
+                    'as_of',
+                    asOf
+                );
+            }
+        }
+    } else {
+        query =
+            new URLSearchParams();
 
-    if (
-        selectedReportType
-        !== 'payments'
-        && to
-    ) {
-        query.set(
-            'to',
-            to
-        );
+        if (from) {
+            query.set(
+                'from',
+                from
+            );
+        }
+
+        if (to) {
+            query.set(
+                'to',
+                to
+            );
+        }
     }
 
     const suffix =
@@ -1575,6 +1671,24 @@ function buildReportEndpoints(
         case 'payments':
             base =
                 '/api/reports/payments';
+
+            break;
+
+        case 'occupancy':
+            base =
+                '/api/reports/occupancy';
+
+            break;
+
+        case 'arrears':
+            base =
+                '/api/reports/arrears';
+
+            break;
+
+        case 'funds':
+            base =
+                '/api/reports/funds';
 
             break;
 
@@ -1640,6 +1754,27 @@ function renderReport(
 
         case 'payments':
             renderPaymentReport(
+                report
+            );
+
+            break;
+
+        case 'occupancy':
+            renderOccupancyReport(
+                report
+            );
+
+            break;
+
+        case 'arrears':
+            renderArrearsReport(
+                report
+            );
+
+            break;
+
+        case 'funds':
+            renderFundsReport(
                 report
             );
 
@@ -2796,6 +2931,583 @@ function renderTenantReport(
 
 /*
 |--------------------------------------------------------------------------
+| Occupancy Report
+|--------------------------------------------------------------------------
+*/
+
+function renderOccupancyReport(
+    report
+) {
+    const totals =
+        report?.totals
+        ?? {};
+
+    const classification =
+        report?.classification
+        ?? {};
+
+    const buildings =
+        Array.isArray(
+            report?.buildings
+        )
+            ? report.buildings
+            : [];
+
+    renderReportHtml(`
+        ${asOfHtml(report?.as_of)}
+
+        ${metricGrid([
+            [
+                translate('reports.units'),
+                numberFormat(
+                    totals.units
+                    ?? 0
+                ),
+            ],
+            [
+                translate('reports.occupied'),
+                numberFormat(
+                    totals.occupied
+                    ?? 0
+                ),
+            ],
+            [
+                translate('reports.vacant'),
+                numberFormat(
+                    totals.vacant
+                    ?? 0
+                ),
+            ],
+            [
+                translate('reports.occupancy_rate'),
+                percentValue(
+                    totals.occupancy_rate
+                ),
+            ],
+        ])}
+
+        ${reportSection(
+            translate('reports.occupancy_by_classification'),
+            `
+                <div
+                    class="
+                        grid gap-4
+                        sm:grid-cols-2
+                    "
+                >
+                    ${occupancyClassificationCard(
+                        translate('reports.commercial'),
+                        classification.commercial
+                        ?? {}
+                    )}
+
+                    ${occupancyClassificationCard(
+                        translate('reports.residential'),
+                        classification.residential
+                        ?? {}
+                    )}
+                </div>
+            `
+        )}
+
+        ${reportSection(
+            translate('reports.buildings'),
+            occupancyBuildingsTable(
+                buildings
+            )
+        )}
+    `);
+}
+
+function occupancyClassificationCard(
+    title,
+    data
+) {
+    const pairs = [
+        [
+            translate('reports.units'),
+            numberFormat(
+                data.units
+                ?? 0
+            ),
+        ],
+        [
+            translate('reports.occupied'),
+            numberFormat(
+                data.occupied
+                ?? 0
+            ),
+        ],
+        [
+            translate('reports.vacant'),
+            numberFormat(
+                data.vacant
+                ?? 0
+            ),
+        ],
+        [
+            translate('reports.occupancy_rate'),
+            percentValue(
+                data.occupancy_rate
+            ),
+        ],
+    ];
+
+    return `
+        <div
+            class="
+                rounded-xl
+                border border-[var(--pm-border)]
+                bg-[var(--pm-surface-subtle)] p-5
+            "
+        >
+            <div
+                class="
+                    text-sm font-semibold
+                    text-[var(--pm-text)]
+                "
+            >
+                ${escapeHtml(
+                    title
+                )}
+            </div>
+
+            <div
+                class="
+                    mt-4 grid grid-cols-2
+                    gap-3
+                "
+            >
+                ${pairs
+                    .map(
+                        ([label, value]) => `
+                            <div>
+                                <div
+                                    class="
+                                        text-xs
+                                        text-[var(--pm-text-muted)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        label
+                                    )}
+                                </div>
+
+                                <div
+                                    class="
+                                        mt-1 text-sm
+                                        font-semibold
+                                        text-[var(--pm-text)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        value
+                                    )}
+                                </div>
+                            </div>
+                        `
+                    )
+                    .join('')}
+            </div>
+        </div>
+    `;
+}
+
+function occupancyBuildingsTable(
+    rows
+) {
+    return tableHtml(
+        [
+            translate('reports.building'),
+            translate('reports.units'),
+            translate('reports.occupied'),
+            translate('reports.vacant'),
+            translate('reports.occupancy_rate'),
+            translate('reports.commercial_units'),
+        ],
+        rows.map(
+            (row) => [
+                row.name
+                ?? translate(
+                    'reports.building_number',
+                    {
+                        number:
+                            row.id,
+                    }
+                ),
+                numberFormat(
+                    row.units
+                    ?? 0
+                ),
+                numberFormat(
+                    row.occupied
+                    ?? 0
+                ),
+                numberFormat(
+                    row.vacant
+                    ?? 0
+                ),
+                percentValue(
+                    row.occupancy_rate
+                ),
+                numberFormat(
+                    row.commercial_units
+                    ?? 0
+                ),
+            ]
+        )
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Arrears Aging Report
+|--------------------------------------------------------------------------
+*/
+
+function renderArrearsReport(
+    report
+) {
+    const totals =
+        report?.totals
+        ?? {};
+
+    const tenants =
+        Array.isArray(
+            report?.tenants
+        )
+            ? report.tenants
+            : [];
+
+    renderReportHtml(`
+        ${asOfHtml(report?.as_of)}
+
+        ${metricGrid([
+            [
+                translate('reports.aging_current'),
+                formatCurrency(
+                    totals.current
+                    ?? 0
+                ),
+            ],
+            [
+                translate('reports.aging_31_60'),
+                formatCurrency(
+                    totals.days_31_60
+                    ?? 0
+                ),
+            ],
+            [
+                translate('reports.aging_61_90'),
+                formatCurrency(
+                    totals.days_61_90
+                    ?? 0
+                ),
+            ],
+            [
+                translate('reports.aging_over_90'),
+                formatCurrency(
+                    totals.over_90
+                    ?? 0
+                ),
+                {
+                    emphasis:
+                        'danger',
+                },
+            ],
+            [
+                translate('reports.total_arrears'),
+                formatCurrency(
+                    totals.total
+                    ?? 0
+                ),
+            ],
+            [
+                translate('reports.open_invoices'),
+                numberFormat(
+                    totals.invoice_count
+                    ?? 0
+                ),
+            ],
+        ])}
+
+        ${reportSection(
+            translate('reports.tenants_in_arrears'),
+            arrearsTenantsTable(
+                tenants
+            )
+        )}
+    `);
+}
+
+function arrearsTenantsTable(
+    rows
+) {
+    return tableHtml(
+        [
+            translate('reports.tenant'),
+            translate('reports.lease'),
+            translate('reports.building'),
+            translate('reports.unit'),
+            translate('reports.open_invoices'),
+            translate('reports.aging_current'),
+            translate('reports.aging_31_60'),
+            translate('reports.aging_61_90'),
+            translate('reports.aging_over_90'),
+            translate('reports.total_arrears'),
+        ],
+        rows.map(
+            (row) => [
+                row?.tenant?.name
+                    ?? translate('reports.unnamed_party'),
+                row?.lease?.id
+                    ? `#${row.lease.id}`
+                    : '',
+                row?.building?.name
+                    ?? '',
+                row?.unit?.name
+                    ?? '',
+                numberFormat(
+                    row.invoice_count
+                    ?? 0
+                ),
+                formatCurrency(
+                    row.current
+                    ?? 0
+                ),
+                formatCurrency(
+                    row.days_31_60
+                    ?? 0
+                ),
+                formatCurrency(
+                    row.days_61_90
+                    ?? 0
+                ),
+                formatCurrency(
+                    row.over_90
+                    ?? 0
+                ),
+                formatCurrency(
+                    row.total
+                    ?? 0
+                ),
+            ]
+        )
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Funds Held Report
+|--------------------------------------------------------------------------
+*/
+
+function renderFundsReport(
+    report
+) {
+    const tenantFunds =
+        report?.tenant_funds
+        ?? {};
+
+    const tenantSummary =
+        tenantFunds.summary
+        ?? {};
+
+    const tenants =
+        Array.isArray(
+            tenantFunds.tenants
+        )
+            ? tenantFunds.tenants
+            : [];
+
+    const ownerFunds =
+        report?.owner_funds
+        ?? {};
+
+    const ownerSummary =
+        ownerFunds.summary
+        ?? {};
+
+    const owners =
+        Array.isArray(
+            ownerFunds.owners
+        )
+            ? ownerFunds.owners
+            : [];
+
+    renderReportHtml(`
+        ${asOfHtml(report?.as_of)}
+
+        ${reportSection(
+            translate('reports.tenant_funds'),
+            `
+                ${metricGrid([
+                    [
+                        translate('reports.rent_reserve'),
+                        formatCurrency(
+                            tenantSummary?.rent_reserve?.total_held
+                            ?? 0
+                        ),
+                        {
+                            meta:
+                                accountCountLabel(
+                                    tenantSummary?.rent_reserve?.account_count
+                                ),
+                        },
+                    ],
+                    [
+                        translate('reports.consumable_advance'),
+                        formatCurrency(
+                            tenantSummary?.consumable_advance?.total_held
+                            ?? 0
+                        ),
+                        {
+                            meta:
+                                accountCountLabel(
+                                    tenantSummary?.consumable_advance?.account_count
+                                ),
+                        },
+                    ],
+                    [
+                        translate('reports.security_deposit'),
+                        formatCurrency(
+                            tenantSummary?.security_deposit?.total_held
+                            ?? 0
+                        ),
+                        {
+                            meta:
+                                accountCountLabel(
+                                    tenantSummary?.security_deposit?.account_count
+                                ),
+                        },
+                    ],
+                    [
+                        translate('reports.total_held'),
+                        formatCurrency(
+                            tenantSummary.total_held
+                            ?? 0
+                        ),
+                    ],
+                ])}
+
+                ${fundsTenantsTable(
+                    tenants
+                )}
+            `
+        )}
+
+        ${reportSection(
+            translate('reports.owner_funds'),
+            `
+                ${metricGrid([
+                    [
+                        translate('reports.owner_accounts'),
+                        numberFormat(
+                            ownerSummary.account_count
+                            ?? 0
+                        ),
+                    ],
+                    [
+                        translate('reports.total_held'),
+                        formatCurrency(
+                            ownerSummary.total_held
+                            ?? 0
+                        ),
+                    ],
+                ])}
+
+                ${fundsOwnersTable(
+                    owners
+                )}
+            `
+        )}
+    `);
+}
+
+function fundsTenantsTable(
+    rows
+) {
+    return tableHtml(
+        [
+            translate('reports.tenant'),
+            translate('reports.lease'),
+            translate('reports.building'),
+            translate('reports.unit'),
+            translate('reports.rent_reserve'),
+            translate('reports.consumable_advance'),
+            translate('reports.security_deposit'),
+            translate('reports.total_held'),
+        ],
+        rows.map(
+            (row) => [
+                row?.tenant?.name
+                    ?? translate('reports.unnamed_party'),
+                row?.lease?.id
+                    ? `#${row.lease.id}`
+                    : '',
+                row?.building?.name
+                    ?? '',
+                row?.unit?.name
+                    ?? '',
+                formatCurrency(
+                    row.rent_reserve
+                    ?? 0
+                ),
+                formatCurrency(
+                    row.consumable_advance
+                    ?? 0
+                ),
+                formatCurrency(
+                    row.security_deposit
+                    ?? 0
+                ),
+                formatCurrency(
+                    row.total
+                    ?? 0
+                ),
+            ]
+        )
+    );
+}
+
+function fundsOwnersTable(
+    rows
+) {
+    return tableHtml(
+        [
+            translate('reports.owner'),
+            translate('reports.balance'),
+        ],
+        rows.map(
+            (row) => [
+                row?.owner?.name
+                    ?? translate('reports.unnamed_party'),
+                formatCurrency(
+                    row.balance
+                    ?? 0
+                ),
+            ]
+        )
+    );
+}
+
+function accountCountLabel(
+    count
+) {
+    return translate(
+        'reports.account_count',
+        {
+            count:
+                numberFormat(
+                    count
+                    ?? 0
+                ),
+        }
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
 | Rendering Components
 |--------------------------------------------------------------------------
 */
@@ -2903,6 +3615,42 @@ function periodHtml(
     `;
 }
 
+/**
+ * Reference-date line for snapshot reports.
+ */
+function asOfHtml(
+    asOf
+) {
+    return `
+        <div
+            class="
+                mb-6 text-xs
+                text-[var(--pm-text-muted)]
+            "
+        >
+            ${escapeHtml(
+                translate(
+                    'reports.as_of'
+                )
+            )}:
+            ${escapeHtml(
+                asOf
+                    ? formatDate(asOf)
+                    : translate(
+                        'reports.present'
+                    )
+            )}
+        </div>
+    `;
+}
+
+/**
+ * Metric tile grid.
+ *
+ * Each metric is [label, value] with an optional third options object:
+ * { emphasis: 'danger' } paints the tile with danger status tokens and
+ * { meta: '…' } adds a muted sub-line under the value.
+ */
 function metricGrid(
     metrics
 ) {
@@ -2916,19 +3664,37 @@ function metricGrid(
         >
             ${metrics
                 .map(
-                    ([label, value]) => `
+                    ([label, value, options = {}]) => {
+                        const danger =
+                            options.emphasis
+                            === 'danger';
+
+                        return `
                         <div
                             class="
-                                rounded-xl
-                                border border-[var(--pm-border)]
-                                bg-[var(--pm-surface-subtle)] p-4
+                                rounded-xl border p-4
+                                ${
+                                    danger
+                                        ? `
+                                            border-[var(--pm-danger-border)]
+                                            bg-[var(--pm-danger-background)]
+                                        `
+                                        : `
+                                            border-[var(--pm-border)]
+                                            bg-[var(--pm-surface-subtle)]
+                                        `
+                                }
                             "
                         >
                             <div
                                 class="
                                     text-xs font-medium
                                     uppercase tracking-wide
-                                    text-[var(--pm-text-muted)]
+                                    ${
+                                        danger
+                                            ? 'text-[var(--pm-danger-text)]'
+                                            : 'text-[var(--pm-text-muted)]'
+                                    }
                                 "
                             >
                                 ${escapeHtml(
@@ -2941,15 +3707,41 @@ function metricGrid(
                                     mt-2 text-xl
                                     font-semibold
                                     tracking-tight
-                                    text-[var(--pm-text)]
+                                    ${
+                                        danger
+                                            ? 'text-[var(--pm-danger-text)]'
+                                            : 'text-[var(--pm-text)]'
+                                    }
                                 "
                             >
                                 ${escapeHtml(
                                     value
                                 )}
                             </div>
+
+                            ${
+                                options.meta
+                                    ? `
+                                        <div
+                                            class="
+                                                mt-1 text-xs
+                                                ${
+                                                    danger
+                                                        ? 'text-[var(--pm-danger-text)]'
+                                                        : 'text-[var(--pm-text-muted)]'
+                                                }
+                                            "
+                                        >
+                                            ${escapeHtml(
+                                                options.meta
+                                            )}
+                                        </div>
+                                    `
+                                    : ''
+                            }
                         </div>
-                    `
+                        `;
+                    }
                 )
                 .join('')}
         </div>
@@ -3890,6 +4682,16 @@ function numberFormat(
     return formatNumber(
         value
     );
+}
+
+/**
+ * Render an API-provided percentage value (already expressed as a
+ * number of percent, e.g. 92.5) for display.
+ */
+function percentValue(
+    value
+) {
+    return `${numberFormat(value ?? 0)}%`;
 }
 
 function translatedDomainValue(

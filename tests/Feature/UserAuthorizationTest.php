@@ -49,7 +49,11 @@ class UserAuthorizationTest extends TestCase
                 UserCapability::ExportReports
             )
         );
-        $this->assertFalse(
+        /*
+         * V1.0.7: the Manager mirrors the Administrator outside the
+         * Manage group, so record deletion is a Manager capability.
+         */
+        $this->assertTrue(
             UserRole::PropertyManager->allows(
                 UserCapability::DeleteRecords
             )

@@ -288,6 +288,17 @@ function initializeExportActions() {
 
     document
         .getElementById(
+            'activity-log-export-xlsx'
+        )
+        ?.addEventListener(
+            'click',
+            () => exportActivityLog(
+                'xlsx'
+            )
+        );
+
+    document
+        .getElementById(
             'activity-log-export-csv'
         )
         ?.addEventListener(
@@ -298,21 +309,60 @@ function initializeExportActions() {
         );
 }
 
+/** Export button, MIME type and label key per supported format. */
+const ACTIVITY_EXPORT_FORMATS = {
+    pdf: {
+        buttonId:
+            'activity-log-export-pdf',
+
+        accept:
+            'application/pdf',
+
+        labelKey:
+            'activity_log.export_pdf',
+    },
+
+    csv: {
+        buttonId:
+            'activity-log-export-csv',
+
+        accept:
+            'text/csv',
+
+        labelKey:
+            'activity_log.export_csv',
+    },
+
+    xlsx: {
+        buttonId:
+            'activity-log-export-xlsx',
+
+        accept:
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+
+        labelKey:
+            'activity_log.export_xlsx',
+    },
+};
+
 /**
  * Export all Activity Log rows matching the current filters.
  *
  * Pagination is deliberately excluded.
  *
- * @param {'pdf'|'csv'} format
+ * @param {'pdf'|'csv'|'xlsx'} format
  */
 async function exportActivityLog(
     format
 ) {
+    const definition =
+        ACTIVITY_EXPORT_FORMATS[
+            format
+        ];
+
     const button =
         document.getElementById(
-            format === 'pdf'
-                ? 'activity-log-export-pdf'
-                : 'activity-log-export-csv'
+            definition.buttonId
         );
 
     const originalLabel =
@@ -353,9 +403,7 @@ async function exportActivityLog(
                 {
                     headers: {
                         Accept:
-                            format === 'pdf'
-                                ? 'application/pdf'
-                                : 'text/csv',
+                            definition.accept,
                     },
                 }
             );
@@ -426,9 +474,7 @@ async function exportActivityLog(
             button.textContent =
                 originalLabel
                 || translate(
-                    format === 'pdf'
-                        ? 'activity_log.export_pdf'
-                        : 'activity_log.export_csv'
+                    definition.labelKey
                 );
         }
     }

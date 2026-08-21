@@ -858,14 +858,51 @@
                                     text-sm font-semibold
                                     text-[var(--pm-text)]
                                 "
-                                data-i18n="shell.whats_new"
+                                data-i18n="shell.notifications"
                             >
-                                What's new
+                                Notifications
                             </div>
                         </div>
 
+                        {{--
+                            V1.0.7 notification center.
+
+                            Rows are rendered by auth.js from
+                            GET /api/notifications every time the panel
+                            opens. Each row deep-links to the page where
+                            the situation is handled.
+                        --}}
                         <div
-                            class="p-4"
+                            id="notification-list"
+                            class="
+                                max-h-[22rem]
+                                overflow-y-auto p-2
+                            "
+                        >
+                            <div
+                                class="
+                                    px-3 py-6 text-center
+                                    text-sm
+                                    text-[var(--pm-text-muted)]
+                                "
+                                data-i18n="notifications.loading"
+                            >
+                                Loading notifications…
+                            </div>
+                        </div>
+
+                        {{--
+                            Release announcement details. Hidden until the
+                            release row is selected; opening it preserves
+                            the existing release read-state flow.
+                        --}}
+                        <div
+                            id="notification-release-panel"
+                            class="
+                                hidden border-t
+                                border-[var(--pm-border)]
+                                p-4
+                            "
                             data-release-notification
                         >
                             <div
@@ -873,32 +910,38 @@
                                     text-sm font-semibold
                                     text-[var(--pm-text)]
                                 "
-                                data-i18n="release.v104_heading"
+                                data-i18n="shell.whats_new"
                             >
-                                You are now on Patrimoine v1.0.4
+                                What's new
                             </div>
 
-                            <ul
+                            {{--
+                                V1.0.7: release detail lives on the Update
+                                log page; the panel links there instead of
+                                carrying per-version bullets that go stale.
+                            --}}
+                            <p
                                 class="
-                                    mt-3 space-y-2
-                                    text-sm
+                                    mt-3 text-sm
                                     text-[var(--pm-text-muted)]
                                 "
+                                data-i18n="release.summary_line"
                             >
-                                <li
-                                    class="flex gap-2"
-                                    data-i18n="release.v104_ui"
-                                >
-                                    Updated interface for a cleaner experience.
-                                </li>
+                                This update brings new features and improvements across Patrimoine.
+                            </p>
 
-                                <li
-                                    class="flex gap-2"
-                                    data-i18n="release.v104_fixes"
-                                >
-                                    Usability and localisation fixes.
-                                </li>
-                            </ul>
+                            <a
+                                href="/help#updates"
+                                class="
+                                    mt-3 inline-flex items-center gap-1.5
+                                    text-sm font-medium
+                                    text-[var(--pm-accent)]
+                                    hover:underline
+                                "
+                                data-i18n="release.view_details"
+                            >
+                                View the full update log
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -1125,6 +1168,70 @@
                             </div>
                         </div>
 
+                        {{-- Help and product information --}}
+                        <div
+                            class="
+                                border-t border-[var(--pm-border)]
+                                p-2
+                            "
+                        >
+                            <a
+                                href="/help"
+                                class="shell-menu-item"
+                            >
+                                <svg
+                                    class="h-4 w-4"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    aria-hidden="true"
+                                >
+                                    <circle cx="12" cy="12" r="9"/>
+                                    <path d="M9.5 9a2.5 2.5 0 0 1 5 .3c0 1.7-2.5 2.2-2.5 3.7"/>
+                                    <path d="M12 17h.01"/>
+                                </svg>
+
+                                <span
+                                    class="
+                                        block text-sm font-medium
+                                        text-[var(--pm-text)]
+                                    "
+                                    data-i18n="shell.help"
+                                >
+                                    Help
+                                </span>
+                            </a>
+
+                            <a
+                                href="/help#updates"
+                                class="shell-menu-item"
+                            >
+                                <svg
+                                    class="h-4 w-4"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M12 8v4l2.5 2.5"/>
+                                    <path d="M3.5 9A9 9 0 1 1 3 12"/>
+                                    <path d="M3 4v5h5"/>
+                                </svg>
+
+                                <span
+                                    class="
+                                        block text-sm font-medium
+                                        text-[var(--pm-text)]
+                                    "
+                                    data-i18n="shell.update_log"
+                                >
+                                    Update log
+                                </span>
+                            </a>
+                        </div>
+
                         {{-- Account actions --}}
                         <div
                             class="
@@ -1197,7 +1304,7 @@
         description-id="profile-modal-description"
         close-id="profile-modal-close"
         close-label="Close"
-        close-label-key="users.close"
+        close-label-key="actions.close"
     >
         <x-slot:title>
             {{ __('ui.shell.my_profile') }}
@@ -1230,16 +1337,41 @@
             ></div>
 
             <div class="grid gap-5 sm:grid-cols-2">
-                <div class="sm:col-span-2">
+                {{--
+                    V1.0.7 structured names: the API accepts
+                    given_names + surname and recomposes the
+                    display name.
+                --}}
+                <div>
                     <label
-                        for="profile-name"
+                        for="profile-given-names"
                         class="pm-field-label"
                     >
-                        {{ __('ui.users.name') }}
+                        <span data-i18n="users.given_names">
+                            Given names
+                        </span>
                     </label>
 
                     <input
-                        id="profile-name"
+                        id="profile-given-names"
+                        type="text"
+                        maxlength="255"
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="profile-surname"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="users.surname">
+                            Surname
+                        </span>
+                    </label>
+
+                    <input
+                        id="profile-surname"
                         type="text"
                         maxlength="255"
                         required

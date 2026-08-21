@@ -8,19 +8,18 @@
 | This module owns:
 |
 | - Lease listing;
-| - status and tenant filtering;
+| - status, tenant, building, frequency and expiry filtering;
 | - pagination;
 | - Lease creation;
 | - Lease deletion;
 | - Unit selection;
 | - Tenant and Agent Party selection;
 | - Lease contractual terms;
-| - Security Deposit close-out;
-| - itemized Security Deposit deductions;
-| - final Security Deposit settlement and voucher access.
+| - scheduled rent increments (list, schedule, cancel).
 |
 | General financial transactions such as Payments, Invoices and owner
-| accounting remain in their dedicated modules.
+| accounting remain in their dedicated modules. Tenant Funds and Security
+| Deposit operations live in the Tenants workspace.
 |
 */
 
@@ -40,6 +39,10 @@ import {
 } from './core.js';
 
 import {
+    browserCan,
+} from './permissions.js';
+
+import {
     dateForApi,
     dateForDisplay,
     initializeDateInputs,
@@ -56,6 +59,9 @@ let loadedLeasesById =
     new Map();
 
 let availableUnits =
+    [];
+
+let availableBuildings =
     [];
 
 let availableTenants =
@@ -121,18 +127,9 @@ export async function initializeLeases() {
 
     initializeTerminationSettlementDrawer();
 
-    initializeSecurityDepositModal();
-
     initializeLeaseFinancialHistoryModal();
 
-    /*
-     * Register operational Tenant Funds controls.
-     *
-     * This initializer owns the modal close/backdrop actions, Rent Reserve
-     * and Consumable Advance forms, and the hand-off to the Security Deposit
-     * close-out workflow.
-     */
-    initializeTenantFundsModal();
+    initializeRentIncrementsDrawer();
 
     initializeLeaseFieldHelp();
 
@@ -260,6 +257,12 @@ async function loadLeaseReferenceData() {
             : [];
 
     /*
+     * The Building list itself feeds the register's Building filter.
+     */
+    availableBuildings =
+        buildings;
+
+    /*
     * Flatten Building -> Unit relationships into one searchable Unit
     * collection.
     *
@@ -346,6 +349,8 @@ function populateLeaseReferenceControls() {
         )
     );
 
+    populateBuildingFilter();
+
     /*
     * Unit selection uses the searchable Unit picker rather than a native
     * select. Refreshing here ensures any newly loaded Unit information is
@@ -413,6 +418,57 @@ function partyDisplayName(party) {
     return party?.name
         || party?.legal_name
         || `Party #${party?.id ?? ''}`;
+}
+
+/**
+ * Render Building options into the register's Building filter.
+ */
+function populateBuildingFilter() {
+    const select =
+        document.getElementById(
+            'lease-building-filter'
+        );
+
+    if (! select) {
+        return;
+    }
+
+    const previousValue =
+        select.value;
+
+    select.innerHTML = `
+        <option value="">
+            ${escapeHtml(
+                translate(
+                    'leases.all_buildings'
+                )
+            )}
+        </option>
+
+        ${
+            availableBuildings
+                .map(
+                    (building) => `
+                        <option
+                            value="${escapeHtml(
+                                building.id
+                            )}"
+                        >
+                            ${escapeHtml(
+                                building.name
+                                || `Building #${building.id ?? ''}`
+                            )}
+                        </option>
+                    `
+                )
+                .join('')
+        }
+    `;
+
+    if (previousValue !== '') {
+        select.value =
+            previousValue;
+    }
 }
 
 
@@ -1051,29 +1107,55 @@ function hideUnitSearchResults() {
 */
 
 function initializeLeaseFilters() {
-    document
-        .getElementById(
-            'lease-status-filter'
-        )
-        ?.addEventListener(
-            'change',
-            () => {
-                loadLeases(
-                    1
+    [
+        'lease-status-filter',
+        'lease-tenant-filter',
+        'lease-building-filter',
+        'lease-frequency-filter',
+    ].forEach(
+        (elementId) => {
+            document
+                .getElementById(
+                    elementId
+                )
+                ?.addEventListener(
+                    'change',
+                    () => {
+                        loadLeases(
+                            1
+                        );
+                    }
                 );
-            }
-        );
+        }
+    );
 
+    /*
+     * The expiry filter is a DD-MM-YYYY date input. Reload only when the
+     * field is empty (filter cleared) or contains a complete valid date,
+     * so half-typed values never fire spurious requests.
+     */
     document
         .getElementById(
-            'lease-tenant-filter'
+            'lease-ending-before-filter'
         )
         ?.addEventListener(
             'change',
-            () => {
-                loadLeases(
-                    1
-                );
+            (event) => {
+                const value =
+                    event.target.value.trim();
+
+                if (
+                    value === ''
+                    || /^\d{4}-\d{2}-\d{2}$/.test(
+                        dateForApi(
+                            value
+                        )
+                    )
+                ) {
+                    loadLeases(
+                        1
+                    );
+                }
             }
         );
 }
@@ -1104,6 +1186,23 @@ function leaseQueryParameters(
             'lease-tenant-filter'
         );
 
+    const building =
+        formValue(
+            'lease-building-filter'
+        );
+
+    const frequency =
+        formValue(
+            'lease-frequency-filter'
+        );
+
+    const endingBefore =
+        dateForApi(
+            formValue(
+                'lease-ending-before-filter'
+            )
+        );
+
     if (status !== '') {
         parameters.set(
             'status',
@@ -1115,6 +1214,31 @@ function leaseQueryParameters(
         parameters.set(
             'tenant_id',
             tenant
+        );
+    }
+
+    if (building !== '') {
+        parameters.set(
+            'building_id',
+            building
+        );
+    }
+
+    if (frequency !== '') {
+        parameters.set(
+            'payment_frequency',
+            frequency
+        );
+    }
+
+    if (
+        /^\d{4}-\d{2}-\d{2}$/.test(
+            endingBefore
+        )
+    ) {
+        parameters.set(
+            'ending_before',
+            endingBefore
         );
     }
 
@@ -1511,7 +1635,7 @@ function leaseCard(lease) {
 
                     <button
                         type="button"
-                        data-tenant-funds
+                        data-rent-increments
                         data-lease-id="${escapeHtml(
                             lease.id
                         )}"
@@ -1519,25 +1643,31 @@ function leaseCard(lease) {
                     >
                         ${escapeHtml(
                             translate(
-                                'leases.tenant_funds'
+                                'leases.rent_increments'
                             )
                         )}
                     </button>
 
-                    <button
-                        type="button"
-                        data-security-deposit
-                        data-lease-id="${escapeHtml(
-                            lease.id
-                        )}"
-                        class="pm-button-secondary"
-                    >
-                        ${escapeHtml(
-                            translate(
-                                'leases.manage_security_deposit'
-                            )
-                        )}
-                    </button>
+                    ${
+                        lease.status !== 'notice'
+                            ? `
+                                <button
+                                    type="button"
+                                    data-extend-lease
+                                    data-lease-id="${escapeHtml(
+                                        lease.id
+                                    )}"
+                                    class="pm-button-secondary"
+                                >
+                                    ${escapeHtml(
+                                        translate(
+                                            'leases.extend'
+                                        )
+                                    )}
+                                </button>
+                            `
+                            : ''
+                    }
 
                     ${
                         lease.status === 'notice'
@@ -1592,27 +1722,6 @@ function leaseCard(lease) {
                                     ${escapeHtml(
                                         translate(
                                             'leases.terminate'
-                                        )
-                                    )}
-                                </button>
-                            `
-                            : ''
-                    }
-
-                    ${
-                        lease.status !== 'notice'
-                            ? `
-                                <button
-                                    type="button"
-                                    data-extend-lease
-                                    data-lease-id="${escapeHtml(
-                                        lease.id
-                                    )}"
-                                    class="pm-button-secondary"
-                                >
-                                    ${escapeHtml(
-                                        translate(
-                                            'leases.extend'
                                         )
                                     )}
                                 </button>
@@ -1769,32 +1878,14 @@ function attachLeaseActionListeners(
 
     container
         .querySelectorAll(
-            '[data-tenant-funds]'
+            '[data-rent-increments]'
         )
         .forEach(
             (button) => {
                 button.addEventListener(
                     'click',
                     () => {
-                        openTenantFundsModal(
-                            button.dataset
-                                .leaseId
-                        );
-                    }
-                );
-            }
-        );
-
-    container
-        .querySelectorAll(
-            '[data-security-deposit]'
-        )
-        .forEach(
-            (button) => {
-                button.addEventListener(
-                    'click',
-                    () => {
-                        openSecurityDepositModal(
+                        openRentIncrementsModal(
                             button.dataset
                                 .leaseId
                         );
@@ -2652,7 +2743,6 @@ function resetLeaseForm() {
     );
 
 
-
     const advanceReceivedCheckbox =
         document.getElementById(
             'lease-advance-received'
@@ -2684,9 +2774,6 @@ function resetLeaseForm() {
     );
 
     updateAdvanceReceivedControls();
-
-
-
 
 
     setFormValue(
@@ -3252,9 +3339,6 @@ function updateManagementFeeControls() {
                 );
     }
 }
-
-
-
 
 
 /*
@@ -5085,7 +5169,6 @@ function buildLeasePayload() {
             ),
 
 
-
         /*
         * Contractual tenant advance terms.
         *
@@ -5126,8 +5209,6 @@ function buildLeasePayload() {
             ),
 
 
-
-
         management_fee_type:
             formValue(
                 'lease-management-fee-type'
@@ -5151,8 +5232,6 @@ function buildLeasePayload() {
             nullableFormValue(
                 'lease-notes'
             ),
-
-
 
 
         advance_received:
@@ -5182,8 +5261,6 @@ function buildLeasePayload() {
             nullableFormValue(
                 'lease-advance-received-collector'
             ),
-
-
 
 
     };
@@ -6013,225 +6090,844 @@ function hideLeasePageError() {
 
 /*
 |--------------------------------------------------------------------------
-| Security Deposit Operations
+| Rent Increments
 |--------------------------------------------------------------------------
 |
-| Security Deposit settlement is an operational Lease close-out workflow.
+| V1.0.7 discretionary rent-increment workflow.
 |
-| Contractual deposit terms remain in the normal Lease editor, while this
-| modal works with actual held funds, deductions and immutable settlement
-| records from the server.
+| Increments are scheduled and cancelled here; applying a due increment
+| remains exclusive to the daily patrimoine:apply-due-rent-increments
+| scheduler command, so rent never changes ad hoc from the browser.
 |
 */
 
-let securityDepositLeaseId =
+let rentIncrementsLeaseId =
     null;
 
 /**
- * Initialize Security Deposit modal controls.
+ * Register Rent Increments drawer controls.
  */
-/**
- * Initialize Security Deposit DD-MM-YYYY controls while retaining
- * the browser-native calendar picker.
- */
-function initializeSecurityDepositDateInputs() {
-    document
-        .querySelectorAll(
-            '[data-security-date-input]'
-        )
-        .forEach(
-            (textInput) => {
-                if (
-                    textInput.dataset
-                        .securityDateInitialized
-                    === 'true'
-                ) {
-                    return;
-                }
-
-                textInput.dataset
-                    .securityDateInitialized =
-                    'true';
-
-                const fieldId =
-                    textInput.id;
-
-                const pickerButton =
-                    document.querySelector(
-                        `[data-security-date-picker="${fieldId}"]`
-                    );
-
-                const nativeInput =
-                    document.querySelector(
-                        `[data-security-native-date-picker="${fieldId}"]`
-                    );
-
-                if (
-                    ! pickerButton
-                    || ! nativeInput
-                ) {
-                    return;
-                }
-
-                const syncNative =
-                    () => {
-                        const iso =
-                            dateForApi(
-                                textInput.value
-                            );
-
-                        nativeInput.value =
-                            /^\d{4}-\d{2}-\d{2}$/
-                                .test(iso)
-                                ? iso
-                                : '';
-                    };
-
-                textInput.addEventListener(
-                    'blur',
-                    () => {
-                        const iso =
-                            dateForApi(
-                                textInput.value
-                            );
-
-                        if (
-                            /^\d{4}-\d{2}-\d{2}$/
-                                .test(iso)
-                        ) {
-                            textInput.value =
-                                dateForDisplay(
-                                    iso
-                                );
-                        }
-
-                        syncNative();
-                    }
-                );
-
-                pickerButton.addEventListener(
-                    'click',
-                    () => {
-                        openDatePicker(
-                            textInput
-                        );
-                    }
-                );
-
-                nativeInput.addEventListener(
-                    'change',
-                    () => {
-                        if (! nativeInput.value) {
-                            return;
-                        }
-
-                        textInput.value =
-                            dateForDisplay(
-                                nativeInput.value
-                            );
-
-                        textInput.dispatchEvent(
-                            new Event(
-                                'change',
-                                {
-                                    bubbles: true,
-                                }
-                            )
-                        );
-                    }
-                );
-            }
-        );
-}
-
-
-function initializeSecurityDepositModal() {
-    initializeSecurityDepositDateInputs();
-
+function initializeRentIncrementsDrawer() {
     document
         .getElementById(
-            'security-deposit-modal-close'
+            'rent-increments-modal-close'
         )
         ?.addEventListener(
             'click',
-            closeSecurityDepositModal
+            closeRentIncrementsModal
         );
 
     document
         .getElementById(
-            'security-deposit-close-footer'
+            'rent-increments-close-footer'
         )
         ?.addEventListener(
             'click',
-            closeSecurityDepositModal
+            closeRentIncrementsModal
         );
 
     document
         .getElementById(
-            'security-deposit-modal-backdrop'
+            'rent-increments-modal-backdrop'
         )
         ?.addEventListener(
             'click',
-            closeSecurityDepositModal
+            closeRentIncrementsModal
         );
 
     document
         .getElementById(
-            'security-deposit-deduction-form'
+            'rent-increment-form'
         )
         ?.addEventListener(
             'submit',
-            submitSecurityDepositDeduction
+            submitRentIncrementSchedule
         );
 
+    /*
+     * Keep the value suffix unambiguous: % for percentage increments,
+     * the configured currency for fixed amounts.
+     */
     document
         .getElementById(
-            'security-deposit-settlement-form'
+            'rent-increment-type'
         )
         ?.addEventListener(
-            'submit',
-            submitSecurityDepositSettlement
+            'change',
+            updateRentIncrementScheduleUnit
         );
-
-
-            /*
-        * Financial document API routes require the same Sanctum Bearer token
-        * used by the rest of the authenticated application.
-        *
-        * The voucher must therefore be fetched through apiRequest() rather than
-        * opened through ordinary browser navigation.
-        */
-        document
-            .getElementById(
-                'security-deposit-voucher-link'
-            )
-            ?.addEventListener(
-                'click',
-                openSecurityDepositVoucher
-            );
-
-
 
     document.addEventListener(
         'keydown',
         (event) => {
-            const modal =
+            const drawer =
                 document.getElementById(
-                    'security-deposit-modal'
+                    'rent-increments-modal'
                 );
 
             if (
                 event.key === 'Escape'
-                && modal?.classList.contains(
+                && drawer?.classList.contains(
                     'pm-drawer-active'
                 )
             ) {
-                closeSecurityDepositModal();
+                closeRentIncrementsModal();
             }
         }
     );
 }
 
+/**
+ * Open and load the Rent Increments drawer for one Lease.
+ */
+async function openRentIncrementsModal(
+    leaseId
+) {
+    const numericLeaseId =
+        Number(
+            leaseId
+        );
+
+    if (
+        ! Number.isInteger(
+            numericLeaseId
+        )
+        || numericLeaseId <= 0
+    ) {
+        return;
+    }
+
+    const drawer =
+        document.getElementById(
+            'rent-increments-modal'
+        );
+
+    if (! drawer) {
+        return;
+    }
+
+    rentIncrementsLeaseId =
+        numericLeaseId;
+
+    resetRentIncrementsDrawer();
+
+    openDrawer(
+        drawer
+    );
+
+    await loadRentIncrements();
+}
+
+function closeRentIncrementsModal() {
+    closeDrawer(
+        'rent-increments-modal',
+        {
+            onClosed: () => {
+                rentIncrementsLeaseId =
+                    null;
+            },
+        }
+    );
+}
+
+/**
+ * Return the drawer to its pristine loading state and apply the
+ * manage_operations presentation gate to the scheduling controls.
+ */
+function resetRentIncrementsDrawer() {
+    hideRentIncrementsError();
+
+    document
+        .getElementById(
+            'rent-increments-loading'
+        )
+        ?.classList
+        .remove(
+            'hidden'
+        );
+
+    const list =
+        document.getElementById(
+            'rent-increments-list'
+        );
+
+    if (list) {
+        list.innerHTML = '';
+
+        list.classList.add(
+            'hidden'
+        );
+    }
+
+    document
+        .getElementById(
+            'rent-increment-form'
+        )
+        ?.reset();
+
+    updateRentIncrementScheduleUnit();
+
+    /*
+     * The schedule form and its footer action are Manager controls.
+     * permissions.js remains declarative via data-requires-capability;
+     * this browserCan() gate is the operative presentation guard.
+     */
+    const canManage =
+        browserCan(
+            'manage_operations'
+        );
+
+    document
+        .getElementById(
+            'rent-increment-schedule'
+        )
+        ?.classList
+        .toggle(
+            'hidden',
+            ! canManage
+        );
+
+    document
+        .getElementById(
+            'rent-increment-submit'
+        )
+        ?.classList
+        .toggle(
+            'hidden',
+            ! canManage
+        );
+}
+
+/**
+ * Reflect the selected increment type in the value suffix.
+ */
+function updateRentIncrementScheduleUnit() {
+    const unit =
+        document.getElementById(
+            'rent-increment-unit'
+        );
+
+    if (! unit) {
+        return;
+    }
+
+    unit.textContent =
+        formValue(
+            'rent-increment-type'
+        ) === 'fixed'
+            ? (
+                getPresentationConfiguration()
+                    .currency
+                || 'GHS'
+            )
+            : '%';
+}
+
+/**
+ * Load every rent increment recorded for the open Lease.
+ */
+async function loadRentIncrements() {
+    if (
+        ! Number.isInteger(
+            rentIncrementsLeaseId
+        )
+    ) {
+        return;
+    }
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/leases/${rentIncrementsLeaseId}/rent-increments`
+            );
+
+        const payload =
+            await parseJsonResponse(
+                response
+            );
+
+        renderRentIncrements(
+            Array.isArray(
+                payload?.rent_increments
+            )
+                ? payload.rent_increments
+                : []
+        );
+
+        document
+            .getElementById(
+                'rent-increments-loading'
+            )
+            ?.classList
+            .add(
+                'hidden'
+            );
+
+        document
+            .getElementById(
+                'rent-increments-list'
+            )
+            ?.classList
+            .remove(
+                'hidden'
+            );
+    } catch (error) {
+        document
+            .getElementById(
+                'rent-increments-loading'
+            )
+            ?.classList
+            .add(
+                'hidden'
+            );
+
+        showRentIncrementsError(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'leases.increments_unable_load'
+                )
+        );
+    }
+}
+
+/**
+ * Render the increment history with status pills and Manager cancel
+ * actions on scheduled rows.
+ */
+function renderRentIncrements(
+    increments
+) {
+    const container =
+        document.getElementById(
+            'rent-increments-list'
+        );
+
+    if (! container) {
+        return;
+    }
+
+    if (increments.length === 0) {
+        container.innerHTML = `
+            <div
+                class="
+                    rounded-xl border
+                    border-dashed border-[var(--pm-border)]
+                    px-6 py-10 text-center
+                    text-sm text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'leases.no_rent_increments'
+                    )
+                )}
+            </div>
+        `;
+
+        return;
+    }
+
+    const canManage =
+        browserCan(
+            'manage_operations'
+        );
+
+    container.innerHTML =
+        increments
+            .map(
+                (increment) =>
+                    rentIncrementRow(
+                        increment,
+                        canManage
+                    )
+            )
+            .join('');
+
+    container
+        .querySelectorAll(
+            '[data-cancel-rent-increment]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        cancelRentIncrement(
+                            button.dataset
+                                .incrementId
+                        );
+                    }
+                );
+            }
+        );
+}
+
+/**
+ * Render one increment record.
+ */
+function rentIncrementRow(
+    increment,
+    canManage
+) {
+    const timeline =
+        [
+            increment.notification_sent_at
+                ? `${translate(
+                    'leases.notification_sent'
+                )}: ${formatDate(
+                    increment.notification_sent_at
+                )}`
+                : null,
+
+            increment.applied_at
+                ? `${translate(
+                    'leases.applied_on'
+                )}: ${formatDate(
+                    increment.applied_at
+                )}`
+                : null,
+
+            increment.cancelled_at
+                ? `${translate(
+                    'leases.cancelled_on'
+                )}: ${formatDate(
+                    increment.cancelled_at
+                )}`
+                : null,
+        ].filter(
+            Boolean
+        );
+
+    return `
+        <div
+            class="
+                rounded-xl border
+                border-[var(--pm-border)]
+                bg-[var(--pm-surface-subtle)] p-4
+            "
+        >
+            <div
+                class="
+                    flex flex-wrap items-center
+                    justify-between gap-2
+                "
+            >
+                <div
+                    class="
+                        text-sm font-semibold
+                        text-[var(--pm-text)]
+                    "
+                >
+                    ${escapeHtml(
+                        formatCurrency(
+                            Number(
+                                increment.old_rent_amount
+                                ?? 0
+                            )
+                        )
+                    )}
+                    →
+                    ${escapeHtml(
+                        formatCurrency(
+                            Number(
+                                increment.new_rent_amount
+                                ?? 0
+                            )
+                        )
+                    )}
+                </div>
+
+                ${rentIncrementStatusBadge(
+                    increment.status
+                )}
+            </div>
+
+            <div
+                class="
+                    mt-2 flex flex-wrap
+                    gap-x-5 gap-y-1
+                    text-xs text-[var(--pm-text-muted)]
+                "
+            >
+                <span>
+                    ${escapeHtml(
+                        rentIncrementAmountLabel(
+                            increment
+                        )
+                    )}
+                </span>
+
+                <span>
+                    ${escapeHtml(
+                        translate(
+                            'leases.effective_date'
+                        )
+                    )}:
+                    ${escapeHtml(
+                        formatDate(
+                            increment.effective_date
+                        )
+                    )}
+                </span>
+            </div>
+
+            ${
+                timeline.length > 0
+                    ? `
+                        <div
+                            class="
+                                mt-2 space-y-0.5
+                                text-xs text-[var(--pm-text-subtle)]
+                            "
+                        >
+                            ${
+                                timeline
+                                    .map(
+                                        (entry) => `
+                                            <div>
+                                                ${escapeHtml(
+                                                    entry
+                                                )}
+                                            </div>
+                                        `
+                                    )
+                                    .join('')
+                            }
+                        </div>
+                    `
+                    : ''
+            }
+
+            ${
+                canManage
+                && increment.status === 'scheduled'
+                    ? `
+                        <div
+                            class="mt-3"
+                            data-requires-capability="manage_operations"
+                        >
+                            <button
+                                type="button"
+                                data-cancel-rent-increment
+                                data-increment-id="${escapeHtml(
+                                    increment.id
+                                )}"
+                                class="
+                                    rounded-lg
+                                    border border-[var(--pm-danger-border)]
+                                    bg-[var(--pm-surface)] px-3 py-1.5
+                                    text-xs font-medium
+                                    text-[var(--pm-danger-text)]
+                                    transition
+                                    hover:bg-[var(--pm-danger-background)]
+                                "
+                            >
+                                ${escapeHtml(
+                                    translate(
+                                        'leases.cancel_increment'
+                                    )
+                                )}
+                            </button>
+                        </div>
+                    `
+                    : ''
+            }
+        </div>
+    `;
+}
+
+/**
+ * Status pill for one increment.
+ */
+function rentIncrementStatusBadge(
+    status
+) {
+    let classes =
+        'bg-[var(--pm-surface-muted)] text-[var(--pm-text-secondary)]';
+
+    let label =
+        String(
+            status || ''
+        );
+
+    if (status === 'scheduled') {
+        classes =
+            'bg-[var(--pm-info-background)] text-[var(--pm-info-text)]';
+
+        label =
+            translate(
+                'leases.increment_status_scheduled'
+            );
+    } else if (
+        status === 'applied'
+    ) {
+        classes =
+            'bg-[var(--pm-success-background)] text-[var(--pm-success-text)]';
+
+        label =
+            translate(
+                'leases.increment_status_applied'
+            );
+    } else if (
+        status === 'cancelled'
+    ) {
+        label =
+            translate(
+                'leases.increment_status_cancelled'
+            );
+    }
+
+    return `
+        <span
+            class="
+                rounded-full
+                px-2.5 py-1
+                text-xs font-medium
+                ${classes}
+            "
+        >
+            ${escapeHtml(
+                label
+            )}
+        </span>
+    `;
+}
+
+/**
+ * Human description of the configured increase.
+ */
+function rentIncrementAmountLabel(
+    increment
+) {
+    const value =
+        Number(
+            increment.increment_value
+            ?? 0
+        );
+
+    if (
+        increment.increment_type
+        === 'percentage'
+    ) {
+        return `+${value}%`;
+    }
+
+    return `+${formatCurrency(
+        value
+    )}`;
+}
+
+/**
+ * Schedule a future rent increment (Manager workflow).
+ *
+ * Business-rule refusals from the server (pending increment exists,
+ * non-increasing rent, interval too short, …) arrive as 422 validation
+ * messages and render inline in the drawer.
+ */
+async function submitRentIncrementSchedule(
+    event
+) {
+    event.preventDefault();
+
+    if (
+        ! Number.isInteger(
+            rentIncrementsLeaseId
+        )
+    ) {
+        return;
+    }
+
+    const effectiveDate =
+        dateForApi(
+            formValue(
+                'rent-increment-effective-date'
+            )
+        );
+
+    if (
+        ! /^\d{4}-\d{2}-\d{2}$/.test(
+            effectiveDate
+        )
+    ) {
+        showRentIncrementsError(
+            translate(
+                'leases.increment_invalid_date'
+            )
+        );
+
+        return;
+    }
+
+    const submitButton =
+        document.getElementById(
+            'rent-increment-submit'
+        );
+
+    try {
+        hideRentIncrementsError();
+
+        if (submitButton) {
+            submitButton.disabled =
+                true;
+        }
+
+        const response =
+            await apiRequest(
+                `/api/leases/${rentIncrementsLeaseId}/rent-increments`,
+                {
+                    method:
+                        'POST',
+
+                    body:
+                        JSON.stringify({
+                            increment_type:
+                                formValue(
+                                    'rent-increment-type'
+                                ),
+
+                            increment_value:
+                                Number(
+                                    formValue(
+                                        'rent-increment-value'
+                                    )
+                                ),
+
+                            effective_date:
+                                effectiveDate,
+                        }),
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        document
+            .getElementById(
+                'rent-increment-form'
+            )
+            ?.reset();
+
+        updateRentIncrementScheduleUnit();
+
+        await loadRentIncrements();
+    } catch (error) {
+        showRentIncrementsError(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'leases.increment_schedule_failed'
+                )
+        );
+    } finally {
+        if (submitButton) {
+            submitButton.disabled =
+                false;
+        }
+    }
+}
+
+/**
+ * Cancel one scheduled increment before the scheduler applies it.
+ */
+async function cancelRentIncrement(
+    incrementId
+) {
+    const numericIncrementId =
+        Number(
+            incrementId
+        );
+
+    if (
+        ! Number.isInteger(
+            numericIncrementId
+        )
+        || numericIncrementId <= 0
+    ) {
+        return;
+    }
+
+    if (
+        ! window.confirm(
+            translate(
+                'leases.confirm_cancel_increment'
+            )
+        )
+    ) {
+        return;
+    }
+
+    try {
+        hideRentIncrementsError();
+
+        const response =
+            await apiRequest(
+                `/api/rent-increments/${numericIncrementId}/cancel`,
+                {
+                    method:
+                        'POST',
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        await loadRentIncrements();
+    } catch (error) {
+        showRentIncrementsError(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'leases.increment_cancel_failed'
+                )
+        );
+    }
+}
+
+/**
+ * Surface a Rent Increments drawer failure.
+ */
+function showRentIncrementsError(
+    message
+) {
+    const box =
+        document.getElementById(
+            'rent-increments-error'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent =
+        message;
+
+    box.classList.remove(
+        'hidden'
+    );
+}
+
+/**
+ * Clear Rent Increments drawer failures.
+ */
+function hideRentIncrementsError() {
+    const box =
+        document.getElementById(
+            'rent-increments-error'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent = '';
+
+    box.classList.add(
+        'hidden'
+    );
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -7081,1975 +7777,4 @@ async function openLeaseFinancialHistoryDocument(
                 )
         );
     }
-}
-
-
-/**
- * Open the operational Security Deposit view for one Lease.
- */
-async function openSecurityDepositModal(
-    leaseId
-) {
-    const numericLeaseId =
-        Number(
-            leaseId
-        );
-
-    if (
-        ! Number.isInteger(
-            numericLeaseId
-        )
-        || numericLeaseId <= 0
-    ) {
-        return;
-    }
-
-    securityDepositLeaseId =
-        numericLeaseId;
-
-    resetSecurityDepositModal();
-
-    const lease =
-        loadedLeasesById.get(
-            String(
-                numericLeaseId
-            )
-        );
-
-    setText(
-        'security-deposit-modal-description',
-        [
-            lease?.unit?.building?.name,
-            lease?.unit?.name,
-            partyDisplayName(
-                lease?.tenant
-            ),
-        ]
-            .filter(Boolean)
-            .join(' · ')
-            || translate(
-                'leases.security_review_description'
-            )
-    );
-
-    const drawer =
-        document.getElementById(
-            'security-deposit-modal'
-        );
-
-    if (! drawer) {
-        return;
-    }
-
-    openDrawer(
-        drawer
-    );
-
-    await loadSecurityDepositPosition();
-}
-
-/**
- * Close and reset the Security Deposit modal.
- */
-function closeSecurityDepositModal() {
-    closeDrawer(
-        'security-deposit-modal',
-        {
-            onClosed: () => {
-                securityDepositLeaseId =
-                    null;
-
-                resetSecurityDepositModal();
-            },
-        }
-    );
-}
-
-
-/**
- * Restore modal controls to their initial loading state.
- */
-function resetSecurityDepositModal() {
-    hideSecurityDepositError();
-
-    document
-        .getElementById(
-            'security-deposit-loading'
-        )
-        ?.classList.remove(
-            'hidden'
-        );
-
-    document
-        .getElementById(
-            'security-deposit-content'
-        )
-        ?.classList.add(
-            'hidden'
-        );
-
-    document
-        .getElementById(
-            'security-deposit-deduction-form'
-        )
-        ?.reset();
-
-    document
-        .getElementById(
-            'security-deposit-settlement-form'
-        )
-        ?.reset();
-
-    document
-        .getElementById(
-            'security-deposit-settled'
-        )
-        ?.classList.add(
-            'hidden'
-        );
-
-    const lifecycle =
-        document.getElementById(
-            'security-deposit-lifecycle-message'
-        );
-
-    if (lifecycle) {
-        lifecycle.textContent = '';
-
-        lifecycle.classList.add(
-            'hidden'
-        );
-    }
-
-    const voucherButton =
-        document.getElementById(
-            'security-deposit-voucher-link'
-        );
-
-    if (voucherButton) {
-        delete voucherButton.dataset.endpoint;
-
-        voucherButton.disabled =
-            true;
-    }
-}
-
-/**
- * Retrieve server-calculated Security Deposit position.
- */
-async function loadSecurityDepositPosition() {
-    if (! securityDepositLeaseId) {
-        return;
-    }
-
-    try {
-        hideSecurityDepositError();
-
-        const response =
-            await apiRequest(
-                `/api/leases/${securityDepositLeaseId}/security-deposit`
-            );
-
-        const position =
-            await parseJsonResponse(
-                response
-            );
-
-        renderSecurityDepositPosition(
-            position
-        );
-    } catch (error) {
-        showSecurityDepositError(
-            error instanceof Error
-                ? error.message
-                : translate(
-                    'leases.unable_load_security_deposit'
-                )
-        );
-    } finally {
-        document
-            .getElementById(
-                'security-deposit-loading'
-            )
-            ?.classList.add(
-                'hidden'
-            );
-
-        document
-            .getElementById(
-                'security-deposit-content'
-            )
-            ?.classList.remove(
-                'hidden'
-            );
-    }
-}
-
-/**
- * Render authoritative Security Deposit values returned by the API.
- */
-function renderSecurityDepositPosition(
-    position
-) {
-    const lease =
-        loadedLeasesById.get(
-            String(
-                securityDepositLeaseId
-            )
-        );
-
-    setText(
-        'security-deposit-contractual',
-        formatCurrency(
-            Number(
-                position?.contractual_amount
-                ?? 0
-            )
-        )
-    );
-
-    setText(
-        'security-deposit-held',
-        formatCurrency(
-            Number(
-                position?.held_balance
-                ?? 0
-            )
-        )
-    );
-
-    setText(
-        'security-deposit-deduction-total',
-        formatCurrency(
-            Number(
-                position?.deduction_total
-                ?? 0
-            )
-        )
-    );
-
-    setText(
-        'security-deposit-refund',
-        formatCurrency(
-            Number(
-                position?.estimated_refund
-                ?? 0
-            )
-        )
-    );
-
-    setText(
-        'security-deposit-debt',
-        formatCurrency(
-            Number(
-                position?.estimated_tenant_debt
-                ?? 0
-            )
-        )
-    );
-
-    renderSecurityDepositDeductions(
-        position?.deductions
-    );
-
-    const settlement =
-        position?.settlement
-        ?? null;
-
-    const terminationInProgress =
-        lease?.status
-        === 'notice';
-
-    const terminated =
-        lease?.status
-        === 'terminated';
-
-    const deductionsAllowed =
-        terminationInProgress
-        || terminated;
-
-    const deductionForm =
-        document.getElementById(
-            'security-deposit-deduction-form'
-        );
-
-    const settlementForm =
-        document.getElementById(
-            'security-deposit-settlement-form'
-        );
-
-    const settledBox =
-        document.getElementById(
-            'security-deposit-settled'
-        );
-
-    const lifecycle =
-        document.getElementById(
-            'security-deposit-lifecycle-message'
-        );
-
-    deductionForm?.classList.add(
-        'hidden'
-    );
-
-    settlementForm?.classList.add(
-        'hidden'
-    );
-
-    settledBox?.classList.add(
-        'hidden'
-    );
-
-    lifecycle?.classList.add(
-        'hidden'
-    );
-
-    if (settlement) {
-        settledBox?.classList.remove(
-            'hidden'
-        );
-
-        setText(
-            'security-deposit-voucher-number',
-            `${translate(
-                'leases.voucher'
-            )} ${settlement.refund_voucher_number}`
-        );
-
-
-        const voucherButton =
-            document.getElementById(
-                'security-deposit-voucher-link'
-            );
-
-        if (voucherButton) {
-            /*
-             * Store the authenticated API endpoint as data rather than
-             * assigning it as an href. Ordinary navigation would omit the
-             * sessionStorage Bearer token and receive HTTP 401.
-             */
-            voucherButton.dataset.endpoint =
-                `/api/security-deposit-settlements/${settlement.id}/voucher`;
-
-            voucherButton.disabled =
-                false;
-        }
-
-
-
-
-        return;
-    }
-
-    if (! deductionsAllowed) {
-        if (lifecycle) {
-            lifecycle.textContent =
-                translate(
-                    'leases.security_available_during_termination'
-                );
-
-            lifecycle.classList.remove(
-                'hidden'
-            );
-        }
-
-        return;
-    }
-
-    /*
-     * V1.0.5 permits itemized Security Deposit deductions while
-     * termination is in progress.
-     */
-    deductionForm?.classList.remove(
-        'hidden'
-    );
-
-    /*
-     * The existing final Security Deposit settlement remains available
-     * only after the Lease has actually completed termination.
-     */
-    if (terminated) {
-        settlementForm?.classList.remove(
-            'hidden'
-        );
-    } else if (lifecycle) {
-        lifecycle.textContent =
-            translate(
-                'leases.security_deductions_during_termination'
-            );
-
-        lifecycle.classList.remove(
-            'hidden'
-        );
-    }
-
-    /*
-     * Default operational dates to today while still allowing the Property
-     * Manager to enter the actual assessment/settlement date.
-     */
-    const today =
-        new Date()
-            .toISOString()
-            .slice(
-                0,
-                10
-            );
-
-    const todayDisplay =
-        dateForDisplay(
-            today
-        );
-
-    const deductionDate =
-        document.getElementById(
-            'security-deduction-date'
-        );
-
-    if (
-        deductionDate
-        && ! deductionDate.value
-    ) {
-        deductionDate.value =
-            todayDisplay;
-    }
-
-    const settlementDate =
-        document.getElementById(
-            'security-settlement-date'
-        );
-
-    if (
-        settlementDate
-        && ! settlementDate.value
-    ) {
-        settlementDate.value =
-            todayDisplay;
-    }
-}
-
-/**
- * Render itemized close-out deductions.
- */
-function renderSecurityDepositDeductions(
-    deductions
-) {
-    const container =
-        document.getElementById(
-            'security-deposit-deductions'
-        );
-
-    if (! container) {
-        return;
-    }
-
-    const items =
-        Array.isArray(
-            deductions
-        )
-            ? deductions
-            : [];
-
-    if (items.length === 0) {
-        container.innerHTML = `
-            <div
-                class="
-                    rounded-lg border
-                    border-dashed border-[var(--pm-border)]
-                    px-4 py-6 text-center
-                    text-sm text-[var(--pm-text-muted)]
-                "
-            >
-                ${escapeHtml(
-                    translate(
-                        'leases.no_deductions'
-                    )
-                )}
-            </div>
-        `;
-
-        return;
-    }
-
-    container.innerHTML = `
-        <div class="overflow-x-auto">
-            <table
-                class="
-                    w-full border-collapse
-                    text-left text-sm
-                "
-            >
-                <thead>
-                    <tr
-                        class="
-                            border-b border-[var(--pm-border)]
-                            text-xs uppercase
-                            tracking-wide text-[var(--pm-text-muted)]
-                        "
-                    >
-                        <th class="px-3 py-2">
-                            ${escapeHtml(
-                                translate(
-                                    'leases.date'
-                                )
-                            )}
-                        </th>
-
-                        <th class="px-3 py-2">
-                            ${escapeHtml(
-                                translate(
-                                    'leases.description'
-                                )
-                            )}
-                        </th>
-
-                        <th class="px-3 py-2">
-                            ${escapeHtml(
-                                translate(
-                                    'leases.reference'
-                                )
-                            )}
-                        </th>
-
-                        <th
-                            class="
-                                px-3 py-2
-                                text-right
-                            "
-                        >
-                            ${escapeHtml(
-                                translate(
-                                    'leases.amount'
-                                )
-                            )}
-                        </th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    ${
-                        items
-                            .map(
-                                (deduction) => `
-                                    <tr
-                                        class="
-                                            border-b
-                                            border-[var(--pm-border-subtle)]
-                                        "
-                                    >
-                                        <td
-                                            class="
-                                                px-3 py-3
-                                                text-[var(--pm-text-secondary)]
-                                            "
-                                        >
-                                            ${escapeHtml(
-                                                formatDate(
-                                                    deduction
-                                                        .deduction_date
-                                                )
-                                            )}
-                                        </td>
-
-                                        <td class="px-3 py-3">
-                                            <div
-                                                class="
-                                                    font-medium
-                                                    text-[var(--pm-text)]
-                                                "
-                                            >
-                                                ${escapeHtml(
-                                                    deduction
-                                                        .description
-                                                    ?? ''
-                                                )}
-                                            </div>
-
-                                            ${
-                                                deduction.notes
-                                                    ? `
-                                                        <div
-                                                            class="
-                                                                mt-1 text-xs
-                                                                text-[var(--pm-text-muted)]
-                                                            "
-                                                        >
-                                                            ${escapeHtml(
-                                                                deduction.notes
-                                                            )}
-                                                        </div>
-                                                    `
-                                                    : ''
-                                            }
-                                        </td>
-
-                                        <td
-                                            class="
-                                                px-3 py-3
-                                                text-[var(--pm-text-secondary)]
-                                            "
-                                        >
-                                            ${escapeHtml(
-                                                deduction.reference
-                                                || '—'
-                                            )}
-                                        </td>
-
-                                        <td
-                                            class="
-                                                px-3 py-3
-                                                text-right
-                                                font-medium
-                                                text-[var(--pm-text)]
-                                            "
-                                        >
-                                            ${escapeHtml(
-                                                formatCurrency(
-                                                    Number(
-                                                        deduction.amount
-                                                        ?? 0
-                                                    )
-                                                )
-                                            )}
-                                        </td>
-                                    </tr>
-                                `
-                            )
-                            .join('')
-                    }
-                </tbody>
-            </table>
-        </div>
-    `;
-}
-
-
-/**
- * Download and display the finalized Security Deposit voucher.
- *
- * Financial document routes are protected by Sanctum. The application token
- * therefore has to be attached through apiRequest() rather than relying on a
- * normal browser link.
- */
-async function openSecurityDepositVoucher() {
-    const button =
-        document.getElementById(
-            'security-deposit-voucher-link'
-        );
-
-    const endpoint =
-        button?.dataset
-            ?.endpoint;
-
-    if (
-        ! button
-        || ! endpoint
-    ) {
-        return;
-    }
-
-    hideSecurityDepositError();
-
-    /*
-     * Open an empty browser tab immediately while this code is still running
-     * inside the user's click event. This avoids popup blockers treating the
-     * eventual PDF window as an unsolicited popup after the asynchronous
-     * authenticated request completes.
-     */
-    const viewer =
-        window.open(
-            '',
-            '_blank'
-        );
-
-    if (! viewer) {
-        showSecurityDepositError(
-            translate(
-                'leases.voucher_popup_blocked'
-            )
-        );
-
-        return;
-    }
-
-    const originalLabel =
-        button.textContent;
-
-    try {
-        button.disabled =
-            true;
-
-        button.textContent =
-            translate(
-                'leases.opening'
-            );
-
-        const response =
-            await apiRequest(
-                endpoint,
-                {
-                    headers: {
-                        Accept:
-                            'application/pdf',
-                    },
-                }
-            );
-
-        if (! response.ok) {
-            throw new Error(
-                translate(
-                    'leases.unable_open_voucher'
-                )
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        /*
-         * Navigate the already-opened tab to the authenticated PDF blob.
-         */
-        viewer.location.href =
-            url;
-
-        /*
-         * The browser no longer needs the temporary object URL once the PDF
-         * viewer has had sufficient time to load it.
-         */
-        window.setTimeout(
-            () => {
-                URL.revokeObjectURL(
-                    url
-                );
-            },
-            60000
-        );
-    } catch (error) {
-        viewer.close();
-
-        showSecurityDepositError(
-            error instanceof Error
-                ? error.message
-                : translate(
-                    'leases.unable_open_voucher'
-                )
-        );
-    } finally {
-        button.disabled =
-            false;
-
-        button.textContent =
-            originalLabel
-            || translate(
-                'leases.download_voucher'
-            );
-    }
-}
-
-
-
-/**
- * Persist one itemized deduction and refresh the server-calculated preview.
- */
-async function submitSecurityDepositDeduction(
-    event
-) {
-    event.preventDefault();
-
-    if (! securityDepositLeaseId) {
-        return;
-    }
-
-    const button =
-        document.getElementById(
-            'security-deduction-submit'
-        );
-
-    try {
-        hideSecurityDepositError();
-
-        if (button) {
-            button.disabled =
-                true;
-
-            button.textContent =
-                translate(
-                    'leases.adding'
-                );
-        }
-
-        const response =
-            await apiRequest(
-                `/api/leases/${securityDepositLeaseId}/security-deposit/deductions`,
-                {
-                    method:
-                        'POST',
-
-                    body:
-                        JSON.stringify({
-                            description:
-                                formValue(
-                                    'security-deduction-description'
-                                ),
-
-                            amount:
-                                Number(
-                                    formValue(
-                                        'security-deduction-amount'
-                                    )
-                                ),
-
-                            deduction_date:
-                                dateForApi(
-                                    formValue(
-                                        'security-deduction-date'
-                                    )
-                                ),
-
-                            reference:
-                                nullableFormValue(
-                                    'security-deduction-reference'
-                                ),
-
-                            notes:
-                                nullableFormValue(
-                                    'security-deduction-notes'
-                                ),
-                        }),
-                }
-            );
-
-        await parseJsonResponse(
-            response
-        );
-
-        document
-            .getElementById(
-                'security-deposit-deduction-form'
-            )
-            ?.reset();
-
-        await loadSecurityDepositPosition();
-    } catch (error) {
-        showSecurityDepositError(
-            error instanceof Error
-                ? error.message
-                : translate(
-                    'leases.unable_add_deduction'
-                )
-        );
-    } finally {
-        if (button) {
-            button.disabled =
-                false;
-
-            button.textContent =
-                translate(
-                    'leases.add_deduction'
-                );
-        }
-    }
-}
-
-/**
- * Finalize Security Deposit close-out.
- */
-async function submitSecurityDepositSettlement(
-    event
-) {
-    event.preventDefault();
-
-    if (! securityDepositLeaseId) {
-        return;
-    }
-
-    const confirmed =
-        window.confirm(
-            translate(
-                'leases.finalize_security_confirmation'
-            )
-            + '\n\n'
-            + translate(
-                'leases.finalize_security_warning'
-            )
-        );
-
-    if (! confirmed) {
-        return;
-    }
-
-    const button =
-        document.getElementById(
-            'security-settlement-submit'
-        );
-
-    try {
-        hideSecurityDepositError();
-
-        if (button) {
-            button.disabled =
-                true;
-
-            button.textContent =
-                translate(
-                    'leases.finalizing'
-                );
-        }
-
-        const response =
-            await apiRequest(
-                `/api/leases/${securityDepositLeaseId}/security-deposit/settle`,
-                {
-                    method:
-                        'POST',
-
-                    body:
-                        JSON.stringify({
-                            settlement_date:
-                                dateForApi(
-                                    formValue(
-                                        'security-settlement-date'
-                                    )
-                                ),
-
-                            notes:
-                                nullableFormValue(
-                                    'security-settlement-notes'
-                                ),
-                        }),
-                }
-            );
-
-        await parseJsonResponse(
-            response
-        );
-
-        await loadSecurityDepositPosition();
-    } catch (error) {
-        showSecurityDepositError(
-            error instanceof Error
-                ? error.message
-                : translate(
-                    'leases.unable_finalize_security'
-                )
-        );
-    } finally {
-        if (button) {
-            button.disabled =
-                false;
-
-            button.textContent =
-                translate(
-                    'leases.finalize_settlement'
-                );
-        }
-    }
-}
-
-/**
- * Display an operational Security Deposit error.
- */
-function showSecurityDepositError(
-    message
-) {
-    const box =
-        document.getElementById(
-            'security-deposit-error'
-        );
-
-    if (! box) {
-        return;
-    }
-
-    box.textContent =
-        message;
-
-    box.classList.remove(
-        'hidden'
-    );
-}
-
-/**
- * Clear an operational Security Deposit error.
- */
-function hideSecurityDepositError() {
-    const box =
-        document.getElementById(
-            'security-deposit-error'
-        );
-
-    if (! box) {
-        return;
-    }
-
-    box.textContent = '';
-
-    box.classList.add(
-        'hidden'
-    );
-}
-
-/*
-|--------------------------------------------------------------------------
-| Tenant Fund Operations
-|--------------------------------------------------------------------------
-|
-| This workspace exposes actual tenant-held money rather than contractual
-| Lease expectations.
-|
-| All balances and Invoice obligations originate from the backend. The
-| browser never performs accounting calculations or mutates balances itself.
-|
-*/
-
-let tenantFundsLeaseId =
-    null;
-
-let tenantFundsLease =
-    null;
-
-/**
- * Register Tenant Funds modal controls.
- */
-/**
- * Initialize Tenant Funds DD-MM-YYYY date controls while retaining the
- * browser's native date picker.
- */
-function initializeTenantFundsDateInputs() {
-    initializeDateInputs(
-        '[data-tenant-funds-date-input]'
-    );
-
-    document
-        .querySelectorAll(
-            '[data-tenant-funds-date-picker]'
-        )
-        .forEach(
-            (button) => {
-                if (
-                    button.dataset
-                        .tenantFundsDateInitialized
-                    === 'true'
-                ) {
-                    return;
-                }
-
-                button.dataset
-                    .tenantFundsDateInitialized =
-                    'true';
-
-                const fieldId =
-                    button.dataset
-                        .tenantFundsDatePicker;
-
-                const textInput =
-                    document.getElementById(
-                        fieldId
-                    );
-
-                const nativeInput =
-                    document.querySelector(
-                        `[data-tenant-funds-native-date-picker="${fieldId}"]`
-                    );
-
-                if (
-                    ! textInput
-                    || ! nativeInput
-                ) {
-                    return;
-                }
-
-                const syncNative =
-                    () => {
-                        const iso =
-                            dateForApi(
-                                textInput.value
-                            );
-
-                        nativeInput.value =
-                            /^\d{4}-\d{2}-\d{2}$/
-                                .test(iso)
-                                ? iso
-                                : '';
-                    };
-
-                textInput.addEventListener(
-                    'change',
-                    syncNative
-                );
-
-                textInput.addEventListener(
-                    'blur',
-                    syncNative
-                );
-
-                button.addEventListener(
-                    'click',
-                    () => {
-                        openDatePicker(
-                            textInput
-                        );
-                    }
-                );
-
-                nativeInput.addEventListener(
-                    'change',
-                    () => {
-                        textInput.value =
-                            dateForDisplay(
-                                nativeInput.value
-                            );
-
-                        textInput.dispatchEvent(
-                            new Event(
-                                'change',
-                                {
-                                    bubbles: true,
-                                }
-                            )
-                        );
-                    }
-                );
-            }
-        );
-}
-
-
-function initializeTenantFundsModal() {
-    initializeTenantFundsDateInputs();
-
-    document
-        .getElementById(
-            'tenant-funds-modal-close'
-        )
-        ?.addEventListener(
-            'click',
-            closeTenantFundsModal
-        );
-
-    document
-        .getElementById(
-            'tenant-funds-close-footer'
-        )
-        ?.addEventListener(
-            'click',
-            closeTenantFundsModal
-        );
-
-    document
-        .getElementById(
-            'tenant-funds-modal-backdrop'
-        )
-        ?.addEventListener(
-            'click',
-            closeTenantFundsModal
-        );
-
-    document
-        .getElementById(
-            'tenant-funds-reserve-form'
-        )
-        ?.addEventListener(
-            'submit',
-            submitRentReserveConsumption
-        );
-
-    document
-        .getElementById(
-            'tenant-funds-advance-form'
-        )
-        ?.addEventListener(
-            'submit',
-            submitConsumableAdvanceConsumption
-        );
-
-    document.addEventListener(
-        'keydown',
-        (event) => {
-            const drawer =
-                document.getElementById(
-                    'tenant-funds-modal'
-                );
-
-            if (
-                event.key === 'Escape'
-                && drawer?.classList.contains(
-                    'pm-drawer-active'
-                )
-            ) {
-                closeTenantFundsModal();
-            }
-        }
-    );
-}
-
-/**
- * Open the actual tenant-held fund position for one Lease.
- */
-async function openTenantFundsModal(
-    leaseId
-) {
-    const numericLeaseId =
-        Number(
-            leaseId
-        );
-
-    if (
-        ! Number.isInteger(
-            numericLeaseId
-        )
-        || numericLeaseId <= 0
-    ) {
-        return;
-    }
-
-    tenantFundsLeaseId =
-        numericLeaseId;
-
-    tenantFundsLease =
-        null;
-
-    hideTenantFundsError();
-
-    document
-        .getElementById(
-            'tenant-funds-loading'
-        )
-        ?.classList.remove(
-            'hidden'
-        );
-
-    document
-        .getElementById(
-            'tenant-funds-content'
-        )
-        ?.classList.add(
-            'hidden'
-        );
-
-    const lease =
-        loadedLeasesById.get(
-            String(
-                numericLeaseId
-            )
-        );
-
-    setText(
-        'tenant-funds-modal-description',
-        [
-            lease?.unit?.building?.name,
-            lease?.unit?.name,
-            partyDisplayName(
-                lease?.tenant
-            ),
-        ]
-            .filter(Boolean)
-            .join(' · ')
-            || translate(
-                'leases.tenant_funds_description'
-            )
-    );
-
-    const drawer =
-        document.getElementById(
-            'tenant-funds-modal'
-        );
-
-    if (! drawer) {
-        return;
-    }
-
-    openDrawer(
-        drawer
-    );
-
-    await loadTenantFundsLease();
-}
-
-/**
- * Reload authoritative Lease financial information.
- */
-async function loadTenantFundsLease() {
-    if (! tenantFundsLeaseId) {
-        return;
-    }
-
-    try {
-        hideTenantFundsError();
-
-        const response =
-            await apiRequest(
-                `/api/leases/${tenantFundsLeaseId}`
-            );
-
-        tenantFundsLease =
-            await parseJsonResponse(
-                response
-            );
-
-        renderTenantFunds();
-    } catch (error) {
-        showTenantFundsError(
-            error instanceof Error
-                ? error.message
-                : translate(
-                    'leases.unable_load_tenant_funds'
-                )
-        );
-    } finally {
-        document
-            .getElementById(
-                'tenant-funds-loading'
-            )
-            ?.classList.add(
-                'hidden'
-            );
-
-        document
-            .getElementById(
-                'tenant-funds-content'
-            )
-            ?.classList.remove(
-                'hidden'
-            );
-    }
-}
-
-/**
- * Render server-calculated balances and outstanding Invoices.
- */
-function renderTenantFunds() {
-    const accounts =
-        Array.isArray(
-            tenantFundsLease
-                ?.tenant_fund_accounts
-        )
-            ? tenantFundsLease
-                .tenant_fund_accounts
-            : [];
-
-    const reserve =
-        accounts.find(
-            (account) =>
-                account.type
-                === 'rent_reserve'
-        )
-        ?? null;
-
-    const advance =
-        accounts.find(
-            (account) =>
-                account.type
-                === 'consumable_advance'
-        )
-        ?? null;
-
-    const securityDeposit =
-        accounts.find(
-            (account) =>
-                account.type
-                === 'security_deposit'
-        )
-        ?? null;
-
-    setText(
-        'tenant-funds-reserve-balance',
-        formatCurrency(
-            Number(
-                reserve?.balance
-                ?? 0
-            )
-        )
-    );
-
-    setText(
-        'tenant-funds-advance-balance',
-        formatCurrency(
-            Number(
-                advance?.balance
-                ?? 0
-            )
-        )
-    );
-
-    setText(
-        'tenant-funds-security-balance',
-        formatCurrency(
-            Number(
-                securityDeposit?.balance
-                ?? 0
-            )
-        )
-    );
-
-    renderTenantFundInvoiceSelect(
-        'tenant-funds-reserve-invoice'
-    );
-
-    renderTenantFundInvoiceSelect(
-        'tenant-funds-advance-invoice'
-    );
-
-    configureRentReserveOperation(
-        reserve
-    );
-
-    configureConsumableAdvanceOperation(
-        advance
-    );
-
-    const today =
-        new Date()
-            .toISOString()
-            .slice(
-                0,
-                10
-            );
-
-    const todayDisplay =
-        dateForDisplay(
-            today
-        );
-
-    setFormValue(
-        'tenant-funds-reserve-date',
-        todayDisplay
-    );
-
-    setFormValue(
-        'tenant-funds-advance-date',
-        todayDisplay
-    );
-}
-
-/**
- * Populate an Invoice selector from authoritative outstanding balances.
- */
-function renderTenantFundInvoiceSelect(
-    id
-) {
-    const select =
-        document.getElementById(
-            id
-        );
-
-    if (! select) {
-        return;
-    }
-
-    const invoices =
-        Array.isArray(
-            tenantFundsLease
-                ?.invoices
-        )
-            ? tenantFundsLease
-                .invoices
-            : [];
-
-    const outstanding =
-        invoices.filter(
-            (invoice) =>
-                Number(
-                    invoice.outstanding_amount
-                    ?? 0
-                ) > 0
-        );
-
-    if (outstanding.length === 0) {
-        select.innerHTML = `
-            <option value="">
-                ${escapeHtml(
-                    translate(
-                        'leases.no_outstanding_invoice'
-                    )
-                )}
-            </option>
-        `;
-
-        select.disabled =
-            true;
-
-        return;
-    }
-
-    select.disabled =
-        false;
-
-    select.innerHTML = `
-        <option value="">
-            ${escapeHtml(
-                translate(
-                    'leases.select_invoice'
-                )
-            )}
-        </option>
-
-        ${outstanding
-            .map(
-                (invoice) => `
-                    <option
-                        value="${escapeHtml(
-                            invoice.id
-                        )}"
-                    >
-                        ${escapeHtml(
-                            invoice.invoice_number
-                            || `${translate(
-                                'leases.invoice'
-                            )} #${invoice.id}`
-                        )}
-                        ·
-                        ${escapeHtml(
-                            formatCurrency(
-                                Number(
-                                    invoice.outstanding_amount
-                                    ?? 0
-                                )
-                            )
-                        )}
-                        ${escapeHtml(
-                            translate(
-                                'leases.outstanding'
-                            )
-                        )}
-                    </option>
-                `
-            )
-            .join('')}
-    `;
-}
-
-/**
- * Determine whether Rent Reserve consumption can be offered.
- */
-function configureRentReserveOperation(
-    account
-) {
-    const form =
-        document.getElementById(
-            'tenant-funds-reserve-form'
-        );
-
-    const unavailable =
-        document.getElementById(
-            'tenant-funds-reserve-unavailable'
-        );
-
-    const balance =
-        Number(
-            account?.balance
-            ?? 0
-        );
-
-    const noticeStarted =
-        Boolean(
-            tenantFundsLease
-                ?.termination_notice_date
-        );
-
-    form?.classList.remove(
-        'hidden'
-    );
-
-    unavailable?.classList.add(
-        'hidden'
-    );
-
-    if (! account || balance <= 0) {
-        form?.classList.add(
-            'hidden'
-        );
-
-        if (unavailable) {
-            unavailable.textContent =
-                translate(
-                    'leases.no_rent_reserve'
-                );
-
-            unavailable.classList.remove(
-                'hidden'
-            );
-        }
-
-        return;
-    }
-
-    if (! noticeStarted) {
-        form?.classList.add(
-            'hidden'
-        );
-
-        if (unavailable) {
-            unavailable.textContent =
-                translate(
-                    'leases.reserve_protected'
-                );
-
-            unavailable.classList.remove(
-                'hidden'
-            );
-        }
-
-        return;
-    }
-
-    setText(
-        'tenant-funds-reserve-help',
-        translate(
-            'leases.reserve_available'
-        )
-    );
-}
-
-/**
- * Determine whether Consumable Advance consumption can be offered.
- */
-function configureConsumableAdvanceOperation(
-    account
-) {
-    const form =
-        document.getElementById(
-            'tenant-funds-advance-form'
-        );
-
-    const unavailable =
-        document.getElementById(
-            'tenant-funds-advance-unavailable'
-        );
-
-    const balance =
-        Number(
-            account?.balance
-            ?? 0
-        );
-
-    form?.classList.remove(
-        'hidden'
-    );
-
-    unavailable?.classList.add(
-        'hidden'
-    );
-
-    if (! account || balance <= 0) {
-        form?.classList.add(
-            'hidden'
-        );
-
-        if (unavailable) {
-            unavailable.textContent =
-                translate(
-                    'leases.no_consumable_advance'
-                );
-
-            unavailable.classList.remove(
-                'hidden'
-            );
-        }
-    }
-}
-
-/**
- * Apply Rent Reserve against an outstanding Invoice.
- */
-async function submitRentReserveConsumption(
-    event
-) {
-    event.preventDefault();
-
-    const account =
-        tenantFundAccountByType(
-            'rent_reserve'
-        );
-
-    if (! account) {
-        return;
-    }
-
-    const button =
-        document.getElementById(
-            'tenant-funds-reserve-submit'
-        );
-
-    try {
-        hideTenantFundsError();
-
-        if (button) {
-            button.disabled =
-                true;
-
-            button.textContent =
-                translate(
-                    'leases.applying'
-                );
-        }
-
-        const response =
-            await apiRequest(
-                `/api/tenant-funds/${account.id}/consume-rent`,
-                {
-                    method:
-                        'POST',
-
-                    body:
-                        JSON.stringify({
-                            invoice_id:
-                                Number(
-                                    formValue(
-                                        'tenant-funds-reserve-invoice'
-                                    )
-                                ),
-
-                            amount:
-                                Number(
-                                    formValue(
-                                        'tenant-funds-reserve-amount'
-                                    )
-                                ),
-
-                            transaction_date:
-                                dateForApi(
-                formValue(
-                                    'tenant-funds-reserve-date'
-                                )
-            ),
-                        }),
-                }
-            );
-
-        await parseJsonResponse(
-            response
-        );
-
-        document
-            .getElementById(
-                'tenant-funds-reserve-form'
-            )
-            ?.reset();
-
-        await loadTenantFundsLease();
-    } catch (error) {
-        showTenantFundsError(
-            error instanceof Error
-                ? error.message
-                : translate(
-                    'leases.unable_apply_reserve'
-                )
-        );
-    } finally {
-        if (button) {
-            button.disabled =
-                false;
-
-            button.textContent =
-                translate(
-                    'leases.apply_rent_reserve'
-                );
-        }
-    }
-}
-
-/**
- * Apply Consumable Advance against an outstanding Invoice.
- */
-async function submitConsumableAdvanceConsumption(
-    event
-) {
-    event.preventDefault();
-
-    const account =
-        tenantFundAccountByType(
-            'consumable_advance'
-        );
-
-    if (! account) {
-        return;
-    }
-
-    const button =
-        document.getElementById(
-            'tenant-funds-advance-submit'
-        );
-
-    try {
-        hideTenantFundsError();
-
-        if (button) {
-            button.disabled =
-                true;
-
-            button.textContent =
-                translate(
-                    'leases.applying'
-                );
-        }
-
-        const response =
-            await apiRequest(
-                `/api/tenant-funds/${account.id}/consume-advance`,
-                {
-                    method:
-                        'POST',
-
-                    body:
-                        JSON.stringify({
-                            invoice_id:
-                                Number(
-                                    formValue(
-                                        'tenant-funds-advance-invoice'
-                                    )
-                                ),
-
-                            amount:
-                                Number(
-                                    formValue(
-                                        'tenant-funds-advance-amount'
-                                    )
-                                ),
-
-                            transaction_date:
-                                dateForApi(
-                formValue(
-                                    'tenant-funds-advance-date'
-                                )
-            ),
-                        }),
-                }
-            );
-
-        await parseJsonResponse(
-            response
-        );
-
-        document
-            .getElementById(
-                'tenant-funds-advance-form'
-            )
-            ?.reset();
-
-        await loadTenantFundsLease();
-    } catch (error) {
-        showTenantFundsError(
-            error instanceof Error
-                ? error.message
-                : translate(
-                    'leases.unable_apply_advance'
-                )
-        );
-    } finally {
-        if (button) {
-            button.disabled =
-                false;
-
-            button.textContent =
-                translate(
-                    'leases.apply_consumable_advance'
-                );
-        }
-    }
-}
-
-/**
- * Find one actual tenant-fund account by type.
- */
-function tenantFundAccountByType(
-    type
-) {
-    const accounts =
-        Array.isArray(
-            tenantFundsLease
-                ?.tenant_fund_accounts
-        )
-            ? tenantFundsLease
-                .tenant_fund_accounts
-            : [];
-
-    return accounts.find(
-        (account) =>
-            account.type
-            === type
-    )
-    ?? null;
-}
-
-/**
- * Close the Tenant Funds workspace.
- */
-function closeTenantFundsModal(
-    afterClose = null
-) {
-    closeDrawer(
-        'tenant-funds-modal',
-        {
-            onClosed: () => {
-                tenantFundsLeaseId =
-                    null;
-
-                tenantFundsLease =
-                    null;
-
-                hideTenantFundsError();
-
-                /*
-                 * Used by the Security Deposit hand-off.
-                 *
-                 * Direct event-listener calls pass a MouseEvent here, so
-                 * execute only real callback functions.
-                 */
-                if (
-                    typeof afterClose
-                    === 'function'
-                ) {
-                    afterClose();
-                }
-            },
-        }
-    );
-}
-
-/**
- * Display Tenant Funds operational failures.
- */
-function showTenantFundsError(
-    message
-) {
-    const box =
-        document.getElementById(
-            'tenant-funds-error'
-        );
-
-    if (! box) {
-        return;
-    }
-
-    box.textContent =
-        message;
-
-    box.classList.remove(
-        'hidden'
-    );
-}
-
-/**
- * Clear Tenant Funds operational failures.
- */
-function hideTenantFundsError() {
-    const box =
-        document.getElementById(
-            'tenant-funds-error'
-        );
-
-    if (! box) {
-        return;
-    }
-
-    box.textContent = '';
-
-    box.classList.add(
-        'hidden'
-    );
 }

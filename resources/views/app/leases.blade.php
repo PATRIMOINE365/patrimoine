@@ -216,10 +216,12 @@
                     class="
                         grid w-full gap-3
                         sm:grid-cols-2
+                        lg:grid-cols-3
+                        xl:grid-cols-5
                         xl:w-auto
                     "
                 >
-                    <div class="sm:min-w-44">
+                    <div class="sm:min-w-40">
                         <label
                             for="lease-status-filter"
                             class="sr-only"
@@ -270,7 +272,7 @@
                         </select>
                     </div>
 
-                    <div class="sm:min-w-64">
+                    <div class="sm:min-w-48">
                         <label
                             for="lease-tenant-filter"
                             class="sr-only"
@@ -291,6 +293,139 @@
                                         {{ __('ui.leases.all_tenants') }}
                                     </option>
                         </select>
+                    </div>
+
+                    <div class="sm:min-w-48">
+                        <label
+                            for="lease-building-filter"
+                            class="sr-only"
+                        >
+                            <span data-i18n="leases.building">
+                                Building
+                            </span>
+                        </label>
+
+                        <select
+                            id="lease-building-filter"
+                            class="pm-input"
+                        >
+                            <option
+                                value=""
+                                data-i18n="leases.all_buildings"
+                            >
+                                All buildings
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="sm:min-w-40">
+                        <label
+                            for="lease-frequency-filter"
+                            class="sr-only"
+                        >
+                            <span data-i18n="leases.payment_frequency">
+                                {{ __('ui.leases.payment_frequency') }}
+                            </span>
+                        </label>
+
+                        <select
+                            id="lease-frequency-filter"
+                            class="pm-input"
+                        >
+                            <option
+                                value=""
+                                data-i18n="leases.all_frequencies"
+                            >
+                                All frequencies
+                            </option>
+
+                            <option
+                                value="monthly"
+                                data-i18n="leases.monthly"
+                            >
+                                {{ __('ui.leases.monthly') }}
+                            </option>
+
+                            <option
+                                value="quarterly"
+                                data-i18n="leases.quarterly"
+                            >
+                                {{ __('ui.leases.quarterly') }}
+                            </option>
+
+                            <option
+                                value="bi_yearly"
+                                data-i18n="leases.bi_yearly"
+                            >
+                                {{ __('ui.leases.bi_yearly') }}
+                            </option>
+
+                            <option
+                                value="yearly"
+                                data-i18n="leases.yearly"
+                            >
+                                {{ __('ui.leases.yearly') }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="sm:min-w-40">
+                        <label
+                            for="lease-ending-before-filter"
+                            class="sr-only"
+                        >
+                            <span data-i18n="leases.expiring_before">
+                                Expiring before
+                            </span>
+                        </label>
+
+                        <div class="pm-lease-date-control">
+                            <input
+                                id="lease-ending-before-filter"
+                                data-lease-date-input
+                                data-pm-date-input
+                                inputmode="numeric"
+                                maxlength="10"
+                                placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                type="text"
+                                class="pm-input"
+                            >
+
+                            <button
+                                type="button"
+                                class="pm-lease-date-picker-button"
+                                data-lease-date-picker="lease-ending-before-filter"
+                                aria-label="Choose date"
+                            >
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    aria-hidden="true"
+                                >
+                                    <rect
+                                        x="3"
+                                        y="5"
+                                        width="18"
+                                        height="16"
+                                        rx="2"
+                                    />
+                                    <path d="M16 3v4"/>
+                                    <path d="M8 3v4"/>
+                                    <path d="M3 11h18"/>
+                                </svg>
+                            </button>
+
+                            <input
+                                id="lease-ending-before-filter-picker"
+                                type="date"
+                                class="pm-lease-native-date-picker"
+                                tabindex="-1"
+                                aria-hidden="true"
+                                data-lease-native-date-picker="lease-ending-before-filter"
+                            >
+                        </div>
                     </div>
                 </div>
             </div>
@@ -396,8 +531,6 @@
                                 md:grid-cols-2
                             "
                         >
-
-
 
 
 <div class="md:col-span-2">
@@ -556,10 +689,6 @@
         ></div>
     </div>
 </div>
-
-
-
-
 
 
                             <div>
@@ -1756,13 +1885,6 @@
                             </div>
                         </div>
                     </section>
-
-
-
-
-
-
-
 
 
                     {{-- =================================================
@@ -3049,16 +3171,7 @@
                         rows="4"
                         maxlength="2000"
                         required
-                        class="
-                            mt-2 w-full resize-y rounded-lg
-                            border border-[var(--pm-border)]
-                            bg-[var(--pm-surface)]
-                            px-3.5 py-2.5 text-sm
-                            text-[var(--pm-text)]
-                            outline-none
-                            focus:border-red-500
-                            focus:ring-2 focus:ring-red-500/20
-                        "
+                        class="pm-input mt-2 resize-y"
                     ></textarea>
                 </div>
 
@@ -3079,16 +3192,7 @@
                         type="text"
                         autocomplete="off"
                         required
-                        class="
-                            mt-2 w-full rounded-lg
-                            border border-[var(--pm-border)]
-                            bg-[var(--pm-surface)]
-                            px-3.5 py-2.5 text-sm
-                            text-[var(--pm-text)]
-                            outline-none
-                            focus:border-red-500
-                            focus:ring-2 focus:ring-red-500/20
-                        "
+                        class="pm-input mt-2"
                     >
                 </div>
 
@@ -3109,16 +3213,7 @@
                         type="password"
                         autocomplete="current-password"
                         required
-                        class="
-                            mt-2 w-full rounded-lg
-                            border border-[var(--pm-border)]
-                            bg-[var(--pm-surface)]
-                            px-3.5 py-2.5 text-sm
-                            text-[var(--pm-text)]
-                            outline-none
-                            focus:border-red-500
-                            focus:ring-2 focus:ring-red-500/20
-                        "
+                        class="pm-input mt-2"
                     >
                 </div>
             </section>
@@ -3172,640 +3267,6 @@
     "
 ></div>
 @endsection
-
-{{-- ================================================================
-     Security Deposit Operational Modal
-================================================================ --}}
-
-<x-drawer
-    id="security-deposit-modal"
-    backdrop-id="security-deposit-modal-backdrop"
-    width="sm"
->
-    <x-drawer-header
-        title-id="security-deposit-modal-title"
-        description-id="security-deposit-modal-description"
-        close-id="security-deposit-modal-close"
-        close-label="Close"
-        close-label-key="leases.close"
-    >
-        <x-slot:title>
-            <span data-i18n="leases.security_deposit">
-                {{ __('ui.leases.security_deposit') }}
-            </span>
-        </x-slot:title>
-
-        <x-slot:description>
-            <span data-i18n="leases.security_modal_description">
-                {{ __('ui.leases.security_modal_description') }}
-            </span>
-        </x-slot:description>
-    </x-drawer-header>
-
-    <div class="pm-security-deposit-drawer-body">
-                <div
-                    id="security-deposit-error"
-                    class="
-                        mb-5 hidden rounded-lg
-                        border border-[var(--pm-danger-border)]
-                        bg-[var(--pm-danger-background)] px-4 py-3
-                        text-sm text-[var(--pm-danger-text)]
-                    "
-                ></div>
-
-                <div
-                    id="security-deposit-loading"
-                    class="
-                        py-12 text-center
-                        text-sm text-[var(--pm-text-subtle)]
-                    "
-                >
-                    <span data-i18n="leases.loading_security_deposit">
-                        {{ __('ui.leases.loading_security_deposit') }}
-                    </span>
-                </div>
-
-                <div
-                    id="security-deposit-content"
-                    class="hidden"
-                >
-                    {{-- Position Summary --}}
-
-                    <section>
-                        <div
-                            class="
-                                grid gap-4
-                                sm:grid-cols-2
-                                xl:grid-cols-5
-                            "
-                        >
-                            <div
-                                class="
-                                    rounded-xl border border-[var(--pm-border)]
-                                    bg-[var(--pm-surface-subtle)] p-4
-                                "
-                            >
-                                <div class="text-xs text-[var(--pm-text-muted)]">
-                                    <span data-i18n="leases.contractual_deposit">
-                                        {{ __('ui.leases.contractual_deposit') }}
-                                    </span>
-                                </div>
-
-                                <div
-                                    id="security-deposit-contractual"
-                                    class="
-                                        mt-2 text-lg font-semibold
-                                        text-[var(--pm-text)]
-                                    "
-                                >
-                                    —
-                                </div>
-                            </div>
-
-                            <div
-                                class="
-                                    rounded-xl border border-[var(--pm-border)]
-                                    bg-[var(--pm-surface-subtle)] p-4
-                                "
-                            >
-                                <div class="text-xs text-[var(--pm-text-muted)]">
-                                    <span data-i18n="leases.held_balance">
-                                        {{ __('ui.leases.held_balance') }}
-                                    </span>
-                                </div>
-
-                                <div
-                                    id="security-deposit-held"
-                                    class="
-                                        mt-2 text-lg font-semibold
-                                        text-[var(--pm-text)]
-                                    "
-                                >
-                                    —
-                                </div>
-                            </div>
-
-                            <div
-                                class="
-                                    rounded-xl border border-[var(--pm-border)]
-                                    bg-[var(--pm-surface-subtle)] p-4
-                                "
-                            >
-                                <div class="text-xs text-[var(--pm-text-muted)]">
-                                    <span data-i18n="leases.deductions">
-                                        {{ __('ui.leases.deductions') }}
-                                    </span>
-                                </div>
-
-                                <div
-                                    id="security-deposit-deduction-total"
-                                    class="
-                                        mt-2 text-lg font-semibold
-                                        text-[var(--pm-text)]
-                                    "
-                                >
-                                    —
-                                </div>
-                            </div>
-
-                            <div
-                                class="
-                                    rounded-xl border border-[var(--pm-success-border)]
-                                    bg-[var(--pm-success-background)] p-4
-                                "
-                            >
-                                <div class="text-xs text-[var(--pm-success-text)]">
-                                    <span data-i18n="leases.refund">
-                                        {{ __('ui.leases.refund') }}
-                                    </span>
-                                </div>
-
-                                <div
-                                    id="security-deposit-refund"
-                                    class="
-                                        mt-2 text-lg font-semibold
-                                        text-[var(--pm-success-text)]
-                                    "
-                                >
-                                    —
-                                </div>
-                            </div>
-
-                            <div
-                                class="
-                                    rounded-xl border border-[var(--pm-danger-border)]
-                                    bg-[var(--pm-danger-background)] p-4
-                                "
-                            >
-                                <div class="text-xs text-[var(--pm-danger-text)]">
-                                    <span data-i18n="leases.tenant_debt">
-                                        {{ __('ui.leases.tenant_debt') }}
-                                    </span>
-                                </div>
-
-                                <div
-                                    id="security-deposit-debt"
-                                    class="
-                                        mt-2 text-lg font-semibold
-                                        text-[var(--pm-danger-text)]
-                                    "
-                                >
-                                    —
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    {{-- Lifecycle Notice --}}
-
-                    <div
-                        id="security-deposit-lifecycle-message"
-                        class="
-                            mt-5 hidden rounded-xl
-                            border border-[var(--pm-warning-border)]
-                            bg-[var(--pm-warning-background)] px-4 py-3
-                            text-sm text-[var(--pm-warning-text)]
-                        "
-                    ></div>
-
-                    {{-- Itemized Deductions --}}
-
-                    <section
-                        class="
-                            mt-7 border-t
-                            border-[var(--pm-border-subtle)] pt-6
-                        "
-                    >
-                        <div
-                            class="
-                                flex flex-col gap-3
-                                sm:flex-row
-                                sm:items-center
-                                sm:justify-between
-                            "
-                        >
-                            <div>
-                                <h3
-                                    class="
-                                        text-sm font-semibold
-                                        text-[var(--pm-text)]
-                                    "
-                                >
-                                    <span data-i18n="leases.itemized_deductions">
-                                        {{ __('ui.leases.itemized_deductions') }}
-                                    </span>
-                                </h3>
-
-                                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
-                                    <span data-i18n="leases.itemized_deductions_description">
-                                        {{ __('ui.leases.itemized_deductions_description') }}
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div
-                            id="security-deposit-deductions"
-                            class="mt-4"
-                        ></div>
-
-                        <form
-                            id="security-deposit-deduction-form"
-                            class="
-                                mt-5 hidden rounded-xl
-                                border border-[var(--pm-border)]
-                                bg-[var(--pm-surface-subtle)] p-4
-                            "
-                        >
-                            <div
-                                class="
-                                    grid gap-4
-                                    md:grid-cols-2
-                                "
-                            >
-                                <div class="md:col-span-2">
-                                    <label
-                                        for="security-deduction-description"
-                                        class="pm-field-label"
-                                    >
-                                        <span data-i18n="leases.description">
-                                            {{ __('ui.leases.description') }}
-                                        </span>
-                                        <span class="text-[var(--pm-danger-text)]">*</span>
-                                    </label>
-
-                                    <input
-                                        id="security-deduction-description"
-                                        type="text"
-                                        maxlength="255"
-                                        required
-                                        data-i18n-placeholder="leases.deduction_description_placeholder"
-                                        placeholder="{{ __('ui.leases.deduction_description_placeholder') }}"
-                                        class="pm-input"
-                                    >
-                                </div>
-
-                                <div>
-                                    <label
-                                        for="security-deduction-amount"
-                                        class="pm-field-label"
-                                    >
-                                        <span data-i18n="leases.amount">
-                                            {{ __('ui.leases.amount') }}
-                                        </span>
-                                        <span class="text-[var(--pm-danger-text)]">*</span>
-                                    </label>
-
-                                    <input
-                                        id="security-deduction-amount"
-                                        type="number"
-                                        min="1"
-                                        step="1"
-                                        required
-                                        class="pm-input"
-                                    >
-                                </div>
-
-                                <div>
-                                    <label
-                                        for="security-deduction-date"
-                                        class="pm-field-label"
-                                    >
-                                        <span data-i18n="leases.deduction_date">
-                                            {{ __('ui.leases.deduction_date') }}
-                                        </span>
-                                        <span class="text-[var(--pm-danger-text)]">*</span>
-                                    </label>
-
-                                    <div class="pm-security-date-control">
-                                        <input
-                                            id="security-deduction-date"
-                                            type="text"
-                                            data-security-date-input
-                                            inputmode="numeric"
-                                            maxlength="10"
-                                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
-                                            required
-                                            class="pm-input"
-                                        >
-
-                                        <button
-                                            type="button"
-                                            class="pm-security-date-picker-button"
-                                            data-security-date-picker="security-deduction-date"
-                                            aria-label="Choose date"
-                                        >
-                                            <svg
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="2"
-                                                aria-hidden="true"
-                                            >
-                                                <rect
-                                                    x="3"
-                                                    y="5"
-                                                    width="18"
-                                                    height="16"
-                                                    rx="2"
-                                                />
-                                                <path d="M16 3v4"/>
-                                                <path d="M8 3v4"/>
-                                                <path d="M3 11h18"/>
-                                            </svg>
-                                        </button>
-
-                                        <input
-                                            type="date"
-                                            class="pm-security-native-date-picker"
-                                            tabindex="-1"
-                                            aria-hidden="true"
-                                            data-security-native-date-picker="security-deduction-date"
-                                        >
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label
-                                        for="security-deduction-reference"
-                                        class="pm-field-label"
-                                    >
-                                        <span data-i18n="leases.reference">
-                                            {{ __('ui.leases.reference') }}
-                                        </span>
-                                    </label>
-
-                                    <input
-                                        id="security-deduction-reference"
-                                        type="text"
-                                        maxlength="255"
-                                        data-i18n-placeholder="leases.deduction_reference_placeholder"
-                                        placeholder="{{ __('ui.leases.deduction_reference_placeholder') }}"
-                                        class="pm-input"
-                                    >
-                                </div>
-
-                                <div>
-                                    <label
-                                        for="security-deduction-notes"
-                                        class="pm-field-label"
-                                    >
-                                        <span data-i18n="leases.notes">
-                                            {{ __('ui.leases.notes') }}
-                                        </span>
-                                    </label>
-
-                                    <input
-                                        id="security-deduction-notes"
-                                        type="text"
-                                        data-i18n-placeholder="leases.optional_details"
-                                        placeholder="{{ __('ui.leases.optional_details') }}"
-                                        class="pm-input"
-                                    >
-                                </div>
-                            </div>
-
-                            <div
-                                class="
-                                    mt-4 flex justify-end
-                                "
-                            >
-                                <button
-                                    id="security-deduction-submit"
-                                    type="submit"
-                                    class="pm-button-primary"
-                                >
-                                    <span data-i18n="leases.add_deduction">
-                                        {{ __('ui.leases.add_deduction') }}
-                                    </span>
-                                </button>
-                            </div>
-                        </form>
-                    </section>
-
-                    {{-- Final Settlement --}}
-
-                    <section
-                        id="security-deposit-settlement-section"
-                        class="
-                            mt-7 border-t
-                            border-[var(--pm-border-subtle)] pt-6
-                        "
-                    >
-                        <div>
-                            <h3
-                                class="
-                                    text-sm font-semibold
-                                    text-[var(--pm-text)]
-                                "
-                            >
-                                <span data-i18n="leases.final_settlement">
-                                    {{ __('ui.leases.final_settlement') }}
-                                </span>
-                            </h3>
-
-                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
-                                <span data-i18n="leases.final_settlement_description">
-                                    {{ __('ui.leases.final_settlement_description') }}
-                                </span>
-                            </p>
-                        </div>
-
-                        <form
-                            id="security-deposit-settlement-form"
-                            class="
-                                mt-4 hidden rounded-xl
-                                border border-[var(--pm-border)]
-                                p-4
-                            "
-                        >
-                            <div
-                                class="
-                                    grid gap-4
-                                    md:grid-cols-2
-                                "
-                            >
-                                <div>
-                                    <label
-                                        for="security-settlement-date"
-                                        class="pm-field-label"
-                                    >
-                                        <span data-i18n="leases.settlement_date">
-                                            {{ __('ui.leases.settlement_date') }}
-                                        </span>
-                                        <span class="text-[var(--pm-danger-text)]">*</span>
-                                    </label>
-
-                                    <div class="pm-security-date-control">
-                                        <input
-                                            id="security-settlement-date"
-                                            type="text"
-                                            data-security-date-input
-                                            inputmode="numeric"
-                                            maxlength="10"
-                                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
-                                            required
-                                            class="pm-input"
-                                        >
-
-                                        <button
-                                            type="button"
-                                            class="pm-security-date-picker-button"
-                                            data-security-date-picker="security-settlement-date"
-                                            aria-label="Choose date"
-                                        >
-                                            <svg
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="2"
-                                                aria-hidden="true"
-                                            >
-                                                <rect
-                                                    x="3"
-                                                    y="5"
-                                                    width="18"
-                                                    height="16"
-                                                    rx="2"
-                                                />
-                                                <path d="M16 3v4"/>
-                                                <path d="M8 3v4"/>
-                                                <path d="M3 11h18"/>
-                                            </svg>
-                                        </button>
-
-                                        <input
-                                            type="date"
-                                            class="pm-security-native-date-picker"
-                                            tabindex="-1"
-                                            aria-hidden="true"
-                                            data-security-native-date-picker="security-settlement-date"
-                                        >
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label
-                                        for="security-settlement-notes"
-                                        class="pm-field-label"
-                                    >
-                                        <span data-i18n="leases.notes">
-                                            {{ __('ui.leases.notes') }}
-                                        </span>
-                                    </label>
-
-                                    <input
-                                        id="security-settlement-notes"
-                                        type="text"
-                                        data-i18n-placeholder="leases.closeout_notes_placeholder"
-                                        placeholder="{{ __('ui.leases.closeout_notes_placeholder') }}"
-                                        class="pm-input"
-                                    >
-                                </div>
-                            </div>
-
-                            <div
-                                class="
-                                    mt-4 rounded-lg
-                                    border border-[var(--pm-warning-border)]
-                                    bg-[var(--pm-warning-background)] px-4 py-3
-                                    text-xs leading-5
-                                    text-[var(--pm-warning-text)]
-                                "
-                            >
-                                <span data-i18n="leases.final_settlement_warning">
-                                    {{ __('ui.leases.final_settlement_warning') }}
-                                </span>
-                            </div>
-
-                            <div
-                                class="
-                                    mt-4 flex justify-end
-                                "
-                            >
-                                <button
-                                    id="security-settlement-submit"
-                                    type="submit"
-                                    class="pm-button-primary"
-                                >
-                                    <span data-i18n="leases.finalize_settlement">
-                                        {{ __('ui.leases.finalize_settlement') }}
-                                    </span>
-                                </button>
-                            </div>
-                        </form>
-
-                        <div
-                            id="security-deposit-settled"
-                            class="
-                                mt-4 hidden rounded-xl
-                                border border-[var(--pm-success-border)]
-                                bg-[var(--pm-success-background)] p-5
-                            "
-                        >
-                            <div
-                                class="
-                                    flex flex-col gap-4
-                                    sm:flex-row
-                                    sm:items-center
-                                    sm:justify-between
-                                "
-                            >
-                                <div>
-                                    <div
-                                        class="
-                                            text-sm font-semibold
-                                            text-[var(--pm-success-text)]
-                                        "
-                                    >
-                                        <span data-i18n="leases.security_deposit_settled">
-                                            {{ __('ui.leases.security_deposit_settled') }}
-                                        </span>
-                                    </div>
-
-                                    <div
-                                        id="security-deposit-voucher-number"
-                                        class="
-                                            mt-1 text-xs
-                                            text-[var(--pm-success-text)]
-                                        "
-                                    >
-                                        —
-                                    </div>
-                                </div>
-
-                                <button
-                                    id="security-deposit-voucher-link"
-                                    type="button"
-                                    class="
-                                        pm-button-secondary
-                                        disabled:cursor-not-allowed
-                                        disabled:opacity-60
-                                    "
-                                >
-                                    <span data-i18n="leases.download_voucher">
-                                        {{ __('ui.leases.download_voucher') }}
-                                    </span>
-                                </button>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-    </div>
-
-    <x-drawer-footer>
-        <button
-            id="security-deposit-close-footer"
-            type="button"
-            class="pm-button-secondary"
-        >
-            <span data-i18n="actions.close">
-                {{ __('ui.actions.close') }}
-            </span>
-        </button>
-    </x-drawer-footer>
-</x-drawer>
-
 
 
 {{-- ================================================================
@@ -4219,474 +3680,252 @@
 
 
 {{-- ================================================================
-     Tenant Funds Operational Modal
+     V1.0.7 Lease Rent Increments
 ================================================================ --}}
 
 <x-drawer
-    id="tenant-funds-modal"
-    backdrop-id="tenant-funds-modal-backdrop"
+    id="rent-increments-modal"
+    backdrop-id="rent-increments-modal-backdrop"
     width="sm"
 >
     <x-drawer-header
-        title-id="tenant-funds-modal-title"
-        description-id="tenant-funds-modal-description"
-        close-id="tenant-funds-modal-close"
+        title-id="rent-increments-modal-title"
+        description-id="rent-increments-modal-description"
+        close-id="rent-increments-modal-close"
         close-label="Close"
         close-label-key="leases.close"
     >
         <x-slot:title>
-            <span data-i18n="leases.tenant_funds">
-                {{ __('ui.leases.tenant_funds') }}
+            <span data-i18n="leases.rent_increments">
+                Rent increments
             </span>
         </x-slot:title>
 
         <x-slot:description>
-            <span data-i18n="leases.tenant_funds_modal_description">
-                {{ __('ui.leases.tenant_funds_modal_description') }}
+            <span data-i18n="leases.rent_increments_description">
+                Review scheduled, applied and cancelled rent increases for this Lease.
             </span>
         </x-slot:description>
     </x-drawer-header>
 
-    <div class="pm-tenant-funds-drawer-body">
-                <div
-                    id="tenant-funds-error"
-                    class="
-                        mb-5 hidden rounded-lg
-                        border border-[var(--pm-danger-border)]
-                        bg-[var(--pm-danger-background)] px-4 py-3
-                        text-sm text-[var(--pm-danger-text)]
-                    "
-                ></div>
+    <form
+        id="rent-increment-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div class="min-h-0 flex-1 overflow-y-auto px-5 py-5">
+            <div
+                id="rent-increments-error"
+                class="
+                    mb-5 hidden rounded-lg
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
+                "
+            ></div>
 
-                <div
-                    id="tenant-funds-loading"
-                    class="
-                        py-12 text-center
-                        text-sm text-[var(--pm-text-subtle)]
-                    "
-                >
-                    <span data-i18n="leases.loading_tenant_funds">
-                        {{ __('ui.leases.loading_tenant_funds') }}
-                    </span>
+            <div
+                id="rent-increments-loading"
+                class="
+                    py-12 text-center
+                    text-sm text-[var(--pm-text-subtle)]
+                "
+            >
+                <span data-i18n="leases.rent_increments_loading">
+                    Loading rent increments…
+                </span>
+            </div>
+
+            <div
+                id="rent-increments-list"
+                class="hidden space-y-3"
+            ></div>
+
+            <section
+                id="rent-increment-schedule"
+                data-requires-capability="manage_operations"
+                class="
+                    mt-7 hidden border-t
+                    border-[var(--pm-border-subtle)] pt-6
+                "
+            >
+                <div class="mb-4">
+                    <h3
+                        class="
+                            text-sm font-semibold
+                            text-[var(--pm-text)]
+                        "
+                    >
+                        <span data-i18n="leases.schedule_increment">
+                            Schedule increment
+                        </span>
+                    </h3>
+
+                    <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
+                        <span data-i18n="leases.schedule_increment_description">
+                            The new rent takes effect automatically on the effective date.
+                        </span>
+                    </p>
                 </div>
 
                 <div
-                    id="tenant-funds-content"
-                    class="hidden"
+                    class="
+                        grid gap-4
+                        sm:grid-cols-2
+                    "
                 >
-                    {{-- Actual Balances --}}
-
-                    <section>
-                        <div
-                            class="
-                                grid gap-4
-                                md:grid-cols-3
-                            "
+                    <div>
+                        <label
+                            for="rent-increment-type"
+                            class="pm-field-label"
                         >
-                            <div
-                                class="
-                                    rounded-xl border
-                                    border-[var(--pm-border)]
-                                    bg-[var(--pm-surface-subtle)] p-5
-                                "
-                            >
-                                <div class="text-xs text-[var(--pm-text-muted)]">
-                                    <span data-i18n="leases.rent_reserve">
-                                        {{ __('ui.leases.rent_reserve') }}
-                                    </span>
-                                </div>
+                            <span data-i18n="leases.increment_type">
+                                {{ __('ui.leases.increment_type') }}
+                            </span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
+                        </label>
 
-                                <div
-                                    id="tenant-funds-reserve-balance"
-                                    class="
-                                        mt-2 text-xl font-semibold
-                                        text-[var(--pm-text)]
-                                    "
-                                >
-                                    —
-                                </div>
-
-                                <p
-                                    id="tenant-funds-reserve-help"
-                                    class="
-                                        mt-2 text-xs
-                                        leading-5 text-[var(--pm-text-muted)]
-                                    "
-                                >
-                                    <span data-i18n="leases.reserve_protected_short">
-                                        {{ __('ui.leases.reserve_protected_short') }}
-                                    </span>
-                                </p>
-                            </div>
-
-                            <div
-                                class="
-                                    rounded-xl border
-                                    border-[var(--pm-border)]
-                                    bg-[var(--pm-surface-subtle)] p-5
-                                "
-                            >
-                                <div class="text-xs text-[var(--pm-text-muted)]">
-                                    <span data-i18n="leases.consumable_advance">
-                                        {{ __('ui.leases.consumable_advance') }}
-                                    </span>
-                                </div>
-
-                                <div
-                                    id="tenant-funds-advance-balance"
-                                    class="
-                                        mt-2 text-xl font-semibold
-                                        text-[var(--pm-text)]
-                                    "
-                                >
-                                    —
-                                </div>
-
-                                <p
-                                    class="
-                                        mt-2 text-xs
-                                        leading-5 text-[var(--pm-text-muted)]
-                                    "
-                                >
-                                    <span data-i18n="leases.consumable_advance_description">
-                                        {{ __('ui.leases.consumable_advance_description') }}
-                                    </span>
-                                </p>
-                            </div>
-
-                            <div
-                                class="
-                                    rounded-xl border
-                                    border-[var(--pm-border)]
-                                    bg-[var(--pm-surface-subtle)] p-5
-                                "
-                            >
-                                <div class="text-xs text-[var(--pm-text-muted)]">
-                                    <span data-i18n="leases.security_deposit">
-                                        {{ __('ui.leases.security_deposit') }}
-                                    </span>
-                                </div>
-
-                                <div
-                                    id="tenant-funds-security-balance"
-                                    class="
-                                        mt-2 text-xl font-semibold
-                                        text-[var(--pm-text)]
-                                    "
-                                >
-                                    —
-                                </div>
-
-
-                            </div>
-                        </div>
-                    </section>
-
-                    {{-- Rent Reserve --}}
-
-                    <section
-                        class="
-                            mt-7 border-t
-                            border-[var(--pm-border-subtle)] pt-7
-                        "
-                    >
-                        <div class="mb-4">
-                            <h3
-                                class="
-                                    text-sm font-semibold
-                                    text-[var(--pm-text)]
-                                "
-                            >
-                                <span data-i18n="leases.apply_rent_reserve">
-                                    {{ __('ui.leases.apply_rent_reserve') }}
-                                </span>
-                            </h3>
-
-                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
-                                <span data-i18n="leases.apply_reserve_description">
-                                    {{ __('ui.leases.apply_reserve_description') }}
-                                </span>
-                            </p>
-                        </div>
-
-                        <div
-                            id="tenant-funds-reserve-unavailable"
-                            class="
-                                hidden rounded-lg
-                                border border-[var(--pm-warning-border)]
-                                bg-[var(--pm-warning-background)] px-4 py-3
-                                text-sm text-[var(--pm-warning-text)]
-                            "
-                        ></div>
-
-                        <form
-                            id="tenant-funds-reserve-form"
-                            class="
-                                grid gap-4
-                                md:grid-cols-4
-                            "
+                        <select
+                            id="rent-increment-type"
+                            required
+                            class="pm-input"
                         >
-                            <div class="md:col-span-2">
-                                <label
-                                    for="tenant-funds-reserve-invoice"
-                                    class="pm-field-label"
-                                >
-                                    <span data-i18n="leases.outstanding_invoice">
-                                        {{ __('ui.leases.outstanding_invoice') }}
-                                    </span>
-                                </label>
+                            <option
+                                value="percentage"
+                                data-i18n="leases.percentage"
+                            >
+                                {{ __('ui.leases.percentage') }}
+                            </option>
 
-                                <select
-                                    id="tenant-funds-reserve-invoice"
-                                    required
-                                    class="pm-input"
-                                ></select>
-                            </div>
+                            <option
+                                value="fixed"
+                                data-i18n="leases.fixed_amount"
+                            >
+                                {{ __('ui.leases.fixed_amount') }}
+                            </option>
+                        </select>
+                    </div>
 
-                            <div>
-                                <label
-                                    for="tenant-funds-reserve-amount"
-                                    class="pm-field-label"
-                                >
-                                    <span data-i18n="leases.amount">
-                                        {{ __('ui.leases.amount') }}
-                                    </span>
-                                </label>
+                    <div>
+                        <label
+                            for="rent-increment-value"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="leases.increment_value">
+                                {{ __('ui.leases.increment_value') }}
+                            </span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
+                        </label>
 
-                                <input
-                                    id="tenant-funds-reserve-amount"
-                                    type="number"
-                                    min="1"
-                                    step="1"
-                                    required
-                                    class="pm-input"
-                                >
-                            </div>
+                        <div class="relative">
+                            <input
+                                id="rent-increment-value"
+                                type="number"
+                                min="0.01"
+                                step="0.01"
+                                required
+                                class="pm-input pr-14"
+                            >
 
-                            <div>
-                                <label
-                                    for="tenant-funds-reserve-date"
-                                    class="pm-field-label"
-                                >
-                                    <span data-i18n="leases.date">
-                                        {{ __('ui.leases.date') }}
-                                    </span>
-                                </label>
-
-                                <div class="pm-tenant-funds-date-control">
-<input
-                                    id="tenant-funds-reserve-date"
-                            data-tenant-funds-date-input
-                            inputmode="numeric"
-                            maxlength="10"
-                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
-                                    type="text"
-                                    required
-                                    class="pm-input"
-                                >
-
-    <button
-        type="button"
-        class="pm-tenant-funds-date-picker-button"
-        data-tenant-funds-date-picker="tenant-funds-reserve-date"
-        aria-label="Choose date"
-    >
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-        >
-            <rect x="3" y="5" width="18" height="16" rx="2"/>
-            <path d="M16 3v4"/>
-            <path d="M8 3v4"/>
-            <path d="M3 11h18"/>
-        </svg>
-    </button>
-
-    <input
-        type="date"
-        class="pm-tenant-funds-native-date-picker"
-        tabindex="-1"
-        aria-hidden="true"
-        data-tenant-funds-native-date-picker="tenant-funds-reserve-date"
-    >
-</div>
-                            </div>
-
-                            <div class="md:col-span-4">
-                                <button
-                                    id="tenant-funds-reserve-submit"
-                                    type="submit"
-                                    class="pm-button-primary"
-                                >
-                                    <span data-i18n="leases.apply_rent_reserve">
-                                        {{ __('ui.leases.apply_rent_reserve') }}
-                                    </span>
-                                </button>
-                            </div>
-                        </form>
-                    </section>
-
-                    {{-- Consumable Advance --}}
-
-                    <section
-                        class="
-                            mt-7 border-t
-                            border-[var(--pm-border-subtle)] pt-7
-                        "
-                    >
-                        <div class="mb-4">
-                            <h3
+                            <span
+                                id="rent-increment-unit"
                                 class="
-                                    text-sm font-semibold
-                                    text-[var(--pm-text)]
+                                    absolute right-3.5
+                                    top-1/2
+                                    -translate-y-1/2
+                                    text-xs font-medium
+                                    text-[var(--pm-text-subtle)]
                                 "
                             >
-                                <span data-i18n="leases.apply_consumable_advance">
-                                    {{ __('ui.leases.apply_consumable_advance') }}
-                                </span>
-                            </h3>
-
-                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
-                                <span data-i18n="leases.apply_advance_description">
-                                    {{ __('ui.leases.apply_advance_description') }}
-                                </span>
-                            </p>
+                                %
+                            </span>
                         </div>
+                    </div>
 
-                        <div
-                            id="tenant-funds-advance-unavailable"
-                            class="
-                                hidden rounded-lg
-                                border border-[var(--pm-border)]
-                                bg-[var(--pm-surface-subtle)] px-4 py-3
-                                text-sm text-[var(--pm-text-secondary)]
-                            "
-                        ></div>
-
-                        <form
-                            id="tenant-funds-advance-form"
-                            class="
-                                grid gap-4
-                                md:grid-cols-4
-                            "
+                    <div class="sm:col-span-2">
+                        <label
+                            for="rent-increment-effective-date"
+                            class="pm-field-label"
                         >
-                            <div class="md:col-span-2">
-                                <label
-                                    for="tenant-funds-advance-invoice"
-                                    class="pm-field-label"
+                            <span data-i18n="leases.effective_date">
+                                Effective date
+                            </span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
+                        </label>
+
+                        <div class="pm-lease-date-control">
+                            <input
+                                id="rent-increment-effective-date"
+                                data-lease-date-input
+                                data-pm-date-input
+                                inputmode="numeric"
+                                maxlength="10"
+                                placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                type="text"
+                                required
+                                class="pm-input"
+                            >
+
+                            <button
+                                type="button"
+                                class="pm-lease-date-picker-button"
+                                data-lease-date-picker="rent-increment-effective-date"
+                                aria-label="Choose date"
+                            >
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    aria-hidden="true"
                                 >
-                                    <span data-i18n="leases.outstanding_invoice">
-                                        {{ __('ui.leases.outstanding_invoice') }}
-                                    </span>
-                                </label>
+                                    <rect
+                                        x="3"
+                                        y="5"
+                                        width="18"
+                                        height="16"
+                                        rx="2"
+                                    />
+                                    <path d="M16 3v4"/>
+                                    <path d="M8 3v4"/>
+                                    <path d="M3 11h18"/>
+                                </svg>
+                            </button>
 
-                                <select
-                                    id="tenant-funds-advance-invoice"
-                                    required
-                                    class="pm-input"
-                                ></select>
-                            </div>
-
-                            <div>
-                                <label
-                                    for="tenant-funds-advance-amount"
-                                    class="pm-field-label"
-                                >
-                                    <span data-i18n="leases.amount">
-                                        {{ __('ui.leases.amount') }}
-                                    </span>
-                                </label>
-
-                                <input
-                                    id="tenant-funds-advance-amount"
-                                    type="number"
-                                    min="1"
-                                    step="1"
-                                    required
-                                    class="pm-input"
-                                >
-                            </div>
-
-                            <div>
-                                <label
-                                    for="tenant-funds-advance-date"
-                                    class="pm-field-label"
-                                >
-                                    <span data-i18n="leases.date">
-                                        {{ __('ui.leases.date') }}
-                                    </span>
-                                </label>
-
-                                <div class="pm-tenant-funds-date-control">
-<input
-                                    id="tenant-funds-advance-date"
-                            data-tenant-funds-date-input
-                            inputmode="numeric"
-                            maxlength="10"
-                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
-                                    type="text"
-                                    required
-                                    class="pm-input"
-                                >
-
-    <button
-        type="button"
-        class="pm-tenant-funds-date-picker-button"
-        data-tenant-funds-date-picker="tenant-funds-advance-date"
-        aria-label="Choose date"
-    >
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-        >
-            <rect x="3" y="5" width="18" height="16" rx="2"/>
-            <path d="M16 3v4"/>
-            <path d="M8 3v4"/>
-            <path d="M3 11h18"/>
-        </svg>
-    </button>
-
-    <input
-        type="date"
-        class="pm-tenant-funds-native-date-picker"
-        tabindex="-1"
-        aria-hidden="true"
-        data-tenant-funds-native-date-picker="tenant-funds-advance-date"
-    >
-</div>
-                            </div>
-
-                            <div class="md:col-span-4">
-                                <button
-                                    id="tenant-funds-advance-submit"
-                                    type="submit"
-                                    class="pm-button-primary"
-                                >
-                                    <span data-i18n="leases.apply_consumable_advance">
-                                        {{ __('ui.leases.apply_consumable_advance') }}
-                                    </span>
-                                </button>
-                            </div>
-                        </form>
-                    </section>
+                            <input
+                                id="rent-increment-effective-date-picker"
+                                type="date"
+                                class="pm-lease-native-date-picker"
+                                tabindex="-1"
+                                aria-hidden="true"
+                                data-lease-native-date-picker="rent-increment-effective-date"
+                            >
+                        </div>
+                    </div>
                 </div>
-    </div>
+            </section>
+        </div>
 
-    <x-drawer-footer>
-        <button
-            id="tenant-funds-close-footer"
-            type="button"
-            class="pm-button-secondary"
-        >
-            <span data-i18n="actions.close">
-                {{ __('ui.actions.close') }}
-            </span>
-        </button>
-    </x-drawer-footer>
+        <x-drawer-footer>
+            <button
+                id="rent-increments-close-footer"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="actions.close">
+                    {{ __('ui.actions.close') }}
+                </span>
+            </button>
+
+            <button
+                id="rent-increment-submit"
+                type="submit"
+                data-requires-capability="manage_operations"
+                class="hidden pm-button-primary"
+            >
+                <span data-i18n="leases.schedule_increment">
+                    Schedule increment
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
 </x-drawer>

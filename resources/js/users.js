@@ -40,6 +40,74 @@ let editingUserId =
  */
 let userDrawerCloseTimer = null;
 
+/**
+ * V1.0.7 structured names: derive given names + surname from a legacy
+ * display name when the API payload does not carry the structured fields.
+ *
+ * The last word becomes the surname; everything before it the given names.
+ *
+ * @param {object} user
+ * @returns {{given_names: string, surname: string}}
+ */
+function structuredNameFor(user) {
+    const givenNames =
+        String(
+            user?.given_names
+            ?? ''
+        ).trim();
+
+    const surname =
+        String(
+            user?.surname
+            ?? ''
+        ).trim();
+
+    if (
+        givenNames !== ''
+        || surname !== ''
+    ) {
+        return {
+            given_names: givenNames,
+            surname,
+        };
+    }
+
+    const parts =
+        String(
+            user?.name
+            || ''
+        )
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean);
+
+    if (parts.length === 0) {
+        return {
+            given_names: '',
+            surname: '',
+        };
+    }
+
+    if (parts.length === 1) {
+        return {
+            given_names: '',
+            surname: parts[0],
+        };
+    }
+
+    return {
+        given_names:
+            parts
+                .slice(0, -1)
+                .join(' '),
+
+        surname:
+            parts[
+                parts.length - 1
+            ],
+    };
+}
+
 export async function initializeUsers() {
     const workspace =
         document.getElementById(
@@ -426,10 +494,10 @@ function userRow(user) {
                                     <span
                                         class="
                                             rounded-full
-                                            bg-amber-50
+                                            bg-[var(--pm-warning-background)]
                                             px-2.5 py-1
                                             text-xs font-medium
-                                            text-amber-700
+                                            text-[var(--pm-warning-text)]
                                         "
                                     >
                                         ${escapeHtml(
@@ -902,11 +970,22 @@ function openEditUserModal(
 
     resetUserForm();
 
+    const structuredName =
+        structuredNameFor(
+            user
+        );
+
     document
         .getElementById(
-            'user-name'
+            'user-given-names'
         ).value =
-        user.name ?? '';
+        structuredName.given_names;
+
+    document
+        .getElementById(
+            'user-surname'
+        ).value =
+        structuredName.surname;
 
     document
         .getElementById(
@@ -1202,10 +1281,19 @@ async function submitUserForm(
             editingUserId
         );
 
+    /*
+     * V1.0.7 structured names: the API composes the display name from
+     * given_names + surname.
+     */
     const payload = {
-        name:
+        given_names:
+            nullableFormValue(
+                'user-given-names'
+            ),
+
+        surname:
             formValue(
-                'user-name'
+                'user-surname'
             ),
 
         email:

@@ -94,17 +94,27 @@ const CAPABILITY_SELECTORS = {
         '#owner-record-payout-button',
         '#owner-record-adjustment-button',
 
-        '#tenant-fund-form',
-        '#tenant-funds-reserve-form',
-        '#tenant-funds-advance-form',
+        /*
+         * V1.0.7 owner expense bills.
+         */
+        '#owner-expense-bill-property-expense-button',
+        '#owner-expense-bill-submit',
 
-        '#security-deposit-deduction-form',
-        '#security-deposit-settlement-form',
+        '#tenant-fund-form',
 
         '#tenant-transaction-actions',
         '#tenant-deposit-form',
         '#tenant-withdrawal-form',
         '#tenant-adjustment-form',
+
+        /*
+         * V1.0.7 tenant fund transfers (v1.0.7 also removed the lease-page
+         * tenant-funds and security-deposit drawers, whose selectors were
+         * pruned from this list).
+         */
+        '#tenant-accounts-transfer',
+        '#tenant-transfer-form',
+        '[data-transfer-source]',
 
         /*
          * Applying a held security deposit is finance work like the three

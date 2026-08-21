@@ -50,14 +50,7 @@
         <button
             id="add-user-button"
             type="button"
-            class="
-                inline-flex items-center justify-center
-                rounded-lg bg-patrimoine-800
-                px-4 py-2.5
-                text-sm font-medium text-white
-                shadow-sm transition
-                hover:bg-patrimoine-900
-            "
+            class="pm-button-primary"
         >
             <span data-i18n="users.add_user">{{ __('ui.users.add_user') }}</span>
         </button>
@@ -67,9 +60,10 @@
         id="users-error"
         class="
             mt-6 hidden rounded-xl
-            border border-red-200
-            bg-red-50 px-4 py-3
-            text-sm text-red-700
+            border px-4 py-3 text-sm
+            border-[var(--pm-danger-border)]
+            bg-[var(--pm-danger-background)]
+            text-[var(--pm-danger-text)]
         "
         role="alert"
     ></div>
@@ -78,9 +72,10 @@
         id="users-success"
         class="
             mt-6 hidden rounded-xl
-            border border-emerald-200
-            bg-emerald-50 px-4 py-3
-            text-sm text-emerald-700
+            border px-4 py-3 text-sm
+            border-[var(--pm-success-border)]
+            bg-[var(--pm-success-background)]
+            text-[var(--pm-success-text)]
         "
         role="status"
     ></div>
@@ -103,11 +98,7 @@
             <div>
                 <label
                     for="users-search"
-                    class="
-                        mb-1.5 block
-                        text-xs font-medium
-                        text-[var(--pm-text-muted)]
-                    "
+                    class="pm-field-label"
                 >
                     <span data-i18n="users.search">{{ __('ui.users.search') }}</span>
                 </label>
@@ -117,39 +108,21 @@
                     type="search"
                     data-i18n-placeholder="users.search_placeholder"
                     placeholder="{{ __('ui.users.search_placeholder') }}"
-                    class="
-                        w-full rounded-lg
-                        border border-[var(--pm-border)]
-                        bg-[var(--pm-surface)] px-3 py-2.5
-                        text-sm text-[var(--pm-text)]
-                        outline-none transition
-                        focus:border-patrimoine-500
-                        focus:ring-2
-                        focus:ring-patrimoine-100
-                    "
+                    class="pm-input"
                 >
             </div>
 
             <div>
                 <label
                     for="users-role-filter"
-                    class="
-                        mb-1.5 block
-                        text-xs font-medium
-                        text-[var(--pm-text-muted)]
-                    "
+                    class="pm-field-label"
                 >
                     <span data-i18n="users.role">{{ __('ui.users.role') }}</span>
                 </label>
 
                 <select
                     id="users-role-filter"
-                    class="
-                        w-full rounded-lg
-                        border border-[var(--pm-border)]
-                        bg-[var(--pm-surface)] px-3 py-2.5
-                        text-sm text-[var(--pm-text)]
-                    "
+                    class="pm-input"
                 >
                     <option value="" data-i18n="users.all_roles">{{ __('ui.users.all_roles') }}</option>
                     <option value="administrator" data-i18n="roles.administrator">{{ __('ui.roles.administrator') }}</option>
@@ -161,23 +134,14 @@
             <div>
                 <label
                     for="users-status-filter"
-                    class="
-                        mb-1.5 block
-                        text-xs font-medium
-                        text-[var(--pm-text-muted)]
-                    "
+                    class="pm-field-label"
                 >
                     <span data-i18n="users.status">{{ __('ui.users.status') }}</span>
                 </label>
 
                 <select
                     id="users-status-filter"
-                    class="
-                        w-full rounded-lg
-                        border border-[var(--pm-border)]
-                        bg-[var(--pm-surface)] px-3 py-2.5
-                        text-sm text-[var(--pm-text)]
-                    "
+                    class="pm-input"
                 >
                     <option value="" data-i18n="users.all_statuses">{{ __('ui.users.all_statuses') }}</option>
                     <option value="1" data-i18n="users.active">{{ __('ui.users.active') }}</option>
@@ -222,7 +186,7 @@
         description-id="user-modal-description"
         close-id="user-modal-close"
         close-label="Close"
-        close-label-key="users.close"
+        close-label-key="actions.close"
     >
         <x-slot:title>
             <span data-i18n="users.add_user">{{ __('ui.users.add_user') }}</span>
@@ -258,16 +222,37 @@
             ></div>
 
             <div class="grid gap-5 sm:grid-cols-2">
-                <div class="sm:col-span-2">
+                {{--
+                    V1.0.7 structured names: the API accepts
+                    given_names + surname and recomposes the
+                    display name.
+                --}}
+                <div>
                     <label
-                        for="user-name"
+                        for="user-given-names"
                         class="pm-field-label"
                     >
-                        <span data-i18n="users.name">{{ __('ui.users.name') }}</span>
+                        <span data-i18n="users.given_names">Given names</span>
                     </label>
 
                     <input
-                        id="user-name"
+                        id="user-given-names"
+                        type="text"
+                        maxlength="255"
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="user-surname"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="users.surname">Surname</span>
+                    </label>
+
+                    <input
+                        id="user-surname"
                         type="text"
                         maxlength="255"
                         required

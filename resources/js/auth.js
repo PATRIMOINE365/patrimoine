@@ -21,7 +21,10 @@ import {
     apiRequest,
     clearToken,
     closeDrawer,
+    escapeHtml,
+    formatCurrency,
     formatLongDate,
+    formatNumber,
     getPresentationConfiguration,
     initials,
     openDrawer,
@@ -387,6 +390,13 @@ export async function initializeAuthenticatedShell() {
     initializeShellControls();
     initializeProfileControls();
 
+    /*
+     * Load derived notifications in the background so the consolidated
+     * unread badge (release announcement OR any danger notification) is
+     * correct before the bell panel is first opened.
+     */
+    refreshNotifications();
+
     await loadManagingOrganisation();
 
     return true;
@@ -607,9 +617,46 @@ function renderCurrentUser(user) {
 
 /*
 |--------------------------------------------------------------------------
-| Release Notification
+| V1.0.7 Notification Center
 |--------------------------------------------------------------------------
+|
+| The bell shows derived operational notifications from
+| GET /api/notifications. Rows deep-link to the page where the situation
+| is handled. The release announcement keeps its dedicated read-state
+| flow (POST /api/auth/release-notification/read).
+|
 */
+
+/** Last payload returned by GET /api/notifications. */
+let notificationsPayload =
+    null;
+
+/** Deep link per notification kind. */
+const NOTIFICATION_LINKS = {
+    rent_overdue:
+        '/dashboard',
+
+    rent_due_soon:
+        '/dashboard',
+
+    leases_expiring:
+        '/leases',
+
+    increments_upcoming:
+        '/leases',
+};
+
+/** Severity → token-colored indicator dot. */
+const NOTIFICATION_SEVERITY_DOTS = {
+    danger:
+        'bg-[var(--pm-danger-text)]',
+
+    warning:
+        'bg-[var(--pm-warning-text)]',
+
+    info:
+        'bg-[var(--pm-info-text)]',
+};
 
 /**
  * Reflect the authenticated user's persisted release acknowledgement state
@@ -617,6 +664,27 @@ function renderCurrentUser(user) {
  */
 function renderReleaseNotificationState(
     user
+) {
+    /*
+     * Until the notification payload has loaded, the release read-state
+     * from /api/auth/me is the only unread signal available.
+     */
+    if (notificationsPayload) {
+        renderNotificationBadge();
+
+        return;
+    }
+
+    setNotificationBadgeVisible(
+        Boolean(
+            user
+                ?.has_unread_release_notification
+        )
+    );
+}
+
+function setNotificationBadgeVisible(
+    unread
 ) {
     const badge =
         document.getElementById(
@@ -626,12 +694,6 @@ function renderReleaseNotificationState(
     if (! badge) {
         return;
     }
-
-    const unread =
-        Boolean(
-            user
-                ?.has_unread_release_notification
-        );
 
     badge.classList.toggle(
         'hidden',
@@ -644,6 +706,320 @@ function renderReleaseNotificationState(
             ? 'false'
             : 'true'
     );
+}
+
+/**
+ * The bell is marked unread when the release announcement is unread OR
+ * any danger-severity notification is present.
+ */
+function renderNotificationBadge() {
+    const notifications =
+        notificationsPayload
+            ?.notifications
+        || [];
+
+    const release =
+        notifications.find(
+            (notification) =>
+                notification.kind
+                === 'release_notes'
+        );
+
+    const unread =
+        Boolean(release?.unread)
+        || notifications.some(
+            (notification) =>
+                notification.severity
+                === 'danger'
+        );
+
+    setNotificationBadgeVisible(
+        unread
+    );
+}
+
+/**
+ * Load current notifications and render the bell panel.
+ *
+ * Called during shell initialization (so the unread badge is correct
+ * without opening the panel) and every time the panel opens.
+ */
+async function refreshNotifications() {
+    const list =
+        document.getElementById(
+            'notification-list'
+        );
+
+    if (! list) {
+        return;
+    }
+
+    try {
+        const response =
+            await apiRequest(
+                '/api/notifications'
+            );
+
+        notificationsPayload =
+            await parseJsonResponse(
+                response
+            );
+
+        renderNotificationList();
+        renderNotificationBadge();
+    } catch {
+        list.innerHTML = `
+            <div
+                class="
+                    px-3 py-6 text-center
+                    text-sm
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'notifications.unable_load'
+                    )
+                )}
+            </div>
+        `;
+    }
+}
+
+/**
+ * Localized single-line body for one notification.
+ */
+function notificationBody(
+    notification
+) {
+    if (
+        notification.kind
+        === 'release_notes'
+    ) {
+        return translate(
+            'notifications.release_notes_body'
+        );
+    }
+
+    const count =
+        Number(
+            notification.count
+            || 0
+        );
+
+    const key =
+        count === 1
+            ? `notifications.${notification.kind}_body_one`
+            : `notifications.${notification.kind}_body`;
+
+    return translate(
+        key,
+        {
+            count:
+                formatNumber(
+                    count
+                ),
+
+            amount:
+                formatCurrency(
+                    notification.amount
+                    || 0
+                ),
+        }
+    );
+}
+
+/**
+ * Localized title for one notification.
+ */
+function notificationTitle(
+    notification
+) {
+    if (
+        notification.kind
+        === 'release_notes'
+    ) {
+        return translate(
+            'notifications.release_notes_title',
+            {
+                release:
+                    String(
+                        notification.release
+                        || ''
+                    ),
+            }
+        );
+    }
+
+    return translate(
+        `notifications.${notification.kind}_title`
+    );
+}
+
+function notificationRowMarkup(
+    notification
+) {
+    const dot =
+        NOTIFICATION_SEVERITY_DOTS[
+            notification.severity
+        ]
+        || NOTIFICATION_SEVERITY_DOTS.info;
+
+    const title =
+        escapeHtml(
+            notificationTitle(
+                notification
+            )
+        );
+
+    const body =
+        escapeHtml(
+            notificationBody(
+                notification
+            )
+        );
+
+    const content = `
+        <span
+            class="
+                mt-1 h-2.5 w-2.5 shrink-0
+                rounded-full
+                ${dot}
+            "
+            aria-hidden="true"
+        ></span>
+
+        <span class="min-w-0 flex-1">
+            <span
+                class="
+                    block text-sm font-medium
+                    text-[var(--pm-text)]
+                "
+            >
+                ${title}
+            </span>
+
+            <span
+                class="
+                    mt-0.5 block text-xs
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                ${body}
+            </span>
+        </span>
+    `;
+
+    if (
+        notification.kind
+        === 'release_notes'
+    ) {
+        /*
+         * The release row toggles the in-panel release details and
+         * acknowledges the announcement instead of navigating away.
+         */
+        return `
+            <button
+                type="button"
+                data-notification-release
+                class="
+                    flex w-full items-start gap-3
+                    rounded-lg px-3 py-3
+                    text-left transition
+                    hover:bg-[var(--pm-hover)]
+                "
+            >
+                ${content}
+            </button>
+        `;
+    }
+
+    const href =
+        NOTIFICATION_LINKS[
+            notification.kind
+        ]
+        || '/dashboard';
+
+    return `
+        <a
+            href="${href}"
+            class="
+                flex items-start gap-3
+                rounded-lg px-3 py-3
+                transition
+                hover:bg-[var(--pm-hover)]
+            "
+        >
+            ${content}
+        </a>
+    `;
+}
+
+function renderNotificationList() {
+    const list =
+        document.getElementById(
+            'notification-list'
+        );
+
+    if (! list) {
+        return;
+    }
+
+    const notifications =
+        notificationsPayload
+            ?.notifications
+        || [];
+
+    if (notifications.length === 0) {
+        list.innerHTML = `
+            <div
+                class="
+                    px-3 py-6 text-center
+                    text-sm
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'notifications.empty'
+                    )
+                )}
+            </div>
+        `;
+
+        return;
+    }
+
+    list.innerHTML =
+        notifications
+            .map(
+                notificationRowMarkup
+            )
+            .join('');
+}
+
+/**
+ * Toggle the in-panel release details and acknowledge the announcement.
+ */
+function openReleaseNotificationDetails() {
+    const panel =
+        document.getElementById(
+            'notification-release-panel'
+        );
+
+    panel?.classList.toggle(
+        'hidden'
+    );
+
+    acknowledgeCurrentReleaseNotification()
+        .catch(
+            (error) => {
+                console.error(
+                    'Unable to acknowledge release notification.',
+                    error
+                );
+            }
+        );
 }
 
 
@@ -693,6 +1069,39 @@ async function acknowledgeCurrentReleaseNotification() {
             ),
     };
 
+    /*
+     * Mirror the acknowledged state into the loaded notification payload
+     * so the consolidated badge rule stays accurate without refetching.
+     */
+    if (notificationsPayload) {
+        notificationsPayload = {
+            ...notificationsPayload,
+
+            notifications:
+                (
+                    notificationsPayload
+                        .notifications
+                    || []
+                ).map(
+                    (notification) =>
+                        notification.kind
+                        === 'release_notes'
+                            ? {
+                                ...notification,
+
+                                unread:
+                                    Boolean(
+                                        state
+                                            .has_unread_release_notification
+                                    ),
+                            }
+                            : notification
+                ),
+        };
+
+        renderNotificationList();
+    }
+
     renderReleaseNotificationState(
         authenticatedShellUser
     );
@@ -703,6 +1112,87 @@ async function acknowledgeCurrentReleaseNotification() {
 | My Profile
 |--------------------------------------------------------------------------
 */
+
+/**
+ * V1.0.7 structured names: derive given names + surname from a legacy
+ * display name when the API payload does not carry the structured fields.
+ *
+ * The last word becomes the surname; everything before it the given names.
+ *
+ * @param {string|null} name
+ * @returns {{given_names: string, surname: string}}
+ */
+function splitDisplayName(name) {
+    const parts =
+        String(
+            name
+            || ''
+        )
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean);
+
+    if (parts.length === 0) {
+        return {
+            given_names: '',
+            surname: '',
+        };
+    }
+
+    if (parts.length === 1) {
+        return {
+            given_names: '',
+            surname: parts[0],
+        };
+    }
+
+    return {
+        given_names:
+            parts
+                .slice(0, -1)
+                .join(' '),
+
+        surname:
+            parts[
+                parts.length - 1
+            ],
+    };
+}
+
+/**
+ * Resolve the structured name for a user payload, falling back to
+ * splitting the composed display name.
+ *
+ * @param {object} user
+ * @returns {{given_names: string, surname: string}}
+ */
+function structuredNameFor(user) {
+    const givenNames =
+        String(
+            user?.given_names
+            ?? ''
+        ).trim();
+
+    const surname =
+        String(
+            user?.surname
+            ?? ''
+        ).trim();
+
+    if (
+        givenNames !== ''
+        || surname !== ''
+    ) {
+        return {
+            given_names: givenNames,
+            surname,
+        };
+    }
+
+    return splitDisplayName(
+        user?.name
+    );
+}
 
 /**
  * Populate and show the signed-in user's own profile drawer.
@@ -720,9 +1210,14 @@ function openProfileModal() {
         return;
     }
 
-    const name =
+    const givenNames =
         document.getElementById(
-            'profile-name'
+            'profile-given-names'
+        );
+
+    const surname =
+        document.getElementById(
+            'profile-surname'
         );
 
     const email =
@@ -745,9 +1240,19 @@ function openProfileModal() {
             'profile-status'
         );
 
-    if (name) {
-        name.value =
-            user.name ?? '';
+    const structuredName =
+        structuredNameFor(
+            user
+        );
+
+    if (givenNames) {
+        givenNames.value =
+            structuredName.given_names;
+    }
+
+    if (surname) {
+        surname.value =
+            structuredName.surname;
     }
 
     if (email) {
@@ -981,9 +1486,14 @@ async function submitProfileForm(
         return;
     }
 
-    const name =
+    const givenNames =
         document.getElementById(
-            'profile-name'
+            'profile-given-names'
+        );
+
+    const surname =
+        document.getElementById(
+            'profile-surname'
         );
 
     const email =
@@ -1007,7 +1517,8 @@ async function submitProfileForm(
         );
 
     if (
-        ! name
+        ! givenNames
+        || ! surname
         || ! email
         || ! phone
         || ! newPassword
@@ -1046,9 +1557,18 @@ async function submitProfileForm(
         button.disabled =
             true;
 
+        /*
+         * V1.0.7 structured names: PATCH /api/auth/me accepts
+         * given_names + surname and recomposes the display name.
+         */
         const payload = {
-            name:
-                name.value
+            given_names:
+                givenNames.value
+                    .trim()
+                    || null,
+
+            surname:
+                surname.value
                     .trim(),
 
             email:
@@ -1341,6 +1861,18 @@ function initializeShellControls() {
             'aria-expanded',
             'false'
         );
+
+        /*
+         * Collapse the release details so the next open starts from the
+         * notification list again.
+         */
+        document
+            .getElementById(
+                'notification-release-panel'
+            )
+            ?.classList.add(
+                'hidden'
+            );
     };
 
     manageToggle?.addEventListener(
@@ -1436,23 +1968,36 @@ function initializeShellControls() {
             );
 
             /*
-             * Opening the notification panel counts as seeing the current
-             * release announcement. Closing/reopening an already-read panel
-             * performs no additional API request.
+             * Refresh the derived notifications every time the panel
+             * opens so it always reflects the current operational state.
              */
             if (opening) {
-                acknowledgeCurrentReleaseNotification()
-                    .catch(
-                        (error) => {
-                            console.error(
-                                'Unable to acknowledge release notification.',
-                                error
-                            );
-                        }
-                    );
+                refreshNotifications();
             }
         }
     );
+
+    /*
+     * The release row is re-rendered on every refresh; delegate its click
+     * through the stable list container.
+     */
+    document
+        .getElementById(
+            'notification-list'
+        )
+        ?.addEventListener(
+            'click',
+            (event) => {
+                const releaseRow =
+                    event.target.closest(
+                        '[data-notification-release]'
+                    );
+
+                if (releaseRow) {
+                    openReleaseNotificationDetails();
+                }
+            }
+        );
 
     userMenu?.addEventListener(
         'click',

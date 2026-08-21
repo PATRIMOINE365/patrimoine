@@ -60,6 +60,55 @@
         "
     ></div>
 
+    {{-- Expense Bill success banner (post-creation document actions) --}}
+
+    <div
+        id="owner-expense-bill-success"
+        class="
+            mb-6 hidden rounded-xl
+            border border-[var(--pm-success-border)]
+            bg-[var(--pm-success-background)] px-4 py-3
+            text-sm text-[var(--pm-success-text)]
+        "
+    >
+        <div
+            class="
+                flex flex-col gap-3
+                sm:flex-row sm:items-center
+                sm:justify-between
+            "
+        >
+            <span id="owner-expense-bill-success-message"></span>
+
+            <div class="flex flex-wrap gap-2">
+                <button
+                    id="owner-expense-bill-download"
+                    type="button"
+                    class="pm-button-secondary"
+                >
+                    <span data-i18n="owners.download_bill">
+    {{ __('ui.owners.download_bill') }}
+</span>
+                </button>
+
+                <button
+                    id="owner-expense-bill-email"
+                    type="button"
+                    class="pm-button-secondary"
+                >
+                    <span data-i18n="owners.email_to_owner">
+    {{ __('ui.owners.email_to_owner') }}
+</span>
+                </button>
+            </div>
+        </div>
+
+        <div
+            id="owner-expense-bill-email-status"
+            class="mt-2 hidden text-xs"
+        ></div>
+    </div>
+
     {{-- ============================================================
          Owner Workspace
     ============================================================ --}}
@@ -324,6 +373,37 @@
                                 flex flex-wrap gap-2
                             "
                         >
+                            <button
+                                id="owner-view-accounts-button"
+                                type="button"
+                                class="
+                                    inline-flex items-center gap-2
+                                    rounded-lg border
+                                    border-[var(--pm-border)]
+                                    bg-[var(--pm-surface)] px-3.5 py-2.5
+                                    text-sm font-medium
+                                    text-[var(--pm-text-secondary)]
+                                    transition
+                                    hover:border-[var(--pm-border-strong)]
+                                    hover:bg-[var(--pm-hover)]
+                                "
+                            >
+                                <svg
+                                    class="h-4 w-4"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <rect x="2" y="5" width="20" height="14" rx="2"/>
+                                    <path d="M2 10h20"/>
+                                </svg>
+
+                                <span data-i18n="owners.accounts">
+    {{ __('ui.owners.accounts') }}
+</span>
+                            </button>
+
                             <button
                                 id="owner-record-deposit-button"
                                 type="button"
@@ -1685,6 +1765,469 @@
 
             <button
                 id="owner-adjustment-submit"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="actions.save">
+    {{ __('ui.actions.save') }}
+</span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+{{-- ================================================================
+     Owner Accounts Drawer (read-only consolidated position)
+================================================================ --}}
+
+<x-drawer
+    id="owner-accounts-modal"
+    backdrop-id="owner-accounts-modal-backdrop"
+    width="lg"
+>
+    <x-drawer-header
+        close-id="owner-accounts-modal-close"
+        close-label="Close"
+        close-label-key="owners.close"
+    >
+        <x-slot:title>
+            <span data-i18n="owners.owner_accounts_title">
+    {{ __('ui.owners.owner_accounts_title') }}
+</span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="owners.owner_accounts_description">
+    {{ __('ui.owners.owner_accounts_description') }}
+</span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <div
+        class="
+            min-h-0 flex-1
+            overflow-y-auto
+            px-6 py-6
+        "
+    >
+        <div
+            class="
+                rounded-xl border
+                border-[var(--pm-info-border)]
+                bg-[var(--pm-info-background)] px-4 py-3
+                text-sm leading-6 text-[var(--pm-info-text)]
+            "
+        >
+            <span data-i18n="owners.consolidated_account_note">
+    {{ __('ui.owners.consolidated_account_note') }}
+</span>
+        </div>
+
+        <div
+            class="
+                mt-5 grid gap-4
+                sm:grid-cols-2
+            "
+        >
+            <div
+                class="
+                    rounded-xl border
+                    border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] p-4
+                "
+            >
+                <div
+                    class="
+                        text-xs font-medium
+                        uppercase tracking-wide
+                        text-[var(--pm-text-muted)]
+                    "
+                >
+                    <span data-i18n="owners.current_balance">
+    {{ __('ui.owners.current_balance') }}
+</span>
+                </div>
+
+                <div
+                    id="owner-accounts-balance"
+                    class="
+                        mt-2 text-2xl font-semibold
+                        tracking-tight text-[var(--pm-text)]
+                    "
+                >
+                    —
+                </div>
+            </div>
+
+            <div
+                class="
+                    rounded-xl border
+                    border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] p-4
+                "
+            >
+                <div
+                    class="
+                        text-xs font-medium
+                        uppercase tracking-wide
+                        text-[var(--pm-text-muted)]
+                    "
+                >
+                    <span data-i18n="owners.properties">
+    {{ __('ui.owners.properties') }}
+</span>
+                </div>
+
+                <div
+                    id="owner-accounts-property-count"
+                    class="
+                        mt-2 text-2xl font-semibold
+                        tracking-tight text-[var(--pm-text)]
+                    "
+                >
+                    —
+                </div>
+            </div>
+
+            <div
+                class="
+                    rounded-xl border
+                    border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] p-4
+                "
+            >
+                <div
+                    class="
+                        text-xs font-medium
+                        uppercase tracking-wide
+                        text-[var(--pm-text-muted)]
+                    "
+                >
+                    <span data-i18n="owners.total_credits">
+    {{ __('ui.owners.total_credits') }}
+</span>
+                </div>
+
+                <div
+                    id="owner-accounts-credits"
+                    class="
+                        mt-2 text-xl font-semibold
+                        text-[var(--pm-success-text)]
+                    "
+                >
+                    —
+                </div>
+            </div>
+
+            <div
+                class="
+                    rounded-xl border
+                    border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] p-4
+                "
+            >
+                <div
+                    class="
+                        text-xs font-medium
+                        uppercase tracking-wide
+                        text-[var(--pm-text-muted)]
+                    "
+                >
+                    <span data-i18n="owners.total_debits">
+    {{ __('ui.owners.total_debits') }}
+</span>
+                </div>
+
+                <div
+                    id="owner-accounts-debits"
+                    class="
+                        mt-2 text-xl font-semibold
+                        text-[var(--pm-danger-text)]
+                    "
+                >
+                    —
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <h3
+                class="
+                    text-base font-semibold
+                    text-[var(--pm-text)]
+                "
+            >
+                <span data-i18n="owners.recent_activity">
+    {{ __('ui.owners.recent_activity') }}
+</span>
+            </h3>
+
+            <p
+                class="
+                    mt-1 text-xs
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                <span data-i18n="owners.recent_activity_description">
+    {{ __('ui.owners.recent_activity_description') }}
+</span>
+            </p>
+
+            <div
+                class="
+                    mt-3 overflow-x-auto
+                    rounded-xl border
+                    border-[var(--pm-border)]
+                "
+            >
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr
+                            class="
+                                border-b border-[var(--pm-border-subtle)]
+                                bg-[var(--pm-surface-subtle)]
+                                text-left text-xs font-medium
+                                uppercase tracking-wide
+                                text-[var(--pm-text-muted)]
+                            "
+                        >
+                            <th class="px-4 py-2.5 font-medium">
+                                <span data-i18n="owners.date">
+    {{ __('ui.owners.date') }}
+</span>
+                            </th>
+
+                            <th class="px-4 py-2.5 font-medium">
+                                <span data-i18n="owners.type">
+    {{ __('ui.owners.type') }}
+</span>
+                            </th>
+
+                            <th class="px-4 py-2.5 text-right font-medium">
+                                <span data-i18n="owners.amount">
+    {{ __('ui.owners.amount') }}
+</span>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="owner-accounts-ledger"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <x-drawer-footer>
+        <button
+            type="button"
+            data-close-owner-modal="owner-accounts-modal"
+            class="pm-button-secondary"
+        >
+            <span data-i18n="actions.close">
+    {{ __('ui.actions.close') }}
+</span>
+        </button>
+    </x-drawer-footer>
+</x-drawer>
+
+{{-- ================================================================
+     Owner Expense Bill Drawer (multi-line, billed directly to owner)
+================================================================ --}}
+
+<x-drawer
+    id="owner-expense-bill-modal"
+    backdrop-id="owner-expense-bill-modal-backdrop"
+    width="lg"
+>
+    <x-drawer-header
+        close-id="owner-expense-bill-modal-close"
+        close-label="Close"
+        close-label-key="owners.close"
+    >
+        <x-slot:title>
+            <span data-i18n="owners.expense_bill_title">
+    {{ __('ui.owners.expense_bill_title') }}
+</span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="owners.expense_bill_description">
+    {{ __('ui.owners.expense_bill_description') }}
+</span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    {{-- Secondary route to the legacy per-Building expense drawer --}}
+
+    <div
+        class="
+            flex items-center
+            justify-between gap-4
+            border-b border-[var(--pm-border-subtle)]
+            bg-[var(--pm-surface-subtle)]
+            px-6 py-3
+        "
+    >
+        <p class="text-xs text-[var(--pm-text-muted)]">
+            <span data-i18n="owners.property_expense_switch_hint">
+    {{ __('ui.owners.property_expense_switch_hint') }}
+</span>
+        </p>
+
+        <button
+            id="owner-expense-bill-property-expense-button"
+            type="button"
+            class="pm-button-secondary shrink-0"
+        >
+            <span data-i18n="owners.property_expense">
+    {{ __('ui.owners.property_expense') }}
+</span>
+        </button>
+    </div>
+
+    <form
+            id="owner-expense-bill-form"
+            class="flex min-h-0 flex-1 flex-col"
+        >
+        <div
+            class="
+                min-h-0 flex-1
+                overflow-y-auto
+                px-6 py-6
+            "
+        >
+<div
+                id="owner-expense-bill-error"
+                class="
+                    mb-5 hidden rounded-xl
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
+                "
+            ></div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+                <div>
+                    <label
+                        for="owner-expense-bill-date"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="owners.bill_date">
+    {{ __('ui.owners.bill_date') }}
+</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <input
+                        id="owner-expense-bill-date"
+                        type="text"
+                        inputmode="numeric"
+                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                        maxlength="10"
+                        autocomplete="off"
+                        data-owner-date-input
+                        data-pm-date-input
+                        required
+                        class="pm-input"
+                    >
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <div
+                    class="
+                        text-sm font-semibold
+                        text-[var(--pm-text)]
+                    "
+                >
+                    <span data-i18n="owners.expense_lines">
+    {{ __('ui.owners.expense_lines') }}
+</span>
+                </div>
+
+                <div
+                    id="owner-expense-bill-lines"
+                    class="mt-3 space-y-3"
+                ></div>
+
+                <div
+                    class="
+                        mt-4 flex items-center
+                        justify-between gap-4
+                    "
+                >
+                    <button
+                        id="owner-expense-bill-add-line"
+                        type="button"
+                        class="pm-button-secondary"
+                    >
+                        <span data-i18n="owners.add_line">
+    {{ __('ui.owners.add_line') }}
+</span>
+                    </button>
+
+                    <div class="text-right">
+                        <div
+                            class="
+                                text-xs font-medium
+                                uppercase tracking-wide
+                                text-[var(--pm-text-muted)]
+                            "
+                        >
+                            <span data-i18n="owners.bill_total">
+    {{ __('ui.owners.bill_total') }}
+</span>
+                        </div>
+
+                        <div
+                            id="owner-expense-bill-total"
+                            class="
+                                mt-1 text-lg font-semibold
+                                text-[var(--pm-text)]
+                            "
+                        >
+                            —
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <label
+                    for="owner-expense-bill-notes"
+                    class="pm-field-label"
+                >
+                    <span data-i18n="owners.notes">
+    {{ __('ui.owners.notes') }}
+</span>
+                    <span class="text-xs text-[var(--pm-text-subtle)]">
+                        <span data-i18n="owners.optional">
+    {{ __('ui.owners.optional') }}
+</span>
+                    </span>
+                </label>
+
+                <textarea
+                    id="owner-expense-bill-notes"
+                    rows="3"
+                    class="pm-input"
+                ></textarea>
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                type="button"
+                data-close-owner-modal="owner-expense-bill-modal"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="actions.cancel">
+    {{ __('ui.actions.cancel') }}
+</span>
+            </button>
+
+            <button
+                id="owner-expense-bill-submit"
                 type="submit"
                 class="pm-button-primary"
             >

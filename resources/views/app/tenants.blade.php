@@ -246,24 +246,26 @@
                         <span data-i18n="tenants.lease">
                             {{ __('ui.tenants.lease') }}
                         </span>
-                        <span class="text-[var(--pm-danger-text)]">*</span>
+
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
+                            {{ __('ui.tenants.optional') }}
+                        </span>
                     </label>
 
                     <select
                         id="tenant-deposit-lease"
-                        required
                         class="pm-input"
                     >
                         <option value="">
-                            {{ __('ui.tenants.select_lease') }}
+                            {{ __('ui.tenants.all_leases') }}
                         </option>
                     </select>
 
                     <p
                         class="mt-1.5 text-xs text-[var(--pm-text-muted)]"
-                        data-i18n="tenants.lease_first_help"
+                        data-i18n="tenants.any_account_help"
                     >
-                        {{ __('ui.tenants.lease_first_help') }}
+                        {{ __('ui.tenants.any_account_help') }}
                     </p>
                 </div>
 
@@ -285,7 +287,7 @@
                         class="pm-input"
                     >
                         <option value="">
-                            {{ __('ui.tenants.select_lease_first') }}
+                            {{ __('ui.tenants.select_account') }}
                         </option>
                     </select>
                 </div>
@@ -599,18 +601,27 @@
                         <span data-i18n="tenants.lease">
                             {{ __('ui.tenants.lease') }}
                         </span>
-                        <span class="text-[var(--pm-danger-text)]">*</span>
+
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
+                            {{ __('ui.tenants.optional') }}
+                        </span>
                     </label>
 
                     <select
                         id="tenant-withdrawal-lease"
-                        required
                         class="pm-input"
                     >
                         <option value="">
-                            {{ __('ui.tenants.select_lease') }}
+                            {{ __('ui.tenants.all_leases') }}
                         </option>
                     </select>
+
+                    <p
+                        class="mt-1.5 text-xs text-[var(--pm-text-muted)]"
+                        data-i18n="tenants.any_account_help"
+                    >
+                        {{ __('ui.tenants.any_account_help') }}
+                    </p>
                 </div>
 
                 <div>
@@ -631,7 +642,7 @@
                         class="pm-input"
                     >
                         <option value="">
-                            {{ __('ui.tenants.select_lease_first') }}
+                            {{ __('ui.tenants.select_account') }}
                         </option>
                     </select>
                 </div>
@@ -1380,6 +1391,399 @@
 
             <button
                 id="tenant-security-application-submit"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="actions.save">
+                    {{ __('ui.actions.save') }}
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+{{-- ================================================================
+     V1.0.7 Tenant Accounts Drawer
+================================================================ --}}
+
+<x-drawer
+    id="tenant-accounts-drawer"
+    backdrop-id="tenant-accounts-drawer-backdrop"
+    width="lg"
+>
+    <x-drawer-header
+        close-id="tenant-accounts-drawer-close"
+        close-label="{{ __('ui.tenants.close') }}"
+        close-label-key="tenants.close"
+    >
+        <x-slot:title>
+            <span data-i18n="tenants.accounts">
+                {{ __('ui.tenants.accounts') }}
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="tenants.accounts_description">
+                {{ __('ui.tenants.accounts_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <div class="flex min-h-0 flex-1 flex-col">
+        <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+            <div
+                id="tenant-accounts-error"
+                class="
+                    mb-5 hidden rounded-xl
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
+                "
+            ></div>
+
+            <div
+                id="tenant-accounts-success"
+                class="
+                    mb-5 hidden flex-wrap items-center
+                    justify-between gap-3 rounded-xl
+                    border border-[var(--pm-success-border)]
+                    bg-[var(--pm-success-background)] px-4 py-3
+                    text-sm text-[var(--pm-success-text)]
+                "
+            ></div>
+
+            <div
+                class="
+                    mb-4 flex flex-wrap items-center
+                    justify-between gap-3
+                "
+            >
+                <div
+                    id="tenant-accounts-context"
+                    class="text-sm font-semibold text-[var(--pm-text)]"
+                >
+                    —
+                </div>
+
+                <button
+                    type="button"
+                    id="tenant-accounts-transfer"
+                    data-requires-capability="manage_finance"
+                    class="pm-button-primary"
+                >
+                    <span data-i18n="tenants.transfer">
+                        {{ __('ui.tenants.transfer') }}
+                    </span>
+                </button>
+            </div>
+
+            <div id="tenant-accounts-table">
+                <div
+                    class="
+                        rounded-xl border
+                        border-dashed border-[var(--pm-border)]
+                        px-5 py-8 text-center
+                        text-sm text-[var(--pm-text-muted)]
+                    "
+                    data-i18n="tenants.loading_accounts"
+                >
+                    {{ __('ui.tenants.loading_accounts') }}
+                </div>
+            </div>
+
+            <div
+                id="tenant-accounts-position"
+                class="mt-6"
+            ></div>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                type="button"
+                data-close-tenant-transaction="tenant-accounts-drawer"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="actions.close">
+                    {{ __('ui.actions.close') }}
+                </span>
+            </button>
+        </x-drawer-footer>
+    </div>
+</x-drawer>
+
+{{-- ================================================================
+     V1.0.7 Tenant Transfer Drawer
+================================================================ --}}
+
+<x-drawer
+    id="tenant-transfer-drawer"
+    backdrop-id="tenant-transfer-drawer-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="tenant-transfer-drawer-close"
+        close-label="{{ __('ui.tenants.close') }}"
+        close-label-key="tenants.close"
+    >
+        <x-slot:title>
+            <span data-i18n="tenants.transfer">
+                {{ __('ui.tenants.transfer') }}
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="tenants.transfer_description">
+                {{ __('ui.tenants.transfer_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="tenant-transfer-form"
+        data-requires-capability="manage_finance"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+            <div
+                id="tenant-transfer-error"
+                class="
+                    mb-5 hidden rounded-xl
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
+                "
+            ></div>
+
+            <div
+                class="
+                    mb-5 rounded-xl
+                    border border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] px-4 py-4
+                "
+            >
+                <div
+                    class="
+                        text-xs font-medium uppercase
+                        tracking-wide text-[var(--pm-text-muted)]
+                    "
+                    data-i18n="tenants.transaction_context"
+                >
+                    {{ __('ui.tenants.transaction_context') }}
+                </div>
+
+                <div
+                    id="tenant-transfer-tenant-context"
+                    class="mt-2 text-sm font-semibold text-[var(--pm-text)]"
+                >
+                    —
+                </div>
+
+                <div
+                    id="tenant-transfer-property-context"
+                    class="mt-1 text-sm text-[var(--pm-text-muted)]"
+                ></div>
+            </div>
+
+            <div class="space-y-5">
+                <div>
+                    <label
+                        for="tenant-transfer-source"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="tenants.source_account">
+                            {{ __('ui.tenants.source_account') }}
+                        </span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <select
+                        id="tenant-transfer-source"
+                        required
+                        disabled
+                        class="pm-input"
+                    >
+                        <option value="">
+                            {{ __('ui.tenants.select_source_account') }}
+                        </option>
+                    </select>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-transfer-destination"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="tenants.destination_account">
+                            {{ __('ui.tenants.destination_account') }}
+                        </span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <select
+                        id="tenant-transfer-destination"
+                        required
+                        disabled
+                        class="pm-input"
+                    >
+                        <option value="">
+                            {{ __('ui.tenants.select_destination_account') }}
+                        </option>
+                    </select>
+                </div>
+
+                <div
+                    class="
+                        grid gap-3 rounded-xl
+                        border border-[var(--pm-border)]
+                        bg-[var(--pm-surface-subtle)] p-4
+                        sm:grid-cols-2
+                    "
+                >
+                    <div>
+                        <div
+                            class="text-xs text-[var(--pm-text-muted)]"
+                            data-i18n="tenants.source_balance"
+                        >
+                            {{ __('ui.tenants.source_balance') }}
+                        </div>
+
+                        <div
+                            id="tenant-transfer-source-balance"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-[var(--pm-text-muted)]"
+                            data-i18n="tenants.destination_balance"
+                        >
+                            {{ __('ui.tenants.destination_balance') }}
+                        </div>
+
+                        <div
+                            id="tenant-transfer-destination-balance"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-[var(--pm-text-muted)]"
+                            data-i18n="tenants.resulting_source_balance"
+                        >
+                            {{ __('ui.tenants.resulting_source_balance') }}
+                        </div>
+
+                        <div
+                            id="tenant-transfer-resulting-source"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-[var(--pm-text-muted)]"
+                            data-i18n="tenants.resulting_destination_balance"
+                        >
+                            {{ __('ui.tenants.resulting_destination_balance') }}
+                        </div>
+
+                        <div
+                            id="tenant-transfer-resulting-destination"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
+                        >
+                            —
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-transfer-amount"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="tenants.amount">
+                            {{ __('ui.tenants.amount') }}
+                        </span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <input
+                        id="tenant-transfer-amount"
+                        type="number"
+                        min="1"
+                        step="1"
+                        required
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-transfer-reason"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="tenants.reason">
+                            {{ __('ui.tenants.reason') }}
+                        </span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <textarea
+                        id="tenant-transfer-reason"
+                        rows="4"
+                        maxlength="500"
+                        required
+                        class="pm-input"
+                        placeholder="{{ __('ui.tenants.transfer_reason_placeholder') }}"
+                        data-i18n-placeholder="tenants.transfer_reason_placeholder"
+                    ></textarea>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-transfer-reference"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="tenants.reference">
+                            {{ __('ui.tenants.reference') }}
+                        </span>
+
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
+                            {{ __('ui.tenants.optional') }}
+                        </span>
+                    </label>
+
+                    <input
+                        id="tenant-transfer-reference"
+                        type="text"
+                        maxlength="255"
+                        class="pm-input"
+                    >
+                </div>
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                type="button"
+                data-close-tenant-transaction="tenant-transfer-drawer"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
+                </span>
+            </button>
+
+            <button
+                id="tenant-transfer-submit"
                 type="submit"
                 class="pm-button-primary"
             >

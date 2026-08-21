@@ -7,10 +7,13 @@
 |
 | Responsibilities:
 |
-| - portfolio metrics;
-| - financial metrics;
-| - overdue rent;
-| - upcoming rent;
+| - occupancy hero band (rate, meter, vacancy split);
+| - financial metric tiles;
+| - six-month collections trend chart (hand-rolled, div based);
+| - owner and tenant funds held;
+| - overdue rent and upcoming rent lists;
+| - leases expiring within 90 days;
+| - upcoming rent increments;
 | - dashboard date and error handling.
 |
 */
@@ -21,6 +24,7 @@ import {
     formatCurrency,
     formatDate,
     formatLongDate,
+    getPresentationConfiguration,
     parseJsonResponse,
     setText,
     translate,
@@ -107,6 +111,10 @@ export async function initializeDashboard() {
             summary
         );
 
+        renderCollectionsTrend(
+            summary?.collections_trend
+        );
+
         renderInvoiceList(
             'overdue-list',
             overdue
@@ -115,6 +123,14 @@ export async function initializeDashboard() {
         renderInvoiceList(
             'upcoming-list',
             upcoming
+        );
+
+        renderExpiringLeases(
+            summary
+        );
+
+        renderUpcomingIncrements(
+            summary
         );
     } catch (error) {
         if (! errorBox) {
@@ -164,15 +180,65 @@ function firstDefined(
 }
 
 /**
+ * Format a "YYYY-MM" trend month using the organisation language locale.
+ *
+ * @param {string} value
+ * @returns {string}
+ */
+function formatTrendMonth(
+    value
+) {
+    const parts =
+        String(value || '')
+            .split('-');
+
+    if (parts.length < 2) {
+        return String(value || '');
+    }
+
+    const date =
+        new Date(
+            Number(parts[0]),
+            Number(parts[1]) - 1,
+            1
+        );
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return String(value);
+    }
+
+    return new Intl.DateTimeFormat(
+        getPresentationConfiguration()
+            .browser_locale
+        || 'en-GB',
+        {
+            month:
+                'short',
+
+            year:
+                '2-digit',
+        }
+    ).format(
+        date
+    );
+}
+
+/**
  * Render dashboard summary metrics.
  *
  * Current API format:
  *
  * {
  *     "as_of": "...",
- *     "metrics": {
- *         ...
- *     }
+ *     "metrics": { ... },
+ *     "occupancy_rate": 0-100,
+ *     "collections_trend": [ ... ],
+ *     "expiring_leases": [ ... ],
+ *     "upcoming_increments": [ ... ]
  * }
  *
  * The fallback to the root object keeps the browser tolerant of older API
@@ -190,6 +256,112 @@ function renderDashboardSummary(
             ? summary.metrics
             : summary;
 
+    const occupied =
+        Number(
+            firstDefined(
+                metrics,
+                [
+                    'occupied_units',
+                    'occupied',
+                ]
+            )
+        ) || 0;
+
+    const totalUnits =
+        Number(
+            firstDefined(
+                metrics,
+                [
+                    'total_units',
+                    'units',
+                ]
+            )
+        ) || 0;
+
+    const providedRate =
+        firstDefined(
+            summary,
+            [
+                'occupancy_rate',
+            ],
+            null
+        );
+
+    const rate =
+        providedRate !== null
+        && Number.isFinite(
+            Number(providedRate)
+        )
+            ? Number(providedRate)
+            : (
+                totalUnits > 0
+                    ? Math.round(
+                        (occupied / totalUnits)
+                        * 100
+                    )
+                    : 0
+            );
+
+    const boundedRate =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                rate
+            )
+        );
+
+    setText(
+        'metric-occupancy-rate',
+        `${boundedRate}%`
+    );
+
+    const meter =
+        document.getElementById(
+            'occupancy-meter'
+        );
+
+    if (meter) {
+        meter.style.width =
+            `${boundedRate}%`;
+    }
+
+    setText(
+        'metric-occupied',
+        occupied
+    );
+
+    setText(
+        'metric-vacant',
+        firstDefined(
+            metrics,
+            [
+                'vacant_units',
+                'vacant',
+            ]
+        )
+    );
+
+    setText(
+        'metric-vacant-commercial',
+        firstDefined(
+            metrics,
+            [
+                'vacant_commercial_units',
+            ]
+        )
+    );
+
+    setText(
+        'metric-vacant-residential',
+        firstDefined(
+            metrics,
+            [
+                'vacant_residential_units',
+            ]
+        )
+    );
+
     setText(
         'metric-buildings',
         firstDefined(
@@ -203,35 +375,7 @@ function renderDashboardSummary(
 
     setText(
         'metric-units',
-        firstDefined(
-            metrics,
-            [
-                'total_units',
-                'units',
-            ]
-        )
-    );
-
-    setText(
-        'metric-occupied',
-        firstDefined(
-            metrics,
-            [
-                'occupied_units',
-                'occupied',
-            ]
-        )
-    );
-
-    setText(
-        'metric-vacant',
-        firstDefined(
-            metrics,
-            [
-                'vacant_units',
-                'vacant',
-            ]
-        )
+        totalUnits
     );
 
     setText(
@@ -286,6 +430,516 @@ function renderDashboardSummary(
             )
         )
     );
+
+    setText(
+        'metric-tenant-funds',
+        formatCurrency(
+            firstDefined(
+                metrics,
+                [
+                    'tenant_funds_held',
+                    'tenant_funds',
+                ]
+            )
+        )
+    );
+}
+
+/**
+ * Render the six-month collections trend as a hand-rolled div bar chart.
+ *
+ * No chart library and no canvas: a flex row of columns whose inner bar
+ * heights are proportional to the highest month in the series.
+ *
+ * @param {*} trend
+ */
+function renderCollectionsTrend(
+    trend
+) {
+    const container =
+        document.getElementById(
+            'collections-chart'
+        );
+
+    if (! container) {
+        return;
+    }
+
+    const months =
+        Array.isArray(trend)
+            ? trend.filter(
+                (entry) =>
+                    entry
+                    && typeof entry
+                        === 'object'
+            )
+            : [];
+
+    if (months.length === 0) {
+        container.innerHTML = `
+            <div
+                class="
+                    rounded-lg border border-dashed
+                    border-[var(--pm-border)]
+                    px-4 py-8 text-center
+                    text-sm text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'dashboard.no_collections'
+                    )
+                )}
+            </div>
+        `;
+
+        return;
+    }
+
+    const maximum =
+        Math.max(
+            ...months.map(
+                (entry) =>
+                    Number(entry.amount)
+                    || 0
+            ),
+            1
+        );
+
+    const bars =
+        months
+            .map(
+                (entry) => {
+                    const amount =
+                        Number(entry.amount)
+                        || 0;
+
+                    const label =
+                        formatTrendMonth(
+                            entry.month
+                        );
+
+                    const percent =
+                        Math.round(
+                            (amount / maximum)
+                            * 100
+                        );
+
+                    const height =
+                        amount > 0
+                            ? Math.max(
+                                percent,
+                                2
+                            )
+                            : 0;
+
+                    const tooltip =
+                        `${label} — ${formatCurrency(
+                            amount
+                        )}`;
+
+                    return `
+                        <div
+                            class="
+                                flex min-w-0 flex-1
+                                flex-col items-center
+                                gap-2
+                            "
+                            title="${escapeHtml(
+                                tooltip
+                            ).replaceAll(
+                                '"',
+                                '&quot;'
+                            )}"
+                        >
+                            <div
+                                class="
+                                    flex h-40 w-full
+                                    items-end
+                                "
+                            >
+                                <div
+                                    class="
+                                        w-full rounded-t-md
+                                        bg-[var(--pm-primary)]
+                                    "
+                                    style="height: ${height}%; min-height: ${
+                                        amount > 0
+                                            ? '4px'
+                                            : '2px'
+                                    }; ${
+                                        amount > 0
+                                            ? ''
+                                            : 'background: var(--pm-surface-muted);'
+                                    }"
+                                ></div>
+                            </div>
+
+                            <div
+                                class="
+                                    truncate text-xs
+                                    text-[var(--pm-text-muted)]
+                                "
+                            >
+                                ${escapeHtml(
+                                    label
+                                )}
+                            </div>
+                        </div>
+                    `;
+                }
+            )
+            .join('');
+
+    container.innerHTML = `
+        <div
+            class="
+                flex items-end gap-2
+                sm:gap-4
+            "
+        >
+            ${bars}
+        </div>
+    `;
+}
+
+/**
+ * Render the leases expiring within the next 90 days.
+ *
+ * @param {object} summary
+ */
+function renderExpiringLeases(
+    summary
+) {
+    const container =
+        document.getElementById(
+            'expiring-list'
+        );
+
+    if (! container) {
+        return;
+    }
+
+    const leases =
+        Array.isArray(
+            summary?.expiring_leases
+        )
+            ? summary.expiring_leases
+            : [];
+
+    const badge =
+        document.getElementById(
+            'expiring-count'
+        );
+
+    if (badge) {
+        const count =
+            Number(
+                firstDefined(
+                    summary?.metrics,
+                    [
+                        'leases_expiring_90_days',
+                    ],
+                    leases.length
+                )
+            ) || 0;
+
+        badge.textContent =
+            String(count);
+
+        badge.classList.toggle(
+            'hidden',
+            count === 0
+        );
+    }
+
+    if (leases.length === 0) {
+        container.innerHTML =
+            emptyStateHtml(
+                'dashboard.no_expiring_leases'
+            );
+
+        return;
+    }
+
+    container.innerHTML =
+        leases
+            .slice(0, 6)
+            .map(
+                (lease) => {
+                    const tenant =
+                        lease.tenant_name
+                        || translate(
+                            'dashboard.tenant'
+                        );
+
+                    const propertyLabel =
+                        [
+                            lease.building_name,
+                            lease.unit_name,
+                        ]
+                            .filter(
+                                Boolean
+                            )
+                            .join(
+                                ' / '
+                            );
+
+                    return `
+                        <div
+                            class="
+                                flex items-center gap-4
+                                border-b border-[var(--pm-border)]
+                                py-4 last:border-b-0
+                                first:pt-0 last:pb-0
+                            "
+                        >
+                            <div
+                                class="
+                                    min-w-0 flex-1
+                                "
+                            >
+                                <div
+                                    class="
+                                        truncate text-sm
+                                        font-medium
+                                        text-[var(--pm-text)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        tenant
+                                    )}
+                                </div>
+
+                                ${
+                                    propertyLabel
+                                        ? `
+                                            <div
+                                                class="
+                                                    mt-1 truncate
+                                                    text-xs
+                                                    text-[var(--pm-text-secondary)]
+                                                "
+                                            >
+                                                ${escapeHtml(
+                                                    propertyLabel
+                                                )}
+                                            </div>
+                                        `
+                                        : ''
+                                }
+                            </div>
+
+                            <div
+                                class="
+                                    shrink-0 text-right
+                                "
+                            >
+                                <div
+                                    class="
+                                        text-xs
+                                        text-[var(--pm-text-muted)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        translate(
+                                            'dashboard.ends'
+                                        )
+                                    )}
+                                </div>
+
+                                <div
+                                    class="
+                                        text-sm font-semibold
+                                        text-[var(--pm-text)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        formatDate(
+                                            lease.end_date
+                                        )
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            )
+            .join('');
+}
+
+/**
+ * Render the rent increments taking effect soon.
+ *
+ * @param {object} summary
+ */
+function renderUpcomingIncrements(
+    summary
+) {
+    const container =
+        document.getElementById(
+            'increments-list'
+        );
+
+    if (! container) {
+        return;
+    }
+
+    const increments =
+        Array.isArray(
+            summary?.upcoming_increments
+        )
+            ? summary.upcoming_increments
+            : [];
+
+    if (increments.length === 0) {
+        container.innerHTML =
+            emptyStateHtml(
+                'dashboard.no_increments'
+            );
+
+        return;
+    }
+
+    container.innerHTML =
+        increments
+            .slice(0, 6)
+            .map(
+                (increment) => {
+                    const tenant =
+                        increment.tenant_name
+                        || translate(
+                            'dashboard.tenant'
+                        );
+
+                    const oldRent =
+                        formatCurrency(
+                            increment
+                                .old_rent_amount
+                        );
+
+                    const newRent =
+                        formatCurrency(
+                            increment
+                                .new_rent_amount
+                        );
+
+                    return `
+                        <div
+                            class="
+                                flex items-center gap-4
+                                border-b border-[var(--pm-border)]
+                                py-4 last:border-b-0
+                                first:pt-0 last:pb-0
+                            "
+                        >
+                            <div
+                                class="
+                                    min-w-0 flex-1
+                                "
+                            >
+                                <div
+                                    class="
+                                        truncate text-sm
+                                        font-medium
+                                        text-[var(--pm-text)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        tenant
+                                    )}
+                                </div>
+
+                                <div
+                                    class="
+                                        mt-1 truncate
+                                        text-xs
+                                        text-[var(--pm-text-secondary)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        oldRent
+                                    )}
+                                    <span
+                                        class="
+                                            text-[var(--pm-text-muted)]
+                                        "
+                                    >→</span>
+                                    <span
+                                        class="
+                                            font-semibold
+                                            text-[var(--pm-text)]
+                                        "
+                                    >${escapeHtml(
+                                        newRent
+                                    )}</span>
+                                </div>
+                            </div>
+
+                            <div
+                                class="
+                                    shrink-0 text-right
+                                "
+                            >
+                                <div
+                                    class="
+                                        text-xs
+                                        text-[var(--pm-text-muted)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        translate(
+                                            'dashboard.effective'
+                                        )
+                                    )}
+                                </div>
+
+                                <div
+                                    class="
+                                        text-sm font-semibold
+                                        text-[var(--pm-text)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        formatDate(
+                                            increment
+                                                .effective_date
+                                        )
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            )
+            .join('');
+}
+
+/**
+ * Build the shared dashed empty-state block for dashboard lists.
+ *
+ * @param {string} translationKey
+ * @returns {string}
+ */
+function emptyStateHtml(
+    translationKey
+) {
+    return `
+        <div
+            class="
+                rounded-lg border border-dashed
+                border-[var(--pm-border)]
+                px-4 py-8 text-center
+                text-sm text-[var(--pm-text-muted)]
+            "
+        >
+            ${escapeHtml(
+                translate(
+                    translationKey
+                )
+            )}
+        </div>
+    `;
 }
 
 /**
@@ -361,22 +1015,10 @@ function renderInvoiceList(
     if (
         items.length === 0
     ) {
-        container.innerHTML = `
-            <div
-                class="
-                    rounded-lg border border-dashed
-                    border-[var(--pm-border)]
-                    px-4 py-8 text-center
-                    text-sm text-[var(--pm-text-muted)]
-                "
-            >
-                ${escapeHtml(
-                    translate(
-                        'dashboard.no_records'
-                    )
-                )}
-            </div>
-        `;
+        container.innerHTML =
+            emptyStateHtml(
+                'dashboard.no_records'
+            );
 
         return;
     }

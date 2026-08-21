@@ -43,6 +43,12 @@ let selectedOwnerAccountId = null;
 let selectedOwner = null;
 
 /*
+ * The most recently recorded Expense Bill, used by the success banner's
+ * "Download bill" and "Email to owner" actions.
+ */
+let lastExpenseBillId = null;
+
+/*
 |--------------------------------------------------------------------------
 | Initialization
 |--------------------------------------------------------------------------
@@ -591,6 +597,17 @@ async function selectOwnerAccount(
     accountId,
     transactionPage = 1
 ) {
+    /*
+     * A recorded Expense Bill banner belongs to the owner it was created
+     * for — hide it when the workspace moves to a different owner.
+     */
+    if (
+        Number(accountId)
+        !== selectedOwnerAccountId
+    ) {
+        hideExpenseBillSuccess();
+    }
+
     selectedOwnerAccountId =
         Number(
             accountId
@@ -1714,17 +1731,50 @@ function renderOwnerPayouts(
 
                             <div
                                 class="
-                                    shrink-0 text-base
-                                    font-semibold
-                                    text-[var(--pm-text)]
+                                    flex shrink-0
+                                    items-center gap-3
                                 "
                             >
-                                ${escapeHtml(
-                                    formatCurrency(
-                                        payout.amount
-                                        ?? 0
-                                    )
-                                )}
+                                <div
+                                    class="
+                                        text-base font-semibold
+                                        text-[var(--pm-text)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        formatCurrency(
+                                            payout.amount
+                                            ?? 0
+                                        )
+                                    )}
+                                </div>
+
+                                ${
+                                    payout.id
+                                        ? `
+                                            <button
+                                                type="button"
+                                                data-owner-receipt-endpoint="${escapeAttribute(
+                                                    `/api/owner-payouts/${payout.id}/receipt`
+                                                )}"
+                                                class="
+                                                    rounded-lg border
+                                                    border-[var(--pm-border)]
+                                                    bg-[var(--pm-surface)] px-3 py-2
+                                                    text-xs font-medium
+                                                    text-[var(--pm-text-secondary)]
+                                                    transition
+                                                    hover:border-[var(--pm-border-strong)]
+                                                    hover:bg-[var(--pm-hover)]
+                                                "
+                                            >
+                                                ${translate(
+                                                    'owners.receipt'
+                                                )}
+                                            </button>
+                                        `
+                                        : ''
+                                }
                             </div>
                         </div>
                     `
@@ -1795,6 +1845,15 @@ function initializeOwnerWorkspaceActions() {
      */
     document
         .getElementById(
+            'owner-view-accounts-button'
+        )
+        ?.addEventListener(
+            'click',
+            openOwnerAccountsModal
+        );
+
+    document
+        .getElementById(
             'owner-record-deposit-button'
         )
         ?.addEventListener(
@@ -1802,13 +1861,18 @@ function initializeOwnerWorkspaceActions() {
             openOwnerDepositModal
         );
 
+    /*
+     * V1.0.7: the Expense action now opens the multi-line Expense Bill
+     * drawer. The legacy per-Building expense drawer remains reachable
+     * through the secondary action inside that drawer.
+     */
     document
         .getElementById(
             'owner-record-expense-button'
         )
         ?.addEventListener(
             'click',
-            openOwnerExpenseModal
+            openOwnerExpenseBillModal
         );
 
     document
@@ -1854,8 +1918,10 @@ function initializeOwnerWorkspaceActions() {
      * Shared drawer headers generate close buttons by ID.
      */
     [
+        'owner-accounts-modal',
         'owner-deposit-modal',
         'owner-expense-modal',
+        'owner-expense-bill-modal',
         'owner-payout-modal',
         'owner-adjustment-modal',
     ].forEach(
@@ -1880,8 +1946,10 @@ function initializeOwnerWorkspaceActions() {
      * Clicking the drawer backdrop closes it.
      */
     [
+        'owner-accounts-modal',
         'owner-deposit-modal',
         'owner-expense-modal',
+        'owner-expense-bill-modal',
         'owner-payout-modal',
         'owner-adjustment-modal',
     ].forEach(
@@ -1909,8 +1977,10 @@ function initializeOwnerWorkspaceActions() {
             }
 
             [
+                'owner-accounts-modal',
                 'owner-deposit-modal',
                 'owner-expense-modal',
+                'owner-expense-bill-modal',
                 'owner-payout-modal',
                 'owner-adjustment-modal',
             ].forEach(
@@ -2038,6 +2108,125 @@ function initializeOwnerWorkspaceActions() {
 
                 await submitOwnerAdjustment();
             }
+        );
+
+    /*
+     * Expense Bill drawer — dynamic line rows and running total.
+     */
+    document
+        .getElementById(
+            'owner-expense-bill-add-line'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                appendExpenseBillLine();
+
+                updateExpenseBillTotal();
+            }
+        );
+
+    const billLines =
+        document.getElementById(
+            'owner-expense-bill-lines'
+        );
+
+    billLines?.addEventListener(
+        'input',
+        updateExpenseBillTotal
+    );
+
+    billLines?.addEventListener(
+        'click',
+        (event) => {
+            const remove =
+                event.target.closest(
+                    '[data-remove-expense-line]'
+                );
+
+            if (! remove) {
+                return;
+            }
+
+            remove
+                .closest(
+                    '[data-expense-bill-line]'
+                )
+                ?.remove();
+
+            /*
+             * A bill always keeps at least one editable line.
+             */
+            if (
+                ! billLines.querySelector(
+                    '[data-expense-bill-line]'
+                )
+            ) {
+                appendExpenseBillLine();
+            }
+
+            updateExpenseBillTotal();
+        }
+    );
+
+    /*
+     * Secondary route to the legacy per-Building expense drawer.
+     */
+    document
+        .getElementById(
+            'owner-expense-bill-property-expense-button'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                closeDrawer(
+                    'owner-expense-bill-modal'
+                );
+
+                openOwnerExpenseModal();
+            }
+        );
+
+    document
+        .getElementById(
+            'owner-expense-bill-form'
+        )
+        ?.addEventListener(
+            'submit',
+            async (event) => {
+                event.preventDefault();
+
+                await submitOwnerExpenseBill();
+            }
+        );
+
+    /*
+     * Expense Bill success banner document actions.
+     */
+    document
+        .getElementById(
+            'owner-expense-bill-download'
+        )
+        ?.addEventListener(
+            'click',
+            async () => {
+                if (! lastExpenseBillId) {
+                    return;
+                }
+
+                await openAuthenticatedPdf(
+                    `/api/owner-expense-bills/${lastExpenseBillId}/pdf`
+                );
+            }
+        );
+
+    document
+        .getElementById(
+            'owner-expense-bill-email'
+        )
+        ?.addEventListener(
+            'click',
+            emailExpenseBillToOwner
         );
 }
 
@@ -2935,6 +3124,695 @@ async function submitOwnerExpense() {
 
 /*
 |--------------------------------------------------------------------------
+| Owner Accounts View
+|--------------------------------------------------------------------------
+|
+| Owners have exactly ONE consolidated account by design. This read-only
+| drawer presents that consolidated position — balance, lifetime credits
+| and debits, property count — together with the already-loaded recent
+| ledger page. No additional endpoints are called.
+|
+*/
+
+function openOwnerAccountsModal() {
+    if (! hasSelectedOwner()) {
+        return;
+    }
+
+    renderOwnerAccountsView(
+        selectedOwner
+    );
+
+    openDrawer(
+        'owner-accounts-modal'
+    );
+}
+
+/**
+ * Render the consolidated account position from already-loaded detail data.
+ *
+ * @param {object} owner
+ */
+function renderOwnerAccountsView(
+    owner
+) {
+    const balance =
+        Number(
+            owner.balance
+            ?? 0
+        );
+
+    const balanceElement =
+        document.getElementById(
+            'owner-accounts-balance'
+        );
+
+    if (balanceElement) {
+        balanceElement.textContent =
+            formatCurrency(
+                balance
+            );
+
+        balanceElement.classList.toggle(
+            'text-[var(--pm-danger-text)]',
+            balance < 0
+        );
+
+        balanceElement.classList.toggle(
+            'text-[var(--pm-text)]',
+            balance >= 0
+        );
+    }
+
+    setText(
+        'owner-accounts-credits',
+        formatCurrency(
+            owner.credited_amount
+            ?? 0
+        )
+    );
+
+    setText(
+        'owner-accounts-debits',
+        formatCurrency(
+            owner.debited_amount
+            ?? 0
+        )
+    );
+
+    const properties =
+        Array.isArray(
+            owner.properties
+        )
+            ? owner.properties
+            : [];
+
+    setText(
+        'owner-accounts-property-count',
+        formatNumber(
+            properties.length
+        )
+    );
+
+    const body =
+        document.getElementById(
+            'owner-accounts-ledger'
+        );
+
+    if (! body) {
+        return;
+    }
+
+    const transactions =
+        Array.isArray(
+            owner.transactions?.data
+        )
+            ? owner.transactions.data
+            : [];
+
+    if (transactions.length === 0) {
+        body.innerHTML = `
+            <tr>
+                <td
+                    colspan="3"
+                    class="
+                        px-4 py-6 text-center
+                        text-sm text-[var(--pm-text-muted)]
+                    "
+                >
+                    ${translate(
+                        'owners.no_transactions'
+                    )}
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    body.innerHTML =
+        transactions
+            .map(
+                renderOwnerAccountsLedgerRow
+            )
+            .join('');
+}
+
+/**
+ * Render one compact ledger row for the Accounts drawer.
+ *
+ * @param {object} transaction
+ * @returns {string}
+ */
+function renderOwnerAccountsLedgerRow(
+    transaction
+) {
+    const credit =
+        transaction.direction
+        === 'credit';
+
+    const amountPrefix =
+        credit
+            ? '+'
+            : '−';
+
+    const amountClass =
+        credit
+            ? 'text-[var(--pm-success-text)]'
+            : 'text-[var(--pm-danger-text)]';
+
+    return `
+        <tr
+            class="
+                border-b border-[var(--pm-border-subtle)]
+                last:border-b-0
+            "
+        >
+            <td
+                class="
+                    whitespace-nowrap px-4 py-2.5
+                    text-xs text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(
+                    formatDate(
+                        transaction.transaction_date
+                    )
+                )}
+            </td>
+
+            <td
+                class="
+                    px-4 py-2.5 text-sm
+                    text-[var(--pm-text)]
+                "
+            >
+                ${escapeHtml(
+                    ownerTransactionCategoryLabel(
+                        transaction.category
+                    )
+                )}
+            </td>
+
+            <td
+                class="
+                    whitespace-nowrap px-4 py-2.5
+                    text-right text-sm font-semibold
+                    ${amountClass}
+                "
+            >
+                ${amountPrefix}${escapeHtml(
+                    formatCurrency(
+                        transaction.amount
+                        ?? 0
+                    )
+                )}
+            </td>
+        </tr>
+    `;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Owner Expense Bill
+|--------------------------------------------------------------------------
+|
+| A bill charges one or more expense lines DIRECTLY to the selected
+| OwnerAccount in one validated batch. The legacy per-Building expense
+| drawer stays available through the secondary action in this drawer's
+| header area.
+|
+*/
+
+function openOwnerExpenseBillModal() {
+    if (! hasSelectedOwner()) {
+        return;
+    }
+
+    hideExpenseBillSuccess();
+
+    document
+        .getElementById(
+            'owner-expense-bill-form'
+        )
+        ?.reset();
+
+    hideOwnerActionError(
+        'owner-expense-bill-error'
+    );
+
+    setOwnerDateValue(
+        'owner-expense-bill-date',
+        localToday()
+    );
+
+    const lines =
+        document.getElementById(
+            'owner-expense-bill-lines'
+        );
+
+    if (lines) {
+        lines.innerHTML = '';
+    }
+
+    appendExpenseBillLine();
+
+    updateExpenseBillTotal();
+
+    openDrawer(
+        'owner-expense-bill-modal'
+    );
+
+    document
+        .querySelector(
+            '#owner-expense-bill-lines [data-expense-line-description]'
+        )
+        ?.focus();
+}
+
+/**
+ * Append one editable expense line row.
+ */
+function appendExpenseBillLine() {
+    const container =
+        document.getElementById(
+            'owner-expense-bill-lines'
+        );
+
+    container?.insertAdjacentHTML(
+        'beforeend',
+        expenseBillLineTemplate()
+    );
+}
+
+/**
+ * Build one expense line row.
+ *
+ * @returns {string}
+ */
+function expenseBillLineTemplate() {
+    return `
+        <div
+            data-expense-bill-line
+            class="flex items-start gap-2"
+        >
+            <div class="min-w-0 flex-1">
+                <input
+                    type="text"
+                    maxlength="255"
+                    required
+                    data-expense-line-description
+                    placeholder="${escapeAttribute(
+                        translate(
+                            'owners.line_description_placeholder'
+                        )
+                    )}"
+                    class="pm-input"
+                >
+            </div>
+
+            <div class="relative w-36 shrink-0">
+                <span
+                    class="
+                        pointer-events-none
+                        absolute inset-y-0 left-0
+                        flex items-center pl-3
+                        text-sm text-[var(--pm-text-muted)]
+                    "
+                >
+                    ${escapeHtml(
+                        ownerCurrencyDisplay()
+                    )}
+                </span>
+
+                <input
+                    type="number"
+                    min="1"
+                    step="1"
+                    required
+                    data-expense-line-amount
+                    class="pm-input pl-12"
+                >
+            </div>
+
+            <button
+                type="button"
+                data-remove-expense-line
+                class="pm-icon-button mt-1 shrink-0"
+                aria-label="${escapeAttribute(
+                    translate(
+                        'owners.remove_line'
+                    )
+                )}"
+                title="${escapeAttribute(
+                    translate(
+                        'owners.remove_line'
+                    )
+                )}"
+            >
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    class="h-4 w-4"
+                    aria-hidden="true"
+                >
+                    <path
+                        stroke-linecap="round"
+                        d="M6 6l12 12M18 6L6 18"
+                    />
+                </svg>
+            </button>
+        </div>
+    `;
+}
+
+/**
+ * Recompute and display the running bill total.
+ */
+function updateExpenseBillTotal() {
+    const amounts =
+        document.querySelectorAll(
+            '#owner-expense-bill-lines [data-expense-line-amount]'
+        );
+
+    let total = 0;
+
+    amounts.forEach(
+        (input) => {
+            const amount =
+                Number(
+                    input.value
+                );
+
+            if (
+                Number.isInteger(amount)
+                && amount > 0
+            ) {
+                total += amount;
+            }
+        }
+    );
+
+    setText(
+        'owner-expense-bill-total',
+        formatCurrency(
+            total
+        )
+    );
+}
+
+async function submitOwnerExpenseBill() {
+    if (! hasSelectedOwner()) {
+        return;
+    }
+
+    hideOwnerActionError(
+        'owner-expense-bill-error'
+    );
+
+    const rows =
+        document.querySelectorAll(
+            '#owner-expense-bill-lines [data-expense-bill-line]'
+        );
+
+    if (rows.length === 0) {
+        showOwnerActionError(
+            'owner-expense-bill-error',
+            translate('owners.expense_bill_lines_required')
+        );
+
+        return;
+    }
+
+    /*
+     * Every line must carry a description and a positive whole-currency
+     * amount before anything is sent to the API.
+     */
+    const lines = [];
+
+    let invalid = false;
+
+    rows.forEach(
+        (row) => {
+            const description =
+                String(
+                    row.querySelector(
+                        '[data-expense-line-description]'
+                    )?.value
+                    ?? ''
+                ).trim();
+
+            const amount =
+                Number(
+                    row.querySelector(
+                        '[data-expense-line-amount]'
+                    )?.value
+                );
+
+            if (
+                ! description
+                || ! Number.isInteger(amount)
+                || amount <= 0
+            ) {
+                invalid = true;
+
+                return;
+            }
+
+            lines.push({
+                description,
+
+                amount,
+            });
+        }
+    );
+
+    if (invalid) {
+        showOwnerActionError(
+            'owner-expense-bill-error',
+            translate('owners.expense_bill_line_invalid')
+        );
+
+        return;
+    }
+
+    const payload = {
+        bill_date:
+            ownerDateValue(
+                'owner-expense-bill-date'
+            ),
+
+        notes:
+            fieldValue(
+                'owner-expense-bill-notes'
+            )
+            || null,
+
+        lines,
+    };
+
+    setOwnerActionSubmitting(
+        'owner-expense-bill-submit',
+        true,
+        translate('owners.recording'),
+        translate('actions.save')
+    );
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/owner-accounts/${selectedOwnerAccountId}/expense-bills`,
+                {
+                    method:
+                        'POST',
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        ),
+                }
+            );
+
+        const data =
+            await parseJsonResponse(
+                response
+            );
+
+        closeDrawer(
+            'owner-expense-bill-modal'
+        );
+
+        await refreshSelectedOwner();
+
+        showExpenseBillSuccess(
+            data?.expense_bill
+        );
+    } catch (error) {
+        showOwnerActionError(
+            'owner-expense-bill-error',
+            error instanceof Error
+                ? error.message
+                : translate('owners.unable_to_record_bill')
+        );
+    } finally {
+        setOwnerActionSubmitting(
+            'owner-expense-bill-submit',
+            false,
+            translate('owners.recording'),
+            translate('actions.save')
+        );
+    }
+}
+
+/**
+ * Show the post-creation success banner with its document actions.
+ *
+ * The server already emailed the bill best-effort during creation; the
+ * banner's "Email to owner" button is the explicit resend.
+ *
+ * @param {object|null|undefined} bill
+ */
+function showExpenseBillSuccess(
+    bill
+) {
+    lastExpenseBillId =
+        bill?.id
+        ?? null;
+
+    const banner =
+        document.getElementById(
+            'owner-expense-bill-success'
+        );
+
+    if (
+        ! banner
+        || ! lastExpenseBillId
+    ) {
+        return;
+    }
+
+    setText(
+        'owner-expense-bill-success-message',
+        translate(
+            'owners.expense_bill_recorded',
+            {
+                number:
+                    String(
+                        bill?.bill_number
+                        ?? lastExpenseBillId
+                    ),
+            }
+        )
+    );
+
+    const status =
+        document.getElementById(
+            'owner-expense-bill-email-status'
+        );
+
+    if (status) {
+        status.textContent = '';
+
+        status.classList.add(
+            'hidden'
+        );
+    }
+
+    banner.classList.remove(
+        'hidden'
+    );
+
+    banner.scrollIntoView({
+        behavior:
+            'smooth',
+
+        block:
+            'nearest',
+    });
+}
+
+function hideExpenseBillSuccess() {
+    document
+        .getElementById(
+            'owner-expense-bill-success'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+}
+
+/**
+ * Explicitly resend the bill email to the owner and surface the outcome.
+ */
+async function emailExpenseBillToOwner() {
+    if (! lastExpenseBillId) {
+        return;
+    }
+
+    const button =
+        document.getElementById(
+            'owner-expense-bill-email'
+        );
+
+    const status =
+        document.getElementById(
+            'owner-expense-bill-email-status'
+        );
+
+    if (button) {
+        button.disabled = true;
+    }
+
+    if (status) {
+        status.textContent =
+            translate('owners.sending_email');
+
+        status.classList.remove(
+            'hidden',
+            'text-[var(--pm-danger-text)]'
+        );
+    }
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/owner-expense-bills/${lastExpenseBillId}/send-email`,
+                {
+                    method:
+                        'POST',
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        if (status) {
+            status.textContent =
+                translate('owners.email_sent');
+        }
+    } catch (error) {
+        if (status) {
+            status.textContent =
+                error instanceof Error
+                    ? error.message
+                    : translate('owners.email_failed');
+
+            status.classList.add(
+                'text-[var(--pm-danger-text)]'
+            );
+        }
+    } finally {
+        if (button) {
+            button.disabled = false;
+        }
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
 | Owner Payout
 |--------------------------------------------------------------------------
 */
@@ -3249,15 +4127,30 @@ async function submitOwnerAdjustment() {
                 }
             );
 
-        await parseJsonResponse(
-            response
-        );
+        const data =
+            await parseJsonResponse(
+                response
+            );
 
         closeDrawer(
             'owner-adjustment-modal'
         );
 
         await refreshSelectedOwner();
+
+        /*
+         * Open the audit voucher exactly like the deposit receipt.
+         */
+        const voucherEndpoint =
+            data
+                ?.adjustment_voucher
+                ?.pdf_endpoint;
+
+        if (voucherEndpoint) {
+            await openAuthenticatedPdf(
+                voucherEndpoint
+            );
+        }
     } catch (error) {
         showOwnerActionError(
             'owner-adjustment-error',

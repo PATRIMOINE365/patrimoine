@@ -84,6 +84,32 @@ let editingUnitId =
     null;
 
 /*
+ * Unit classification filter selected in the page filter bar.
+ *
+ * 'all' | 'commercial' | 'residential'
+ */
+let unitClassificationFilter =
+    'all';
+
+/*
+ * Deletion confirmation state.
+ */
+let deletingPropertyId =
+    null;
+
+let deletingPropertyName =
+    '';
+
+let deletingUnitId =
+    null;
+
+/*
+ * Auto-hide timer for the page activity banner.
+ */
+let propertiesBannerTimer =
+    null;
+
+/*
 |--------------------------------------------------------------------------
 | Properties Page Initialization
 |--------------------------------------------------------------------------
@@ -133,9 +159,35 @@ export async function initializeProperties() {
         );
     }
 
+    const classificationFilter =
+        document.getElementById(
+            'property-classification-filter'
+        );
+
+    if (classificationFilter) {
+        classificationFilter.addEventListener(
+            'change',
+            () => {
+                unitClassificationFilter =
+                    classificationFilter.value === 'commercial'
+                    || classificationFilter.value === 'residential'
+                        ? classificationFilter.value
+                        : 'all';
+
+                loadProperties(
+                    formValue(
+                        'property-search'
+                    )
+                );
+            }
+        );
+    }
+
     initializePropertyCreation();
     initializeOwnerCreation();
     initializeExistingUnitCreation();
+    initializePropertyDeletion();
+    initializeUnitDeletion();
 
     await loadProperties();
 }
@@ -458,6 +510,51 @@ function bindRenderedPropertyActions(
                 );
             }
         );
+
+    container
+        .querySelectorAll(
+            '[data-delete-building]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        openDeletePropertyModal(
+                            button.dataset
+                                .buildingId,
+
+                            button.dataset
+                                .buildingName
+                        );
+                    }
+                );
+            }
+        );
+
+    container
+        .querySelectorAll(
+            '[data-delete-unit]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        openDeleteUnitModal(
+                            button.dataset
+                                .unitId,
+
+                            button.dataset
+                                .unitName,
+
+                            button.dataset
+                                .buildingName
+                        );
+                    }
+                );
+            }
+        );
 }
 
 /*
@@ -599,8 +696,30 @@ function propertyCard(
                     )
         );
 
+    /*
+     * The classification filter narrows the Unit rows rendered inside each
+     * Property card without hiding the parent Property itself.
+     */
+    const filteredUnits =
+        unitClassificationFilter === 'all'
+            ? units
+            : units.filter(
+                (unit) =>
+                    Boolean(
+                        unit.is_commercial
+                    )
+                    === (
+                        unitClassificationFilter
+                        === 'commercial'
+                    )
+            );
+
     const expandUnits =
-        matchingUnitIds.size > 0;
+        matchingUnitIds.size > 0
+        || (
+            unitClassificationFilter !== 'all'
+            && filteredUnits.length > 0
+        );
 
     const ownerships =
         Array.isArray(
@@ -630,9 +749,10 @@ function propertyCard(
     const unitRows =
         renderPropertyUnits(
             building,
-            units,
+            filteredUnits,
             buildingName,
-            matchingUnitIds
+            matchingUnitIds,
+            units.length
         );
 
     return `
@@ -759,6 +879,48 @@ function propertyCard(
                         ${escapeHtml(
                             translate(
                                 'properties.edit'
+                            )
+                        )}
+                    </button>
+
+                    <button
+                        type="button"
+                        data-delete-building
+                        data-building-id="${escapeHtml(
+                            building.id
+                        )}"
+                        data-building-name="${escapeHtml(
+                            buildingName
+                        )}"
+                        class="
+                            inline-flex min-h-[2.625rem]
+                            items-center justify-center gap-2
+                            rounded-lg
+                            border border-[var(--pm-danger-border)]
+                            bg-[var(--pm-surface)] px-4 py-2.5
+                            text-sm font-semibold
+                            text-[var(--pm-danger-text)]
+                            transition
+                            hover:bg-[var(--pm-danger-background)]
+                        "
+                    >
+                        <svg
+                            class="h-4 w-4"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <path d="M3 6h18"/>
+                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                            <path d="M10 11v6"/>
+                            <path d="M14 11v6"/>
+                        </svg>
+
+                        ${escapeHtml(
+                            translate(
+                                'properties.delete'
                             )
                         )}
                     </button>
@@ -958,22 +1120,71 @@ function renderPropertyOwners(
 }
 
 /**
- * Render all Units associated with a Building.
+ * Render the classification badge for a Unit.
+ *
+ * Commercial Units use the info status tokens; residential Units use the
+ * neutral surface tokens.
+ *
+ * @param {object} unit
+ * @returns {string}
+ */
+function unitClassificationBadge(
+    unit
+) {
+    const commercial =
+        Boolean(
+            unit?.is_commercial
+        );
+
+    const badgeClasses =
+        commercial
+            ? 'border-[var(--pm-info-border)] bg-[var(--pm-info-background)] text-[var(--pm-info-text)]'
+            : 'border-[var(--pm-border)] bg-[var(--pm-surface-muted)] text-[var(--pm-text-secondary)]';
+
+    return `
+        <span
+            class="
+                inline-flex whitespace-nowrap
+                rounded-full border
+                px-2.5 py-1
+                text-xs font-medium
+                ${badgeClasses}
+            "
+        >
+            ${escapeHtml(
+                translate(
+                    commercial
+                        ? 'properties.commercial'
+                        : 'properties.residential'
+                )
+            )}
+        </span>
+    `;
+}
+
+/**
+ * Render the Units of a Building as a table.
+ *
+ * The table receives the classification-filtered Unit collection; the
+ * total Unit count distinguishes "the Building has no Units" from "no
+ * Unit matches the active classification filter".
  *
  * @param {object} building
  * @param {Array} units
  * @param {string} buildingName
  * @param {Set<string>} matchingUnitIds
+ * @param {number} totalUnitCount
  * @returns {string}
  */
 function renderPropertyUnits(
     building,
     units,
     buildingName,
-    matchingUnitIds = new Set()
+    matchingUnitIds = new Set(),
+    totalUnitCount = 0
 ) {
     if (
-        units.length === 0
+        totalUnitCount === 0
     ) {
         return `
             <div
@@ -991,83 +1202,186 @@ function renderPropertyUnits(
         `;
     }
 
-    return units
-        .map(
-            (unit) => {
-                const matchesSearch =
-                    matchingUnitIds.has(
-                        String(
-                            unit.id
-                        )
-                    );
+    if (
+        units.length === 0
+    ) {
+        return `
+            <div
+                class="
+                    py-5 text-sm
+                    text-[var(--pm-text-subtle)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'properties.no_units_match_filter'
+                    )
+                )}
+            </div>
+        `;
+    }
 
-                return `
-                <div
-                    data-property-unit-id="${escapeHtml(
-                        unit.id
-                    )}"
-                    class="
-                        flex items-center
-                        justify-between gap-4
-                        border-b border-[var(--pm-border-subtle)]
-                        px-3 py-3 last:border-b-0
-                        ${
-                            matchesSearch
-                                ? 'rounded-lg bg-patrimoine-50 ring-1 ring-inset ring-patrimoine-200'
-                                : ''
-                        }
-                    "
-                >
-                    <div
-                        class="
-                            min-w-0 flex-1
-                        "
-                    >
-                        <div
+    const rows =
+        units
+            .map(
+                (unit) => {
+                    const matchesSearch =
+                        matchingUnitIds.has(
+                            String(
+                                unit.id
+                            )
+                        );
+
+                    const unitName =
+                        unit.name
+                        || translate(
+                            'properties.unnamed_unit'
+                        );
+
+                    return `
+                        <tr
+                            data-property-unit-id="${escapeHtml(
+                                unit.id
+                            )}"
                             class="
-                                text-sm font-medium
-                                text-[var(--pm-text)]
+                                border-b border-[var(--pm-border-subtle)]
+                                last:border-b-0
+                                ${
+                                    matchesSearch
+                                        ? 'bg-[var(--pm-selected)]'
+                                        : ''
+                                }
                             "
                         >
-                            ${escapeHtml(
-                                unit.name
-                                || translate(
-                                    'properties.unnamed_unit'
-                                )
-                            )}
-                        </div>
+                            <td
+                                class="
+                                    px-3 py-3 text-sm
+                                    font-medium
+                                    text-[var(--pm-text)]
+                                "
+                            >
+                                ${escapeHtml(
+                                    unitName
+                                )}
+                            </td>
 
-                        ${
-                            unit.description
-                                ? `
-                                    <div
+                            <td class="px-3 py-3">
+                                ${unitClassificationBadge(
+                                    unit
+                                )}
+                            </td>
+
+                            <td
+                                class="
+                                    max-w-[22rem] px-3 py-3
+                                    text-xs
+                                    text-[var(--pm-text-muted)]
+                                "
+                            >
+                                ${
+                                    unit.description
+                                        ? escapeHtml(
+                                            unit.description
+                                        )
+                                        : '—'
+                                }
+                            </td>
+
+                            <td class="px-3 py-3">
+                                <div
+                                    class="
+                                        flex items-center
+                                        justify-end gap-2
+                                    "
+                                >
+                                    <button
+                                        type="button"
+                                        data-edit-unit
+                                        data-unit-id="${escapeHtml(
+                                            unit.id
+                                        )}"
+                                        data-building-id="${escapeHtml(
+                                            building.id
+                                        )}"
+                                        data-building-name="${escapeHtml(
+                                            buildingName
+                                        )}"
                                         class="
-                                            mt-1 text-xs
-                                            text-[var(--pm-text-muted)]
+                                            rounded-lg
+                                            border border-[var(--pm-border)]
+                                            bg-[var(--pm-surface)] px-3 py-1.5
+                                            text-xs font-medium
+                                            text-[var(--pm-text-secondary)]
+                                            transition
+                                            hover:bg-[var(--pm-hover)]
                                         "
                                     >
                                         ${escapeHtml(
-                                            unit.description
+                                            translate(
+                                                'properties.edit'
+                                            )
                                         )}
-                                    </div>
-                                `
-                                : ''
-                        }
-                    </div>
+                                    </button>
 
-                    <div
+                                    <button
+                                        type="button"
+                                        data-delete-unit
+                                        data-unit-id="${escapeHtml(
+                                            unit.id
+                                        )}"
+                                        data-unit-name="${escapeHtml(
+                                            unitName
+                                        )}"
+                                        data-building-id="${escapeHtml(
+                                            building.id
+                                        )}"
+                                        data-building-name="${escapeHtml(
+                                            buildingName
+                                        )}"
+                                        class="
+                                            rounded-lg
+                                            border border-[var(--pm-danger-border)]
+                                            bg-[var(--pm-surface)] px-3 py-1.5
+                                            text-xs font-medium
+                                            text-[var(--pm-danger-text)]
+                                            transition
+                                            hover:bg-[var(--pm-danger-background)]
+                                        "
+                                    >
+                                        ${escapeHtml(
+                                            translate(
+                                                'properties.delete'
+                                            )
+                                        )}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            )
+            .join('');
+
+    return `
+        <div class="overflow-x-auto">
+            <table
+                class="
+                    w-full min-w-[560px]
+                    text-left
+                "
+            >
+                <thead>
+                    <tr
                         class="
-                            flex shrink-0
-                            items-center gap-2
+                            border-b border-[var(--pm-border-subtle)]
+                            text-xs font-semibold uppercase
+                            tracking-[0.08em]
+                            text-[var(--pm-text-subtle)]
                         "
                     >
-                        <span
+                        <th
                             class="
-                                rounded-full
-                                bg-[var(--pm-surface-muted)]
-                                px-2.5 py-1
-                                text-xs font-medium
-                                text-[var(--pm-text-muted)]
+                                px-3 py-2 font-semibold
                             "
                         >
                             ${escapeHtml(
@@ -1075,42 +1389,53 @@ function renderPropertyUnits(
                                     'properties.unit'
                                 )
                             )}
-                        </span>
+                        </th>
 
-                        <button
-                            type="button"
-                            data-edit-unit
-                            data-unit-id="${escapeHtml(
-                                unit.id
-                            )}"
-                            data-building-id="${escapeHtml(
-                                building.id
-                            )}"
-                            data-building-name="${escapeHtml(
-                                buildingName
-                            )}"
+                        <th
                             class="
-                                rounded-lg
-                                border border-[var(--pm-border)]
-                                bg-[var(--pm-surface)] px-3 py-1.5
-                                text-xs font-medium
-                                text-[var(--pm-text-secondary)]
-                                transition
-                                hover:bg-[var(--pm-hover)]
+                                px-3 py-2 font-semibold
                             "
                         >
                             ${escapeHtml(
                                 translate(
-                                    'properties.edit'
+                                    'properties.classification'
                                 )
                             )}
-                        </button>
-                    </div>
-                </div>
-            `;
-            }
-        )
-        .join('');
+                        </th>
+
+                        <th
+                            class="
+                                px-3 py-2 font-semibold
+                            "
+                        >
+                            ${escapeHtml(
+                                translate(
+                                    'properties.description'
+                                )
+                            )}
+                        </th>
+
+                        <th
+                            class="
+                                px-3 py-2 text-right
+                                font-semibold
+                            "
+                        >
+                            ${escapeHtml(
+                                translate(
+                                    'properties.actions'
+                                )
+                            )}
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${rows}
+                </tbody>
+            </table>
+        </div>
+    `;
 }
 
 /**
@@ -2705,6 +3030,16 @@ async function submitPropertyForm(
 
         closePropertyModal();
 
+        showPropertiesBanner(
+            editing
+                ? translate(
+                    'properties.property_updated'
+                )
+                : translate(
+                    'properties.property_created'
+                )
+        );
+
         await refreshPropertyPortfolio();
     } catch (error) {
         showPropertyFormError(
@@ -2832,6 +3167,60 @@ async function refreshPropertyPortfolio() {
         ),
         1
     );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Page Activity Feedback
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * Show the page activity banner after a successful mutation.
+ *
+ * The banner reuses the page's inline banner pattern (the same markup
+ * shape as #properties-error) with the success status tokens and hides
+ * itself automatically.
+ *
+ * @param {string} message
+ */
+function showPropertiesBanner(
+    message
+) {
+    const banner =
+        document.getElementById(
+            'properties-banner'
+        );
+
+    if (! banner) {
+        return;
+    }
+
+    banner.textContent =
+        message;
+
+    banner.classList.remove(
+        'hidden'
+    );
+
+    if (propertiesBannerTimer) {
+        window.clearTimeout(
+            propertiesBannerTimer
+        );
+    }
+
+    propertiesBannerTimer =
+        window.setTimeout(
+            () => {
+                banner.classList.add(
+                    'hidden'
+                );
+
+                banner.textContent =
+                    '';
+            },
+            6000
+        );
 }
 
 /*
@@ -3011,7 +3400,7 @@ function openOwnerModal(
 
     document
         .getElementById(
-            'owner-name'
+            'owner-given-names'
         )
         ?.focus();
 }
@@ -3194,12 +3583,20 @@ async function submitOwnerForm(
 /**
  * Build and validate a Person Owner payload.
  *
+ * Person names are captured as Given names + Surname. The API composes
+ * the display name server-side from these two fields.
+ *
  * @returns {object|null}
  */
 function buildPersonOwnerPayload() {
-    const name =
+    const givenNames =
         formValue(
-            'owner-name'
+            'owner-given-names'
+        );
+
+    const surname =
+        formValue(
+            'owner-surname'
         );
 
     const phone =
@@ -3213,7 +3610,8 @@ function buildPersonOwnerPayload() {
         );
 
     if (
-        name === ''
+        givenNames === ''
+        || surname === ''
         || phone === ''
         || email === ''
     ) {
@@ -3230,7 +3628,10 @@ function buildPersonOwnerPayload() {
         type:
             'person',
 
-        name,
+        given_names:
+            givenNames,
+
+        surname,
 
         phone,
 
@@ -3721,6 +4122,11 @@ function populateExistingUnitForm(
             'existing-unit-description'
         );
 
+    const commercialInput =
+        document.getElementById(
+            'existing-unit-commercial'
+        );
+
     if (nameInput) {
         nameInput.value =
             unit.name
@@ -3731,6 +4137,13 @@ function populateExistingUnitForm(
         descriptionInput.value =
             unit.description
             || '';
+    }
+
+    if (commercialInput) {
+        commercialInput.checked =
+            Boolean(
+                unit.is_commercial
+            );
     }
 }
 
@@ -3866,6 +4279,14 @@ async function submitExistingUnitForm(
             'existing-unit-description'
         );
 
+    const isCommercial =
+        document
+            .getElementById(
+                'existing-unit-commercial'
+            )
+            ?.checked
+        === true;
+
     if (
         ! Number.isInteger(
             buildingId
@@ -3933,6 +4354,9 @@ async function submitExistingUnitForm(
                             name,
 
                             description,
+
+                            is_commercial:
+                                isCommercial,
                         }),
                 }
             );
@@ -3942,6 +4366,16 @@ async function submitExistingUnitForm(
         );
 
         closeExistingUnitModal();
+
+        showPropertiesBanner(
+            editing
+                ? translate(
+                    'properties.unit_updated'
+                )
+                : translate(
+                    'properties.unit_added'
+                )
+        );
 
         await refreshPropertyPortfolio();
     } catch (error) {
@@ -3997,6 +4431,643 @@ function hideExistingUnitFormError() {
     const box =
         document.getElementById(
             'existing-unit-form-error'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent =
+        '';
+
+    box.classList.add(
+        'hidden'
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Property Deletion
+|--------------------------------------------------------------------------
+|
+| Deleting a Building is destructive and irreversible, so the confirmation
+| drawer requires the user to retype the Property name before the DELETE
+| request is allowed. A 409 response carries a localized reason explaining
+| which dependent records block the deletion; that reason is surfaced
+| inline inside the drawer.
+|
+*/
+
+/**
+ * Initialize the Delete Property confirmation drawer.
+ */
+function initializePropertyDeletion() {
+    const modal =
+        document.getElementById(
+            'delete-property-modal'
+        );
+
+    const form =
+        document.getElementById(
+            'delete-property-form'
+        );
+
+    if (
+        ! modal
+        || ! form
+    ) {
+        return;
+    }
+
+    document
+        .getElementById(
+            'delete-property-modal-close'
+        )
+        ?.addEventListener(
+            'click',
+            closeDeletePropertyModal
+        );
+
+    document
+        .getElementById(
+            'delete-property-cancel-button'
+        )
+        ?.addEventListener(
+            'click',
+            closeDeletePropertyModal
+        );
+
+    document
+        .getElementById(
+            'delete-property-modal-backdrop'
+        )
+        ?.addEventListener(
+            'click',
+            closeDeletePropertyModal
+        );
+
+    document
+        .getElementById(
+            'delete-property-confirmation'
+        )
+        ?.addEventListener(
+            'input',
+            updateDeletePropertyConfirmationState
+        );
+
+    form.addEventListener(
+        'submit',
+        submitDeletePropertyForm
+    );
+
+    document.addEventListener(
+        'keydown',
+        (event) => {
+            if (
+                event.key === 'Escape'
+                && modal
+                    .classList
+                    .contains(
+                        'pm-drawer-active'
+                    )
+            ) {
+                closeDeletePropertyModal();
+            }
+        }
+    );
+}
+
+/**
+ * Enable the destructive submit button only when the typed Property name
+ * matches the Property being deleted.
+ */
+function updateDeletePropertyConfirmationState() {
+    const submitButton =
+        document.getElementById(
+            'delete-property-submit-button'
+        );
+
+    if (! submitButton) {
+        return;
+    }
+
+    const typedName =
+        formValue(
+            'delete-property-confirmation'
+        );
+
+    submitButton.disabled =
+        deletingPropertyName === ''
+        || typedName
+            !== deletingPropertyName;
+}
+
+/**
+ * Open the Delete Property confirmation drawer.
+ *
+ * @param {string|number} buildingId
+ * @param {string} buildingName
+ */
+function openDeletePropertyModal(
+    buildingId,
+    buildingName
+) {
+    const modal =
+        document.getElementById(
+            'delete-property-modal'
+        );
+
+    const numericBuildingId =
+        Number(
+            buildingId
+        );
+
+    if (
+        ! modal
+        || ! Number.isInteger(
+            numericBuildingId
+        )
+        || numericBuildingId <= 0
+    ) {
+        return;
+    }
+
+    deletingPropertyId =
+        numericBuildingId;
+
+    deletingPropertyName =
+        String(
+            buildingName
+            || ''
+        ).trim();
+
+    const nameElement =
+        document.getElementById(
+            'delete-property-name'
+        );
+
+    if (nameElement) {
+        nameElement.textContent =
+            deletingPropertyName
+            || translate(
+                'properties.unnamed_property'
+            );
+    }
+
+    const confirmationInput =
+        document.getElementById(
+            'delete-property-confirmation'
+        );
+
+    if (confirmationInput) {
+        confirmationInput.value =
+            '';
+    }
+
+    hideDeletePropertyError();
+
+    updateDeletePropertyConfirmationState();
+
+    openDrawer(
+        modal
+    );
+
+    window.setTimeout(
+        () => {
+            confirmationInput?.focus();
+        },
+        50
+    );
+}
+
+/**
+ * Close and reset the Delete Property confirmation drawer.
+ */
+function closeDeletePropertyModal() {
+    closeDrawer(
+        'delete-property-modal',
+        {
+            onClosed: () => {
+                deletingPropertyId =
+                    null;
+
+                deletingPropertyName =
+                    '';
+
+                const confirmationInput =
+                    document.getElementById(
+                        'delete-property-confirmation'
+                    );
+
+                if (confirmationInput) {
+                    confirmationInput.value =
+                        '';
+                }
+
+                hideDeletePropertyError();
+
+                updateDeletePropertyConfirmationState();
+            },
+        }
+    );
+}
+
+/**
+ * Delete the confirmed Building.
+ *
+ * A 409 response means dependent records block the deletion; the server's
+ * localized reason is shown inline.
+ */
+async function submitDeletePropertyForm(
+    event
+) {
+    event.preventDefault();
+
+    const submitButton =
+        document.getElementById(
+            'delete-property-submit-button'
+        );
+
+    if (
+        ! submitButton
+        || ! Number.isInteger(
+            deletingPropertyId
+        )
+        || deletingPropertyId <= 0
+    ) {
+        return;
+    }
+
+    const typedName =
+        formValue(
+            'delete-property-confirmation'
+        );
+
+    if (
+        typedName
+        !== deletingPropertyName
+    ) {
+        showDeletePropertyError(
+            translate(
+                'properties.type_name_to_confirm'
+            )
+        );
+
+        return;
+    }
+
+    hideDeletePropertyError();
+
+    try {
+        submitButton.disabled =
+            true;
+
+        submitButton.textContent =
+            translate(
+                'properties.deleting'
+            );
+
+        const response =
+            await apiRequest(
+                `/api/buildings/${deletingPropertyId}`,
+                {
+                    method:
+                        'DELETE',
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        closeDeletePropertyModal();
+
+        showPropertiesBanner(
+            translate(
+                'properties.property_deleted'
+            )
+        );
+
+        await refreshPropertyPortfolio();
+    } catch (error) {
+        showDeletePropertyError(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'properties.unable_to_delete_property'
+                )
+        );
+    } finally {
+        submitButton.textContent =
+            translate(
+                'properties.delete_property'
+            );
+
+        updateDeletePropertyConfirmationState();
+    }
+}
+
+function showDeletePropertyError(
+    message
+) {
+    const box =
+        document.getElementById(
+            'delete-property-error'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent =
+        message;
+
+    box.classList.remove(
+        'hidden'
+    );
+}
+
+function hideDeletePropertyError() {
+    const box =
+        document.getElementById(
+            'delete-property-error'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent =
+        '';
+
+    box.classList.add(
+        'hidden'
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Unit Deletion
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * Initialize the Delete Unit confirmation drawer.
+ */
+function initializeUnitDeletion() {
+    const modal =
+        document.getElementById(
+            'delete-unit-modal'
+        );
+
+    const form =
+        document.getElementById(
+            'delete-unit-form'
+        );
+
+    if (
+        ! modal
+        || ! form
+    ) {
+        return;
+    }
+
+    document
+        .getElementById(
+            'delete-unit-modal-close'
+        )
+        ?.addEventListener(
+            'click',
+            closeDeleteUnitModal
+        );
+
+    document
+        .getElementById(
+            'delete-unit-cancel-button'
+        )
+        ?.addEventListener(
+            'click',
+            closeDeleteUnitModal
+        );
+
+    document
+        .getElementById(
+            'delete-unit-modal-backdrop'
+        )
+        ?.addEventListener(
+            'click',
+            closeDeleteUnitModal
+        );
+
+    form.addEventListener(
+        'submit',
+        submitDeleteUnitForm
+    );
+
+    document.addEventListener(
+        'keydown',
+        (event) => {
+            if (
+                event.key === 'Escape'
+                && modal
+                    .classList
+                    .contains(
+                        'pm-drawer-active'
+                    )
+            ) {
+                closeDeleteUnitModal();
+            }
+        }
+    );
+}
+
+/**
+ * Open the Delete Unit confirmation drawer.
+ *
+ * @param {string|number} unitId
+ * @param {string} unitName
+ * @param {string} buildingName
+ */
+function openDeleteUnitModal(
+    unitId,
+    unitName,
+    buildingName
+) {
+    const modal =
+        document.getElementById(
+            'delete-unit-modal'
+        );
+
+    const numericUnitId =
+        Number(
+            unitId
+        );
+
+    if (
+        ! modal
+        || ! Number.isInteger(
+            numericUnitId
+        )
+        || numericUnitId <= 0
+    ) {
+        return;
+    }
+
+    deletingUnitId =
+        numericUnitId;
+
+    const unitNameElement =
+        document.getElementById(
+            'delete-unit-name'
+        );
+
+    if (unitNameElement) {
+        unitNameElement.textContent =
+            unitName
+            || translate(
+                'properties.unnamed_unit'
+            );
+    }
+
+    const buildingNameElement =
+        document.getElementById(
+            'delete-unit-building-name'
+        );
+
+    if (buildingNameElement) {
+        buildingNameElement.textContent =
+            buildingName
+            || translate(
+                'properties.property'
+            );
+    }
+
+    hideDeleteUnitError();
+
+    openDrawer(
+        modal
+    );
+}
+
+/**
+ * Close and reset the Delete Unit confirmation drawer.
+ */
+function closeDeleteUnitModal() {
+    closeDrawer(
+        'delete-unit-modal',
+        {
+            onClosed: () => {
+                deletingUnitId =
+                    null;
+
+                hideDeleteUnitError();
+            },
+        }
+    );
+}
+
+/**
+ * Delete the confirmed Unit.
+ *
+ * A 409 response means dependent records block the deletion; the server's
+ * localized reason is shown inline.
+ */
+async function submitDeleteUnitForm(
+    event
+) {
+    event.preventDefault();
+
+    const submitButton =
+        document.getElementById(
+            'delete-unit-submit-button'
+        );
+
+    if (
+        ! submitButton
+        || ! Number.isInteger(
+            deletingUnitId
+        )
+        || deletingUnitId <= 0
+    ) {
+        return;
+    }
+
+    hideDeleteUnitError();
+
+    try {
+        submitButton.disabled =
+            true;
+
+        submitButton.textContent =
+            translate(
+                'properties.deleting'
+            );
+
+        const response =
+            await apiRequest(
+                `/api/units/${deletingUnitId}`,
+                {
+                    method:
+                        'DELETE',
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        closeDeleteUnitModal();
+
+        showPropertiesBanner(
+            translate(
+                'properties.unit_deleted'
+            )
+        );
+
+        await refreshPropertyPortfolio();
+    } catch (error) {
+        showDeleteUnitError(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'properties.unable_to_delete_unit'
+                )
+        );
+    } finally {
+        submitButton.disabled =
+            false;
+
+        submitButton.textContent =
+            translate(
+                'properties.delete_unit'
+            );
+    }
+}
+
+function showDeleteUnitError(
+    message
+) {
+    const box =
+        document.getElementById(
+            'delete-unit-error'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent =
+        message;
+
+    box.classList.remove(
+        'hidden'
+    );
+}
+
+function hideDeleteUnitError() {
+    const box =
+        document.getElementById(
+            'delete-unit-error'
         );
 
     if (! box) {

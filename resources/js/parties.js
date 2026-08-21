@@ -41,6 +41,7 @@ import {
     parseJsonResponse,
     setText,
     translate,
+    wireDrawer,
 } from './core.js';
 
 /*
@@ -83,6 +84,30 @@ let editingPartyRecord =
     null;
 
 /*
+ * Last successful API payload for the Parties list.
+ *
+ * Kept so the presentation-only controls (surname sort, has-email filter)
+ * can re-render the loaded page without another API request.
+ */
+let lastPartiesPayload =
+    null;
+
+/*
+ * The Party currently pending deletion in the confirm drawer.
+ */
+let deletingPartyId =
+    null;
+
+let deletingPartyName =
+    null;
+
+/*
+ * Open/close controls returned by wireDrawer for the delete drawer.
+ */
+let deletePartyDrawerControls =
+    null;
+
+/*
 |--------------------------------------------------------------------------
 | Public Initializer
 |--------------------------------------------------------------------------
@@ -107,6 +132,8 @@ export async function initializeParties() {
     initializePartyFilters();
 
     initializePartyForm();
+
+    initializeDeletePartyDrawer();
 
     await loadParties();
 }
@@ -174,6 +201,43 @@ function initializePartyFilters() {
             );
         }
     );
+
+    /*
+     * Presentation-only controls.
+     *
+     * The has-email filter and the surname sort act on the Parties
+     * already loaded for the current page, so they re-render from the
+     * cached payload instead of calling the API.
+     */
+    document
+        .getElementById(
+            'party-email-filter'
+        )
+        ?.addEventListener(
+            'change',
+            rerenderLoadedParties
+        );
+
+    document
+        .getElementById(
+            'party-sort-surname'
+        )
+        ?.addEventListener(
+            'change',
+            rerenderLoadedParties
+        );
+}
+
+/**
+ * Re-render the currently loaded page after a presentation-only
+ * control (has-email filter, surname sort) changes.
+ */
+function rerenderLoadedParties() {
+    if (lastPartiesPayload) {
+        renderParties(
+            lastPartiesPayload
+        );
+    }
 }
 
 /**
@@ -331,6 +395,9 @@ function renderParties(payload) {
         return;
     }
 
+    lastPartiesPayload =
+        payload;
+
     const parties =
         Array.isArray(
             payload?.data
@@ -340,6 +407,9 @@ function renderParties(payload) {
 
     /*
      * Maintain an in-memory Party lookup for edit operations.
+     *
+     * The lookup always covers the full loaded page, regardless of the
+     * presentation-only filter below.
      */
     loadedPartiesById =
         new Map(
@@ -356,7 +426,18 @@ function renderParties(payload) {
         parties
     );
 
-    if (parties.length === 0) {
+    /*
+     * Presentation-only pass: has-email filter, then surname sort.
+     *
+     * Both act on the loaded page only; server search, filters and
+     * ordering remain authoritative.
+     */
+    const displayedParties =
+        presentLoadedParties(
+            parties
+        );
+
+    if (displayedParties.length === 0) {
         container.innerHTML = `
             <div
                 class="
@@ -419,7 +500,7 @@ function renderParties(payload) {
     }
 
     container.innerHTML =
-        parties
+        displayedParties
             .map(
                 (party) =>
                     partyCard(
@@ -431,6 +512,87 @@ function renderParties(payload) {
     attachPartyActionListeners(
         container
     );
+}
+
+/**
+ * Apply the presentation-only has-email filter and surname sort to the
+ * Parties loaded for the current page.
+ */
+function presentLoadedParties(
+    parties
+) {
+    let displayed =
+        [...parties];
+
+    const emailFilter =
+        formValue(
+            'party-email-filter'
+        );
+
+    if (emailFilter === 'yes') {
+        displayed =
+            displayed.filter(
+                partyHasEmail
+            );
+    } else if (emailFilter === 'no') {
+        displayed =
+            displayed.filter(
+                (party) =>
+                    ! partyHasEmail(
+                        party
+                    )
+            );
+    }
+
+    const sortToggle =
+        document.getElementById(
+            'party-sort-surname'
+        );
+
+    if (sortToggle?.checked) {
+        displayed.sort(
+            (first, second) =>
+                surnameSortKey(
+                    first
+                ).localeCompare(
+                    surnameSortKey(
+                        second
+                    ),
+                    undefined,
+                    {
+                        sensitivity:
+                            'base',
+                    }
+                )
+        );
+    }
+
+    return displayed;
+}
+
+/**
+ * Whether a Party has any deliverable email address on file.
+ */
+function partyHasEmail(party) {
+    return Boolean(
+        party?.email
+        || party?.contact_person_email
+    );
+}
+
+/**
+ * Sort key for the presentation-only surname sort.
+ *
+ * Falls back to the composed display name for Parties without a stored
+ * surname (organisations, associations, legacy people).
+ */
+function surnameSortKey(party) {
+    return String(
+        party?.surname
+        || party?.name
+        || party?.legal_name
+        || ''
+    ).trim();
 }
 
 /**
@@ -789,7 +951,7 @@ function attachPartyActionListeners(
                 button.addEventListener(
                     'click',
                     () => {
-                        deleteParty(
+                        openDeletePartyModal(
                             button.dataset
                                 .partyId,
 
@@ -1068,7 +1230,7 @@ function openCreatePartyModal() {
 
     document
         .getElementById(
-            'party-name'
+            'party-given-names'
         )
         ?.focus();
 }
@@ -1299,7 +1461,12 @@ function updatePartyTypeFields() {
      * Hidden fields should not remain browser-required.
      */
     setRequired(
-        'party-name',
+        'party-given-names',
+        person
+    );
+
+    setRequired(
+        'party-surname',
         person
     );
 
@@ -1362,9 +1529,56 @@ function populatePartyForm(party) {
 
     updatePartyTypeFields();
 
+    /*
+     * V1.0.7 structured person names.
+     *
+     * The API returns given_names and surname alongside the composed
+     * display name. Legacy people created before the split may carry
+     * only `name`; derive a best-effort split (last token → surname)
+     * so the required fields are pre-filled for correction on save.
+     */
+    let givenNames =
+        party.given_names
+        ?? '';
+
+    let surname =
+        party.surname
+        ?? '';
+
+    if (
+        party.type === 'person'
+        && givenNames === ''
+        && surname === ''
+        && typeof party.name === 'string'
+        && party.name.trim() !== ''
+    ) {
+        const tokens =
+            party.name
+                .trim()
+                .split(/\s+/);
+
+        surname =
+            tokens.length > 1
+                ? tokens[tokens.length - 1]
+                : tokens[0];
+
+        givenNames =
+            tokens
+                .slice(
+                    0,
+                    -1
+                )
+                .join(' ');
+    }
+
     setFormValue(
-        'party-name',
-        party.name
+        'party-given-names',
+        givenNames
+    );
+
+    setFormValue(
+        'party-surname',
+        surname
     );
 
     setFormValue(
@@ -1609,12 +1823,38 @@ function buildPartyPayload() {
          * sent as null so converting between Person and Organisation does
          * not retain stale identity information.
          */
-        name:
+        /*
+         * V1.0.7 structured person names.
+         *
+         * People send given_names + surname and omit `name`; the
+         * display name is composed server-side. Organisations and
+         * associations clear all person identity fields so a type
+         * change does not retain stale information.
+         */
+        ...(
             type === 'person'
-                ? nullableFormValue(
-                    'party-name'
-                )
-                : null,
+                ? {
+                    given_names:
+                        nullableFormValue(
+                            'party-given-names'
+                        ),
+
+                    surname:
+                        nullableFormValue(
+                            'party-surname'
+                        ),
+                }
+                : {
+                    name:
+                        null,
+
+                    given_names:
+                        null,
+
+                    surname:
+                        null,
+                }
+        ),
 
         legal_name:
             type === 'person'
@@ -1832,12 +2072,56 @@ async function submitPartyForm(event) {
 */
 
 /**
- * Delete a Party after user confirmation.
+ * Wire the Delete Party confirm drawer once at page initialization.
  *
- * Backend foreign-key restrictions and managing-organisation safeguards
- * remain authoritative. Any rejection is displayed to the user.
+ * The drawer follows the shared core.js lifecycle: backdrop click, the
+ * header close button, the Cancel button and Escape all dismiss it.
  */
-async function deleteParty(
+function initializeDeletePartyDrawer() {
+    const drawer =
+        document.getElementById(
+            'party-delete-modal'
+        );
+
+    if (! drawer) {
+        return;
+    }
+
+    deletePartyDrawerControls =
+        wireDrawer(
+            drawer,
+            {
+                closers: [
+                    'party-delete-modal-close',
+                    'party-delete-cancel',
+                ],
+
+                onClose: () => {
+                    deletingPartyId =
+                        null;
+
+                    deletingPartyName =
+                        null;
+
+                    hideDeletePartyError();
+                },
+            }
+        );
+
+    document
+        .getElementById(
+            'party-delete-confirm'
+        )
+        ?.addEventListener(
+            'click',
+            confirmDeleteParty
+        );
+}
+
+/**
+ * Open the Delete Party confirm drawer for one Party.
+ */
+function openDeletePartyModal(
     partyId,
     partyName
 ) {
@@ -1855,32 +2139,70 @@ async function deleteParty(
         return;
     }
 
-    const confirmed =
-        window.confirm(
-            `${translate(
-                'parties.delete'
-            )} "${
-                partyName
-                || translate(
-                    'parties.this_party'
-                )
-            }"?`
-            + '\n\n'
-            + translate(
-                'parties.delete_restriction'
-            )
+    deletingPartyId =
+        numericPartyId;
+
+    deletingPartyName =
+        partyName
+        || translate(
+            'parties.this_party'
         );
 
-    if (! confirmed) {
+    hideDeletePartyError();
+
+    setText(
+        'party-delete-name',
+        deletingPartyName
+    );
+
+    if (deletePartyDrawerControls) {
+        deletePartyDrawerControls.open();
+    } else {
+        openDrawer(
+            'party-delete-modal'
+        );
+    }
+}
+
+/**
+ * Delete the Party pending in the confirm drawer.
+ *
+ * Backend foreign-key restrictions and managing-organisation safeguards
+ * remain authoritative. A 409 rejection reason from the server is
+ * surfaced inside the drawer so the user understands why the Party
+ * must be retained.
+ */
+async function confirmDeleteParty() {
+    if (
+        ! Number.isInteger(
+            deletingPartyId
+        )
+        || deletingPartyId <= 0
+    ) {
         return;
     }
 
+    const confirmButton =
+        document.getElementById(
+            'party-delete-confirm'
+        );
+
     try {
-        hidePageError();
+        hideDeletePartyError();
+
+        if (confirmButton) {
+            confirmButton.disabled =
+                true;
+
+            confirmButton.textContent =
+                translate(
+                    'parties.deleting_party'
+                );
+        }
 
         const response =
             await apiRequest(
-                `/api/parties/${numericPartyId}`,
+                `/api/parties/${deletingPartyId}`,
                 {
                     method: 'DELETE',
                 }
@@ -1889,6 +2211,7 @@ async function deleteParty(
         /*
          * A successful DELETE returns HTTP 204 and therefore has no JSON
          * body. Only parse a body when the API actually returns one.
+         * A 409 rejection carries a message explaining the restriction.
          */
         if (
             response.status !== 204
@@ -1898,18 +2221,79 @@ async function deleteParty(
             );
         }
 
+        if (deletePartyDrawerControls) {
+            deletePartyDrawerControls.close();
+        } else {
+            closeDrawer(
+                'party-delete-modal'
+            );
+        }
+
         await loadParties(
             1
         );
     } catch (error) {
-        showPageError(
+        showDeletePartyError(
             error instanceof Error
                 ? error.message
                 : translate(
                     'parties.unable_to_delete_party'
                 )
         );
+    } finally {
+        if (confirmButton) {
+            confirmButton.disabled =
+                false;
+
+            confirmButton.textContent =
+                translate(
+                    'parties.delete_party'
+                );
+        }
     }
+}
+
+/**
+ * Show the server rejection reason inside the delete drawer.
+ */
+function showDeletePartyError(
+    message
+) {
+    const box =
+        document.getElementById(
+            'party-delete-error'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent =
+        message;
+
+    box.classList.remove(
+        'hidden'
+    );
+}
+
+/**
+ * Clear the delete drawer error.
+ */
+function hideDeletePartyError() {
+    const box =
+        document.getElementById(
+            'party-delete-error'
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent = '';
+
+    box.classList.add(
+        'hidden'
+    );
 }
 
 /*

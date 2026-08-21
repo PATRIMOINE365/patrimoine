@@ -51,6 +51,55 @@
         </div>
     </div>
 
+    {{-- V1.0.7 About --}}
+    <section class="pm-card mb-7">
+        <div
+            class="
+                flex flex-col gap-3
+                sm:flex-row sm:items-center
+                sm:justify-between
+            "
+        >
+            <div>
+                <h2
+                    class="
+                        text-base font-semibold
+                        text-[var(--pm-text)]
+                    "
+                >
+                    <span data-i18n="settings.about">About</span>
+                </h2>
+
+                <p
+                    class="
+                        mt-1 text-sm
+                        text-[var(--pm-text-muted)]
+                    "
+                >
+                    <span data-i18n="settings.application_version">Application version</span>:
+                    <span
+                        id="settings-app-version"
+                        class="
+                            font-medium
+                            text-[var(--pm-text)]
+                        "
+                    >—</span>
+                </p>
+            </div>
+
+            <a
+                href="/help#updates"
+                class="
+                    text-sm font-medium
+                    text-[var(--pm-accent)]
+                    hover:underline
+                "
+            >
+                <span data-i18n="settings.view_update_log">View update log</span>
+            </a>
+        </div>
+    </section>
+
     {{-- Page-level error --}}
     <div
         id="settings-error"
@@ -603,6 +652,290 @@
             </div>
 
         </form>
+    </section>
+
+    {{--
+        V1.0.7 Registry backup & restore.
+
+        Administrator-only, like the rest of Settings. Only Registry data
+        (parties, buildings, units, leases) is portable — financial
+        history is immutable and is never part of a backup.
+    --}}
+    <section
+        id="settings-backup-section"
+        data-requires-capability="manage_settings"
+        class="rbac-hidden mt-8"
+    >
+        <div class="pm-card">
+            <h2
+                class="
+                    text-base font-semibold
+                    text-[var(--pm-text)]
+                "
+            >
+                <span data-i18n="settings.backup_restore">Data backup &amp; restore</span>
+            </h2>
+
+            <p
+                class="
+                    mt-1 text-sm leading-6
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                <span data-i18n="settings.backup_restore_description">Export the Registry as restorable backup files, or restore a previous backup.</span>
+            </p>
+
+            <div
+                class="
+                    mt-4 rounded-lg border
+                    border-[var(--pm-warning-border)]
+                    bg-[var(--pm-warning-background)]
+                    px-4 py-3 text-sm
+                    text-[var(--pm-warning-text)]
+                "
+            >
+                <span data-i18n="settings.backup_financial_note">Financial history (payments, invoices, journal and funds) is not part of backups. It cannot be exported or restored here.</span>
+            </div>
+
+            {{-- Export --}}
+            <div class="mt-6">
+                <h3
+                    class="
+                        text-sm font-semibold
+                        text-[var(--pm-text)]
+                    "
+                >
+                    <span data-i18n="settings.export_heading">Export</span>
+                </h3>
+
+                <div
+                    class="
+                        mt-3 grid gap-3
+                        sm:grid-cols-2
+                    "
+                >
+                    @foreach([
+                        'parties' => 'Parties',
+                        'buildings' => 'Buildings',
+                        'units' => 'Units',
+                        'leases' => 'Leases',
+                    ] as $entity => $label)
+                        <div
+                            class="
+                                flex items-center
+                                justify-between gap-3
+                                rounded-lg border
+                                border-[var(--pm-border)]
+                                bg-[var(--pm-surface-subtle)]
+                                px-4 py-3
+                            "
+                        >
+                            <span
+                                class="
+                                    text-sm font-medium
+                                    text-[var(--pm-text)]
+                                "
+                                data-i18n="settings.entity_{{ $entity }}"
+                            >{{ $label }}</span>
+
+                            <span class="flex shrink-0 gap-2">
+                                <button
+                                    type="button"
+                                    data-registry-export
+                                    data-entity="{{ $entity }}"
+                                    data-format="csv"
+                                    class="pm-button-secondary px-3 py-2 text-xs"
+                                >
+                                    CSV
+                                </button>
+
+                                <button
+                                    type="button"
+                                    data-registry-export
+                                    data-entity="{{ $entity }}"
+                                    data-format="xlsx"
+                                    class="pm-button-secondary px-3 py-2 text-xs"
+                                >
+                                    XLSX
+                                </button>
+                            </span>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div
+                    class="
+                        mt-4 flex flex-col gap-3
+                        sm:flex-row sm:items-center
+                        sm:justify-between
+                    "
+                >
+                    <button
+                        id="settings-export-full"
+                        type="button"
+                        class="pm-button-primary"
+                    >
+                        <span data-i18n="settings.export_full">Full backup (XLSX)</span>
+                    </button>
+
+                    <div class="flex items-center gap-2">
+                        <label
+                            for="settings-export-pdf-entity"
+                            class="pm-field-label mb-0"
+                        >
+                            <span data-i18n="settings.export_pdf_review">PDF review</span>
+                        </label>
+
+                        <select
+                            id="settings-export-pdf-entity"
+                            class="pm-input w-auto"
+                        >
+                            <option value="parties" data-i18n="settings.entity_parties">Parties</option>
+                            <option value="buildings" data-i18n="settings.entity_buildings">Buildings</option>
+                            <option value="units" data-i18n="settings.entity_units">Units</option>
+                            <option value="leases" data-i18n="settings.entity_leases">Leases</option>
+                        </select>
+
+                        <button
+                            id="settings-export-pdf"
+                            type="button"
+                            class="pm-button-secondary"
+                        >
+                            PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Import / restore --}}
+            <div
+                class="
+                    mt-7 border-t
+                    border-[var(--pm-border)]
+                    pt-6
+                "
+            >
+                <h3
+                    class="
+                        text-sm font-semibold
+                        text-[var(--pm-text)]
+                    "
+                >
+                    <span data-i18n="settings.import_heading">Import / restore</span>
+                </h3>
+
+                <div
+                    class="
+                        mt-3 grid gap-4
+                        md:grid-cols-2
+                    "
+                >
+                    <div>
+                        <label
+                            for="settings-import-file"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="settings.import_file">Backup file</span>
+                        </label>
+
+                        <input
+                            id="settings-import-file"
+                            type="file"
+                            accept=".csv,.xlsx"
+                            class="pm-input"
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="settings-import-entity"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="settings.import_entity">Data set</span>
+                        </label>
+
+                        <select
+                            id="settings-import-entity"
+                            class="pm-input"
+                        >
+                            <option value="parties" data-i18n="settings.entity_parties">Parties</option>
+                            <option value="buildings" data-i18n="settings.entity_buildings">Buildings</option>
+                            <option value="units" data-i18n="settings.entity_units">Units</option>
+                            <option value="leases" data-i18n="settings.entity_leases">Leases</option>
+                            <option value="full" data-i18n="settings.entity_full">Full backup (all entities)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div
+                    class="
+                        mt-4 flex flex-col gap-3
+                        sm:flex-row sm:items-center
+                        sm:justify-between
+                    "
+                >
+                    <label
+                        class="
+                            flex items-center gap-3
+                            rounded-lg border
+                            border-[var(--pm-border)]
+                            bg-[var(--pm-surface-subtle)]
+                            px-4 py-3
+                        "
+                    >
+                        <input
+                            id="settings-import-dry-run"
+                            type="checkbox"
+                            checked
+                            class="
+                                h-4 w-4 rounded
+                                border-[var(--pm-border-strong)]
+                            "
+                        >
+
+                        <span>
+                            <span
+                                class="
+                                    block text-sm font-medium
+                                    text-[var(--pm-text)]
+                                "
+                                data-i18n="settings.dry_run"
+                            >
+                                Dry run (validate without saving)
+                            </span>
+
+                            <span
+                                class="
+                                    mt-0.5 block text-xs
+                                    text-[var(--pm-text-muted)]
+                                "
+                                data-i18n="settings.dry_run_help"
+                            >
+                                Runs the full import and reports the result without changing any data.
+                            </span>
+                        </span>
+                    </label>
+
+                    <button
+                        id="settings-import-run"
+                        type="button"
+                        class="pm-button-primary shrink-0"
+                    >
+                        <span data-i18n="settings.run_import">Run import</span>
+                    </button>
+                </div>
+
+                <div
+                    id="settings-import-result"
+                    class="
+                        mt-4 hidden rounded-lg
+                        border border-[var(--pm-border)]
+                        bg-[var(--pm-surface-subtle)]
+                        px-4 py-4 text-sm
+                    "
+                ></div>
+            </div>
+        </div>
     </section>
 
 </div>

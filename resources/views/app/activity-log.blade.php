@@ -63,6 +63,14 @@
             </button>
 
             <button
+                id="activity-log-export-xlsx"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="activity_log.export_xlsx">Export XLSX</span>
+            </button>
+
+            <button
                 id="activity-log-export-csv"
                 type="button"
                 class="pm-button-primary"

@@ -99,3 +99,12 @@ Route::view(
     '/settings',
     'app.settings'
 )->name('settings');
+
+/*
+ * V1.0.7: in-app Help & Documentation and Update log,
+ * available to every authenticated role.
+ */
+Route::view(
+    '/help',
+    'app.help'
+)->name('help');
