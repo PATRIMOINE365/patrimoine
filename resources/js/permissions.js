@@ -25,10 +25,15 @@ const ROLE_CAPABILITIES = {
         'view_financial_journal',
     ]),
 
+    /*
+     * V1.0.7: the Manager mirrors the Administrator everywhere except the
+     * Manage group — so record deletion is a Manager capability too.
+     */
     property_manager: new Set([
         'view_operations',
         'manage_operations',
         'manage_finance',
+        'delete_records',
         'export_reports',
     ]),
 

@@ -42,8 +42,26 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /*
+             * V1.0.7: users carry structured `given_names` + `surname`;
+             * the model recomposes the display `name` on save. A plain
+             * `name` remains accepted when no surname is supplied.
+             */
             'name' => [
-                'required',
+                'nullable',
+                'string',
+                'max:255',
+                'required_without:surname',
+            ],
+
+            'given_names' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'surname' => [
+                'nullable',
                 'string',
                 'max:255',
             ],

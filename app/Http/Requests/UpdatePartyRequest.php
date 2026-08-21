@@ -38,13 +38,30 @@ class UpdatePartyRequest extends FormRequest
                 ]),
             ],
 
+            /*
+             * V1.0.7: see StorePartyRequest — structured names for people,
+             * plain `name` accepted only when no surname is supplied.
+             */
             'name' => [
                 'nullable',
                 'string',
                 'max:255',
                 Rule::requiredIf(
                     fn (): bool => $this->input('type') === 'person'
+                        && ! $this->filled('surname')
                 ),
+            ],
+
+            'given_names' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'surname' => [
+                'nullable',
+                'string',
+                'max:255',
             ],
 
             'legal_name' => [

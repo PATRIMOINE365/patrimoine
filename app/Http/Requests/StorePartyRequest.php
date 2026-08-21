@@ -48,6 +48,11 @@ class StorePartyRequest extends FormRequest
 
             /*
              * Person-specific identity.
+             *
+             * V1.0.7: people carry structured `given_names` + `surname`;
+             * the model recomposes the display `name` on save. A plain
+             * `name` remains accepted (API compatibility) when no surname
+             * is supplied.
              */
             'name' => [
                 'nullable',
@@ -55,7 +60,20 @@ class StorePartyRequest extends FormRequest
                 'max:255',
                 Rule::requiredIf(
                     fn (): bool => $this->input('type') === 'person'
+                        && ! $this->filled('surname')
                 ),
+            ],
+
+            'given_names' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'surname' => [
+                'nullable',
+                'string',
+                'max:255',
             ],
 
             /*

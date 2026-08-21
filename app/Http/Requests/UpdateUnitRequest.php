@@ -48,6 +48,12 @@ class UpdateUnitRequest extends FormRequest
                 'nullable',
                 'string',
             ],
+
+            // V1.0.7: units may be marked commercial (shop/office).
+            'is_commercial' => [
+                'nullable',
+                'boolean',
+            ],
         ];
     }
 }

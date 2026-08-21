@@ -188,8 +188,25 @@ class AuthController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
+            /*
+             * V1.0.7 structured names: the profile edits given_names +
+             * surname; plain name stays accepted when no surname is sent.
+             */
             'name' => [
-                'required',
+                'nullable',
+                'string',
+                'max:255',
+                'required_without:surname',
+            ],
+
+            'given_names' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'surname' => [
+                'nullable',
                 'string',
                 'max:255',
             ],
@@ -270,8 +287,20 @@ class AuthController extends Controller
                 $validated,
                 $changingPassword
             ): void {
-                $user->name =
-                    $validated['name'];
+                /*
+                 * Structured parts win; the model recomposes name on save.
+                 * A plain name (no surname sent) is applied directly.
+                 */
+                if (filled($validated['surname'] ?? null)) {
+                    $user->given_names =
+                        $validated['given_names'] ?? null;
+
+                    $user->surname =
+                        $validated['surname'];
+                } elseif (filled($validated['name'] ?? null)) {
+                    $user->name =
+                        $validated['name'];
+                }
 
                 $user->email =
                     mb_strtolower(

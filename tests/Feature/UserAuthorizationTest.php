@@ -236,43 +236,63 @@ class UserAuthorizationTest extends TestCase
         }
     }
 
-    public function test_property_manager_and_viewer_cannot_delete(): void
+    /*
+     * V1.0.7: record deletion belongs to the Manager as well — only the
+     * Viewer remains blocked. Manager deletion itself is covered by
+     * test_manager_can_delete_supported_unreferenced_record below.
+     */
+    public function test_viewer_cannot_delete(): void
     {
-        foreach (
+        $party = Party::create([
+            'type' => 'person',
+            'name' => 'Delete Protection Test',
+            'phone' => '0200000000',
+            'email' => 'viewer@delete-test.example',
+        ]);
+
+        Sanctum::actingAs(
+            User::factory()->create([
+                'role' => UserRole::Viewer,
+            ])
+        );
+
+        $this
+            ->deleteJson("/api/parties/{$party->id}")
+            ->assertForbidden();
+
+        $this->assertDatabaseHas(
+            'parties',
             [
-                UserRole::PropertyManager,
-                UserRole::Viewer,
-            ] as $role
-        ) {
-            /*
-             * Party has no factory in the current Patrimoine codebase.
-             * Create the smallest valid standalone Person directly.
-             */
-            $party = Party::create([
-                'type' => 'person',
-                'name' => 'Delete Protection Test',
-                'phone' => '0200000000',
-                'email' => strtolower($role->value)
-                    .'@delete-test.example',
-            ]);
+                'id' => $party->id,
+            ]
+        );
+    }
 
-            Sanctum::actingAs(
-                User::factory()->create([
-                    'role' => $role,
-                ])
-            );
+    public function test_manager_can_delete_supported_unreferenced_record(): void
+    {
+        $party = Party::create([
+            'type' => 'person',
+            'name' => 'Manager Delete Test',
+            'phone' => '0200000002',
+            'email' => 'manager-delete-test@example.test',
+        ]);
 
-            $this
-                ->deleteJson("/api/parties/{$party->id}")
-                ->assertForbidden();
+        Sanctum::actingAs(
+            User::factory()->create([
+                'role' => UserRole::PropertyManager,
+            ])
+        );
 
-            $this->assertDatabaseHas(
-                'parties',
-                [
-                    'id' => $party->id,
-                ]
-            );
-        }
+        $this
+            ->deleteJson("/api/parties/{$party->id}")
+            ->assertNoContent();
+
+        $this->assertDatabaseMissing(
+            'parties',
+            [
+                'id' => $party->id,
+            ]
+        );
     }
 
     public function test_administrator_can_delete_supported_unreferenced_record(): void

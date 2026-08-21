@@ -41,97 +41,113 @@
 html[data-theme="light"] {
     color-scheme: light;
 
-    --pm-page: #f7f8f7;
+    --pm-page: #f5f7f6;
     --pm-surface: #ffffff;
-    --pm-surface-subtle: #f8fafc;
-    --pm-surface-muted: #f1f5f9;
+    --pm-surface-subtle: #f7faf8;
+    --pm-surface-muted: #eef3f0;
     --pm-surface-elevated: #ffffff;
 
-    --pm-text: #0f172a;
-    --pm-text-secondary: #334155;
-    --pm-text-muted: #64748b;
-    --pm-text-subtle: #94a3b8;
+    --pm-text: #101b15;
+    --pm-text-secondary: #33423a;
+    --pm-text-muted: #5f6e66;
+    --pm-text-subtle: #8b988f;
 
-    --pm-border: #e2e8f0;
-    --pm-border-subtle: #f1f5f9;
-    --pm-border-strong: #cbd5e1;
+    --pm-border: #dfe6e2;
+    --pm-border-subtle: #edf2ef;
+    --pm-border-strong: #c3cec8;
 
-    --pm-hover: #f8fafc;
-    --pm-selected: #f4f8f6;
+    --pm-hover: #f2f6f4;
+    --pm-selected: #e8f1ec;
 
     --pm-input-background: #ffffff;
-    --pm-input-disabled: #f8fafc;
+    --pm-input-disabled: #f4f7f5;
 
-    --pm-overlay: rgb(2 6 23 / 0.50);
+    --pm-overlay: rgb(6 15 10 / 0.50);
 
-    --pm-success-background: #f0fdf4;
-    --pm-success-border: #bbf7d0;
-    --pm-success-text: #15803d;
+    --pm-success-background: #ecfaf1;
+    --pm-success-border: #b5e8c8;
+    --pm-success-text: #157a42;
 
-    --pm-warning-background: #fffbeb;
-    --pm-warning-border: #fde68a;
-    --pm-warning-text: #92400e;
+    --pm-warning-background: #fdf7e7;
+    --pm-warning-border: #f3dfA0;
+    --pm-warning-text: #8f5a0d;
 
-    --pm-danger-background: #fef2f2;
-    --pm-danger-border: #fecaca;
-    --pm-danger-text: #b91c1c;
+    --pm-danger-background: #fdf1f1;
+    --pm-danger-border: #f4c4c4;
+    --pm-danger-text: #b42323;
 
-    --pm-info-background: #eff6ff;
-    --pm-info-border: #bfdbfe;
-    --pm-info-text: #1d4ed8;
+    --pm-info-background: #eef5fd;
+    --pm-info-border: #bcd9f5;
+    --pm-info-text: #1a5cb0;
 
     /* Brand accent for highlighted text (eyebrows, active states). */
-    --pm-accent: #3f6e54;
+    --pm-accent: #2f7351;
+
+    /*
+     * Primary action surface. Buttons read ONLY these tokens, so the
+     * app-wide button color is a one-line change per theme.
+     */
+    --pm-primary: #2e6b4f;
+    --pm-primary-hover: #245741;
+    --pm-primary-text: #ffffff;
 
     /* Solid destructive action surface (delete buttons). */
-    --pm-danger-solid: #dc2626;
-    --pm-danger-solid-hover: #b91c1c;
+    --pm-danger-solid: #d03636;
+    --pm-danger-solid-hover: #b32626;
 }
 
 html[data-theme="dark"] {
     color-scheme: dark;
 
-    --pm-page: #0f1412;
-    --pm-surface: #171d1a;
-    --pm-surface-subtle: #1c231f;
-    --pm-surface-muted: #222a26;
-    --pm-surface-elevated: #202722;
+    --pm-page: #0e1311;
+    --pm-surface: #161c19;
+    --pm-surface-subtle: #1b221e;
+    --pm-surface-muted: #212925;
+    --pm-surface-elevated: #1e2621;
 
-    --pm-text: #f1f5f3;
-    --pm-text-secondary: #d3ddd7;
-    --pm-text-muted: #9eaca4;
-    --pm-text-subtle: #75847b;
+    --pm-text: #eef4f0;
+    --pm-text-secondary: #ccd8d1;
+    --pm-text-muted: #97a69d;
+    --pm-text-subtle: #6e7d74;
 
-    --pm-border: #303a34;
-    --pm-border-subtle: #27302b;
-    --pm-border-strong: #465249;
+    --pm-border: #33403a;
+    --pm-border-subtle: #28312c;
+    --pm-border-strong: #4b5a52;
 
-    --pm-hover: #202822;
-    --pm-selected: #25352c;
+    --pm-hover: #1f2723;
+    --pm-selected: #24382d;
 
-    --pm-input-background: #171d1a;
-    --pm-input-disabled: #202722;
+    --pm-input-background: #161c19;
+    --pm-input-disabled: #1e2621;
 
-    --pm-overlay: rgb(0 0 0 / 0.64);
+    --pm-overlay: rgb(0 0 0 / 0.66);
 
-    --pm-success-background: #14251b;
-    --pm-success-border: #28543a;
-    --pm-success-text: #86d7a4;
+    --pm-success-background: #132619;
+    --pm-success-border: #2b5c3e;
+    --pm-success-text: #8fdcac;
 
-    --pm-warning-background: #292314;
-    --pm-warning-border: #5c4b20;
-    --pm-warning-text: #f1cf70;
+    --pm-warning-background: #2a2312;
+    --pm-warning-border: #635020;
+    --pm-warning-text: #f2d078;
 
-    --pm-danger-background: #2b1718;
-    --pm-danger-border: #603034;
-    --pm-danger-text: #f2a0a5;
+    --pm-danger-background: #2c1617;
+    --pm-danger-border: #683337;
+    --pm-danger-text: #f3a4a9;
 
-    --pm-info-background: #172331;
-    --pm-info-border: #294866;
-    --pm-info-text: #9cc9f2;
+    --pm-info-background: #16222f;
+    --pm-info-border: #2c4d6e;
+    --pm-info-text: #a2cdf4;
 
     /* Brand accent for highlighted text (eyebrows, active states). */
-    --pm-accent: #73a587;
+    --pm-accent: #7fb598;
+
+    /*
+     * Primary action surface. A slightly brighter green than light mode
+     * so the button reads as the page's strongest element on dark ground.
+     */
+    --pm-primary: #38795b;
+    --pm-primary-hover: #438f6c;
+    --pm-primary-text: #ffffff;
 
     /* Solid destructive action surface (delete buttons). */
     --pm-danger-solid: #b42323;
@@ -316,15 +332,15 @@ select.pm-input {
 }
 
 .pm-button-primary {
-    border: 1px solid var(--color-patrimoine-800);
-    background: var(--color-patrimoine-800);
-    color: white;
+    border: 1px solid var(--pm-primary);
+    background: var(--pm-primary);
+    color: var(--pm-primary-text);
     box-shadow: 0 1px 2px rgb(15 23 42 / 0.08);
 }
 
 .pm-button-primary:hover:not(:disabled) {
-    border-color: var(--color-patrimoine-900);
-    background: var(--color-patrimoine-900);
+    border-color: var(--pm-primary-hover);
+    background: var(--pm-primary-hover);
 }
 
 .pm-button-primary:disabled {
@@ -2562,24 +2578,10 @@ form
 
 /* Primary submit buttons */
 
-:is(
-    #property-submit-button,
-    #owner-submit-button,
-    #existing-unit-submit-button
-) {
-    border: 1px solid var(--color-patrimoine-800) !important;
-    background: var(--color-patrimoine-800) !important;
-    color: white !important;
-}
-
-:is(
-    #property-submit-button,
-    #owner-submit-button,
-    #existing-unit-submit-button
-):hover:not(:disabled) {
-    border-color: var(--color-patrimoine-900) !important;
-    background: var(--color-patrimoine-900) !important;
-}
+/*
+ * V1.0.7: submit buttons here carry .pm-button-primary — the component
+ * rule is authoritative, no ID-scoped repaint needed.
+ */
 
 
 /* --------------------------------------------------------------------------
@@ -4599,13 +4601,7 @@ select:disabled {
         opacity 150ms ease;
 }
 
-#tenant-funds-modal
-#tenant-funds-reserve-submit:hover:not(:disabled),
-#tenant-funds-modal
-#tenant-funds-advance-submit:hover:not(:disabled) {
-    background:
-        var(--color-patrimoine-900);
-}
+/* V1.0.7: hover handled by .pm-button-primary. */
 
 
 /* --------------------------------------------------------------------------
@@ -5689,13 +5685,7 @@ textarea::placeholder {
 }
 
 
-#security-deposit-modal
-#security-deduction-submit:not(:disabled):hover,
-#security-deposit-modal
-#security-settlement-submit:not(:disabled):hover {
-    background:
-        var(--color-patrimoine-900) !important;
-}
+/* V1.0.7: hover handled by .pm-button-primary. */
 
 
 /*

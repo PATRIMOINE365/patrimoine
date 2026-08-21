@@ -44,12 +44,12 @@
     <style>
         html,
         body {
-            background-color: #f7f8f7;
+            background-color: #f5f7f6;
         }
 
         html[data-theme="dark"],
         html[data-theme="dark"] body {
-            background-color: #0f1412;
+            background-color: #0e1311;
         }
     </style>
 

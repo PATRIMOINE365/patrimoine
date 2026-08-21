@@ -44,9 +44,27 @@ class UpdateUserRequest extends FormRequest
         $user = $this->route('user');
 
         return [
+            /*
+             * V1.0.7: structured names — see StoreUserRequest.
+             */
             'name' => [
                 'sometimes',
-                'required',
+                'nullable',
+                'string',
+                'max:255',
+                'required_without:surname',
+            ],
+
+            'given_names' => [
+                'sometimes',
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'surname' => [
+                'sometimes',
+                'nullable',
                 'string',
                 'max:255',
             ],

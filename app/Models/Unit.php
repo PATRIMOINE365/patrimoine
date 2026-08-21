@@ -26,7 +26,18 @@ class Unit extends Model
         'building_id',
         'name',
         'description',
+        'is_commercial',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'is_commercial' => 'boolean',
+        ];
+    }
 
     /**
      * Building containing this Unit.

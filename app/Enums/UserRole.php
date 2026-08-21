@@ -40,12 +40,19 @@ enum UserRole: string
         return match ($this) {
             self::Administrator => true,
 
+            /*
+             * V1.0.7: the Manager can do everything the Administrator can
+             * EXCEPT the Manage group (Activity Log, Financial Journal,
+             * Users, Settings). Business record deletion therefore belongs
+             * to the Manager as well.
+             */
             self::PropertyManager => in_array(
                 $capability,
                 [
                     UserCapability::ViewOperations,
                     UserCapability::ManageOperations,
                     UserCapability::ManageFinance,
+                    UserCapability::DeleteRecords,
                     UserCapability::ExportReports,
                 ],
                 true

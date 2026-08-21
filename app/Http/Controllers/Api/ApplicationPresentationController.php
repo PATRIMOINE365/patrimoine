@@ -62,6 +62,13 @@ class ApplicationPresentationController extends Controller
                 ?? 18
             );
 
+        /*
+         * V1.0.7: the running release is non-sensitive and lets Settings,
+         * the Help page and the update log show the current version.
+         */
+        $configuration['release'] =
+            (string) config('patrimoine.release');
+
         return response()->json(
             $configuration
         );

@@ -33,6 +33,8 @@ class Party extends Model
     protected $fillable = [
         'type',
         'name',
+        'given_names',
+        'surname',
         'legal_name',
         'phone',
         'alternate_phone',
@@ -50,6 +52,33 @@ class Party extends Model
         'bank_branch',
         'notes',
     ];
+
+    /**
+     * V1.0.7 structured person names.
+     *
+     * For people, `given_names` + `surname` are the source of truth and
+     * the display `name` is always recomposed from them on save, so every
+     * existing list, document, export and e-mail keeps working unchanged.
+     * Organisations and associations continue to use `name` directly.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (Party $party): void {
+            if ($party->type !== 'person') {
+                return;
+            }
+
+            $composed = trim(
+                trim((string) $party->given_names)
+                .' '
+                .trim((string) $party->surname)
+            );
+
+            if ($composed !== '') {
+                $party->name = $composed;
+            }
+        });
+    }
 
     /**
      * Roles currently assigned to this Party.

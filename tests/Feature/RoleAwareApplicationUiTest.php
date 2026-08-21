@@ -45,12 +45,17 @@ class RoleAwareApplicationUiTest extends TestCase
             )
         );
 
-        $this->assertFalse(
+        /*
+         * V1.0.7: the Manager mirrors the Administrator outside the
+         * Manage group, so record deletion is allowed…
+         */
+        $this->assertTrue(
             UserRole::PropertyManager->allows(
                 UserCapability::DeleteRecords
             )
         );
 
+        // …while the Manage group itself stays Administrator-only.
         $this->assertFalse(
             UserRole::PropertyManager->allows(
                 UserCapability::ManageSettings

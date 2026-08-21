@@ -22,6 +22,8 @@ use Laravel\Sanctum\HasApiTokens;
  */
 #[Fillable([
     'name',
+    'given_names',
+    'surname',
     'email',
     'phone',
     'password',
@@ -37,6 +39,26 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
+
+    /**
+     * V1.0.7 structured names: `given_names` + `surname` are the source of
+     * truth and the display `name` is recomposed on save, so tokens,
+     * activity-log snapshots and greetings keep reading `name` unchanged.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (User $user): void {
+            $composed = trim(
+                trim((string) $user->given_names)
+                .' '
+                .trim((string) $user->surname)
+            );
+
+            if ($composed !== '') {
+                $user->name = $composed;
+            }
+        });
+    }
 
     /**
      * Convert stored attributes to their appropriate PHP representations.
