@@ -540,7 +540,7 @@ async function searchSubjects(
         <div
             class="
                 px-4 py-3
-                text-sm text-slate-400
+                text-sm text-[var(--pm-text-subtle)]
             "
         >
             ${escapeHtml(translate('reports.searching'))}
@@ -580,7 +580,7 @@ async function searchSubjects(
             <div
                 class="
                     px-4 py-3
-                    text-sm text-red-600
+                    text-sm text-[var(--pm-danger-text)]
                 "
             >
                 ${escapeHtml(
@@ -778,7 +778,7 @@ function renderSubjectResults(
             <div
                 class="
                     px-4 py-4
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -807,11 +807,11 @@ function renderSubjectResults(
                         )}"
                         class="
                             block w-full
-                            border-b border-slate-100
+                            border-b border-[var(--pm-border-subtle)]
                             px-4 py-3 text-left
                             transition
                             last:border-b-0
-                            hover:bg-slate-50
+                            hover:bg-[var(--pm-hover)]
                         "
                     >
                         <div
@@ -826,7 +826,7 @@ function renderSubjectResults(
                                     class="
                                         truncate text-sm
                                         font-medium
-                                        text-slate-900
+                                        text-[var(--pm-text)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -841,7 +841,7 @@ function renderSubjectResults(
                                                 class="
                                                     mt-1 truncate
                                                     text-xs
-                                                    text-slate-500
+                                                    text-[var(--pm-text-muted)]
                                                 "
                                             >
                                                 ${escapeHtml(
@@ -861,7 +861,7 @@ function renderSubjectResults(
                                             class="
                                                 shrink-0 text-xs
                                                 font-medium
-                                                text-slate-600
+                                                text-[var(--pm-text-secondary)]
                                             "
                                         >
                                             ${escapeHtml(
@@ -1679,7 +1679,7 @@ function renderPaymentReport(
                 .map(
                     (payment) => `
                         <tr>
-                            <td class="px-4 py-3 text-sm text-slate-700">
+                            <td class="px-4 py-3 text-sm text-[var(--pm-text-secondary)]">
                                 ${escapeHtml(
                                     formatDate(
                                         payment.payment_date
@@ -1687,21 +1687,21 @@ function renderPaymentReport(
                                 )}
                             </td>
 
-                            <td class="px-4 py-3 text-sm text-slate-700">
+                            <td class="px-4 py-3 text-sm text-[var(--pm-text-secondary)]">
                                 ${escapeHtml(
                                     payment.payment_number
                                     ?? `PAY-${payment.id}`
                                 )}
                             </td>
 
-                            <td class="px-4 py-3 text-sm text-slate-700">
+                            <td class="px-4 py-3 text-sm text-[var(--pm-text-secondary)]">
                                 ${escapeHtml(
                                     payment?.tenant?.name
                                     ?? '—'
                                 )}
                             </td>
 
-                            <td class="px-4 py-3 text-sm text-slate-700">
+                            <td class="px-4 py-3 text-sm text-[var(--pm-text-secondary)]">
                                 ${escapeHtml(
                                     [
                                         payment?.building?.name,
@@ -1713,7 +1713,7 @@ function renderPaymentReport(
                                 )}
                             </td>
 
-                            <td class="px-4 py-3 text-sm text-slate-700">
+                            <td class="px-4 py-3 text-sm text-[var(--pm-text-secondary)]">
                                 ${escapeHtml(
                                     translatedDomainValue(
                                         'payment_method',
@@ -1722,14 +1722,14 @@ function renderPaymentReport(
                                 )}
                             </td>
 
-                            <td class="px-4 py-3 text-sm text-slate-700">
+                            <td class="px-4 py-3 text-sm text-[var(--pm-text-secondary)]">
                                 ${escapeHtml(
                                     payment.cash_receiver_name
                                     || '—'
                                 )}
                             </td>
 
-                            <td class="px-4 py-3 text-sm text-slate-700">
+                            <td class="px-4 py-3 text-sm text-[var(--pm-text-secondary)]">
                                 ${escapeHtml(
                                     payment.reference
                                     || '—'
@@ -1740,7 +1740,7 @@ function renderPaymentReport(
                                 class="
                                     px-4 py-3
                                     text-right text-sm
-                                    font-medium text-slate-900
+                                    font-medium text-[var(--pm-text)]
                                 "
                             >
                                 ${escapeHtml(
@@ -1781,7 +1781,7 @@ function renderPaymentReport(
                         class="
                             px-4 py-10
                             text-center text-sm
-                            text-slate-500
+                            text-[var(--pm-text-muted)]
                         "
                     >
                         ${escapeHtml(
@@ -1824,11 +1824,11 @@ function renderPaymentReport(
                     class="
                         overflow-x-auto
                         rounded-xl
-                        border border-slate-200
+                        border border-[var(--pm-border)]
                     "
                 >
-                    <table class="min-w-full divide-y divide-slate-200">
-                        <thead class="bg-slate-50">
+                    <table class="min-w-full divide-y divide-[var(--pm-border)]">
+                        <thead class="bg-[var(--pm-surface-subtle)]">
                             <tr>
                                 ${paymentReportHeading(
                                     translate('reports.date')
@@ -1875,7 +1875,7 @@ function renderPaymentReport(
                             </tr>
                         </thead>
 
-                        <tbody class="divide-y divide-slate-100 bg-white">
+                        <tbody class="divide-y divide-[var(--pm-border-subtle)] bg-[var(--pm-surface)]">
                             ${body}
                         </tbody>
                     </table>
@@ -1905,7 +1905,7 @@ function paymentReportHeading(
                 }
                 text-xs font-semibold
                 uppercase tracking-wide
-                text-slate-500
+                text-[var(--pm-text-muted)]
             "
         >
             ${escapeHtml(label)}
@@ -2808,14 +2808,14 @@ function identityCard(
         <div
             class="
                 mb-6 rounded-xl
-                border border-slate-200
-                bg-slate-50/60 p-5
+                border border-[var(--pm-border)]
+                bg-[var(--pm-surface-subtle)] p-5
             "
         >
             <div
                 class="
                     text-lg font-semibold
-                    text-slate-950
+                    text-[var(--pm-text)]
                 "
             >
                 ${escapeHtml(
@@ -2829,7 +2829,7 @@ function identityCard(
                         <div
                             class="
                                 mt-1 text-sm
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             ${escapeHtml(
@@ -2860,7 +2860,7 @@ function periodHtml(
             <div
                 class="
                     mb-6 text-xs
-                    text-slate-500
+                    text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -2876,7 +2876,7 @@ function periodHtml(
         <div
             class="
                 mb-6 text-xs
-                text-slate-500
+                text-[var(--pm-text-muted)]
             "
         >
             ${escapeHtml(
@@ -2920,15 +2920,15 @@ function metricGrid(
                         <div
                             class="
                                 rounded-xl
-                                border border-slate-200
-                                bg-white p-4
+                                border border-[var(--pm-border)]
+                                bg-[var(--pm-surface-subtle)] p-4
                             "
                         >
                             <div
                                 class="
                                     text-xs font-medium
                                     uppercase tracking-wide
-                                    text-slate-500
+                                    text-[var(--pm-text-muted)]
                                 "
                             >
                                 ${escapeHtml(
@@ -2941,7 +2941,7 @@ function metricGrid(
                                     mt-2 text-xl
                                     font-semibold
                                     tracking-tight
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 ${escapeHtml(
@@ -2973,14 +2973,15 @@ function pairGrid(
                         <div
                             class="
                                 rounded-lg
-                                border border-slate-200
+                                border border-[var(--pm-border)]
+                                bg-[var(--pm-surface-subtle)]
                                 px-4 py-3
                             "
                         >
                             <div
                                 class="
                                     text-xs
-                                    text-slate-500
+                                    text-[var(--pm-text-muted)]
                                 "
                             >
                                 ${escapeHtml(
@@ -2992,7 +2993,7 @@ function pairGrid(
                                 class="
                                     mt-1 text-sm
                                     font-semibold
-                                    text-slate-900
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 ${escapeHtml(
@@ -3015,14 +3016,14 @@ function reportSection(
         <section
             class="
                 mt-7 border-t
-                border-slate-100 pt-6
+                border-[var(--pm-border-subtle)] pt-6
             "
         >
             <h3
                 class="
                     mb-4 text-base
                     font-semibold
-                    text-slate-950
+                    text-[var(--pm-text)]
                 "
             >
                 ${escapeHtml(
@@ -3048,10 +3049,10 @@ function tableHtml(
                 class="
                     rounded-xl
                     border border-dashed
-                    border-slate-200
+                    border-[var(--pm-border)]
                     px-5 py-8
                     text-center
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(translate('reports.no_records_section'))}
@@ -3064,19 +3065,19 @@ function tableHtml(
             class="
                 overflow-x-auto
                 rounded-xl
-                border border-slate-200
+                border border-[var(--pm-border)]
             "
         >
             <table
                 class="
                     min-w-full
-                    divide-y divide-slate-200
+                    divide-y divide-[var(--pm-border)]
                     text-sm
                 "
             >
                 <thead
                     class="
-                        bg-slate-50
+                        bg-[var(--pm-surface-subtle)]
                     "
                 >
                     <tr>
@@ -3090,7 +3091,7 @@ function tableHtml(
                                             text-left
                                             text-xs font-semibold
                                             uppercase tracking-wide
-                                            text-slate-500
+                                            text-[var(--pm-text-muted)]
                                         "
                                     >
                                         ${escapeHtml(
@@ -3105,8 +3106,8 @@ function tableHtml(
 
                 <tbody
                     class="
-                        divide-y divide-slate-100
-                        bg-white
+                        divide-y divide-[var(--pm-border-subtle)]
+                        bg-[var(--pm-surface)]
                     "
                 >
                     ${rows
@@ -3120,7 +3121,7 @@ function tableHtml(
                                                     class="
                                                         whitespace-nowrap
                                                         px-4 py-3
-                                                        text-slate-700
+                                                        text-[var(--pm-text-secondary)]
                                                     "
                                                 >
                                                     ${escapeHtml(
@@ -3759,7 +3760,7 @@ function showReportLoading() {
             class="
                 flex min-h-[520px]
                 items-center justify-center
-                text-sm text-slate-400
+                text-sm text-[var(--pm-text-subtle)]
             "
         >
             ${escapeHtml(translate('reports.generating'))}
@@ -3773,7 +3774,7 @@ function renderReportError() {
             class="
                 flex min-h-[520px]
                 items-center justify-center
-                text-sm text-slate-500
+                text-sm text-[var(--pm-text-muted)]
             "
         >
             ${escapeHtml(translate('reports.could_not_generate'))}
@@ -3806,7 +3807,7 @@ function clearReportOutput() {
             <div
                 class="
                     max-w-md text-center
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(translate('reports.select_criteria'))}

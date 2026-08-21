@@ -21,7 +21,7 @@
             <p
                 class="
                     text-sm font-medium
-                    text-patrimoine-700
+                    text-[var(--pm-accent)]
                 "
             >
                 <span data-i18n="owners.finance">
@@ -32,7 +32,7 @@
             <h1
                 class="
                     mt-1 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 <span data-i18n="owners.heading">
@@ -40,7 +40,7 @@
 </span>
             </h1>
 
-            <p class="mt-2 text-sm text-slate-500">
+            <p class="mt-2 text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="owners.page_description">
     {{ __('ui.owners.page_description') }}
 </span>
@@ -54,9 +54,9 @@
         id="owners-error"
         class="
             mb-6 hidden rounded-xl
-            border border-red-200
-            bg-red-50 px-4 py-3
-            text-sm text-red-700
+            border border-[var(--pm-danger-border)]
+            bg-[var(--pm-danger-background)] px-4 py-3
+            text-sm text-[var(--pm-danger-text)]
         "
     ></div>
 
@@ -79,21 +79,19 @@
         <section
             class="
                 pm-owner-directory
-                overflow-hidden rounded-xl
-                border border-slate-200
-                bg-white shadow-sm
+                overflow-hidden pm-card shadow-sm
             "
         >
             <div
                 class="
-                    border-b border-slate-100
+                    border-b border-[var(--pm-border-subtle)]
                     px-5 py-4
                 "
             >
                 <h2
                     class="
                         text-base font-semibold
-                        text-slate-950
+                        text-[var(--pm-text)]
                     "
                 >
                     <span data-i18n="owners.property_owners">
@@ -101,7 +99,7 @@
 </span>
                 </h2>
 
-                <p class="mt-1 text-xs text-slate-500">
+                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                     <span data-i18n="owners.search_description">
     {{ __('ui.owners.search_description') }}
 </span>
@@ -124,7 +122,7 @@
                                 absolute left-3 top-1/2
                                 h-4 w-4
                                 -translate-y-1/2
-                                text-slate-400
+                                text-[var(--pm-text-subtle)]
                             "
                             viewBox="0 0 24 24"
                             fill="none"
@@ -140,16 +138,7 @@
                             type="search"
                             autocomplete="off"
                             placeholder="{{ __('ui.owners.search_placeholder') }}" data-i18n-placeholder="owners.search_placeholder"
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                py-2.5 pl-9 pr-3
-                                text-sm outline-none
-                                transition
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input pl-9"
                         >
                     </div>
                 </div>
@@ -166,7 +155,7 @@
                 <div
                     class="
                         px-5 py-8 text-center
-                        text-sm text-slate-400
+                        text-sm text-[var(--pm-text-subtle)]
                     "
                 >
                     <span data-i18n="owners.loading">
@@ -179,7 +168,7 @@
                 id="owners-list-pagination"
                 class="
                     hidden border-t
-                    border-slate-100
+                    border-[var(--pm-border-subtle)]
                     px-4 py-3
                 "
             ></div>
@@ -194,9 +183,7 @@
             class="
                 pm-owner-detail-shell
                 min-w-0 overflow-hidden
-                rounded-xl
-                border border-slate-200
-                bg-white shadow-sm
+                pm-card shadow-sm
             "
         >
 
@@ -219,8 +206,8 @@
                         class="
                             mx-auto flex h-12 w-12
                             items-center justify-center
-                            rounded-full bg-slate-100
-                            text-slate-500
+                            rounded-full bg-[var(--pm-surface-muted)]
+                            text-[var(--pm-text-muted)]
                         "
                     >
                         <svg
@@ -239,7 +226,7 @@
                     <h2
                         class="
                             mt-4 text-base font-semibold
-                            text-slate-900
+                            text-[var(--pm-text)]
                         "
                     >
                         <span data-i18n="owners.select_property_owner">
@@ -250,7 +237,7 @@
                     <p
                         class="
                             mt-2 text-sm leading-6
-                            text-slate-500
+                            text-[var(--pm-text-muted)]
                         "
                     >
                         <span data-i18n="owners.select_owner_description">
@@ -273,7 +260,7 @@
 
                 <div
                     class="
-                        border-b border-slate-100
+                        border-b border-[var(--pm-border-subtle)]
                         px-6 py-5
                     "
                 >
@@ -298,7 +285,7 @@
                                         truncate
                                         text-xl font-semibold
                                         tracking-tight
-                                        text-slate-950
+                                        text-[var(--pm-text)]
                                     "
                                 >
                                     —
@@ -309,10 +296,10 @@
                                     class="
                                         inline-flex items-center
                                         rounded-full
-                                        bg-emerald-50
+                                        bg-[var(--pm-success-background)]
                                         px-2.5 py-1
                                         text-xs font-medium
-                                        text-emerald-700
+                                        text-[var(--pm-success-text)]
                                     "
                                 >
                                     <span data-i18n="owners.active">
@@ -325,7 +312,7 @@
                                 id="owner-detail-contact"
                                 class="
                                     mt-2 text-sm
-                                    text-slate-500
+                                    text-[var(--pm-text-muted)]
                                 "
                             >
                                 —
@@ -343,13 +330,13 @@
                                 class="
                                     inline-flex items-center gap-2
                                     rounded-lg border
-                                    border-slate-200
-                                    bg-white px-3.5 py-2.5
+                                    border-[var(--pm-border)]
+                                    bg-[var(--pm-surface)] px-3.5 py-2.5
                                     text-sm font-medium
-                                    text-slate-700
+                                    text-[var(--pm-text-secondary)]
                                     transition
-                                    hover:border-slate-300
-                                    hover:bg-slate-50
+                                    hover:border-[var(--pm-border-strong)]
+                                    hover:bg-[var(--pm-hover)]
                                 "
                             >
                                 <svg
@@ -374,13 +361,13 @@
                                 class="
                                     inline-flex items-center
                                     rounded-lg border
-                                    border-slate-200
-                                    bg-white px-3.5 py-2.5
+                                    border-[var(--pm-border)]
+                                    bg-[var(--pm-surface)] px-3.5 py-2.5
                                     text-sm font-medium
-                                    text-slate-700
+                                    text-[var(--pm-text-secondary)]
                                     transition
-                                    hover:border-slate-300
-                                    hover:bg-slate-50
+                                    hover:border-[var(--pm-border-strong)]
+                                    hover:bg-[var(--pm-hover)]
                                 "
                             >
                                 <span data-i18n="owners.expense">
@@ -394,13 +381,13 @@
                                 class="
                                     inline-flex items-center
                                     rounded-lg border
-                                    border-slate-200
-                                    bg-white px-3.5 py-2.5
+                                    border-[var(--pm-border)]
+                                    bg-[var(--pm-surface)] px-3.5 py-2.5
                                     text-sm font-medium
-                                    text-slate-700
+                                    text-[var(--pm-text-secondary)]
                                     transition
-                                    hover:border-slate-300
-                                    hover:bg-slate-50
+                                    hover:border-[var(--pm-border-strong)]
+                                    hover:bg-[var(--pm-hover)]
                                     disabled:cursor-not-allowed
                                     disabled:opacity-50
                                 "
@@ -416,13 +403,13 @@
                                 class="
                                     inline-flex items-center
                                     rounded-lg border
-                                    border-slate-200
-                                    bg-white px-3.5 py-2.5
+                                    border-[var(--pm-border)]
+                                    bg-[var(--pm-surface)] px-3.5 py-2.5
                                     text-sm font-medium
-                                    text-slate-700
+                                    text-[var(--pm-text-secondary)]
                                     transition
-                                    hover:border-slate-300
-                                    hover:bg-slate-50
+                                    hover:border-[var(--pm-border-strong)]
+                                    hover:bg-[var(--pm-hover)]
                                 "
                             >
                                 <span data-i18n="owners.adjustment">
@@ -441,8 +428,8 @@
                 <div
                     class="
                         grid gap-4
-                        border-b border-slate-100
-                        bg-slate-50/50
+                        border-b border-[var(--pm-border-subtle)]
+                        bg-[var(--pm-surface-subtle)]
                         px-6 py-5
                         sm:grid-cols-2
                         xl:grid-cols-4
@@ -453,7 +440,7 @@
                             class="
                                 text-xs font-medium
                                 uppercase tracking-wide
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             <span data-i18n="owners.current_balance">
@@ -465,7 +452,7 @@
                             id="owner-detail-balance"
                             class="
                                 mt-2 text-2xl font-semibold
-                                tracking-tight text-slate-950
+                                tracking-tight text-[var(--pm-text)]
                             "
                         >
                             —
@@ -477,7 +464,7 @@
                             class="
                                 text-xs font-medium
                                 uppercase tracking-wide
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             <span data-i18n="owners.total_credits">
@@ -489,7 +476,7 @@
                             id="owner-detail-credits"
                             class="
                                 mt-2 text-xl font-semibold
-                                text-slate-900
+                                text-[var(--pm-text)]
                             "
                         >
                             —
@@ -501,7 +488,7 @@
                             class="
                                 text-xs font-medium
                                 uppercase tracking-wide
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             <span data-i18n="owners.total_debits">
@@ -513,7 +500,7 @@
                             id="owner-detail-debits"
                             class="
                                 mt-2 text-xl font-semibold
-                                text-slate-900
+                                text-[var(--pm-text)]
                             "
                         >
                             —
@@ -525,7 +512,7 @@
                             class="
                                 text-xs font-medium
                                 uppercase tracking-wide
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             <span data-i18n="owners.properties">
@@ -537,7 +524,7 @@
                             id="owner-detail-property-count"
                             class="
                                 mt-2 text-xl font-semibold
-                                text-slate-900
+                                text-[var(--pm-text)]
                             "
                         >
                             —
@@ -553,7 +540,7 @@
 
                 <div
                     class="
-                        border-b border-slate-100
+                        border-b border-[var(--pm-border-subtle)]
                         px-6 py-6
                     "
                 >
@@ -567,7 +554,7 @@
                             <h3
                                 class="
                                     text-base font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="owners.properties">
@@ -578,7 +565,7 @@
                             <p
                                 class="
                                     mt-1 text-xs
-                                    text-slate-500
+                                    text-[var(--pm-text-muted)]
                                 "
                             >
                                 <span data-i18n="owners.properties_description">
@@ -603,7 +590,7 @@
 
                 <div
                     class="
-                        border-b border-slate-100
+                        border-b border-[var(--pm-border-subtle)]
                         px-6 py-6
                     "
                 >
@@ -611,7 +598,7 @@
                         <h3
                             class="
                                 text-base font-semibold
-                                text-slate-950
+                                text-[var(--pm-text)]
                             "
                         >
                             <span data-i18n="owners.owner_ledger">
@@ -622,7 +609,7 @@
                         <p
                             class="
                                 mt-1 text-xs
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             <span data-i18n="owners.ledger_description">
@@ -640,7 +627,7 @@
                         id="owner-ledger-pagination"
                         class="
                             mt-4 hidden
-                            border-t border-slate-100
+                            border-t border-[var(--pm-border-subtle)]
                             pt-4
                         "
                     ></div>
@@ -661,7 +648,7 @@
                         <h3
                             class="
                                 text-base font-semibold
-                                text-slate-950
+                                text-[var(--pm-text)]
                             "
                         >
                             <span data-i18n="owners.payout_history">
@@ -672,7 +659,7 @@
                         <p
                             class="
                                 mt-1 text-xs
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             <span data-i18n="owners.payout_history_description">
@@ -733,9 +720,9 @@
                 id="owner-deposit-error"
                 class="
                     mb-5 hidden rounded-xl
-                    border border-red-200
-                    bg-red-50 px-4 py-3
-                    text-sm text-red-700
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
                 "
             ></div>
 
@@ -749,15 +736,13 @@
                     <label
                         for="owner-deposit-amount"
                         class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
+                            pm-field-label
                         "
                     >
                         <span data-i18n="owners.amount">
     {{ __('ui.owners.amount') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <div class="relative">
@@ -766,7 +751,7 @@
                                 pointer-events-none
                                 absolute inset-y-0 left-0
                                 flex items-center pl-3.5
-                                text-sm text-slate-500
+                                text-sm text-[var(--pm-text-muted)]
                             "
                          data-currency-display>
                         </span>
@@ -777,15 +762,7 @@
                             min="1"
                             step="1"
                             required
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                py-2.5 pl-14 pr-3.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input pl-14"
                         >
                     </div>
                 </div>
@@ -794,15 +771,13 @@
                     <label
                         for="owner-deposit-date"
                         class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
+                            pm-field-label
                         "
                     >
                         <span data-i18n="owners.deposit_date">
     {{ __('ui.owners.deposit_date') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
@@ -815,15 +790,7 @@
                         data-owner-date-input
                         data-pm-date-input
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                            focus:border-patrimoine-500
-                            focus:ring-2
-                            focus:ring-patrimoine-100
-                        "
+                        class="pm-input"
                     >
                 </div>
 
@@ -831,29 +798,19 @@
                     <label
                         for="owner-deposit-method"
                         class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
+                            pm-field-label
                         "
                     >
                         <span data-i18n="owners.payment_method">
     {{ __('ui.owners.payment_method') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <select
                         id="owner-deposit-method"
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2.5
-                            text-sm outline-none
-                            focus:border-patrimoine-500
-                            focus:ring-2
-                            focus:ring-patrimoine-100
-                        "
+                        class="pm-input"
                     >
                         <option value="bank_transfer" data-i18n="owners.bank_transfer">
     {{ __('ui.owners.bank_transfer') }}
@@ -873,29 +830,19 @@
                     <label
                         for="owner-deposit-purpose"
                         class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
+                            pm-field-label
                         "
                     >
                         <span data-i18n="owners.deposit_purpose">
     {{ __('ui.owners.deposit_purpose') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <select
                         id="owner-deposit-purpose"
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2.5
-                            text-sm outline-none
-                            focus:border-patrimoine-500
-                            focus:ring-2
-                            focus:ring-patrimoine-100
-                        "
+                        class="pm-input"
                     >
                         <option value="general_funding" data-i18n="owners.general_funding">
     {{ __('ui.owners.general_funding') }}
@@ -919,15 +866,13 @@
                     <label
                         for="owner-deposit-building"
                         class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
+                            pm-field-label
                         "
                     >
                         <span data-i18n="owners.building">
     {{ __('ui.owners.building') }}
 </span>
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             <span data-i18n="owners.optional">
     {{ __('ui.owners.optional') }}
 </span>
@@ -936,15 +881,7 @@
 
                     <select
                         id="owner-deposit-building"
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2.5
-                            text-sm outline-none
-                            focus:border-patrimoine-500
-                            focus:ring-2
-                            focus:ring-patrimoine-100
-                        "
+                        class="pm-input"
                     >
                         <option value="" data-i18n="owners.no_specific_building">
     {{ __('ui.owners.no_specific_building') }}
@@ -956,15 +893,13 @@
                     <label
                         for="owner-deposit-unit"
                         class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
+                            pm-field-label
                         "
                     >
                         <span data-i18n="owners.unit">
     {{ __('ui.owners.unit') }}
 </span>
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             <span data-i18n="owners.optional">
     {{ __('ui.owners.optional') }}
 </span>
@@ -974,17 +909,7 @@
                     <select
                         id="owner-deposit-unit"
                         disabled
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2.5
-                            text-sm outline-none
-                            disabled:bg-slate-50
-                            disabled:text-slate-400
-                            focus:border-patrimoine-500
-                            focus:ring-2
-                            focus:ring-patrimoine-100
-                        "
+                        class="pm-input"
                     >
                         <option value="" data-i18n="owners.select_building_first">
     {{ __('ui.owners.select_building_first') }}
@@ -996,15 +921,13 @@
                     <label
                         for="owner-deposit-reference"
                         class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
+                            pm-field-label
                         "
                     >
                         <span data-i18n="owners.reference">
     {{ __('ui.owners.reference') }}
 </span>
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             <span data-i18n="owners.optional">
     {{ __('ui.owners.optional') }}
 </span>
@@ -1015,15 +938,7 @@
                         id="owner-deposit-reference"
                         type="text"
                         maxlength="255"
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                            focus:border-patrimoine-500
-                            focus:ring-2
-                            focus:ring-patrimoine-100
-                        "
+                        class="pm-input"
                     >
                 </div>
 
@@ -1034,30 +949,20 @@
                     <label
                         for="owner-deposit-collector"
                         class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
+                            pm-field-label
                         "
                     >
                         <span data-i18n="owners.collector">
     {{ __('ui.owners.collector') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
                         id="owner-deposit-collector"
                         type="text"
                         maxlength="255"
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                            focus:border-patrimoine-500
-                            focus:ring-2
-                            focus:ring-patrimoine-100
-                        "
+                        class="pm-input"
                     >
                 </div>
 
@@ -1065,15 +970,13 @@
                     <label
                         for="owner-deposit-notes"
                         class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
+                            pm-field-label
                         "
                     >
                         <span data-i18n="owners.notes">
     {{ __('ui.owners.notes') }}
 </span>
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             <span data-i18n="owners.optional">
     {{ __('ui.owners.optional') }}
 </span>
@@ -1083,15 +986,7 @@
                     <textarea
                         id="owner-deposit-notes"
                         rows="3"
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                            focus:border-patrimoine-500
-                            focus:ring-2
-                            focus:ring-patrimoine-100
-                        "
+                        class="pm-input"
                     ></textarea>
                 </div>
             </div>
@@ -1103,8 +998,8 @@
                 data-close-owner-modal="owner-deposit-modal"
                 class="pm-button-secondary"
             >
-                <span data-i18n="owners.cancel">
-    {{ __('ui.owners.cancel') }}
+                <span data-i18n="actions.cancel">
+    {{ __('ui.actions.cancel') }}
 </span>
             </button>
 
@@ -1163,9 +1058,9 @@
                 id="owner-expense-error"
                 class="
                     mb-5 hidden rounded-xl
-                    border border-red-200
-                    bg-red-50 px-4 py-3
-                    text-sm text-red-700
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
                 "
             ></div>
 
@@ -1173,9 +1068,9 @@
                 id="owner-expense-sharing-warning"
                 class="
                     mb-5 hidden rounded-xl
-                    border border-amber-200
-                    bg-amber-50 px-4 py-3
-                    text-sm leading-6 text-amber-800
+                    border border-[var(--pm-warning-border)]
+                    bg-[var(--pm-warning-background)] px-4 py-3
+                    text-sm leading-6 text-[var(--pm-warning-text)]
                 "
             ></div>
 
@@ -1183,25 +1078,18 @@
                 <div class="md:col-span-2">
                     <label
                         for="owner-expense-building"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.building">
     {{ __('ui.owners.building') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <select
                         id="owner-expense-building"
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2.5
-                            text-sm outline-none
-                            focus:border-patrimoine-500
-                            focus:ring-2 focus:ring-patrimoine-100
-                        "
+                        class="pm-input"
                     >
                         <option value="" data-i18n="owners.select_building">
     {{ __('ui.owners.select_building') }}
@@ -1212,12 +1100,12 @@
                 <div class="md:col-span-2">
                     <label
                         for="owner-expense-unit"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.unit">
     {{ __('ui.owners.unit') }}
 </span>
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             <span data-i18n="owners.optional">
     {{ __('ui.owners.optional') }}
 </span>
@@ -1227,14 +1115,7 @@
                     <select
                         id="owner-expense-unit"
                         disabled
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2.5
-                            text-sm outline-none
-                            disabled:bg-slate-50
-                            disabled:text-slate-400
-                        "
+                        class="pm-input"
                     >
                         <option value="" data-i18n="owners.select_building_first">
     {{ __('ui.owners.select_building_first') }}
@@ -1245,12 +1126,12 @@
                 <div class="md:col-span-2">
                     <label
                         for="owner-expense-description"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.description">
     {{ __('ui.owners.description') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
@@ -1259,26 +1140,19 @@
                         maxlength="255"
                         required
                         placeholder="{{ __('ui.owners.expense_description_placeholder') }}" data-i18n-placeholder="owners.expense_description_placeholder"
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                            focus:border-patrimoine-500
-                            focus:ring-2 focus:ring-patrimoine-100
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div>
                     <label
                         for="owner-expense-amount"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.amount">
     {{ __('ui.owners.amount') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <div class="relative">
@@ -1286,7 +1160,7 @@
                             class="
                                 absolute inset-y-0 left-0
                                 flex items-center pl-3.5
-                                text-sm text-slate-500
+                                text-sm text-[var(--pm-text-muted)]
                             "
                          data-currency-display>
                         </span>
@@ -1297,12 +1171,7 @@
                             min="1"
                             step="1"
                             required
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                py-2.5 pl-14 pr-3.5
-                                text-sm outline-none
-                            "
+                            class="pm-input pl-14"
                         >
                     </div>
                 </div>
@@ -1310,12 +1179,12 @@
                 <div>
                     <label
                         for="owner-expense-date"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.expense_date">
     {{ __('ui.owners.expense_date') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
@@ -1328,24 +1197,19 @@
                         data-owner-date-input
                         data-pm-date-input
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div class="md:col-span-2">
                     <label
                         for="owner-expense-reference"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.reference">
     {{ __('ui.owners.reference') }}
 </span>
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             <span data-i18n="owners.optional">
     {{ __('ui.owners.optional') }}
 </span>
@@ -1356,24 +1220,19 @@
                         id="owner-expense-reference"
                         type="text"
                         maxlength="255"
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div class="md:col-span-2">
                     <label
                         for="owner-expense-notes"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.notes">
     {{ __('ui.owners.notes') }}
 </span>
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             <span data-i18n="owners.optional">
     {{ __('ui.owners.optional') }}
 </span>
@@ -1383,12 +1242,7 @@
                     <textarea
                         id="owner-expense-notes"
                         rows="3"
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                        "
+                        class="pm-input"
                     ></textarea>
                 </div>
             </div>
@@ -1400,8 +1254,8 @@
                 data-close-owner-modal="owner-expense-modal"
                 class="pm-button-secondary"
             >
-                <span data-i18n="owners.cancel">
-    {{ __('ui.owners.cancel') }}
+                <span data-i18n="actions.cancel">
+    {{ __('ui.actions.cancel') }}
 </span>
             </button>
 
@@ -1460,20 +1314,20 @@
                 id="owner-payout-error"
                 class="
                     mb-5 hidden rounded-xl
-                    border border-red-200
-                    bg-red-50 px-4 py-3
-                    text-sm text-red-700
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
                 "
             ></div>
 
             <div
                 class="
                     mb-5 rounded-xl
-                    border border-slate-200
-                    bg-slate-50 p-4
+                    border border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] p-4
                 "
             >
-                <div class="text-xs font-medium uppercase text-slate-500">
+                <div class="text-xs font-medium uppercase text-[var(--pm-text-muted)]">
                     <span data-i18n="owners.available_owner_balance">
     {{ __('ui.owners.available_owner_balance') }}
 </span>
@@ -1483,7 +1337,7 @@
                     id="owner-payout-available-balance"
                     class="
                         mt-2 text-2xl font-semibold
-                        text-slate-950
+                        text-[var(--pm-text)]
                     "
                 >
                     —
@@ -1494,12 +1348,12 @@
                 <div>
                     <label
                         for="owner-payout-amount"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.amount">
     {{ __('ui.owners.amount') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
@@ -1508,24 +1362,19 @@
                         min="1"
                         step="1"
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div>
                     <label
                         for="owner-payout-date"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.payout_date">
     {{ __('ui.owners.payout_date') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
@@ -1538,35 +1387,25 @@
                         data-owner-date-input
                         data-pm-date-input
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div>
                     <label
                         for="owner-payout-method"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.payment_method">
     {{ __('ui.owners.payment_method') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <select
                         id="owner-payout-method"
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2.5
-                            text-sm outline-none
-                        "
+                        class="pm-input"
                     >
                         <option value="bank_transfer" data-i18n="owners.bank_transfer">
     {{ __('ui.owners.bank_transfer') }}
@@ -1585,12 +1424,12 @@
                 <div>
                     <label
                         for="owner-payout-reference"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.reference">
     {{ __('ui.owners.reference') }}
 </span>
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             <span data-i18n="owners.optional">
     {{ __('ui.owners.optional') }}
 </span>
@@ -1601,24 +1440,19 @@
                         id="owner-payout-reference"
                         type="text"
                         maxlength="255"
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div class="md:col-span-2">
                     <label
                         for="owner-payout-notes"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.notes">
     {{ __('ui.owners.notes') }}
 </span>
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             <span data-i18n="owners.optional">
     {{ __('ui.owners.optional') }}
 </span>
@@ -1628,12 +1462,7 @@
                     <textarea
                         id="owner-payout-notes"
                         rows="3"
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                        "
+                        class="pm-input"
                     ></textarea>
                 </div>
             </div>
@@ -1645,8 +1474,8 @@
                 data-close-owner-modal="owner-payout-modal"
                 class="pm-button-secondary"
             >
-                <span data-i18n="owners.cancel">
-    {{ __('ui.owners.cancel') }}
+                <span data-i18n="actions.cancel">
+    {{ __('ui.actions.cancel') }}
 </span>
             </button>
 
@@ -1705,18 +1534,18 @@
                 id="owner-adjustment-error"
                 class="
                     mb-5 hidden rounded-xl
-                    border border-red-200
-                    bg-red-50 px-4 py-3
-                    text-sm text-red-700
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
                 "
             ></div>
 
             <div
                 class="
                     mb-5 rounded-xl
-                    border border-amber-200
-                    bg-amber-50 px-4 py-3
-                    text-sm leading-6 text-amber-800
+                    border border-[var(--pm-warning-border)]
+                    bg-[var(--pm-warning-background)] px-4 py-3
+                    text-sm leading-6 text-[var(--pm-warning-text)]
                 "
             >
                 <span data-i18n="owners.adjustment_warning">
@@ -1728,23 +1557,18 @@
                 <div>
                     <label
                         for="owner-adjustment-direction"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.direction">
     {{ __('ui.owners.direction') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <select
                         id="owner-adjustment-direction"
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2.5
-                            text-sm outline-none
-                        "
+                        class="pm-input"
                     >
                         <option value="credit" data-i18n="owners.credit_increase_balance">
     {{ __('ui.owners.credit_increase_balance') }}
@@ -1759,12 +1583,12 @@
                 <div>
                     <label
                         for="owner-adjustment-amount"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.amount">
     {{ __('ui.owners.amount') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
@@ -1773,24 +1597,19 @@
                         min="1"
                         step="1"
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div>
                     <label
                         for="owner-adjustment-date"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.adjustment_date">
     {{ __('ui.owners.adjustment_date') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
@@ -1803,24 +1622,19 @@
                         data-owner-date-input
                         data-pm-date-input
                         required
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div>
                     <label
                         for="owner-adjustment-reference"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.reference">
     {{ __('ui.owners.reference') }}
 </span>
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             <span data-i18n="owners.optional">
     {{ __('ui.owners.optional') }}
 </span>
@@ -1831,24 +1645,19 @@
                         id="owner-adjustment-reference"
                         type="text"
                         maxlength="255"
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                        "
+                        class="pm-input"
                     >
                 </div>
 
                 <div class="md:col-span-2">
                     <label
                         for="owner-adjustment-reason"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="owners.reason">
     {{ __('ui.owners.reason') }}
 </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <textarea
@@ -1857,12 +1666,7 @@
                         maxlength="1000"
                         required
                         placeholder="{{ __('ui.owners.adjustment_reason_placeholder') }}" data-i18n-placeholder="owners.adjustment_reason_placeholder"
-                        class="
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                        "
+                        class="pm-input"
                     ></textarea>
                 </div>
             </div>
@@ -1874,8 +1678,8 @@
                 data-close-owner-modal="owner-adjustment-modal"
                 class="pm-button-secondary"
             >
-                <span data-i18n="owners.cancel">
-    {{ __('ui.owners.cancel') }}
+                <span data-i18n="actions.cancel">
+    {{ __('ui.actions.cancel') }}
 </span>
             </button>
 

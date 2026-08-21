@@ -1,9 +1,11 @@
 import {
     apiRequest,
+    closeDrawer,
     escapeHtml,
     formatCurrency,
     formatDate,
     formatNumber,
+    openDrawer,
     parseJsonResponse,
     translate,
 } from './core.js';
@@ -350,7 +352,7 @@ async function openSecurityDepositApplicationDrawer(
         'tenant-security-application-date'
     );
 
-    openTenantTransactionDrawer(
+    openDrawer(
         'tenant-security-application-drawer'
     );
 
@@ -715,7 +717,7 @@ async function submitSecurityDepositApplication(
                     }
                 );
 
-                closeTenantTransactionDrawer(
+                closeDrawer(
                     'tenant-security-application-drawer'
                 );
 
@@ -829,9 +831,6 @@ function initializeSecurityDepositApplicationControls() {
 let selectedTenant = null;
 let selectedTenantLeases = [];
 let selectedTenantLeaseDetails = new Map();
-
-const tenantTransactionDrawerTimers =
-    new Map();
 
 let tenantTransactionControlsInitialized =
     false;
@@ -1441,7 +1440,7 @@ function renderTenantDetail(
     container.innerHTML = `
         <div
             class="
-                border-b border-slate-100
+                border-b border-[var(--pm-border-subtle)]
                 px-6 py-5
             "
         >
@@ -1457,7 +1456,7 @@ function renderTenantDetail(
                     <h2
                         class="
                             text-xl font-semibold
-                            tracking-tight text-slate-950
+                            tracking-tight text-[var(--pm-text)]
                         "
                     >
                         ${escapeHtml(
@@ -1470,7 +1469,7 @@ function renderTenantDetail(
                     <div
                         class="
                             mt-2 text-sm
-                            text-slate-500
+                            text-[var(--pm-text-muted)]
                         "
                     >
                         ${escapeHtml(
@@ -1526,8 +1525,8 @@ function renderTenantDetail(
         <div
             class="
                 grid gap-4
-                border-b border-slate-100
-                bg-slate-50/50
+                border-b border-[var(--pm-border-subtle)]
+                bg-[var(--pm-surface-subtle)]
                 px-6 py-5
                 sm:grid-cols-3
             "
@@ -1554,14 +1553,14 @@ function renderTenantDetail(
 
         <div
             class="
-                border-b border-slate-100
+                border-b border-[var(--pm-border-subtle)]
                 px-6 py-6
             "
         >
             <h3
                 class="
                     text-base font-semibold
-                    text-slate-950
+                    text-[var(--pm-text)]
                 "
             >
                 ${escapeHtml(
@@ -1619,7 +1618,7 @@ function renderTenantDetail(
                 <h3
                     class="
                         text-base font-semibold
-                        text-slate-950
+                        text-[var(--pm-text)]
                     "
                 >
                     ${escapeHtml(
@@ -1632,7 +1631,7 @@ function renderTenantDetail(
                 <p
                     class="
                         mt-1 text-xs
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                 >
                     ${escapeHtml(
@@ -1652,7 +1651,7 @@ function renderTenantDetail(
 
         <div
             class="
-                border-t border-slate-100
+                border-t border-[var(--pm-border-subtle)]
                 px-6 py-6
             "
         >
@@ -1663,7 +1662,7 @@ function renderTenantDetail(
 
         <div
             class="
-                border-t border-slate-100
+                border-t border-[var(--pm-border-subtle)]
                 px-6 py-6
             "
         >
@@ -1674,7 +1673,7 @@ function renderTenantDetail(
 
         <div
             class="
-                border-t border-slate-100
+                border-t border-[var(--pm-border-subtle)]
                 px-6 py-6
             "
         >
@@ -1686,7 +1685,7 @@ function renderTenantDetail(
 
         <div
             class="
-                border-t border-slate-100
+                border-t border-[var(--pm-border-subtle)]
                 px-6 py-6
             "
         >
@@ -1724,7 +1723,7 @@ function renderTenantFinancialPosition(
             <h3
                 class="
                     text-base font-semibold
-                    text-slate-950
+                    text-[var(--pm-text)]
                 "
             >
                 ${escapeHtml(
@@ -1737,7 +1736,7 @@ function renderTenantFinancialPosition(
             <p
                 class="
                     mt-1 text-xs
-                    text-slate-500
+                    text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -1774,14 +1773,14 @@ function renderTenantFinancialPosition(
         <div
             class="
                 mt-6
-                border-t border-slate-100
+                border-t border-[var(--pm-border-subtle)]
                 pt-5
             "
         >
             <h4
                 class="
                     text-sm font-semibold
-                    text-slate-900
+                    text-[var(--pm-text)]
                 "
             >
                 ${escapeHtml(
@@ -1839,7 +1838,7 @@ function renderTenantInvoices(
             <h3
                 class="
                     text-base font-semibold
-                    text-slate-950
+                    text-[var(--pm-text)]
                 "
             >
                 ${escapeHtml(
@@ -1852,7 +1851,7 @@ function renderTenantInvoices(
             <p
                 class="
                     mt-1 text-xs
-                    text-slate-500
+                    text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -1874,17 +1873,17 @@ function renderTenantInvoices(
                             class="
                                 overflow-x-auto
                                 rounded-xl border
-                                border-slate-200
+                                border-[var(--pm-border)]
                             "
                         >
                             <table
                                 class="
                                     min-w-full
-                                    divide-y divide-slate-200
+                                    divide-y divide-[var(--pm-border)]
                                     text-sm
                                 "
                             >
-                                <thead class="bg-slate-50">
+                                <thead class="bg-[var(--pm-surface-subtle)]">
                                     <tr>
                                         ${tableHeading(translate('tenants.invoice'))}
                                         ${tableHeading(translate('tenants.type'))}
@@ -1900,8 +1899,8 @@ function renderTenantInvoices(
 
                                 <tbody
                                     class="
-                                        divide-y divide-slate-100
-                                        bg-white
+                                        divide-y divide-[var(--pm-border-subtle)]
+                                        bg-[var(--pm-surface)]
                                     "
                                 >
                                     ${rows
@@ -2043,13 +2042,13 @@ function invoiceActionCell(
                     class="
                         inline-flex items-center
                         rounded-lg border
-                        border-slate-200
-                        bg-white px-3 py-2
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2
                         text-xs font-medium
-                        text-slate-700
+                        text-[var(--pm-text-secondary)]
                         shadow-sm transition
-                        hover:border-slate-300
-                        hover:bg-slate-50
+                        hover:border-[var(--pm-border-strong)]
+                        hover:bg-[var(--pm-hover)]
                         disabled:cursor-not-allowed
                         disabled:opacity-60
                     "
@@ -2067,13 +2066,13 @@ function invoiceActionCell(
                     class="
                         inline-flex items-center
                         rounded-lg border
-                        border-slate-200
-                        bg-white px-3 py-2
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2
                         text-xs font-medium
-                        text-slate-700
+                        text-[var(--pm-text-secondary)]
                         shadow-sm transition
-                        hover:border-slate-300
-                        hover:bg-slate-50
+                        hover:border-[var(--pm-border-strong)]
+                        hover:bg-[var(--pm-hover)]
                         disabled:cursor-not-allowed
                         disabled:opacity-60
                     "
@@ -2317,7 +2316,7 @@ function renderTenantPayments(
             <h3
                 class="
                     text-base font-semibold
-                    text-slate-950
+                    text-[var(--pm-text)]
                 "
             >
                 ${escapeHtml(
@@ -2330,7 +2329,7 @@ function renderTenantPayments(
             <p
                 class="
                     mt-1 text-xs
-                    text-slate-500
+                    text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -2352,17 +2351,17 @@ function renderTenantPayments(
                             class="
                                 overflow-x-auto
                                 rounded-xl border
-                                border-slate-200
+                                border-[var(--pm-border)]
                             "
                         >
                             <table
                                 class="
                                     min-w-full
-                                    divide-y divide-slate-200
+                                    divide-y divide-[var(--pm-border)]
                                     text-sm
                                 "
                             >
-                                <thead class="bg-slate-50">
+                                <thead class="bg-[var(--pm-surface-subtle)]">
                                     <tr>
                                         ${tableHeading(translate('tenants.date'))}
                                         ${tableHeading(translate('tenants.amount'), true)}
@@ -2376,8 +2375,8 @@ function renderTenantPayments(
 
                                 <tbody
                                     class="
-                                        divide-y divide-slate-100
-                                        bg-white
+                                        divide-y divide-[var(--pm-border-subtle)]
+                                        bg-[var(--pm-surface)]
                                     "
                                 >
                                     ${rows
@@ -2776,13 +2775,13 @@ function receiptActionCell(
                     class="
                         inline-flex items-center
                         rounded-lg border
-                        border-slate-200
-                        bg-white px-3 py-2
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2
                         text-xs font-medium
-                        text-slate-700
+                        text-[var(--pm-text-secondary)]
                         shadow-sm transition
-                        hover:border-slate-300
-                        hover:bg-slate-50
+                        hover:border-[var(--pm-border-strong)]
+                        hover:bg-[var(--pm-hover)]
                         disabled:cursor-not-allowed
                         disabled:opacity-60
                     "
@@ -2800,13 +2799,13 @@ function receiptActionCell(
                     class="
                         inline-flex items-center
                         rounded-lg border
-                        border-slate-200
-                        bg-white px-3 py-2
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2
                         text-xs font-medium
-                        text-slate-700
+                        text-[var(--pm-text-secondary)]
                         shadow-sm transition
-                        hover:border-slate-300
-                        hover:bg-slate-50
+                        hover:border-[var(--pm-border-strong)]
+                        hover:bg-[var(--pm-hover)]
                         disabled:cursor-not-allowed
                         disabled:opacity-60
                     "
@@ -3043,7 +3042,7 @@ function renderTenantFundHistory(
             <h3
                 class="
                     text-base font-semibold
-                    text-slate-950
+                    text-[var(--pm-text)]
                 "
             >
                 ${escapeHtml(
@@ -3056,7 +3055,7 @@ function renderTenantFundHistory(
             <p
                 class="
                     mt-1 text-xs
-                    text-slate-500
+                    text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -3078,17 +3077,17 @@ function renderTenantFundHistory(
                             class="
                                 overflow-x-auto
                                 rounded-xl border
-                                border-slate-200
+                                border-[var(--pm-border)]
                             "
                         >
                             <table
                                 class="
                                     min-w-full
-                                    divide-y divide-slate-200
+                                    divide-y divide-[var(--pm-border)]
                                     text-sm
                                 "
                             >
-                                <thead class="bg-slate-50">
+                                <thead class="bg-[var(--pm-surface-subtle)]">
                                     <tr>
                                         ${tableHeading(translate('tenants.date'))}
                                         ${tableHeading(translate('tenants.fund'))}
@@ -3102,8 +3101,8 @@ function renderTenantFundHistory(
 
                                 <tbody
                                     class="
-                                        divide-y divide-slate-100
-                                        bg-white
+                                        divide-y divide-[var(--pm-border-subtle)]
+                                        bg-[var(--pm-surface)]
                                     "
                                 >
                                     ${rows
@@ -3237,15 +3236,15 @@ function financialMetric(
         <div
             class="
                 rounded-xl border
-                border-slate-200
-                bg-slate-50/50
+                border-[var(--pm-border)]
+                bg-[var(--pm-surface-subtle)]
                 px-4 py-4
             "
         >
             <div
                 class="
                     text-xs font-medium
-                    text-slate-500
+                    text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(label)}
@@ -3254,7 +3253,7 @@ function financialMetric(
             <div
                 class="
                     mt-1 text-lg font-semibold
-                    text-slate-950
+                    text-[var(--pm-text)]
                 "
             >
                 ${escapeHtml(
@@ -3288,7 +3287,7 @@ function tableHeading(
                 px-4 py-3
                 text-xs font-medium
                 uppercase tracking-wide
-                text-slate-500
+                text-[var(--pm-text-muted)]
                 ${numeric ? 'text-right' : 'text-left'}
             "
         >
@@ -3319,8 +3318,8 @@ function tableCell(
                 ${numeric ? 'text-right' : 'text-left'}
                 ${
                     strong
-                        ? 'font-semibold text-slate-900'
-                        : 'text-slate-600'
+                        ? 'font-semibold text-[var(--pm-text)]'
+                        : 'text-[var(--pm-text-secondary)]'
                 }
             "
         >
@@ -3346,9 +3345,9 @@ function financialEmptyState(
         <div
             class="
                 rounded-xl border
-                border-dashed border-slate-200
+                border-dashed border-[var(--pm-border)]
                 px-5 py-8 text-center
-                text-sm text-slate-500
+                text-sm text-[var(--pm-text-muted)]
             "
         >
             ${escapeHtml(message)}
@@ -3371,9 +3370,9 @@ function renderTenantLeases(
             <div
                 class="
                     rounded-xl border
-                    border-dashed border-slate-200
+                    border-dashed border-[var(--pm-border)]
                     px-5 py-8 text-center
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -3399,9 +3398,8 @@ function renderTenantLeases(
                 return `
                     <article
                         class="
-                            mb-3 rounded-xl
-                            border border-slate-200
-                            bg-white p-4
+                            pm-card
+                            mb-3 p-4
                             last:mb-0
                         "
                     >
@@ -3417,7 +3415,7 @@ function renderTenantLeases(
                                 <div
                                     class="
                                         text-sm font-semibold
-                                        text-slate-900
+                                        text-[var(--pm-text)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -3428,7 +3426,7 @@ function renderTenantLeases(
                                 <div
                                     class="
                                         mt-1 text-xs
-                                        text-slate-500
+                                        text-[var(--pm-text-muted)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -3447,7 +3445,7 @@ function renderTenantLeases(
                                 <div
                                     class="
                                         text-sm font-semibold
-                                        text-slate-900
+                                        text-[var(--pm-text)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -3460,10 +3458,10 @@ function renderTenantLeases(
 
                                 <span
                                     class="
-                                        rounded-full bg-slate-100
+                                        rounded-full bg-[var(--pm-surface-muted)]
                                         px-2.5 py-1
                                         text-xs font-medium
-                                        text-slate-600
+                                        text-[var(--pm-text-secondary)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -3497,7 +3495,7 @@ function summaryMetric(
                 class="
                     text-xs font-medium
                     uppercase tracking-wide
-                    text-slate-500
+                    text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(label)}
@@ -3506,7 +3504,7 @@ function summaryMetric(
             <div
                 class="
                     mt-2 text-xl font-semibold
-                    text-slate-900
+                    text-[var(--pm-text)]
                 "
             >
                 ${escapeHtml(value)}
@@ -3528,7 +3526,7 @@ function detailItem(
             <div
                 class="
                     text-xs font-medium
-                    text-slate-500
+                    text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(label)}
@@ -3537,7 +3535,7 @@ function detailItem(
             <div
                 class="
                     mt-1 text-sm
-                    text-slate-900
+                    text-[var(--pm-text)]
                 "
             >
                 ${escapeHtml(
@@ -3762,7 +3760,7 @@ function renderTenantPagination(
         >
             <div
                 class="
-                    text-xs text-slate-500
+                    text-xs text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -3787,10 +3785,10 @@ function renderTenantPagination(
                     ${current <= 1 ? 'disabled' : ''}
                     class="
                         rounded-lg border
-                        border-slate-200
-                        bg-white px-2.5 py-1.5
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-2.5 py-1.5
                         text-xs font-medium
-                        text-slate-700
+                        text-[var(--pm-text-secondary)]
                         disabled:opacity-40
                     "
                 >
@@ -3807,10 +3805,10 @@ function renderTenantPagination(
                     ${current >= last ? 'disabled' : ''}
                     class="
                         rounded-lg border
-                        border-slate-200
-                        bg-white px-2.5 py-1.5
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-2.5 py-1.5
                         text-xs font-medium
-                        text-slate-700
+                        text-[var(--pm-text-secondary)]
                         disabled:opacity-40
                     "
                 >
@@ -3877,7 +3875,7 @@ function showTenantLoading() {
         <div
             class="
                 px-5 py-8 text-center
-                text-sm text-slate-400
+                text-sm text-[var(--pm-text-subtle)]
             "
         >
             ${escapeHtml(
@@ -3909,7 +3907,7 @@ function renderTenantDirectoryEmpty(
         <div
             class="
                 px-5 py-10 text-center
-                text-sm text-slate-500
+                text-sm text-[var(--pm-text-muted)]
             "
         >
             ${escapeHtml(message)}
@@ -3940,7 +3938,7 @@ function renderTenantDetailLoading() {
         >
             <div
                 class="
-                    text-sm text-slate-400
+                    text-sm text-[var(--pm-text-subtle)]
                 "
             >
                 ${escapeHtml(
@@ -3980,7 +3978,7 @@ function renderTenantDetailEmpty(
             <div
                 class="
                     max-w-md text-center
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(message)}
@@ -4212,7 +4210,7 @@ function initializeTenantTransactionControls() {
                 ?.addEventListener(
                     'click',
                     () => {
-                        closeTenantTransactionDrawer(
+                        closeDrawer(
                             `tenant-${action}-drawer`
                         );
                     }
@@ -4225,7 +4223,7 @@ function initializeTenantTransactionControls() {
                 ?.addEventListener(
                     'click',
                     () => {
-                        closeTenantTransactionDrawer(
+                        closeDrawer(
                             `tenant-${action}-drawer`
                         );
                     }
@@ -4240,7 +4238,7 @@ function initializeTenantTransactionControls() {
                         button.addEventListener(
                             'click',
                             () => {
-                                closeTenantTransactionDrawer(
+                                closeDrawer(
                                     `tenant-${action}-drawer`
                                 );
                             }
@@ -4420,7 +4418,7 @@ function initializeTenantTransactionControls() {
                 )
                 .forEach(
                     (drawer) => {
-                        closeTenantTransactionDrawer(
+                        closeDrawer(
                             drawer.id
                         );
                     }
@@ -4479,7 +4477,7 @@ async function openTenantDepositDrawer() {
 
     updateTenantDepositCashReceiver();
 
-    openTenantTransactionDrawer(
+    openDrawer(
         'tenant-deposit-drawer'
     );
 }
@@ -4511,7 +4509,7 @@ async function openTenantWithdrawalDrawer() {
 
     updateTenantWithdrawalCashReceiver();
 
-    openTenantTransactionDrawer(
+    openDrawer(
         'tenant-withdrawal-drawer'
     );
 }
@@ -4537,7 +4535,7 @@ async function openTenantAdjustmentDrawer() {
         'tenant-adjustment'
     );
 
-    openTenantTransactionDrawer(
+    openDrawer(
         'tenant-adjustment-drawer'
     );
 
@@ -5708,163 +5706,6 @@ function resetTenantAdjustmentDrawer() {
 
 
 /**
- * Open a standard V1.0.4 drawer.
- */
-function openTenantTransactionDrawer(
-    id
-) {
-    const drawer =
-        document.getElementById(
-            id
-        );
-
-    if (! drawer) {
-        return;
-    }
-
-    const oldTimer =
-        tenantTransactionDrawerTimers.get(
-            id
-        );
-
-    if (oldTimer) {
-        window.clearTimeout(
-            oldTimer
-        );
-
-        tenantTransactionDrawerTimers.delete(
-            id
-        );
-    }
-
-    drawer.classList.remove(
-        'pm-drawer-open',
-        'pm-drawer-closing'
-    );
-
-    drawer.removeAttribute(
-        'hidden'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-active'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'false'
-    );
-
-    document.body.classList.add(
-        'overflow-hidden'
-    );
-
-    const panel =
-        drawer.querySelector(
-            '.pm-drawer-panel'
-        );
-
-    if (panel) {
-        void panel.getBoundingClientRect();
-    }
-
-    window.requestAnimationFrame(
-        () => {
-            window.requestAnimationFrame(
-                () => {
-                    drawer.classList.add(
-                        'pm-drawer-open'
-                    );
-                }
-            );
-        }
-    );
-}
-
-
-/**
- * Close a Tenant transaction drawer.
- */
-function closeTenantTransactionDrawer(
-    id
-) {
-    const drawer =
-        document.getElementById(
-            id
-        );
-
-    if (
-        ! drawer
-        || ! drawer.classList.contains(
-            'pm-drawer-active'
-        )
-    ) {
-        return;
-    }
-
-    drawer.classList.remove(
-        'pm-drawer-open'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-closing'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    const oldTimer =
-        tenantTransactionDrawerTimers.get(
-            id
-        );
-
-    if (oldTimer) {
-        window.clearTimeout(
-            oldTimer
-        );
-    }
-
-    const timer =
-        window.setTimeout(
-            () => {
-                drawer.classList.remove(
-                    'pm-drawer-active',
-                    'pm-drawer-closing'
-                );
-
-                drawer.setAttribute(
-                    'hidden',
-                    ''
-                );
-
-                tenantTransactionDrawerTimers.delete(
-                    id
-                );
-
-                const anotherDrawerOpen =
-                    document.querySelector(
-                        '.pm-drawer.pm-drawer-active'
-                    );
-
-                if (! anotherDrawerOpen) {
-                    document.body.classList.remove(
-                        'overflow-hidden'
-                    );
-                }
-            },
-            850
-        );
-
-    tenantTransactionDrawerTimers.set(
-        id,
-        timer
-    );
-}
-
-
-/**
  * Drawer-local financial error.
  */
 function showTenantTransactionError(
@@ -6125,7 +5966,7 @@ async function submitTenantDeposit(
                         );
                 }
 
-                closeTenantTransactionDrawer(
+                closeDrawer(
                     'tenant-deposit-drawer'
                 );
 
@@ -6290,7 +6131,7 @@ async function submitTenantWithdrawal(
                         }
                     );
 
-                closeTenantTransactionDrawer(
+                closeDrawer(
                     'tenant-withdrawal-drawer'
                 );
 
@@ -6402,7 +6243,7 @@ async function submitTenantAdjustment(
                         }
                     );
 
-                closeTenantTransactionDrawer(
+                closeDrawer(
                     'tenant-adjustment-drawer'
                 );
 
@@ -6741,12 +6582,12 @@ function showTenantTransactionSuccess(
             'mb-4',
             'rounded-xl',
             'border',
-            'border-emerald-200',
-            'bg-emerald-50',
+            'border-[var(--pm-success-border)]',
+            'bg-[var(--pm-success-background)]',
             'px-4',
             'py-3',
             'text-sm',
-            'text-emerald-800',
+            'text-[var(--pm-success-text)]',
         ].join(' ');
 
         if (

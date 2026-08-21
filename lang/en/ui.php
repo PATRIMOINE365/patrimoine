@@ -1429,6 +1429,8 @@ return [
         'contact_phone' => 'Contact Phone',
         'contact_email' => 'Contact Email',
         'existing_unit_name_placeholder' => 'e.g. Apartment A2',
+        'no_properties_found' => 'No properties found',
+        'no_properties_hint' => 'Add a property or change your search.',
         'optional_unit_description' => 'Optional unit description',
     ],
     'core' => [

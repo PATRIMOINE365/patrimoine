@@ -21,7 +21,7 @@
             <p
                 class="
                     text-sm font-medium
-                    text-patrimoine-700
+                    text-[var(--pm-accent)]
                 "
             >
                 <span data-i18n="leases.tenancy">
@@ -32,7 +32,7 @@
             <h1
                 class="
                     mt-1 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 <span data-i18n="leases.heading">
@@ -40,7 +40,7 @@
                 </span>
             </h1>
 
-            <p class="mt-2 text-sm text-slate-500">
+            <p class="mt-2 text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="leases.page_description">
                     {{ __('ui.leases.page_description') }}
                 </span>
@@ -50,14 +50,7 @@
         <button
             id="add-lease-button"
             type="button"
-            class="
-                inline-flex items-center gap-2
-                rounded-lg bg-patrimoine-950
-                px-4 py-2.5
-                text-sm font-medium text-white
-                shadow-sm transition
-                hover:bg-patrimoine-900
-            "
+            class="pm-button-primary gap-2"
         >
             <svg
                 class="h-4 w-4"
@@ -82,9 +75,9 @@
         id="leases-error"
         class="
             mb-6 hidden rounded-xl
-            border border-red-200
-            bg-red-50 px-4 py-3
-            text-sm text-red-700
+            border border-[var(--pm-danger-border)]
+            bg-[var(--pm-danger-background)] px-4 py-3
+            text-sm text-[var(--pm-danger-text)]
         "
     ></div>
 
@@ -99,12 +92,9 @@
         "
     >
         <div
-            class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
-            "
+            class="pm-card p-5"
         >
-            <div class="text-sm text-slate-500">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="leases.total_leases">
                     {{ __('ui.leases.total_leases') }}
                 </span>
@@ -114,7 +104,7 @@
                 id="leases-total-count"
                 class="
                     mt-3 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
@@ -122,12 +112,9 @@
         </div>
 
         <div
-            class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
-            "
+            class="pm-card p-5"
         >
-            <div class="text-sm text-slate-500">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="leases.status_active">
                     {{ __('ui.leases.status_active') }}
                 </span>
@@ -137,7 +124,7 @@
                 id="leases-active-count"
                 class="
                     mt-3 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
@@ -145,12 +132,9 @@
         </div>
 
         <div
-            class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
-            "
+            class="pm-card p-5"
         >
-            <div class="text-sm text-slate-500">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="leases.in_notice">
                     {{ __('ui.leases.in_notice') }}
                 </span>
@@ -160,7 +144,7 @@
                 id="leases-notice-count"
                 class="
                     mt-3 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
@@ -168,12 +152,9 @@
         </div>
 
         <div
-            class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
-            "
+            class="pm-card p-5"
         >
-            <div class="text-sm text-slate-500">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="leases.status_draft">
                     {{ __('ui.leases.status_draft') }}
                 </span>
@@ -183,7 +164,7 @@
                 id="leases-draft-count"
                 class="
                     mt-3 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
@@ -196,14 +177,11 @@
     ============================================================ --}}
 
     <section
-        class="
-            rounded-xl border border-slate-200
-            bg-white shadow-sm
-        "
+        class="pm-card"
     >
         <div
             class="
-                border-b border-slate-100
+                border-b border-[var(--pm-border-subtle)]
                 px-5 py-4
             "
         >
@@ -219,7 +197,7 @@
                     <h2
                         class="
                             text-base font-semibold
-                            text-slate-950
+                            text-[var(--pm-text)]
                         "
                     >
                         <span data-i18n="leases.register">
@@ -227,7 +205,7 @@
                         </span>
                     </h2>
 
-                    <p class="mt-1 text-xs text-slate-500">
+                    <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                         <span data-i18n="leases.register_description">
                             {{ __('ui.leases.register_description') }}
                         </span>
@@ -253,16 +231,7 @@
 
                         <select
                             id="lease-status-filter"
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                bg-white px-3 py-2.5
-                                text-sm text-slate-700
-                                outline-none transition
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                             <option
                                         value=""
@@ -313,16 +282,7 @@
 
                         <select
                             id="lease-tenant-filter"
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                bg-white px-3 py-2.5
-                                text-sm text-slate-700
-                                outline-none transition
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                             <option
                                         value=""
@@ -340,7 +300,7 @@
             id="leases-list"
             class="p-5"
         >
-            <div class="text-sm text-slate-400">
+            <div class="text-sm text-[var(--pm-text-subtle)]">
                 <span data-i18n="leases.loading">
                     {{ __('ui.leases.loading') }}
                 </span>
@@ -351,7 +311,7 @@
             id="leases-pagination"
             class="
                 hidden border-t
-                border-slate-100
+                border-[var(--pm-border-subtle)]
                 px-5 py-4
             "
         ></div>
@@ -400,9 +360,9 @@
                         id="lease-form-error"
                         class="
                             mb-5 hidden rounded-lg
-                            border border-red-200
-                            bg-red-50 px-4 py-3
-                            text-sm text-red-700
+                            border border-[var(--pm-danger-border)]
+                            bg-[var(--pm-danger-background)] px-4 py-3
+                            text-sm text-[var(--pm-danger-text)]
                         "
                     ></div>
 
@@ -415,7 +375,7 @@
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="leases.property_tenant">
@@ -423,7 +383,7 @@
                                 </span>
                             </h3>
 
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="leases.property_tenant_description">
                                     {{ __('ui.leases.property_tenant_description') }}
                                 </span>
@@ -443,11 +403,7 @@
 <div class="md:col-span-2">
     <label
         for="lease-unit-search"
-        class="
-            mb-1.5 flex items-center gap-1.5
-            text-sm font-medium
-            text-slate-700
-        "
+        class="pm-field-label flex items-center gap-1.5"
     >
         <span data-i18n="leases.property_unit">
             {{ __('ui.leases.property_unit') }}
@@ -463,7 +419,7 @@
             more than one Active or Notice Lease at the same time.
         </x-field-help>
 
-        <span class="text-red-500">*</span>
+        <span class="text-[var(--pm-danger-text)]">*</span>
     </label>
 
     <div
@@ -483,7 +439,7 @@
                     absolute left-3.5 top-1/2
                     h-4 w-4
                     -translate-y-1/2
-                    text-slate-400
+                    text-[var(--pm-text-subtle)]
                 "
                 viewBox="0 0 24 24"
                 fill="none"
@@ -500,17 +456,7 @@
                 autocomplete="off"
                 data-i18n-placeholder="leases.unit_search_placeholder"
                 placeholder="{{ __('ui.leases.unit_search_placeholder') }}"
-                class="
-                    w-full rounded-lg
-                    border border-slate-200
-                    bg-white
-                    py-2.5 pl-10 pr-11
-                    text-sm
-                    outline-none transition
-                    focus:border-patrimoine-500
-                    focus:ring-2
-                    focus:ring-patrimoine-100
-                "
+                class="pm-input pl-10 pr-11"
             >
 
             <button
@@ -523,10 +469,10 @@
                     -translate-y-1/2
                     items-center justify-center
                     rounded-md
-                    text-slate-400
+                    text-[var(--pm-text-subtle)]
                     transition
-                    hover:bg-slate-100
-                    hover:text-slate-700
+                    hover:bg-[var(--pm-hover)]
+                    hover:text-[var(--pm-text-secondary)]
                 "
 
                     data-i18n-aria-label="leases.clear_selected_unit">
@@ -545,15 +491,7 @@
 
         <div
             id="lease-unit-results"
-            class="
-                absolute z-50 mt-1
-                hidden max-h-80 w-full
-                overflow-y-auto
-                rounded-xl
-                border border-slate-200
-                bg-white
-                shadow-xl
-            "
+            class="pm-card absolute z-50 mt-1 hidden max-h-80 w-full overflow-y-auto shadow-xl"
         ></div>
     </div>
 
@@ -563,8 +501,8 @@
         class="
             mt-3 hidden
             rounded-xl border
-            border-patrimoine-100
-            bg-patrimoine-50/60
+            border-[var(--pm-border)]
+            bg-[var(--pm-selected)]
             p-4
         "
     >
@@ -572,7 +510,7 @@
             class="
                 text-[11px] font-semibold
                 uppercase tracking-[0.12em]
-                text-patrimoine-700
+                text-[var(--pm-accent)]
             "
         >
             <span data-i18n="leases.selected_unit">
@@ -584,7 +522,7 @@
             id="lease-selected-unit-name"
             class="
                 mt-1 text-sm font-semibold
-                text-slate-950
+                text-[var(--pm-text)]
             "
         ></div>
 
@@ -592,7 +530,7 @@
             id="lease-selected-unit-location"
             class="
                 mt-1 text-xs
-                text-slate-500
+                text-[var(--pm-text-muted)]
             "
         ></div>
 
@@ -601,7 +539,7 @@
                 mt-4 text-[11px]
                 font-semibold uppercase
                 tracking-[0.12em]
-                text-slate-500
+                text-[var(--pm-text-muted)]
             "
         >
             <span data-i18n="leases.ownership">
@@ -627,11 +565,7 @@
                             <div>
                                 <label
                                     for="lease-tenant"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.tenant">
                                         {{ __('ui.leases.tenant') }}
@@ -646,22 +580,13 @@
                                         tenant per lease. The selected Party must have the Tenant role.
                                     </x-field-help>
 
-                                    <span class="text-red-500">*</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <select
                                     id="lease-tenant"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        bg-white px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                                     <option
                                         value=""
@@ -675,11 +600,7 @@
                             <div>
                                 <label
                                     for="lease-agent"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.agent">
                                         {{ __('ui.leases.agent') }}
@@ -698,16 +619,7 @@
 
                                 <select
                                     id="lease-agent"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        bg-white px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                                     <option
                                         value=""
@@ -727,14 +639,14 @@
                     <section
                         class="
                             mt-8 border-t
-                            border-slate-100 pt-7
+                            border-[var(--pm-border-subtle)] pt-7
                         "
                     >
                         <div class="mb-4">
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="leases.lease_period">
@@ -742,7 +654,7 @@
                                 </span>
                             </h3>
 
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="leases.lease_period_description">
                                     {{ __('ui.leases.lease_period_description') }}
                                 </span>
@@ -758,11 +670,7 @@
                             <div>
                                 <label
                                     for="lease-start-date"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.start_date">
                                         {{ __('ui.leases.start_date') }}
@@ -777,7 +685,7 @@
                                         Patrimoine uses the day of this date as the recurring rent due day.
                                     </x-field-help>
 
-                                    <span class="text-red-500">*</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <div class="pm-lease-date-control">
@@ -790,15 +698,7 @@
                                     placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                     type="text"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
     <button
         type="button"
@@ -840,11 +740,7 @@
                             <div>
                                 <label
                                     for="lease-end-date"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.end_date">
                                         {{ __('ui.leases.end_date') }}
@@ -869,15 +765,7 @@
                                     maxlength="10"
                                     placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                     type="text"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
     <button
         type="button"
@@ -919,11 +807,7 @@
                             <div>
                                 <label
                                     for="lease-status"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.status">
                                         {{ __('ui.leases.status') }}
@@ -940,21 +824,13 @@
                                         Terminated means the lease has ended.
                                     </x-field-help>
 
-                                    <span class="text-red-500">*</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <select
                                     id="lease-status"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        bg-white px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                                     <option
                                         value="draft"
@@ -989,11 +865,7 @@
                             <div>
                                 <label
                                     for="lease-notice-date"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.notice_date">
                                         {{ __('ui.leases.notice_date') }}
@@ -1019,15 +891,7 @@
                                     maxlength="10"
                                     placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                     type="text"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
     <button
         type="button"
@@ -1075,14 +939,14 @@
                     <section
                         class="
                             mt-8 border-t
-                            border-slate-100 pt-7
+                            border-[var(--pm-border-subtle)] pt-7
                         "
                     >
                         <div class="mb-4">
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="leases.rent_terms">
@@ -1090,7 +954,7 @@
                                 </span>
                             </h3>
 
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="leases.rent_terms_description">
                                     {{ __('ui.leases.rent_terms_description') }}
                                 </span>
@@ -1106,11 +970,7 @@
                             <div>
                                 <label
                                     for="lease-rent-amount"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.monthly_rent">
                                         {{ __('ui.leases.monthly_rent') }}
@@ -1127,7 +987,7 @@
                                     a 15,000 rent obligation for each quarterly billing period.
                                     </x-field-help>
 
-                                    <span class="text-red-500">*</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <input
@@ -1136,26 +996,14 @@
                                     min="0"
                                     step="1"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="lease-frequency"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.payment_frequency">
                                         {{ __('ui.leases.payment_frequency') }}
@@ -1171,21 +1019,13 @@
                                         The Monthly Rent represents one complete period of the selected frequency.
                                     </x-field-help>
 
-                                    <span class="text-red-500">*</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <select
                                     id="lease-frequency"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        bg-white px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                                     <option
                                         value="monthly"
@@ -1220,11 +1060,7 @@
                             <div>
                                 <label
                                     for="lease-due-day"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.due_day_override">
                                         {{ __('ui.leases.due_day_override') }}
@@ -1249,26 +1085,14 @@
                                     step="1"
                                     data-i18n-placeholder="leases.from_start_date"
                                     placeholder="{{ __('ui.leases.from_start_date') }}"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="lease-vat-rate"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.vat_rate">
                                         {{ __('ui.leases.vat_rate') }}
@@ -1284,7 +1108,7 @@
                                         including 0% where applicable.
                                     </x-field-help>
 
-                                    <span class="text-red-500">*</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <input
@@ -1295,26 +1119,14 @@
                                     step="0.01"
                                     value="18"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="lease-proration"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.proration_override">
                                         {{ __('ui.leases.proration_override') }}
@@ -1339,26 +1151,14 @@
                                     step="1"
                                     data-i18n-placeholder="leases.automatic"
                                     placeholder="{{ __('ui.leases.automatic') }}"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="lease-security-deposit"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.security_deposit">
                                         {{ __('ui.leases.security_deposit') }}
@@ -1374,7 +1174,7 @@
                                         itemized deductions before any remaining balance is refunded.
                                     </x-field-help>
 
-                                    <span class="text-red-500">*</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <input
@@ -1384,15 +1184,7 @@
                                     step="1"
                                     value="0"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
                         </div>
@@ -1406,14 +1198,14 @@
                     <section
                         class="
                             mt-8 border-t
-                            border-slate-100 pt-7
+                            border-[var(--pm-border-subtle)] pt-7
                         "
                     >
                         <div class="mb-4">
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="leases.advance_payment">
@@ -1421,7 +1213,7 @@
                                 </span>
                             </h3>
 
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="leases.advance_payment_description">
                                     {{ __('ui.leases.advance_payment_description') }}
                                 </span>
@@ -1437,11 +1229,7 @@
                             <div>
                                 <label
                                     for="lease-advance-payment"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.total_advance_payment">
                                         {{ __('ui.leases.total_advance_payment') }}
@@ -1466,26 +1254,14 @@
                                     step="1"
                                     value="0"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="lease-rent-reserve"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.rent_reserve">
                                         {{ __('ui.leases.rent_reserve') }}
@@ -1510,25 +1286,13 @@
                                     step="1"
                                     value="0"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.consumable_advance">
                                         {{ __('ui.leases.consumable_advance') }}
@@ -1550,8 +1314,8 @@
                                     class="
                                         flex h-[42px] items-center
                                         rounded-lg border
-                                        border-slate-200
-                                        bg-slate-50
+                                        border-[var(--pm-border)]
+                                        bg-[var(--pm-surface-subtle)]
                                         px-3.5
                                     "
                                 >
@@ -1559,7 +1323,7 @@
                                         id="lease-consumable-advance"
                                         class="
                                             text-sm font-semibold
-                                            text-slate-800
+                                            text-[var(--pm-text)]
                                         "
                                     >
                                         —
@@ -1570,8 +1334,8 @@
                                                 <div
                             class="
                                 mt-5 rounded-xl
-                                border border-slate-200
-                                bg-slate-50
+                                border border-[var(--pm-border)]
+                                bg-[var(--pm-surface-subtle)]
                                 p-4
                             "
                         >
@@ -1586,7 +1350,7 @@
                                     type="checkbox"
                                     class="
                                         mt-1 h-4 w-4
-                                        rounded border-slate-300
+                                        rounded border-[var(--pm-border-strong)]
                                         text-patrimoine-700
                                         focus:ring-patrimoine-200
                                     "
@@ -1597,7 +1361,7 @@
                                         class="
                                             flex items-center gap-1.5
                                             text-sm font-semibold
-                                            text-slate-900
+                                            text-[var(--pm-text)]
                                         "
                                     >
                                         <span data-i18n="leases.advance_already_received">
@@ -1621,7 +1385,7 @@
                                     <span
                                         class="
                                             mt-1 block text-xs
-                                            leading-5 text-slate-500
+                                            leading-5 text-[var(--pm-text-muted)]
                                         "
                                     >
                                         <span data-i18n="leases.advance_received_description">
@@ -1643,16 +1407,12 @@
                                 <div>
                                     <label
                                         for="lease-advance-received-date"
-                                        class="
-                                            mb-1.5 flex items-center gap-1.5
-                                            text-sm font-medium
-                                            text-slate-700
-                                        "
+                                        class="pm-field-label flex items-center gap-1.5"
                                     >
                                         <span data-i18n="leases.date_received">
                                             {{ __('ui.leases.date_received') }}
                                         </span>
-                                        <span class="text-red-500">*</span>
+                                        <span class="text-[var(--pm-danger-text)]">*</span>
                                     </label>
 
                                     <div class="pm-lease-date-control">
@@ -1664,15 +1424,7 @@
                                     maxlength="10"
                                     placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                         type="text"
-                                        class="
-                                            w-full rounded-lg
-                                            border border-slate-200
-                                            px-3.5 py-2.5
-                                            text-sm outline-none
-                                            focus:border-patrimoine-500
-                                            focus:ring-2
-                                            focus:ring-patrimoine-100
-                                        "
+                                        class="pm-input"
                                     >
     <button
         type="button"
@@ -1714,29 +1466,17 @@
                                 <div>
                                     <label
                                         for="lease-advance-received-method"
-                                        class="
-                                            mb-1.5 flex items-center gap-1.5
-                                            text-sm font-medium
-                                            text-slate-700
-                                        "
+                                        class="pm-field-label flex items-center gap-1.5"
                                     >
                                         <span data-i18n="leases.payment_method">
                                             {{ __('ui.leases.payment_method') }}
                                         </span>
-                                        <span class="text-red-500">*</span>
+                                        <span class="text-[var(--pm-danger-text)]">*</span>
                                     </label>
 
                                     <select
                                         id="lease-advance-received-method"
-                                        class="
-                                            w-full rounded-lg
-                                            border border-slate-200
-                                            bg-white px-3.5 py-2.5
-                                            text-sm outline-none
-                                            focus:border-patrimoine-500
-                                            focus:ring-2
-                                            focus:ring-patrimoine-100
-                                        "
+                                        class="pm-input"
                                     >
                                         <option
                                         value=""
@@ -1771,11 +1511,7 @@
                                 <div>
                                     <label
                                         for="lease-advance-received-reference"
-                                        class="
-                                            mb-1.5 flex items-center gap-1.5
-                                            text-sm font-medium
-                                            text-slate-700
-                                        "
+                                        class="pm-field-label flex items-center gap-1.5"
                                     >
                                         <span data-i18n="leases.reference">
                                             {{ __('ui.leases.reference') }}
@@ -1788,15 +1524,7 @@
                                         maxlength="255"
                                         data-i18n-placeholder="leases.optional"
                                         placeholder="{{ __('ui.leases.optional') }}"
-                                        class="
-                                            w-full rounded-lg
-                                            border border-slate-200
-                                            px-3.5 py-2.5
-                                            text-sm outline-none
-                                            focus:border-patrimoine-500
-                                            focus:ring-2
-                                            focus:ring-patrimoine-100
-                                        "
+                                        class="pm-input"
                                     >
                                 </div>
 
@@ -1806,16 +1534,12 @@
                                 >
                                     <label
                                         for="lease-advance-received-collector"
-                                        class="
-                                            mb-1.5 flex items-center gap-1.5
-                                            text-sm font-medium
-                                            text-slate-700
-                                        "
+                                        class="pm-field-label flex items-center gap-1.5"
                                     >
                                         <span data-i18n="leases.cash_collector">
                                             {{ __('ui.leases.cash_collector') }}
                                         </span>
-                                        <span class="text-red-500">*</span>
+                                        <span class="text-[var(--pm-danger-text)]">*</span>
                                     </label>
 
                                     <input
@@ -1824,15 +1548,7 @@
                                         maxlength="255"
                                         data-i18n-placeholder="leases.cash_collector_placeholder"
                                         placeholder="{{ __('ui.leases.cash_collector_placeholder') }}"
-                                        class="
-                                            w-full rounded-lg
-                                            border border-slate-200
-                                            px-3.5 py-2.5
-                                            text-sm outline-none
-                                            focus:border-patrimoine-500
-                                            focus:ring-2
-                                            focus:ring-patrimoine-100
-                                        "
+                                        class="pm-input"
                                     >
                                 </div>
                             </div>
@@ -1847,14 +1563,14 @@
                     <section
                         class="
                             mt-8 border-t
-                            border-slate-100 pt-7
+                            border-[var(--pm-border-subtle)] pt-7
                         "
                     >
                         <div class="mb-4">
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="leases.rent_increment">
@@ -1862,7 +1578,7 @@
                                 </span>
                             </h3>
 
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="leases.rent_increment_description">
                                     {{ __('ui.leases.rent_increment_description') }}
                                 </span>
@@ -1878,11 +1594,7 @@
                             <div>
                                 <label
                                     for="lease-rent-increment-type"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.increment_type">
                                         {{ __('ui.leases.increment_type') }}
@@ -1903,15 +1615,7 @@
                                 <select
                                     id="lease-rent-increment-type"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        bg-white px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                                     <option
                                         value="none"
@@ -1939,11 +1643,7 @@
                             <div>
                                 <label
                                     for="lease-rent-increment-value"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.increment_value">
                                         {{ __('ui.leases.increment_value') }}
@@ -1968,17 +1668,7 @@
                                         value="0"
                                         disabled
                                         required
-                                        class="
-                                            w-full rounded-lg
-                                            border border-slate-200
-                                            px-3.5 py-2.5 pr-14
-                                            text-sm outline-none
-                                            disabled:bg-slate-50
-                                            disabled:text-slate-400
-                                            focus:border-patrimoine-500
-                                            focus:ring-2
-                                            focus:ring-patrimoine-100
-                                        "
+                                        class="pm-input pr-14"
                                     >
 
                                     <span
@@ -1988,7 +1678,7 @@
                                             top-1/2
                                             -translate-y-1/2
                                             text-xs font-medium
-                                            text-slate-400
+                                            text-[var(--pm-text-subtle)]
                                         "
                                     >
                                         —
@@ -1999,11 +1689,7 @@
                             <div>
                                 <label
                                     for="lease-next-rent-increment-date"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.next_increment_date">
                                         {{ __('ui.leases.next_increment_date') }}
@@ -2030,17 +1716,7 @@
                                     placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                     type="text"
                                     disabled
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm outline-none
-                                        disabled:bg-slate-50
-                                        disabled:text-slate-400
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
     <button
         type="button"
@@ -2096,14 +1772,14 @@
                     <section
                         class="
                             mt-8 border-t
-                            border-slate-100 pt-7
+                            border-[var(--pm-border-subtle)] pt-7
                         "
                     >
                         <div class="mb-4">
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="leases.fees_commission">
@@ -2111,7 +1787,7 @@
                                 </span>
                             </h3>
 
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="leases.fees_commission_description">
                                     {{ __('ui.leases.fees_commission_description') }}
                                 </span>
@@ -2127,11 +1803,7 @@
                             <div>
                                 <label
                                     for="lease-management-fee-type"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.management_fee">
                                         {{ __('ui.leases.management_fee') }}
@@ -2151,15 +1823,7 @@
                                 <select
                                     id="lease-management-fee-type"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        bg-white px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                                     <option
                                         value="none"
@@ -2187,11 +1851,7 @@
                             <div>
                                 <label
                                     for="lease-management-fee-value"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.fee_value">
                                         {{ __('ui.leases.fee_value') }}
@@ -2216,15 +1876,7 @@
                                         step="0.01"
                                         value="0"
                                         required
-                                        class="
-                                            w-full rounded-lg
-                                            border border-slate-200
-                                            px-3.5 py-2.5 pr-14
-                                            text-sm outline-none
-                                            focus:border-patrimoine-500
-                                            focus:ring-2
-                                            focus:ring-patrimoine-100
-                                        "
+                                        class="pm-input pr-14"
                                     >
 
                                     <span
@@ -2234,7 +1886,7 @@
                                             top-1/2
                                             -translate-y-1/2
                                             text-xs font-medium
-                                            text-slate-400
+                                            text-[var(--pm-text-subtle)]
                                         "
                                     >
                                         —
@@ -2245,11 +1897,7 @@
                             <div>
                                 <label
                                     for="lease-agent-commission"
-                                    class="
-                                        mb-1.5 flex items-center gap-1.5
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label flex items-center gap-1.5"
                                 >
                                     <span data-i18n="leases.agent_commission">
                                         {{ __('ui.leases.agent_commission') }}
@@ -2273,15 +1921,7 @@
                                     step="1"
                                     value="0"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm outline-none
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
                         </div>
@@ -2294,16 +1934,12 @@
                     <section
                         class="
                             mt-8 border-t
-                            border-slate-100 pt-7
+                            border-[var(--pm-border-subtle)] pt-7
                         "
                     >
                         <label
                             for="lease-notes"
-                            class="
-                                mb-1.5 flex items-center gap-1.5
-                                text-sm font-medium
-                                text-slate-700
-                            "
+                            class="pm-field-label flex items-center gap-1.5"
                         >
                             <span data-i18n="leases.notes">
                                 {{ __('ui.leases.notes') }}
@@ -2324,15 +1960,7 @@
                             rows="4"
                             data-i18n-placeholder="leases.notes_placeholder"
                             placeholder="{{ __('ui.leases.notes_placeholder') }}"
-                            class="
-                                w-full resize-y rounded-lg
-                                border border-slate-200
-                                px-3.5 py-2.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input resize-y"
                         ></textarea>
                     </section>
         </div>
@@ -2343,8 +1971,8 @@
                 type="button"
                 class="pm-button-secondary"
             >
-                <span data-i18n="leases.cancel">
-                    {{ __('ui.leases.cancel') }}
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
                 </span>
             </button>
 
@@ -2353,8 +1981,8 @@
                 type="submit"
                 class="pm-button-primary"
             >
-                <span data-i18n="leases.save">
-                    {{ __('ui.leases.save') }}
+                <span data-i18n="actions.save">
+                    {{ __('ui.actions.save') }}
                 </span>
             </button>
         </x-drawer-footer>
@@ -2400,9 +2028,9 @@
                 id="lease-termination-error"
                 class="
                     mb-5 hidden rounded-lg
-                    border border-red-200
-                    bg-red-50 px-4 py-3
-                    text-sm text-red-700
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
                 "
             ></div>
 
@@ -2411,7 +2039,7 @@
                     class="
                         text-sm font-semibold
                         uppercase tracking-wide
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                     data-i18n="leases.lease_context"
                 >
@@ -2422,20 +2050,20 @@
                     class="
                         mt-4 grid gap-4
                         rounded-xl border
-                        border-slate-200
-                        bg-slate-50 p-4
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface-subtle)] p-4
                         sm:grid-cols-2
                     "
                 >
                     <div>
-                        <div class="text-xs text-slate-500">
+                        <div class="text-xs text-[var(--pm-text-muted)]">
                             <span data-i18n="leases.lease">
                                 Lease
                             </span>
                         </div>
                         <div
                             id="lease-termination-context-reference"
-                            class="mt-1 text-sm font-semibold text-slate-900"
+                            class="mt-1 text-sm font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -2443,14 +2071,14 @@
 
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="leases.tenant"
                         >
                             Tenant
                         </div>
                         <div
                             id="lease-termination-context-tenant"
-                            class="mt-1 text-sm font-semibold text-slate-900"
+                            class="mt-1 text-sm font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -2458,14 +2086,14 @@
 
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="leases.property"
                         >
                             Property
                         </div>
                         <div
                             id="lease-termination-context-building"
-                            class="mt-1 text-sm font-semibold text-slate-900"
+                            class="mt-1 text-sm font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -2473,14 +2101,14 @@
 
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="leases.unit"
                         >
                             Unit
                         </div>
                         <div
                             id="lease-termination-context-unit"
-                            class="mt-1 text-sm font-semibold text-slate-900"
+                            class="mt-1 text-sm font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -2488,14 +2116,14 @@
 
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="leases.status"
                         >
                             Status
                         </div>
                         <div
                             id="lease-termination-context-status"
-                            class="mt-1 text-sm font-semibold text-slate-900"
+                            class="mt-1 text-sm font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -2506,14 +2134,14 @@
             <section
                 class="
                     mt-8 border-t
-                    border-slate-100 pt-7
+                    border-[var(--pm-border-subtle)] pt-7
                 "
             >
                 <h3
                     class="
                         text-sm font-semibold
                         uppercase tracking-wide
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                     data-i18n="leases.termination_details"
                 >
@@ -2524,16 +2152,12 @@
                     <div>
                         <label
                             for="lease-termination-notice-date"
-                            class="
-                                mb-1.5 block
-                                text-sm font-medium
-                                text-slate-700
-                            "
+                            class="pm-field-label"
                         >
                             <span data-i18n="leases.notice_date">
                                 Notice Date
                             </span>
-                            <span class="text-red-500">*</span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
                         </label>
 
                         <input
@@ -2544,31 +2168,19 @@
                             type="text"
                             required
                             placeholder="DD-MM-YYYY"
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                px-3.5 py-2.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                     </div>
 
                     <div>
                         <label
                             for="lease-termination-date"
-                            class="
-                                mb-1.5 block
-                                text-sm font-medium
-                                text-slate-700
-                            "
+                            class="pm-field-label"
                         >
                             <span data-i18n="leases.termination_date">
                                 Termination / Vacate Date
                             </span>
-                            <span class="text-red-500">*</span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
                         </label>
 
                         <input
@@ -2579,15 +2191,7 @@
                             type="text"
                             required
                             placeholder="DD-MM-YYYY"
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                px-3.5 py-2.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                     </div>
                 </div>
@@ -2596,14 +2200,14 @@
             <section
                 class="
                     mt-8 border-t
-                    border-slate-100 pt-7
+                    border-[var(--pm-border-subtle)] pt-7
                 "
             >
                 <h3
                     class="
                         text-sm font-semibold
                         uppercase tracking-wide
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                     data-i18n="leases.final_rent_treatment"
                 >
@@ -2614,7 +2218,7 @@
                     <label
                         class="
                             flex items-start gap-3
-                            rounded-xl border border-slate-200
+                            rounded-xl border border-[var(--pm-border)]
                             p-4
                         "
                     >
@@ -2628,14 +2232,14 @@
 
                         <span>
                             <span
-                                class="block text-sm font-medium text-slate-900"
+                                class="block text-sm font-medium text-[var(--pm-text)]"
                                 data-i18n="leases.final_rent_prorate"
                             >
                                 Prorate final period
                             </span>
 
                             <span
-                                class="mt-1 block text-xs text-slate-500"
+                                class="mt-1 block text-xs text-[var(--pm-text-muted)]"
                                 data-i18n="leases.final_rent_prorate_help"
                             >
                                 Charge rent only through the selected termination date.
@@ -2646,7 +2250,7 @@
                     <label
                         class="
                             flex items-start gap-3
-                            rounded-xl border border-slate-200
+                            rounded-xl border border-[var(--pm-border)]
                             p-4
                         "
                     >
@@ -2659,14 +2263,14 @@
 
                         <span>
                             <span
-                                class="block text-sm font-medium text-slate-900"
+                                class="block text-sm font-medium text-[var(--pm-text)]"
                                 data-i18n="leases.final_rent_full"
                             >
                                 Charge full period
                             </span>
 
                             <span
-                                class="mt-1 block text-xs text-slate-500"
+                                class="mt-1 block text-xs text-[var(--pm-text-muted)]"
                                 data-i18n="leases.final_rent_full_help"
                             >
                                 Charge the full contractual billing period containing the termination date.
@@ -2677,7 +2281,7 @@
                     <label
                         class="
                             flex items-start gap-3
-                            rounded-xl border border-slate-200
+                            rounded-xl border border-[var(--pm-border)]
                             p-4
                         "
                     >
@@ -2690,14 +2294,14 @@
 
                         <span>
                             <span
-                                class="block text-sm font-medium text-slate-900"
+                                class="block text-sm font-medium text-[var(--pm-text)]"
                                 data-i18n="leases.final_rent_none"
                             >
                                 No final rent
                             </span>
 
                             <span
-                                class="mt-1 block text-xs text-slate-500"
+                                class="mt-1 block text-xs text-[var(--pm-text-muted)]"
                                 data-i18n="leases.final_rent_none_help"
                             >
                                 Do not charge rent for the final partial billing period.
@@ -2711,14 +2315,14 @@
                 id="lease-termination-notice-actions"
                 class="
                     mt-8 hidden
-                    border-t border-slate-100 pt-7
+                    border-t border-[var(--pm-border-subtle)] pt-7
                 "
             >
                 <h3
                     class="
                         text-sm font-semibold
                         uppercase tracking-wide
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                     data-i18n="leases.termination_notice"
                 >
@@ -2726,7 +2330,7 @@
                 </h3>
 
                 <p
-                    class="mt-2 text-sm text-slate-600"
+                    class="mt-2 text-sm text-[var(--pm-text-secondary)]"
                     data-i18n="leases.termination_notice_ready"
                 >
                     The Termination Notice has been generated and is ready to open.
@@ -2735,15 +2339,7 @@
                 <button
                     id="lease-termination-open-notice"
                     type="button"
-                    class="
-                        mt-4
-                        rounded-lg border border-slate-200
-                        bg-white px-3.5 py-2
-                        text-sm font-medium
-                        text-slate-700
-                        transition
-                        hover:bg-slate-50
-                    "
+                    class="pm-button-secondary mt-4"
                 >
                     <span data-i18n="leases.open_termination_notice">
                         Open Termination Notice
@@ -2758,8 +2354,8 @@
                 type="button"
                 class="pm-button-secondary"
             >
-                <span data-i18n="leases.cancel">
-                    Cancel
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
                 </span>
             </button>
 
@@ -2814,9 +2410,9 @@
                 id="lease-extend-error"
                 class="
                     mb-5 hidden rounded-lg
-                    border border-red-200
-                    bg-red-50 px-4 py-3
-                    text-sm text-red-700
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
                 "
             ></div>
 
@@ -2825,7 +2421,7 @@
                     class="
                         text-sm font-semibold
                         uppercase tracking-wide
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                     data-i18n="leases.current_terms"
                 >
@@ -2840,14 +2436,14 @@
                 >
                     <div>
                         <div
-                            class="text-xs font-medium text-slate-500"
+                            class="text-xs font-medium text-[var(--pm-text-muted)]"
                             data-i18n="leases.monthly_rent"
                         >
                             Monthly Rent
                         </div>
                         <div
                             id="lease-extend-current-rent"
-                            class="mt-1 text-sm font-semibold text-slate-900"
+                            class="mt-1 text-sm font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -2855,14 +2451,14 @@
 
                     <div>
                         <div
-                            class="text-xs font-medium text-slate-500"
+                            class="text-xs font-medium text-[var(--pm-text-muted)]"
                             data-i18n="leases.payment_frequency"
                         >
                             Payment Frequency
                         </div>
                         <div
                             id="lease-extend-current-frequency"
-                            class="mt-1 text-sm font-semibold text-slate-900"
+                            class="mt-1 text-sm font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -2870,14 +2466,14 @@
 
                     <div>
                         <div
-                            class="text-xs font-medium text-slate-500"
+                            class="text-xs font-medium text-[var(--pm-text-muted)]"
                             data-i18n="leases.end_date"
                         >
                             End Date
                         </div>
                         <div
                             id="lease-extend-current-end-date"
-                            class="mt-1 text-sm font-semibold text-slate-900"
+                            class="mt-1 text-sm font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -2885,14 +2481,14 @@
 
                     <div>
                         <div
-                            class="text-xs font-medium text-slate-500"
+                            class="text-xs font-medium text-[var(--pm-text-muted)]"
                             data-i18n="leases.due_day"
                         >
                             Due Day
                         </div>
                         <div
                             id="lease-extend-current-due-day"
-                            class="mt-1 text-sm font-semibold text-slate-900"
+                            class="mt-1 text-sm font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -2903,14 +2499,14 @@
             <section
                 class="
                     mt-8 border-t
-                    border-slate-100 pt-7
+                    border-[var(--pm-border-subtle)] pt-7
                 "
             >
                 <h3
                     class="
                         text-sm font-semibold
                         uppercase tracking-wide
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                     data-i18n="leases.new_terms"
                 >
@@ -2921,16 +2517,12 @@
                     <div>
                         <label
                             for="lease-extend-effective-from"
-                            class="
-                                mb-1.5 block
-                                text-sm font-medium
-                                text-slate-700
-                            "
+                            class="pm-field-label"
                         >
                             <span data-i18n="leases.effective_from">
                                 Effective From
                             </span>
-                            <span class="text-red-500">*</span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
                         </label>
 
                         <input
@@ -2940,26 +2532,14 @@
                             maxlength="10"
                             type="text"
                             required
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                px-3.5 py-2.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                     </div>
 
                     <div>
                         <label
                             for="lease-extend-end-date"
-                            class="
-                                mb-1.5 block
-                                text-sm font-medium
-                                text-slate-700
-                            "
+                            class="pm-field-label"
                         >
                             <span data-i18n="leases.end_date">
                                 End Date
@@ -2972,31 +2552,19 @@
                             inputmode="numeric"
                             maxlength="10"
                             type="text"
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                px-3.5 py-2.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                     </div>
 
                     <div>
                         <label
                             for="lease-extend-rent"
-                            class="
-                                mb-1.5 block
-                                text-sm font-medium
-                                text-slate-700
-                            "
+                            class="pm-field-label"
                         >
                             <span data-i18n="leases.monthly_rent">
                                 Monthly Rent
                             </span>
-                            <span class="text-red-500">*</span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
                         </label>
 
                         <input
@@ -3005,45 +2573,25 @@
                             min="0"
                             step="1"
                             required
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                px-3.5 py-2.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                     </div>
 
                     <div>
                         <label
                             for="lease-extend-frequency"
-                            class="
-                                mb-1.5 block
-                                text-sm font-medium
-                                text-slate-700
-                            "
+                            class="pm-field-label"
                         >
                             <span data-i18n="leases.payment_frequency">
                                 Payment Frequency
                             </span>
-                            <span class="text-red-500">*</span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
                         </label>
 
                         <select
                             id="lease-extend-frequency"
                             required
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                bg-white px-3.5 py-2.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                             <option value="monthly" data-i18n="leases.monthly">
                                 Monthly
@@ -3063,11 +2611,7 @@
                     <div>
                         <label
                             for="lease-extend-due-day"
-                            class="
-                                mb-1.5 block
-                                text-sm font-medium
-                                text-slate-700
-                            "
+                            class="pm-field-label"
                         >
                             <span data-i18n="leases.due_day">
                                 Due Day
@@ -3080,31 +2624,19 @@
                             min="1"
                             max="31"
                             step="1"
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                px-3.5 py-2.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                     </div>
 
                     <div>
                         <label
                             for="lease-extend-vat-rate"
-                            class="
-                                mb-1.5 block
-                                text-sm font-medium
-                                text-slate-700
-                            "
+                            class="pm-field-label"
                         >
                             <span data-i18n="leases.vat_rate">
                                 VAT Rate
                             </span>
-                            <span class="text-red-500">*</span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
                         </label>
 
                         <input
@@ -3114,15 +2646,7 @@
                             max="100"
                             step="0.01"
                             required
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                px-3.5 py-2.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                     </div>
                 </div>
@@ -3131,14 +2655,14 @@
             <section
                 class="
                     mt-8 border-t
-                    border-slate-100 pt-7
+                    border-[var(--pm-border-subtle)] pt-7
                 "
             >
                 <h3
                     class="
                         text-sm font-semibold
                         uppercase tracking-wide
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                     data-i18n="leases.rent_increment"
                 >
@@ -3149,11 +2673,7 @@
                     <div>
                         <label
                             for="lease-extend-increment-type"
-                            class="
-                                mb-1.5 block
-                                text-sm font-medium
-                                text-slate-700
-                            "
+                            class="pm-field-label"
                             data-i18n="leases.increment_type"
                         >
                             Increment Type
@@ -3162,15 +2682,7 @@
                         <select
                             id="lease-extend-increment-type"
                             required
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                bg-white px-3.5 py-2.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                             <option value="none" data-i18n="leases.none">
                                 None
@@ -3187,11 +2699,7 @@
                     <div>
                         <label
                             for="lease-extend-increment-value"
-                            class="
-                                mb-1.5 block
-                                text-sm font-medium
-                                text-slate-700
-                            "
+                            class="pm-field-label"
                             data-i18n="leases.increment_value"
                         >
                             Increment Value
@@ -3203,26 +2711,14 @@
                             min="0"
                             step="0.01"
                             required
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                px-3.5 py-2.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                     </div>
 
                     <div>
                         <label
                             for="lease-extend-next-increment-date"
-                            class="
-                                mb-1.5 block
-                                text-sm font-medium
-                                text-slate-700
-                            "
+                            class="pm-field-label"
                             data-i18n="leases.next_increment_date"
                         >
                             Next Increment Date
@@ -3234,15 +2730,7 @@
                             inputmode="numeric"
                             maxlength="10"
                             type="text"
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                px-3.5 py-2.5
-                                text-sm outline-none
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                     </div>
                 </div>
@@ -3251,16 +2739,12 @@
             <section
                 class="
                     mt-8 border-t
-                    border-slate-100 pt-7
+                    border-[var(--pm-border-subtle)] pt-7
                 "
             >
                 <label
                     for="lease-extend-notes"
-                    class="
-                        mb-1.5 block
-                        text-sm font-medium
-                        text-slate-700
-                    "
+                    class="pm-field-label"
                     data-i18n="leases.notes"
                 >
                     Notes
@@ -3269,15 +2753,7 @@
                 <textarea
                     id="lease-extend-notes"
                     rows="4"
-                    class="
-                        w-full resize-y rounded-lg
-                        border border-slate-200
-                        px-3.5 py-2.5
-                        text-sm outline-none
-                        focus:border-patrimoine-500
-                        focus:ring-2
-                        focus:ring-patrimoine-100
-                    "
+                    class="pm-input resize-y"
                 ></textarea>
             </section>
         </div>
@@ -3288,8 +2764,8 @@
                 type="button"
                 class="pm-button-secondary"
             >
-                <span data-i18n="leases.cancel">
-                    Cancel
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
                 </span>
             </button>
 
@@ -3325,7 +2801,7 @@
     >
         <x-slot:title>
             <span
-                class="text-red-600"
+                class="text-[var(--pm-danger-text)]"
                 data-i18n="leases.delete_lease"
             >
                 Delete Lease
@@ -3354,9 +2830,9 @@
                 id="lease-delete-error"
                 class="
                     hidden rounded-xl
-                    border border-red-300/70
-                    bg-red-500/10 px-4 py-3
-                    text-sm text-red-600
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
                 "
                 role="alert"
             ></div>
@@ -3541,9 +3017,9 @@
                         id="lease-delete-blockers"
                         class="
                             mt-4 hidden rounded-xl
-                            border border-red-300/70
-                            bg-red-500/10 px-4 py-3
-                            text-sm text-red-600
+                            border border-[var(--pm-danger-border)]
+                            bg-[var(--pm-danger-background)] px-4 py-3
+                            text-sm text-[var(--pm-danger-text)]
                         "
                     ></div>
                 </div>
@@ -3552,8 +3028,8 @@
             <section
                 class="
                     space-y-4 rounded-xl
-                    border border-red-300/60
-                    bg-red-500/5 p-4
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] p-4
                 "
             >
                 <div>
@@ -3654,8 +3130,8 @@
                 type="button"
                 class="pm-button-secondary"
             >
-                <span data-i18n="leases.cancel">
-                    Cancel
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
                 </span>
             </button>
 
@@ -3663,16 +3139,7 @@
                 id="lease-delete-submit"
                 type="submit"
                 disabled
-                class="
-                    inline-flex items-center
-                    justify-center rounded-lg
-                    bg-red-600 px-4 py-2.5
-                    text-sm font-semibold text-white
-                    transition
-                    hover:bg-red-700
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                "
+                class="pm-button-danger"
             >
                 <span data-i18n="leases.delete_permanently">
                     Delete permanently
@@ -3686,6 +3153,10 @@
      Global Lease Field Help Tooltip
 ================================================================ --}}
 
+{{--
+    Inverse-surface tooltip: --pm-text on --pm-page reads as dark-on-light
+    in light theme and light-on-dark in dark theme without extra CSS.
+--}}
 <div
     id="lease-field-tooltip"
     role="tooltip"
@@ -3693,10 +3164,10 @@
         pointer-events-none fixed z-[120]
         hidden
         max-w-sm rounded-xl
-        bg-slate-950
+        bg-[var(--pm-text)]
         px-4 py-3
         text-sm leading-6
-        text-white
+        text-[var(--pm-page)]
         shadow-xl
     "
 ></div>
@@ -3709,7 +3180,7 @@
 <x-drawer
     id="security-deposit-modal"
     backdrop-id="security-deposit-modal-backdrop"
-    width="lg"
+    width="sm"
 >
     <x-drawer-header
         title-id="security-deposit-modal-title"
@@ -3736,9 +3207,9 @@
                     id="security-deposit-error"
                     class="
                         mb-5 hidden rounded-lg
-                        border border-red-200
-                        bg-red-50 px-4 py-3
-                        text-sm text-red-700
+                        border border-[var(--pm-danger-border)]
+                        bg-[var(--pm-danger-background)] px-4 py-3
+                        text-sm text-[var(--pm-danger-text)]
                     "
                 ></div>
 
@@ -3746,7 +3217,7 @@
                     id="security-deposit-loading"
                     class="
                         py-12 text-center
-                        text-sm text-slate-400
+                        text-sm text-[var(--pm-text-subtle)]
                     "
                 >
                     <span data-i18n="leases.loading_security_deposit">
@@ -3770,11 +3241,11 @@
                         >
                             <div
                                 class="
-                                    rounded-xl border border-slate-200
-                                    bg-slate-50 p-4
+                                    rounded-xl border border-[var(--pm-border)]
+                                    bg-[var(--pm-surface-subtle)] p-4
                                 "
                             >
-                                <div class="text-xs text-slate-500">
+                                <div class="text-xs text-[var(--pm-text-muted)]">
                                     <span data-i18n="leases.contractual_deposit">
                                         {{ __('ui.leases.contractual_deposit') }}
                                     </span>
@@ -3784,7 +3255,7 @@
                                     id="security-deposit-contractual"
                                     class="
                                         mt-2 text-lg font-semibold
-                                        text-slate-950
+                                        text-[var(--pm-text)]
                                     "
                                 >
                                     —
@@ -3793,11 +3264,11 @@
 
                             <div
                                 class="
-                                    rounded-xl border border-slate-200
-                                    bg-slate-50 p-4
+                                    rounded-xl border border-[var(--pm-border)]
+                                    bg-[var(--pm-surface-subtle)] p-4
                                 "
                             >
-                                <div class="text-xs text-slate-500">
+                                <div class="text-xs text-[var(--pm-text-muted)]">
                                     <span data-i18n="leases.held_balance">
                                         {{ __('ui.leases.held_balance') }}
                                     </span>
@@ -3807,7 +3278,7 @@
                                     id="security-deposit-held"
                                     class="
                                         mt-2 text-lg font-semibold
-                                        text-slate-950
+                                        text-[var(--pm-text)]
                                     "
                                 >
                                     —
@@ -3816,11 +3287,11 @@
 
                             <div
                                 class="
-                                    rounded-xl border border-slate-200
-                                    bg-slate-50 p-4
+                                    rounded-xl border border-[var(--pm-border)]
+                                    bg-[var(--pm-surface-subtle)] p-4
                                 "
                             >
-                                <div class="text-xs text-slate-500">
+                                <div class="text-xs text-[var(--pm-text-muted)]">
                                     <span data-i18n="leases.deductions">
                                         {{ __('ui.leases.deductions') }}
                                     </span>
@@ -3830,7 +3301,7 @@
                                     id="security-deposit-deduction-total"
                                     class="
                                         mt-2 text-lg font-semibold
-                                        text-slate-950
+                                        text-[var(--pm-text)]
                                     "
                                 >
                                     —
@@ -3839,11 +3310,11 @@
 
                             <div
                                 class="
-                                    rounded-xl border border-green-200
-                                    bg-green-50 p-4
+                                    rounded-xl border border-[var(--pm-success-border)]
+                                    bg-[var(--pm-success-background)] p-4
                                 "
                             >
-                                <div class="text-xs text-green-700">
+                                <div class="text-xs text-[var(--pm-success-text)]">
                                     <span data-i18n="leases.refund">
                                         {{ __('ui.leases.refund') }}
                                     </span>
@@ -3853,7 +3324,7 @@
                                     id="security-deposit-refund"
                                     class="
                                         mt-2 text-lg font-semibold
-                                        text-green-800
+                                        text-[var(--pm-success-text)]
                                     "
                                 >
                                     —
@@ -3862,11 +3333,11 @@
 
                             <div
                                 class="
-                                    rounded-xl border border-red-200
-                                    bg-red-50 p-4
+                                    rounded-xl border border-[var(--pm-danger-border)]
+                                    bg-[var(--pm-danger-background)] p-4
                                 "
                             >
-                                <div class="text-xs text-red-700">
+                                <div class="text-xs text-[var(--pm-danger-text)]">
                                     <span data-i18n="leases.tenant_debt">
                                         {{ __('ui.leases.tenant_debt') }}
                                     </span>
@@ -3876,7 +3347,7 @@
                                     id="security-deposit-debt"
                                     class="
                                         mt-2 text-lg font-semibold
-                                        text-red-800
+                                        text-[var(--pm-danger-text)]
                                     "
                                 >
                                     —
@@ -3891,9 +3362,9 @@
                         id="security-deposit-lifecycle-message"
                         class="
                             mt-5 hidden rounded-xl
-                            border border-amber-200
-                            bg-amber-50 px-4 py-3
-                            text-sm text-amber-800
+                            border border-[var(--pm-warning-border)]
+                            bg-[var(--pm-warning-background)] px-4 py-3
+                            text-sm text-[var(--pm-warning-text)]
                         "
                     ></div>
 
@@ -3902,7 +3373,7 @@
                     <section
                         class="
                             mt-7 border-t
-                            border-slate-100 pt-6
+                            border-[var(--pm-border-subtle)] pt-6
                         "
                     >
                         <div
@@ -3917,7 +3388,7 @@
                                 <h3
                                     class="
                                         text-sm font-semibold
-                                        text-slate-950
+                                        text-[var(--pm-text)]
                                     "
                                 >
                                     <span data-i18n="leases.itemized_deductions">
@@ -3925,7 +3396,7 @@
                                     </span>
                                 </h3>
 
-                                <p class="mt-1 text-xs text-slate-500">
+                                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                                     <span data-i18n="leases.itemized_deductions_description">
                                         {{ __('ui.leases.itemized_deductions_description') }}
                                     </span>
@@ -3942,8 +3413,8 @@
                             id="security-deposit-deduction-form"
                             class="
                                 mt-5 hidden rounded-xl
-                                border border-slate-200
-                                bg-slate-50 p-4
+                                border border-[var(--pm-border)]
+                                bg-[var(--pm-surface-subtle)] p-4
                             "
                         >
                             <div
@@ -3955,16 +3426,12 @@
                                 <div class="md:col-span-2">
                                     <label
                                         for="security-deduction-description"
-                                        class="
-                                            mb-1.5 block
-                                            text-sm font-medium
-                                            text-slate-700
-                                        "
+                                        class="pm-field-label"
                                     >
                                         <span data-i18n="leases.description">
                                             {{ __('ui.leases.description') }}
                                         </span>
-                                        <span class="text-red-500">*</span>
+                                        <span class="text-[var(--pm-danger-text)]">*</span>
                                     </label>
 
                                     <input
@@ -3974,31 +3441,19 @@
                                         required
                                         data-i18n-placeholder="leases.deduction_description_placeholder"
                                         placeholder="{{ __('ui.leases.deduction_description_placeholder') }}"
-                                        class="
-                                            w-full rounded-lg
-                                            border border-slate-200
-                                            bg-white px-3.5 py-2.5
-                                            text-sm outline-none
-                                            focus:border-patrimoine-500
-                                            focus:ring-2
-                                            focus:ring-patrimoine-100
-                                        "
+                                        class="pm-input"
                                     >
                                 </div>
 
                                 <div>
                                     <label
                                         for="security-deduction-amount"
-                                        class="
-                                            mb-1.5 block
-                                            text-sm font-medium
-                                            text-slate-700
-                                        "
+                                        class="pm-field-label"
                                     >
                                         <span data-i18n="leases.amount">
                                             {{ __('ui.leases.amount') }}
                                         </span>
-                                        <span class="text-red-500">*</span>
+                                        <span class="text-[var(--pm-danger-text)]">*</span>
                                     </label>
 
                                     <input
@@ -4007,31 +3462,19 @@
                                         min="1"
                                         step="1"
                                         required
-                                        class="
-                                            w-full rounded-lg
-                                            border border-slate-200
-                                            bg-white px-3.5 py-2.5
-                                            text-sm outline-none
-                                            focus:border-patrimoine-500
-                                            focus:ring-2
-                                            focus:ring-patrimoine-100
-                                        "
+                                        class="pm-input"
                                     >
                                 </div>
 
                                 <div>
                                     <label
                                         for="security-deduction-date"
-                                        class="
-                                            mb-1.5 block
-                                            text-sm font-medium
-                                            text-slate-700
-                                        "
+                                        class="pm-field-label"
                                     >
                                         <span data-i18n="leases.deduction_date">
                                             {{ __('ui.leases.deduction_date') }}
                                         </span>
-                                        <span class="text-red-500">*</span>
+                                        <span class="text-[var(--pm-danger-text)]">*</span>
                                     </label>
 
                                     <div class="pm-security-date-control">
@@ -4043,15 +3486,7 @@
                                             maxlength="10"
                                             placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                             required
-                                            class="
-                                                w-full rounded-lg
-                                                border border-slate-200
-                                                bg-white px-3.5 py-2.5
-                                                text-sm outline-none
-                                                focus:border-patrimoine-500
-                                                focus:ring-2
-                                                focus:ring-patrimoine-100
-                                            "
+                                            class="pm-input"
                                         >
 
                                         <button
@@ -4093,11 +3528,7 @@
                                 <div>
                                     <label
                                         for="security-deduction-reference"
-                                        class="
-                                            mb-1.5 block
-                                            text-sm font-medium
-                                            text-slate-700
-                                        "
+                                        class="pm-field-label"
                                     >
                                         <span data-i18n="leases.reference">
                                             {{ __('ui.leases.reference') }}
@@ -4110,26 +3541,14 @@
                                         maxlength="255"
                                         data-i18n-placeholder="leases.deduction_reference_placeholder"
                                         placeholder="{{ __('ui.leases.deduction_reference_placeholder') }}"
-                                        class="
-                                            w-full rounded-lg
-                                            border border-slate-200
-                                            bg-white px-3.5 py-2.5
-                                            text-sm outline-none
-                                            focus:border-patrimoine-500
-                                            focus:ring-2
-                                            focus:ring-patrimoine-100
-                                        "
+                                        class="pm-input"
                                     >
                                 </div>
 
                                 <div>
                                     <label
                                         for="security-deduction-notes"
-                                        class="
-                                            mb-1.5 block
-                                            text-sm font-medium
-                                            text-slate-700
-                                        "
+                                        class="pm-field-label"
                                     >
                                         <span data-i18n="leases.notes">
                                             {{ __('ui.leases.notes') }}
@@ -4141,15 +3560,7 @@
                                         type="text"
                                         data-i18n-placeholder="leases.optional_details"
                                         placeholder="{{ __('ui.leases.optional_details') }}"
-                                        class="
-                                            w-full rounded-lg
-                                            border border-slate-200
-                                            bg-white px-3.5 py-2.5
-                                            text-sm outline-none
-                                            focus:border-patrimoine-500
-                                            focus:ring-2
-                                            focus:ring-patrimoine-100
-                                        "
+                                        class="pm-input"
                                     >
                                 </div>
                             </div>
@@ -4162,13 +3573,7 @@
                                 <button
                                     id="security-deduction-submit"
                                     type="submit"
-                                    class="
-                                        rounded-lg bg-slate-900
-                                        px-4 py-2.5
-                                        text-sm font-medium text-white
-                                        transition
-                                        hover:bg-slate-800
-                                    "
+                                    class="pm-button-primary"
                                 >
                                     <span data-i18n="leases.add_deduction">
                                         {{ __('ui.leases.add_deduction') }}
@@ -4184,14 +3589,14 @@
                         id="security-deposit-settlement-section"
                         class="
                             mt-7 border-t
-                            border-slate-100 pt-6
+                            border-[var(--pm-border-subtle)] pt-6
                         "
                     >
                         <div>
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="leases.final_settlement">
@@ -4199,7 +3604,7 @@
                                 </span>
                             </h3>
 
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="leases.final_settlement_description">
                                     {{ __('ui.leases.final_settlement_description') }}
                                 </span>
@@ -4210,7 +3615,7 @@
                             id="security-deposit-settlement-form"
                             class="
                                 mt-4 hidden rounded-xl
-                                border border-slate-200
+                                border border-[var(--pm-border)]
                                 p-4
                             "
                         >
@@ -4223,16 +3628,12 @@
                                 <div>
                                     <label
                                         for="security-settlement-date"
-                                        class="
-                                            mb-1.5 block
-                                            text-sm font-medium
-                                            text-slate-700
-                                        "
+                                        class="pm-field-label"
                                     >
                                         <span data-i18n="leases.settlement_date">
                                             {{ __('ui.leases.settlement_date') }}
                                         </span>
-                                        <span class="text-red-500">*</span>
+                                        <span class="text-[var(--pm-danger-text)]">*</span>
                                     </label>
 
                                     <div class="pm-security-date-control">
@@ -4244,15 +3645,7 @@
                                             maxlength="10"
                                             placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                             required
-                                            class="
-                                                w-full rounded-lg
-                                                border border-slate-200
-                                                px-3.5 py-2.5
-                                                text-sm outline-none
-                                                focus:border-patrimoine-500
-                                                focus:ring-2
-                                                focus:ring-patrimoine-100
-                                            "
+                                            class="pm-input"
                                         >
 
                                         <button
@@ -4294,11 +3687,7 @@
                                 <div>
                                     <label
                                         for="security-settlement-notes"
-                                        class="
-                                            mb-1.5 block
-                                            text-sm font-medium
-                                            text-slate-700
-                                        "
+                                        class="pm-field-label"
                                     >
                                         <span data-i18n="leases.notes">
                                             {{ __('ui.leases.notes') }}
@@ -4310,15 +3699,7 @@
                                         type="text"
                                         data-i18n-placeholder="leases.closeout_notes_placeholder"
                                         placeholder="{{ __('ui.leases.closeout_notes_placeholder') }}"
-                                        class="
-                                            w-full rounded-lg
-                                            border border-slate-200
-                                            px-3.5 py-2.5
-                                            text-sm outline-none
-                                            focus:border-patrimoine-500
-                                            focus:ring-2
-                                            focus:ring-patrimoine-100
-                                        "
+                                        class="pm-input"
                                     >
                                 </div>
                             </div>
@@ -4326,10 +3707,10 @@
                             <div
                                 class="
                                     mt-4 rounded-lg
-                                    border border-amber-200
-                                    bg-amber-50 px-4 py-3
+                                    border border-[var(--pm-warning-border)]
+                                    bg-[var(--pm-warning-background)] px-4 py-3
                                     text-xs leading-5
-                                    text-amber-800
+                                    text-[var(--pm-warning-text)]
                                 "
                             >
                                 <span data-i18n="leases.final_settlement_warning">
@@ -4345,13 +3726,7 @@
                                 <button
                                     id="security-settlement-submit"
                                     type="submit"
-                                    class="
-                                        rounded-lg bg-patrimoine-950
-                                        px-4 py-2.5
-                                        text-sm font-medium text-white
-                                        transition
-                                        hover:bg-patrimoine-900
-                                    "
+                                    class="pm-button-primary"
                                 >
                                     <span data-i18n="leases.finalize_settlement">
                                         {{ __('ui.leases.finalize_settlement') }}
@@ -4364,8 +3739,8 @@
                             id="security-deposit-settled"
                             class="
                                 mt-4 hidden rounded-xl
-                                border border-green-200
-                                bg-green-50 p-5
+                                border border-[var(--pm-success-border)]
+                                bg-[var(--pm-success-background)] p-5
                             "
                         >
                             <div
@@ -4380,7 +3755,7 @@
                                     <div
                                         class="
                                             text-sm font-semibold
-                                            text-green-900
+                                            text-[var(--pm-success-text)]
                                         "
                                     >
                                         <span data-i18n="leases.security_deposit_settled">
@@ -4392,7 +3767,7 @@
                                         id="security-deposit-voucher-number"
                                         class="
                                             mt-1 text-xs
-                                            text-green-700
+                                            text-[var(--pm-success-text)]
                                         "
                                     >
                                         —
@@ -4403,14 +3778,7 @@
                                     id="security-deposit-voucher-link"
                                     type="button"
                                     class="
-                                        inline-flex items-center
-                                        justify-center rounded-lg
-                                        border border-green-300
-                                        bg-white px-4 py-2.5
-                                        text-sm font-medium
-                                        text-green-800
-                                        transition
-                                        hover:bg-green-100
+                                        pm-button-secondary
                                         disabled:cursor-not-allowed
                                         disabled:opacity-60
                                     "
@@ -4424,6 +3792,18 @@
                     </section>
                 </div>
     </div>
+
+    <x-drawer-footer>
+        <button
+            id="security-deposit-close-footer"
+            type="button"
+            class="pm-button-secondary"
+        >
+            <span data-i18n="actions.close">
+                {{ __('ui.actions.close') }}
+            </span>
+        </button>
+    </x-drawer-footer>
 </x-drawer>
 
 
@@ -4457,14 +3837,14 @@
         </x-slot:description>
     </x-drawer-header>
 
-    <div class="overflow-y-auto px-5 py-5">
+    <div class="min-h-0 flex-1 overflow-y-auto px-5 py-5">
         <div
             id="termination-settlement-error"
             class="
                 mb-5 hidden rounded-lg
-                border border-red-200
-                bg-red-50 px-4 py-3
-                text-sm text-red-700
+                border border-[var(--pm-danger-border)]
+                bg-[var(--pm-danger-background)] px-4 py-3
+                text-sm text-[var(--pm-danger-text)]
             "
         ></div>
 
@@ -4472,7 +3852,7 @@
             id="termination-settlement-loading"
             class="
                 py-12 text-center
-                text-sm text-slate-400
+                text-sm text-[var(--pm-text-subtle)]
             "
         >
             <span data-i18n="leases.termination_settlement_loading">
@@ -4488,13 +3868,13 @@
             <section
                 class="
                     rounded-xl border
-                    border-slate-200
-                    bg-slate-50 p-5
+                    border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] p-5
                 "
             >
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
-                        <div class="text-xs text-slate-500">
+                        <div class="text-xs text-[var(--pm-text-muted)]">
                             <span data-i18n="leases.lease">
                                 Lease
                             </span>
@@ -4504,7 +3884,7 @@
                             id="termination-settlement-lease"
                             class="
                                 mt-1 text-sm font-semibold
-                                text-slate-950
+                                text-[var(--pm-text)]
                             "
                         >
                             —
@@ -4512,7 +3892,7 @@
                     </div>
 
                     <div>
-                        <div class="text-xs text-slate-500">
+                        <div class="text-xs text-[var(--pm-text-muted)]">
                             <span data-i18n="leases.tenant">
                                 Tenant
                             </span>
@@ -4522,7 +3902,7 @@
                             id="termination-settlement-tenant"
                             class="
                                 mt-1 text-sm font-semibold
-                                text-slate-950
+                                text-[var(--pm-text)]
                             "
                         >
                             —
@@ -4530,7 +3910,7 @@
                     </div>
 
                     <div>
-                        <div class="text-xs text-slate-500">
+                        <div class="text-xs text-[var(--pm-text-muted)]">
                             <span data-i18n="leases.property">
                                 Property
                             </span>
@@ -4540,7 +3920,7 @@
                             id="termination-settlement-building"
                             class="
                                 mt-1 text-sm font-medium
-                                text-slate-800
+                                text-[var(--pm-text)]
                             "
                         >
                             —
@@ -4548,7 +3928,7 @@
                     </div>
 
                     <div>
-                        <div class="text-xs text-slate-500">
+                        <div class="text-xs text-[var(--pm-text-muted)]">
                             <span data-i18n="leases.unit">
                                 Unit
                             </span>
@@ -4558,7 +3938,7 @@
                             id="termination-settlement-unit"
                             class="
                                 mt-1 text-sm font-medium
-                                text-slate-800
+                                text-[var(--pm-text)]
                             "
                         >
                             —
@@ -4566,7 +3946,7 @@
                     </div>
 
                     <div>
-                        <div class="text-xs text-slate-500">
+                        <div class="text-xs text-[var(--pm-text-muted)]">
                             <span data-i18n="leases.notice_date">
                                 Notice Date
                             </span>
@@ -4576,7 +3956,7 @@
                             id="termination-settlement-notice-date"
                             class="
                                 mt-1 text-sm font-medium
-                                text-slate-800
+                                text-[var(--pm-text)]
                             "
                         >
                             —
@@ -4584,7 +3964,7 @@
                     </div>
 
                     <div>
-                        <div class="text-xs text-slate-500">
+                        <div class="text-xs text-[var(--pm-text-muted)]">
                             <span data-i18n="leases.termination_date">
                                 Termination / Vacate Date
                             </span>
@@ -4594,7 +3974,7 @@
                             id="termination-settlement-date"
                             class="
                                 mt-1 text-sm font-medium
-                                text-slate-800
+                                text-[var(--pm-text)]
                             "
                         >
                             —
@@ -4608,7 +3988,7 @@
                 <h3
                     class="
                         text-sm font-semibold
-                        text-slate-950
+                        text-[var(--pm-text)]
                     "
                 >
                     <span data-i18n="leases.termination_financial_position">
@@ -4666,13 +4046,9 @@
                         ],
                     ] as [$id, $key, $label])
                         <div
-                            class="
-                                rounded-xl border
-                                border-slate-200
-                                bg-white p-4
-                            "
+                            class="pm-card p-4"
                         >
-                            <div class="text-xs text-slate-500">
+                            <div class="text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="{{ $key }}">
                                     {{ $label }}
                                 </span>
@@ -4682,7 +4058,7 @@
                                 id="{{ $id }}"
                                 class="
                                     mt-2 text-lg font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 —
@@ -4703,14 +4079,14 @@
             <section
                 class="
                     rounded-xl border
-                    border-slate-200
-                    bg-slate-50 p-4
+                    border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] p-4
                 "
             >
                 <p
                     class="
                         text-sm leading-6
-                        text-slate-600
+                        text-[var(--pm-text-secondary)]
                     "
                 >
                     <span data-i18n="leases.termination_resolve_from_tenant">
@@ -4722,16 +4098,7 @@
                     <button
                         id="termination-settlement-tenant-link"
                         type="button"
-                        class="
-                            rounded-lg
-                            bg-patrimoine-950
-                            px-4 py-2.5
-                            text-sm font-medium
-                            text-white
-                            hover:bg-patrimoine-900
-                            disabled:cursor-not-allowed
-                            disabled:opacity-50
-                        "
+                        class="pm-button-primary"
                     >
                         <span data-i18n="leases.go_to_tenant">
                             Go to Tenant
@@ -4742,12 +4109,7 @@
                         id="termination-settlement-notice"
                         type="button"
                         class="
-                            rounded-lg border
-                            border-slate-300
-                            bg-white px-4 py-2.5
-                            text-sm font-medium
-                            text-slate-700
-                            hover:bg-slate-50
+                            pm-button-secondary
                             disabled:cursor-not-allowed
                             disabled:opacity-50
                         "
@@ -4759,59 +4121,31 @@
                 </div>
             </section>
 
-            {{-- Lifecycle controls --}}
-            <section
-                class="
-                    border-t border-slate-200
-                    pt-5
-                "
-            >
-                <div
-                    class="
-                        flex flex-col-reverse gap-3
-                        sm:flex-row sm:justify-end
-                    "
-                >
-                    <button
-                        id="termination-settlement-cancel"
-                        type="button"
-                        class="
-                            rounded-lg border
-                            border-red-300
-                            bg-white px-4 py-2.5
-                            text-sm font-medium
-                            text-red-700
-                            hover:bg-red-50
-                        "
-                    >
-                        <span data-i18n="leases.cancel_termination">
-                            Cancel Termination
-                        </span>
-                    </button>
-
-                    <button
-                        id="termination-settlement-complete"
-                        type="button"
-                        disabled
-                        class="
-                            rounded-lg
-                            bg-patrimoine-950
-                            px-4 py-2.5
-                            text-sm font-medium
-                            text-white
-                            hover:bg-patrimoine-900
-                            disabled:cursor-not-allowed
-                            disabled:opacity-50
-                        "
-                    >
-                        <span data-i18n="leases.complete_termination">
-                            Complete Termination
-                        </span>
-                    </button>
-                </div>
-            </section>
         </div>
     </div>
+
+    <x-drawer-footer>
+        <button
+            id="termination-settlement-cancel"
+            type="button"
+            class="pm-button-danger"
+        >
+            <span data-i18n="leases.cancel_termination">
+                Cancel Termination
+            </span>
+        </button>
+
+        <button
+            id="termination-settlement-complete"
+            type="button"
+            disabled
+            class="pm-button-primary"
+        >
+            <span data-i18n="leases.complete_termination">
+                Complete Termination
+            </span>
+        </button>
+    </x-drawer-footer>
 </x-drawer>
 
 
@@ -4844,20 +4178,20 @@
         </x-slot:description>
     </x-drawer-header>
 
-    <div class="pm-lease-financial-history-drawer-body overflow-y-auto px-5 py-5">
+    <div class="pm-lease-financial-history-drawer-body min-h-0 flex-1 overflow-y-auto px-5 py-5">
         <div
             id="lease-financial-history-error"
             class="
                 mb-5 hidden rounded-lg
-                border border-red-200
-                bg-red-50 px-4 py-3
-                text-sm text-red-700
+                border border-[var(--pm-danger-border)]
+                bg-[var(--pm-danger-background)] px-4 py-3
+                text-sm text-[var(--pm-danger-text)]
             "
         ></div>
 
         <div
             id="lease-financial-history-loading"
-            class="py-12 text-center text-sm text-slate-400"
+            class="py-12 text-center text-sm text-[var(--pm-text-subtle)]"
         >
             <span data-i18n="leases.financial_history_loading">
                 {{ __('ui.leases.financial_history_loading') }}
@@ -4869,6 +4203,18 @@
             class="hidden space-y-4"
         ></div>
     </div>
+
+    <x-drawer-footer>
+        <button
+            id="lease-financial-history-close-footer"
+            type="button"
+            class="pm-button-secondary"
+        >
+            <span data-i18n="actions.close">
+                {{ __('ui.actions.close') }}
+            </span>
+        </button>
+    </x-drawer-footer>
 </x-drawer>
 
 
@@ -4879,7 +4225,7 @@
 <x-drawer
     id="tenant-funds-modal"
     backdrop-id="tenant-funds-modal-backdrop"
-    width="lg"
+    width="sm"
 >
     <x-drawer-header
         title-id="tenant-funds-modal-title"
@@ -4906,9 +4252,9 @@
                     id="tenant-funds-error"
                     class="
                         mb-5 hidden rounded-lg
-                        border border-red-200
-                        bg-red-50 px-4 py-3
-                        text-sm text-red-700
+                        border border-[var(--pm-danger-border)]
+                        bg-[var(--pm-danger-background)] px-4 py-3
+                        text-sm text-[var(--pm-danger-text)]
                     "
                 ></div>
 
@@ -4916,7 +4262,7 @@
                     id="tenant-funds-loading"
                     class="
                         py-12 text-center
-                        text-sm text-slate-400
+                        text-sm text-[var(--pm-text-subtle)]
                     "
                 >
                     <span data-i18n="leases.loading_tenant_funds">
@@ -4940,11 +4286,11 @@
                             <div
                                 class="
                                     rounded-xl border
-                                    border-slate-200
-                                    bg-slate-50 p-5
+                                    border-[var(--pm-border)]
+                                    bg-[var(--pm-surface-subtle)] p-5
                                 "
                             >
-                                <div class="text-xs text-slate-500">
+                                <div class="text-xs text-[var(--pm-text-muted)]">
                                     <span data-i18n="leases.rent_reserve">
                                         {{ __('ui.leases.rent_reserve') }}
                                     </span>
@@ -4954,7 +4300,7 @@
                                     id="tenant-funds-reserve-balance"
                                     class="
                                         mt-2 text-xl font-semibold
-                                        text-slate-950
+                                        text-[var(--pm-text)]
                                     "
                                 >
                                     —
@@ -4964,7 +4310,7 @@
                                     id="tenant-funds-reserve-help"
                                     class="
                                         mt-2 text-xs
-                                        leading-5 text-slate-500
+                                        leading-5 text-[var(--pm-text-muted)]
                                     "
                                 >
                                     <span data-i18n="leases.reserve_protected_short">
@@ -4976,11 +4322,11 @@
                             <div
                                 class="
                                     rounded-xl border
-                                    border-slate-200
-                                    bg-slate-50 p-5
+                                    border-[var(--pm-border)]
+                                    bg-[var(--pm-surface-subtle)] p-5
                                 "
                             >
-                                <div class="text-xs text-slate-500">
+                                <div class="text-xs text-[var(--pm-text-muted)]">
                                     <span data-i18n="leases.consumable_advance">
                                         {{ __('ui.leases.consumable_advance') }}
                                     </span>
@@ -4990,7 +4336,7 @@
                                     id="tenant-funds-advance-balance"
                                     class="
                                         mt-2 text-xl font-semibold
-                                        text-slate-950
+                                        text-[var(--pm-text)]
                                     "
                                 >
                                     —
@@ -4999,7 +4345,7 @@
                                 <p
                                     class="
                                         mt-2 text-xs
-                                        leading-5 text-slate-500
+                                        leading-5 text-[var(--pm-text-muted)]
                                     "
                                 >
                                     <span data-i18n="leases.consumable_advance_description">
@@ -5011,11 +4357,11 @@
                             <div
                                 class="
                                     rounded-xl border
-                                    border-slate-200
-                                    bg-slate-50 p-5
+                                    border-[var(--pm-border)]
+                                    bg-[var(--pm-surface-subtle)] p-5
                                 "
                             >
-                                <div class="text-xs text-slate-500">
+                                <div class="text-xs text-[var(--pm-text-muted)]">
                                     <span data-i18n="leases.security_deposit">
                                         {{ __('ui.leases.security_deposit') }}
                                     </span>
@@ -5025,7 +4371,7 @@
                                     id="tenant-funds-security-balance"
                                     class="
                                         mt-2 text-xl font-semibold
-                                        text-slate-950
+                                        text-[var(--pm-text)]
                                     "
                                 >
                                     —
@@ -5041,14 +4387,14 @@
                     <section
                         class="
                             mt-7 border-t
-                            border-slate-100 pt-7
+                            border-[var(--pm-border-subtle)] pt-7
                         "
                     >
                         <div class="mb-4">
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="leases.apply_rent_reserve">
@@ -5056,7 +4402,7 @@
                                 </span>
                             </h3>
 
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="leases.apply_reserve_description">
                                     {{ __('ui.leases.apply_reserve_description') }}
                                 </span>
@@ -5067,9 +4413,9 @@
                             id="tenant-funds-reserve-unavailable"
                             class="
                                 hidden rounded-lg
-                                border border-amber-200
-                                bg-amber-50 px-4 py-3
-                                text-sm text-amber-800
+                                border border-[var(--pm-warning-border)]
+                                bg-[var(--pm-warning-background)] px-4 py-3
+                                text-sm text-[var(--pm-warning-text)]
                             "
                         ></div>
 
@@ -5083,11 +4429,7 @@
                             <div class="md:col-span-2">
                                 <label
                                     for="tenant-funds-reserve-invoice"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="leases.outstanding_invoice">
                                         {{ __('ui.leases.outstanding_invoice') }}
@@ -5097,23 +4439,14 @@
                                 <select
                                     id="tenant-funds-reserve-invoice"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        bg-white px-3.5 py-2.5
-                                        text-sm
-                                    "
+                                    class="pm-input"
                                 ></select>
                             </div>
 
                             <div>
                                 <label
                                     for="tenant-funds-reserve-amount"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="leases.amount">
                                         {{ __('ui.leases.amount') }}
@@ -5126,23 +4459,14 @@
                                     min="1"
                                     step="1"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="tenant-funds-reserve-date"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="leases.date">
                                         {{ __('ui.leases.date') }}
@@ -5158,12 +4482,7 @@
                             placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                     type="text"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                    "
+                                    class="pm-input"
                                 >
 
     <button
@@ -5200,13 +4519,7 @@
                                 <button
                                     id="tenant-funds-reserve-submit"
                                     type="submit"
-                                    class="
-                                        rounded-lg bg-patrimoine-950
-                                        px-4 py-2.5
-                                        text-sm font-medium text-white
-                                        disabled:cursor-not-allowed
-                                        disabled:opacity-50
-                                    "
+                                    class="pm-button-primary"
                                 >
                                     <span data-i18n="leases.apply_rent_reserve">
                                         {{ __('ui.leases.apply_rent_reserve') }}
@@ -5221,14 +4534,14 @@
                     <section
                         class="
                             mt-7 border-t
-                            border-slate-100 pt-7
+                            border-[var(--pm-border-subtle)] pt-7
                         "
                     >
                         <div class="mb-4">
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="leases.apply_consumable_advance">
@@ -5236,7 +4549,7 @@
                                 </span>
                             </h3>
 
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="leases.apply_advance_description">
                                     {{ __('ui.leases.apply_advance_description') }}
                                 </span>
@@ -5247,9 +4560,9 @@
                             id="tenant-funds-advance-unavailable"
                             class="
                                 hidden rounded-lg
-                                border border-slate-200
-                                bg-slate-50 px-4 py-3
-                                text-sm text-slate-600
+                                border border-[var(--pm-border)]
+                                bg-[var(--pm-surface-subtle)] px-4 py-3
+                                text-sm text-[var(--pm-text-secondary)]
                             "
                         ></div>
 
@@ -5263,11 +4576,7 @@
                             <div class="md:col-span-2">
                                 <label
                                     for="tenant-funds-advance-invoice"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="leases.outstanding_invoice">
                                         {{ __('ui.leases.outstanding_invoice') }}
@@ -5277,23 +4586,14 @@
                                 <select
                                     id="tenant-funds-advance-invoice"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        bg-white px-3.5 py-2.5
-                                        text-sm
-                                    "
+                                    class="pm-input"
                                 ></select>
                             </div>
 
                             <div>
                                 <label
                                     for="tenant-funds-advance-amount"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="leases.amount">
                                         {{ __('ui.leases.amount') }}
@@ -5306,23 +4606,14 @@
                                     min="1"
                                     step="1"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="tenant-funds-advance-date"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="leases.date">
                                         {{ __('ui.leases.date') }}
@@ -5338,12 +4629,7 @@
                             placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                                     type="text"
                                     required
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                    "
+                                    class="pm-input"
                                 >
 
     <button
@@ -5380,13 +4666,7 @@
                                 <button
                                     id="tenant-funds-advance-submit"
                                     type="submit"
-                                    class="
-                                        rounded-lg bg-patrimoine-950
-                                        px-4 py-2.5
-                                        text-sm font-medium text-white
-                                        disabled:cursor-not-allowed
-                                        disabled:opacity-50
-                                    "
+                                    class="pm-button-primary"
                                 >
                                     <span data-i18n="leases.apply_consumable_advance">
                                         {{ __('ui.leases.apply_consumable_advance') }}
@@ -5397,4 +4677,16 @@
                     </section>
                 </div>
     </div>
+
+    <x-drawer-footer>
+        <button
+            id="tenant-funds-close-footer"
+            type="button"
+            class="pm-button-secondary"
+        >
+            <span data-i18n="actions.close">
+                {{ __('ui.actions.close') }}
+            </span>
+        </button>
+    </x-drawer-footer>
 </x-drawer>

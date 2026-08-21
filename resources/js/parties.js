@@ -33,9 +33,11 @@
 
 import {
     apiRequest,
+    closeDrawer,
     escapeHtml,
     formValue,
     nullableFormValue,
+    openDrawer,
     parseJsonResponse,
     setText,
     translate,
@@ -78,16 +80,6 @@ let editingPartyId =
  * such as managing_organisation.
  */
 let editingPartyRecord =
-    null;
-
-/*
- * Keep track of the pending drawer-close cleanup.
- *
- * If the Party drawer is reopened before its closing transition finishes,
- * the previous cleanup must be cancelled. Otherwise that stale timer can
- * remove the active state from the newly reopened drawer.
- */
-let partyDrawerCloseTimer =
     null;
 
 /*
@@ -274,7 +266,7 @@ async function loadParties(
         <div
             class="
                 py-12 text-center
-                text-sm text-slate-400
+                text-sm text-[var(--pm-text-subtle)]
             "
         >
             ${escapeHtml(
@@ -369,7 +361,7 @@ function renderParties(payload) {
             <div
                 class="
                     rounded-xl border
-                    border-dashed border-slate-200
+                    border-dashed border-[var(--pm-border)]
                     px-6 py-14 text-center
                 "
             >
@@ -378,8 +370,8 @@ function renderParties(payload) {
                         mx-auto flex h-11 w-11
                         items-center justify-center
                         rounded-full
-                        bg-patrimoine-50
-                        text-patrimoine-700
+                        bg-[var(--pm-surface-muted)]
+                        text-[var(--pm-accent)]
                     "
                 >
                     <svg
@@ -398,7 +390,7 @@ function renderParties(payload) {
                 <div
                     class="
                         mt-4 text-sm font-medium
-                        text-slate-900
+                        text-[var(--pm-text)]
                     "
                 >
                     ${escapeHtml(
@@ -411,7 +403,7 @@ function renderParties(payload) {
                 <div
                     class="
                         mt-1 text-sm
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                 >
                     ${escapeHtml(
@@ -866,7 +858,7 @@ function renderPartyPagination(
         >
             <div
                 class="
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -892,11 +884,7 @@ function renderPartyPagination(
                             : ''
                     }
                     class="
-                        rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2
-                        text-sm font-medium
-                        text-slate-700
+                        pm-button-secondary
                         disabled:cursor-not-allowed
                         disabled:opacity-40
                     "
@@ -917,11 +905,7 @@ function renderPartyPagination(
                             : ''
                     }
                     class="
-                        rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2
-                        text-sm font-medium
-                        text-slate-700
+                        pm-button-secondary
                         disabled:cursor-not-allowed
                         disabled:opacity-40
                     "
@@ -1202,172 +1186,51 @@ function configurePartyModal() {
     setText(
         'party-submit-button',
         translate(
-            'parties.save'
+            'actions.save'
         )
     );
 }
 
 /**
  * Display the Party modal.
+ *
+ * The open/close transition itself is owned by core.js
+ * (openDrawer / closeDrawer).
  */
 function showPartyModal() {
-    const drawer =
-        document.getElementById(
-            'party-modal'
-        );
-
-    if (! drawer) {
-        return;
-    }
-
-    /*
-     * A previous close transition may still have a pending cleanup.
-     *
-     * Cancel it before reopening so an old timer cannot remove
-     * pm-drawer-active from this newly opened drawer.
-     */
-    if (partyDrawerCloseTimer) {
-        window.clearTimeout(
-            partyDrawerCloseTimer
-        );
-
-        partyDrawerCloseTimer =
-            null;
-    }
-
-    /*
-     * Start from the shared closed drawer state.
-     */
-    drawer.classList.remove(
-        'pm-drawer-open',
-        'pm-drawer-closing'
-    );
-
-    drawer.removeAttribute(
-        'hidden'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-active'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'false'
-    );
-
-    document.body.classList.add(
-        'overflow-hidden'
+    openDrawer(
+        'party-modal'
     );
 
     updatePartyTypeFields();
-
-    /*
-     * Render the off-screen active state before starting
-     * the 800ms slide transition.
-     */
-    const panel =
-        drawer.querySelector(
-            '.pm-drawer-panel'
-        );
-
-    if (panel) {
-        void panel.getBoundingClientRect();
-    }
-
-    window.requestAnimationFrame(
-        () => {
-            window.requestAnimationFrame(
-                () => {
-                    drawer.classList.add(
-                        'pm-drawer-open'
-                    );
-                }
-            );
-        }
-    );
 }
 
 /**
  * Close and reset the Party modal.
  */
 function closePartyModal() {
-    const drawer =
-        document.getElementById(
-            'party-modal'
-        );
+    closeDrawer(
+        'party-modal',
+        {
+            /*
+             * Reset only after the slide-out completes so the form does
+             * not visibly clear while the drawer is still on screen.
+             */
+            onClosed: () => {
+                partyFormMode =
+                    'create';
 
-    if (
-        ! drawer
-        || ! drawer.classList.contains(
-            'pm-drawer-active'
-        )
-    ) {
-        return;
-    }
+                editingPartyId =
+                    null;
 
-    /*
-     * Slide the drawer out while immediately removing
-     * it from hit testing through pm-drawer-closing.
-     */
-    drawer.classList.remove(
-        'pm-drawer-open'
-    );
+                editingPartyRecord =
+                    null;
 
-    drawer.classList.add(
-        'pm-drawer-closing'
-    );
+                resetPartyForm();
 
-    drawer.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    /*
-     * Replace any previous pending cleanup with this close cycle.
-     */
-    if (partyDrawerCloseTimer) {
-        window.clearTimeout(
-            partyDrawerCloseTimer
-        );
-    }
-
-    partyDrawerCloseTimer =
-        window.setTimeout(
-        () => {
-            drawer.classList.remove(
-                'pm-drawer-active',
-                'pm-drawer-closing'
-            );
-
-            partyDrawerCloseTimer =
-                null;
-
-            const anotherDrawerOpen =
-                document.querySelector(
-                    '.pm-drawer.pm-drawer-active'
-                );
-
-            if (! anotherDrawerOpen) {
-                document.body.classList.remove(
-                    'overflow-hidden'
-                );
-            }
-
-            partyFormMode =
-                'create';
-
-            editingPartyId =
-                null;
-
-            editingPartyRecord =
-                null;
-
-            resetPartyForm();
-
-            configurePartyModal();
-        },
-        850
+                configurePartyModal();
+            },
+        }
     );
 }
 

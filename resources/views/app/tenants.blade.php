@@ -28,13 +28,13 @@
             <h1
                 class="
                     mt-1 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 <span data-i18n="tenants.heading">{{ __('ui.tenants.heading') }}</span>
             </h1>
 
-            <p class="mt-2 text-sm text-slate-500">
+            <p class="mt-2 text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="tenants.page_description">{{ __('ui.tenants.page_description') }}</span>
             </p>
         </div>
@@ -44,9 +44,9 @@
         id="tenant-error"
         class="
             mb-6 hidden rounded-xl
-            border border-red-200
-            bg-red-50 px-4 py-3
-            text-sm text-red-700
+            border border-[var(--pm-danger-border)]
+            bg-[var(--pm-danger-background)] px-4 py-3
+            text-sm text-[var(--pm-danger-text)]
         "
     ></div>
 
@@ -58,13 +58,13 @@
                 <h2
                     class="
                         text-base font-semibold
-                        text-slate-950
+                        text-[var(--pm-text)]
                     "
                 >
                     <span data-i18n="tenants.directory">{{ __('ui.tenants.directory') }}</span>
                 </h2>
 
-                <p class="mt-1 text-xs text-slate-500">
+                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                     <span data-i18n="tenants.search_description">
                         {{ __('ui.tenants.search_description') }}
                     </span>
@@ -96,7 +96,7 @@
                 <div
                     class="
                         px-5 py-8 text-center
-                        text-sm text-slate-400
+                        text-sm text-[var(--pm-text-subtle)]
                     "
                 >
                     <span data-i18n="tenants.loading">{{ __('ui.tenants.loading') }}</span>
@@ -125,8 +125,8 @@
                         class="
                             mx-auto flex h-12 w-12
                             items-center justify-center
-                            rounded-full bg-slate-100
-                            text-slate-500
+                            rounded-full bg-[var(--pm-surface-muted)]
+                            text-[var(--pm-text-muted)]
                         "
                     >
                         <svg
@@ -145,7 +145,7 @@
                     <h2
                         class="
                             mt-4 text-base font-semibold
-                            text-slate-900
+                            text-[var(--pm-text)]
                         "
                     >
                         <span data-i18n="tenants.select_tenant">{{ __('ui.tenants.select_tenant') }}</span>
@@ -154,7 +154,7 @@
                     <p
                         class="
                             mt-2 text-sm leading-6
-                            text-slate-500
+                            text-[var(--pm-text-muted)]
                         "
                     >
                         <span data-i18n="tenants.select_tenant_description">{{ __('ui.tenants.select_tenant_description') }}</span>
@@ -201,23 +201,23 @@
                 id="tenant-deposit-error"
                 class="
                     mb-5 hidden rounded-xl
-                    border border-red-200
-                    bg-red-50 px-4 py-3
-                    text-sm text-red-700
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
                 "
             ></div>
 
             <div
                 class="
                     mb-5 rounded-xl
-                    border border-slate-200
-                    bg-slate-50 px-4 py-4
+                    border border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] px-4 py-4
                 "
             >
                 <div
                     class="
                         text-xs font-medium uppercase
-                        tracking-wide text-slate-500
+                        tracking-wide text-[var(--pm-text-muted)]
                     "
                     data-i18n="tenants.transaction_context"
                 >
@@ -226,14 +226,14 @@
 
                 <div
                     id="tenant-deposit-tenant-context"
-                    class="mt-2 text-sm font-semibold text-slate-950"
+                    class="mt-2 text-sm font-semibold text-[var(--pm-text)]"
                 >
                     —
                 </div>
 
                 <div
                     id="tenant-deposit-property-context"
-                    class="mt-1 text-sm text-slate-500"
+                    class="mt-1 text-sm text-[var(--pm-text-muted)]"
                 ></div>
             </div>
 
@@ -241,12 +241,12 @@
                 <div>
                     <label
                         for="tenant-deposit-lease"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.lease">
                             {{ __('ui.tenants.lease') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <select
@@ -260,7 +260,7 @@
                     </select>
 
                     <p
-                        class="mt-1.5 text-xs text-slate-500"
+                        class="mt-1.5 text-xs text-[var(--pm-text-muted)]"
                         data-i18n="tenants.lease_first_help"
                     >
                         {{ __('ui.tenants.lease_first_help') }}
@@ -270,12 +270,12 @@
                 <div>
                     <label
                         for="tenant-deposit-account"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.destination">
                             {{ __('ui.tenants.destination') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <select
@@ -293,14 +293,14 @@
                 <div
                     class="
                         grid gap-3 rounded-xl
-                        border border-slate-200
-                        bg-slate-50 p-4
+                        border border-[var(--pm-border)]
+                        bg-[var(--pm-surface-subtle)] p-4
                         sm:grid-cols-3
                     "
                 >
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="tenants.current_balance"
                         >
                             {{ __('ui.tenants.current_balance') }}
@@ -308,7 +308,7 @@
 
                         <div
                             id="tenant-deposit-current-balance"
-                            class="mt-1 font-semibold text-slate-950"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -316,7 +316,7 @@
 
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="tenants.transaction_amount"
                         >
                             {{ __('ui.tenants.transaction_amount') }}
@@ -324,7 +324,7 @@
 
                         <div
                             id="tenant-deposit-preview-amount"
-                            class="mt-1 font-semibold text-slate-950"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -332,7 +332,7 @@
 
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="tenants.resulting_balance"
                         >
                             {{ __('ui.tenants.resulting_balance') }}
@@ -340,7 +340,7 @@
 
                         <div
                             id="tenant-deposit-resulting-balance"
-                            class="mt-1 font-semibold text-slate-950"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -350,12 +350,12 @@
                 <div>
                     <label
                         for="tenant-deposit-amount"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.amount">
                             {{ __('ui.tenants.amount') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
@@ -371,12 +371,12 @@
                 <div>
                     <label
                         for="tenant-deposit-method"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.payment_method_label">
                             {{ __('ui.tenants.payment_method_label') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <select
@@ -403,7 +403,7 @@
                 >
                     <label
                         for="tenant-deposit-cash-receiver"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.cash_receiver">
                             {{ __('ui.tenants.cash_receiver') }}
@@ -414,12 +414,12 @@
                         id="tenant-deposit-cash-receiver"
                         type="text"
                         readonly
-                        class="pm-input cursor-not-allowed bg-slate-50"
+                        class="pm-input cursor-not-allowed bg-[var(--pm-input-disabled)]"
                         placeholder="{{ __('ui.tenants.cash_receiver_automatic') }}"
                     >
 
                     <p
-                        class="mt-1.5 text-xs text-slate-500"
+                        class="mt-1.5 text-xs text-[var(--pm-text-muted)]"
                         data-i18n="tenants.cash_receiver_help"
                     >
                         {{ __('ui.tenants.cash_receiver_help') }}
@@ -429,12 +429,12 @@
                 <div>
                     <label
                         for="tenant-deposit-date"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.transaction_date">
                             {{ __('ui.tenants.transaction_date') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
@@ -452,13 +452,13 @@
                 <div>
                     <label
                         for="tenant-deposit-reference"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.reference">
                             {{ __('ui.tenants.reference') }}
                         </span>
 
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             {{ __('ui.tenants.optional') }}
                         </span>
                     </label>
@@ -474,13 +474,13 @@
                 <div>
                     <label
                         for="tenant-deposit-notes"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.notes">
                             {{ __('ui.tenants.notes') }}
                         </span>
 
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             {{ __('ui.tenants.optional') }}
                         </span>
                     </label>
@@ -501,8 +501,8 @@
                 data-close-tenant-transaction="tenant-deposit-drawer"
                 class="pm-button-secondary"
             >
-                <span data-i18n="tenants.cancel">
-                    {{ __('ui.tenants.cancel') }}
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
                 </span>
             </button>
 
@@ -555,22 +555,22 @@
                 id="tenant-withdrawal-error"
                 class="
                     mb-5 hidden rounded-xl
-                    border border-red-200
-                    bg-red-50 px-4 py-3
-                    text-sm text-red-700
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
                 "
             ></div>
 
             <div
                 class="
-                    mb-5 rounded-xl border border-slate-200
-                    bg-slate-50 px-4 py-4
+                    mb-5 rounded-xl border border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] px-4 py-4
                 "
             >
                 <div
                     class="
                         text-xs font-medium uppercase
-                        tracking-wide text-slate-500
+                        tracking-wide text-[var(--pm-text-muted)]
                     "
                     data-i18n="tenants.transaction_context"
                 >
@@ -579,14 +579,14 @@
 
                 <div
                     id="tenant-withdrawal-tenant-context"
-                    class="mt-2 text-sm font-semibold text-slate-950"
+                    class="mt-2 text-sm font-semibold text-[var(--pm-text)]"
                 >
                     —
                 </div>
 
                 <div
                     id="tenant-withdrawal-property-context"
-                    class="mt-1 text-sm text-slate-500"
+                    class="mt-1 text-sm text-[var(--pm-text-muted)]"
                 ></div>
             </div>
 
@@ -594,12 +594,12 @@
                 <div>
                     <label
                         for="tenant-withdrawal-lease"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.lease">
                             {{ __('ui.tenants.lease') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <select
@@ -616,12 +616,12 @@
                 <div>
                     <label
                         for="tenant-withdrawal-account"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.account">
                             {{ __('ui.tenants.account') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <select
@@ -639,13 +639,13 @@
                 <div
                     class="
                         grid gap-3 rounded-xl border
-                        border-slate-200 bg-slate-50
+                        border-[var(--pm-border)] bg-[var(--pm-surface-subtle)]
                         p-4 sm:grid-cols-3
                     "
                 >
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="tenants.current_balance"
                         >
                             {{ __('ui.tenants.current_balance') }}
@@ -653,7 +653,7 @@
 
                         <div
                             id="tenant-withdrawal-current-balance"
-                            class="mt-1 font-semibold text-slate-950"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -661,7 +661,7 @@
 
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="tenants.transaction_amount"
                         >
                             {{ __('ui.tenants.transaction_amount') }}
@@ -669,7 +669,7 @@
 
                         <div
                             id="tenant-withdrawal-preview-amount"
-                            class="mt-1 font-semibold text-slate-950"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -677,7 +677,7 @@
 
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="tenants.resulting_balance"
                         >
                             {{ __('ui.tenants.resulting_balance') }}
@@ -685,7 +685,7 @@
 
                         <div
                             id="tenant-withdrawal-resulting-balance"
-                            class="mt-1 font-semibold text-slate-950"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -695,12 +695,12 @@
                 <div>
                     <label
                         for="tenant-withdrawal-amount"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.amount">
                             {{ __('ui.tenants.amount') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
@@ -716,12 +716,12 @@
                 <div>
                     <label
                         for="tenant-withdrawal-method"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.payment_method_label">
                             {{ __('ui.tenants.payment_method_label') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <select
@@ -748,7 +748,7 @@
                 >
                     <label
                         for="tenant-withdrawal-cash-receiver"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.cash_receiver">
                             {{ __('ui.tenants.cash_receiver') }}
@@ -759,12 +759,12 @@
                         id="tenant-withdrawal-cash-receiver"
                         type="text"
                         readonly
-                        class="pm-input cursor-not-allowed bg-slate-50"
+                        class="pm-input cursor-not-allowed bg-[var(--pm-input-disabled)]"
                         placeholder="{{ __('ui.tenants.cash_receiver_automatic') }}"
                     >
 
                     <p
-                        class="mt-1.5 text-xs text-slate-500"
+                        class="mt-1.5 text-xs text-[var(--pm-text-muted)]"
                         data-i18n="tenants.cash_receiver_help"
                     >
                         {{ __('ui.tenants.cash_receiver_help') }}
@@ -774,12 +774,12 @@
                 <div>
                     <label
                         for="tenant-withdrawal-date"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.transaction_date">
                             {{ __('ui.tenants.transaction_date') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
@@ -797,13 +797,13 @@
                 <div>
                     <label
                         for="tenant-withdrawal-reference"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.reference">
                             {{ __('ui.tenants.reference') }}
                         </span>
 
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             {{ __('ui.tenants.optional') }}
                         </span>
                     </label>
@@ -819,13 +819,13 @@
                 <div>
                     <label
                         for="tenant-withdrawal-notes"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.notes">
                             {{ __('ui.tenants.notes') }}
                         </span>
 
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             {{ __('ui.tenants.optional') }}
                         </span>
                     </label>
@@ -846,8 +846,8 @@
                 data-close-tenant-transaction="tenant-withdrawal-drawer"
                 class="pm-button-secondary"
             >
-                <span data-i18n="tenants.cancel">
-                    {{ __('ui.tenants.cancel') }}
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
                 </span>
             </button>
 
@@ -900,22 +900,22 @@
                 id="tenant-adjustment-error"
                 class="
                     mb-5 hidden rounded-xl
-                    border border-red-200
-                    bg-red-50 px-4 py-3
-                    text-sm text-red-700
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
                 "
             ></div>
 
             <div
                 class="
-                    mb-5 rounded-xl border border-slate-200
-                    bg-slate-50 px-4 py-4
+                    mb-5 rounded-xl border border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] px-4 py-4
                 "
             >
                 <div
                     class="
                         text-xs font-medium uppercase
-                        tracking-wide text-slate-500
+                        tracking-wide text-[var(--pm-text-muted)]
                     "
                     data-i18n="tenants.transaction_context"
                 >
@@ -924,22 +924,22 @@
 
                 <div
                     id="tenant-adjustment-tenant-context"
-                    class="mt-2 text-sm font-semibold text-slate-950"
+                    class="mt-2 text-sm font-semibold text-[var(--pm-text)]"
                 >
                     —
                 </div>
 
                 <div
                     id="tenant-adjustment-property-context"
-                    class="mt-1 text-sm text-slate-500"
+                    class="mt-1 text-sm text-[var(--pm-text-muted)]"
                 ></div>
             </div>
 
             <div
                 class="
-                    mb-5 rounded-xl border border-amber-200
-                    bg-amber-50 px-4 py-3
-                    text-sm leading-6 text-amber-800
+                    mb-5 rounded-xl border border-[var(--pm-warning-border)]
+                    bg-[var(--pm-warning-background)] px-4 py-3
+                    text-sm leading-6 text-[var(--pm-warning-text)]
                 "
             >
                 <span data-i18n="tenants.adjustment_warning">
@@ -951,12 +951,12 @@
                 <div>
                     <label
                         for="tenant-adjustment-account"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.account">
                             {{ __('ui.tenants.account') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <select
@@ -973,13 +973,13 @@
                 <div
                     class="
                         grid gap-3 rounded-xl border
-                        border-slate-200 bg-slate-50
+                        border-[var(--pm-border)] bg-[var(--pm-surface-subtle)]
                         p-4 sm:grid-cols-3
                     "
                 >
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="tenants.current_balance"
                         >
                             {{ __('ui.tenants.current_balance') }}
@@ -987,7 +987,7 @@
 
                         <div
                             id="tenant-adjustment-current-balance"
-                            class="mt-1 font-semibold text-slate-950"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -995,7 +995,7 @@
 
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="tenants.correct_balance"
                         >
                             {{ __('ui.tenants.correct_balance') }}
@@ -1003,7 +1003,7 @@
 
                         <div
                             id="tenant-adjustment-preview-correct"
-                            class="mt-1 font-semibold text-slate-950"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -1011,7 +1011,7 @@
 
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="tenants.calculated_adjustment"
                         >
                             {{ __('ui.tenants.calculated_adjustment') }}
@@ -1019,7 +1019,7 @@
 
                         <div
                             id="tenant-adjustment-difference"
-                            class="mt-1 font-semibold text-slate-950"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -1029,12 +1029,12 @@
                 <div>
                     <label
                         for="tenant-adjustment-corrected-balance"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.correct_balance">
                             {{ __('ui.tenants.correct_balance') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
@@ -1049,12 +1049,12 @@
                 <div>
                     <label
                         for="tenant-adjustment-reason"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.reason">
                             {{ __('ui.tenants.reason') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <textarea
@@ -1071,13 +1071,13 @@
                 <div>
                     <label
                         for="tenant-adjustment-reference"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.reference">
                             {{ __('ui.tenants.reference') }}
                         </span>
 
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             {{ __('ui.tenants.optional') }}
                         </span>
                     </label>
@@ -1098,8 +1098,8 @@
                 data-close-tenant-transaction="tenant-adjustment-drawer"
                 class="pm-button-secondary"
             >
-                <span data-i18n="tenants.cancel">
-                    {{ __('ui.tenants.cancel') }}
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
                 </span>
             </button>
 
@@ -1154,24 +1154,24 @@
                 id="tenant-security-application-error"
                 class="
                     mb-5 hidden rounded-xl
-                    border border-red-200
-                    bg-red-50 px-4 py-3
-                    text-sm text-red-700
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
                 "
             ></div>
 
             <div
                 class="
                     mb-5 rounded-xl
-                    border border-slate-200
-                    bg-slate-50
+                    border border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)]
                     px-4 py-4
                 "
             >
                 <div
                     class="
                         text-xs font-medium uppercase
-                        tracking-wide text-slate-500
+                        tracking-wide text-[var(--pm-text-muted)]
                     "
                     data-i18n="tenants.transaction_context"
                 >
@@ -1180,14 +1180,14 @@
 
                 <div
                     id="tenant-security-application-tenant-context"
-                    class="mt-2 text-sm font-semibold text-slate-950"
+                    class="mt-2 text-sm font-semibold text-[var(--pm-text)]"
                 >
                     —
                 </div>
 
                 <div
                     id="tenant-security-application-property-context"
-                    class="mt-1 text-sm text-slate-500"
+                    class="mt-1 text-sm text-[var(--pm-text-muted)]"
                 >
                     —
                 </div>
@@ -1196,7 +1196,7 @@
             <div class="space-y-5">
                 <div>
                     <div
-                        class="mb-1.5 text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                         data-i18n="tenants.security_deposit_available"
                     >
                         {{ __('ui.tenants.security_deposit_available') }}
@@ -1206,10 +1206,10 @@
                         id="tenant-security-application-held-balance"
                         class="
                             rounded-xl
-                            border border-slate-200
-                            bg-slate-50
+                            border border-[var(--pm-border)]
+                            bg-[var(--pm-surface-subtle)]
                             px-4 py-3
-                            text-lg font-semibold text-slate-950
+                            text-lg font-semibold text-[var(--pm-text)]
                         "
                     >
                         —
@@ -1219,12 +1219,12 @@
                 <div>
                     <label
                         for="tenant-security-application-invoice"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.receivable">
                             {{ __('ui.tenants.receivable') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <select
@@ -1242,12 +1242,12 @@
                 <div
                     class="
                         rounded-xl
-                        border border-slate-200
-                        bg-slate-50 p-4
+                        border border-[var(--pm-border)]
+                        bg-[var(--pm-surface-subtle)] p-4
                     "
                 >
                     <div
-                        class="text-xs text-slate-500"
+                        class="text-xs text-[var(--pm-text-muted)]"
                         data-i18n="tenants.receivable_outstanding"
                     >
                         {{ __('ui.tenants.receivable_outstanding') }}
@@ -1255,7 +1255,7 @@
 
                     <div
                         id="tenant-security-application-invoice-balance"
-                        class="mt-1 font-semibold text-slate-950"
+                        class="mt-1 font-semibold text-[var(--pm-text)]"
                     >
                         —
                     </div>
@@ -1264,12 +1264,12 @@
                 <div>
                     <label
                         for="tenant-security-application-amount"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.transaction_amount">
                             {{ __('ui.tenants.transaction_amount') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
@@ -1285,14 +1285,14 @@
                 <div
                     class="
                         grid gap-3 rounded-xl
-                        border border-slate-200
-                        bg-slate-50 p-4
+                        border border-[var(--pm-border)]
+                        bg-[var(--pm-surface-subtle)] p-4
                         sm:grid-cols-2
                     "
                 >
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="tenants.resulting_security_deposit"
                         >
                             {{ __('ui.tenants.resulting_security_deposit') }}
@@ -1300,7 +1300,7 @@
 
                         <div
                             id="tenant-security-application-resulting-deposit"
-                            class="mt-1 font-semibold text-slate-950"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -1308,7 +1308,7 @@
 
                     <div>
                         <div
-                            class="text-xs text-slate-500"
+                            class="text-xs text-[var(--pm-text-muted)]"
                             data-i18n="tenants.resulting_receivable"
                         >
                             {{ __('ui.tenants.resulting_receivable') }}
@@ -1316,7 +1316,7 @@
 
                         <div
                             id="tenant-security-application-resulting-receivable"
-                            class="mt-1 font-semibold text-slate-950"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
                         >
                             —
                         </div>
@@ -1326,12 +1326,12 @@
                 <div>
                     <label
                         for="tenant-security-application-date"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.transaction_date">
                             {{ __('ui.tenants.transaction_date') }}
                         </span>
-                        <span class="text-red-500">*</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
                     <input
@@ -1346,13 +1346,13 @@
                 <div>
                     <label
                         for="tenant-security-application-notes"
-                        class="mb-1.5 block text-sm font-medium text-slate-700"
+                        class="pm-field-label"
                     >
                         <span data-i18n="tenants.notes">
                             {{ __('ui.tenants.notes') }}
                         </span>
 
-                        <span class="text-xs text-slate-400">
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
                             {{ __('ui.tenants.optional') }}
                         </span>
                     </label>
@@ -1373,8 +1373,8 @@
                 data-close-tenant-transaction="tenant-security-application-drawer"
                 class="pm-button-secondary"
             >
-                <span data-i18n="tenants.cancel">
-                    {{ __('ui.tenants.cancel') }}
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
                 </span>
             </button>
 

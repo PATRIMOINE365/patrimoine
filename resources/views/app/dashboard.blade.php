@@ -17,7 +17,7 @@
             <p
                 class="
                     text-sm font-medium
-                    text-patrimoine-700
+                    text-[var(--pm-accent)]
                 "
             >
                 <span data-i18n="dashboard.overview">
@@ -28,7 +28,7 @@
             <h1
                 class="
                     mt-1 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 <span data-i18n="dashboard.heading">
@@ -36,7 +36,7 @@
                 </span>
             </h1>
 
-            <p class="mt-2 text-sm text-slate-500">
+            <p class="mt-2 text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.description">
                     {{ __('ui.dashboard.description') }}
                 </span>
@@ -47,7 +47,7 @@
             id="dashboard-date"
             class="
                 text-sm font-medium
-                text-slate-500
+                text-[var(--pm-text-muted)]
             "
         ></div>
     </div>
@@ -56,9 +56,10 @@
         id="dashboard-error"
         class="
             mb-6 hidden rounded-xl
-            border border-red-200
-            bg-red-50 px-4 py-3
-            text-sm text-red-700
+            border px-4 py-3 text-sm
+            border-[var(--pm-danger-border)]
+            bg-[var(--pm-danger-background)]
+            text-[var(--pm-danger-text)]
         "
     ></div>
 
@@ -70,13 +71,8 @@
             xl:grid-cols-4
         "
     >
-        <div
-            class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
-            "
-        >
-            <div class="text-sm text-slate-500">
+        <div class="pm-card p-5">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.buildings">
                     {{ __('ui.dashboard.buildings') }}
                 </span>
@@ -86,20 +82,15 @@
                 id="metric-buildings"
                 class="
                     mt-3 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
             </div>
         </div>
 
-        <div
-            class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
-            "
-        >
-            <div class="text-sm text-slate-500">
+        <div class="pm-card p-5">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.total_units">
                     {{ __('ui.dashboard.total_units') }}
                 </span>
@@ -109,20 +100,15 @@
                 id="metric-units"
                 class="
                     mt-3 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
             </div>
         </div>
 
-        <div
-            class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
-            "
-        >
-            <div class="text-sm text-slate-500">
+        <div class="pm-card p-5">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.occupied_units">
                     {{ __('ui.dashboard.occupied_units') }}
                 </span>
@@ -132,20 +118,15 @@
                 id="metric-occupied"
                 class="
                     mt-3 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
             </div>
         </div>
 
-        <div
-            class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
-            "
-        >
-            <div class="text-sm text-slate-500">
+        <div class="pm-card p-5">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.vacant_units">
                     {{ __('ui.dashboard.vacant_units') }}
                 </span>
@@ -155,7 +136,7 @@
                 id="metric-vacant"
                 class="
                     mt-3 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
@@ -171,13 +152,8 @@
             xl:grid-cols-4
         "
     >
-        <div
-            class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
-            "
-        >
-            <div class="text-sm text-slate-500">
+        <div class="pm-card p-5">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.rent_due">
                     {{ __('ui.dashboard.rent_due') }}
                 </span>
@@ -187,20 +163,15 @@
                 id="metric-rent-due"
                 class="
                     mt-3 text-2xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
             </div>
         </div>
 
-        <div
-            class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
-            "
-        >
-            <div class="text-sm text-slate-500">
+        <div class="pm-card p-5">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.rent_overdue">
                     {{ __('ui.dashboard.rent_overdue') }}
                 </span>
@@ -210,20 +181,15 @@
                 id="metric-rent-overdue"
                 class="
                     mt-3 text-2xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
             </div>
         </div>
 
-        <div
-            class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
-            "
-        >
-            <div class="text-sm text-slate-500">
+        <div class="pm-card p-5">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.collected_this_month">
                     {{ __('ui.dashboard.collected_this_month') }}
                 </span>
@@ -233,20 +199,15 @@
                 id="metric-collected"
                 class="
                     mt-3 text-2xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
             </div>
         </div>
 
-        <div
-            class="
-                rounded-xl border border-slate-200
-                bg-white p-5 shadow-sm
-            "
-        >
-            <div class="text-sm text-slate-500">
+        <div class="pm-card p-5">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.owner_funds_held">
                     {{ __('ui.dashboard.owner_funds_held') }}
                 </span>
@@ -256,7 +217,7 @@
                 id="metric-owner-funds"
                 class="
                     mt-3 text-2xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
@@ -267,25 +228,20 @@
     <div
         class="
             mt-6 grid gap-6
-            xl:grid-cols-2
+            lg:grid-cols-2
         "
     >
-        <section
-            class="
-                rounded-xl border border-slate-200
-                bg-white shadow-sm
-            "
-        >
+        <section class="pm-card">
             <div
                 class="
-                    border-b border-slate-100
+                    border-b border-[var(--pm-border-subtle)]
                     px-5 py-4
                 "
             >
                 <h2
                     class="
                         text-base font-semibold
-                        text-slate-950
+                        text-[var(--pm-text)]
                     "
                 >
                     <span data-i18n="dashboard.overdue_rent">
@@ -293,7 +249,7 @@
                     </span>
                 </h2>
 
-                <p class="mt-1 text-xs text-slate-500">
+                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                     <span data-i18n="dashboard.overdue_description">
                         {{ __('ui.dashboard.overdue_description') }}
                     </span>
@@ -304,7 +260,7 @@
                 id="overdue-list"
                 class="p-5"
             >
-                <div class="text-sm text-slate-400">
+                <div class="text-sm text-[var(--pm-text-subtle)]">
                     <span data-i18n="dashboard.loading">
                         {{ __('ui.dashboard.loading') }}
                     </span>
@@ -312,22 +268,17 @@
             </div>
         </section>
 
-        <section
-            class="
-                rounded-xl border border-slate-200
-                bg-white shadow-sm
-            "
-        >
+        <section class="pm-card">
             <div
                 class="
-                    border-b border-slate-100
+                    border-b border-[var(--pm-border-subtle)]
                     px-5 py-4
                 "
             >
                 <h2
                     class="
                         text-base font-semibold
-                        text-slate-950
+                        text-[var(--pm-text)]
                     "
                 >
                     <span data-i18n="dashboard.upcoming_rent">
@@ -335,7 +286,7 @@
                     </span>
                 </h2>
 
-                <p class="mt-1 text-xs text-slate-500">
+                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                     <span data-i18n="dashboard.upcoming_description">
                         {{ __('ui.dashboard.upcoming_description') }}
                     </span>
@@ -346,7 +297,7 @@
                 id="upcoming-list"
                 class="p-5"
             >
-                <div class="text-sm text-slate-400">
+                <div class="text-sm text-[var(--pm-text-subtle)]">
                     <span data-i18n="dashboard.loading">
                         {{ __('ui.dashboard.loading') }}
                     </span>

@@ -495,11 +495,11 @@ function userRow(user) {
                         data-user-id="${escapeHtml(user.id)}"
                         class="
                             rounded-lg border
-                            border-slate-200
-                            bg-white px-3 py-2
+                            border-[var(--pm-border)]
+                            bg-[var(--pm-surface)] px-3 py-2
                             text-xs font-medium
-                            text-slate-700
-                            hover:bg-slate-50
+                            text-[var(--pm-text-secondary)]
+                            hover:bg-[var(--pm-hover)]
                         "
                     >
                         ${escapeHtml(

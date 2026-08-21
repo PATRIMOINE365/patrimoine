@@ -16,7 +16,7 @@
     ])
 </head>
 
-<body class="min-h-screen bg-stone-50 font-sans text-slate-900">
+<body class="min-h-screen bg-[var(--pm-page)] font-sans text-[var(--pm-text)]">
 
     <main class="min-h-screen px-6 py-10 sm:px-10 lg:px-16">
 
@@ -39,7 +39,7 @@
                             Patrimoine
                         </div>
 
-                        <div class="text-sm text-slate-500">
+                        <div class="text-sm text-[var(--pm-text-muted)]">
                             Property Management
                         </div>
                     </div>
@@ -48,13 +48,13 @@
                 <h1
                     class="
                         text-3xl font-semibold tracking-tight
-                        text-slate-950
+                        text-[var(--pm-text)]
                     "
                 >
                     Initial Setup
                 </h1>
 
-                <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+                <p class="mt-2 max-w-2xl text-sm leading-6 text-[var(--pm-text-muted)]">
                     Create the first Administrator and configure the
                     Managing Organisation. This setup can be completed only
                     once.
@@ -64,8 +64,8 @@
             <div
                 id="setup-loading"
                 class="
-                    rounded-xl border border-slate-200 bg-white
-                    px-6 py-8 text-sm text-slate-500 shadow-sm
+                    pm-card px-6 py-8
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 Checking installation status…
@@ -75,27 +75,28 @@
                 id="setup-error"
                 class="
                     mb-6 hidden rounded-lg
-                    border border-red-200 bg-red-50
-                    px-4 py-3 text-sm text-red-700
+                    border px-4 py-3 text-sm
+                    border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)]
+                    text-[var(--pm-danger-text)]
                 "
             ></div>
 
             <form
                 id="setup-form"
                 class="
-                    hidden space-y-7 rounded-xl
-                    border border-slate-200 bg-white
-                    p-6 shadow-sm sm:p-8
+                    pm-card hidden space-y-7
+                    p-6 sm:p-8
                 "
             >
 
                 {{-- Administrator --}}
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-950">
+                    <h2 class="text-lg font-semibold text-[var(--pm-text)]">
                         Administrator
                     </h2>
 
-                    <p class="mt-1 text-sm text-slate-500">
+                    <p class="mt-1 text-sm text-[var(--pm-text-muted)]">
                         This account will be the first Patrimoine Administrator.
                     </p>
 
@@ -104,13 +105,10 @@
                         <div>
                             <label
                                 for="administrator-name"
-                                class="
-                                    mb-1.5 block text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 Name
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <input
@@ -118,26 +116,17 @@
                                 type="text"
                                 required
                                 autocomplete="name"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5 text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2 focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div>
                             <label
                                 for="administrator-email"
-                                class="
-                                    mb-1.5 block text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 Email Address
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <input
@@ -145,26 +134,17 @@
                                 type="email"
                                 required
                                 autocomplete="email"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5 text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2 focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div>
                             <label
                                 for="administrator-password"
-                                class="
-                                    mb-1.5 block text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 Password
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <input
@@ -172,16 +152,10 @@
                                 type="password"
                                 required
                                 autocomplete="new-password"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5 text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2 focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
 
-                            <p class="mt-1.5 text-xs text-slate-500">
+                            <p class="mt-1.5 text-xs text-[var(--pm-text-muted)]">
                                 At least 12 characters including uppercase,
                                 lowercase, a number and a symbol.
                             </p>
@@ -190,13 +164,10 @@
                         <div>
                             <label
                                 for="administrator-password-confirmation"
-                                class="
-                                    mb-1.5 block text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 Confirm Password
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <input
@@ -204,13 +175,7 @@
                                 type="password"
                                 required
                                 autocomplete="new-password"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5 text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2 focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
@@ -218,13 +183,13 @@
                 </section>
 
                 {{-- Managing Organisation --}}
-                <section class="border-t border-slate-100 pt-7">
+                <section class="border-t border-[var(--pm-border-subtle)] pt-7">
 
-                    <h2 class="text-lg font-semibold text-slate-950">
+                    <h2 class="text-lg font-semibold text-[var(--pm-text)]">
                         Managing Organisation
                     </h2>
 
-                    <p class="mt-1 text-sm text-slate-500">
+                    <p class="mt-1 text-sm text-[var(--pm-text-muted)]">
                         The organisation operating this Patrimoine installation.
                     </p>
 
@@ -233,62 +198,41 @@
                         <div class="md:col-span-2">
                             <label
                                 for="organisation-legal-name"
-                                class="
-                                    mb-1.5 block text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 Legal Name
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <input
                                 id="organisation-legal-name"
                                 type="text"
                                 required
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5 text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2 focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div class="md:col-span-2">
                             <label
                                 for="organisation-address"
-                                class="
-                                    mb-1.5 block text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 Address
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <textarea
                                 id="organisation-address"
                                 required
                                 rows="3"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5 text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2 focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             ></textarea>
                         </div>
 
                         <div>
                             <label
                                 for="organisation-phone"
-                                class="
-                                    mb-1.5 block text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 Organisation Phone
                             </label>
@@ -296,23 +240,14 @@
                             <input
                                 id="organisation-phone"
                                 type="text"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5 text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2 focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div>
                             <label
                                 for="organisation-email"
-                                class="
-                                    mb-1.5 block text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 Organisation Email
                             </label>
@@ -320,91 +255,58 @@
                             <input
                                 id="organisation-email"
                                 type="email"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5 text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2 focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div>
                             <label
                                 for="contact-person-name"
-                                class="
-                                    mb-1.5 block text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 Contact Person
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <input
                                 id="contact-person-name"
                                 type="text"
                                 required
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5 text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2 focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div>
                             <label
                                 for="contact-person-phone"
-                                class="
-                                    mb-1.5 block text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 Contact Phone
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <input
                                 id="contact-person-phone"
                                 type="text"
                                 required
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5 text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2 focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div class="md:col-span-2">
                             <label
                                 for="contact-person-email"
-                                class="
-                                    mb-1.5 block text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 Contact Email
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <input
                                 id="contact-person-email"
                                 type="email"
                                 required
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5 text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2 focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
@@ -412,13 +314,13 @@
                 </section>
 
                 {{-- Application settings --}}
-                <section class="border-t border-slate-100 pt-7">
+                <section class="border-t border-[var(--pm-border-subtle)] pt-7">
 
-                    <h2 class="text-lg font-semibold text-slate-950">
+                    <h2 class="text-lg font-semibold text-[var(--pm-text)]">
                         Application Settings
                     </h2>
 
-                    <p class="mt-1 text-sm text-slate-500">
+                    <p class="mt-1 text-sm text-[var(--pm-text-muted)]">
                         Language and currency apply to the entire Managing
                         Organisation and remain independent.
                     </p>
@@ -428,25 +330,16 @@
                         <div>
                             <label
                                 for="setup-language"
-                                class="
-                                    mb-1.5 block text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 Language
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <select
                                 id="setup-language"
                                 required
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200 bg-white
-                                    px-3.5 py-2.5 text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2 focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                                 <option value="en" selected>English</option>
                                 <option value="fr">Français</option>
@@ -456,25 +349,16 @@
                         <div>
                             <label
                                 for="setup-currency"
-                                class="
-                                    mb-1.5 block text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 Currency
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <select
                                 id="setup-currency"
                                 required
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200 bg-white
-                                    px-3.5 py-2.5 text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2 focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                                 <option value="GHS" selected>GHS</option>
                                 <option value="FCFA">FCFA</option>
@@ -484,13 +368,10 @@
                         <div>
                             <label
                                 for="setup-vat-rate"
-                                class="
-                                    mb-1.5 block text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 Default VAT Rate %
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <input
@@ -501,40 +382,24 @@
                                 step="0.01"
                                 value="18"
                                 required
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5 text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2 focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                     </div>
                 </section>
 
-                <section class="border-t border-slate-100 pt-7">
+                <section class="border-t border-[var(--pm-border-subtle)] pt-7">
 
                     <button
                         id="setup-submit"
                         type="submit"
-                        class="
-                            inline-flex items-center justify-center
-                            rounded-lg bg-patrimoine-950
-                            px-5 py-3 text-sm font-semibold text-white
-                            shadow-sm transition
-                            hover:bg-patrimoine-800
-                            focus:outline-none
-                            focus:ring-4 focus:ring-patrimoine-700/20
-                            disabled:cursor-not-allowed
-                            disabled:opacity-60
-                        "
+                        class="pm-button-primary"
                     >
                         Complete Setup
                     </button>
 
-                    <p class="mt-3 text-xs leading-5 text-slate-500">
+                    <p class="mt-3 text-xs leading-5 text-[var(--pm-text-muted)]">
                         After setup, use the administrator account above to
                         sign in. The login screen will follow the selected
                         organisation language.

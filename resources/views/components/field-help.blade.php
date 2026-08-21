@@ -49,14 +49,14 @@
         shrink-0 items-center justify-center
         rounded-full
         border border-patrimoine-300
-        bg-white
+        bg-[var(--pm-surface)]
         text-[11px] font-semibold
         leading-none
-        text-patrimoine-700
+        text-[var(--pm-accent)]
         transition
         hover:border-patrimoine-500
-        hover:bg-patrimoine-50
-        hover:text-patrimoine-900
+        hover:bg-[var(--pm-hover)]
+        hover:text-[var(--pm-text)]
         focus:outline-none
         focus:ring-2
         focus:ring-patrimoine-200

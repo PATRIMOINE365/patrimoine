@@ -80,7 +80,6 @@ import {
 } from './financial-journal.js';
 
 import {
-    initializeChangePassword,
     initializeForgotPassword,
     initializeInvitation,
     initializeResetPassword,
@@ -177,7 +176,5 @@ document.addEventListener(
         await initializeActivityLog();
 
         await initializeFinancialJournal();
-
-        initializeChangePassword();
     }
 );

@@ -2214,6 +2214,10 @@ export const translations = {
 
         'properties.existing_unit_name_placeholder':
             'e.g. Apartment A2',
+        'properties.no_properties_found':
+            'No properties found',
+        'properties.no_properties_hint':
+            'Add a property or change your search.',
 
         'properties.optional_unit_description':
             'Optional unit description',
@@ -3330,6 +3334,10 @@ export const translations = {
 
         'properties.existing_unit_name_placeholder':
             'p. ex. Appartement A2',
+        'properties.no_properties_found':
+            'Aucune propriété trouvée',
+        'properties.no_properties_hint':
+            'Ajoutez une propriété ou modifiez votre recherche.',
 
         'properties.optional_unit_description':
             'Description facultative de l’unité',

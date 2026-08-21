@@ -25,9 +25,11 @@
 
 import {
     apiRequest,
+    closeDrawer,
     escapeHtml,
     formValue,
     nullableFormValue,
+    openDrawer,
     parseJsonResponse,
     setText,
     translate,
@@ -181,7 +183,7 @@ async function loadProperties(
         <div
             class="
                 py-10 text-center
-                text-sm text-slate-400
+                text-sm text-[var(--pm-text-subtle)]
             "
         >
             ${escapeHtml(
@@ -305,7 +307,7 @@ function renderProperties(
             <div
                 class="
                     rounded-lg border
-                    border-dashed border-slate-200
+                    border-dashed border-[var(--pm-border)]
                     px-6 py-14 text-center
                 "
             >
@@ -333,19 +335,19 @@ function renderProperties(
                 <div
                     class="
                         mt-4 text-sm font-medium
-                        text-slate-900
+                        text-[var(--pm-text)]
                     "
                 >
-                    No properties found
+                    ${translate('properties.no_properties_found')}
                 </div>
 
                 <div
                     class="
                         mt-1 text-sm
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                 >
-                    Add a property or change your search.
+                    ${translate('properties.no_properties_hint')}
                 </div>
             </div>
         `;
@@ -636,9 +638,7 @@ function propertyCard(
     return `
         <article
             class="
-                mb-4 overflow-hidden
-                rounded-xl border border-slate-200
-                bg-white
+                pm-card mb-4 overflow-hidden
                 last:mb-0
             "
         >
@@ -665,7 +665,7 @@ function propertyCard(
                         <h3
                             class="
                                 text-base font-semibold
-                                text-slate-950
+                                text-[var(--pm-text)]
                             "
                         >
                             ${escapeHtml(
@@ -698,7 +698,7 @@ function propertyCard(
                     <div
                         class="
                             mt-1 flex items-center gap-2
-                            text-sm text-slate-500
+                            text-sm text-[var(--pm-text-muted)]
                         "
                     >
                         <svg
@@ -743,16 +743,7 @@ function propertyCard(
                         data-building-id="${escapeHtml(
                             building.id
                         )}"
-                        class="
-                            inline-flex items-center gap-2
-                            rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2
-                            text-sm font-medium
-                            text-slate-700
-                            transition
-                            hover:bg-slate-50
-                        "
+                        class="pm-button-secondary gap-2"
                     >
                         <svg
                             class="h-4 w-4"
@@ -781,16 +772,7 @@ function propertyCard(
                         data-building-name="${escapeHtml(
                             buildingName
                         )}"
-                        class="
-                            inline-flex items-center gap-2
-                            rounded-lg
-                            bg-patrimoine-950
-                            px-3.5 py-2
-                            text-sm font-medium
-                            text-white
-                            transition
-                            hover:bg-patrimoine-900
-                        "
+                        class="pm-button-primary gap-2"
                     >
                         <svg
                             class="h-4 w-4"
@@ -821,16 +803,7 @@ function propertyCard(
                                 ? 'true'
                                 : 'false'
                         }"
-                        class="
-                            inline-flex items-center
-                            gap-2 rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2
-                            text-sm font-medium
-                            text-slate-700
-                            transition
-                            hover:bg-slate-50
-                        "
+                        class="pm-button-secondary gap-2"
                     >
                         <span
                             data-property-toggle-label
@@ -878,8 +851,8 @@ function propertyCard(
                             ? ''
                             : 'hidden'
                     }
-                    border-t border-slate-100
-                    bg-slate-50/60
+                    border-t border-[var(--pm-border-subtle)]
+                    bg-[var(--pm-surface-subtle)]
                     px-5 py-4
                 "
             >
@@ -887,7 +860,7 @@ function propertyCard(
                     class="
                         mb-2 text-xs font-semibold
                         uppercase tracking-[0.12em]
-                        text-slate-400
+                        text-[var(--pm-text-subtle)]
                     "
                 >
                     ${escapeHtml(
@@ -920,7 +893,7 @@ function renderPropertyOwners(
         return `
             <span
                 class="
-                    text-xs text-slate-400
+                    text-xs text-[var(--pm-text-subtle)]
                 "
             >
                 ${escapeHtml(
@@ -955,10 +928,10 @@ function renderPropertyOwners(
                         class="
                             inline-flex items-center
                             rounded-full
-                            bg-slate-100
+                            bg-[var(--pm-surface-muted)]
                             px-2.5 py-1
                             text-xs font-medium
-                            text-slate-600
+                            text-[var(--pm-text-secondary)]
                         "
                     >
                         ${escapeHtml(
@@ -1006,7 +979,7 @@ function renderPropertyUnits(
             <div
                 class="
                     py-5 text-sm
-                    text-slate-400
+                    text-[var(--pm-text-subtle)]
                 "
             >
                 ${escapeHtml(
@@ -1036,7 +1009,7 @@ function renderPropertyUnits(
                     class="
                         flex items-center
                         justify-between gap-4
-                        border-b border-slate-100
+                        border-b border-[var(--pm-border-subtle)]
                         px-3 py-3 last:border-b-0
                         ${
                             matchesSearch
@@ -1053,7 +1026,7 @@ function renderPropertyUnits(
                         <div
                             class="
                                 text-sm font-medium
-                                text-slate-900
+                                text-[var(--pm-text)]
                             "
                         >
                             ${escapeHtml(
@@ -1070,7 +1043,7 @@ function renderPropertyUnits(
                                     <div
                                         class="
                                             mt-1 text-xs
-                                            text-slate-500
+                                            text-[var(--pm-text-muted)]
                                         "
                                     >
                                         ${escapeHtml(
@@ -1091,10 +1064,10 @@ function renderPropertyUnits(
                         <span
                             class="
                                 rounded-full
-                                bg-slate-100
+                                bg-[var(--pm-surface-muted)]
                                 px-2.5 py-1
                                 text-xs font-medium
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             ${escapeHtml(
@@ -1118,12 +1091,12 @@ function renderPropertyUnits(
                             )}"
                             class="
                                 rounded-lg
-                                border border-slate-200
-                                bg-white px-3 py-1.5
+                                border border-[var(--pm-border)]
+                                bg-[var(--pm-surface)] px-3 py-1.5
                                 text-xs font-medium
-                                text-slate-700
+                                text-[var(--pm-text-secondary)]
                                 transition
-                                hover:bg-slate-50
+                                hover:bg-[var(--pm-hover)]
                             "
                         >
                             ${escapeHtml(
@@ -1313,7 +1286,7 @@ function renderPropertiesPagination(
         >
             <div
                 class="
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -1340,11 +1313,7 @@ function renderPropertiesPagination(
                             : ''
                     }
                     class="
-                        rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2
-                        text-sm font-medium
-                        text-slate-700
+                        pm-button-secondary
                         disabled:cursor-not-allowed
                         disabled:opacity-40
                     "
@@ -1365,11 +1334,7 @@ function renderPropertiesPagination(
                             : ''
                     }
                     class="
-                        rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2
-                        text-sm font-medium
-                        text-slate-700
+                        pm-button-secondary
                         disabled:cursor-not-allowed
                         disabled:opacity-40
                     "
@@ -1733,45 +1698,8 @@ async function openEditPropertyModal(
  * Make the shared property modal visible.
  */
 function showPropertyModal() {
-    const drawer =
-        document.getElementById(
-            'property-modal'
-        );
-
-    if (! drawer) {
-        return;
-    }
-
-    drawer.classList.remove(
-        'pm-drawer-open',
-        'pm-drawer-closing'
-    );
-
-    drawer.removeAttribute(
-        'hidden'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-active'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'false'
-    );
-
-    document.body.classList.add(
-        'overflow-hidden'
-    );
-
-    /*
-     * Force the active drawer state to render before applying the open
-     * transition. This matches the working Owner drawer lifecycle.
-     */
-    void drawer.offsetWidth;
-
-    drawer.classList.add(
-        'pm-drawer-open'
+    openDrawer(
+        'property-modal'
     );
 }
 
@@ -1867,49 +1795,20 @@ function populatePropertyForm(
  * Close and reset the Property modal.
  */
 function closePropertyModal() {
-    const drawer =
-        document.getElementById(
-            'property-modal'
-        );
+    closeDrawer(
+        'property-modal',
+        {
+            onClosed: () => {
+                resetPropertyForm();
 
-    if (! drawer) {
-        return;
-    }
+                editingPropertyId =
+                    null;
 
-    drawer.classList.remove(
-        'pm-drawer-open'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-closing'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    window.setTimeout(
-        () => {
-            drawer.classList.remove(
-                'pm-drawer-active',
-                'pm-drawer-closing'
-            );
-
-            document.body.classList.remove(
-                'overflow-hidden'
-            );
-
-            resetPropertyForm();
-
-            editingPropertyId =
-                null;
-
-            configurePropertyModal(
-                'create'
-            );
-        },
-        220
+                configurePropertyModal(
+                    'create'
+                );
+            },
+        }
     );
 }
 
@@ -2074,16 +1973,12 @@ function addPropertyOwnerRow(
         );
 
     row.className =
-        'property-owner-row grid gap-3 rounded-xl border border-slate-200 bg-slate-50/50 p-3 sm:grid-cols-[1fr_150px_auto] sm:items-end';
+        'property-owner-row grid gap-3 rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface-subtle)] p-3 sm:grid-cols-[1fr_150px_auto] sm:items-end';
 
     row.innerHTML = `
         <div>
             <label
-                class="
-                    mb-1.5 block
-                    text-xs font-medium
-                    text-slate-600
-                "
+                class="pm-field-label"
             >
                 ${escapeHtml(
                     translate(
@@ -2096,16 +1991,7 @@ function addPropertyOwnerRow(
                 <select
                     data-owner-party
                     required
-                    class="
-                        min-w-0 flex-1 rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2.5
-                        text-sm
-                        outline-none transition
-                        focus:border-patrimoine-500
-                        focus:ring-2
-                        focus:ring-patrimoine-100
-                    "
+                    class="pm-input min-w-0 flex-1"
                 >
                     ${ownerPartyOptions(
                         selectedPartyId
@@ -2117,12 +2003,12 @@ function addPropertyOwnerRow(
                     data-create-owner
                     class="
                         shrink-0 rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2.5
+                        border border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2.5
                         text-sm font-medium
-                        text-patrimoine-800
+                        text-[var(--pm-accent)]
                         transition
-                        hover:bg-patrimoine-50
+                        hover:bg-[var(--pm-hover)]
                     "
                     title="${escapeHtml(
                         translate(
@@ -2145,7 +2031,7 @@ function addPropertyOwnerRow(
                         <p
                             class="
                                 mt-1.5 text-xs
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             ${escapeHtml(
@@ -2161,11 +2047,7 @@ function addPropertyOwnerRow(
 
         <div>
             <label
-                class="
-                    mb-1.5 block
-                    text-xs font-medium
-                    text-slate-600
-                "
+                class="pm-field-label"
             >
                 ${escapeHtml(
                     translate(
@@ -2184,16 +2066,7 @@ function addPropertyOwnerRow(
                 value="${escapeHtml(
                     percentage
                 )}"
-                class="
-                    w-full rounded-lg
-                    border border-slate-200
-                    bg-white px-3 py-2.5
-                    text-sm
-                    outline-none transition
-                    focus:border-patrimoine-500
-                    focus:ring-2
-                    focus:ring-patrimoine-100
-                "
+                class="pm-input"
             >
         </div>
 
@@ -2204,13 +2077,13 @@ function addPropertyOwnerRow(
                 inline-flex h-10
                 items-center justify-center
                 rounded-lg
-                border border-slate-200
-                bg-white px-3
-                text-sm text-slate-500
+                border border-[var(--pm-border)]
+                bg-[var(--pm-surface)] px-3
+                text-sm text-[var(--pm-text-muted)]
                 transition
-                hover:border-red-200
-                hover:bg-red-50
-                hover:text-red-600
+                hover:border-[var(--pm-danger-border)]
+                hover:bg-[var(--pm-danger-background)]
+                hover:text-[var(--pm-danger-text)]
             "
         >
             ${escapeHtml(
@@ -2389,16 +2262,12 @@ function addPropertyUnitRow(
         );
 
     row.className =
-        'property-unit-row grid gap-3 rounded-xl border border-slate-200 bg-slate-50/50 p-3 sm:grid-cols-[220px_1fr_auto] sm:items-end';
+        'property-unit-row grid gap-3 rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface-subtle)] p-3 sm:grid-cols-[220px_1fr_auto] sm:items-end';
 
     row.innerHTML = `
         <div>
             <label
-                class="
-                    mb-1.5 block
-                    text-xs font-medium
-                    text-slate-600
-                "
+                class="pm-field-label"
             >
                 ${escapeHtml(
                     translate(
@@ -2420,26 +2289,13 @@ function addPropertyUnitRow(
                         'properties.unit_name_placeholder'
                     )
                 )}"
-                class="
-                    w-full rounded-lg
-                    border border-slate-200
-                    bg-white px-3 py-2.5
-                    text-sm
-                    outline-none transition
-                    focus:border-patrimoine-500
-                    focus:ring-2
-                    focus:ring-patrimoine-100
-                "
+                class="pm-input"
             >
         </div>
 
         <div>
             <label
-                class="
-                    mb-1.5 block
-                    text-xs font-medium
-                    text-slate-600
-                "
+                class="pm-field-label"
             >
                 ${escapeHtml(
                     translate(
@@ -2459,16 +2315,7 @@ function addPropertyUnitRow(
                         'properties.optional_description'
                     )
                 )}"
-                class="
-                    w-full rounded-lg
-                    border border-slate-200
-                    bg-white px-3 py-2.5
-                    text-sm
-                    outline-none transition
-                    focus:border-patrimoine-500
-                    focus:ring-2
-                    focus:ring-patrimoine-100
-                "
+                class="pm-input"
             >
         </div>
 
@@ -2479,13 +2326,13 @@ function addPropertyUnitRow(
                 inline-flex h-10
                 items-center justify-center
                 rounded-lg
-                border border-slate-200
-                bg-white px-3
-                text-sm text-slate-500
+                border border-[var(--pm-border)]
+                bg-[var(--pm-surface)] px-3
+                text-sm text-[var(--pm-text-muted)]
                 transition
-                hover:border-red-200
-                hover:bg-red-50
-                hover:text-red-600
+                hover:border-[var(--pm-danger-border)]
+                hover:bg-[var(--pm-danger-background)]
+                hover:text-[var(--pm-danger-text)]
             "
         >
             ${escapeHtml(
@@ -3112,10 +2959,10 @@ function initializeOwnerCreation() {
         (event) => {
             if (
                 event.key === 'Escape'
-                && ! modal
+                && modal
                     .classList
                     .contains(
-                        'hidden'
+                        'pm-drawer-active'
                     )
             ) {
                 closeOwnerModal();
@@ -3158,13 +3005,8 @@ function openOwnerModal(
 
     updateOwnerTypeFields();
 
-    modal.classList.remove(
-        'hidden'
-    );
-
-    modal.setAttribute(
-        'aria-hidden',
-        'false'
+    openDrawer(
+        modal
     );
 
     document
@@ -3178,28 +3020,17 @@ function openOwnerModal(
  * Close the inline Owner creation modal.
  */
 function closeOwnerModal() {
-    const modal =
-        document.getElementById(
-            'owner-modal'
-        );
+    closeDrawer(
+        'owner-modal',
+        {
+            onClosed: () => {
+                ownerTargetRow =
+                    null;
 
-    if (! modal) {
-        return;
-    }
-
-    modal.classList.add(
-        'hidden'
+                hideOwnerFormError();
+            },
+        }
     );
-
-    modal.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    ownerTargetRow =
-        null;
-
-    hideOwnerFormError();
 }
 
 /**
@@ -3572,10 +3403,6 @@ function hideOwnerFormError() {
 |--------------------------------------------------------------------------
 */
 
-let existingUnitSlideCloseTimer =
-    null;
-
-
 /**
  * Initialize the shared Add/Edit Unit modal.
  */
@@ -3615,9 +3442,6 @@ function initializeExistingUnitCreation() {
             closeExistingUnitModal
         );
 
-    /*
-     * Keep the existing backdrop listener.
-     */
     document
         .getElementById(
             'existing-unit-modal-backdrop'
@@ -3626,30 +3450,6 @@ function initializeExistingUnitCreation() {
             'click',
             closeExistingUnitModal
         );
-
-    /*
-     * The legacy Unit modal has a full-screen positioning wrapper above
-     * the backdrop. Detect any click outside the actual right-side panel
-     * from the modal root as well.
-     */
-    modal.addEventListener(
-        'click',
-        (event) => {
-            const panel =
-                modal.querySelector(
-                    ':scope > div:not(#existing-unit-modal-backdrop) > div'
-                );
-
-            if (
-                panel
-                && ! panel.contains(
-                    event.target
-                )
-            ) {
-                closeExistingUnitModal();
-            }
-        }
-    );
 
     form.addEventListener(
         'submit',
@@ -3664,7 +3464,7 @@ function initializeExistingUnitCreation() {
                 && modal
                     .classList
                     .contains(
-                        'existing-unit-slide-active'
+                        'pm-drawer-active'
                     )
             ) {
                 closeExistingUnitModal();
@@ -3771,78 +3571,19 @@ function openExistingUnitModal(
         );
     }
 
-    /*
-     * If a previous close animation was still pending, cancel it.
-     */
-    if (existingUnitSlideCloseTimer !== null) {
-        window.clearTimeout(
-            existingUnitSlideCloseTimer
-        );
-
-        existingUnitSlideCloseTimer =
-            null;
-    }
-
-    /*
-     * Expose the modal, but leave the panel translated off-screen.
-     */
-    modal.style.removeProperty(
-        'display'
+    openDrawer(
+        modal
     );
 
-    modal.classList.remove(
-        'hidden',
-        'existing-unit-slide-open',
-        'existing-unit-slide-closing'
-    );
-
-    modal.classList.add(
-        'existing-unit-slide-active'
-    );
-
-    modal.setAttribute(
-        'aria-hidden',
-        'false'
-    );
-
-    document.body.classList.add(
-        'overflow-hidden'
-    );
-
-    const panel =
-        modal.querySelector(
-            ':scope > div:not(#existing-unit-modal-backdrop) > div'
-        );
-
-    /*
-     * Force the browser to render the translateX(100%) starting position
-     * before applying the open state.
-     */
-    if (panel) {
-        void panel.getBoundingClientRect();
-    }
-
-    window.requestAnimationFrame(
+    window.setTimeout(
         () => {
-            window.requestAnimationFrame(
-                () => {
-                    modal.classList.add(
-                        'existing-unit-slide-open'
-                    );
-
-                    window.setTimeout(
-                        () => {
-                            document
-                                .getElementById(
-                                    'existing-unit-name'
-                                )
-                                ?.focus();
-                        },
-                        50
-                    );
-                }
-            );
-        }
+            document
+                .getElementById(
+                    'existing-unit-name'
+                )
+                ?.focus();
+        },
+        50
     );
 }
 
@@ -3997,173 +3738,39 @@ function populateExistingUnitForm(
  * Close and reset the shared Unit modal.
  */
 function closeExistingUnitModal() {
-    const modal =
-        document.getElementById(
-            'existing-unit-modal'
-        );
-
     const form =
         document.getElementById(
             'existing-unit-form'
         );
 
-    if (
-        ! modal
-        || ! modal.classList.contains(
-            'existing-unit-slide-active'
-        )
-    ) {
-        return;
-    }
+    closeDrawer(
+        'existing-unit-modal',
+        {
+            onClosed: () => {
+                form?.reset();
 
-    const panel =
-        modal.querySelector(
-            ':scope > div:not(#existing-unit-modal-backdrop) > div'
-        );
+                const buildingNameElement =
+                    document.getElementById(
+                        'existing-unit-building-name'
+                    );
 
-    /*
-     * Begin the 800ms slide-out.
-     *
-     * CSS makes the closing root pointer-events:none immediately, so the
-     * underlying Properties workspace cannot be blocked while the visual
-     * transition is running.
-     */
-    modal.classList.remove(
-        'existing-unit-slide-open'
-    );
+                if (buildingNameElement) {
+                    buildingNameElement.textContent =
+                        '—';
+                }
 
-    modal.classList.add(
-        'existing-unit-slide-closing'
-    );
+                existingUnitFormMode =
+                    'create';
 
-    modal.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    if (existingUnitSlideCloseTimer !== null) {
-        window.clearTimeout(
-            existingUnitSlideCloseTimer
-        );
-
-        existingUnitSlideCloseTimer =
-            null;
-    }
-
-    let cleanedUp =
-        false;
-
-    const finishClose =
-        () => {
-            if (cleanedUp) {
-                return;
-            }
-
-            cleanedUp =
-                true;
-
-            if (existingUnitSlideCloseTimer !== null) {
-                window.clearTimeout(
-                    existingUnitSlideCloseTimer
-                );
-
-                existingUnitSlideCloseTimer =
+                editingUnitId =
                     null;
-            }
 
-            panel?.removeEventListener(
-                'transitionend',
-                handleTransitionEnd
-            );
+                resetExistingUnitModalLabels();
 
-            modal.classList.remove(
-                'existing-unit-slide-active',
-                'existing-unit-slide-open',
-                'existing-unit-slide-closing'
-            );
-
-            modal.classList.add(
-                'hidden'
-            );
-
-            /*
-             * Ensure this legacy full-screen root is completely removed
-             * from layout and hit-testing after the transition.
-             */
-            modal.style.setProperty(
-                'display',
-                'none',
-                'important'
-            );
-
-            const anotherDrawerOpen =
-                document.querySelector(
-                    '.pm-drawer.pm-drawer-active'
-                );
-
-            if (! anotherDrawerOpen) {
-                document.body.classList.remove(
-                    'overflow-hidden'
-                );
-            }
-
-            form?.reset();
-
-            const buildingNameElement =
-                document.getElementById(
-                    'existing-unit-building-name'
-                );
-
-            if (buildingNameElement) {
-                buildingNameElement.textContent =
-                    '—';
-            }
-
-            existingUnitFormMode =
-                'create';
-
-            editingUnitId =
-                null;
-
-            resetExistingUnitModalLabels();
-
-            hideExistingUnitFormError();
-        };
-
-    const handleTransitionEnd =
-        (event) => {
-            /*
-             * Ignore opacity transitions and unrelated descendants.
-             * We only care about completion of the panel transform.
-             */
-            if (
-                event.target !== panel
-                || event.propertyName !== 'transform'
-            ) {
-                return;
-            }
-
-            finishClose();
-        };
-
-    if (panel) {
-        panel.addEventListener(
-            'transitionend',
-            handleTransitionEnd
-        );
-    }
-
-    /*
-     * Safety fallback only.
-     *
-     * transitionend may not fire when reduced motion is enabled or if the
-     * browser interrupts the transition.
-     */
-    existingUnitSlideCloseTimer =
-        window.setTimeout(
-            finishClose,
-            900
-        );
+                hideExistingUnitFormError();
+            },
+        }
+    );
 }
 
 /**

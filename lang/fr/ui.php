@@ -426,6 +426,8 @@ return [
         'contact_phone' => 'Téléphone du contact',
         'contact_email' => 'E-mail du contact',
         'existing_unit_name_placeholder' => 'p. ex. Appartement A2',
+        'no_properties_found' => 'Aucune propriété trouvée',
+        'no_properties_hint' => 'Ajoutez une propriété ou modifiez votre recherche.',
         'optional_unit_description' => 'Description facultative de l’unité',
     ],
     'core' => [

@@ -1,8 +1,10 @@
 import {
     apiRequest,
+    closeDrawer,
     formatCurrency,
     formatDate,
     formatNumber,
+    openDrawer,
     parseJsonResponse,
     translate,
 } from './core.js';
@@ -292,8 +294,8 @@ function renderOwnerDirectoryRow(
 
     const balanceClass =
         balance < 0
-            ? 'text-red-700'
-            : 'text-slate-900';
+            ? 'text-[var(--pm-danger-text)]'
+            : 'text-[var(--pm-text)]';
 
     return `
         <button
@@ -303,14 +305,14 @@ function renderOwnerDirectoryRow(
             )}"
             class="
                 block w-full
-                border-b border-slate-100
+                border-b border-[var(--pm-border-subtle)]
                 px-5 py-4 text-left
                 transition
                 last:border-b-0
                 ${
                     selected
-                        ? 'bg-patrimoine-50'
-                        : 'hover:bg-slate-50'
+                        ? 'bg-[var(--pm-selected)]'
+                        : 'hover:bg-[var(--pm-hover)]'
                 }
             "
         >
@@ -324,7 +326,7 @@ function renderOwnerDirectoryRow(
                     <div
                         class="
                             truncate text-sm font-semibold
-                            text-slate-900
+                            text-[var(--pm-text)]
                         "
                     >
                         ${escapeHtml(
@@ -342,7 +344,7 @@ function renderOwnerDirectoryRow(
                                 <div
                                     class="
                                         mt-1 truncate
-                                        text-xs text-slate-500
+                                        text-xs text-[var(--pm-text-muted)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -358,7 +360,7 @@ function renderOwnerDirectoryRow(
                     <div
                         class="
                             mt-2 text-xs
-                            text-slate-400
+                            text-[var(--pm-text-subtle)]
                         "
                     >
                         ${formatNumber(
@@ -403,7 +405,7 @@ function renderOwnerDirectoryRow(
                     <div
                         class="
                             mt-1 text-[11px]
-                            text-slate-400
+                            text-[var(--pm-text-subtle)]
                         "
                     >
                         ${translate(
@@ -480,7 +482,7 @@ function renderOwnerDirectoryPagination(
         >
             <div
                 class="
-                    text-xs text-slate-500
+                    text-xs text-[var(--pm-text-muted)]
                 "
             >
                 ${translate(
@@ -503,12 +505,12 @@ function renderOwnerDirectoryPagination(
                     ${current <= 1 ? 'disabled' : ''}
                     class="
                         rounded-lg border
-                        border-slate-200
-                        bg-white px-2.5 py-1.5
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-2.5 py-1.5
                         text-xs font-medium
-                        text-slate-700
+                        text-[var(--pm-text-secondary)]
                         transition
-                        hover:bg-slate-50
+                        hover:bg-[var(--pm-hover)]
                         disabled:cursor-not-allowed
                         disabled:opacity-40
                     "
@@ -524,12 +526,12 @@ function renderOwnerDirectoryPagination(
                     ${current >= last ? 'disabled' : ''}
                     class="
                         rounded-lg border
-                        border-slate-200
-                        bg-white px-2.5 py-1.5
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-2.5 py-1.5
                         text-xs font-medium
-                        text-slate-700
+                        text-[var(--pm-text-secondary)]
                         transition
-                        hover:bg-slate-50
+                        hover:bg-[var(--pm-hover)]
                         disabled:cursor-not-allowed
                         disabled:opacity-40
                     "
@@ -616,12 +618,12 @@ async function selectOwnerAccount(
                     );
 
                 button.classList.toggle(
-                    'bg-patrimoine-50',
+                    'bg-[var(--pm-selected)]',
                     selected
                 );
 
                 button.classList.toggle(
-                    'hover:bg-slate-50',
+                    'hover:bg-[var(--pm-hover)]',
                     ! selected
                 );
             }
@@ -844,18 +846,18 @@ function renderOwnerStatus(
         ? `
             inline-flex items-center
             rounded-full
-            bg-emerald-50
+            bg-[var(--pm-success-background)]
             px-2.5 py-1
             text-xs font-medium
-            text-emerald-700
+            text-[var(--pm-success-text)]
         `
         : `
             inline-flex items-center
             rounded-full
-            bg-slate-100
+            bg-[var(--pm-surface-muted)]
             px-2.5 py-1
             text-xs font-medium
-            text-slate-600
+            text-[var(--pm-text-secondary)]
         `;
 }
 
@@ -890,10 +892,10 @@ function renderOwnerProperties(
                 class="
                     col-span-full rounded-xl
                     border border-dashed
-                    border-slate-200
+                    border-[var(--pm-border)]
                     px-5 py-8
                     text-center
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${translate(
@@ -944,9 +946,7 @@ function renderOwnerProperty(
     return `
         <article
             class="
-                rounded-xl border
-                border-slate-200
-                bg-white p-4
+                pm-card p-4
             "
         >
             <div
@@ -959,7 +959,7 @@ function renderOwnerProperty(
                     <div
                         class="
                             text-sm font-semibold
-                            text-slate-950
+                            text-[var(--pm-text)]
                         "
                     >
                         ${escapeHtml(
@@ -976,7 +976,7 @@ function renderOwnerProperty(
                                 <div
                                     class="
                                         mt-1 text-xs
-                                        text-slate-500
+                                        text-[var(--pm-text-muted)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -991,10 +991,10 @@ function renderOwnerProperty(
                 <span
                     class="
                         shrink-0 rounded-full
-                        bg-slate-100
+                        bg-[var(--pm-surface-muted)]
                         px-2.5 py-1
                         text-xs font-medium
-                        text-slate-600
+                        text-[var(--pm-text-secondary)]
                     "
                 >
                     ${escapeHtml(
@@ -1007,14 +1007,14 @@ function renderOwnerProperty(
             <div
                 class="
                     mt-4 border-t
-                    border-slate-100 pt-3
+                    border-[var(--pm-border-subtle)] pt-3
                 "
             >
                 <div
                     class="
                         text-[11px] font-semibold
                         uppercase tracking-wide
-                        text-slate-400
+                        text-[var(--pm-text-subtle)]
                     "
                 >
                     ${translate(
@@ -1037,10 +1037,10 @@ function renderOwnerProperty(
                                             <span
                                                 class="
                                                     rounded-lg
-                                                    bg-slate-50
+                                                    bg-[var(--pm-surface-subtle)]
                                                     px-2.5 py-1.5
                                                     text-xs
-                                                    text-slate-600
+                                                    text-[var(--pm-text-secondary)]
                                                 "
                                             >
                                                 ${escapeHtml(
@@ -1059,7 +1059,7 @@ function renderOwnerProperty(
                             <div
                                 class="
                                     mt-2 text-xs
-                                    text-slate-400
+                                    text-[var(--pm-text-subtle)]
                                 "
                             >
                                 ${translate(
@@ -1108,9 +1108,9 @@ function renderOwnerLedger(
             <div
                 class="
                     rounded-xl border
-                    border-dashed border-slate-200
+                    border-dashed border-[var(--pm-border)]
                     px-5 py-8 text-center
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${translate(
@@ -1150,8 +1150,8 @@ function renderOwnerTransaction(
 
     const amountClass =
         credit
-            ? 'text-emerald-700'
-            : 'text-red-700';
+            ? 'text-[var(--pm-success-text)]'
+            : 'text-[var(--pm-danger-text)]';
 
     const property =
         transactionPropertyLabel(
@@ -1168,13 +1168,13 @@ function renderOwnerTransaction(
                     )}"
                     class="
                         rounded-lg border
-                        border-slate-200
-                        bg-white px-3 py-2
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2
                         text-xs font-medium
-                        text-slate-700
+                        text-[var(--pm-text-secondary)]
                         transition
-                        hover:border-slate-300
-                        hover:bg-slate-50
+                        hover:border-[var(--pm-border-strong)]
+                        hover:bg-[var(--pm-hover)]
                     "
                 >
                     ${translate(
@@ -1187,9 +1187,7 @@ function renderOwnerTransaction(
     return `
         <article
             class="
-                mb-3 rounded-xl
-                border border-slate-200
-                bg-white p-4
+                mb-3 pm-card p-4
                 last:mb-0
             "
         >
@@ -1214,8 +1212,8 @@ function renderOwnerTransaction(
                                 rounded-full
                                 ${
                                     credit
-                                        ? 'bg-emerald-50 text-emerald-700'
-                                        : 'bg-red-50 text-red-700'
+                                        ? 'bg-[var(--pm-success-background)] text-[var(--pm-success-text)]'
+                                        : 'bg-[var(--pm-danger-background)] text-[var(--pm-danger-text)]'
                                 }
                                 px-2.5 py-1
                                 text-xs font-medium
@@ -1235,7 +1233,7 @@ function renderOwnerTransaction(
                         <span
                             class="
                                 text-sm font-semibold
-                                text-slate-900
+                                text-[var(--pm-text)]
                             "
                         >
                             ${escapeHtml(
@@ -1250,7 +1248,7 @@ function renderOwnerTransaction(
                         class="
                             mt-2 flex flex-wrap
                             gap-x-5 gap-y-1
-                            text-xs text-slate-500
+                            text-xs text-[var(--pm-text-muted)]
                         "
                     >
                         <span>
@@ -1353,7 +1351,7 @@ function renderOwnerTransaction(
                                     class="
                                         mt-3 max-w-3xl
                                         text-xs leading-5
-                                        text-slate-500
+                                        text-[var(--pm-text-muted)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -1459,7 +1457,7 @@ function renderOwnerLedgerPagination(
         >
             <div
                 class="
-                    text-xs text-slate-500
+                    text-xs text-[var(--pm-text-muted)]
                 "
             >
                 ${translate(
@@ -1497,12 +1495,12 @@ function renderOwnerLedgerPagination(
                     ${current <= 1 ? 'disabled' : ''}
                     class="
                         rounded-lg border
-                        border-slate-200
-                        bg-white px-3 py-2
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2
                         text-xs font-medium
-                        text-slate-700
+                        text-[var(--pm-text-secondary)]
                         transition
-                        hover:bg-slate-50
+                        hover:bg-[var(--pm-hover)]
                         disabled:cursor-not-allowed
                         disabled:opacity-40
                     "
@@ -1518,12 +1516,12 @@ function renderOwnerLedgerPagination(
                     ${current >= last ? 'disabled' : ''}
                     class="
                         rounded-lg border
-                        border-slate-200
-                        bg-white px-3 py-2
+                        border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-3 py-2
                         text-xs font-medium
-                        text-slate-700
+                        text-[var(--pm-text-secondary)]
                         transition
-                        hover:bg-slate-50
+                        hover:bg-[var(--pm-hover)]
                         disabled:cursor-not-allowed
                         disabled:opacity-40
                     "
@@ -1610,9 +1608,9 @@ function renderOwnerPayouts(
             <div
                 class="
                     rounded-xl border
-                    border-dashed border-slate-200
+                    border-dashed border-[var(--pm-border)]
                     px-5 py-8 text-center
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${translate(
@@ -1628,7 +1626,7 @@ function renderOwnerPayouts(
         <div
             class="
                 overflow-hidden rounded-xl
-                border border-slate-200
+                border border-[var(--pm-border)]
             "
         >
             ${entries
@@ -1637,7 +1635,7 @@ function renderOwnerPayouts(
                         <div
                             class="
                                 flex flex-col gap-3
-                                border-b border-slate-100
+                                border-b border-[var(--pm-border-subtle)]
                                 px-4 py-3
                                 last:border-b-0
                                 sm:flex-row
@@ -1649,7 +1647,7 @@ function renderOwnerPayouts(
                                 <div
                                     class="
                                         text-sm font-medium
-                                        text-slate-900
+                                        text-[var(--pm-text)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -1663,7 +1661,7 @@ function renderOwnerPayouts(
                                     class="
                                         mt-1 flex flex-wrap
                                         gap-x-4 gap-y-1
-                                        text-xs text-slate-500
+                                        text-xs text-[var(--pm-text-muted)]
                                     "
                                 >
                                     ${
@@ -1702,7 +1700,7 @@ function renderOwnerPayouts(
                                             <div
                                                 class="
                                                     mt-2 text-xs
-                                                    text-slate-500
+                                                    text-[var(--pm-text-muted)]
                                                 "
                                             >
                                                 ${escapeHtml(
@@ -1718,7 +1716,7 @@ function renderOwnerPayouts(
                                 class="
                                     shrink-0 text-base
                                     font-semibold
-                                    text-slate-900
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 ${escapeHtml(
@@ -1843,7 +1841,7 @@ function initializeOwnerWorkspaceActions() {
                 button.addEventListener(
                     'click',
                     () => {
-                        closeOwnerModal(
+                        closeDrawer(
                             button.dataset
                                 .closeOwnerModal
                         );
@@ -1869,7 +1867,7 @@ function initializeOwnerWorkspaceActions() {
                 ?.addEventListener(
                     'click',
                     () => {
-                        closeOwnerModal(
+                        closeDrawer(
                             id
                         );
                     }
@@ -1895,7 +1893,7 @@ function initializeOwnerWorkspaceActions() {
                 ?.addEventListener(
                     'click',
                     () => {
-                        closeOwnerModal(
+                        closeDrawer(
                             id
                         );
                     }
@@ -1922,14 +1920,21 @@ function initializeOwnerWorkspaceActions() {
                             id
                         );
 
+                    /*
+                     * Only dismiss drawers that are actually open and not
+                     * already animating shut.
+                     */
                     if (
                         modal
+                        && modal.classList.contains(
+                            'pm-drawer-active'
+                        )
                         && ! modal.classList.contains(
-                            'hidden'
+                            'pm-drawer-closing'
                         )
                     ) {
-                        closeOwnerModal(
-                            id
+                        closeDrawer(
+                            modal
                         );
                     }
                 }
@@ -2164,157 +2169,12 @@ function initializeOwnerDateInputs() {
 |--------------------------------------------------------------------------
 | Owner Drawer Helpers
 |--------------------------------------------------------------------------
+|
+| Drawer open/close animation and scroll locking are handled by the shared
+| openDrawer / closeDrawer lifecycle in core.js. This module only keeps the
+| per-drawer form reset and focus behaviour.
+|
 */
-
-const ownerDrawerCloseTimers = new Map();
-
-function openOwnerModal(
-    id
-) {
-    const drawer =
-        document.getElementById(
-            id
-        );
-
-    if (! drawer) {
-        return;
-    }
-
-    const oldTimer =
-        ownerDrawerCloseTimers.get(
-            id
-        );
-
-    if (oldTimer) {
-        window.clearTimeout(
-            oldTimer
-        );
-
-        ownerDrawerCloseTimers.delete(
-            id
-        );
-    }
-
-    drawer.classList.remove(
-        'pm-drawer-open',
-        'pm-drawer-closing'
-    );
-
-    drawer.removeAttribute(
-        'hidden'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-active'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'false'
-    );
-
-    document.body.classList.add(
-        'overflow-hidden'
-    );
-
-    const panel =
-        drawer.querySelector(
-            '.pm-drawer-panel'
-        );
-
-    if (panel) {
-        void panel.getBoundingClientRect();
-    }
-
-    window.requestAnimationFrame(
-        () => {
-            window.requestAnimationFrame(
-                () => {
-                    drawer.classList.add(
-                        'pm-drawer-open'
-                    );
-                }
-            );
-        }
-    );
-}
-
-function closeOwnerModal(
-    id
-) {
-    if (! id) {
-        return;
-    }
-
-    const drawer =
-        document.getElementById(
-            id
-        );
-
-    if (
-        ! drawer
-        || ! drawer.classList.contains(
-            'pm-drawer-active'
-        )
-    ) {
-        return;
-    }
-
-    drawer.classList.remove(
-        'pm-drawer-open'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-closing'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    const oldTimer =
-        ownerDrawerCloseTimers.get(
-            id
-        );
-
-    if (oldTimer) {
-        window.clearTimeout(
-            oldTimer
-        );
-    }
-
-    const timer =
-        window.setTimeout(
-            () => {
-                drawer.classList.remove(
-                    'pm-drawer-active',
-                    'pm-drawer-closing'
-                );
-
-                ownerDrawerCloseTimers.delete(
-                    id
-                );
-
-                const anotherDrawerOpen =
-                    document.querySelector(
-                        '.pm-drawer.pm-drawer-active'
-                    );
-
-                if (! anotherDrawerOpen) {
-                    document.body.classList.remove(
-                        'overflow-hidden'
-                    );
-                }
-            },
-            850
-        );
-
-    ownerDrawerCloseTimers.set(
-        id,
-        timer
-    );
-}
 
 /**
  * Ensure an Owner is actually selected before opening a financial action.
@@ -2579,7 +2439,7 @@ function openOwnerDepositModal() {
 
     updateOwnerDepositCollector();
 
-    openOwnerModal(
+    openDrawer(
         'owner-deposit-modal'
     );
 
@@ -2767,7 +2627,7 @@ async function submitOwnerDeposit() {
         const transactionId =
             data?.transaction?.id;
 
-        closeOwnerModal(
+        closeDrawer(
             'owner-deposit-modal'
         );
 
@@ -2843,7 +2703,7 @@ function openOwnerExpenseModal() {
         false
     );
 
-    openOwnerModal(
+    openDrawer(
         'owner-expense-modal'
     );
 }
@@ -3051,7 +2911,7 @@ async function submitOwnerExpense() {
             response
         );
 
-        closeOwnerModal(
+        closeDrawer(
             'owner-expense-modal'
         );
 
@@ -3135,7 +2995,7 @@ function openOwnerPayoutModal() {
             String(balance);
     }
 
-    openOwnerModal(
+    openDrawer(
         'owner-payout-modal'
     );
 
@@ -3245,7 +3105,7 @@ async function submitOwnerPayout() {
             response
         );
 
-        closeOwnerModal(
+        closeDrawer(
             'owner-payout-modal'
         );
 
@@ -3298,7 +3158,7 @@ function openOwnerAdjustmentModal() {
         localToday()
     );
 
-    openOwnerModal(
+    openDrawer(
         'owner-adjustment-modal'
     );
 }
@@ -3393,7 +3253,7 @@ async function submitOwnerAdjustment() {
             response
         );
 
-        closeOwnerModal(
+        closeDrawer(
             'owner-adjustment-modal'
         );
 
@@ -3828,7 +3688,7 @@ function showOwnerDirectoryLoading() {
         <div
             class="
                 px-5 py-8 text-center
-                text-sm text-slate-400
+                text-sm text-[var(--pm-text-subtle)]
             "
         >
             ${translate(
@@ -3854,7 +3714,7 @@ function renderOwnerDirectoryEmpty(
         <div
             class="
                 px-5 py-10 text-center
-                text-sm text-slate-500
+                text-sm text-[var(--pm-text-muted)]
             "
         >
             ${escapeHtml(message)}
@@ -3889,7 +3749,7 @@ function showOwnerDetailLoading() {
         <div
             class="
                 text-center text-sm
-                text-slate-400
+                text-[var(--pm-text-subtle)]
             "
         >
             ${translate(
@@ -3932,7 +3792,7 @@ function showOwnerDetailEmpty(
         >
             <div
                 class="
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(message)}

@@ -20,13 +20,16 @@
 import {
     apiRequest,
     clearToken,
+    closeDrawer,
     formatLongDate,
     getPresentationConfiguration,
     initials,
+    openDrawer,
     parseJsonResponse,
     saveToken,
     token,
     translate,
+
 } from './core.js';
 
 import { initializeBrowserAuthorization } from './permissions.js';
@@ -90,9 +93,6 @@ function clearUserRole() {
 */
 
 let authenticatedShellUser =
-    null;
-
-let profileDrawerCloseTimer =
     null;
 
 
@@ -805,60 +805,8 @@ function openProfileModal() {
 
     hideProfileMessage();
 
-    if (
-        profileDrawerCloseTimer
-        !== null
-    ) {
-        window.clearTimeout(
-            profileDrawerCloseTimer
-        );
-
-        profileDrawerCloseTimer =
-            null;
-    }
-
-    modal.classList.remove(
-        'pm-drawer-open',
-        'pm-drawer-closing'
-    );
-
-    modal.removeAttribute(
-        'hidden'
-    );
-
-    modal.classList.add(
-        'pm-drawer-active'
-    );
-
-    modal.setAttribute(
-        'aria-hidden',
-        'false'
-    );
-
-    document.body.classList.add(
-        'overflow-hidden'
-    );
-
-    const panel =
-        modal.querySelector(
-            '.pm-drawer-panel'
-        );
-
-    if (panel) {
-        void panel
-            .getBoundingClientRect();
-    }
-
-    window.requestAnimationFrame(
-        () => {
-            window.requestAnimationFrame(
-                () => {
-                    modal.classList.add(
-                        'pm-drawer-open'
-                    );
-                }
-            );
-        }
+    openDrawer(
+        modal
     );
 }
 
@@ -867,65 +815,9 @@ function openProfileModal() {
  * Close the My Profile drawer using the shared drawer transition.
  */
 function closeProfileModal() {
-    const modal =
-        document.getElementById(
-            'profile-modal'
-        );
-
-    if (
-        ! modal
-        || ! modal.classList.contains(
-            'pm-drawer-active'
-        )
-    ) {
-        return;
-    }
-
-    modal.classList.remove(
-        'pm-drawer-open'
+    closeDrawer(
+        'profile-modal'
     );
-
-    modal.classList.add(
-        'pm-drawer-closing'
-    );
-
-    modal.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    if (
-        profileDrawerCloseTimer
-        !== null
-    ) {
-        window.clearTimeout(
-            profileDrawerCloseTimer
-        );
-    }
-
-    profileDrawerCloseTimer =
-        window.setTimeout(
-            () => {
-                modal.classList.remove(
-                    'pm-drawer-active',
-                    'pm-drawer-closing'
-                );
-
-                modal.setAttribute(
-                    'hidden',
-                    ''
-                );
-
-                document.body
-                    .classList.remove(
-                        'overflow-hidden'
-                    );
-
-                profileDrawerCloseTimer =
-                    null;
-            },
-            850
-        );
 }
 
 

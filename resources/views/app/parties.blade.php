@@ -15,25 +15,20 @@
         "
     >
         <div>
-            <p
-                class="
-                    text-sm font-medium
-                    text-patrimoine-700
-                "
-            >
+            <p class="text-sm font-medium text-[var(--pm-accent)]">
                 <span data-i18n="parties.contacts_stakeholders">{{ __('ui.parties.contacts_stakeholders') }}</span>
             </p>
 
             <h1
                 class="
                     mt-1 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 <span data-i18n="parties.heading">{{ __('ui.parties.heading') }}</span>
             </h1>
 
-            <p class="mt-2 text-sm text-slate-500">
+            <p class="mt-2 text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="parties.page_description">{{ __('ui.parties.page_description') }}</span>
             </p>
         </div>
@@ -41,14 +36,7 @@
         <button
             id="add-party-button"
             type="button"
-            class="
-                inline-flex items-center gap-2
-                rounded-lg bg-patrimoine-950
-                px-4 py-2.5
-                text-sm font-medium text-white
-                shadow-sm transition
-                hover:bg-patrimoine-900
-            "
+            class="pm-button-primary gap-2"
         >
             <svg
                 class="h-4 w-4"
@@ -70,9 +58,9 @@
         id="parties-error"
         class="
             mb-6 hidden rounded-xl
-            border border-red-200
-            bg-red-50 px-4 py-3
-            text-sm text-red-700
+            border border-[var(--pm-danger-border)]
+            bg-[var(--pm-danger-background)] px-4 py-3
+            text-sm text-[var(--pm-danger-text)]
         "
     ></div>
 
@@ -84,12 +72,9 @@
         "
     >
         <div
-            class="
-                pm-surface-card pm-parties-stat-card
-                rounded-xl p-5
-            "
+            class="pm-card p-5"
         >
-            <div class="text-sm text-slate-500">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="parties.total_parties">{{ __('ui.parties.total_parties') }}</span>
             </div>
 
@@ -97,7 +82,7 @@
                 id="parties-total-count"
                 class="
                     mt-3 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
@@ -105,12 +90,9 @@
         </div>
 
         <div
-            class="
-                pm-surface-card pm-parties-stat-card
-                rounded-xl p-5
-            "
+            class="pm-card p-5"
         >
-            <div class="text-sm text-slate-500">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="parties.people">{{ __('ui.parties.people') }}</span>
             </div>
 
@@ -118,7 +100,7 @@
                 id="parties-person-count"
                 class="
                     mt-3 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
@@ -126,12 +108,9 @@
         </div>
 
         <div
-            class="
-                pm-surface-card pm-parties-stat-card
-                rounded-xl p-5
-            "
+            class="pm-card p-5"
         >
-            <div class="text-sm text-slate-500">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="parties.organisations">{{ __('ui.parties.organisations') }}</span>
             </div>
 
@@ -139,7 +118,7 @@
                 id="parties-organisation-count"
                 class="
                     mt-3 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
@@ -147,12 +126,9 @@
         </div>
 
         <div
-            class="
-                pm-surface-card pm-parties-stat-card
-                rounded-xl p-5
-            "
+            class="pm-card p-5"
         >
-            <div class="text-sm text-slate-500">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="parties.multiple_roles">{{ __('ui.parties.multiple_roles') }}</span>
             </div>
 
@@ -160,7 +136,7 @@
                 id="parties-multi-role-count"
                 class="
                     mt-3 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
@@ -170,16 +146,13 @@
 
     {{-- Party portfolio --}}
     <section
-        class="
-            pm-surface-card pm-parties-directory
-            overflow-hidden rounded-xl
-        "
+        class="pm-card overflow-hidden"
     >
 
         {{-- Filters --}}
         <div
             class="
-                border-b border-slate-100
+                border-b border-[var(--pm-border-subtle)]
                 px-5 py-4
             "
         >
@@ -195,13 +168,13 @@
                     <h2
                         class="
                             text-base font-semibold
-                            text-slate-950
+                            text-[var(--pm-text)]
                         "
                     >
                         <span data-i18n="parties.directory">{{ __('ui.parties.directory') }}</span>
                     </h2>
 
-                    <p class="mt-1 text-xs text-slate-500">
+                    <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                         <span data-i18n="parties.directory_description">{{ __('ui.parties.directory_description') }}</span>
                     </p>
                 </div>
@@ -230,7 +203,7 @@
                                     absolute left-3 top-1/2
                                     h-4 w-4
                                     -translate-y-1/2
-                                    text-slate-400
+                                    text-[var(--pm-text-subtle)]
                                 "
                                 viewBox="0 0 24 24"
                                 fill="none"
@@ -246,19 +219,7 @@
                                 type="search"
                                 data-i18n-placeholder="parties.search_placeholder"
                                 placeholder="{{ __('ui.parties.search_placeholder') }}"
-                                class="
-                                    pm-parties-filter-control
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    bg-white py-2.5
-                                    pl-9 pr-3
-                                    text-sm
-                                    outline-none transition
-                                    placeholder:text-slate-400
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input pl-9"
                             >
                         </div>
                     </div>
@@ -274,17 +235,7 @@
 
                         <select
                             id="party-type-filter"
-                            class="
-                                pm-parties-filter-control
-                                w-full rounded-lg
-                                border border-slate-200
-                                bg-white px-3 py-2.5
-                                text-sm text-slate-700
-                                outline-none transition
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                             <option
                                 value=""
@@ -327,17 +278,7 @@
 
                         <select
                             id="party-role-filter"
-                            class="
-                                pm-parties-filter-control
-                                w-full rounded-lg
-                                border border-slate-200
-                                bg-white px-3 py-2.5
-                                text-sm text-slate-700
-                                outline-none transition
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                             <option
                                 value=""
@@ -385,7 +326,7 @@
             id="parties-list"
             class="p-5"
         >
-            <div class="text-sm text-slate-400">
+            <div class="text-sm text-[var(--pm-text-subtle)]">
                 <span data-i18n="parties.loading">{{ __('ui.parties.loading') }}</span>
             </div>
         </div>
@@ -395,7 +336,7 @@
             id="parties-pagination"
             class="
                 hidden border-t
-                border-slate-100
+                border-[var(--pm-border-subtle)]
                 px-5 py-4
             "
         ></div>
@@ -410,7 +351,7 @@
 <x-drawer
     id="party-modal"
     backdrop-id="party-modal-backdrop"
-    width="lg"
+    width="sm"
 >
     <x-drawer-header
         title-id="party-modal-title"
@@ -442,9 +383,9 @@
                         id="party-form-error"
                         class="
                             mb-5 hidden rounded-lg
-                            border border-red-200
-                            bg-red-50 px-4 py-3
-                            text-sm text-red-700
+                            border border-[var(--pm-danger-border)]
+                            bg-[var(--pm-danger-background)] px-4 py-3
+                            text-sm text-[var(--pm-danger-text)]
                         "
                     ></div>
 
@@ -454,13 +395,13 @@
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="parties.party_type">{{ __('ui.parties.party_type') }}</span>
                             </h3>
 
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="parties.party_type_description">{{ __('ui.parties.party_type_description') }}</span>
                             </p>
                         </div>
@@ -468,16 +409,7 @@
                         <select
                             id="party-type"
                             required
-                            class="
-                                w-full rounded-lg
-                                border border-slate-200
-                                bg-white px-3.5 py-2.5
-                                text-sm
-                                outline-none transition
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input"
                         >
                             <option
                                 value="person"
@@ -510,14 +442,14 @@
                         id="party-person-fields"
                         class="
                             mt-8 border-t
-                            border-slate-100 pt-7
+                            border-[var(--pm-border-subtle)] pt-7
                         "
                     >
                         <div class="mb-4">
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="parties.personal_details">{{ __('ui.parties.personal_details') }}</span>
@@ -533,90 +465,51 @@
                             <div class="md:col-span-2">
                                 <label
                                     for="party-name"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.full_name">{{ __('ui.parties.full_name') }}</span>
-                                    <span class="text-red-500">*</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <input
                                     id="party-name"
                                     type="text"
                                     maxlength="255"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="party-phone"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.phone">{{ __('ui.parties.phone') }}</span>
-                                    <span class="text-red-500">*</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <input
                                     id="party-phone"
                                     type="text"
                                     maxlength="50"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="party-email"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.email">{{ __('ui.parties.email') }}</span>
-                                    <span class="text-red-500">*</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <input
                                     id="party-email"
                                     type="email"
                                     maxlength="255"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
                         </div>
@@ -630,7 +523,7 @@
                         id="party-organisation-fields"
                         class="
                             mt-8 hidden
-                            border-t border-slate-100
+                            border-t border-[var(--pm-border-subtle)]
                             pt-7
                         "
                     >
@@ -638,7 +531,7 @@
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="parties.organisation_details">{{ __('ui.parties.organisation_details') }}</span>
@@ -654,120 +547,68 @@
                             <div class="md:col-span-2">
                                 <label
                                     for="party-legal-name"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.legal_name">{{ __('ui.parties.legal_name') }}</span>
-                                    <span class="text-red-500">*</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <input
                                     id="party-legal-name"
                                     type="text"
                                     maxlength="255"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div class="md:col-span-2">
                                 <label
                                     for="party-contact-name"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.contact_person">{{ __('ui.parties.contact_person') }}</span>
-                                    <span class="text-red-500">*</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <input
                                     id="party-contact-name"
                                     type="text"
                                     maxlength="255"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="party-contact-phone"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.contact_phone">{{ __('ui.parties.contact_phone') }}</span>
-                                    <span class="text-red-500">*</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <input
                                     id="party-contact-phone"
                                     type="text"
                                     maxlength="50"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="party-contact-email"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.contact_email">{{ __('ui.parties.contact_email') }}</span>
-                                    <span class="text-red-500">*</span>
+                                    <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
                                 <input
                                     id="party-contact-email"
                                     type="email"
                                     maxlength="255"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
                         </div>
@@ -780,20 +621,20 @@
                     <section
                         class="
                             mt-8 border-t
-                            border-slate-100 pt-7
+                            border-[var(--pm-border-subtle)] pt-7
                         "
                     >
                         <div class="mb-4">
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="parties.contact_identification">{{ __('ui.parties.contact_identification') }}</span>
                             </h3>
 
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="parties.contact_identification_description">{{ __('ui.parties.contact_identification_description') }}</span>
                             </p>
                         </div>
@@ -807,11 +648,7 @@
                             <div>
                                 <label
                                     for="party-alternate-phone"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.alternate_phone">{{ __('ui.parties.alternate_phone') }}</span>
                                 </label>
@@ -820,27 +657,14 @@
                                     id="party-alternate-phone"
                                     type="text"
                                     maxlength="50"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="party-id-number"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.id_number">{{ __('ui.parties.id_number') }}</span>
                                 </label>
@@ -849,27 +673,14 @@
                                     id="party-id-number"
                                     type="text"
                                     maxlength="255"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="party-registration-number"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.registration_number">{{ __('ui.parties.registration_number') }}</span>
                                 </label>
@@ -878,27 +689,14 @@
                                     id="party-registration-number"
                                     type="text"
                                     maxlength="255"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="party-vat-tin"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.vat_tin">{{ __('ui.parties.vat_tin') }}</span>
                                 </label>
@@ -907,27 +705,14 @@
                                     id="party-vat-tin"
                                     type="text"
                                     maxlength="255"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div class="md:col-span-2">
                                 <label
                                     for="party-address"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.address">{{ __('ui.parties.address') }}</span>
                                 </label>
@@ -935,16 +720,7 @@
                                 <textarea
                                     id="party-address"
                                     rows="2"
-                                    class="
-                                        w-full resize-y rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input resize-y"
                                 ></textarea>
                             </div>
                         </div>
@@ -957,20 +733,20 @@
                     <section
                         class="
                             mt-8 border-t
-                            border-slate-100 pt-7
+                            border-[var(--pm-border-subtle)] pt-7
                         "
                     >
                         <div class="mb-4">
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="parties.roles">{{ __('ui.parties.roles') }}</span>
                             </h3>
 
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="parties.roles_description">{{ __('ui.parties.roles_description') }}</span>
                             </p>
                         </div>
@@ -986,7 +762,7 @@
                                     flex cursor-pointer
                                     items-center gap-3
                                     rounded-xl border
-                                    border-slate-200
+                                    border-[var(--pm-border)]
                                     px-4 py-3
                                 "
                             >
@@ -995,8 +771,8 @@
                                     type="checkbox"
                                     class="
                                         h-4 w-4 rounded
-                                        border-slate-300
-                                        text-patrimoine-700
+                                        border-[var(--pm-border-strong)]
+                                        text-[var(--pm-accent)]
                                         focus:ring-patrimoine-500
                                     "
                                 >
@@ -1004,7 +780,7 @@
                                 <span
                                     class="
                                         text-sm font-medium
-                                        text-slate-700
+                                        text-[var(--pm-text-secondary)]
                                     "
                                 >
                                     <span data-i18n="parties.owner">{{ __('ui.parties.owner') }}</span>
@@ -1016,7 +792,7 @@
                                     flex cursor-pointer
                                     items-center gap-3
                                     rounded-xl border
-                                    border-slate-200
+                                    border-[var(--pm-border)]
                                     px-4 py-3
                                 "
                             >
@@ -1025,8 +801,8 @@
                                     type="checkbox"
                                     class="
                                         h-4 w-4 rounded
-                                        border-slate-300
-                                        text-patrimoine-700
+                                        border-[var(--pm-border-strong)]
+                                        text-[var(--pm-accent)]
                                         focus:ring-patrimoine-500
                                     "
                                 >
@@ -1034,7 +810,7 @@
                                 <span
                                     class="
                                         text-sm font-medium
-                                        text-slate-700
+                                        text-[var(--pm-text-secondary)]
                                     "
                                 >
                                     <span data-i18n="parties.tenant">{{ __('ui.parties.tenant') }}</span>
@@ -1046,7 +822,7 @@
                                     flex cursor-pointer
                                     items-center gap-3
                                     rounded-xl border
-                                    border-slate-200
+                                    border-[var(--pm-border)]
                                     px-4 py-3
                                 "
                             >
@@ -1055,8 +831,8 @@
                                     type="checkbox"
                                     class="
                                         h-4 w-4 rounded
-                                        border-slate-300
-                                        text-patrimoine-700
+                                        border-[var(--pm-border-strong)]
+                                        text-[var(--pm-accent)]
                                         focus:ring-patrimoine-500
                                     "
                                 >
@@ -1064,7 +840,7 @@
                                 <span
                                     class="
                                         text-sm font-medium
-                                        text-slate-700
+                                        text-[var(--pm-text-secondary)]
                                     "
                                 >
                                     <span data-i18n="parties.agent">{{ __('ui.parties.agent') }}</span>
@@ -1080,20 +856,20 @@
                     <section
                         class="
                             mt-8 border-t
-                            border-slate-100 pt-7
+                            border-[var(--pm-border-subtle)] pt-7
                         "
                     >
                         <div class="mb-4">
                             <h3
                                 class="
                                     text-sm font-semibold
-                                    text-slate-950
+                                    text-[var(--pm-text)]
                                 "
                             >
                                 <span data-i18n="parties.banking_details">{{ __('ui.parties.banking_details') }}</span>
                             </h3>
 
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="parties.banking_description">{{ __('ui.parties.banking_description') }}</span>
                             </p>
                         </div>
@@ -1107,11 +883,7 @@
                             <div>
                                 <label
                                     for="party-bank-name"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.bank_name">{{ __('ui.parties.bank_name') }}</span>
                                 </label>
@@ -1120,27 +892,14 @@
                                     id="party-bank-name"
                                     type="text"
                                     maxlength="255"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="party-bank-branch"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.bank_branch">{{ __('ui.parties.bank_branch') }}</span>
                                 </label>
@@ -1149,27 +908,14 @@
                                     id="party-bank-branch"
                                     type="text"
                                     maxlength="255"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="party-bank-account-name"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.account_name">{{ __('ui.parties.account_name') }}</span>
                                 </label>
@@ -1178,27 +924,14 @@
                                     id="party-bank-account-name"
                                     type="text"
                                     maxlength="255"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
 
                             <div>
                                 <label
                                     for="party-bank-account-number"
-                                    class="
-                                        mb-1.5 block
-                                        text-sm font-medium
-                                        text-slate-700
-                                    "
+                                    class="pm-field-label"
                                 >
                                     <span data-i18n="parties.account_number">{{ __('ui.parties.account_number') }}</span>
                                 </label>
@@ -1207,16 +940,7 @@
                                     id="party-bank-account-number"
                                     type="text"
                                     maxlength="255"
-                                    class="
-                                        w-full rounded-lg
-                                        border border-slate-200
-                                        px-3.5 py-2.5
-                                        text-sm
-                                        outline-none transition
-                                        focus:border-patrimoine-500
-                                        focus:ring-2
-                                        focus:ring-patrimoine-100
-                                    "
+                                    class="pm-input"
                                 >
                             </div>
                         </div>
@@ -1226,16 +950,12 @@
                     <section
                         class="
                             mt-8 border-t
-                            border-slate-100 pt-7
+                            border-[var(--pm-border-subtle)] pt-7
                         "
                     >
                         <label
                             for="party-notes"
-                            class="
-                                mb-1.5 block
-                                text-sm font-medium
-                                text-slate-700
-                            "
+                            class="pm-field-label"
                         >
                             <span data-i18n="parties.notes">{{ __('ui.parties.notes') }}</span>
                         </label>
@@ -1245,16 +965,7 @@
                             rows="4"
                             data-i18n-placeholder="parties.notes_placeholder"
                             placeholder="{{ __('ui.parties.notes_placeholder') }}"
-                            class="
-                                w-full resize-y rounded-lg
-                                border border-slate-200
-                                px-3.5 py-2.5
-                                text-sm
-                                outline-none transition
-                                focus:border-patrimoine-500
-                                focus:ring-2
-                                focus:ring-patrimoine-100
-                            "
+                            class="pm-input resize-y"
                         ></textarea>
                     </section>
         </div>
@@ -1265,7 +976,7 @@
                 type="button"
                 class="pm-button-secondary"
             >
-                <span data-i18n="parties.cancel">{{ __('ui.parties.cancel') }}</span>
+                <span data-i18n="actions.cancel">{{ __('ui.actions.cancel') }}</span>
             </button>
 
             <button
@@ -1273,8 +984,8 @@
                 type="submit"
                 class="pm-button-primary"
             >
-                <span data-i18n="parties.save">
-                    {{ __('ui.parties.save') }}
+                <span data-i18n="actions.save">
+                    {{ __('ui.actions.save') }}
 </span>
             </button>
         </x-drawer-footer>

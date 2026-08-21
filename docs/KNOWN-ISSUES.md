@@ -7,22 +7,19 @@ Recorded 2026-08-21 after a full codebase review. Ordered by priority. Tick item
 - [ ] **Repository is public on GitHub.** A business financial application with full commit
   history is exposed at github.com/kanippah/patrimoine. Decide whether this is intentional;
   if not, flip to private in repo Settings → Danger Zone.
-- [ ] **Rent increments have no HTTP surface.** `RentIncrementService` (schedule / apply /
-  cancel) is fully implemented and tested, and the daily commands apply and notify scheduled
-  increments — but no API route or UI exists to schedule or cancel one. Today that requires
-  tinker. Needs routes under `capability:manage_operations` plus a lease-drawer UI section.
+- [x] **Rent increments have no HTTP surface.** ~~Today that requires tinker.~~ Resolved in
+  v1.0.6: `GET/POST /api/leases/{lease}/rent-increments` and
+  `POST /api/rent-increments/{id}/cancel` (RentIncrementController, RentIncrementApiTest).
+  Applying stays scheduler-only by design. A dedicated lease-drawer UI section for the
+  increment history remains a possible follow-up (scheduling is already reachable through
+  the lease-extension drawer).
 
 ## Medium
 
-- [ ] **Repo hygiene: committed backup artifacts.** ~116 tracked `.bak*` files (mostly
-  `*.bak-v104-*` CSS/JS/Blade/lang snapshots), 9 hidden checkpoint directories at repo root
-  (`.v104-*`, `.profile-password-*`), and two stray empty files (`fresh`, `role`). All of it
-  ships in every deploy. Delete them, and add ignore rules (`*.bak*`, checkpoint dirs) to
-  `.gitignore`.
-- [ ] **Dashboard has no dark mode.** `resources/views/app/dashboard.blade.php` is the only
-  authenticated page still hardcoding `bg-white` / `slate-*` classes instead of the `--pm-*`
-  tokens — renders as white cards on a dark page. Migrate it like the other pages (or add a
-  `.pm-dashboard-page` override shim as an interim fix).
+- [x] **Repo hygiene: committed backup artifacts.** Resolved in v1.0.6: all 163 artifacts
+  deleted and `.gitignore` rules added.
+- [x] **Dashboard has no dark mode.** Resolved in v1.0.6: every page is token-native
+  (`docs/DESIGN.md`); the shim layer in `app.css` was deleted.
 - [ ] **Invoice numbering is collision-prone.** `InvoiceGenerationService::nextInvoiceNumber()`
   derives `INV-%06d` from `Invoice::max('id') + 1`. Two concurrent generations, or generation
   after any historical deletion, can violate the unique index. Move to a dedicated sequence
@@ -33,14 +30,12 @@ Recorded 2026-08-21 after a full codebase review. Ordered by priority. Tick item
 
 ## Low
 
-- [ ] **Two drawers never migrated to `<x-drawer>`:** `#owner-modal`
-  (`resources/views/app/properties.blade.php:682`) and `#existing-unit-modal` (`:1153`) are
-  hand-rolled with inconsistent z-index (80 vs 70) and backdrop styles.
-- [ ] **Drawer open/close state machine is copy-pasted** across ~7 JS modules (`auth.js`,
-  `leases.js`, `activity-log.js`, `properties.js`, `payments.js`, `owners.js`, `users.js`).
-  Extract into `core.js`.
-- [ ] **Stock boilerplate:** `README.md` is the unmodified Laravel skeleton README;
-  `resources/views/welcome.blade.php` (72 KB) is unrouted starter content. Replace / delete.
+- [x] **Two drawers never migrated to `<x-drawer>`:** resolved in v1.0.6 — every overlay is
+  an `<x-drawer>` (`sm` or `lg`), and the orphaned change-password dialog was removed.
+- [x] **Drawer open/close state machine is copy-pasted:** resolved in v1.0.6 —
+  `openDrawer`/`closeDrawer`/`wireDrawer` live in `core.js`; all page modules delegate.
+- [ ] **Stock boilerplate:** `README.md` is still the unmodified Laravel skeleton README
+  (`welcome.blade.php` was deleted in v1.0.6). Write a real README.
 - [ ] **Mail is fully synchronous.** No `ShouldQueue`, no queue worker required — but web
   requests that send invitations/receipts block on the Resend round-trip, and the daily
   reminder run is serial. If volume grows, queue the mailables (infra already supports it:

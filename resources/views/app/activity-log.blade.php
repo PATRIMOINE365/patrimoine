@@ -98,7 +98,7 @@
                     id="activity-log-search"
                     type="search"
                     maxlength="255"
-                    data-i18n-placeholder="{{ __('ui.activity_log.search_placeholder') }}"
+                    data-i18n-placeholder="activity_log.search_placeholder"
                     placeholder="{{ __('ui.activity_log.search_placeholder') }}"
                     class="pm-input"
                 >
@@ -201,7 +201,7 @@
                     id="activity-log-action"
                     type="text"
                     maxlength="100"
-                    data-i18n-placeholder="{{ __('ui.activity_log.action_placeholder') }}"
+                    data-i18n-placeholder="activity_log.action_placeholder"
                     placeholder="{{ __('ui.activity_log.action_placeholder') }}"
                     class="pm-input"
                 >
@@ -219,7 +219,7 @@
                     id="activity-log-entity-type"
                     type="text"
                     maxlength="100"
-                    data-i18n-placeholder="{{ __('ui.activity_log.entity_type_placeholder') }}"
+                    data-i18n-placeholder="activity_log.entity_type_placeholder"
                     placeholder="{{ __('ui.activity_log.entity_type_placeholder') }}"
                     class="pm-input"
                 >

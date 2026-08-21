@@ -353,7 +353,7 @@
                         checked
                         class="
                             h-4 w-4 rounded
-                            border-slate-300
+                            border-[var(--pm-border-strong)]
                             text-patrimoine-700
                         "
                     >
@@ -389,7 +389,7 @@
                 type="button"
                 class="pm-button-secondary"
             >
-                <span data-i18n="users.cancel">{{ __('ui.users.cancel') }}</span>
+                <span data-i18n="actions.cancel">{{ __('ui.actions.cancel') }}</span>
             </button>
 
             <button

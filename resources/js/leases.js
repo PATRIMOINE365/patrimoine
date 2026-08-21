@@ -26,12 +26,14 @@
 
 import {
     apiRequest,
+    closeDrawer,
     escapeHtml,
     formValue,
     formatCurrency,
     formatDate,
     getPresentationConfiguration,
     nullableFormValue,
+    openDrawer,
     parseJsonResponse,
     setText,
     translate,
@@ -66,45 +68,26 @@ let defaultVatRate =
     '18.00';
 
 /*
- * Pending Add Lease drawer close cleanup.
- *
- * Reopening before the 800ms closing transition completes must cancel
- * this timer so stale cleanup cannot close a newly reopened drawer.
+ * Drawer open/close mechanics (classes, aria, body scroll, timers) are
+ * owned by the shared openDrawer/closeDrawer helpers in core.js.
  */
-let leaseDrawerCloseTimer =
-    null;
 
 /*
  * Controlled V1.0.5 Extend drawer state.
  */
-let leaseExtendDrawerCloseTimer =
-    null;
-
 let extendingLeaseId =
     null;
 
 /*
  * Controlled V1.0.5 Termination drawer state.
  */
-let leaseTerminationDrawerCloseTimer =
-    null;
-
 let terminatingLeaseId =
     null;
 
 /*
  * Controlled V1.0.5 destructive Lease Delete drawer state.
  */
-let leaseDeleteDrawerCloseTimer =
-    null;
-
 let deletingLeaseId =
-    null;
-
-/*
- * Financial History drawer state.
- */
-let leaseFinancialHistoryDrawerCloseTimer =
     null;
 
 /*
@@ -658,7 +641,7 @@ function renderUnitSearchResults(
                 class="
                     px-4 py-5
                     text-center text-sm
-                    text-slate-500
+                    text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -744,20 +727,20 @@ function unitSearchResult(unit) {
             )}"
             class="
                 block w-full
-                border-b border-slate-100
+                border-b border-[var(--pm-border-subtle)]
                 px-4 py-3
                 text-left
                 transition
                 last:border-b-0
-                hover:bg-patrimoine-50
-                focus:bg-patrimoine-50
+                hover:bg-[var(--pm-hover)]
+                focus:bg-[var(--pm-hover)]
                 focus:outline-none
             "
         >
             <div
                 class="
                     text-sm font-medium
-                    text-slate-950
+                    text-[var(--pm-text)]
                 "
             >
                 ${escapeHtml(
@@ -768,7 +751,7 @@ function unitSearchResult(unit) {
             <div
                 class="
                     mt-0.5 text-xs
-                    text-slate-600
+                    text-[var(--pm-text-secondary)]
                 "
             >
                 ${escapeHtml(
@@ -782,7 +765,7 @@ function unitSearchResult(unit) {
                         <div
                             class="
                                 mt-1 text-xs
-                                text-slate-400
+                                text-[var(--pm-text-subtle)]
                             "
                         >
                             ${escapeHtml(
@@ -799,7 +782,7 @@ function unitSearchResult(unit) {
                         <div
                             class="
                                 mt-1.5 text-xs
-                                text-patrimoine-700
+                                text-[var(--pm-accent)]
                             "
                         >
                             ${escapeHtml(
@@ -977,7 +960,7 @@ function renderSelectedUnit(unit) {
             ownersContainer.innerHTML = `
                 <span
                     class="
-                        text-sm text-slate-400
+                        text-sm text-[var(--pm-text-subtle)]
                     "
                 >
                     ${escapeHtml(
@@ -996,11 +979,11 @@ function renderSelectedUnit(unit) {
                                 class="
                                     inline-flex items-center
                                     rounded-full
-                                    bg-white
+                                    bg-[var(--pm-surface)]
                                     px-3 py-1.5
                                     text-xs font-medium
-                                    text-slate-700
-                                    ring-1 ring-slate-200
+                                    text-[var(--pm-text-secondary)]
+                                    ring-1 ring-[var(--pm-border)]
                                 "
                             >
                                 ${escapeHtml(
@@ -1020,7 +1003,7 @@ function renderSelectedUnit(unit) {
                                             <span
                                                 class="
                                                     ml-1
-                                                    text-slate-400
+                                                    text-[var(--pm-text-subtle)]
                                                 "
                                             >
                                                 · ${escapeHtml(
@@ -1162,7 +1145,7 @@ async function loadLeases(
         <div
             class="
                 py-12 text-center
-                text-sm text-slate-400
+                text-sm text-[var(--pm-text-subtle)]
             "
         >
             ${escapeHtml(
@@ -1248,7 +1231,7 @@ function renderLeases(payload) {
             <div
                 class="
                     rounded-xl border
-                    border-dashed border-slate-200
+                    border-dashed border-[var(--pm-border)]
                     px-6 py-14 text-center
                 "
             >
@@ -1357,12 +1340,7 @@ function leaseCard(lease) {
 
     return `
         <article
-            class="
-                mb-4 rounded-xl
-                border border-slate-200
-                bg-white p-5
-                last:mb-0
-            "
+            class="pm-card mb-4 p-5 last:mb-0"
         >
             <div
                 class="
@@ -1383,7 +1361,7 @@ function leaseCard(lease) {
                         <h3
                             class="
                                 text-base font-semibold
-                                text-slate-950
+                                text-[var(--pm-text)]
                             "
                         >
                             ${escapeHtml(
@@ -1403,7 +1381,7 @@ function leaseCard(lease) {
                     <div
                         class="
                             mt-2 text-sm
-                            text-slate-600
+                            text-[var(--pm-text-secondary)]
                         "
                     >
                         ${escapeHtml(
@@ -1424,7 +1402,7 @@ function leaseCard(lease) {
                                 <div
                                     class="
                                         mt-1 text-sm
-                                        text-slate-500
+                                        text-[var(--pm-text-muted)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -1444,7 +1422,7 @@ function leaseCard(lease) {
                         class="
                             mt-3 flex flex-wrap
                             gap-x-6 gap-y-1
-                            text-sm text-slate-500
+                            text-sm text-[var(--pm-text-muted)]
                         "
                     >
                         <span>
@@ -1522,15 +1500,7 @@ function leaseCard(lease) {
                         data-lease-id="${escapeHtml(
                             lease.id
                         )}"
-                        class="
-                            rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2
-                            text-sm font-medium
-                            text-slate-700
-                            transition
-                            hover:bg-slate-50
-                        "
+                        class="pm-button-secondary"
                     >
                         ${escapeHtml(
                             translate(
@@ -1545,15 +1515,7 @@ function leaseCard(lease) {
                         data-lease-id="${escapeHtml(
                             lease.id
                         )}"
-                        class="
-                            rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2
-                            text-sm font-medium
-                            text-slate-700
-                            transition
-                            hover:bg-slate-50
-                        "
+                        class="pm-button-secondary"
                     >
                         ${escapeHtml(
                             translate(
@@ -1568,15 +1530,7 @@ function leaseCard(lease) {
                         data-lease-id="${escapeHtml(
                             lease.id
                         )}"
-                        class="
-                            rounded-lg
-                            border border-slate-200
-                            bg-white px-3.5 py-2
-                            text-sm font-medium
-                            text-slate-700
-                            transition
-                            hover:bg-slate-50
-                        "
+                        class="pm-button-secondary"
                     >
                         ${escapeHtml(
                             translate(
@@ -1596,12 +1550,12 @@ function leaseCard(lease) {
                                     )}"
                                     class="
                                         rounded-lg
-                                        border border-amber-200
-                                        bg-amber-50 px-3.5 py-2
+                                        border border-[var(--pm-warning-border)]
+                                        bg-[var(--pm-warning-background)] px-3.5 py-2
                                         text-sm font-medium
-                                        text-amber-800
+                                        text-[var(--pm-warning-text)]
                                         transition
-                                        hover:bg-amber-100
+                                        hover:bg-[var(--pm-warning-background)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -1627,12 +1581,12 @@ function leaseCard(lease) {
                                     )}"
                                     class="
                                         rounded-lg
-                                        border border-amber-200
-                                        bg-white px-3.5 py-2
+                                        border border-[var(--pm-warning-border)]
+                                        bg-[var(--pm-surface)] px-3.5 py-2
                                         text-sm font-medium
-                                        text-amber-700
+                                        text-[var(--pm-warning-text)]
                                         transition
-                                        hover:bg-amber-50
+                                        hover:bg-[var(--pm-warning-background)]
                                     "
                                 >
                                     ${escapeHtml(
@@ -1654,15 +1608,7 @@ function leaseCard(lease) {
                                     data-lease-id="${escapeHtml(
                                         lease.id
                                     )}"
-                                    class="
-                                        rounded-lg
-                                        border border-slate-200
-                                        bg-white px-3.5 py-2
-                                        text-sm font-medium
-                                        text-slate-700
-                                        transition
-                                        hover:bg-slate-50
-                                    "
+                                    class="pm-button-secondary"
                                 >
                                     ${escapeHtml(
                                         translate(
@@ -1682,12 +1628,12 @@ function leaseCard(lease) {
                         )}"
                         class="
                             rounded-lg
-                            border border-red-200
-                            bg-white px-3.5 py-2
+                            border border-[var(--pm-danger-border)]
+                            bg-[var(--pm-surface)] px-3.5 py-2
                             text-sm font-medium
-                            text-red-600
+                            text-[var(--pm-danger-text)]
                             transition
-                            hover:bg-red-50
+                            hover:bg-[var(--pm-danger-background)]
                         "
                     >
                         ${escapeHtml(
@@ -1709,21 +1655,21 @@ function leaseStatusBadge(status) {
         );
 
     let classes =
-        'bg-slate-100 text-slate-600';
+        'bg-[var(--pm-surface-muted)] text-[var(--pm-text-secondary)]';
 
     if (status === 'active') {
         classes =
-            'bg-green-100 text-green-700';
+            'bg-[var(--pm-success-background)] text-[var(--pm-success-text)]';
     } else if (
         status === 'notice'
     ) {
         classes =
-            'bg-amber-100 text-amber-700';
+            'bg-[var(--pm-warning-background)] text-[var(--pm-warning-text)]';
     } else if (
         status === 'terminated'
     ) {
         classes =
-            'bg-red-100 text-red-700';
+            'bg-[var(--pm-danger-background)] text-[var(--pm-danger-text)]';
     }
 
     return `
@@ -1981,7 +1927,7 @@ function renderLeasePagination(
                 justify-between gap-4
             "
         >
-            <div class="text-sm text-slate-500">
+            <div class="text-sm text-[var(--pm-text-muted)]">
                 ${escapeHtml(
                     translate(
                         'leases.page'
@@ -2003,14 +1949,7 @@ function renderLeasePagination(
                             ? 'disabled'
                             : ''
                     }
-                    class="
-                        rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2
-                        text-sm font-medium
-                        text-slate-700
-                        disabled:opacity-40
-                    "
+                    class="pm-button-secondary disabled:opacity-40"
                 >
                     ${escapeHtml(
                         translate(
@@ -2027,14 +1966,7 @@ function renderLeasePagination(
                             ? 'disabled'
                             : ''
                     }
-                    class="
-                        rounded-lg
-                        border border-slate-200
-                        bg-white px-3 py-2
-                        text-sm font-medium
-                        text-slate-700
-                        disabled:opacity-40
-                    "
+                    class="pm-button-secondary disabled:opacity-40"
                 >
                     ${escapeHtml(
                         translate(
@@ -2660,145 +2592,28 @@ function configureLeaseModal() {
     setText(
         'lease-submit-button',
         translate(
-            'leases.save'
+            'actions.save'
         )
     );
 }
 
 function showLeaseModal() {
-    const drawer =
-        document.getElementById(
-            'lease-modal'
-        );
-
-    if (! drawer) {
-        return;
-    }
-
-    /*
-     * Cancel stale cleanup if the user reopens the drawer before the
-     * previous closing animation has completed.
-     */
-    if (leaseDrawerCloseTimer !== null) {
-        window.clearTimeout(
-            leaseDrawerCloseTimer
-        );
-
-        leaseDrawerCloseTimer =
-            null;
-    }
-
-    drawer.classList.remove(
-        'hidden',
-        'pm-drawer-open',
-        'pm-drawer-closing'
-    );
-
-    drawer.removeAttribute(
-        'hidden'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-active'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'false'
-    );
-
-    document.body.classList.add(
-        'overflow-hidden'
-    );
-
-    const panel =
-        drawer.querySelector(
-            '.pm-drawer-panel'
-        );
-
-    /*
-     * Commit the off-screen translateX(100%) state before starting the
-     * 800ms opening transition.
-     */
-    if (panel) {
-        void panel.getBoundingClientRect();
-    }
-
-    window.requestAnimationFrame(
-        () => {
-            window.requestAnimationFrame(
-                () => {
-                    drawer.classList.add(
-                        'pm-drawer-open'
-                    );
-                }
-            );
-        }
+    openDrawer(
+        'lease-modal'
     );
 }
 
 function closeLeaseModal() {
-    const drawer =
-        document.getElementById(
-            'lease-modal'
-        );
-
-    if (
-        ! drawer
-        || ! drawer.classList.contains(
-            'pm-drawer-active'
-        )
-    ) {
-        return;
-    }
-
-    drawer.classList.remove(
-        'pm-drawer-open'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-closing'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    if (leaseDrawerCloseTimer !== null) {
-        window.clearTimeout(
-            leaseDrawerCloseTimer
-        );
-    }
-
-    leaseDrawerCloseTimer =
-        window.setTimeout(
-            () => {
-                drawer.classList.remove(
-                    'pm-drawer-active',
-                    'pm-drawer-closing'
-                );
-
-                leaseDrawerCloseTimer =
-                    null;
-
-                const anotherDrawerOpen =
-                    document.querySelector(
-                        '.pm-drawer.pm-drawer-active'
-                    );
-
-                if (! anotherDrawerOpen) {
-                    document.body.classList.remove(
-                        'overflow-hidden'
-                    );
-                }
-
+    closeDrawer(
+        'lease-modal',
+        {
+            onClosed: () => {
                 resetLeaseForm();
 
                 configureLeaseModal();
             },
-            850
-        );
+        }
+    );
 }
 
 function resetLeaseForm() {
@@ -3458,9 +3273,6 @@ function updateManagementFeeControls() {
 let terminationSettlementLeaseId =
     null;
 
-let terminationSettlementCloseTimer =
-    null;
-
 
 function initializeTerminationSettlementDrawer() {
     document
@@ -3567,61 +3379,10 @@ async function openTerminationSettlementModal(
     terminationSettlementLeaseId =
         numericLeaseId;
 
-    if (
-        terminationSettlementCloseTimer
-        !== null
-    ) {
-        window.clearTimeout(
-            terminationSettlementCloseTimer
-        );
-
-        terminationSettlementCloseTimer =
-            null;
-    }
-
     resetTerminationSettlementDrawer();
 
-    drawer.classList.remove(
-        'hidden',
-        'pm-drawer-closing'
-    );
-
-    drawer.removeAttribute(
-        'hidden'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-active'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'false'
-    );
-
-    document.body.classList.add(
-        'overflow-hidden'
-    );
-
-    const panel =
-        drawer.querySelector(
-            '.pm-drawer-panel'
-        );
-
-    if (panel) {
-        void panel.getBoundingClientRect();
-    }
-
-    window.requestAnimationFrame(
-        () => {
-            window.requestAnimationFrame(
-                () => {
-                    drawer.classList.add(
-                        'pm-drawer-open'
-                    );
-                }
-            );
-        }
+    openDrawer(
+        drawer
     );
 
     await loadTerminationSettlement();
@@ -3629,69 +3390,15 @@ async function openTerminationSettlementModal(
 
 
 function closeTerminationSettlementModal() {
-    const drawer =
-        document.getElementById(
-            'termination-settlement-modal'
-        );
-
-    if (
-        ! drawer
-        || ! drawer.classList.contains(
-            'pm-drawer-active'
-        )
-    ) {
-        return;
-    }
-
-    drawer.classList.remove(
-        'pm-drawer-open'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-closing'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    if (
-        terminationSettlementCloseTimer
-        !== null
-    ) {
-        window.clearTimeout(
-            terminationSettlementCloseTimer
-        );
-    }
-
-    terminationSettlementCloseTimer =
-        window.setTimeout(
-            () => {
-                drawer.classList.remove(
-                    'pm-drawer-active',
-                    'pm-drawer-closing'
-                );
-
-                terminationSettlementCloseTimer =
-                    null;
-
+    closeDrawer(
+        'termination-settlement-modal',
+        {
+            onClosed: () => {
                 terminationSettlementLeaseId =
                     null;
-
-                const anotherDrawerOpen =
-                    document.querySelector(
-                        '.pm-drawer.pm-drawer-active'
-                    );
-
-                if (! anotherDrawerOpen) {
-                    document.body.classList.remove(
-                        'overflow-hidden'
-                    );
-                }
             },
-            850
-        );
+        }
+    );
 }
 
 
@@ -4019,9 +3726,9 @@ function renderTerminationSettlementBlockers(
             <div
                 class="
                     rounded-xl
-                    border border-green-200
-                    bg-green-50 px-4 py-3
-                    text-sm text-green-800
+                    border border-[var(--pm-success-border)]
+                    bg-[var(--pm-success-background)] px-4 py-3
+                    text-sm text-[var(--pm-success-text)]
                 "
             >
                 ${escapeHtml(
@@ -4039,14 +3746,14 @@ function renderTerminationSettlementBlockers(
         <div
             class="
                 rounded-xl
-                border border-amber-200
-                bg-amber-50 px-4 py-4
+                border border-[var(--pm-warning-border)]
+                bg-[var(--pm-warning-background)] px-4 py-4
             "
         >
             <div
                 class="
                     text-sm font-semibold
-                    text-amber-900
+                    text-[var(--pm-warning-text)]
                 "
             >
                 ${escapeHtml(
@@ -4059,7 +3766,7 @@ function renderTerminationSettlementBlockers(
             <ul
                 class="
                     mt-2 list-disc space-y-1
-                    pl-5 text-sm text-amber-800
+                    pl-5 text-sm text-[var(--pm-warning-text)]
                 "
             >
                 ${
@@ -4412,18 +4119,6 @@ function openLeaseTerminationModal(
         return;
     }
 
-    if (
-        leaseTerminationDrawerCloseTimer
-        !== null
-    ) {
-        window.clearTimeout(
-            leaseTerminationDrawerCloseTimer
-        );
-
-        leaseTerminationDrawerCloseTimer =
-            null;
-    }
-
     terminatingLeaseId =
         numericLeaseId;
 
@@ -4489,98 +4184,16 @@ function openLeaseTerminationModal(
             'hidden'
         );
 
-    drawer.classList.remove(
-        'hidden',
-        'pm-drawer-closing'
-    );
-
-    drawer.removeAttribute(
-        'hidden'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-active'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'false'
-    );
-
-    document.body.classList.add(
-        'overflow-hidden'
-    );
-
-    const panel =
-        drawer.querySelector(
-            '.pm-drawer-panel'
-        );
-
-    if (panel) {
-        void panel.getBoundingClientRect();
-    }
-
-    window.requestAnimationFrame(
-        () => {
-            window.requestAnimationFrame(
-                () => {
-                    drawer.classList.add(
-                        'pm-drawer-open'
-                    );
-                }
-            );
-        }
+    openDrawer(
+        drawer
     );
 }
 
 function closeLeaseTerminationModal() {
-    const drawer =
-        document.getElementById(
-            'lease-termination-modal'
-        );
-
-    if (
-        ! drawer
-        || ! drawer.classList.contains(
-            'pm-drawer-active'
-        )
-    ) {
-        return;
-    }
-
-    drawer.classList.remove(
-        'pm-drawer-open'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-closing'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    if (
-        leaseTerminationDrawerCloseTimer
-        !== null
-    ) {
-        window.clearTimeout(
-            leaseTerminationDrawerCloseTimer
-        );
-    }
-
-    leaseTerminationDrawerCloseTimer =
-        window.setTimeout(
-            () => {
-                drawer.classList.remove(
-                    'pm-drawer-active',
-                    'pm-drawer-closing'
-                );
-
-                leaseTerminationDrawerCloseTimer =
-                    null;
-
+    closeDrawer(
+        'lease-termination-modal',
+        {
+            onClosed: () => {
                 terminatingLeaseId =
                     null;
 
@@ -4591,20 +4204,9 @@ function closeLeaseTerminationModal() {
                     ?.reset();
 
                 hideLeaseTerminationError();
-
-                const anotherDrawerOpen =
-                    document.querySelector(
-                        '.pm-drawer.pm-drawer-active'
-                    );
-
-                if (! anotherDrawerOpen) {
-                    document.body.classList.remove(
-                        'overflow-hidden'
-                    );
-                }
             },
-            850
-        );
+        }
+    );
 }
 
 function hideLeaseTerminationError() {
@@ -4934,18 +4536,6 @@ function openExtendLeaseModal(
         return;
     }
 
-    if (
-        leaseExtendDrawerCloseTimer
-        !== null
-    ) {
-        window.clearTimeout(
-            leaseExtendDrawerCloseTimer
-        );
-
-        leaseExtendDrawerCloseTimer =
-            null;
-    }
-
     extendingLeaseId =
         numericLeaseId;
 
@@ -5052,98 +4642,16 @@ function openExtendLeaseModal(
 
     updateLeaseExtendIncrementControls();
 
-    drawer.classList.remove(
-        'hidden',
-        'pm-drawer-closing'
-    );
-
-    drawer.removeAttribute(
-        'hidden'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-active'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'false'
-    );
-
-    document.body.classList.add(
-        'overflow-hidden'
-    );
-
-    const panel =
-        drawer.querySelector(
-            '.pm-drawer-panel'
-        );
-
-    if (panel) {
-        void panel.getBoundingClientRect();
-    }
-
-    window.requestAnimationFrame(
-        () => {
-            window.requestAnimationFrame(
-                () => {
-                    drawer.classList.add(
-                        'pm-drawer-open'
-                    );
-                }
-            );
-        }
+    openDrawer(
+        drawer
     );
 }
 
 function closeLeaseExtendModal() {
-    const drawer =
-        document.getElementById(
-            'lease-extend-modal'
-        );
-
-    if (
-        ! drawer
-        || ! drawer.classList.contains(
-            'pm-drawer-active'
-        )
-    ) {
-        return;
-    }
-
-    drawer.classList.remove(
-        'pm-drawer-open'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-closing'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    if (
-        leaseExtendDrawerCloseTimer
-        !== null
-    ) {
-        window.clearTimeout(
-            leaseExtendDrawerCloseTimer
-        );
-    }
-
-    leaseExtendDrawerCloseTimer =
-        window.setTimeout(
-            () => {
-                drawer.classList.remove(
-                    'pm-drawer-active',
-                    'pm-drawer-closing'
-                );
-
-                leaseExtendDrawerCloseTimer =
-                    null;
-
+    closeDrawer(
+        'lease-extend-modal',
+        {
+            onClosed: () => {
                 extendingLeaseId =
                     null;
 
@@ -5154,20 +4662,9 @@ function closeLeaseExtendModal() {
                     ?.reset();
 
                 hideLeaseExtendError();
-
-                const anotherDrawerOpen =
-                    document.querySelector(
-                        '.pm-drawer.pm-drawer-active'
-                    );
-
-                if (! anotherDrawerOpen) {
-                    document.body.classList.remove(
-                        'overflow-hidden'
-                    );
-                }
             },
-            850
-        );
+        }
+    );
 }
 
 function hideLeaseExtendError() {
@@ -5497,7 +4994,7 @@ async function submitLeaseForm(
 
         submitButton.textContent =
             translate(
-                'leases.save'
+                'actions.save'
             );
     }
 }
@@ -5838,17 +5335,6 @@ async function openLeaseDeleteDrawer(
             lease.id
         );
 
-    if (
-        leaseDeleteDrawerCloseTimer
-    ) {
-        window.clearTimeout(
-            leaseDeleteDrawerCloseTimer
-        );
-
-        leaseDeleteDrawerCloseTimer =
-            null;
-    }
-
     hideLeaseDeleteError();
 
     const form =
@@ -5910,36 +5396,8 @@ async function openLeaseDeleteDrawer(
             true;
     }
 
-    drawer.hidden = false;
-
-    drawer.classList.remove(
-        'hidden',
-        'pm-drawer-closing'
-    );
-
-    drawer.removeAttribute(
-        'aria-hidden'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-active'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'false'
-    );
-
-    requestAnimationFrame(
-        () => {
-            requestAnimationFrame(
-                () => {
-                    drawer.classList.add(
-                        'pm-drawer-open'
-                    );
-                }
-            );
-        }
+    openDrawer(
+        drawer
     );
 
     drawer
@@ -6002,69 +5460,15 @@ async function openLeaseDeleteDrawer(
 }
 
 function closeLeaseDeleteDrawer() {
-    const drawer =
-        document.getElementById(
-            'lease-delete-modal'
-        );
-
-    if (
-        ! drawer
-        || ! drawer.classList.contains(
-            'pm-drawer-active'
-        )
-    ) {
-        return;
-    }
-
-    drawer.classList.remove(
-        'pm-drawer-open'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-closing'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    if (
-        leaseDeleteDrawerCloseTimer
-    ) {
-        window.clearTimeout(
-            leaseDeleteDrawerCloseTimer
-        );
-    }
-
-    leaseDeleteDrawerCloseTimer =
-        window.setTimeout(
-            () => {
-                drawer.classList.remove(
-                    'pm-drawer-active',
-                    'pm-drawer-closing'
-                );
-
-                drawer.hidden = true;
-
+    closeDrawer(
+        'lease-delete-modal',
+        {
+            onClosed: () => {
                 deletingLeaseId =
                     null;
-
-                leaseDeleteDrawerCloseTimer =
-                    null;
-
-                if (
-                    ! document.querySelector(
-                        '.pm-drawer.pm-drawer-active'
-                    )
-                ) {
-                    document.body.classList.remove(
-                        'overflow-hidden'
-                    );
-                }
             },
-            800
-        );
+        }
+    );
 }
 
 function renderLeaseDeleteImpact(
@@ -6291,9 +5695,9 @@ function renderLeaseDeleteImpact(
             <div
                 class="
                     rounded-xl
-                    border border-green-200
-                    bg-green-50 px-4 py-3
-                    text-sm text-green-800
+                    border border-[var(--pm-success-border)]
+                    bg-[var(--pm-success-background)] px-4 py-3
+                    text-sm text-[var(--pm-success-text)]
                 "
             >
                 ${escapeHtml(
@@ -6623,15 +6027,6 @@ function hideLeasePageError() {
 let securityDepositLeaseId =
     null;
 
-/*
- * Pending Security Deposit drawer close cleanup.
- *
- * Reopening during the 800ms close transition must cancel the previous
- * cleanup so an old timer cannot close a newly reopened drawer.
- */
-let securityDepositDrawerCloseTimer =
-    null;
-
 /**
  * Initialize Security Deposit modal controls.
  */
@@ -6764,6 +6159,15 @@ function initializeSecurityDepositModal() {
 
     document
         .getElementById(
+            'security-deposit-close-footer'
+        )
+        ?.addEventListener(
+            'click',
+            closeSecurityDepositModal
+        );
+
+    document
+        .getElementById(
             'security-deposit-modal-backdrop'
         )
         ?.addEventListener(
@@ -6842,6 +6246,15 @@ function initializeLeaseFinancialHistoryModal() {
     document
         .getElementById(
             'lease-financial-history-modal-close'
+        )
+        ?.addEventListener(
+            'click',
+            closeLeaseFinancialHistoryModal
+        );
+
+    document
+        .getElementById(
+            'lease-financial-history-close-footer'
         )
         ?.addEventListener(
             'click',
@@ -6955,135 +6368,19 @@ async function openLeaseFinancialHistoryModal(
 }
 
 function showLeaseFinancialHistoryDrawer() {
-    const drawer =
-        document.getElementById(
-            'lease-financial-history-modal'
-        );
-
-    if (! drawer) {
-        return;
-    }
-
-    if (
-        leaseFinancialHistoryDrawerCloseTimer
-        !== null
-    ) {
-        window.clearTimeout(
-            leaseFinancialHistoryDrawerCloseTimer
-        );
-
-        leaseFinancialHistoryDrawerCloseTimer =
-            null;
-    }
-
-    drawer.classList.remove(
-        'hidden',
-        'pm-drawer-open',
-        'pm-drawer-closing'
-    );
-
-    drawer.removeAttribute(
-        'hidden'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-active'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'false'
-    );
-
-    document.body.classList.add(
-        'overflow-hidden'
-    );
-
-    const panel =
-        drawer.querySelector(
-            '.pm-drawer-panel'
-        );
-
-    if (panel) {
-        void panel.getBoundingClientRect();
-    }
-
-    window.requestAnimationFrame(
-        () => {
-            window.requestAnimationFrame(
-                () => {
-                    drawer.classList.add(
-                        'pm-drawer-open'
-                    );
-                }
-            );
-        }
+    openDrawer(
+        'lease-financial-history-modal'
     );
 }
 
 function closeLeaseFinancialHistoryModal() {
-    const drawer =
-        document.getElementById(
-            'lease-financial-history-modal'
-        );
-
-    if (
-        ! drawer
-        || ! drawer.classList.contains(
-            'pm-drawer-active'
-        )
-    ) {
-        return;
-    }
-
-    drawer.classList.remove(
-        'pm-drawer-open'
+    closeDrawer(
+        'lease-financial-history-modal',
+        {
+            onClosed:
+                resetLeaseFinancialHistoryModal,
+        }
     );
-
-    drawer.classList.add(
-        'pm-drawer-closing'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    if (
-        leaseFinancialHistoryDrawerCloseTimer
-        !== null
-    ) {
-        window.clearTimeout(
-            leaseFinancialHistoryDrawerCloseTimer
-        );
-    }
-
-    leaseFinancialHistoryDrawerCloseTimer =
-        window.setTimeout(
-            () => {
-                drawer.classList.remove(
-                    'pm-drawer-active',
-                    'pm-drawer-closing'
-                );
-
-                leaseFinancialHistoryDrawerCloseTimer =
-                    null;
-
-                const anotherDrawerOpen =
-                    document.querySelector(
-                        '.pm-drawer.pm-drawer-active'
-                    );
-
-                if (! anotherDrawerOpen) {
-                    document.body.classList.remove(
-                        'overflow-hidden'
-                    );
-                }
-
-                resetLeaseFinancialHistoryModal();
-            },
-            850
-        );
 }
 
 function resetLeaseFinancialHistoryModal() {
@@ -7386,7 +6683,7 @@ function renderLeaseFinancialHistory(
                 <div
                     class="
                         text-sm font-medium
-                        text-slate-900
+                        text-[var(--pm-text)]
                     "
                 >
                     ${escapeHtml(
@@ -7399,7 +6696,7 @@ function renderLeaseFinancialHistory(
                 <div
                     class="
                         mt-1 text-sm
-                        text-slate-500
+                        text-[var(--pm-text-muted)]
                     "
                 >
                     ${escapeHtml(
@@ -7844,60 +7141,8 @@ async function openSecurityDepositModal(
         return;
     }
 
-    if (
-        securityDepositDrawerCloseTimer
-        !== null
-    ) {
-        window.clearTimeout(
-            securityDepositDrawerCloseTimer
-        );
-
-        securityDepositDrawerCloseTimer =
-            null;
-    }
-
-    drawer.classList.remove(
-        'hidden',
-        'pm-drawer-open',
-        'pm-drawer-closing'
-    );
-
-    drawer.removeAttribute(
-        'hidden'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-active'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'false'
-    );
-
-    document.body.classList.add(
-        'overflow-hidden'
-    );
-
-    const panel =
-        drawer.querySelector(
-            '.pm-drawer-panel'
-        );
-
-    if (panel) {
-        void panel.getBoundingClientRect();
-    }
-
-    window.requestAnimationFrame(
-        () => {
-            window.requestAnimationFrame(
-                () => {
-                    drawer.classList.add(
-                        'pm-drawer-open'
-                    );
-                }
-            );
-        }
+    openDrawer(
+        drawer
     );
 
     await loadSecurityDepositPosition();
@@ -7907,71 +7152,17 @@ async function openSecurityDepositModal(
  * Close and reset the Security Deposit modal.
  */
 function closeSecurityDepositModal() {
-    const drawer =
-        document.getElementById(
-            'security-deposit-modal'
-        );
-
-    if (
-        ! drawer
-        || ! drawer.classList.contains(
-            'pm-drawer-active'
-        )
-    ) {
-        return;
-    }
-
-    drawer.classList.remove(
-        'pm-drawer-open'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-closing'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    if (
-        securityDepositDrawerCloseTimer
-        !== null
-    ) {
-        window.clearTimeout(
-            securityDepositDrawerCloseTimer
-        );
-    }
-
-    securityDepositDrawerCloseTimer =
-        window.setTimeout(
-            () => {
-                drawer.classList.remove(
-                    'pm-drawer-active',
-                    'pm-drawer-closing'
-                );
-
-                securityDepositDrawerCloseTimer =
-                    null;
-
-                const anotherDrawerOpen =
-                    document.querySelector(
-                        '.pm-drawer.pm-drawer-active'
-                    );
-
-                if (! anotherDrawerOpen) {
-                    document.body.classList.remove(
-                        'overflow-hidden'
-                    );
-                }
-
+    closeDrawer(
+        'security-deposit-modal',
+        {
+            onClosed: () => {
                 securityDepositLeaseId =
                     null;
 
                 resetSecurityDepositModal();
             },
-            850
-        );
+        }
+    );
 }
 
 
@@ -8363,9 +7554,9 @@ function renderSecurityDepositDeductions(
             <div
                 class="
                     rounded-lg border
-                    border-dashed border-slate-200
+                    border-dashed border-[var(--pm-border)]
                     px-4 py-6 text-center
-                    text-sm text-slate-500
+                    text-sm text-[var(--pm-text-muted)]
                 "
             >
                 ${escapeHtml(
@@ -8390,9 +7581,9 @@ function renderSecurityDepositDeductions(
                 <thead>
                     <tr
                         class="
-                            border-b border-slate-200
+                            border-b border-[var(--pm-border)]
                             text-xs uppercase
-                            tracking-wide text-slate-500
+                            tracking-wide text-[var(--pm-text-muted)]
                         "
                     >
                         <th class="px-3 py-2">
@@ -8442,13 +7633,13 @@ function renderSecurityDepositDeductions(
                                     <tr
                                         class="
                                             border-b
-                                            border-slate-100
+                                            border-[var(--pm-border-subtle)]
                                         "
                                     >
                                         <td
                                             class="
                                                 px-3 py-3
-                                                text-slate-600
+                                                text-[var(--pm-text-secondary)]
                                             "
                                         >
                                             ${escapeHtml(
@@ -8463,7 +7654,7 @@ function renderSecurityDepositDeductions(
                                             <div
                                                 class="
                                                     font-medium
-                                                    text-slate-900
+                                                    text-[var(--pm-text)]
                                                 "
                                             >
                                                 ${escapeHtml(
@@ -8479,7 +7670,7 @@ function renderSecurityDepositDeductions(
                                                         <div
                                                             class="
                                                                 mt-1 text-xs
-                                                                text-slate-500
+                                                                text-[var(--pm-text-muted)]
                                                             "
                                                         >
                                                             ${escapeHtml(
@@ -8494,7 +7685,7 @@ function renderSecurityDepositDeductions(
                                         <td
                                             class="
                                                 px-3 py-3
-                                                text-slate-600
+                                                text-[var(--pm-text-secondary)]
                                             "
                                         >
                                             ${escapeHtml(
@@ -8508,7 +7699,7 @@ function renderSecurityDepositDeductions(
                                                 px-3 py-3
                                                 text-right
                                                 font-medium
-                                                text-slate-900
+                                                text-[var(--pm-text)]
                                             "
                                         >
                                             ${escapeHtml(
@@ -8921,15 +8112,6 @@ let tenantFundsLeaseId =
 let tenantFundsLease =
     null;
 
-/*
- * Pending Tenant Funds drawer close cleanup.
- *
- * Reopening during the 800ms closing animation cancels this cleanup so
- * a stale timer cannot close the newly reopened drawer.
- */
-let tenantFundsDrawerCloseTimer =
-    null;
-
 /**
  * Register Tenant Funds modal controls.
  */
@@ -9043,6 +8225,15 @@ function initializeTenantFundsModal() {
     document
         .getElementById(
             'tenant-funds-modal-close'
+        )
+        ?.addEventListener(
+            'click',
+            closeTenantFundsModal
+        );
+
+    document
+        .getElementById(
+            'tenant-funds-close-footer'
         )
         ?.addEventListener(
             'click',
@@ -9172,61 +8363,8 @@ async function openTenantFundsModal(
         return;
     }
 
-    /*
-     * Cancel stale cleanup if the drawer is reopened before the previous
-     * closing transition completes.
-     */
-    if (tenantFundsDrawerCloseTimer !== null) {
-        window.clearTimeout(
-            tenantFundsDrawerCloseTimer
-        );
-
-        tenantFundsDrawerCloseTimer =
-            null;
-    }
-
-    drawer.classList.remove(
-        'hidden',
-        'pm-drawer-open',
-        'pm-drawer-closing'
-    );
-
-    drawer.removeAttribute(
-        'hidden'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-active'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'false'
-    );
-
-    document.body.classList.add(
-        'overflow-hidden'
-    );
-
-    const panel =
-        drawer.querySelector(
-            '.pm-drawer-panel'
-        );
-
-    if (panel) {
-        void panel.getBoundingClientRect();
-    }
-
-    window.requestAnimationFrame(
-        () => {
-            window.requestAnimationFrame(
-                () => {
-                    drawer.classList.add(
-                        'pm-drawer-open'
-                    );
-                }
-            );
-        }
+    openDrawer(
+        drawer
     );
 
     await loadTenantFundsLease();
@@ -9844,61 +8982,10 @@ function tenantFundAccountByType(
 function closeTenantFundsModal(
     afterClose = null
 ) {
-    const drawer =
-        document.getElementById(
-            'tenant-funds-modal'
-        );
-
-    if (
-        ! drawer
-        || ! drawer.classList.contains(
-            'pm-drawer-active'
-        )
-    ) {
-        return;
-    }
-
-    drawer.classList.remove(
-        'pm-drawer-open'
-    );
-
-    drawer.classList.add(
-        'pm-drawer-closing'
-    );
-
-    drawer.setAttribute(
-        'aria-hidden',
-        'true'
-    );
-
-    if (tenantFundsDrawerCloseTimer !== null) {
-        window.clearTimeout(
-            tenantFundsDrawerCloseTimer
-        );
-    }
-
-    tenantFundsDrawerCloseTimer =
-        window.setTimeout(
-            () => {
-                drawer.classList.remove(
-                    'pm-drawer-active',
-                    'pm-drawer-closing'
-                );
-
-                tenantFundsDrawerCloseTimer =
-                    null;
-
-                const anotherDrawerOpen =
-                    document.querySelector(
-                        '.pm-drawer.pm-drawer-active'
-                    );
-
-                if (! anotherDrawerOpen) {
-                    document.body.classList.remove(
-                        'overflow-hidden'
-                    );
-                }
-
+    closeDrawer(
+        'tenant-funds-modal',
+        {
+            onClosed: () => {
                 tenantFundsLeaseId =
                     null;
 
@@ -9920,8 +9007,8 @@ function closeTenantFundsModal(
                     afterClose();
                 }
             },
-            850
-        );
+        }
+    );
 }
 
 /**

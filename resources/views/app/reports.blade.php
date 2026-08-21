@@ -30,13 +30,13 @@
             <h1
                 class="
                     mt-1 text-3xl font-semibold
-                    tracking-tight text-slate-950
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 <span data-i18n="reports.heading">{{ __('ui.reports.heading') }}</span>
             </h1>
 
-            <p class="mt-2 text-sm text-slate-500">
+            <p class="mt-2 text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="reports.page_description">{{ __('ui.reports.page_description') }}</span>
             </p>
         </div>
@@ -48,9 +48,9 @@
         id="reports-error"
         class="
             mb-6 hidden rounded-xl
-            border border-red-200
-            bg-red-50 px-4 py-3
-            text-sm text-red-700
+            border border-[var(--pm-danger-border)]
+            bg-[var(--pm-danger-background)] px-4 py-3
+            text-sm text-[var(--pm-danger-text)]
         "
     ></div>
 
@@ -68,44 +68,53 @@
         <aside
             class="
                 pm-reports-controls
-                self-start rounded-xl
-                border border-slate-200
-                bg-white shadow-sm
+                pm-card
+                self-start shadow-sm
             "
         >
             <div
                 class="
-                    border-b border-slate-100
+                    border-b border-[var(--pm-border-subtle)]
                     px-5 py-4
                 "
             >
                 <h2
                     class="
                         text-base font-semibold
-                        text-slate-950
+                        text-[var(--pm-text)]
                     "
                 >
                     <span data-i18n="reports.report_type">{{ __('ui.reports.report_type') }}</span>
                 </h2>
 
-                <p class="mt-1 text-xs text-slate-500">
+                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                     <span data-i18n="reports.report_type_description">{{ __('ui.reports.report_type_description') }}</span>
                 </p>
             </div>
 
-            <div class="p-3">
+            {{--
+                Report types read as a single column in the xl sidebar but
+                pair up on small/medium screens where the aside spans the
+                full page width.
+            --}}
+            <div
+                class="
+                    grid gap-1 p-3
+                    sm:grid-cols-2
+                    xl:grid-cols-1
+                "
+            >
 
                 <button
                     type="button"
                     data-report-type="managing-organisation"
                     class="
                         report-type-button
-                        mb-1 flex w-full
+                        is-active
+                        flex w-full
                         items-start gap-3
                         rounded-lg px-3 py-3
                         text-left transition
-                        bg-patrimoine-50
-                        text-patrimoine-950
                     "
                 >
                     <div class="min-w-0">
@@ -116,7 +125,7 @@
                         <div
                             class="
                                 mt-1 text-xs
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             <span data-i18n="reports.managing_organisation_summary">{{ __('ui.reports.managing_organisation_summary') }}</span>
@@ -129,11 +138,10 @@
                     data-report-type="owner"
                     class="
                         report-type-button
-                        mb-1 flex w-full
+                        flex w-full
                         items-start gap-3
                         rounded-lg px-3 py-3
-                        text-left text-slate-700
-                        transition hover:bg-slate-50
+                        text-left transition
                     "
                 >
                     <div class="min-w-0">
@@ -144,7 +152,7 @@
                         <div
                             class="
                                 mt-1 text-xs
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             <span data-i18n="reports.owner_report_summary">{{ __('ui.reports.owner_report_summary') }}</span>
@@ -157,11 +165,10 @@
                     data-report-type="building"
                     class="
                         report-type-button
-                        mb-1 flex w-full
+                        flex w-full
                         items-start gap-3
                         rounded-lg px-3 py-3
-                        text-left text-slate-700
-                        transition hover:bg-slate-50
+                        text-left transition
                     "
                 >
                     <div class="min-w-0">
@@ -172,7 +179,7 @@
                         <div
                             class="
                                 mt-1 text-xs
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             <span data-i18n="reports.building_report_summary">{{ __('ui.reports.building_report_summary') }}</span>
@@ -185,11 +192,10 @@
                     data-report-type="unit"
                     class="
                         report-type-button
-                        mb-1 flex w-full
+                        flex w-full
                         items-start gap-3
                         rounded-lg px-3 py-3
-                        text-left text-slate-700
-                        transition hover:bg-slate-50
+                        text-left transition
                     "
                 >
                     <div class="min-w-0">
@@ -200,7 +206,7 @@
                         <div
                             class="
                                 mt-1 text-xs
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             <span data-i18n="reports.unit_report_summary">{{ __('ui.reports.unit_report_summary') }}</span>
@@ -216,8 +222,7 @@
                         flex w-full
                         items-start gap-3
                         rounded-lg px-3 py-3
-                        text-left text-slate-700
-                        transition hover:bg-slate-50
+                        text-left transition
                     "
                 >
                     <div class="min-w-0">
@@ -228,7 +233,7 @@
                         <div
                             class="
                                 mt-1 text-xs
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             <span data-i18n="reports.tenant_statement_summary">{{ __('ui.reports.tenant_statement_summary') }}</span>
@@ -241,11 +246,10 @@
                     data-report-type="payments"
                     class="
                         report-type-button
-                        mt-1 flex w-full
+                        flex w-full
                         items-start gap-3
                         rounded-lg px-3 py-3
-                        text-left text-slate-700
-                        transition hover:bg-slate-50
+                        text-left transition
                     "
                 >
                     <div class="min-w-0">
@@ -258,7 +262,7 @@
                         <div
                             class="
                                 mt-1 text-xs
-                                text-slate-500
+                                text-[var(--pm-text-muted)]
                             "
                         >
                             <span data-i18n="reports.payments_report_summary">
@@ -278,18 +282,14 @@
                 id="report-subject-section"
                 class="
                     hidden border-t
-                    border-slate-100
+                    border-[var(--pm-border-subtle)]
                     px-5 py-4
                 "
             >
                 <label
                     id="report-subject-label"
                     for="report-subject-search"
-                    class="
-                        mb-1.5 block
-                        text-sm font-medium
-                        text-slate-700
-                    "
+                    class="pm-field-label"
                 >
                     <span data-i18n="reports.search">{{ __('ui.reports.search') }}</span>
                 </label>
@@ -301,17 +301,7 @@
                         type="search"
                         autocomplete="off"
                         placeholder="{{ __('ui.reports.search_placeholder') }}" data-i18n-placeholder="reports.search_placeholder"
-                        class="
-                            pm-input
-                            w-full rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                            transition
-                            focus:border-patrimoine-500
-                            focus:ring-2
-                            focus:ring-patrimoine-100
-                        "
+                        class="pm-input"
                     >
 
                     <div
@@ -321,8 +311,8 @@
                             max-h-72 w-full
                             overflow-y-auto
                             rounded-xl
-                            border border-slate-200
-                            bg-white shadow-lg
+                            border border-[var(--pm-border)]
+                            bg-[var(--pm-surface-elevated)] shadow-lg
                         "
                     ></div>
 
@@ -338,8 +328,8 @@
                     class="
                         mt-3 hidden
                         rounded-xl
-                        border border-patrimoine-200
-                        bg-patrimoine-50/50
+                        border border-[var(--pm-border-strong)]
+                        bg-[var(--pm-selected)]
                         p-3
                     "
                 >
@@ -354,7 +344,7 @@
                                 id="report-selected-subject-name"
                                 class="
                                     truncate text-sm font-semibold
-                                    text-slate-900
+                                    text-[var(--pm-text)]
                                 "
                             ></div>
 
@@ -362,7 +352,7 @@
                                 id="report-selected-subject-meta"
                                 class="
                                     mt-1 text-xs
-                                    text-slate-500
+                                    text-[var(--pm-text-muted)]
                                 "
                             ></div>
                         </div>
@@ -373,8 +363,8 @@
                             class="
                                 shrink-0 text-xs
                                 font-medium
-                                text-patrimoine-700
-                                hover:text-patrimoine-950
+                                text-[var(--pm-accent)]
+                                hover:text-[var(--pm-text)]
                             "
                         >
                             <span data-i18n="reports.change">{{ __('ui.reports.change') }}</span>
@@ -388,22 +378,29 @@
                 id="payment-report-filters"
                 class="
                     hidden border-t
-                    border-slate-100 p-4
+                    border-[var(--pm-border-subtle)] p-4
                 "
             >
-                <div class="text-sm font-medium text-slate-700">
+                <div class="text-sm font-medium text-[var(--pm-text-secondary)]">
                     <span data-i18n="reports.payment_filters">
                         {{ __('ui.reports.payment_filters') }}
                     </span>
                 </div>
 
-                <p class="mt-1 text-xs text-slate-500">
+                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                     <span data-i18n="reports.payment_filters_description">
                         {{ __('ui.reports.payment_filters_description') }}
                     </span>
                 </p>
 
-                <div class="mt-4 space-y-3">
+                {{-- Two filter columns on small screens, one in the xl sidebar. --}}
+                <div
+                    class="
+                        mt-4 grid gap-3
+                        sm:grid-cols-2
+                        xl:grid-cols-1
+                    "
+                >
                     <div>
                         <label
                             for="payment-report-tenant"
@@ -564,28 +561,31 @@
 
             <div
                 class="
-                    border-t border-slate-100
+                    border-t border-[var(--pm-border-subtle)]
                     px-5 py-4
                 "
             >
-                <div class="text-sm font-medium text-slate-700">
+                <div class="text-sm font-medium text-[var(--pm-text-secondary)]">
                     <span data-i18n="reports.reporting_period">{{ __('ui.reports.reporting_period') }}</span>
                 </div>
 
-                <p class="mt-1 text-xs text-slate-500">
+                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
                     <span data-i18n="reports.period_description">{{ __('ui.reports.period_description') }}</span>
                 </p>
 
-                <div class="mt-4 space-y-3">
+                {{-- From/To pair up on small screens, stack in the xl sidebar. --}}
+                <div
+                    class="
+                        mt-4 grid gap-3
+                        sm:grid-cols-2
+                        xl:grid-cols-1
+                    "
+                >
 
                     <div>
                         <label
                             for="report-from"
-                            class="
-                                mb-1.5 block
-                                text-xs font-medium
-                                text-slate-600
-                            "
+                            class="pm-field-label"
                         >
                             <span data-i18n="reports.from">{{ __('ui.reports.from') }}</span>
                         </label>
@@ -600,16 +600,7 @@
                                 autocomplete="off"
                                 data-report-date-input
                                 data-pm-date-input
-                                class="
-                                    pm-input
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    py-2.5 pl-3 pr-11
-                                    text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input pr-11"
                             >
 
                             <button
@@ -620,9 +611,9 @@
                                     absolute inset-y-0 right-0
                                     flex w-10 items-center
                                     justify-center
-                                    text-slate-400
+                                    text-[var(--pm-text-subtle)]
                                     transition
-                                    hover:text-slate-700
+                                    hover:text-[var(--pm-text-secondary)]
                                 "
                             >
                                 <svg
@@ -662,11 +653,7 @@
                     <div>
                         <label
                             for="report-to"
-                            class="
-                                mb-1.5 block
-                                text-xs font-medium
-                                text-slate-600
-                            "
+                            class="pm-field-label"
                         >
                             <span data-i18n="reports.to">{{ __('ui.reports.to') }}</span>
                         </label>
@@ -681,16 +668,7 @@
                                 autocomplete="off"
                                 data-report-date-input
                                 data-pm-date-input
-                                class="
-                                    pm-input
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    py-2.5 pl-3 pr-11
-                                    text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input pr-11"
                             >
 
                             <button
@@ -701,9 +679,9 @@
                                     absolute inset-y-0 right-0
                                     flex w-10 items-center
                                     justify-center
-                                    text-slate-400
+                                    text-[var(--pm-text-subtle)]
                                     transition
-                                    hover:text-slate-700
+                                    hover:text-[var(--pm-text-secondary)]
                                 "
                             >
                                 <svg
@@ -762,18 +740,17 @@
         <section
             class="
                 pm-reports-output-shell
+                pm-card
                 min-w-0 overflow-hidden
-                rounded-xl border
-                border-slate-200
-                bg-white shadow-sm
+                shadow-sm
             "
         >
 
             <div
                 class="
                     flex flex-col gap-4
-                    border-b border-slate-100
-                    px-6 py-5
+                    border-b border-[var(--pm-border-subtle)]
+                    px-4 py-5 sm:px-6
                     lg:flex-row
                     lg:items-center
                     lg:justify-between
@@ -785,7 +762,7 @@
                         class="
                             text-xl font-semibold
                             tracking-tight
-                            text-slate-950
+                            text-[var(--pm-text)]
                         "
                     >
                         <span data-i18n="reports.managing_organisation_report">{{ __('ui.reports.managing_organisation_report') }}</span>
@@ -795,7 +772,7 @@
                         id="report-output-subtitle"
                         class="
                             mt-1 text-sm
-                            text-slate-500
+                            text-[var(--pm-text-muted)]
                         "
                     >
                         <span data-i18n="reports.managing_organisation_description">{{ __('ui.reports.managing_organisation_description') }}</span>
@@ -841,7 +818,7 @@
 
             <div
                 id="report-output"
-                class="pm-reports-output p-6"
+                class="pm-reports-output p-4 sm:p-6"
             >
                 <div
                     class="
@@ -852,7 +829,7 @@
                     <div class="max-w-md text-center">
                         <div
                             class="
-                                text-sm text-slate-500
+                                text-sm text-[var(--pm-text-muted)]
                             "
                         >
                             <span data-i18n="reports.initial_prompt">{{ __('ui.reports.initial_prompt') }}</span>

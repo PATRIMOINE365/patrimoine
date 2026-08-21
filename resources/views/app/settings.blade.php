@@ -96,11 +96,11 @@
             <div class="pm-settings-form-grid">
 
                 {{-- Organisation identity --}}
-                <section>
+                <section class="pm-card">
                     <h3
                         class="
                             mb-4 text-sm font-semibold
-                            text-slate-950
+                            text-[var(--pm-text)]
                         "
                     >
                         <span data-i18n="settings.organisation_details">{{ __('ui.settings.organisation_details') }}</span>
@@ -115,14 +115,10 @@
                         <div class="md:col-span-2">
                             <label
                                 for="organisation-legal-name"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.legal_name">{{ __('ui.settings.legal_name') }}</span>
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <input
@@ -132,30 +128,17 @@
                                 maxlength="255"
                                 data-i18n-placeholder="settings.legal_name_placeholder"
                                 placeholder="{{ __('ui.settings.legal_name_placeholder') }}"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    transition
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div class="md:col-span-2">
                             <label
                                 for="organisation-address"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.address">{{ __('ui.settings.address') }}</span>
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <textarea
@@ -164,27 +147,14 @@
                                 required
                                 data-i18n-placeholder="settings.address_placeholder"
                                 placeholder="{{ __('ui.settings.address_placeholder') }}"
-                                class="
-                                    w-full resize-y rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    transition
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input resize-y"
                             ></textarea>
                         </div>
 
                         <div>
                             <label
                                 for="organisation-phone"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.phone">{{ __('ui.settings.phone') }}</span>
                             </label>
@@ -193,27 +163,14 @@
                                 id="organisation-phone"
                                 type="text"
                                 maxlength="50"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    transition
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div>
                             <label
                                 for="organisation-alternate-phone"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.alternate_phone">{{ __('ui.settings.alternate_phone') }}</span>
                             </label>
@@ -222,27 +179,14 @@
                                 id="organisation-alternate-phone"
                                 type="text"
                                 maxlength="50"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    transition
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div class="md:col-span-2">
                             <label
                                 for="organisation-email"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.general_email">{{ __('ui.settings.general_email') }}</span>
                             </label>
@@ -251,27 +195,18 @@
                                 id="organisation-email"
                                 type="email"
                                 maxlength="255"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    transition
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
                     </div>
                 </section>
 
                 {{-- Contact person --}}
-                <section>
+                <section class="pm-card">
                     <h3
                         class="
                             mb-4 text-sm font-semibold
-                            text-slate-950
+                            text-[var(--pm-text)]
                         "
                     >
                         <span data-i18n="settings.primary_contact">{{ __('ui.settings.primary_contact') }}</span>
@@ -286,14 +221,10 @@
                         <div class="md:col-span-2">
                             <label
                                 for="organisation-contact-name"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.contact_person">{{ __('ui.settings.contact_person') }}</span>
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <input
@@ -301,30 +232,17 @@
                                 type="text"
                                 required
                                 maxlength="255"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    transition
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div>
                             <label
                                 for="organisation-contact-phone"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.contact_phone">{{ __('ui.settings.contact_phone') }}</span>
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <input
@@ -332,30 +250,17 @@
                                 type="text"
                                 required
                                 maxlength="50"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    transition
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div>
                             <label
                                 for="organisation-contact-email"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.contact_email">{{ __('ui.settings.contact_email') }}</span>
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <input
@@ -363,27 +268,18 @@
                                 type="email"
                                 required
                                 maxlength="255"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    transition
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
                     </div>
                 </section>
 
                 {{-- Registration --}}
-                <section>
+                <section class="pm-card">
                     <h3
                         class="
                             mb-4 text-sm font-semibold
-                            text-slate-950
+                            text-[var(--pm-text)]
                         "
                     >
                         <span data-i18n="settings.registration">{{ __('ui.settings.registration') }}</span>
@@ -398,11 +294,7 @@
                         <div>
                             <label
                                 for="organisation-registration-number"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.registration_number">{{ __('ui.settings.registration_number') }}</span>
                             </label>
@@ -411,26 +303,14 @@
                                 id="organisation-registration-number"
                                 type="text"
                                 maxlength="255"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div>
                             <label
                                 for="organisation-vat-tin"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.vat_tin">{{ __('ui.settings.vat_tin') }}</span>
                             </label>
@@ -439,32 +319,24 @@
                                 id="organisation-vat-tin"
                                 type="text"
                                 maxlength="255"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
                     </div>
                 </section>
 
                 {{-- Language and currency --}}
-                <section>
+                <section class="pm-card">
                     <h3
                         class="
                             mb-1 text-sm font-semibold
-                            text-slate-950
+                            text-[var(--pm-text)]
                         "
                     >
                         <span data-i18n="settings.language_currency">{{ __('ui.settings.language_currency') }}</span>
                     </h3>
 
-                    <p class="mb-4 text-xs text-slate-500">
+                    <p class="mb-4 text-xs text-[var(--pm-text-muted)]">
                         <span data-i18n="settings.language_currency_description">{{ __('ui.settings.language_currency_description') }}</span>
                     </p>
 
@@ -477,29 +349,16 @@
                         <div>
                             <label
                                 for="organisation-language"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.language">{{ __('ui.settings.language') }}</span>
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <select
                                 id="organisation-language"
                                 required
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    bg-white px-3.5 py-2.5
-                                    text-sm outline-none
-                                    transition
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                                 @foreach(
                                     config('patrimoine.languages', [])
@@ -512,7 +371,7 @@
                                 @endforeach
                             </select>
 
-                            <p class="mt-1.5 text-xs text-slate-500">
+                            <p class="mt-1.5 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="settings.language_help">{{ __('ui.settings.language_help') }}</span>
                             </p>
                         </div>
@@ -520,29 +379,16 @@
                         <div>
                             <label
                                 for="organisation-currency"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.currency">{{ __('ui.settings.currency') }}</span>
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <select
                                 id="organisation-currency"
                                 required
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    bg-white px-3.5 py-2.5
-                                    text-sm outline-none
-                                    transition
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                                 @foreach(
                                     config('patrimoine.currencies', [])
@@ -554,7 +400,7 @@
                                 @endforeach
                             </select>
 
-                            <p class="mt-1.5 text-xs text-slate-500">
+                            <p class="mt-1.5 text-xs text-[var(--pm-text-muted)]">
                                 <span data-i18n="settings.currency_help">{{ __('ui.settings.currency_help') }}</span>
                             </p>
                         </div>
@@ -563,17 +409,17 @@
 
 
                 {{-- Financial defaults --}}
-                <section>
+                <section class="pm-card">
                     <h3
                         class="
                             mb-1 text-sm font-semibold
-                            text-slate-950
+                            text-[var(--pm-text)]
                         "
                     >
                         <span data-i18n="settings.financial_defaults">{{ __('ui.settings.financial_defaults') }}</span>
                     </h3>
 
-                    <p class="mb-4 text-xs text-slate-500">
+                    <p class="mb-4 text-xs text-[var(--pm-text-muted)]">
                         <span data-i18n="settings.financial_defaults_description">{{ __('ui.settings.financial_defaults_description') }}</span>
                     </p>
 
@@ -586,11 +432,7 @@
                         <div>
                             <label
                                 for="organisation-default-vat-rate"
-                                class="
-                                    mb-1.5 flex items-center gap-1.5
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.default_vat_rate">{{ __('ui.settings.default_vat_rate') }}</span>
 
@@ -606,7 +448,7 @@
                                     Leases or historical Invoices.
                                 </x-field-help>
 
-                                <span class="text-red-500">*</span>
+                                <span class="text-[var(--pm-danger-text)]">*</span>
                             </label>
 
                             <input
@@ -617,22 +459,13 @@
                                 step="0.01"
                                 required
                                 value="18"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    transition
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
 
                             <p
                                 class="
                                     mt-1.5 text-xs
-                                    text-slate-500
+                                    text-[var(--pm-text-muted)]
                                 "
                             >
                                 <span data-i18n="settings.vat_starting_rate">{{ __('ui.settings.vat_starting_rate') }}</span>
@@ -646,17 +479,17 @@
 
 
                 {{-- Banking --}}
-                <section>
+                <section class="pm-card">
                     <h3
                         class="
                             mb-1 text-sm font-semibold
-                            text-slate-950
+                            text-[var(--pm-text)]
                         "
                     >
                         <span data-i18n="settings.banking_details">{{ __('ui.settings.banking_details') }}</span>
                     </h3>
 
-                    <p class="mb-4 text-xs text-slate-500">
+                    <p class="mb-4 text-xs text-[var(--pm-text-muted)]">
                         <span data-i18n="settings.optional">{{ __('ui.settings.optional') }}</span>
                     </p>
 
@@ -669,11 +502,7 @@
                         <div>
                             <label
                                 for="organisation-bank-name"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.bank_name">{{ __('ui.settings.bank_name') }}</span>
                             </label>
@@ -682,26 +511,14 @@
                                 id="organisation-bank-name"
                                 type="text"
                                 maxlength="255"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div>
                             <label
                                 for="organisation-bank-branch"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.bank_branch">{{ __('ui.settings.bank_branch') }}</span>
                             </label>
@@ -710,26 +527,14 @@
                                 id="organisation-bank-branch"
                                 type="text"
                                 maxlength="255"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div>
                             <label
                                 for="organisation-bank-account-name"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.account_name">{{ __('ui.settings.account_name') }}</span>
                             </label>
@@ -738,26 +543,14 @@
                                 id="organisation-bank-account-name"
                                 type="text"
                                 maxlength="255"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
 
                         <div>
                             <label
                                 for="organisation-bank-account-number"
-                                class="
-                                    mb-1.5 block
-                                    text-sm font-medium
-                                    text-slate-700
-                                "
+                                class="pm-field-label"
                             >
                                 <span data-i18n="settings.account_number">{{ __('ui.settings.account_number') }}</span>
                             </label>
@@ -766,29 +559,17 @@
                                 id="organisation-bank-account-number"
                                 type="text"
                                 maxlength="255"
-                                class="
-                                    w-full rounded-lg
-                                    border border-slate-200
-                                    px-3.5 py-2.5
-                                    text-sm outline-none
-                                    focus:border-patrimoine-500
-                                    focus:ring-2
-                                    focus:ring-patrimoine-100
-                                "
+                                class="pm-input"
                             >
                         </div>
                     </div>
                 </section>
 
                 {{-- Notes --}}
-                <section class="pm-settings-notes-card">
+                <section class="pm-card pm-settings-notes-card">
                     <label
                         for="organisation-notes"
-                        class="
-                            mb-1.5 block
-                            text-sm font-medium
-                            text-slate-700
-                        "
+                        class="pm-field-label"
                     >
                         <span data-i18n="settings.notes">{{ __('ui.settings.notes') }}</span>
                     </label>
@@ -796,15 +577,7 @@
                     <textarea
                         id="organisation-notes"
                         rows="3"
-                        class="
-                            w-full resize-y rounded-lg
-                            border border-slate-200
-                            px-3.5 py-2.5
-                            text-sm outline-none
-                            focus:border-patrimoine-500
-                            focus:ring-2
-                            focus:ring-patrimoine-100
-                        "
+                        class="pm-input resize-y"
                     ></textarea>
                 </section>
 
