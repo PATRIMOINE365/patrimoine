@@ -114,7 +114,7 @@ class PasswordBrowserWorkflowTest extends TestCase
         );
     }
 
-    public function test_password_browser_module_is_wired_to_all_four_api_workflows(): void
+    public function test_password_browser_module_is_wired_to_all_api_workflows(): void
     {
         $app =
             file_get_contents(
@@ -130,17 +130,26 @@ class PasswordBrowserWorkflowTest extends TestCase
                 )
             );
 
+        $auth =
+            file_get_contents(
+                resource_path(
+                    'js/auth.js'
+                )
+            );
+
         $this->assertStringContainsString(
             "from './password.js'",
             $app
         );
 
+        /*
+         * password.js owns the three public (unauthenticated) workflows.
+         */
         foreach (
             [
                 '/api/auth/forgot-password',
                 '/api/auth/reset-password',
                 '/api/auth/invitations/accept',
-                '/api/auth/change-password',
             ] as $endpoint
         ) {
             $this->assertStringContainsString(
@@ -149,9 +158,29 @@ class PasswordBrowserWorkflowTest extends TestCase
             );
         }
 
+        /*
+         * V1.0.6 removed the orphaned standalone Change Password dialog.
+         * The authenticated user's own password change lives inline in the
+         * profile drawer (auth.js) and submits through /api/auth/me.
+         */
+        $this->assertStringContainsString(
+            '/api/auth/me',
+            $auth
+        );
+
+        $this->assertStringContainsString(
+            "'profile-current-password'",
+            $auth
+        );
+
+        $this->assertStringContainsString(
+            "'profile-new-password'",
+            $auth
+        );
+
         $this->assertStringContainsString(
             'clearToken();',
-            $password
+            $auth
         );
     }
 
