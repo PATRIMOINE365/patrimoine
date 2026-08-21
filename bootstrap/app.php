@@ -17,6 +17,13 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         /*
+         * Production runs behind the Coolify/Traefik reverse proxy inside a
+         * private Docker network; trust it so X-Forwarded-Proto is honoured
+         * and generated URLs use https.
+         */
+        $middleware->trustProxies(at: '*');
+
+        /*
          * Patrimoine uses one Managing Organisation language for both
          * browser and API presentation. Apply it early to every request.
          */

@@ -1,0 +1,35 @@
+# VCS and CI
+.git
+.github
+
+# Dependencies (rebuilt inside the image)
+node_modules
+vendor
+
+# Local state
+.env
+.env.*
+!.env.example
+storage/logs/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+public/build
+public/hot
+public/storage
+database/*.sqlite
+
+# Committed backup artifacts (see docs/KNOWN-ISSUES.md)
+.v104-*
+.profile-password-*
+*.bak
+*.bak-*
+*.unit-drawer-backup
+fresh
+role
+
+# Tests and tooling
+tests
+phpunit.xml
+.editorconfig
+docs
