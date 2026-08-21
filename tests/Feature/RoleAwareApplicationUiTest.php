@@ -156,10 +156,19 @@ class RoleAwareApplicationUiTest extends TestCase
                 '#owner-record-expense-button',
                 '#owner-record-payout-button',
                 '#owner-record-adjustment-button',
-                '#tenant-funds-reserve-form',
-                '#tenant-funds-advance-form',
-                '#security-deposit-deduction-form',
-                '#security-deposit-settlement-form',
+
+                /*
+                 * V1.0.7: the lease-page tenant-funds and security-deposit
+                 * drawers were removed (their work lives in the Tenants
+                 * workspace), so their selectors left the classification.
+                 * The new finance controls are classified instead.
+                 */
+                '#owner-expense-bill-submit',
+                '#tenant-transfer-form',
+                '[data-transfer-source]',
+                '#tenant-deposit-form',
+                '#tenant-withdrawal-form',
+                '#tenant-adjustment-form',
                 '[data-delete-party]',
                 '[data-delete-lease]',
             ] as $selector
