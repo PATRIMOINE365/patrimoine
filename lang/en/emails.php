@@ -58,6 +58,19 @@ return [
         'contact_after' => 'if you require any clarification regarding this notice.',
     ],
 
+    'owner_expense_bill' => [
+        'title' => 'Owner Expense Bill',
+        'subject' => 'Owner Expense Bill :number - :organisation',
+        'intro' => 'Please find attached the itemized bill for expenses charged to your owner account.',
+        'bill' => 'Bill',
+        'bill_date' => 'Bill Date',
+        'line_count' => 'Expense Lines',
+        'total_billed' => 'Total Billed',
+        'pdf_attached' => 'The full itemized bill is attached as a PDF.',
+        'sent' => 'Owner expense bill email sent successfully.',
+        'owner_email_missing' => 'Owner does not have an email address.',
+    ],
+
     'payment_methods' => [
         'cash' => 'Cash',
         'bank_transfer' => 'Bank Transfer',

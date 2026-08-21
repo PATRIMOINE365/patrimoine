@@ -31,6 +31,39 @@ class DashboardController extends Controller
         return response()->json([
             'as_of' => $asOfDate->toDateString(),
             'metrics' => $service->metrics($asOfDate),
+
+            /*
+             * V1.0.7 dashboard additions: occupancy percentage, trailing
+             * collections trend, expiring leases and upcoming increments —
+             * one round trip paints the whole dashboard.
+             */
+            'occupancy_rate' => $service->occupancyRate($asOfDate),
+
+            'collections_trend' => $service->collectionsTrend($asOfDate),
+
+            'expiring_leases' => $service
+                ->expiringLeases($asOfDate)
+                ->map(fn ($lease): array => [
+                    'id' => $lease->id,
+                    'tenant_name' => $lease->tenant?->name,
+                    'building_name' => $lease->unit?->building?->name,
+                    'unit_name' => $lease->unit?->name,
+                    'end_date' => $lease->end_date?->toDateString(),
+                    'status' => $lease->status,
+                ])
+                ->values(),
+
+            'upcoming_increments' => $service
+                ->upcomingIncrements($asOfDate)
+                ->map(fn ($increment): array => [
+                    'id' => $increment->id,
+                    'lease_id' => $increment->lease_id,
+                    'tenant_name' => $increment->lease?->tenant?->name,
+                    'old_rent_amount' => $increment->old_rent_amount,
+                    'new_rent_amount' => $increment->new_rent_amount,
+                    'effective_date' => $increment->effective_date?->toDateString(),
+                ])
+                ->values(),
         ]);
     }
 

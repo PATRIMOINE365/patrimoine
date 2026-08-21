@@ -8,6 +8,9 @@ use Carbon\CarbonImmutable;
 use DateTimeInterface;
 use Illuminate\Support\Collection;
 use IntlDateFormatter;
+use OpenSpout\Common\Entity\Row;
+use OpenSpout\Writer\XLSX\Writer;
+use RuntimeException;
 
 /**
  * Prepare immutable Activity Log events for human-facing exports.
@@ -233,6 +236,91 @@ class ActivityLogExportService
          */
         return "\xEF\xBB\xBF"
             .$contents;
+    }
+
+    /**
+     * V1.0.7: render the same shared projection as an XLSX workbook so
+     * Activity Log downloads match the PDF/XLSX/CSV rule used everywhere
+     * else in Patrimoine.
+     *
+     * @param  Collection<int, ActivityLog>  $events
+     */
+    public function xlsx(
+        Collection $events
+    ): string {
+        $path =
+            tempnam(
+                sys_get_temp_dir(),
+                'patrimoine-activity-'
+            );
+
+        if ($path === false) {
+            throw new RuntimeException(
+                'Unable to create temporary Activity Log XLSX file.'
+            );
+        }
+
+        $writer =
+            new Writer();
+
+        try {
+            $writer->openToFile(
+                $path
+            );
+
+            $columns =
+                $this->columns();
+
+            $writer->addRow(
+                Row::fromValues(
+                    array_values(
+                        $columns
+                    )
+                )
+            );
+
+            foreach (
+                $this->rows(
+                    $events
+                ) as $row
+            ) {
+                $writer->addRow(
+                    Row::fromValues(
+                        array_map(
+                            static fn (
+                                string $column
+                            ): string =>
+                                $row[$column]
+                                ?? '',
+                            array_keys(
+                                $columns
+                            )
+                        )
+                    )
+                );
+            }
+
+            $writer->close();
+
+            $contents =
+                file_get_contents(
+                    $path
+                );
+
+            if ($contents === false) {
+                throw new RuntimeException(
+                    'Unable to read generated Activity Log XLSX file.'
+                );
+            }
+
+            return $contents;
+        } finally {
+            if (is_file($path)) {
+                @unlink(
+                    $path
+                );
+            }
+        }
     }
 
     /**

@@ -142,4 +142,62 @@ class ActivityLogExportController extends Controller
             ]
         );
     }
+
+    /**
+     * V1.0.7: export every Activity Log event matching the active filters
+     * as an XLSX workbook — completing the PDF/XLSX/CSV download rule.
+     */
+    public function xlsx(
+        Request $request,
+        ActivityLogQueryService $activityLogQuery,
+        ActivityLogExportService $export,
+        ActivityLogService $activityLog
+    ): Response {
+        $validated =
+            $activityLogQuery
+                ->validatedFilters(
+                    $request,
+                    includePagination: false
+                );
+
+        $filters =
+            $activityLogQuery
+                ->exportFilterSnapshot(
+                    $validated
+                );
+
+        $events =
+            $activityLogQuery
+                ->query(
+                    $validated
+                )
+                ->get();
+
+        $contents =
+            $export->xlsx(
+                $events
+            );
+
+        $activityLog->record(
+            action: 'activity_log.exported',
+            request: $request,
+            entityType: 'activity_log',
+            entityLabel: 'Activity Log',
+            metadata: [
+                'format' => 'xlsx',
+                'filters' => $filters,
+                'record_count' => $events->count(),
+            ],
+        );
+
+        return response(
+            $contents,
+            200,
+            [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+
+                'Content-Disposition' => 'attachment; filename="activity-log.xlsx"',
+            ]
+        );
+    }
 }

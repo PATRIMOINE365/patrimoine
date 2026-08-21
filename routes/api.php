@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\ActivityLogExportController;
 use App\Http\Controllers\Api\ApplicationPresentationController;
+use App\Http\Controllers\Api\ArrearsReportController;
+use App\Http\Controllers\Api\ArrearsReportExportController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BuildingController;
 use App\Http\Controllers\Api\ConsumableAdvanceController;
@@ -11,11 +13,17 @@ use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\EmailController;
 use App\Http\Controllers\Api\FinancialJournalController;
 use App\Http\Controllers\Api\FinancialJournalExportController;
+use App\Http\Controllers\Api\FundsReportController;
+use App\Http\Controllers\Api\FundsReportExportController;
 use App\Http\Controllers\Api\InitialSetupController;
 use App\Http\Controllers\Api\LeaseController;
 use App\Http\Controllers\Api\LeaseFinancialHistoryExportController;
 use App\Http\Controllers\Api\ManagingOrganisationController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\OccupancyReportController;
+use App\Http\Controllers\Api\OccupancyReportExportController;
 use App\Http\Controllers\Api\OwnerAccountController;
+use App\Http\Controllers\Api\OwnerExpenseBillController;
 use App\Http\Controllers\Api\OwnerExpenseController;
 use App\Http\Controllers\Api\OwnerLedgerController;
 use App\Http\Controllers\Api\OwnerPayoutController;
@@ -25,6 +33,8 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PaymentRegisterController;
 use App\Http\Controllers\Api\PaymentReportController;
 use App\Http\Controllers\Api\PaymentReportExportController;
+use App\Http\Controllers\Api\RegistryPortabilityController;
+use App\Http\Controllers\Api\ReleaseLogController;
 use App\Http\Controllers\Api\RentIncrementController;
 use App\Http\Controllers\Api\RentReserveController;
 use App\Http\Controllers\Api\ReportController;
@@ -32,6 +42,7 @@ use App\Http\Controllers\Api\ReportExportController;
 use App\Http\Controllers\Api\SecurityDepositController;
 use App\Http\Controllers\Api\TenantFundController;
 use App\Http\Controllers\Api\TenantFundDepositController;
+use App\Http\Controllers\Api\TenantFundTransferController;
 use App\Http\Controllers\Api\TenantFundWithdrawalController;
 use App\Http\Controllers\Api\UnitController;
 use App\Http\Controllers\Api\UserController;
@@ -142,6 +153,14 @@ Route::middleware('auth:sanctum')->group(
             ]
         );
 
+        /*
+         * V1.0.7: localized update log, readable by every role.
+         */
+        Route::get(
+            'release-log',
+            [ReleaseLogController::class, 'index']
+        );
+
         Route::post(
             'auth/logout',
             [AuthController::class, 'logout']
@@ -237,6 +256,14 @@ Route::middleware('auth:sanctum')->group(
                 'leases/{lease}/termination-settlement',
                 [LeaseController::class, 'terminationSettlement']
             );
+
+                /*
+                 * V1.0.7: derived notification center for the bell menu.
+                 */
+                Route::get(
+                    'notifications',
+                    [NotificationController::class, 'index']
+                );
 
                 Route::get(
                     'dashboard',
@@ -407,6 +434,14 @@ Route::middleware('auth:sanctum')->group(
                     'payments/{payment}/send-receipt',
                     [EmailController::class, 'receipt']
                 );
+
+                /*
+                 * V1.0.7: resend an owner expense bill to the billed owner.
+                 */
+                Route::post(
+                    'owner-expense-bills/{ownerExpenseBill}/send-email',
+                    [OwnerExpenseBillController::class, 'sendEmail']
+                );
             }
         );
 
@@ -481,6 +516,15 @@ Route::middleware('auth:sanctum')->group(
                     [TenantFundController::class, 'adjustment']
                 );
 
+                /*
+                 * V1.0.7: move held money between two fund accounts of
+                 * the SAME tenant, possibly across that tenant's Leases.
+                 */
+                Route::post(
+                    'tenant-funds/transfers',
+                    [TenantFundTransferController::class, 'store']
+                );
+
                 Route::post(
                     'tenant-funds/{tenantFundAccount}/consume-rent',
                     [RentReserveController::class, 'consume']
@@ -525,6 +569,14 @@ Route::middleware('auth:sanctum')->group(
                     'owner-accounts/{ownerAccount}/payouts',
                     [OwnerPayoutController::class, 'store']
                 );
+
+                /*
+                 * V1.0.7: bill multiple expense lines directly to one owner.
+                 */
+                Route::post(
+                    'owner-accounts/{ownerAccount}/expense-bills',
+                    [OwnerExpenseBillController::class, 'store']
+                );
             }
         );
 
@@ -560,9 +612,34 @@ Route::middleware('auth:sanctum')->group(
                     [DocumentController::class, 'ownerDepositReceipt']
                 );
 
+                /*
+                 * V1.0.7: itemized owner expense bill PDF.
+                 */
+                Route::get(
+                    'owner-expense-bills/{ownerExpenseBill}/pdf',
+                    [OwnerExpenseBillController::class, 'pdf']
+                );
+
+                /*
+                 * V1.0.7: owner payout receipt PDF.
+                 */
+                Route::get(
+                    'owner-payouts/{ownerPayout}/receipt',
+                    [DocumentController::class, 'payoutReceipt']
+                );
+
                 Route::get(
                     'adjustment-vouchers/{adjustmentVoucher}/pdf',
                     [DocumentController::class, 'adjustmentVoucher']
+                );
+
+                /*
+                 * V1.0.7: Transfer voucher PDF, keyed by the debit leg
+                 * of the Tenant fund Transfer.
+                 */
+                Route::get(
+                    'tenant-fund-transfers/{tenantFundTransaction}/voucher',
+                    [TenantFundTransferController::class, 'voucher']
                 );
 
                 Route::get(
@@ -598,6 +675,56 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'reports/payments/xlsx',
                     [PaymentReportExportController::class, 'xlsx']
+                );
+
+                /*
+                 * V1.0.7 report subjects: portfolio Occupancy, tenant
+                 * Arrears Aging and Funds Held snapshots, each with the
+                 * standard PDF/CSV/XLSX download rule.
+                 */
+                Route::get(
+                    'reports/occupancy/pdf',
+                    [OccupancyReportExportController::class, 'pdf']
+                );
+
+                Route::get(
+                    'reports/occupancy/csv',
+                    [OccupancyReportExportController::class, 'csv']
+                );
+
+                Route::get(
+                    'reports/occupancy/xlsx',
+                    [OccupancyReportExportController::class, 'xlsx']
+                );
+
+                Route::get(
+                    'reports/arrears/pdf',
+                    [ArrearsReportExportController::class, 'pdf']
+                );
+
+                Route::get(
+                    'reports/arrears/csv',
+                    [ArrearsReportExportController::class, 'csv']
+                );
+
+                Route::get(
+                    'reports/arrears/xlsx',
+                    [ArrearsReportExportController::class, 'xlsx']
+                );
+
+                Route::get(
+                    'reports/funds/pdf',
+                    [FundsReportExportController::class, 'pdf']
+                );
+
+                Route::get(
+                    'reports/funds/csv',
+                    [FundsReportExportController::class, 'csv']
+                );
+
+                Route::get(
+                    'reports/funds/xlsx',
+                    [FundsReportExportController::class, 'xlsx']
                 );
 
                 Route::get(
@@ -704,6 +831,27 @@ Route::middleware('auth:sanctum')->group(
                     'reports/payments',
                     PaymentReportController::class
                 );
+
+                /*
+                 * V1.0.7 report subject data endpoints.
+                 *
+                 * Occupancy and Arrears accept an optional as_of=Y-m-d
+                 * snapshot date; Funds Held is always as of today.
+                 */
+                Route::get(
+                    'reports/occupancy',
+                    OccupancyReportController::class
+                );
+
+                Route::get(
+                    'reports/arrears',
+                    ArrearsReportController::class
+                );
+
+                Route::get(
+                    'reports/funds',
+                    FundsReportController::class
+                );
             }
         );
 
@@ -783,6 +931,12 @@ Route::middleware('auth:sanctum')->group(
                     [ActivityLogExportController::class, 'csv']
                 );
 
+                // V1.0.7: XLSX completes the PDF/XLSX/CSV download rule.
+                Route::get(
+                    'activity-log/xlsx',
+                    [ActivityLogExportController::class, 'xlsx']
+                );
+
                 Route::get(
                     'activity-log/{activityLog}',
                     [ActivityLogController::class, 'show']
@@ -860,6 +1014,43 @@ Route::middleware('auth:sanctum')->group(
                 Route::put(
                     'managing-organisation',
                     [ManagingOrganisationController::class, 'update']
+                );
+
+                /*
+                 * V1.0.7 Registry backup & idempotent restore.
+                 *
+                 * Administrator-only, like the rest of the Settings area.
+                 * Only Registry data (parties, buildings + ownership,
+                 * units, leases) is portable; financial history is
+                 * immutable and intentionally has no import route.
+                 */
+                Route::get(
+                    'registry/export',
+                    [RegistryPortabilityController::class, 'export']
+                );
+
+                Route::get(
+                    'registry/export/full',
+                    [RegistryPortabilityController::class, 'exportFull']
+                );
+
+                Route::get(
+                    'registry/export/pdf',
+                    [RegistryPortabilityController::class, 'exportPdf']
+                );
+
+                Route::post(
+                    'registry/import',
+                    [RegistryPortabilityController::class, 'import']
+                );
+
+                /*
+                 * Full multi-sheet restore in one request so old→new id
+                 * remapping carries across the four entities.
+                 */
+                Route::post(
+                    'registry/import/full',
+                    [RegistryPortabilityController::class, 'importFull']
                 );
             }
         );

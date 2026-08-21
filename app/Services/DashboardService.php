@@ -8,6 +8,8 @@ use App\Models\Lease;
 use App\Models\OwnerAccount;
 use App\Models\OwnerTransaction;
 use App\Models\Payment;
+use App\Models\RentIncrement;
+use App\Models\TenantFundAccount;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -59,7 +61,142 @@ class DashboardService
                 $monthStart,
                 $monthEnd
             ),
+
+            /*
+             * V1.0.7 portfolio-health additions.
+             */
+            'vacant_commercial_units' => $this->vacantUnitCount(
+                $asOfDate,
+                commercial: true
+            ),
+
+            'vacant_residential_units' => $this->vacantUnitCount(
+                $asOfDate,
+                commercial: false
+            ),
+
+            'tenant_funds_held' => $this->tenantFundsHeld(),
+
+            'leases_expiring_90_days' => $this->expiringLeases(
+                $asOfDate,
+                90
+            )->count(),
+
+            'increments_upcoming_60_days' => $this->upcomingIncrements(
+                $asOfDate,
+                60
+            )->count(),
         ];
+    }
+
+    /**
+     * V1.0.7: occupancy rate in whole percent (0 when no units exist).
+     */
+    public function occupancyRate(Carbon $asOfDate): int
+    {
+        $total = Unit::query()->count();
+
+        if ($total === 0) {
+            return 0;
+        }
+
+        return (int) round(
+            $this->occupiedUnitCount($asOfDate) * 100 / $total
+        );
+    }
+
+    /**
+     * V1.0.7: tenant money currently held across all active fund accounts
+     * (rent reserves, consumable advances and security deposits). Only
+     * positive balances count, mirroring ownerFundsHeld().
+     */
+    public function tenantFundsHeld(): int
+    {
+        return TenantFundAccount::query()
+            ->where('status', 'active')
+            ->with('transactions')
+            ->get()
+            ->sum(
+                fn (TenantFundAccount $account): int => max(
+                    0,
+                    $account->creditedAmount() - $account->debitedAmount()
+                )
+            );
+    }
+
+    /**
+     * V1.0.7: rent actually collected per month for the trailing N months
+     * (oldest first) — the dashboard's collections trend.
+     *
+     * @return array<int, array{month: string, amount: int}>
+     */
+    public function collectionsTrend(
+        Carbon $asOfDate,
+        int $months = 6
+    ): array {
+        $trend = [];
+
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $start = $asOfDate->copy()->subMonthsNoOverflow($i)->startOfMonth();
+            $end = $start->copy()->endOfMonth();
+
+            $trend[] = [
+                'month' => $start->format('Y-m'),
+                'amount' => $this->rentCollectedBetween($start, $end),
+            ];
+        }
+
+        return $trend;
+    }
+
+    /**
+     * V1.0.7: current leases whose contractual end date falls within the
+     * requested window — the expiry-management list.
+     *
+     * @return Collection<int, Lease>
+     */
+    public function expiringLeases(
+        Carbon $asOfDate,
+        int $days = 90
+    ) {
+        return Lease::query()
+            ->with([
+                'tenant',
+                'unit.building',
+            ])
+            ->whereIn('status', ['active', 'notice'])
+            ->whereNotNull('end_date')
+            ->whereDate('end_date', '>=', $asOfDate->toDateString())
+            ->whereDate(
+                'end_date',
+                '<=',
+                $asOfDate->copy()->addDays($days)->toDateString()
+            )
+            ->orderBy('end_date')
+            ->get();
+    }
+
+    /**
+     * V1.0.7: scheduled rent increments becoming effective within the
+     * requested window.
+     *
+     * @return Collection<int, RentIncrement>
+     */
+    public function upcomingIncrements(
+        Carbon $asOfDate,
+        int $days = 60
+    ) {
+        return RentIncrement::query()
+            ->with('lease.tenant')
+            ->where('status', 'scheduled')
+            ->whereDate('effective_date', '>=', $asOfDate->toDateString())
+            ->whereDate(
+                'effective_date',
+                '<=',
+                $asOfDate->copy()->addDays($days)->toDateString()
+            )
+            ->orderBy('effective_date')
+            ->get();
     }
 
     /**
@@ -70,9 +207,15 @@ class DashboardService
      *
      * Draft and terminated Leases never create occupancy.
      */
-    public function occupiedUnitCount(Carbon $asOfDate): int
-    {
+    public function occupiedUnitCount(
+        Carbon $asOfDate,
+        ?bool $commercial = null
+    ): int {
         return Unit::query()
+            ->when(
+                $commercial !== null,
+                fn ($query) => $query->where('is_commercial', $commercial)
+            )
             ->whereHas('leases', function ($query) use ($asOfDate) {
                 $query
                     ->whereIn('status', ['active', 'notice'])
@@ -96,10 +239,19 @@ class DashboardService
      * Occupancy is derived from Lease records rather than stored directly
      * on the Unit, so vacancy is simply total Units minus occupied Units.
      */
-    public function vacantUnitCount(Carbon $asOfDate): int
-    {
-        return Unit::query()->count()
-            - $this->occupiedUnitCount($asOfDate);
+    public function vacantUnitCount(
+        Carbon $asOfDate,
+        ?bool $commercial = null
+    ): int {
+        $total = Unit::query()
+            ->when(
+                $commercial !== null,
+                fn ($query) => $query->where('is_commercial', $commercial)
+            )
+            ->count();
+
+        return $total
+            - $this->occupiedUnitCount($asOfDate, $commercial);
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AdjustmentVoucher;
 use App\Models\Invoice;
 use App\Models\Lease;
+use App\Models\OwnerPayout;
 use App\Models\OwnerTransaction;
 use App\Models\Payment;
 use App\Models\SecurityDepositSettlement;
@@ -14,6 +15,7 @@ use App\Services\ActivityLogService;
 use App\Services\Documents\AdjustmentVoucherDocumentService;
 use App\Services\Documents\InvoiceDocumentService;
 use App\Services\Documents\OwnerDepositReceiptDocumentService;
+use App\Services\Documents\OwnerPayoutReceiptDocumentService;
 use App\Services\Documents\ReceiptDocumentService;
 use App\Services\Documents\SecurityDepositVoucherDocumentService;
 use App\Services\Documents\TerminationNoticeDocumentService;
@@ -207,6 +209,54 @@ class DocumentController extends Controller
                 ?: "Owner deposit #{$ownerTransaction->id}",
             metadata: [
                 'document_type' => 'owner_deposit_receipt',
+                'format' => 'pdf',
+                'filename' => $filename,
+            ],
+        );
+
+        return response(
+            $contents,
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+
+                'Content-Disposition' => 'inline; filename="'
+                    .$filename
+                    .'"',
+
+                'Content-Length' => strlen($contents),
+            ]
+        );
+    }
+
+    /**
+     * Download an Owner Payout receipt PDF.
+     */
+    public function payoutReceipt(
+        Request $request,
+        OwnerPayout $ownerPayout,
+        OwnerPayoutReceiptDocumentService $service,
+        ActivityLogService $activityLog
+    ): Response {
+        $contents =
+            $service->generate(
+                $ownerPayout
+            );
+
+        $filename =
+            $service->filename(
+                $ownerPayout
+            );
+
+        $activityLog->record(
+            action: 'owner_payout_receipt.downloaded',
+            request: $request,
+            entityType: 'owner_payout',
+            entityId: $ownerPayout->id,
+            entityLabel: $ownerPayout->reference
+                ?: "Owner payout #{$ownerPayout->id}",
+            metadata: [
+                'document_type' => 'owner_payout_receipt',
                 'format' => 'pdf',
                 'filename' => $filename,
             ],

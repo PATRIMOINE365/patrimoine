@@ -76,6 +76,9 @@ class AccountingEventMap
     public const EVENT_ADJUSTMENT =
         'adjustment';
 
+    public const EVENT_TENANT_FUND_TRANSFER =
+        'tenant_fund_transfer';
+
     /**
      * Events whose complete double-entry mapping is always fixed.
      *

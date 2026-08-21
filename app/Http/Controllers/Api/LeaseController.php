@@ -81,6 +81,39 @@ class LeaseController extends Controller
         }
 
         /*
+         * V1.0.7 register filters: by building, by billing frequency, and
+         * by contractual end date window (expiry management).
+         */
+        if ($request->filled('building_id')) {
+            $query->whereHas(
+                'unit',
+                function ($query) use ($request): void {
+                    $query->where(
+                        'building_id',
+                        (int) $request->input('building_id')
+                    );
+                }
+            );
+        }
+
+        if ($request->filled('payment_frequency')) {
+            $query->where(
+                'payment_frequency',
+                $request->string('payment_frequency')->toString()
+            );
+        }
+
+        if ($request->filled('ending_before')) {
+            $query
+                ->whereNotNull('end_date')
+                ->whereDate(
+                    'end_date',
+                    '<=',
+                    $request->string('ending_before')->toString()
+                );
+        }
+
+        /*
         * The main Lease screen needs one search box rather than separate
         * Tenant, Unit and Building searches.
         *

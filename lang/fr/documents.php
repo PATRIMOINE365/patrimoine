@@ -44,6 +44,26 @@ return [
         'performed_by' => 'Effectué par',
     ],
 
+    'tenant_fund_transfer_voucher' => [
+        'title' => 'Bon de transfert de fonds locataire',
+        'voucher_number' => 'Numéro du bon',
+        'date' => 'Date',
+        'tenant' => 'Locataire',
+        'source_account' => 'Compte source',
+        'destination_account' => 'Compte destination',
+        'lease' => 'Bail',
+        'amount' => 'Montant',
+        'reason' => 'Motif',
+        'debit_transaction' => 'Transaction de débit',
+        'credit_transaction' => 'Transaction de crédit',
+
+        'funds' => [
+            'rent_reserve' => 'Réserve de loyer',
+            'consumable_advance' => 'Avance sur consommables',
+            'security_deposit' => 'Dépôt de garantie',
+        ],
+    ],
+
     'common' => [
         'property_management' => 'Gestion immobilière',
         'vat_tin' => 'TVA/NIF',
@@ -120,6 +140,41 @@ return [
             'repair_maintenance' => 'Réparation et entretien',
             'other' => 'Autre',
         ],
+    ],
+
+    'owner_expense_bill' => [
+        'title' => 'Facture de dépenses du propriétaire',
+        'heading' => 'FACTURE DE DÉPENSES DU PROPRIÉTAIRE',
+        'property_owner' => 'Propriétaire',
+        'billed_to' => 'Facturé à',
+        'bill_number' => 'Facture n°',
+        'bill_date' => 'Date de facturation',
+        'expense_lines' => 'Lignes de dépenses',
+        'description' => 'Description',
+        'amount' => 'Montant',
+        'total' => 'Total',
+        'notes' => 'Notes',
+        'footer_billed_to' => 'Cette facture enregistre les dépenses facturées à',
+        'footer_recorded_by' => 'et enregistrées par',
+    ],
+
+    'owner_payout_receipt' => [
+        'title' => 'Reçu de paiement au propriétaire',
+        'heading' => 'REÇU DE PAIEMENT AU PROPRIÉTAIRE',
+        'property_owner' => 'Propriétaire',
+        'paid_to' => 'Payé à',
+        'payout_number' => 'Paiement n°',
+        'payout_date' => 'Date de paiement',
+        'method' => 'Mode de paiement',
+        'reference' => 'Référence',
+        'amount_paid' => 'Montant payé',
+        'payout_details' => 'Détails du paiement',
+        'allocations_count' => 'Crédits du propriétaire affectés',
+        'current_balance' => 'Solde actuel',
+        'balance_explanation' => 'Le solde du compte du propriétaire est calculé à partir de tous les crédits et débits enregistrés dans le grand livre du propriétaire dans Patrimoine.',
+        'notes' => 'Notes',
+        'footer_paid_to' => 'Ce reçu confirme les fonds payés à',
+        'footer_recorded_by' => 'et enregistrés par',
     ],
 
     'security_deposit_voucher' => [

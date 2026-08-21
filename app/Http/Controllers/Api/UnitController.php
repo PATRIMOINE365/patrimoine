@@ -33,6 +33,14 @@ class UnitController extends Controller
             );
         }
 
+        // V1.0.7: filter by commercial/residential classification.
+        if ($request->filled('is_commercial')) {
+            $query->where(
+                'is_commercial',
+                $request->boolean('is_commercial')
+            );
+        }
+
         if ($request->filled('search')) {
             $search = trim(
                 $request->string('search')->toString()

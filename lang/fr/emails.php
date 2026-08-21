@@ -58,6 +58,19 @@ return [
         'contact_after' => 'pour toute demande de clarification concernant cet avis.',
     ],
 
+    'owner_expense_bill' => [
+        'title' => 'Facture de dépenses du propriétaire',
+        'subject' => 'Facture de dépenses du propriétaire :number - :organisation',
+        'intro' => 'Veuillez trouver ci-joint la facture détaillée des dépenses imputées à votre compte de propriétaire.',
+        'bill' => 'Facture',
+        'bill_date' => 'Date de facturation',
+        'line_count' => 'Lignes de dépenses',
+        'total_billed' => 'Total facturé',
+        'pdf_attached' => 'La facture détaillée complète est jointe au format PDF.',
+        'sent' => 'L’e-mail de la facture de dépenses du propriétaire a été envoyé avec succès.',
+        'owner_email_missing' => 'Le propriétaire ne possède pas d’adresse e-mail.',
+    ],
+
     'payment_methods' => [
         'cash' => 'Espèces',
         'bank_transfer' => 'Virement bancaire',

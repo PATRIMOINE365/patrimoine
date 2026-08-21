@@ -44,6 +44,26 @@ return [
         'performed_by' => 'Performed By',
     ],
 
+    'tenant_fund_transfer_voucher' => [
+        'title' => 'Tenant Fund Transfer Voucher',
+        'voucher_number' => 'Voucher Number',
+        'date' => 'Date',
+        'tenant' => 'Tenant',
+        'source_account' => 'Source Account',
+        'destination_account' => 'Destination Account',
+        'lease' => 'Lease',
+        'amount' => 'Amount',
+        'reason' => 'Reason',
+        'debit_transaction' => 'Debit Transaction',
+        'credit_transaction' => 'Credit Transaction',
+
+        'funds' => [
+            'rent_reserve' => 'Rent Reserve',
+            'consumable_advance' => 'Consumable Advance',
+            'security_deposit' => 'Security Deposit',
+        ],
+    ],
+
     'common' => [
         'property_management' => 'Property Management',
         'vat_tin' => 'VAT/TIN',
@@ -120,6 +140,41 @@ return [
             'repair_maintenance' => 'Repair & Maintenance',
             'other' => 'Other',
         ],
+    ],
+
+    'owner_expense_bill' => [
+        'title' => 'Owner Expense Bill',
+        'heading' => 'OWNER EXPENSE BILL',
+        'property_owner' => 'Property Owner',
+        'billed_to' => 'Billed To',
+        'bill_number' => 'Bill No',
+        'bill_date' => 'Bill Date',
+        'expense_lines' => 'Expense Lines',
+        'description' => 'Description',
+        'amount' => 'Amount',
+        'total' => 'Total',
+        'notes' => 'Notes',
+        'footer_billed_to' => 'This bill records expenses charged to',
+        'footer_recorded_by' => 'and recorded by',
+    ],
+
+    'owner_payout_receipt' => [
+        'title' => 'Owner Payout Receipt',
+        'heading' => 'OWNER PAYOUT RECEIPT',
+        'property_owner' => 'Property Owner',
+        'paid_to' => 'Paid To',
+        'payout_number' => 'Payout No',
+        'payout_date' => 'Payout Date',
+        'method' => 'Method',
+        'reference' => 'Reference',
+        'amount_paid' => 'Amount Paid',
+        'payout_details' => 'Payout Details',
+        'allocations_count' => 'Allocated Owner Credits',
+        'current_balance' => 'Current Balance',
+        'balance_explanation' => 'The Owner account balance is derived from all Owner ledger credits and debits recorded in Patrimoine.',
+        'notes' => 'Notes',
+        'footer_paid_to' => 'This receipt confirms money paid to',
+        'footer_recorded_by' => 'and recorded by',
     ],
 
     'security_deposit_voucher' => [
