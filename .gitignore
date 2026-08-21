@@ -28,3 +28,10 @@ Thumbs.db
 
 # Local RC environment
 .env.rc
+
+# Never commit editor/backup snapshots (see docs/KNOWN-ISSUES.md history)
+*.bak
+*.bak-*
+*-backup
+.v104-*/
+.profile-password-*/
