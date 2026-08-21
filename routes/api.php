@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PaymentRegisterController;
 use App\Http\Controllers\Api\PaymentReportController;
 use App\Http\Controllers\Api\PaymentReportExportController;
+use App\Http\Controllers\Api\RentIncrementController;
 use App\Http\Controllers\Api\RentReserveController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReportExportController;
@@ -222,6 +223,16 @@ Route::middleware('auth:sanctum')->group(
                     [LeaseController::class, 'financialHistory']
                 );
 
+                /*
+                 * V1.0.6: rent increments are readable by every role so the
+                 * lease workspace (and future mobile clients) can show the
+                 * increment history alongside the lease.
+                 */
+                Route::get(
+                    'leases/{lease}/rent-increments',
+                    [RentIncrementController::class, 'index']
+                );
+
             Route::get(
                 'leases/{lease}/termination-settlement',
                 [LeaseController::class, 'terminationSettlement']
@@ -347,6 +358,23 @@ Route::middleware('auth:sanctum')->group(
                 Route::post(
                     'leases/{lease}/termination/cancel',
                     [LeaseController::class, 'cancelTermination']
+                );
+
+                /*
+                 * V1.0.6: schedule / cancel rent increments over the API.
+                 *
+                 * Applying an increment intentionally has no HTTP route —
+                 * rent only ever changes through the daily
+                 * patrimoine:apply-due-rent-increments scheduler command.
+                 */
+                Route::post(
+                    'leases/{lease}/rent-increments',
+                    [RentIncrementController::class, 'store']
+                );
+
+                Route::post(
+                    'rent-increments/{rentIncrement}/cancel',
+                    [RentIncrementController::class, 'cancel']
                 );
 
                 /*
