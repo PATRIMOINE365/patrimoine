@@ -4326,8 +4326,12 @@ svg {
 /*
  * Hidden native date input is retained only to invoke the browser's
  * calendar picker.
+ *
+ * V1.0.7: applied by CLASS everywhere (it was #lease-modal-scoped, which
+ * left the raw native input visible under the masked field in the lease
+ * register filter and the rent-increments drawer).
  */
-#lease-modal .pm-lease-native-date-picker {
+.pm-lease-native-date-picker {
     position: absolute !important;
 
     width: 1px !important;

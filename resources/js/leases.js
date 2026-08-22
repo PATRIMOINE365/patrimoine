@@ -1406,15 +1406,27 @@ function updateLeaseMetrics(
     payload,
     leases
 ) {
+    /*
+     * V1.0.7: the API returns portfolio-wide lifecycle counts alongside
+     * the paginated page, so the tiles always describe the whole
+     * portfolio rather than whichever 25 rows happen to be loaded.
+     * The page-derived numbers remain only as a compatibility fallback.
+     */
+    const counts =
+        payload?.status_counts
+        ?? null;
+
     setText(
         'leases-total-count',
-        payload?.total
+        counts?.total
+        ?? payload?.total
         ?? leases.length
     );
 
     setText(
         'leases-active-count',
-        leases.filter(
+        counts?.active
+        ?? leases.filter(
             (lease) =>
                 lease.status === 'active'
         ).length
@@ -1422,7 +1434,8 @@ function updateLeaseMetrics(
 
     setText(
         'leases-notice-count',
-        leases.filter(
+        counts?.notice
+        ?? leases.filter(
             (lease) =>
                 lease.status === 'notice'
         ).length
@@ -1430,7 +1443,8 @@ function updateLeaseMetrics(
 
     setText(
         'leases-draft-count',
-        leases.filter(
+        counts?.draft
+        ?? leases.filter(
             (lease) =>
                 lease.status === 'draft'
         ).length

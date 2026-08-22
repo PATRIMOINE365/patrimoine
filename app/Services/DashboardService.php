@@ -370,7 +370,17 @@ class DashboardService
             ->whereDate('due_date', '<', $asOfDate->toDateString())
             ->orderBy('due_date')
             ->orderBy('id')
-            ->get();
+            ->get()
+            /*
+             * V1.0.7: an invoice fully covered through fund consumption can
+             * retain a non-paid status while owing nothing. Zero-outstanding
+             * rows must not appear as overdue (or inflate the notification
+             * count) — the tenant owes nothing on them.
+             */
+            ->filter(
+                fn (Invoice $invoice): bool => $invoice->outstandingAmount() > 0
+            )
+            ->values();
     }
 
     /**
@@ -398,6 +408,11 @@ class DashboardService
             ->whereDate('due_date', '<=', $endDate->toDateString())
             ->orderBy('due_date')
             ->orderBy('id')
-            ->get();
+            ->get()
+            // V1.0.7: see overdueInvoices — zero-outstanding rows excluded.
+            ->filter(
+                fn (Invoice $invoice): bool => $invoice->outstandingAmount() > 0
+            )
+            ->values();
     }
 }

@@ -189,22 +189,46 @@ class LeaseController extends Controller
             );
         }
 
-        return response()->json(
-            $query
-                ->orderByDesc('start_date')
-                ->orderByDesc('id')
-                ->paginate(
-                    perPage: min(
-                        max(
-                            (int) $request->input(
-                                'per_page',
-                                25
-                            ),
-                            1
+        $page = $query
+            ->orderByDesc('start_date')
+            ->orderByDesc('id')
+            ->paginate(
+                perPage: min(
+                    max(
+                        (int) $request->input(
+                            'per_page',
+                            25
                         ),
-                        100
-                    )
+                        1
+                    ),
+                    100
                 )
+            );
+
+        /*
+         * V1.0.7: portfolio-wide lifecycle counts for the register tiles.
+         *
+         * Deliberately unfiltered — the tiles describe the whole portfolio
+         * while the paginated list below reflects the active filters.
+         */
+        $statusCounts = Lease::query()
+            ->selectRaw('status, COUNT(*) AS aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+
+        return response()->json(
+            array_merge(
+                $page->toArray(),
+                [
+                    'status_counts' => [
+                        'total' => (int) $statusCounts->sum(),
+                        'active' => (int) ($statusCounts['active'] ?? 0),
+                        'notice' => (int) ($statusCounts['notice'] ?? 0),
+                        'draft' => (int) ($statusCounts['draft'] ?? 0),
+                        'terminated' => (int) ($statusCounts['terminated'] ?? 0),
+                    ],
+                ]
+            )
         );
     }
 
