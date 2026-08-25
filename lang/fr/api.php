@@ -30,6 +30,7 @@ return [
     'email' => [
         'invoice_sent' => 'L’e-mail de la facture a été envoyé avec succès.',
         'receipt_sent' => 'L’e-mail du reçu a été envoyé avec succès.',
+        'transfer_voucher_sent' => 'L’e-mail du bon de transfert a été envoyé avec succès.',
     ],
 
     'validation' => [

@@ -30,6 +30,7 @@ return [
     'email' => [
         'invoice_sent' => 'Invoice email sent successfully.',
         'receipt_sent' => 'Receipt email sent successfully.',
+        'transfer_voucher_sent' => 'Transfer voucher email sent successfully.',
     ],
 
     'validation' => [

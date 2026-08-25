@@ -467,6 +467,22 @@ export const translations = {
             'At least two active fund accounts are required for a Transfer.',
         'tenants.transfer_recorded':
             'Transfer recorded successfully.',
+        'tenants.transfers':
+            'Transfers',
+        'tenants.transfers_description':
+            'Fund-to-fund transfers with their official vouchers.',
+        'tenants.no_transfers':
+            'No transfers recorded yet.',
+        'tenants.voucher':
+            'Voucher',
+        'tenants.from_fund':
+            'From',
+        'tenants.to_fund':
+            'To',
+        'tenants.unable_to_open_voucher':
+            'Unable to open the transfer voucher.',
+        'tenants.unable_to_resend_voucher':
+            'Unable to resend the transfer voucher.',
         'tenants.download_voucher':
             'Download voucher',
         'tenants.download_receipt':
@@ -3142,6 +3158,22 @@ export const translations = {
             'Au moins deux comptes de fonds actifs sont nécessaires pour un transfert.',
         'tenants.transfer_recorded':
             'Transfert enregistré avec succès.',
+        'tenants.transfers':
+            'Transferts',
+        'tenants.transfers_description':
+            'Transferts entre fonds avec leurs bons officiels.',
+        'tenants.no_transfers':
+            'Aucun transfert enregistré pour le moment.',
+        'tenants.voucher':
+            'Bon',
+        'tenants.from_fund':
+            'De',
+        'tenants.to_fund':
+            'Vers',
+        'tenants.unable_to_open_voucher':
+            "Impossible d'ouvrir le bon de transfert.",
+        'tenants.unable_to_resend_voucher':
+            'Impossible de renvoyer le bon de transfert.',
         'tenants.download_voucher':
             'Télécharger le justificatif',
         'tenants.download_receipt':

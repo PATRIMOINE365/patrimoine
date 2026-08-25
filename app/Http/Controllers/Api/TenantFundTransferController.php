@@ -272,4 +272,69 @@ class TenantFundTransferController extends Controller
             ]
         );
     }
+
+    /**
+     * V1.0.8: resend the Transfer voucher to the tenant by email.
+     *
+     * Mirrors Invoice resend: an explicit operational action, logged in
+     * the Activity Log. The Financial Journal is untouched — resending a
+     * document is not a financial event.
+     */
+    public function sendEmail(
+        Request $request,
+        TenantFundTransaction $tenantFundTransaction,
+        \App\Services\Notifications\EmailDeliveryService $service,
+        ActivityLogService $activityLog,
+    ): JsonResponse {
+        /*
+         * Only the debit leg of a Transfer carries the voucher.
+         */
+        if (
+            $tenantFundTransaction->category !== 'transfer'
+            || $tenantFundTransaction->direction !== 'debit'
+        ) {
+            throw ValidationException::withMessages([
+                'tenant_fund_transaction' => [
+                    'The selected transaction is not the debit leg of a Tenant fund Transfer.',
+                ],
+            ]);
+        }
+
+        try {
+            $service->sendTransferVoucher(
+                $tenantFundTransaction
+            );
+        } catch (RuntimeException $exception) {
+            throw ValidationException::withMessages([
+                'email' => [
+                    $exception->getMessage(),
+                ],
+            ]);
+        }
+
+        $activityLog->record(
+            action: 'tenant_fund_transfer_voucher.resent',
+
+            request: $request,
+
+            entityType: 'tenant_fund_transaction',
+
+            entityId: $tenantFundTransaction->id,
+
+            entityLabel: $tenantFundTransaction->reference
+                ?? 'Tenant fund transfer #'.$tenantFundTransaction->id,
+
+            metadata: [
+                'document_type' => 'tenant_fund_transfer_voucher',
+
+                'delivery' => 'email',
+            ],
+        );
+
+        return response()->json([
+            'message' => __('api.email.transfer_voucher_sent'),
+
+            'tenant_fund_transaction_id' => $tenantFundTransaction->id,
+        ]);
+    }
 }

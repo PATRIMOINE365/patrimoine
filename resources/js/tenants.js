@@ -1706,6 +1706,17 @@ function renderTenantDetail(
                 px-6 py-6
             "
         >
+            ${renderTenantTransfers(
+                operationalHistory?.fundTransactions
+            )}
+        </div>
+
+        <div
+            class="
+                border-t border-[var(--pm-border-subtle)]
+                px-6 py-6
+            "
+        >
             ${renderTenantFundHistory(
                 operationalHistory?.fundTransactions
             )}
@@ -1714,6 +1725,7 @@ function renderTenantDetail(
 
     initializeTenantInvoiceActions();
     initializeTenantReceiptActions();
+    initializeTenantTransferVoucherActions();
     initializeTenantTransactionActionButtons();
     initializeSecurityDepositApplicationActions();
 }
@@ -3033,6 +3045,448 @@ async function resendTenantReceipt(
             error instanceof Error
                 ? error.message
                 : translate('tenants.unable_to_resend_receipt')
+        );
+    }
+}
+
+
+/**
+ * V1.0.8: render the tenant's fund Transfers, one row per voucher.
+ *
+ * A Transfer is stored as a debit and a credit leg sharing one TRF
+ * reference; only the debit leg carries the voucher, so it is the row.
+ * The credit leg is looked up in the same already-loaded ledger to show
+ * the destination fund.
+ *
+ * @param {Array<object>} transactions
+ * @returns {string}
+ */
+function renderTenantTransfers(
+    transactions
+) {
+    const ledger =
+        Array.isArray(
+            transactions
+        )
+            ? transactions
+            : [];
+
+    const transfers =
+        ledger
+            .filter(
+                (transaction) =>
+                    transaction?.category === 'transfer'
+                    && transaction?.direction === 'debit'
+            )
+            .map(
+                (debit) => ({
+                    debit,
+                    credit:
+                        ledger.find(
+                            (candidate) =>
+                                candidate?.category === 'transfer'
+                                && candidate?.direction === 'credit'
+                                && candidate?.reference === debit.reference
+                        )
+                        ?? null,
+                })
+            );
+
+    const header = `
+        <div>
+            <h3
+                class="
+                    text-base font-semibold
+                    text-[var(--pm-text)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'tenants.transfers'
+                    )
+                )}
+            </h3>
+
+            <p
+                class="
+                    mt-1 text-xs
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'tenants.transfers_description'
+                    )
+                )}
+            </p>
+        </div>
+    `;
+
+    if (transfers.length === 0) {
+        return `
+            ${header}
+
+            <div class="mt-4">
+                ${financialEmptyState(
+                    translate('tenants.no_transfers')
+                )}
+            </div>
+        `;
+    }
+
+    const rows =
+        transfers
+            .map(
+                ({ debit, credit }) => {
+                    const safeId =
+                        escapeHtml(
+                            debit.id
+                        );
+
+                    return `
+                        <tr>
+                            ${tableCell(
+                                debit.transaction_date
+                                    ? formatDate(
+                                        debit.transaction_date
+                                    )
+                                    : '—'
+                            )}
+
+                            ${tableCell(
+                                debit.reference
+                                    ?? '—'
+                            )}
+
+                            ${tableCell(
+                                tenantFundTypeLabel(
+                                    debit.fund_type
+                                )
+                            )}
+
+                            ${tableCell(
+                                credit
+                                    ? tenantFundTypeLabel(
+                                        credit.fund_type
+                                    )
+                                    : '—'
+                            )}
+
+                            ${tableCell(
+                                formatCurrency(
+                                    Number(
+                                        debit.amount
+                                        ?? 0
+                                    )
+                                ),
+                                true,
+                                true
+                            )}
+
+                            <td
+                                class="
+                                    whitespace-nowrap
+                                    px-4 py-3 text-left
+                                "
+                            >
+                                <div
+                                    class="
+                                        flex items-center gap-2
+                                    "
+                                >
+                                    <button
+                                        type="button"
+                                        data-open-transfer-voucher="${safeId}"
+                                        class="
+                                            inline-flex items-center
+                                            rounded-lg border
+                                            border-[var(--pm-border)]
+                                            bg-[var(--pm-surface)] px-3 py-2
+                                            text-xs font-medium
+                                            text-[var(--pm-text-secondary)]
+                                            shadow-sm transition
+                                            hover:border-[var(--pm-border-strong)]
+                                            hover:bg-[var(--pm-hover)]
+                                            disabled:cursor-not-allowed
+                                            disabled:opacity-60
+                                        "
+                                    >
+                                        ${escapeHtml(
+                                            translate(
+                                                'tenants.voucher'
+                                            )
+                                        )}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        data-resend-transfer-voucher="${safeId}"
+                                        data-requires-capability="manage_operations"
+                                        class="
+                                            inline-flex items-center
+                                            rounded-lg border
+                                            border-[var(--pm-border)]
+                                            bg-[var(--pm-surface)] px-3 py-2
+                                            text-xs font-medium
+                                            text-[var(--pm-text-secondary)]
+                                            shadow-sm transition
+                                            hover:border-[var(--pm-border-strong)]
+                                            hover:bg-[var(--pm-hover)]
+                                            disabled:cursor-not-allowed
+                                            disabled:opacity-60
+                                        "
+                                    >
+                                        ${escapeHtml(
+                                            translate(
+                                                'tenants.resend'
+                                            )
+                                        )}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            )
+            .join('');
+
+    return `
+        ${header}
+
+        <div class="mt-4">
+            <div
+                class="
+                    overflow-x-auto
+                    rounded-xl border
+                    border-[var(--pm-border)]
+                "
+            >
+                <table
+                    class="
+                        min-w-full
+                        divide-y divide-[var(--pm-border)]
+                        text-sm
+                    "
+                >
+                    <thead class="bg-[var(--pm-surface-subtle)]">
+                        <tr>
+                            ${tableHeading(translate('tenants.date'))}
+                            ${tableHeading(translate('tenants.voucher'))}
+                            ${tableHeading(translate('tenants.from_fund'))}
+                            ${tableHeading(translate('tenants.to_fund'))}
+                            ${tableHeading(translate('tenants.amount'), true)}
+                            ${tableHeading(translate('tenants.actions'))}
+                        </tr>
+                    </thead>
+
+                    <tbody
+                        class="
+                            divide-y divide-[var(--pm-border-subtle)]
+                            bg-[var(--pm-surface)]
+                        "
+                    >
+                        ${rows}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+
+/**
+ * Wire Transfer voucher actions after Tenant detail rendering.
+ */
+function initializeTenantTransferVoucherActions() {
+    document
+        .querySelectorAll(
+            '[data-open-transfer-voucher]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        await openTenantTransferVoucher(
+                            button
+                        );
+                    }
+                );
+            }
+        );
+
+    document
+        .querySelectorAll(
+            '[data-resend-transfer-voucher]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        await resendTenantTransferVoucher(
+                            button
+                        );
+                    }
+                );
+            }
+        );
+}
+
+
+/**
+ * Fetch and open an authenticated Transfer voucher PDF.
+ *
+ * Direct browser navigation cannot carry the API Bearer token, so the PDF
+ * is retrieved through apiRequest() and opened through a temporary blob URL.
+ *
+ * @param {HTMLButtonElement} button
+ */
+async function openTenantTransferVoucher(
+    button
+) {
+    const transactionId =
+        button.dataset.openTransferVoucher;
+
+    if (! transactionId) {
+        return;
+    }
+
+    const originalLabel =
+        button.textContent;
+
+    button.disabled = true;
+    button.textContent =
+        translate('tenants.opening');
+
+    hideTenantError();
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/tenant-fund-transfers/${encodeURIComponent(
+                    transactionId
+                )}/voucher`
+            );
+
+        if (! response.ok) {
+            throw new Error(
+                translate('tenants.unable_to_open_voucher')
+            );
+        }
+
+        const blob =
+            await response.blob();
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        window.open(
+            url,
+            '_blank',
+            'noopener,noreferrer'
+        );
+
+        window.setTimeout(
+            () => {
+                URL.revokeObjectURL(
+                    url
+                );
+            },
+            60000
+        );
+    } catch (error) {
+        showTenantError(
+            error instanceof Error
+                ? error.message
+                : translate('tenants.unable_to_open_voucher')
+        );
+    } finally {
+        if (
+            document.body.contains(
+                button
+            )
+        ) {
+            button.textContent =
+                originalLabel;
+
+            button.disabled =
+                false;
+        }
+    }
+}
+
+
+/**
+ * Resend a Transfer voucher email using the established email workflow.
+ *
+ * @param {HTMLButtonElement} button
+ */
+async function resendTenantTransferVoucher(
+    button
+) {
+    const transactionId =
+        button.dataset.resendTransferVoucher;
+
+    if (! transactionId) {
+        return;
+    }
+
+    const originalLabel =
+        button.textContent;
+
+    button.disabled = true;
+    button.textContent =
+        translate('tenants.sending');
+
+    hideTenantError();
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/tenant-fund-transfers/${encodeURIComponent(
+                    transactionId
+                )}/send-email`,
+                {
+                    method:
+                        'POST',
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        button.textContent =
+            translate('tenants.sent');
+
+        window.setTimeout(
+            () => {
+                if (
+                    document.body.contains(
+                        button
+                    )
+                ) {
+                    button.textContent =
+                        originalLabel;
+                    button.disabled =
+                        false;
+                }
+            },
+            1800
+        );
+    } catch (error) {
+        button.textContent =
+            originalLabel;
+        button.disabled =
+            false;
+
+        showTenantError(
+            error instanceof Error
+                ? error.message
+                : translate('tenants.unable_to_resend_voucher')
         );
     }
 }
@@ -6241,44 +6695,6 @@ async function refreshTenantAccountsTable() {
 
 
 /**
- * Fund account lifecycle pill using semantic status tokens.
- *
- * @param {string} status
- * @returns {string}
- */
-function tenantAccountStatusPill(
-    status
-) {
-    const classes =
-        status === 'active'
-            ? 'border border-[var(--pm-success-border)] '
-                + 'bg-[var(--pm-success-background)] '
-                + 'text-[var(--pm-success-text)]'
-            : 'border border-[var(--pm-border)] '
-                + 'bg-[var(--pm-surface-muted)] '
-                + 'text-[var(--pm-text-secondary)]';
-
-    return `
-        <span
-            class="
-                inline-flex rounded-full
-                px-2.5 py-1
-                text-xs font-medium
-                ${classes}
-            "
-        >
-            ${escapeHtml(
-                tenantDynamicLabel(
-                    'account_status',
-                    status
-                )
-            )}
-        </span>
-    `;
-}
-
-
-/**
  * Render the Accounts table across all Leases, with a totals row.
  *
  * @param {Array<{account: object, lease: object}>} entries
@@ -6309,17 +6725,11 @@ function renderTenantAccountsTable(
         entries
             .map(
                 ({ account, lease }) => {
-                    const status =
-                        tenantFundAccountStatus(
-                            account
-                        );
-
-                    const transferable =
-                        status === 'active'
-                        && tenantFundBalance(
-                            account
-                        ) > 0;
-
+                    /*
+                     * V1.0.8: the Status and per-row Actions columns are
+                     * gone. Transfers start from the drawer-level Transfer
+                     * button; account lifecycle stays visible in exports.
+                     */
                     return `
                         <tr>
                             ${tableCell(
@@ -6335,17 +6745,6 @@ function renderTenantAccountsTable(
                                 true
                             )}
 
-                            <td
-                                class="
-                                    whitespace-nowrap
-                                    px-4 py-3 text-left
-                                "
-                            >
-                                ${tenantAccountStatusPill(
-                                    status
-                                )}
-                            </td>
-
                             ${tableCell(
                                 formatCurrency(
                                     tenantFundBalance(
@@ -6355,41 +6754,6 @@ function renderTenantAccountsTable(
                                 true,
                                 true
                             )}
-
-                            <td
-                                class="
-                                    whitespace-nowrap
-                                    px-4 py-3 text-right
-                                "
-                            >
-                                <button
-                                    type="button"
-                                    data-transfer-source="${escapeHtml(
-                                        account.id
-                                    )}"
-                                    data-requires-capability="manage_finance"
-                                    ${transferable ? '' : 'disabled'}
-                                    class="
-                                        inline-flex items-center
-                                        rounded-lg border
-                                        border-[var(--pm-border)]
-                                        bg-[var(--pm-surface)] px-3 py-2
-                                        text-xs font-medium
-                                        text-[var(--pm-text-secondary)]
-                                        shadow-sm transition
-                                        hover:border-[var(--pm-border-strong)]
-                                        hover:bg-[var(--pm-hover)]
-                                        disabled:cursor-not-allowed
-                                        disabled:opacity-60
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        translate(
-                                            'tenants.transfer'
-                                        )
-                                    )}
-                                </button>
-                            </td>
                         </tr>
                     `;
                 }
@@ -6415,9 +6779,7 @@ function renderTenantAccountsTable(
                     <tr>
                         ${tableHeading(translate('tenants.lease'))}
                         ${tableHeading(translate('tenants.fund'))}
-                        ${tableHeading(translate('tenants.status'))}
                         ${tableHeading(translate('tenants.current_balance'), true)}
-                        ${tableHeading(translate('tenants.actions'), true)}
                     </tr>
                 </thead>
 
@@ -6433,7 +6795,7 @@ function renderTenantAccountsTable(
                 <tfoot class="bg-[var(--pm-surface-subtle)]">
                     <tr>
                         <td
-                            colspan="3"
+                            colspan="2"
                             class="
                                 whitespace-nowrap
                                 px-4 py-3 text-left
@@ -6456,8 +6818,6 @@ function renderTenantAccountsTable(
                             true,
                             true
                         )}
-
-                        <td class="px-4 py-3"></td>
                     </tr>
                 </tfoot>
             </table>

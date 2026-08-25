@@ -6,14 +6,17 @@ use App\Mail\InvoiceMail;
 use App\Mail\ReceiptMail;
 use App\Mail\RentIncrementNoticeMail;
 use App\Mail\RentReminderMail;
+use App\Mail\TenantFundTransferVoucherMail;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\RentIncrement;
+use App\Models\TenantFundTransaction;
 use App\Services\ApplicationIdentityService;
 use App\Services\ApplicationLocaleService;
 use App\Services\ApplicationPresentationFormatter;
 use App\Services\Documents\InvoiceDocumentService;
 use App\Services\Documents\ReceiptDocumentService;
+use App\Services\Documents\TenantFundTransferVoucherDocumentService;
 use Illuminate\Support\Facades\Mail;
 use RuntimeException;
 
@@ -36,10 +39,103 @@ class EmailDeliveryService
     public function __construct(
         private InvoiceDocumentService $invoiceDocuments,
         private ReceiptDocumentService $receiptDocuments,
+        private TenantFundTransferVoucherDocumentService $transferVoucherDocuments,
         private ApplicationIdentityService $identity,
         private ApplicationPresentationFormatter $formatter,
         private ApplicationLocaleService $locale
     ) {}
+
+    /**
+     * V1.0.8: send or resend a tenant fund Transfer voucher to the tenant.
+     *
+     * $debitTransaction must be the voucher-carrying debit leg; the credit
+     * leg is resolved by the shared TRF reference for display purposes.
+     */
+    public function sendTransferVoucher(
+        TenantFundTransaction $debitTransaction
+    ): void {
+        $debitTransaction->loadMissing([
+            'account.lease.tenant',
+            'account.lease.unit.building',
+        ]);
+
+        $creditTransaction =
+            TenantFundTransaction::query()
+                ->where('reference', $debitTransaction->reference)
+                ->where('category', 'transfer')
+                ->where('direction', 'credit')
+                ->with('account.lease')
+                ->first();
+
+        if ($creditTransaction === null) {
+            throw new RuntimeException(
+                'The credit leg of this Transfer could not be found.'
+            );
+        }
+
+        $email =
+            $this->transferRecipient(
+                $debitTransaction
+            );
+
+        $contents =
+            $this->transferVoucherDocuments
+                ->pdf(
+                    $debitTransaction
+                );
+
+        $filename =
+            $this->transferVoucherDocuments
+                ->filename(
+                    $debitTransaction
+                );
+
+        Mail::to(
+            $email
+        )
+            ->locale(
+                $this->locale->language()
+            )
+            ->send(
+                new TenantFundTransferVoucherMail(
+                    debitTransaction: $debitTransaction,
+                    creditTransaction: $creditTransaction,
+                    pdfContents: $contents,
+                    pdfFilename: $filename,
+                    managingOrganisation: $this
+                        ->identity
+                        ->managingOrganisation(),
+
+                    formatter: $this->formatter
+                )
+            );
+    }
+
+    /**
+     * Resolve the recipient of a Transfer voucher: the tenant on the
+     * Lease the money left from.
+     */
+    private function transferRecipient(
+        TenantFundTransaction $debitTransaction
+    ): string {
+        $email =
+            trim(
+                (string)
+                $debitTransaction
+                    ->account
+                    ->lease
+                    ->tenant
+                    ->email
+            );
+
+        if ($email === '') {
+            throw new RuntimeException(
+                __('business.email.tenant_email_missing')
+            );
+        }
+
+        return $email;
+    }
 
     /**
      * Send or resend an Invoice to the tenant.

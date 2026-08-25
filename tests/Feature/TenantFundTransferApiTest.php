@@ -424,6 +424,129 @@ class TenantFundTransferApiTest extends TestCase
     }
 
     /**
+     * V1.0.8: the Transfer voucher can be resent to the tenant by email.
+     */
+    public function test_transfer_voucher_can_be_resent_through_api(): void
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+
+        [$source, $destination] =
+            $this->twoFundedAccountsForOneTenant(
+                sourceAmount: 20000,
+
+                destinationAmount: 0
+            );
+
+        $debitTransactionId =
+            $this->postJson(
+                '/api/tenant-funds/transfers',
+                [
+                    'source_account_id' => $source->id,
+
+                    'destination_account_id' => $destination->id,
+
+                    'amount' => 5000,
+
+                    'reason' => 'Resend workflow test.',
+                ]
+            )
+                ->assertCreated()
+                ->json('transfer.debit_transaction.id');
+
+        $tenantEmail =
+            $source->lease->tenant->email;
+
+        $this->postJson(
+            "/api/tenant-fund-transfers/{$debitTransactionId}/send-email"
+        )
+            ->assertOk()
+            ->assertJsonPath(
+                'message',
+                'Transfer voucher email sent successfully.'
+            );
+
+        \Illuminate\Support\Facades\Mail::assertSent(
+            \App\Mail\TenantFundTransferVoucherMail::class,
+            function ($mail) use ($debitTransactionId, $tenantEmail): bool {
+                return $mail->debitTransaction->id === $debitTransactionId
+                    && $mail->hasTo($tenantEmail);
+            }
+        );
+
+        $this->assertDatabaseHas(
+            'activity_logs',
+            [
+                'action' => 'tenant_fund_transfer_voucher.resent',
+
+                'entity_type' => 'tenant_fund_transaction',
+
+                'entity_id' => $debitTransactionId,
+            ]
+        );
+    }
+
+    /**
+     * Only a Transfer debit leg carries a voucher; anything else is
+     * rejected before any email is attempted.
+     */
+    public function test_transfer_voucher_resend_rejects_non_transfer_transaction(): void
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+
+        [$source] =
+            $this->twoFundedAccountsForOneTenant(
+                sourceAmount: 10000,
+
+                destinationAmount: 0
+            );
+
+        $fundingTransaction =
+            $source->transactions()->firstOrFail();
+
+        $this->postJson(
+            "/api/tenant-fund-transfers/{$fundingTransaction->id}/send-email"
+        )->assertUnprocessable();
+
+        \Illuminate\Support\Facades\Mail::assertNothingSent();
+    }
+
+    /**
+     * Resending a business document is an operational action and is
+     * unavailable to Viewer.
+     */
+    public function test_viewer_cannot_resend_a_transfer_voucher(): void
+    {
+        [$source, $destination] =
+            $this->twoFundedAccountsForOneTenant(
+                sourceAmount: 10000,
+
+                destinationAmount: 0
+            );
+
+        $debitTransactionId =
+            $this->postJson(
+                '/api/tenant-funds/transfers',
+                [
+                    'source_account_id' => $source->id,
+
+                    'destination_account_id' => $destination->id,
+
+                    'amount' => 1000,
+
+                    'reason' => 'Viewer resend guard.',
+                ]
+            )
+                ->assertCreated()
+                ->json('transfer.debit_transaction.id');
+
+        $this->authenticateApiUser('viewer');
+
+        $this->postJson(
+            "/api/tenant-fund-transfers/{$debitTransactionId}/send-email"
+        )->assertForbidden();
+    }
+
+    /**
      * V1.0.8: with fund accounts provisioned eagerly on the Lease, a
      * Transfer must work between EVERY ordered pair of the three account
      * types — Security Deposit included — with a balanced Journal entry

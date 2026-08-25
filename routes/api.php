@@ -442,6 +442,15 @@ Route::middleware('auth:sanctum')->group(
                     'owner-expense-bills/{ownerExpenseBill}/send-email',
                     [OwnerExpenseBillController::class, 'sendEmail']
                 );
+
+                /*
+                 * V1.0.8: resend a tenant fund Transfer voucher to the
+                 * tenant. Follows the invoice/receipt resend rule above.
+                 */
+                Route::post(
+                    'tenant-fund-transfers/{tenantFundTransaction}/send-email',
+                    [TenantFundTransferController::class, 'sendEmail']
+                );
             }
         );
 
