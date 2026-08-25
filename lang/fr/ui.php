@@ -446,6 +446,8 @@ return [
         'party' => 'Partie',
         'create_owner_first' => 'Créez d’abord un propriétaire…',
         'select_owner' => 'Sélectionner un propriétaire…',
+        'occupied' => 'Occupée',
+        'vacant' => 'Vacante',
         'create_new_owner' => 'Créer un nouveau propriétaire',
         'new' => '+ Nouveau',
         'no_owners_yet' => 'Aucun propriétaire pour le moment. Créez la première Partie propriétaire.',

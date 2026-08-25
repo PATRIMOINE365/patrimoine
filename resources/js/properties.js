@@ -1128,6 +1128,48 @@ function renderPropertyOwners(
  * @param {object} unit
  * @returns {string}
  */
+/**
+ * V1.0.8: vacant / occupied pill derived from the server-side
+ * is_occupied flag (an active or notice Lease on the Unit).
+ */
+function unitOccupancyBadge(
+    unit
+) {
+    const occupied =
+        Boolean(
+            unit?.is_occupied
+        );
+
+    const classes =
+        occupied
+            ? 'border border-[var(--pm-success-border)] '
+                + 'bg-[var(--pm-success-background)] '
+                + 'text-[var(--pm-success-text)]'
+            : 'border border-[var(--pm-border)] '
+                + 'bg-[var(--pm-surface-muted)] '
+                + 'text-[var(--pm-text-secondary)]';
+
+    return `
+        <span
+            class="
+                inline-flex rounded-full
+                px-2 py-0.5
+                text-xs font-medium
+                ${classes}
+            "
+        >
+            ${escapeHtml(
+                translate(
+                    occupied
+                        ? 'properties.occupied'
+                        : 'properties.vacant'
+                )
+            )}
+        </span>
+    `;
+}
+
+
 function unitClassificationBadge(
     unit
 ) {
@@ -1266,9 +1308,15 @@ function renderPropertyUnits(
                             </td>
 
                             <td class="px-3 py-3">
-                                ${unitClassificationBadge(
-                                    unit
-                                )}
+                                <div class="flex items-center gap-1.5">
+                                    ${unitClassificationBadge(
+                                        unit
+                                    )}
+
+                                    ${unitOccupancyBadge(
+                                        unit
+                                    )}
+                                </div>
                             </td>
 
                             <td

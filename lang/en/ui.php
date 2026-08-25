@@ -1678,6 +1678,8 @@ return [
         'party' => 'Party',
         'create_owner_first' => 'Create an owner first…',
         'select_owner' => 'Select owner…',
+        'occupied' => 'Occupied',
+        'vacant' => 'Vacant',
         'create_new_owner' => 'Create a new owner',
         'new' => '+ New',
         'no_owners_yet' => 'No owners yet. Create the first Owner Party.',

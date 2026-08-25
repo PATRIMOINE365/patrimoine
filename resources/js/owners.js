@@ -3892,7 +3892,7 @@ function expenseBillLineTemplate() {
                     data-money-input
                     required
                     data-expense-line-amount
-                    class="pm-input pl-12"
+                    class="pm-input pm-input-currency"
                 >
             </div>
 

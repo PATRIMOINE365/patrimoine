@@ -1044,7 +1044,7 @@
                                         inputmode="numeric"
                                         data-money-input
                             required
-                            class="pm-input pl-14"
+                            class="pm-input pm-input-currency"
                         >
                     </div>
                 </div>

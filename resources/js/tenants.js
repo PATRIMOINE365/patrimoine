@@ -1122,7 +1122,6 @@ function renderTenantInvoices(
                                     <tr>
                                         ${tableHeading(translate('tenants.invoice'))}
                                         ${tableHeading(translate('tenants.type'))}
-                                        ${tableHeading(translate('tenants.date'))}
                                         ${tableHeading(translate('tenants.due_date'))}
                                         ${tableHeading(translate('tenants.amount'), true)}
                                         ${tableHeading(translate('tenants.paid'), true)}
@@ -1175,14 +1174,6 @@ function renderTenantInvoiceRow(
                     invoice?.type
                     ?? 'unknown'
                 )
-            )}
-
-            ${tableCell(
-                invoice?.date
-                    ? formatDate(
-                        invoice.date
-                    )
-                    : '—'
             )}
 
             ${tableCell(

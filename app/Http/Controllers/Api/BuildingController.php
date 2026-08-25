@@ -26,7 +26,11 @@ class BuildingController extends Controller
         $query = Building::query()
             ->with([
                 'ownerships.party',
-                'units',
+                'units' => fn ($unitQuery) => $unitQuery
+                    ->withExists([
+                        'leases as is_occupied' => fn ($leaseQuery) => $leaseQuery
+                            ->whereIn('status', ['active', 'notice']),
+                    ]),
             ]);
 
         /*
@@ -140,7 +144,11 @@ class BuildingController extends Controller
 
                 $building->load([
                     'ownerships.party',
-                    'units',
+                    'units' => fn ($unitQuery) => $unitQuery
+                        ->withExists([
+                            'leases as is_occupied' => fn ($leaseQuery) => $leaseQuery
+                                ->whereIn('status', ['active', 'notice']),
+                        ]),
                 ]);
 
                 $activityLog->record(
@@ -170,7 +178,11 @@ class BuildingController extends Controller
         return response()->json(
             $building->load([
                 'ownerships.party',
-                'units',
+                'units' => fn ($unitQuery) => $unitQuery
+                    ->withExists([
+                        'leases as is_occupied' => fn ($leaseQuery) => $leaseQuery
+                            ->whereIn('status', ['active', 'notice']),
+                    ]),
             ])
         );
     }
@@ -219,7 +231,11 @@ class BuildingController extends Controller
                     ->refresh()
                     ->load([
                         'ownerships.party',
-                        'units',
+                        'units' => fn ($unitQuery) => $unitQuery
+                            ->withExists([
+                                'leases as is_occupied' => fn ($leaseQuery) => $leaseQuery
+                                    ->whereIn('status', ['active', 'notice']),
+                            ]),
                     ]);
 
                 $afterSnapshot =

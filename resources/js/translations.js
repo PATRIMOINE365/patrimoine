@@ -157,6 +157,8 @@ export const translations = {
             ':count accounts',
         'properties.filter_units_label':
             'Filter units by classification',
+        'properties.occupied': 'Occupied',
+        'properties.vacant': 'Vacant',
         'properties.filter_all_units':
             'All units',
         'properties.commercial':
@@ -2929,6 +2931,8 @@ export const translations = {
             ':count comptes',
         'properties.filter_units_label':
             'Filtrer les unités par type',
+        'properties.occupied': 'Occupée',
+        'properties.vacant': 'Vacante',
         'properties.filter_all_units':
             'Toutes les unités',
         'properties.commercial':

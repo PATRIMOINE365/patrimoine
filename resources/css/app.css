@@ -327,6 +327,15 @@ html[data-shell-role="administrator"]
     color: var(--pm-text);
 }
 
+/*
+ * V1.0.8: inputs with a leading currency prefix. Same cascade-layer
+ * rule as .pm-input-search: Tailwind pl-* utilities cannot beat the
+ * un-layered .pm-input padding.
+ */
+.pm-input-currency {
+    padding-left: 3.75rem;
+}
+
 .pm-input-search {
     padding-left: 2.5rem;
 }
