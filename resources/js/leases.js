@@ -6002,7 +6002,7 @@ function buildLeaseExtendPayload() {
             ),
 
         end_date:
-            nullableDateValue(
+            nullableDateForApi(
                 'lease-extend-end-date'
             ),
 
@@ -6043,7 +6043,7 @@ function buildLeaseExtendPayload() {
             ),
 
         next_rent_increment_date:
-            nullableDateValue(
+            nullableDateForApi(
                 'lease-extend-next-increment-date'
             ),
 

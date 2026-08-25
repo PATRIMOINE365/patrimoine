@@ -3929,6 +3929,44 @@ function expenseBillLineTemplate() {
     `;
 }
 
+/**
+ * Recompute and display the running bill total.
+ */
+function updateExpenseBillTotal() {
+    const amounts =
+        document.querySelectorAll(
+            '#owner-expense-bill-lines [data-expense-line-amount]'
+        );
+
+    let total = 0;
+
+    amounts.forEach(
+        (input) => {
+            const amount =
+                Number(
+                    parseMoneyInput(
+                        input.value
+                    )
+                    || 0
+                );
+
+            if (
+                Number.isInteger(amount)
+                && amount > 0
+            ) {
+                total += amount;
+            }
+        }
+    );
+
+    setText(
+        'owner-expense-bill-total',
+        formatCurrency(
+            total
+        )
+    );
+}
+
 /*
 |--------------------------------------------------------------------------
 | V1.0.8 Unified Expense flow: Building + single/split + review step
