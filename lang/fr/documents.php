@@ -242,4 +242,17 @@ return [
             'cancelled' => 'Annulée',
         ],
     ],
+
+    'owner_reserve_transfer' => [
+        'title' => 'Transfert entre comptes propriétaire',
+        'voucher_number' => 'Numéro du bon',
+        'date' => 'Date',
+        'owner' => 'Propriétaire',
+        'from_account' => 'De',
+        'to_account' => 'Vers',
+        'payout_account' => 'Compte de retrait (loyers)',
+        'deposit_account' => 'Compte de dépôt / dépenses',
+        'amount' => 'Montant',
+        'reason' => 'Motif',
+    ],
 ];

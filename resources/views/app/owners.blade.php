@@ -377,7 +377,7 @@
                                 id="owner-view-accounts-button"
                                 type="button"
                                 class="
-                                    inline-flex items-center gap-2
+                                    inline-flex items-center
                                     rounded-lg border
                                     border-[var(--pm-border)]
                                     bg-[var(--pm-surface)] px-3.5 py-2.5
@@ -388,17 +388,6 @@
                                     hover:bg-[var(--pm-hover)]
                                 "
                             >
-                                <svg
-                                    class="h-4 w-4"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                >
-                                    <rect x="2" y="5" width="20" height="14" rx="2"/>
-                                    <path d="M2 10h20"/>
-                                </svg>
-
                                 <span data-i18n="owners.accounts">
     {{ __('ui.owners.accounts') }}
 </span>
@@ -406,37 +395,6 @@
 
                             <button
                                 id="owner-record-deposit-button"
-                                type="button"
-                                class="
-                                    inline-flex items-center gap-2
-                                    rounded-lg border
-                                    border-[var(--pm-border)]
-                                    bg-[var(--pm-surface)] px-3.5 py-2.5
-                                    text-sm font-medium
-                                    text-[var(--pm-text-secondary)]
-                                    transition
-                                    hover:border-[var(--pm-border-strong)]
-                                    hover:bg-[var(--pm-hover)]
-                                "
-                            >
-                                <svg
-                                    class="h-4 w-4"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                >
-                                    <path d="M12 5v14"/>
-                                    <path d="M5 12h14"/>
-                                </svg>
-
-                                <span data-i18n="owners.deposit">
-    {{ __('ui.owners.deposit') }}
-</span>
-                            </button>
-
-                            <button
-                                id="owner-record-expense-button"
                                 type="button"
                                 class="
                                     inline-flex items-center
@@ -450,8 +408,8 @@
                                     hover:bg-[var(--pm-hover)]
                                 "
                             >
-                                <span data-i18n="owners.expense">
-    {{ __('ui.owners.expense') }}
+                                <span data-i18n="owners.deposit">
+    {{ __('ui.owners.deposit') }}
 </span>
                             </button>
 
@@ -474,6 +432,26 @@
                             >
                                 <span data-i18n="owners.payout">
     {{ __('ui.owners.payout') }}
+</span>
+                            </button>
+
+                            <button
+                                id="owner-record-expense-button"
+                                type="button"
+                                class="
+                                    inline-flex items-center
+                                    rounded-lg border
+                                    border-[var(--pm-border)]
+                                    bg-[var(--pm-surface)] px-3.5 py-2.5
+                                    text-sm font-medium
+                                    text-[var(--pm-text-secondary)]
+                                    transition
+                                    hover:border-[var(--pm-border-strong)]
+                                    hover:bg-[var(--pm-hover)]
+                                "
+                            >
+                                <span data-i18n="owners.expense">
+    {{ __('ui.owners.expense') }}
 </span>
                             </button>
 
@@ -754,6 +732,46 @@
                     ></div>
                 </div>
 
+                {{-- ====================================================
+                     V1.0.8 Account Transfers (Payout <-> Deposit/Expense)
+                ==================================================== --}}
+
+                <div
+                    class="
+                        border-t border-[var(--pm-border-subtle)]
+                        px-6 py-6
+                    "
+                >
+                    <div>
+                        <h3
+                            class="
+                                text-base font-semibold
+                                text-[var(--pm-text)]
+                            "
+                        >
+                            <span data-i18n="owners.transfers">
+    {{ __('ui.owners.transfers') }}
+</span>
+                        </h3>
+
+                        <p
+                            class="
+                                mt-1 text-xs
+                                text-[var(--pm-text-muted)]
+                            "
+                        >
+                            <span data-i18n="owners.transfers_description">
+    {{ __('ui.owners.transfers_description') }}
+</span>
+                        </p>
+                    </div>
+
+                    <div
+                        id="owner-transfers-list"
+                        class="mt-4"
+                    ></div>
+                </div>
+
             </div>
         </section>
     </div>
@@ -761,6 +779,190 @@
 {{-- ================================================================
      Owner Deposit Drawer
 ================================================================ --}}
+
+{{-- ====================================================
+     V1.0.8 Owner Account Transfer Drawer
+==================================================== --}}
+
+<x-drawer
+    id="owner-transfer-modal"
+    backdrop-id="owner-transfer-modal-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        title-id="owner-transfer-modal-title"
+        description-id="owner-transfer-modal-description"
+        close-id="owner-transfer-modal-close"
+        close-label="Close"
+        close-label-key="owners.close"
+    >
+        <x-slot:title>
+            <span data-i18n="owners.transfer_title">
+                {{ __('ui.owners.transfer_title') }}
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="owners.transfer_description">
+                {{ __('ui.owners.transfer_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="owner-transfer-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div class="flex-1 overflow-y-auto px-6 py-6">
+            <div
+                id="owner-transfer-error"
+                class="
+                    mb-5 hidden rounded-lg
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
+                "
+            ></div>
+
+            <div class="grid gap-4">
+                <div>
+                    <label
+                        for="owner-transfer-direction"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="owners.transfer_direction">
+    {{ __('ui.owners.transfer_direction') }}
+</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <select
+                        id="owner-transfer-direction"
+                        required
+                        class="pm-input"
+                    >
+                        <option
+                            value="to_expense"
+                            data-i18n="owners.transfer_to_expense"
+                        >
+                            {{ __('ui.owners.transfer_to_expense') }}
+                        </option>
+
+                        <option
+                            value="to_payout"
+                            data-i18n="owners.transfer_to_payout"
+                        >
+                            {{ __('ui.owners.transfer_to_payout') }}
+                        </option>
+                    </select>
+                </div>
+
+                <div>
+                    <span class="pm-field-label">
+                        <span data-i18n="owners.transfer_available">
+    {{ __('ui.owners.transfer_available') }}
+</span>
+                    </span>
+
+                    <div
+                        id="owner-transfer-available"
+                        class="
+                            text-lg font-semibold
+                            text-[var(--pm-text)]
+                        "
+                    >
+                        —
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        for="owner-transfer-amount"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="owners.amount">
+    {{ __('ui.owners.amount') }}
+</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <input
+                        id="owner-transfer-amount"
+                        type="text"
+                        inputmode="numeric"
+                        data-money-input
+                        required
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="owner-transfer-date"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="owners.transaction_date">
+    {{ __('ui.owners.transaction_date') }}
+</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <input
+                        id="owner-transfer-date"
+                        type="text"
+                        data-pm-date-input
+                        inputmode="numeric"
+                        maxlength="10"
+                        required
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="owner-transfer-reason"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="owners.transfer_reason">
+    {{ __('ui.owners.transfer_reason') }}
+</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <textarea
+                        id="owner-transfer-reason"
+                        rows="3"
+                        required
+                        maxlength="1000"
+                        class="pm-input"
+                    ></textarea>
+                </div>
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                id="owner-transfer-cancel"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
+                </span>
+            </button>
+
+            <button
+                id="owner-transfer-submit"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="actions.save">
+                    {{ __('ui.actions.save') }}
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
 
 <x-drawer
     id="owner-deposit-modal"
@@ -1823,6 +2025,19 @@
             <span data-i18n="owners.consolidated_account_note">
     {{ __('ui.owners.consolidated_account_note') }}
 </span>
+        </div>
+
+        <div class="mt-4 flex justify-end">
+            <button
+                id="owner-transfer-button"
+                type="button"
+                data-requires-capability="manage_finance"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="owners.transfer">
+    {{ __('ui.owners.transfer') }}
+</span>
+            </button>
         </div>
 
         {{--

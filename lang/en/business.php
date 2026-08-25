@@ -43,6 +43,9 @@ return [
         'no_ownership' => 'Building has no ownership allocations.',
         'ownership_total' => 'Building ownership percentages must total 100%.',
         'payout_positive' => 'Owner payout amount must be greater than zero.',
+        'reserve_transfer_positive' => 'Account transfer amount must be greater than zero.',
+        'reserve_transfer_reason_required' => 'Account transfer reason is required.',
+        'reserve_transfer_exceeds_source' => 'Account transfer exceeds the available source account balance.',
         'payout_no_funds' => 'Owner has no funds available for payout.',
         'payout_exceeds_balance' => 'Owner payout exceeds available balance.',
         'payout_allocation_failed' => 'Unable to fully allocate owner payout to net available credits.',
@@ -60,5 +63,6 @@ return [
 
     'email' => [
         'tenant_email_missing' => 'Tenant does not have an email address.',
+        'owner_email_missing' => 'Owner does not have an email address.',
     ],
 ];

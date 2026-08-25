@@ -114,4 +114,19 @@ return [
         'fund_security_deposit' => 'Security Deposit',
         'pdf_attached' => 'Your official transfer receipt is attached as a PDF.',
     ],
+
+    'owner_reserve_transfer' => [
+        'title' => 'Owner Account Transfer',
+        'subject' => 'Account Transfer Voucher :number - :organisation',
+        'intro' => 'Please find attached the voucher for a transfer between your accounts held with us.',
+        'amount_moved' => 'Amount Moved',
+        'voucher' => 'Voucher',
+        'transfer_date' => 'Transfer Date',
+        'from_account' => 'From',
+        'to_account' => 'To',
+        'payout_account' => 'Payout Account (from rent)',
+        'deposit_account' => 'Deposit / Expense Account',
+        'reason' => 'Reason',
+        'pdf_attached' => 'Your official transfer voucher is attached as a PDF.',
+    ],
 ];

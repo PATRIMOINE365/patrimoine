@@ -242,4 +242,17 @@ return [
             'cancelled' => 'Cancelled',
         ],
     ],
+
+    'owner_reserve_transfer' => [
+        'title' => 'Owner Account Transfer',
+        'voucher_number' => 'Voucher Number',
+        'date' => 'Date',
+        'owner' => 'Owner',
+        'from_account' => 'From',
+        'to_account' => 'To',
+        'payout_account' => 'Payout Account (from rent)',
+        'deposit_account' => 'Deposit / Expense Account',
+        'amount' => 'Amount',
+        'reason' => 'Reason',
+    ],
 ];

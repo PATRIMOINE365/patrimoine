@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\OwnerExpenseBillController;
 use App\Http\Controllers\Api\OwnerExpenseController;
 use App\Http\Controllers\Api\OwnerLedgerController;
 use App\Http\Controllers\Api\OwnerPayoutController;
+use App\Http\Controllers\Api\OwnerReserveTransferController;
 use App\Http\Controllers\Api\PartyController;
 use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\PaymentController;
@@ -448,6 +449,11 @@ Route::middleware('auth:sanctum')->group(
                  * tenant. Follows the invoice/receipt resend rule above.
                  */
                 Route::post(
+                    'owner-reserve-transfers/{ownerTransaction}/send-email',
+                    [OwnerReserveTransferController::class, 'sendEmail']
+                );
+
+                Route::post(
                     'tenant-fund-transfers/{tenantFundTransaction}/send-email',
                     [TenantFundTransferController::class, 'sendEmail']
                 );
@@ -577,6 +583,20 @@ Route::middleware('auth:sanctum')->group(
                 /*
                  * V1.0.7: bill multiple expense lines directly to one owner.
                  */
+                /*
+                 * V1.0.8: transfers between the owner's Payout account
+                 * and Deposit/Expense account.
+                 */
+                Route::get(
+                    'owner-accounts/{ownerAccount}/reserve-transfers',
+                    [OwnerReserveTransferController::class, 'index']
+                );
+
+                Route::post(
+                    'owner-accounts/{ownerAccount}/reserve-transfers',
+                    [OwnerReserveTransferController::class, 'store']
+                );
+
                 Route::post(
                     'owner-accounts/{ownerAccount}/expense-bills',
                     [OwnerExpenseBillController::class, 'store']
@@ -641,6 +661,11 @@ Route::middleware('auth:sanctum')->group(
                  * V1.0.7: Transfer voucher PDF, keyed by the debit leg
                  * of the Tenant fund Transfer.
                  */
+                Route::get(
+                    'owner-reserve-transfers/{ownerTransaction}/voucher',
+                    [OwnerReserveTransferController::class, 'voucher']
+                );
+
                 Route::get(
                     'tenant-fund-transfers/{tenantFundTransaction}/voucher',
                     [TenantFundTransferController::class, 'voucher']

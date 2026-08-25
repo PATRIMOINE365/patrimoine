@@ -75,6 +75,8 @@ export async function initializeOwners() {
 
     initializeOwnerWorkspaceActions();
 
+    initializeOwnerTransferControls();
+
     synchronizeOwnerCurrencyDisplays();
     initializeOwnerDateInputs();
 
@@ -824,6 +826,8 @@ function renderOwnerDetail(
     renderOwnerPayouts(
         owner.payouts
     );
+
+    loadOwnerTransfers();
 }
 
 /**
@@ -1603,6 +1607,584 @@ function renderOwnerLedgerPagination(
  *
  * @param {Array<object>} payouts
  */
+/*
+|--------------------------------------------------------------------------
+| V1.0.8 Owner Account Transfers (Payout <-> Deposit/Expense)
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * Wire the Transfer drawer controls once.
+ */
+function initializeOwnerTransferControls() {
+    document
+        .getElementById(
+            'owner-transfer-button'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                if (! selectedOwner) {
+                    return;
+                }
+
+                hideOwnerActionError(
+                    'owner-transfer-error'
+                );
+
+                const form =
+                    document.getElementById(
+                        'owner-transfer-form'
+                    );
+
+                form?.reset();
+
+                updateOwnerTransferAvailable();
+
+                openDrawer(
+                    'owner-transfer-modal'
+                );
+            }
+        );
+
+    document
+        .getElementById(
+            'owner-transfer-direction'
+        )
+        ?.addEventListener(
+            'change',
+            updateOwnerTransferAvailable
+        );
+
+    document
+        .getElementById(
+            'owner-transfer-cancel'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                closeDrawer(
+                    'owner-transfer-modal'
+                );
+            }
+        );
+
+    document
+        .getElementById(
+            'owner-transfer-form'
+        )
+        ?.addEventListener(
+            'submit',
+            async (event) => {
+                event.preventDefault();
+
+                await submitOwnerTransfer();
+            }
+        );
+}
+
+/**
+ * Show the source-account balance for the chosen direction.
+ */
+function updateOwnerTransferAvailable() {
+    const direction =
+        fieldValue(
+            'owner-transfer-direction'
+        );
+
+    const available =
+        direction === 'to_payout'
+            ? Number(
+                selectedOwner?.deposit_account_balance
+                ?? 0
+            )
+            : Number(
+                selectedOwner?.payout_account_balance
+                ?? 0
+            );
+
+    const element =
+        document.getElementById(
+            'owner-transfer-available'
+        );
+
+    if (element) {
+        element.textContent =
+            formatCurrency(
+                available
+            );
+
+        element.classList.toggle(
+            'text-[var(--pm-danger-text)]',
+            available <= 0
+        );
+    }
+}
+
+async function submitOwnerTransfer() {
+    if (! selectedOwner) {
+        return;
+    }
+
+    hideOwnerActionError(
+        'owner-transfer-error'
+    );
+
+    const amount =
+        Number(
+            fieldValue(
+                'owner-transfer-amount'
+            )
+        );
+
+    if (
+        ! Number.isInteger(amount)
+        || amount <= 0
+    ) {
+        showOwnerActionError(
+            'owner-transfer-error',
+            translate('owners.invalid_transfer_amount')
+        );
+
+        return;
+    }
+
+    const submitButton =
+        document.getElementById(
+            'owner-transfer-submit'
+        );
+
+    try {
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
+
+        const response =
+            await apiRequest(
+                `/api/owner-accounts/${encodeURIComponent(
+                    selectedOwner.id
+                )}/reserve-transfers`,
+                {
+                    method: 'POST',
+
+                    body: JSON.stringify({
+                        direction:
+                            fieldValue(
+                                'owner-transfer-direction'
+                            ),
+
+                        amount,
+
+                        transaction_date:
+                            dateForApi(
+                                fieldValue(
+                                    'owner-transfer-date'
+                                )
+                            ),
+
+                        reason:
+                            fieldValue(
+                                'owner-transfer-reason'
+                            ),
+                    }),
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        closeDrawer(
+            'owner-transfer-modal'
+        );
+
+        await refreshSelectedOwner();
+
+        renderOwnerAccountsView(
+            selectedOwner
+        );
+    } catch (error) {
+        showOwnerActionError(
+            'owner-transfer-error',
+            error instanceof Error
+                ? error.message
+                : translate('owners.unable_to_transfer')
+        );
+    } finally {
+        if (submitButton) {
+            submitButton.disabled = false;
+        }
+    }
+}
+
+/**
+ * Load and render the owner's transfer history section.
+ */
+async function loadOwnerTransfers() {
+    const container =
+        document.getElementById(
+            'owner-transfers-list'
+        );
+
+    if (
+        ! container
+        || ! selectedOwner
+    ) {
+        return;
+    }
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/owner-accounts/${encodeURIComponent(
+                    selectedOwner.id
+                )}/reserve-transfers`
+            );
+
+        const payload =
+            await parseJsonResponse(
+                response
+            );
+
+        renderOwnerTransfers(
+            Array.isArray(
+                payload?.data
+            )
+                ? payload.data
+                : []
+        );
+    } catch {
+        container.innerHTML = '';
+    }
+}
+
+function renderOwnerTransfers(
+    transfers
+) {
+    const container =
+        document.getElementById(
+            'owner-transfers-list'
+        );
+
+    if (! container) {
+        return;
+    }
+
+    if (transfers.length === 0) {
+        container.innerHTML = `
+            <div
+                class="
+                    rounded-xl border
+                    border-dashed border-[var(--pm-border)]
+                    px-5 py-8 text-center
+                    text-sm text-[var(--pm-text-muted)]
+                "
+            >
+                ${translate(
+                    'owners.no_transfers'
+                )}
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = `
+        <div
+            class="
+                overflow-hidden rounded-xl
+                border border-[var(--pm-border)]
+            "
+        >
+            ${transfers
+                .map(
+                    (transfer) => `
+                        <div
+                            class="
+                                flex flex-col gap-3
+                                border-b border-[var(--pm-border-subtle)]
+                                px-4 py-3
+                                last:border-b-0
+                                sm:flex-row
+                                sm:items-center
+                                sm:justify-between
+                            "
+                        >
+                            <div>
+                                <div
+                                    class="
+                                        text-sm font-medium
+                                        text-[var(--pm-text)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        transfer.reference
+                                        ?? ''
+                                    )}
+                                    ·
+                                    ${escapeHtml(
+                                        transfer.direction === 'credit'
+                                            ? translate(
+                                                'owners.transfer_to_expense'
+                                            )
+                                            : translate(
+                                                'owners.transfer_to_payout'
+                                            )
+                                    )}
+                                </div>
+
+                                <div
+                                    class="
+                                        mt-0.5 text-xs
+                                        text-[var(--pm-text-muted)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        formatDate(
+                                            transfer.transaction_date
+                                        )
+                                    )}${
+                                        transfer.notes
+                                            ? ' · ' + escapeHtml(
+                                                transfer.notes
+                                            )
+                                            : ''
+                                    }
+                                </div>
+                            </div>
+
+                            <div
+                                class="
+                                    flex items-center gap-2
+                                "
+                            >
+                                <span
+                                    class="
+                                        text-sm font-semibold
+                                        text-[var(--pm-text)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        formatCurrency(
+                                            transfer.amount
+                                        )
+                                    )}
+                                </span>
+
+                                <button
+                                    type="button"
+                                    data-open-owner-transfer-voucher="${escapeHtml(
+                                        transfer.id
+                                    )}"
+                                    class="
+                                        inline-flex items-center
+                                        rounded-lg border
+                                        border-[var(--pm-border)]
+                                        bg-[var(--pm-surface)] px-3 py-2
+                                        text-xs font-medium
+                                        text-[var(--pm-text-secondary)]
+                                        shadow-sm transition
+                                        hover:border-[var(--pm-border-strong)]
+                                        hover:bg-[var(--pm-hover)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        translate(
+                                            'owners.voucher'
+                                        )
+                                    )}
+                                </button>
+
+                                <button
+                                    type="button"
+                                    data-resend-owner-transfer-voucher="${escapeHtml(
+                                        transfer.id
+                                    )}"
+                                    class="
+                                        inline-flex items-center
+                                        rounded-lg border
+                                        border-[var(--pm-border)]
+                                        bg-[var(--pm-surface)] px-3 py-2
+                                        text-xs font-medium
+                                        text-[var(--pm-text-secondary)]
+                                        shadow-sm transition
+                                        hover:border-[var(--pm-border-strong)]
+                                        hover:bg-[var(--pm-hover)]
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        translate(
+                                            'owners.resend'
+                                        )
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    `
+                )
+                .join('')}
+        </div>
+    `;
+
+    container
+        .querySelectorAll(
+            '[data-open-owner-transfer-voucher]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        await openOwnerTransferVoucher(
+                            button
+                        );
+                    }
+                );
+            }
+        );
+
+    container
+        .querySelectorAll(
+            '[data-resend-owner-transfer-voucher]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        await resendOwnerTransferVoucher(
+                            button
+                        );
+                    }
+                );
+            }
+        );
+}
+
+async function openOwnerTransferVoucher(
+    button
+) {
+    const transferId =
+        button.dataset.openOwnerTransferVoucher;
+
+    if (! transferId) {
+        return;
+    }
+
+    button.disabled = true;
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/owner-reserve-transfers/${encodeURIComponent(
+                    transferId
+                )}/voucher`
+            );
+
+        if (! response.ok) {
+            throw new Error(
+                translate('owners.unable_to_open_voucher')
+            );
+        }
+
+        const blob =
+            await response.blob();
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        window.open(
+            url,
+            '_blank',
+            'noopener,noreferrer'
+        );
+
+        window.setTimeout(
+            () => {
+                URL.revokeObjectURL(
+                    url
+                );
+            },
+            60000
+        );
+    } catch (error) {
+        showOwnersError(
+            error instanceof Error
+                ? error.message
+                : translate('owners.unable_to_open_voucher')
+        );
+    } finally {
+        button.disabled = false;
+    }
+}
+
+async function resendOwnerTransferVoucher(
+    button
+) {
+    const transferId =
+        button.dataset.resendOwnerTransferVoucher;
+
+    if (! transferId) {
+        return;
+    }
+
+    const originalLabel =
+        button.textContent;
+
+    button.disabled = true;
+    button.textContent =
+        translate('owners.sending');
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/owner-reserve-transfers/${encodeURIComponent(
+                    transferId
+                )}/send-email`,
+                {
+                    method: 'POST',
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        button.textContent =
+            translate('owners.sent');
+
+        window.setTimeout(
+            () => {
+                if (
+                    document.body.contains(
+                        button
+                    )
+                ) {
+                    button.textContent =
+                        originalLabel;
+                    button.disabled =
+                        false;
+                }
+            },
+            1800
+        );
+    } catch (error) {
+        button.textContent =
+            originalLabel;
+        button.disabled =
+            false;
+
+        showOwnersError(
+            error instanceof Error
+                ? error.message
+                : translate('owners.unable_to_resend_voucher')
+        );
+    }
+}
+
+
 function renderOwnerPayouts(
     payouts
 ) {

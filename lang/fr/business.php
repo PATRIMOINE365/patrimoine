@@ -43,6 +43,9 @@ return [
         'no_ownership' => 'Aucune répartition de propriété n’est définie pour l’immeuble.',
         'ownership_total' => 'La somme des pourcentages de propriété de l’immeuble doit être égale à 100 %.',
         'payout_positive' => 'Le montant du paiement au propriétaire doit être supérieur à zéro.',
+        'reserve_transfer_positive' => 'Le montant du transfert entre comptes doit être supérieur à zéro.',
+        'reserve_transfer_reason_required' => 'Le motif du transfert entre comptes est obligatoire.',
+        'reserve_transfer_exceeds_source' => 'Le transfert dépasse le solde disponible du compte source.',
         'payout_no_funds' => 'Aucun fonds n’est disponible pour un paiement à ce propriétaire.',
         'payout_exceeds_balance' => 'Le paiement au propriétaire dépasse le solde disponible.',
         'payout_allocation_failed' => 'Le paiement au propriétaire ne peut pas être entièrement affecté aux crédits nets disponibles.',
@@ -60,5 +63,6 @@ return [
 
     'email' => [
         'tenant_email_missing' => 'Le locataire ne possède pas d’adresse e-mail.',
+        'owner_email_missing' => 'Le propriétaire ne possède pas d’adresse e-mail.',
     ],
 ];

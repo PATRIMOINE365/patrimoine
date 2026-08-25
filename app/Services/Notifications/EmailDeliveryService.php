@@ -16,6 +16,9 @@ use App\Services\ApplicationLocaleService;
 use App\Services\ApplicationPresentationFormatter;
 use App\Services\Documents\InvoiceDocumentService;
 use App\Services\Documents\ReceiptDocumentService;
+use App\Mail\OwnerReserveTransferVoucherMail;
+use App\Models\OwnerTransaction;
+use App\Services\Documents\OwnerReserveTransferVoucherDocumentService;
 use App\Services\Documents\TenantFundTransferVoucherDocumentService;
 use Illuminate\Support\Facades\Mail;
 use RuntimeException;
@@ -40,6 +43,7 @@ class EmailDeliveryService
         private InvoiceDocumentService $invoiceDocuments,
         private ReceiptDocumentService $receiptDocuments,
         private TenantFundTransferVoucherDocumentService $transferVoucherDocuments,
+        private OwnerReserveTransferVoucherDocumentService $ownerReserveTransferDocuments,
         private ApplicationIdentityService $identity,
         private ApplicationPresentationFormatter $formatter,
         private ApplicationLocaleService $locale
@@ -100,6 +104,63 @@ class EmailDeliveryService
                 new TenantFundTransferVoucherMail(
                     debitTransaction: $debitTransaction,
                     creditTransaction: $creditTransaction,
+                    pdfContents: $contents,
+                    pdfFilename: $filename,
+                    managingOrganisation: $this
+                        ->identity
+                        ->managingOrganisation(),
+
+                    formatter: $this->formatter
+                )
+            );
+    }
+
+    /**
+     * V1.0.8: send or resend an owner account transfer voucher.
+     */
+    public function sendOwnerReserveTransferVoucher(
+        OwnerTransaction $transaction
+    ): void {
+        $transaction->loadMissing([
+            'ownerAccount.party',
+        ]);
+
+        $email =
+            trim(
+                (string)
+                $transaction
+                    ->ownerAccount
+                    ->party
+                    ->email
+            );
+
+        if ($email === '') {
+            throw new RuntimeException(
+                __('business.email.owner_email_missing')
+            );
+        }
+
+        $contents =
+            $this->ownerReserveTransferDocuments
+                ->pdf(
+                    $transaction
+                );
+
+        $filename =
+            $this->ownerReserveTransferDocuments
+                ->filename(
+                    $transaction
+                );
+
+        Mail::to(
+            $email
+        )
+            ->locale(
+                $this->locale->language()
+            )
+            ->send(
+                new OwnerReserveTransferVoucherMail(
+                    transaction: $transaction,
                     pdfContents: $contents,
                     pdfFilename: $filename,
                     managingOrganisation: $this

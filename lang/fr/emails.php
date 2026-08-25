@@ -114,4 +114,19 @@ return [
         'fund_security_deposit' => 'Caution',
         'pdf_attached' => 'Votre récépissé de transfert officiel est joint au format PDF.',
     ],
+
+    'owner_reserve_transfer' => [
+        'title' => 'Transfert entre comptes propriétaire',
+        'subject' => 'Bon de transfert entre comptes :number - :organisation',
+        'intro' => 'Veuillez trouver ci-joint le bon relatif à un transfert entre vos comptes tenus chez nous.',
+        'amount_moved' => 'Montant transféré',
+        'voucher' => 'Bon',
+        'transfer_date' => 'Date du transfert',
+        'from_account' => 'De',
+        'to_account' => 'Vers',
+        'payout_account' => 'Compte de retrait (loyers)',
+        'deposit_account' => 'Compte de dépôt / dépenses',
+        'reason' => 'Motif',
+        'pdf_attached' => 'Votre bon de transfert officiel est joint au format PDF.',
+    ],
 ];
