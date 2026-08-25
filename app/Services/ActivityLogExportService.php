@@ -97,6 +97,18 @@ class ActivityLogExportService
                 $event->ip_address
             ),
 
+            'browser' => $this->text(
+                $event->browser
+            ),
+
+            'platform' => $this->text(
+                $event->platform
+            ),
+
+            'device' => $this->text(
+                $event->device
+            ),
+
             'before_values' => $this->structured(
                 $event->before_values
             ),
@@ -138,6 +150,9 @@ class ActivityLogExportService
             'entity_id' => 'Record ID',
             'entity_label' => 'Record',
             'ip_address' => 'IP Address',
+            'browser' => 'Browser',
+            'platform' => 'Platform',
+            'device' => 'Device',
             'before_values' => 'Before Values',
             'after_values' => 'After Values',
             'snapshot' => 'Snapshot',

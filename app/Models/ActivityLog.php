@@ -27,6 +27,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'snapshot',
     'metadata',
     'ip_address',
+    'user_agent',
+    'browser',
+    'platform',
+    'device',
 ])]
 class ActivityLog extends Model
 {

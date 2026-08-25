@@ -16,6 +16,11 @@ use Illuminate\Support\Arr;
  */
 class ActivityLogService
 {
+    public function __construct(
+        private readonly UserAgentContextService $userAgentContext,
+    ) {
+    }
+
     /**
      * Record one meaningful human action.
      *
@@ -39,6 +44,7 @@ class ActivityLogService
         ?string $actorEmail = null,
         ?string $actorRole = null,
         ?string $ipAddress = null,
+        ?string $userAgent = null,
     ): ActivityLog {
         /*
          * Resolve authenticated identity automatically when a request is
@@ -63,6 +69,14 @@ class ActivityLogService
         }
 
         $ipAddress ??= $request?->ip();
+        $userAgent ??= $request?->userAgent();
+
+        /*
+         * Freeze the client context now, exactly like actor identity:
+         * historical events must never be re-interpreted later.
+         */
+        $clientContext =
+            $this->userAgentContext->parse($userAgent);
 
         return ActivityLog::create([
             'user_id' => $actor?->getKey(),
@@ -80,6 +94,12 @@ class ActivityLogService
             'snapshot' => $this->normalize($snapshot),
             'metadata' => $this->normalize($metadata),
             'ip_address' => $ipAddress,
+            'user_agent' => $userAgent === null
+                ? null
+                : mb_substr($userAgent, 0, 1024),
+            'browser' => $clientContext['browser'],
+            'platform' => $clientContext['platform'],
+            'device' => $clientContext['device'],
         ]);
     }
 

@@ -1043,7 +1043,7 @@ export const translations = {
         'activity_log.search':
             'Search',
         'activity_log.search_placeholder':
-            'Search actor, action, record, IP or historical context...',
+            'Search actor, action, record, IP, browser, device or historical context...',
         'activity_log.from':
             'From',
         'activity_log.to':
@@ -1110,6 +1110,14 @@ export const translations = {
             'Email',
         'activity_log.ip_address':
             'IP Address',
+        'activity_log.browser':
+            'Browser',
+        'activity_log.platform':
+            'Platform',
+        'activity_log.device':
+            'Device',
+        'activity_log.user_agent':
+            'User Agent',
         'activity_log.entity':
             'Record',
         'activity_log.before_values':
@@ -3904,7 +3912,7 @@ export const translations = {
         'activity_log.search':
             'Rechercher',
         'activity_log.search_placeholder':
-            'Rechercher un utilisateur, une action, un enregistrement, une adresse IP ou un contexte historique...',
+            'Rechercher un utilisateur, une action, un enregistrement, une adresse IP, un navigateur, un appareil ou un contexte historique...',
         'activity_log.from':
             'Du',
         'activity_log.to':
@@ -3971,6 +3979,14 @@ export const translations = {
             'E-mail',
         'activity_log.ip_address':
             'Adresse IP',
+        'activity_log.browser':
+            'Navigateur',
+        'activity_log.platform':
+            'Plateforme',
+        'activity_log.device':
+            'Appareil',
+        'activity_log.user_agent':
+            'Agent utilisateur',
         'activity_log.entity':
             'Enregistrement',
         'activity_log.before_values':

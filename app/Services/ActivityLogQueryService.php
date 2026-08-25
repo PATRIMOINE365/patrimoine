@@ -202,6 +202,21 @@ class ActivityLogQueryService
                             'like',
                             $pattern
                         )
+                        ->orWhere(
+                            'browser',
+                            'like',
+                            $pattern
+                        )
+                        ->orWhere(
+                            'platform',
+                            'like',
+                            $pattern
+                        )
+                        ->orWhere(
+                            'device',
+                            'like',
+                            $pattern
+                        )
                         ->orWhereRaw(
                             'CAST(before_values AS CHAR) LIKE ?',
                             [$pattern]

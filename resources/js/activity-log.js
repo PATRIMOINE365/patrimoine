@@ -865,6 +865,20 @@ function activityRow(event) {
                                 `
                                 : ''
                         }
+
+                        ${
+                            clientContextSummary(event)
+                                ? `
+                                    <span>
+                                        ${escapeHtml(
+                                            clientContextSummary(
+                                                event
+                                            )
+                                        )}
+                                    </span>
+                                `
+                                : ''
+                        }
                     </div>
                 </div>
 
@@ -888,6 +902,24 @@ function activityRow(event) {
             </div>
         </article>
     `;
+}
+
+/**
+ * Compact "Chrome 128 · Windows · Desktop" line for the event card.
+ *
+ * Older events recorded before client context existed simply omit the
+ * line rather than showing placeholders.
+ */
+function clientContextSummary(
+    event
+) {
+    return [
+        event.browser,
+        event.platform,
+        event.device,
+    ]
+        .filter(Boolean)
+        .join(' · ');
 }
 
 /*
@@ -1202,6 +1234,34 @@ function activityDetailMarkup(
                             'activity_log.ip_address'
                         ),
                         event.ip_address
+                    )}
+
+                    ${detailItem(
+                        translate(
+                            'activity_log.browser'
+                        ),
+                        event.browser
+                    )}
+
+                    ${detailItem(
+                        translate(
+                            'activity_log.platform'
+                        ),
+                        event.platform
+                    )}
+
+                    ${detailItem(
+                        translate(
+                            'activity_log.device'
+                        ),
+                        event.device
+                    )}
+
+                    ${detailItem(
+                        translate(
+                            'activity_log.user_agent'
+                        ),
+                        event.user_agent
                     )}
 
                     ${detailItem(

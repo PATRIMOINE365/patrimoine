@@ -49,6 +49,9 @@ class ActivityLogController extends Controller
                     'entity_id',
                     'entity_label',
                     'ip_address',
+                    'browser',
+                    'platform',
+                    'device',
                     'created_at',
                 ])
                 ->paginate(
