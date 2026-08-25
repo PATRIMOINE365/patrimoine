@@ -1260,6 +1260,7 @@ return [
         'billing_mode_single' => 'Facturer uniquement ce propriétaire',
         'billing_mode_split' => 'Répartir entre tous les propriétaires selon leurs parts',
         'expense_review_title' => 'Vérifier cette dépense',
+        'split_preview_title' => 'Part par propriétaire',
         'expense_review_description' => 'Rien n’est enregistré avant votre confirmation. Chaque propriétaire facturé reçoit la facture détaillée par e-mail.',
         'transfers_description' => 'Mouvements entre le compte de retrait et le compte de dépôt / dépenses, avec leurs bons officiels.',
         'no_transfers' => 'Aucun transfert entre comptes pour le moment.',

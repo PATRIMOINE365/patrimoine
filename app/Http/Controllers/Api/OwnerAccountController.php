@@ -160,6 +160,7 @@ class OwnerAccountController extends Controller
     ): JsonResponse {
         $ownerAccount->load([
             'party.buildingOwnerships.building.units',
+            'party.buildingOwnerships.building.ownerships.party',
             'payouts',
         ]);
 
@@ -181,6 +182,25 @@ class OwnerAccountController extends Controller
                                 'id' => $building->id,
 
                                 'name' => $building->name,
+
+                                /*
+                                 * V1.0.8: every co-owner and share, so
+                                 * the expense review can preview the
+                                 * split before anything is recorded.
+                                 */
+                                'ownerships' => $building
+                                    ->ownerships
+                                    ->map(
+                                        fn ($coOwnership): array => [
+                                            'party_id' => $coOwnership->party_id,
+
+                                            'name' => $coOwnership->party->legal_name
+                                                ?? $coOwnership->party->name,
+
+                                            'ownership_percentage' => $coOwnership->ownership_percentage,
+                                        ]
+                                    )
+                                    ->values(),
 
                                 'location' => $building->location,
 

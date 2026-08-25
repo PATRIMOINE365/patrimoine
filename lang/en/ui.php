@@ -1110,6 +1110,7 @@ return [
         'billing_mode_single' => 'Bill this owner only',
         'billing_mode_split' => 'Split across all owners by ownership share',
         'expense_review_title' => 'Verify this expense',
+        'split_preview_title' => 'Share per owner',
         'expense_review_description' => 'Nothing is recorded until you confirm. Each billed owner receives the itemized bill by email.',
         'transfers_description' => 'Movements between the Payout account and the Deposit / Expense account, with their official vouchers.',
         'no_transfers' => 'No account transfers recorded yet.',

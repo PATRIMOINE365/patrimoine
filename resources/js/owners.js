@@ -4297,6 +4297,8 @@ function enterExpenseBillReview() {
                 </span>
             </div>
         </div>
+
+        ${renderExpenseSplitPreview(payload)}
     `;
 
     document
@@ -4343,6 +4345,190 @@ function enterExpenseBillReview() {
             'pm-hide'
         );
 }
+
+/**
+ * V1.0.8: per-owner share table for split mode, using the same
+ * largest-remainder proration the server applies, so the preview
+ * matches the recorded bills to the unit.
+ *
+ * @param {object} payload
+ * @returns {string}
+ */
+function renderExpenseSplitPreview(
+    payload
+) {
+    if (payload.split !== 'split') {
+        return '';
+    }
+
+    const ownerships =
+        (
+            selectedOwner?.properties
+            ?? []
+        )
+            .map(
+                (property) =>
+                    property.building
+                    ?? property
+            )
+            .find(
+                (building) =>
+                    Number(building.id)
+                    === Number(payload.building_id)
+            )?.ownerships
+        ?? [];
+
+    if (ownerships.length === 0) {
+        return '';
+    }
+
+    const totalPercentage =
+        ownerships.reduce(
+            (sum, ownership) =>
+                sum
+                + Number(
+                    ownership.ownership_percentage
+                    ?? 0
+                ),
+            0
+        );
+
+    if (totalPercentage <= 0) {
+        return '';
+    }
+
+    /*
+     * Prorate each line independently with largest-remainder rounding,
+     * mirroring OwnerExpenseBillingService::recordSplit exactly.
+     */
+    const shares =
+        ownerships.map(
+            () => 0
+        );
+
+    payload.lines.forEach(
+        (line) => {
+            const floors = [];
+            const fractions = [];
+            let allocated = 0;
+
+            ownerships.forEach(
+                (ownership, index) => {
+                    const exact =
+                        line.amount
+                        * Number(
+                            ownership.ownership_percentage
+                        )
+                        / totalPercentage;
+
+                    floors[index] =
+                        Math.floor(exact);
+
+                    fractions[index] =
+                        exact - floors[index];
+
+                    allocated +=
+                        floors[index];
+                }
+            );
+
+            let remainder =
+                line.amount - allocated;
+
+            fractions
+                .map(
+                    (fraction, index) => ({
+                        fraction,
+                        index,
+                    })
+                )
+                .sort(
+                    (left, right) =>
+                        right.fraction
+                        - left.fraction
+                )
+                .forEach(
+                    ({ index }) => {
+                        if (remainder > 0) {
+                            floors[index] += 1;
+                            remainder -= 1;
+                        }
+                    }
+                );
+
+            floors.forEach(
+                (share, index) => {
+                    shares[index] += share;
+                }
+            );
+        }
+    );
+
+    return `
+        <div class="mt-5">
+            <h4
+                class="
+                    text-xs font-semibold uppercase
+                    tracking-wide
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'owners.split_preview_title'
+                    )
+                )}
+            </h4>
+
+            <div
+                class="
+                    mt-2 overflow-hidden rounded-xl
+                    border border-[var(--pm-border)]
+                "
+            >
+                ${ownerships
+                    .map(
+                        (ownership, index) => `
+                            <div
+                                class="
+                                    flex items-center justify-between gap-4
+                                    border-b border-[var(--pm-border-subtle)]
+                                    px-4 py-2.5 text-sm
+                                    last:border-b-0
+                                "
+                            >
+                                <span class="text-[var(--pm-text-secondary)]">
+                                    ${escapeHtml(
+                                        ownership.name
+                                        ?? ''
+                                    )}
+                                    <span class="text-xs text-[var(--pm-text-muted)]">
+                                        (${escapeHtml(
+                                            String(
+                                                Number(
+                                                    ownership.ownership_percentage
+                                                )
+                                            )
+                                        )}%)
+                                    </span>
+                                </span>
+
+                                <span class="font-medium text-[var(--pm-text)]">
+                                    ${escapeHtml(
+                                        formatCurrency(
+                                            shares[index]
+                                        )
+                                    )}
+                                </span>
+                            </div>
+                        `
+                    )
+                    .join('')}
+            </div>
+        </div>
+    `;
+}
+
 
 /**
  * Return the drawer to the editable form.
