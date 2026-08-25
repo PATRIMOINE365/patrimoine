@@ -3,16 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ApplySecurityDepositRequest;
 use App\Http\Requests\SettleSecurityDepositRequest;
 use App\Http\Requests\StoreSecurityDepositDeductionRequest;
-use App\Models\Invoice;
 use App\Models\Lease;
 use App\Models\SecurityDepositDeduction;
 use App\Models\TenantFundAccount;
 use App\Services\ActivityLogService;
 use App\Services\FinancialActivitySnapshotService;
-use App\Services\SecurityDepositApplicationService;
 use App\Services\SecurityDepositService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
@@ -222,78 +219,6 @@ class SecurityDepositController extends Controller
 
         return response()->json(
             data: $deduction,
-            status: 201
-        );
-    }
-
-    /**
-     * Manually apply held Security Deposit to an outstanding Lease debt.
-     */
-    public function apply(
-        ApplySecurityDepositRequest $request,
-        Lease $lease,
-        SecurityDepositApplicationService $service,
-        ActivityLogService $activityLog
-    ): JsonResponse {
-        $validated = $request->validated();
-
-        $invoice = Invoice::query()
-            ->findOrFail(
-                $validated['invoice_id']
-            );
-
-        try {
-            $application = $service->apply(
-                lease: $lease,
-                invoice: $invoice,
-                amount: (int) $validated['amount'],
-                transactionDate: $validated['transaction_date'],
-                notes: $validated['notes'] ?? null
-            );
-        } catch (RuntimeException $exception) {
-            throw ValidationException::withMessages([
-                'security_deposit' => [
-                    $exception->getMessage(),
-                ],
-            ]);
-        }
-
-        $application->load([
-            'lease',
-            'invoice',
-            'tenantFundTransaction.account',
-        ]);
-
-        $activityLog->record(
-            action: 'security_deposit.applied',
-            request: $request,
-            entityType: 'security_deposit_application',
-            entityId: $application->id,
-            entityLabel: 'Security Deposit application #'
-                .$application->id,
-            snapshot: [
-                'id' => (int) $application->id,
-
-                'lease_id' => (int) $application->lease_id,
-
-                'invoice_id' => (int) $application->invoice_id,
-
-                'invoice_number' => $application->invoice?->invoice_number,
-
-                'invoice_type' => $application->invoice?->type,
-
-                'tenant_fund_transaction_id' => (int) $application->tenant_fund_transaction_id,
-
-                'amount' => (int) $application->amount,
-
-                'application_date' => $application->application_date?->toDateString(),
-
-                'notes' => $application->notes,
-            ],
-        );
-
-        return response()->json(
-            data: $application,
             status: 201
         );
     }

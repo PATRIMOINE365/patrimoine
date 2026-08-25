@@ -116,13 +116,6 @@ const CAPABILITY_SELECTORS = {
         '#tenant-transfer-form',
         '[data-transfer-source]',
 
-        /*
-         * Applying a held security deposit is finance work like the three
-         * drawers above; gate it declaratively too (the JS guard in
-         * tenants.js remains as defence in depth).
-         */
-        '[data-apply-security-deposit-header]',
-        '#tenant-security-application-form',
     ],
 
     delete_records: [
