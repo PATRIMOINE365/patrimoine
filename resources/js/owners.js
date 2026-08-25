@@ -3995,6 +3995,10 @@ function populateExpenseBillBuildings() {
             ? selectedOwner.properties
             : [];
 
+    /*
+     * Owner detail serializes ownerships: the Building sits one level
+     * down at property.building.{id,name}.
+     */
     select.innerHTML =
         `<option value="">${escapeHtml(
             translate(
@@ -4005,10 +4009,12 @@ function populateExpenseBillBuildings() {
             .map(
                 (property) => `
                     <option value="${escapeHtml(
-                        property.id
+                        property.building?.id
+                        ?? property.id
                     )}">
                         ${escapeHtml(
-                            property.name
+                            property.building?.name
+                            ?? property.name
                             ?? ''
                         )}
                     </option>
@@ -4159,11 +4165,17 @@ function enterExpenseBillReview() {
         (
             selectedOwner?.properties
             ?? []
-        ).find(
-            (property) =>
-                Number(property.id)
-                === Number(payload.building_id)
-        )?.name
+        )
+            .map(
+                (property) =>
+                    property.building
+                    ?? property
+            )
+            .find(
+                (building) =>
+                    Number(building.id)
+                    === Number(payload.building_id)
+            )?.name
         ?? '';
 
     const total =
