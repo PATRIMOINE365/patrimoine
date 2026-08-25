@@ -100,11 +100,11 @@ return [
         'ignore' => 'If you did not request this reset, you can ignore this email.',
     ],
     'transfer_voucher' => [
-        'title' => 'Fund Transfer Voucher',
-        'subject' => 'Fund Transfer Voucher :number - :organisation',
-        'intro' => 'Please find attached the voucher for a transfer between funds we hold on your behalf.',
+        'title' => 'Transfer Receipt',
+        'subject' => 'Transfer Receipt :number - :organisation',
+        'intro' => 'Please find attached the receipt for a transfer between funds we hold on your behalf.',
         'amount_moved' => 'Amount Moved',
-        'voucher' => 'Voucher',
+        'voucher' => 'Receipt',
         'transfer_date' => 'Transfer Date',
         'from_fund' => 'From',
         'to_fund' => 'To',
@@ -112,6 +112,6 @@ return [
         'fund_rent_reserve' => 'Rent Reserve',
         'fund_consumable_advance' => 'Consumable Advance',
         'fund_security_deposit' => 'Security Deposit',
-        'pdf_attached' => 'Your official transfer voucher is attached as a PDF.',
+        'pdf_attached' => 'Your official transfer receipt is attached as a PDF.',
     ],
 ];

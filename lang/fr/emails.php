@@ -100,11 +100,11 @@ return [
         'ignore' => 'Si vous n’avez pas demandé cette réinitialisation, vous pouvez ignorer cet e-mail.',
     ],
     'transfer_voucher' => [
-        'title' => 'Bon de transfert de fonds',
-        'subject' => 'Bon de transfert de fonds :number - :organisation',
-        'intro' => 'Veuillez trouver ci-joint le bon relatif à un transfert entre les fonds que nous détenons pour votre compte.',
+        'title' => 'Récépissé de transfert',
+        'subject' => 'Récépissé de transfert :number - :organisation',
+        'intro' => 'Veuillez trouver ci-joint le récépissé relatif à un transfert entre les fonds que nous détenons pour votre compte.',
         'amount_moved' => 'Montant transféré',
-        'voucher' => 'Bon',
+        'voucher' => 'Récépissé',
         'transfer_date' => 'Date du transfert',
         'from_fund' => 'De',
         'to_fund' => 'Vers',
@@ -112,6 +112,6 @@ return [
         'fund_rent_reserve' => 'Réserve de loyer',
         'fund_consumable_advance' => 'Avance consommable',
         'fund_security_deposit' => 'Caution',
-        'pdf_attached' => 'Votre bon de transfert officiel est joint au format PDF.',
+        'pdf_attached' => 'Votre récépissé de transfert officiel est joint au format PDF.',
     ],
 ];

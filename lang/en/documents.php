@@ -33,7 +33,7 @@ return [
     ],
     'adjustment_voucher' => [
         'title' => 'Adjustment Voucher',
-        'voucher_number' => 'Voucher Number',
+        'voucher_number' => 'Receipt Number',
         'date' => 'Date',
         'context' => 'Context',
         'account' => 'Account',
@@ -45,8 +45,8 @@ return [
     ],
 
     'tenant_fund_transfer_voucher' => [
-        'title' => 'Tenant Fund Transfer Voucher',
-        'voucher_number' => 'Voucher Number',
+        'title' => 'Transfer Receipt',
+        'voucher_number' => 'Receipt Number',
         'date' => 'Date',
         'tenant' => 'Tenant',
         'source_account' => 'Source Account',

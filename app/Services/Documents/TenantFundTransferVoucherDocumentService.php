@@ -78,7 +78,7 @@ class TenantFundTransferVoucherDocumentService
         TenantFundTransaction $debitTransaction
     ): string {
         return sprintf(
-            'Patrimoine-Tenant-Fund-Transfer-Voucher-%s.pdf',
+            'Patrimoine-Transfer-Receipt-%s.pdf',
             $this->safeFilenamePart(
                 (string) $debitTransaction->reference
             )

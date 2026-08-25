@@ -470,21 +470,21 @@ export const translations = {
         'tenants.transfers':
             'Transfers',
         'tenants.transfers_description':
-            'Fund-to-fund transfers with their official vouchers.',
+            'Fund-to-fund transfers with their official receipts.',
         'tenants.no_transfers':
             'No transfers recorded yet.',
         'tenants.voucher':
-            'Voucher',
+            'Receipt',
         'tenants.from_fund':
             'From',
         'tenants.to_fund':
             'To',
         'tenants.unable_to_open_voucher':
-            'Unable to open the transfer voucher.',
+            'Unable to open the transfer receipt.',
         'tenants.unable_to_resend_voucher':
-            'Unable to resend the transfer voucher.',
+            'Unable to resend the transfer receipt.',
         'tenants.download_voucher':
-            'Download voucher',
+            'Download receipt',
         'tenants.download_receipt':
             'Download receipt',
         'tenants.unable_to_open_document':
@@ -3161,21 +3161,21 @@ export const translations = {
         'tenants.transfers':
             'Transferts',
         'tenants.transfers_description':
-            'Transferts entre fonds avec leurs bons officiels.',
+            'Transferts entre fonds avec leurs récépissés officiels.',
         'tenants.no_transfers':
             'Aucun transfert enregistré pour le moment.',
         'tenants.voucher':
-            'Bon',
+            'Récépissé',
         'tenants.from_fund':
             'De',
         'tenants.to_fund':
             'Vers',
         'tenants.unable_to_open_voucher':
-            "Impossible d'ouvrir le bon de transfert.",
+            "Impossible d'ouvrir le récépissé de transfert.",
         'tenants.unable_to_resend_voucher':
-            'Impossible de renvoyer le bon de transfert.',
+            'Impossible de renvoyer le récépissé de transfert.',
         'tenants.download_voucher':
-            'Télécharger le justificatif',
+            'Télécharger le récépissé',
         'tenants.download_receipt':
             'Télécharger le reçu',
         'tenants.unable_to_open_document':

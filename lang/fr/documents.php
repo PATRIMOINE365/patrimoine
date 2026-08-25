@@ -33,7 +33,7 @@ return [
     ],
     'adjustment_voucher' => [
         'title' => 'Bon d’ajustement',
-        'voucher_number' => 'Numéro du bon',
+        'voucher_number' => 'Numéro du récépissé',
         'date' => 'Date',
         'context' => 'Contexte',
         'account' => 'Compte',
@@ -45,8 +45,8 @@ return [
     ],
 
     'tenant_fund_transfer_voucher' => [
-        'title' => 'Bon de transfert de fonds locataire',
-        'voucher_number' => 'Numéro du bon',
+        'title' => 'Récépissé de transfert',
+        'voucher_number' => 'Numéro du récépissé',
         'date' => 'Date',
         'tenant' => 'Locataire',
         'source_account' => 'Compte source',

@@ -462,7 +462,7 @@ class TenantFundTransferApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath(
                 'message',
-                'Transfer voucher email sent successfully.'
+                'Transfer receipt email sent successfully.'
             );
 
         \Illuminate\Support\Facades\Mail::assertSent(
