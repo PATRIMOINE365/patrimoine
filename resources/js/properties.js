@@ -33,6 +33,7 @@ import {
     parseJsonResponse,
     setText,
     translate,
+    requireDangerConfirmation,
 } from './core.js';
 
 /*
@@ -5202,6 +5203,14 @@ async function submitDeletePropertyForm(
                 'properties.deleting'
             );
 
+        if (
+            ! await requireDangerConfirmation({
+                entityLabel: String(deletingPropertyName ?? ""),
+            })
+        ) {
+            return;
+        }
+
         const response =
             await apiRequest(
                 `/api/buildings/${deletingPropertyId}`,
@@ -5477,6 +5486,14 @@ async function submitDeleteUnitForm(
             translate(
                 'properties.deleting'
             );
+
+        if (
+            ! await requireDangerConfirmation({
+                entityLabel: String(deletingUnitName ?? ""),
+            })
+        ) {
+            return;
+        }
 
         const response =
             await apiRequest(

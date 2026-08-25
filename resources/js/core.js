@@ -877,6 +877,377 @@ export function initializeMoneyInputs() {
     );
 }
 
+/*
+|--------------------------------------------------------------------------
+| V1.0.8 Danger confirmation (irreversible deletions)
+|--------------------------------------------------------------------------
+|
+| Every delete flow calls requireDangerConfirmation() as its FINAL gate:
+| the operator must tick an explicit risk acknowledgement AND re-type
+| their password, which the server verifies via auth/confirm-password
+| before the browser is allowed to send the DELETE.
+|
+*/
+
+let dangerDialogResolve = null;
+
+function ensureDangerDialog() {
+    if (
+        document.getElementById(
+            'pm-danger-dialog'
+        )
+    ) {
+        return;
+    }
+
+    const wrapper =
+        document.createElement(
+            'div'
+        );
+
+    wrapper.id = 'pm-danger-dialog';
+
+    wrapper.className =
+        'pm-hide fixed inset-0 z-[90] flex items-center justify-center p-4';
+
+    wrapper.innerHTML = `
+        <div
+            id="pm-danger-backdrop"
+            class="absolute inset-0 bg-black/50"
+        ></div>
+
+        <div
+            class="
+                relative w-full max-w-md
+                rounded-2xl border
+                border-[var(--pm-danger-border)]
+                bg-[var(--pm-surface)] p-6 shadow-2xl
+            "
+        >
+            <h3
+                class="
+                    text-base font-semibold
+                    text-[var(--pm-danger-text)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'danger.title'
+                    )
+                )}
+            </h3>
+
+            <p
+                id="pm-danger-entity"
+                class="
+                    mt-2 text-sm
+                    text-[var(--pm-text-secondary)]
+                "
+            ></p>
+
+            <div
+                id="pm-danger-error"
+                class="
+                    mt-3 hidden rounded-lg
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-3 py-2
+                    text-sm text-[var(--pm-danger-text)]
+                "
+            ></div>
+
+            <label
+                class="
+                    mt-4 flex items-start gap-2.5
+                    text-sm text-[var(--pm-text-secondary)]
+                "
+            >
+                <input
+                    id="pm-danger-acknowledge"
+                    type="checkbox"
+                    class="mt-0.5 h-4 w-4"
+                >
+
+                <span>
+                    ${escapeHtml(
+                        translate(
+                            'danger.acknowledgement'
+                        )
+                    )}
+                </span>
+            </label>
+
+            <div class="mt-4">
+                <label
+                    for="pm-danger-password"
+                    class="pm-field-label"
+                >
+                    ${escapeHtml(
+                        translate(
+                            'danger.password_label'
+                        )
+                    )}
+                </label>
+
+                <input
+                    id="pm-danger-password"
+                    type="password"
+                    autocomplete="current-password"
+                    class="pm-input"
+                >
+            </div>
+
+            <div class="mt-5 flex justify-end gap-2">
+                <button
+                    id="pm-danger-cancel"
+                    type="button"
+                    class="pm-button-secondary"
+                >
+                    ${escapeHtml(
+                        translate(
+                            'danger.cancel'
+                        )
+                    )}
+                </button>
+
+                <button
+                    id="pm-danger-confirm"
+                    type="button"
+                    class="pm-button-danger"
+                    disabled
+                >
+                    ${escapeHtml(
+                        translate(
+                            'danger.confirm'
+                        )
+                    )}
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(
+        wrapper
+    );
+
+    const refreshConfirmState = () => {
+        const confirm =
+            document.getElementById(
+                'pm-danger-confirm'
+            );
+
+        if (confirm) {
+            confirm.disabled =
+                ! document.getElementById(
+                    'pm-danger-acknowledge'
+                )?.checked
+                || ! document.getElementById(
+                    'pm-danger-password'
+                )?.value;
+        }
+    };
+
+    document
+        .getElementById(
+            'pm-danger-acknowledge'
+        )
+        ?.addEventListener(
+            'change',
+            refreshConfirmState
+        );
+
+    document
+        .getElementById(
+            'pm-danger-password'
+        )
+        ?.addEventListener(
+            'input',
+            refreshConfirmState
+        );
+
+    const close = (result) => {
+        wrapper.classList.add(
+            'pm-hide'
+        );
+
+        const resolve =
+            dangerDialogResolve;
+
+        dangerDialogResolve = null;
+
+        resolve?.(result);
+    };
+
+    document
+        .getElementById(
+            'pm-danger-cancel'
+        )
+        ?.addEventListener(
+            'click',
+            () => close(false)
+        );
+
+    document
+        .getElementById(
+            'pm-danger-backdrop'
+        )
+        ?.addEventListener(
+            'click',
+            () => close(false)
+        );
+
+    document
+        .getElementById(
+            'pm-danger-confirm'
+        )
+        ?.addEventListener(
+            'click',
+            async () => {
+                const confirmButton =
+                    document.getElementById(
+                        'pm-danger-confirm'
+                    );
+
+                const errorBox =
+                    document.getElementById(
+                        'pm-danger-error'
+                    );
+
+                errorBox?.classList.add(
+                    'hidden'
+                );
+
+                try {
+                    if (confirmButton) {
+                        confirmButton.disabled = true;
+                    }
+
+                    const response =
+                        await apiRequest(
+                            '/api/auth/confirm-password',
+                            {
+                                method: 'POST',
+
+                                body: JSON.stringify({
+                                    password:
+                                        document.getElementById(
+                                            'pm-danger-password'
+                                        )?.value
+                                        ?? '',
+                                }),
+                            }
+                        );
+
+                    await parseJsonResponse(
+                        response
+                    );
+
+                    close(true);
+                } catch (error) {
+                    if (errorBox) {
+                        errorBox.textContent =
+                            error instanceof Error
+                                ? error.message
+                                : translate(
+                                    'danger.verification_failed'
+                                );
+
+                        errorBox.classList.remove(
+                            'hidden'
+                        );
+                    }
+                } finally {
+                    if (confirmButton) {
+                        confirmButton.disabled = false;
+                    }
+                }
+            }
+        );
+}
+
+/**
+ * Final gate before an irreversible deletion.
+ *
+ * Resolves true only after the operator ticks the acknowledgement AND
+ * their password is verified server-side. Resolves false on cancel.
+ *
+ * @param {{entityLabel?: string}} options
+ * @returns {Promise<boolean>}
+ */
+export function requireDangerConfirmation(
+    options = {}
+) {
+    ensureDangerDialog();
+
+    const wrapper =
+        document.getElementById(
+            'pm-danger-dialog'
+        );
+
+    const entity =
+        document.getElementById(
+            'pm-danger-entity'
+        );
+
+    if (entity) {
+        entity.textContent =
+            options.entityLabel
+                ? translate(
+                    'danger.entity_prefix'
+                ) + ' ' + options.entityLabel
+                : translate(
+                    'danger.entity_generic'
+                );
+    }
+
+    const acknowledge =
+        document.getElementById(
+            'pm-danger-acknowledge'
+        );
+
+    const password =
+        document.getElementById(
+            'pm-danger-password'
+        );
+
+    if (acknowledge) {
+        acknowledge.checked = false;
+    }
+
+    if (password) {
+        password.value = '';
+    }
+
+    document
+        .getElementById(
+            'pm-danger-error'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    const confirm =
+        document.getElementById(
+            'pm-danger-confirm'
+        );
+
+    if (confirm) {
+        confirm.disabled = true;
+    }
+
+    wrapper?.classList.remove(
+        'pm-hide'
+    );
+
+    password?.focus();
+
+    return new Promise(
+        (resolve) => {
+            dangerDialogResolve =
+                resolve;
+        }
+    );
+}
+
 export function formatDate(
     value
 ) {

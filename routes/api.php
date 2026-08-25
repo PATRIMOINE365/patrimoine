@@ -164,6 +164,11 @@ Route::middleware('auth:sanctum')->group(
         );
 
         Route::post(
+            'auth/confirm-password',
+            [AuthController::class, 'confirmPassword']
+        )->middleware('throttle:5,1');
+
+        Route::post(
             'auth/logout',
             [AuthController::class, 'logout']
         );

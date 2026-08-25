@@ -18,6 +18,7 @@ import {
     nullableFormValue,
     parseJsonResponse,
     translate,
+    requireDangerConfirmation,
 } from './core.js';
 
 let userSearchTimer =
@@ -1537,6 +1538,14 @@ async function deleteUser(
 
     try {
         hideUsersError();
+
+        if (
+            ! await requireDangerConfirmation({
+                entityLabel: String(user.name ?? user.email ?? ''),
+            })
+        ) {
+            return;
+        }
 
         const response =
             await apiRequest(

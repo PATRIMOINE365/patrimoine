@@ -42,6 +42,7 @@ import {
     setText,
     translate,
     wireDrawer,
+    requireDangerConfirmation,
 } from './core.js';
 
 /*
@@ -2198,6 +2199,14 @@ async function confirmDeleteParty() {
                 translate(
                     'parties.deleting_party'
                 );
+        }
+
+        if (
+            ! await requireDangerConfirmation({
+                entityLabel: String(deletingPartyName ?? ""),
+            })
+        ) {
+            return;
         }
 
         const response =

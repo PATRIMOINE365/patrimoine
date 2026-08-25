@@ -1811,4 +1811,15 @@ return [
         'release_notes_title' => 'What\'s new in Patrimoine v{release}',
         'release_notes_body' => 'See what changed in this update.',
     ],
+
+    'danger' => [
+        'title' => 'Confirm irreversible deletion',
+        'entity_prefix' => 'You are about to permanently delete:',
+        'entity_generic' => 'You are about to permanently delete this record.',
+        'acknowledgement' => 'I understand this action is irreversible, that the record and its history cannot be recovered, and I accept the risk.',
+        'password_label' => 'Enter your password to confirm',
+        'cancel' => 'Cancel',
+        'confirm' => 'Delete permanently',
+        'verification_failed' => 'Password verification failed.',
+    ],
 ];

@@ -39,6 +39,7 @@ import {
     translate,
     parseMoneyInput,
     formatMoneyDigits,
+    requireDangerConfirmation,
 } from './core.js';
 
 import {

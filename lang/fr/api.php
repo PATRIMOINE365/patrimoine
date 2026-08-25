@@ -2,6 +2,7 @@
 
 return [
     'auth' => [
+        'password_confirmation_failed' => 'Le mot de passe est incorrect.',
         'account_disabled' => 'Ce compte a été désactivé.',
         'setup_required' => 'Terminez la configuration de votre compte avant de vous connecter.',
         'invalid_credentials' => 'Les identifiants fournis sont incorrects.',

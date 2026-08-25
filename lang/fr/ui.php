@@ -1811,4 +1811,15 @@ return [
         'release_notes_title' => 'Nouveautés de Patrimoine v{release}',
         'release_notes_body' => 'Découvrez les changements de cette mise à jour.',
     ],
+
+    'danger' => [
+        'title' => 'Confirmer la suppression irréversible',
+        'entity_prefix' => 'Vous êtes sur le point de supprimer définitivement :',
+        'entity_generic' => 'Vous êtes sur le point de supprimer définitivement cet enregistrement.',
+        'acknowledgement' => 'Je comprends que cette action est irréversible, que l’enregistrement et son historique ne pourront pas être récupérés, et j’en accepte le risque.',
+        'password_label' => 'Saisissez votre mot de passe pour confirmer',
+        'cancel' => 'Annuler',
+        'confirm' => 'Supprimer définitivement',
+        'verification_failed' => 'La vérification du mot de passe a échoué.',
+    ],
 ];

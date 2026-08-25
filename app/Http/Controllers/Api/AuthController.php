@@ -443,6 +443,36 @@ class AuthController extends Controller
     /**
      * Revoke the Sanctum token used for the current API request.
      */
+    /**
+     * V1.0.8: re-verify the CURRENT user's password before an
+     * irreversible action. The browser calls this from the shared
+     * danger-confirmation dialog immediately before a DELETE.
+     */
+    public function confirmPassword(
+        \Illuminate\Http\Request $request
+    ): \Illuminate\Http\JsonResponse {
+        $validated = $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        if (
+            ! \Illuminate\Support\Facades\Hash::check(
+                $validated['password'],
+                $request->user()->password
+            )
+        ) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'password' => [
+                    __('api.auth.password_confirmation_failed'),
+                ],
+            ]);
+        }
+
+        return response()->json([
+            'confirmed' => true,
+        ]);
+    }
+
     public function logout(
         Request $request,
         ActivityLogService $activityLog
