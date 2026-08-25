@@ -639,6 +639,12 @@ const NOTIFICATION_LINKS = {
     rent_due_soon:
         '/dashboard',
 
+    expenses_unpaid:
+        '/tenants',
+
+    owner_bills_unpaid:
+        '/owners',
+
     leases_expiring:
         '/leases',
 

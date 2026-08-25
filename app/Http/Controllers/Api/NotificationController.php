@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
  *
  * - overdue rent (count + total outstanding)
  * - invoices becoming due within 7 days
+ * - unpaid tenant expense invoices and owner expense bills (V1.0.8)
  * - leases expiring within 90 days
  * - scheduled rent increments effective within 60 days
  * - the release announcement (existing last_seen_release mechanism)
@@ -53,6 +54,36 @@ class NotificationController extends Controller
                 'count' => $upcoming->count(),
                 'amount' => $upcoming->sum(
                     fn ($invoice): int => $invoice->outstandingAmount()
+                ),
+            ];
+        }
+
+        /*
+         * V1.0.8: expenses stopped settling themselves — surface every
+         * open expense receivable so it gets paid through the Pay flow.
+         */
+        $unpaidExpenses = $dashboard->unpaidExpenseInvoices();
+
+        if ($unpaidExpenses->isNotEmpty()) {
+            $notifications[] = [
+                'kind' => 'expenses_unpaid',
+                'severity' => 'warning',
+                'count' => $unpaidExpenses->count(),
+                'amount' => $unpaidExpenses->sum(
+                    fn ($invoice): int => $invoice->outstandingAmount()
+                ),
+            ];
+        }
+
+        $unpaidBills = $dashboard->unpaidOwnerExpenseBills();
+
+        if ($unpaidBills->isNotEmpty()) {
+            $notifications[] = [
+                'kind' => 'owner_bills_unpaid',
+                'severity' => 'warning',
+                'count' => $unpaidBills->count(),
+                'amount' => $unpaidBills->sum(
+                    fn ($bill): int => $bill->outstandingAmount()
                 ),
             ];
         }

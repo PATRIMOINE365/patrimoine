@@ -15,6 +15,25 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.8',
+            'date' => '2026-08-26',
+            'title' => 'Dépenses payables, comptes propriétaires et documents plus rapides',
+            'changes' => [
+                'L\'argent du propriétaire est désormais réparti sur deux comptes : le compte Retraits (issu des loyers, retirable) et le compte Dépôts/Dépenses, avec des transferts entre eux et des récépissés imprimables.',
+                'Les dépenses ne se règlent plus toutes seules : une dépense locataire crée une facture EXP détaillée et une facture de dépenses propriétaire reste impayée jusqu\'à son paiement explicite.',
+                'Nouvelles sections Dépenses sur les pages Locataires et Propriétaires, avec l\'état de paiement de chaque document.',
+                'Bouton Payer sur les factures : réglez tout montant depuis le compte de votre choix (comptes de fonds du locataire, ou compte Dépôts/Retraits du propriétaire) avec une étape de vérification avant enregistrement.',
+                'Les paiements ainsi enregistrés peuvent être annulés : l\'annulation reverse l\'argent, passe une contre-écriture immuable au journal et est entièrement tracée.',
+                'Reçus de paiement : les factures payées offrent un reçu téléchargeable listant chaque paiement.',
+                'Tiroir de dépenses propriétaire : facturez un propriétaire directement ou répartissez entre tous les propriétaires d\'un immeuble selon leur pourcentage ; chaque copropriétaire reçoit sa propre facture par e-mail.',
+                'Les dépôts propriétaires enregistrent leur objet, et les reçus de dépôt s\'ouvrent de manière fiable.',
+                'La création de bail gagne une étape de vérification, des préréglages de durée et de préavis, et des sélecteurs de locataire/agent avec recherche ; les trois comptes de fonds du locataire sont créés avec le bail.',
+                'Les suppressions irréversibles exigent désormais une confirmation saisie et votre mot de passe.',
+                'Documents nettement plus rapides : des PDF jusqu\'à 36 fois plus légers, ouverts nativement dans un onglet du navigateur.',
+                'La cloche de notifications affiche aussi les factures de dépenses impayées, côté locataires comme côté propriétaires.',
+            ],
+        ],
+        [
             'version' => '1.0.7',
             'date' => '2026-08-22',
             'title' => 'Comptes, documents partout et restauration des données',

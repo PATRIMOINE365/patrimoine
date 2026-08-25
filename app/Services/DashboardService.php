@@ -6,6 +6,7 @@ use App\Models\Building;
 use App\Models\Invoice;
 use App\Models\Lease;
 use App\Models\OwnerAccount;
+use App\Models\OwnerExpenseBill;
 use App\Models\OwnerTransaction;
 use App\Models\Payment;
 use App\Models\RentIncrement;
@@ -391,6 +392,46 @@ class DashboardService
      *
      * @return Collection<int, Invoice>
      */
+    /**
+     * V1.0.8: unpaid tenant expense Invoices.
+     *
+     * Expense invoices fall due on their expense date, so any open
+     * balance is immediately actionable through the Pay flow.
+     */
+    public function unpaidExpenseInvoices()
+    {
+        return Invoice::query()
+            ->with([
+                'lease.tenant',
+                'lease.unit.building',
+            ])
+            ->where('type', 'expense')
+            ->whereIn('status', ['issued', 'partial'])
+            ->orderBy('due_date')
+            ->orderBy('id')
+            ->get()
+            ->filter(
+                fn (Invoice $invoice): bool => $invoice->outstandingAmount() > 0
+            )
+            ->values();
+    }
+
+    /**
+     * V1.0.8: owner expense bills that still carry an unpaid balance.
+     */
+    public function unpaidOwnerExpenseBills()
+    {
+        return OwnerExpenseBill::query()
+            ->with('ownerAccount.party')
+            ->orderBy('bill_date')
+            ->orderBy('id')
+            ->get()
+            ->filter(
+                fn (OwnerExpenseBill $bill): bool => $bill->outstandingAmount() > 0
+            )
+            ->values();
+    }
+
     public function upcomingInvoices(
         Carbon $asOfDate,
         int $days = 7

@@ -19,6 +19,25 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.8',
+            'date' => '2026-08-26',
+            'title' => 'Payable expenses, owner accounts, and faster documents',
+            'changes' => [
+                'Owner money now lives in two accounts: the Payout account (rent-derived, withdrawable) and the Deposit/Expense account, with transfers between them and printable transfer receipts.',
+                'Expenses no longer settle themselves: a tenant expense creates an itemized EXP invoice and an owner expense bill stays unpaid until it is explicitly paid.',
+                'New Expenses sections on the Tenant and Owner pages list these documents with their payment state.',
+                'Pay button on invoices and bills: settle any amount from a chosen account (tenant fund accounts, or the owner\'s Deposit/Payout account) with a review step before recording.',
+                'Payments made this way can be cancelled: the cancellation reverts the money, posts an immutable journal reversal and is fully activity-logged.',
+                'Payment receipts: paid invoices and bills offer a downloadable receipt listing every payment.',
+                'Owner expense drawer: bill one owner directly or split across all owners of a building by ownership percentage; each co-owner gets their own emailed bill.',
+                'Owner deposits record their purpose, and deposit receipts open reliably.',
+                'Lease creation gained a verification review, duration and notice presets, and searchable tenant/agent pickers; all three tenant fund accounts are provisioned with the lease.',
+                'Irreversible deletions now require a typed acknowledgement and your password.',
+                'Documents are dramatically faster: PDFs are up to 36x smaller and open natively in a browser tab.',
+                'Notification bell now also shows unpaid expense invoices and unpaid owner expense bills.',
+            ],
+        ],
+        [
             'version' => '1.0.7',
             'date' => '2026-08-22',
             'title' => 'Accounts, documents everywhere, and data restore',

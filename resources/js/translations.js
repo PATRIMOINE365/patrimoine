@@ -320,6 +320,18 @@ export const translations = {
             '{count} invoices due within 7 days — {amount}',
         'notifications.rent_due_soon_body_one':
             '1 invoice due within 7 days — {amount}',
+        'notifications.expenses_unpaid_title':
+            'Unpaid expense invoices',
+        'notifications.expenses_unpaid_body':
+            '{count} expense invoices awaiting payment — {amount}',
+        'notifications.expenses_unpaid_body_one':
+            '1 expense invoice awaiting payment — {amount}',
+        'notifications.owner_bills_unpaid_title':
+            'Unpaid owner expense bills',
+        'notifications.owner_bills_unpaid_body':
+            '{count} owner bills awaiting payment — {amount}',
+        'notifications.owner_bills_unpaid_body_one':
+            '1 owner bill awaiting payment — {amount}',
         'notifications.leases_expiring_title':
             'Leases expiring',
         'notifications.leases_expiring_body':
@@ -3169,6 +3181,18 @@ export const translations = {
             '{count} factures dues sous 7 jours — {amount}',
         'notifications.rent_due_soon_body_one':
             '1 facture due sous 7 jours — {amount}',
+        'notifications.expenses_unpaid_title':
+            'Factures de dépenses impayées',
+        'notifications.expenses_unpaid_body':
+            '{count} factures de dépenses en attente de paiement — {amount}',
+        'notifications.expenses_unpaid_body_one':
+            '1 facture de dépenses en attente de paiement — {amount}',
+        'notifications.owner_bills_unpaid_title':
+            'Factures de dépenses propriétaires impayées',
+        'notifications.owner_bills_unpaid_body':
+            '{count} factures propriétaires en attente de paiement — {amount}',
+        'notifications.owner_bills_unpaid_body_one':
+            '1 facture propriétaire en attente de paiement — {amount}',
         'notifications.leases_expiring_title':
             'Baux arrivant à échéance',
         'notifications.leases_expiring_body':
