@@ -11,6 +11,7 @@ use App\Models\OwnerAccount;
 use App\Models\OwnerExpenseBill;
 use App\Models\OwnerTransaction;
 use App\Models\Party;
+use App\Models\PartyRole;
 use App\Services\Accounting\SystemChartOfAccounts;
 use App\Services\OwnerPayoutService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -77,7 +78,8 @@ class OwnerExpenseBillApiTest extends TestCase
 
         return compact(
             'owner',
-            'account'
+            'account',
+            'building'
         );
     }
 
@@ -95,6 +97,8 @@ class OwnerExpenseBillApiTest extends TestCase
         $response = $this->postJson(
             "/api/owner-accounts/{$context['account']->id}/expense-bills",
             [
+                'building_id' => $context['building']->id,
+                'split' => 'single',
                 'bill_date' => '2026-08-21',
                 'notes' => 'August direct billing batch.',
                 'lines' => [
@@ -147,7 +151,7 @@ class OwnerExpenseBillApiTest extends TestCase
             ] as [$description, $amount]
         ) {
             $this->assertDatabaseHas('owner_expenses', [
-                'building_id' => null,
+                'building_id' => $context['building']->id,
                 'unit_id' => null,
                 'description' => $description,
                 'amount' => $amount,
@@ -156,7 +160,7 @@ class OwnerExpenseBillApiTest extends TestCase
 
             $this->assertDatabaseHas('owner_transactions', [
                 'owner_account_id' => $context['account']->id,
-                'building_id' => null,
+                'building_id' => $context['building']->id,
                 'direction' => 'debit',
                 'category' => 'expense',
                 'amount' => $amount,
@@ -205,6 +209,8 @@ class OwnerExpenseBillApiTest extends TestCase
         $this->postJson(
             "/api/owner-accounts/{$context['account']->id}/expense-bills",
             [
+                'building_id' => $context['building']->id,
+                'split' => 'single',
                 'bill_date' => '2026-08-21',
                 'lines' => [],
             ]
@@ -230,6 +236,8 @@ class OwnerExpenseBillApiTest extends TestCase
         $this->postJson(
             "/api/owner-accounts/{$context['account']->id}/expense-bills",
             [
+                'building_id' => $context['building']->id,
+                'split' => 'single',
                 'bill_date' => '2026-08-21',
                 'lines' => [
                     [
@@ -262,6 +270,8 @@ class OwnerExpenseBillApiTest extends TestCase
         $this->postJson(
             "/api/owner-accounts/{$context['account']->id}/expense-bills",
             [
+                'building_id' => $context['building']->id,
+                'split' => 'single',
                 'bill_date' => '2026-08-21',
                 'lines' => [
                     [
@@ -495,9 +505,13 @@ class OwnerExpenseBillApiTest extends TestCase
     private function recordBill(
         OwnerAccount $account
     ): OwnerExpenseBill {
+        $building = Building::query()->firstOrFail();
+
         $this->postJson(
             "/api/owner-accounts/{$account->id}/expense-bills",
             [
+                'building_id' => $building->id,
+                'split' => 'single',
                 'bill_date' => '2026-08-21',
                 'lines' => [
                     [
@@ -517,4 +531,80 @@ class OwnerExpenseBillApiTest extends TestCase
             ->latest('id')
             ->firstOrFail();
     }
+    /**
+     * V1.0.8 split mode: lines are prorated across every owner of the
+     * Building by ownership percentage with largest-remainder rounding.
+     */
+    public function test_split_mode_bills_every_owner_by_percentage(): void
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+
+        $context = $this->createOwnerContext();
+
+        $second = Party::create([
+            'type' => 'person',
+            'name' => 'Second Co-Owner',
+            'phone' => '0200000911',
+            'email' => 'second-co-owner@example.test',
+        ]);
+
+        PartyRole::create([
+            'party_id' => $second->id,
+            'role' => 'owner',
+        ]);
+
+        BuildingOwner::query()
+            ->where('building_id', $context['building']->id)
+            ->update(['ownership_percentage' => 60.00]);
+
+        BuildingOwner::create([
+            'building_id' => $context['building']->id,
+            'party_id' => $second->id,
+            'ownership_percentage' => 40.00,
+        ]);
+
+        $this->postJson(
+            "/api/owner-accounts/{$context['account']->id}/expense-bills",
+            [
+                'building_id' => $context['building']->id,
+                'split' => 'split',
+                'bill_date' => '2026-08-21',
+                'notes' => 'Roof repair',
+                'lines' => [
+                    [
+                        'description' => 'Roofing sheets',
+                        'amount' => 1001,
+                    ],
+                ],
+            ]
+        )
+            ->assertCreated()
+            ->assertJsonCount(2, 'bills');
+
+        /*
+         * 1001 at 60/40: floor gives 600 + 400, largest remainder gives
+         * the extra 1 to the 60% owner (0.6 fraction beats 0.4).
+         */
+        $this->assertDatabaseHas('owner_transactions', [
+            'owner_account_id' => $context['account']->id,
+            'category' => 'expense',
+            'amount' => 601,
+        ]);
+
+        $secondAccount = OwnerAccount::query()
+            ->where('party_id', $second->id)
+            ->firstOrFail();
+
+        $this->assertDatabaseHas('owner_transactions', [
+            'owner_account_id' => $secondAccount->id,
+            'category' => 'expense',
+            'amount' => 400,
+        ]);
+
+        $this->assertSame(
+            -601,
+            $context['account']->fresh()->depositAccountBalance()
+        );
+    }
 }
+

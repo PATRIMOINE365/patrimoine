@@ -294,7 +294,7 @@ class BrowserLocalisationTest extends TestCase
                 false
             )
             ->assertSee(
-                'data-i18n="owners.record_property_expense"',
+                'data-i18n="owners.billing_mode"',
                 false
             )
             ->assertSee(

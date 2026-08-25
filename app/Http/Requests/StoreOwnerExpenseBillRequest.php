@@ -27,6 +27,22 @@ class StoreOwnerExpenseBillRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /*
+             * V1.0.8: the unified expense flow always names the
+             * Building the cost belongs to, and whether it bills only
+             * this owner or splits across all owners by percentage.
+             */
+            'building_id' => [
+                'required',
+                'integer',
+                'exists:buildings,id',
+            ],
+
+            'split' => [
+                'required',
+                'in:single,split',
+            ],
+
             'bill_date' => [
                 'required',
                 'date_format:Y-m-d',

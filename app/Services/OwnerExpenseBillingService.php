@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Building;
 use App\Models\OwnerAccount;
 use App\Models\OwnerExpense;
 use App\Models\OwnerExpenseBill;
@@ -47,13 +48,15 @@ class OwnerExpenseBillingService
         array $lines,
         string $billDate,
         ?string $notes,
-        User $actor
+        User $actor,
+        ?int $buildingId = null
     ): OwnerExpenseBill {
         return DB::transaction(function () use (
             $ownerAccount,
             $lines,
             $billDate,
-            $notes
+            $notes,
+            $buildingId
         ): OwnerExpenseBill {
             /*
              * Lock the owner account row so concurrent financial
@@ -139,7 +142,7 @@ class OwnerExpenseBillingService
                  * billed expense (vs. a Building-allocated expense).
                  */
                 $expense = OwnerExpense::create([
-                    'building_id' => null,
+                    'building_id' => $buildingId,
                     'unit_id' => null,
                     'owner_expense_bill_id' => $bill->id,
                     'description' => $description,
@@ -154,7 +157,7 @@ class OwnerExpenseBillingService
                  */
                 $transaction = OwnerTransaction::create([
                     'owner_account_id' => $ownerAccount->id,
-                    'building_id' => null,
+                    'building_id' => $buildingId,
                     'direction' => 'debit',
                     'category' => 'expense',
                     'amount' => $amount,
@@ -183,6 +186,145 @@ class OwnerExpenseBillingService
             return $bill
                 ->refresh()
                 ->load('expenses');
+        });
+    }
+
+    /**
+     * V1.0.8: split one set of expense lines across every owner of a
+     * Building according to ownership percentage.
+     *
+     * Each co-owner receives their own bill whose line amounts are the
+     * prorated shares (largest-remainder rounding, so every line's
+     * shares sum exactly to the entered amount). Owners whose share of
+     * every line rounds to zero receive no bill.
+     *
+     * @param  array<int, array{description: mixed, amount: mixed}>  $lines
+     * @return array<int, OwnerExpenseBill>
+     */
+    public function recordSplit(
+        Building $building,
+        array $lines,
+        string $billDate,
+        ?string $notes,
+        User $actor
+    ): array {
+        return DB::transaction(function () use (
+            $building,
+            $lines,
+            $billDate,
+            $notes,
+            $actor
+        ): array {
+            $building = Building::query()
+                ->with(['ownerships.party'])
+                ->lockForUpdate()
+                ->findOrFail($building->id);
+
+            $ownerships = $building->ownerships
+                ->sortBy('id')
+                ->values();
+
+            if ($ownerships->isEmpty()) {
+                throw new RuntimeException(
+                    __('business.owner.no_ownership')
+                );
+            }
+
+            $totalPercentage = (float) $ownerships->sum(
+                fn ($ownership): float => (float) $ownership->ownership_percentage
+            );
+
+            if ($totalPercentage <= 0) {
+                throw new RuntimeException(
+                    __('business.owner.no_ownership')
+                );
+            }
+
+            /*
+             * Prorate every line independently so each bill's lines sum
+             * exactly to that owner's share and, across owners, to the
+             * entered line amount.
+             */
+            $perOwnerLines = [];
+
+            foreach (array_values($lines) as $line) {
+                $amount = (int) $line['amount'];
+
+                $shares = [];
+                $fractions = [];
+                $allocated = 0;
+
+                foreach ($ownerships as $index => $ownership) {
+                    $exact = $amount
+                        * (float) $ownership->ownership_percentage
+                        / $totalPercentage;
+
+                    $shares[$index] = (int) floor($exact);
+                    $fractions[$index] = $exact - floor($exact);
+                    $allocated += $shares[$index];
+                }
+
+                $remainder = $amount - $allocated;
+
+                arsort($fractions);
+
+                foreach (array_keys($fractions) as $index) {
+                    if ($remainder <= 0) {
+                        break;
+                    }
+
+                    $shares[$index] += 1;
+                    $remainder -= 1;
+                }
+
+                foreach ($shares as $index => $share) {
+                    if ($share <= 0) {
+                        continue;
+                    }
+
+                    $perOwnerLines[$index][] = [
+                        'description' => $line['description'],
+                        'amount' => $share,
+                    ];
+                }
+            }
+
+            $bills = [];
+
+            foreach ($ownerships as $index => $ownership) {
+                if (empty($perOwnerLines[$index])) {
+                    continue;
+                }
+
+                $account = OwnerAccount::firstOrCreate(
+                    ['party_id' => $ownership->party_id],
+                    ['status' => 'active']
+                );
+
+                $shareNote = sprintf(
+                    '%s (%s%%)',
+                    trim((string) ($notes ?? '')) !== ''
+                        ? trim((string) $notes)
+                        : $building->name,
+                    rtrim(rtrim(number_format(
+                        (float) $ownership->ownership_percentage,
+                        2,
+                        '.',
+                        ''
+                    ), '0'), '.')
+                );
+
+                $bills[] = $this->record(
+                    ownerAccount: $account,
+                    lines: $perOwnerLines[$index],
+                    billDate: $billDate,
+                    notes: $shareNote,
+                    actor: $actor,
+                    buildingId: $building->id,
+                );
+            }
+
+            return $bills;
         });
     }
 }

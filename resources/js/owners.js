@@ -2504,7 +2504,6 @@ function initializeOwnerWorkspaceActions() {
     [
         'owner-accounts-modal',
         'owner-deposit-modal',
-        'owner-expense-modal',
         'owner-expense-bill-modal',
         'owner-payout-modal',
         'owner-adjustment-modal',
@@ -2532,7 +2531,6 @@ function initializeOwnerWorkspaceActions() {
     [
         'owner-accounts-modal',
         'owner-deposit-modal',
-        'owner-expense-modal',
         'owner-expense-bill-modal',
         'owner-payout-modal',
         'owner-adjustment-modal',
@@ -2563,8 +2561,7 @@ function initializeOwnerWorkspaceActions() {
             [
                 'owner-accounts-modal',
                 'owner-deposit-modal',
-                'owner-expense-modal',
-                'owner-expense-bill-modal',
+                        'owner-expense-bill-modal',
                 'owner-payout-modal',
                 'owner-adjustment-modal',
             ].forEach(
@@ -2612,20 +2609,6 @@ function initializeOwnerWorkspaceActions() {
             }
         );
 
-    document
-        .getElementById(
-            'owner-expense-building'
-        )
-        ?.addEventListener(
-            'change',
-            () => {
-                populateOwnerActionUnits(
-                    'owner-expense'
-                );
-
-                updateExpenseOwnershipWarning();
-            }
-        );
 
     /*
      * Deposit cash collector.
@@ -2652,19 +2635,6 @@ function initializeOwnerWorkspaceActions() {
                 event.preventDefault();
 
                 await submitOwnerDeposit();
-            }
-        );
-
-    document
-        .getElementById(
-            'owner-expense-form'
-        )
-        ?.addEventListener(
-            'submit',
-            async (event) => {
-                event.preventDefault();
-
-                await submitOwnerExpense();
             }
         );
 
@@ -2753,23 +2723,6 @@ function initializeOwnerWorkspaceActions() {
         }
     );
 
-    /*
-     * Secondary route to the legacy per-Building expense drawer.
-     */
-    document
-        .getElementById(
-            'owner-expense-bill-property-expense-button'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                closeDrawer(
-                    'owner-expense-bill-modal'
-                );
-
-                openOwnerExpenseModal();
-            }
-        );
 
     document
         .getElementById(
@@ -2781,6 +2734,26 @@ function initializeOwnerWorkspaceActions() {
                 event.preventDefault();
 
                 await submitOwnerExpenseBill();
+            }
+        );
+
+    document
+        .getElementById(
+            'owner-expense-bill-back'
+        )
+        ?.addEventListener(
+            'click',
+            exitExpenseBillReview
+        );
+
+    document
+        .getElementById(
+            'owner-expense-bill-confirm'
+        )
+        ?.addEventListener(
+            'click',
+            async () => {
+                await confirmOwnerExpenseBill();
             }
         );
 
@@ -3426,284 +3399,6 @@ async function submitOwnerDeposit() {
 
 /*
 |--------------------------------------------------------------------------
-| Owner Expense
-|--------------------------------------------------------------------------
-*/
-
-function openOwnerExpenseModal() {
-    if (! hasSelectedOwner()) {
-        return;
-    }
-
-    const properties =
-        Array.isArray(
-            selectedOwner?.properties
-        )
-            ? selectedOwner.properties
-            : [];
-
-    if (properties.length === 0) {
-        showOwnersError(
-            translate('owners.no_property_for_expense')
-        );
-
-        return;
-    }
-
-    document
-        .getElementById(
-            'owner-expense-form'
-        )
-        ?.reset();
-
-    hideOwnerActionError(
-        'owner-expense-error'
-    );
-
-    hideExpenseOwnershipWarning();
-
-    setOwnerDateValue(
-        'owner-expense-date',
-        localToday()
-    );
-
-    populateOwnerActionBuildings(
-        'owner-expense',
-        false
-    );
-
-    openDrawer(
-        'owner-expense-modal'
-    );
-}
-
-/**
- * Warn when the selected Owner owns less than the complete Building.
- *
- * OwnerAccountingService will allocate the full expense among all Building
- * owners according to their ownership percentages.
- */
-function updateExpenseOwnershipWarning() {
-    const buildingId =
-        fieldValue(
-            'owner-expense-building'
-        );
-
-    const warning =
-        document.getElementById(
-            'owner-expense-sharing-warning'
-        );
-
-    if (
-        ! warning
-        || ! buildingId
-    ) {
-        hideExpenseOwnershipWarning();
-
-        return;
-    }
-
-    const properties =
-        Array.isArray(
-            selectedOwner?.properties
-        )
-            ? selectedOwner.properties
-            : [];
-
-    const property =
-        properties.find(
-            (item) =>
-                String(
-                    item?.building?.id
-                    ?? ''
-                ) === buildingId
-        );
-
-    const percentage =
-        Number(
-            property?.ownership_percentage
-            ?? 0
-        );
-
-    if (percentage >= 100) {
-        hideExpenseOwnershipWarning();
-
-        return;
-    }
-
-    warning.textContent =
-        translate(
-            'owners.expense_sharing_warning',
-            {
-                percentage:
-                    percentage.toFixed(2),
-            }
-        );
-
-    warning.classList.remove(
-        'hidden'
-    );
-}
-
-function hideExpenseOwnershipWarning() {
-    const warning =
-        document.getElementById(
-            'owner-expense-sharing-warning'
-        );
-
-    if (! warning) {
-        return;
-    }
-
-    warning.textContent = '';
-
-    warning.classList.add(
-        'hidden'
-    );
-}
-
-async function submitOwnerExpense() {
-    if (! hasSelectedOwner()) {
-        return;
-    }
-
-    hideOwnerActionError(
-        'owner-expense-error'
-    );
-
-    const buildingId =
-        fieldValue(
-            'owner-expense-building'
-        );
-
-    const unitId =
-        fieldValue(
-            'owner-expense-unit'
-        );
-
-    const amount =
-        Number(
-            fieldValue(
-                'owner-expense-amount'
-            )
-        );
-
-    if (! buildingId) {
-        showOwnerActionError(
-            'owner-expense-error',
-            translate('owners.select_expense_building')
-        );
-
-        return;
-    }
-
-    if (
-        ! Number.isInteger(amount)
-        || amount <= 0
-    ) {
-        showOwnerActionError(
-            'owner-expense-error',
-            translate('owners.invalid_expense_amount')
-        );
-
-        return;
-    }
-
-    const description =
-        fieldValue(
-            'owner-expense-description'
-        );
-
-    if (! description) {
-        showOwnerActionError(
-            'owner-expense-error',
-            translate('owners.expense_description_required')
-        );
-
-        return;
-    }
-
-    const payload = {
-        building_id:
-            Number(buildingId),
-
-        unit_id:
-            unitId
-                ? Number(unitId)
-                : null,
-
-        description,
-
-        amount,
-
-        expense_date:
-            ownerDateValue(
-                'owner-expense-date'
-            ),
-
-        reference:
-            fieldValue(
-                'owner-expense-reference'
-            )
-            || null,
-
-        notes:
-            fieldValue(
-                'owner-expense-notes'
-            )
-            || null,
-    };
-
-    setOwnerActionSubmitting(
-        'owner-expense-submit',
-        true,
-        translate('owners.recording'),
-        translate('actions.save')
-    );
-
-    try {
-        const response =
-            await apiRequest(
-                '/api/owner-expenses',
-                {
-                    method:
-                        'POST',
-
-                    body:
-                        JSON.stringify(
-                            payload
-                        ),
-                }
-            );
-
-        await parseJsonResponse(
-            response
-        );
-
-        closeDrawer(
-            'owner-expense-modal'
-        );
-
-        await refreshSelectedOwner();
-    } catch (error) {
-        showOwnerActionError(
-            'owner-expense-error',
-            error instanceof Error
-                ? error.message
-                : translate('owners.unable_to_record_expense')
-        );
-    } finally {
-        setOwnerActionSubmitting(
-            'owner-expense-submit',
-            false,
-            translate('owners.recording'),
-            translate('owners.record_expense')
-        );
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
 | Owner Accounts View
 |--------------------------------------------------------------------------
 |
@@ -4121,6 +3816,10 @@ function openOwnerExpenseBillModal() {
 
     updateExpenseBillTotal();
 
+    populateExpenseBillBuildings();
+
+    exitExpenseBillReview();
+
     openDrawer(
         'owner-expense-bill-modal'
     );
@@ -4230,44 +3929,59 @@ function expenseBillLineTemplate() {
     `;
 }
 
+/*
+|--------------------------------------------------------------------------
+| V1.0.8 Unified Expense flow: Building + single/split + review step
+|--------------------------------------------------------------------------
+*/
+
+let pendingExpenseBillPayload = null;
+
 /**
- * Recompute and display the running bill total.
+ * Fill the Building selector from the selected owner's properties.
  */
-function updateExpenseBillTotal() {
-    const amounts =
-        document.querySelectorAll(
-            '#owner-expense-bill-lines [data-expense-line-amount]'
+function populateExpenseBillBuildings() {
+    const select =
+        document.getElementById(
+            'owner-expense-bill-building'
         );
 
-    let total = 0;
+    if (! select) {
+        return;
+    }
 
-    amounts.forEach(
-        (input) => {
-            const amount =
-                Number(
-                    parseMoneyInput(
-                        input.value
-                    )
-                    || 0
-                );
-
-            if (
-                Number.isInteger(amount)
-                && amount > 0
-            ) {
-                total += amount;
-            }
-        }
-    );
-
-    setText(
-        'owner-expense-bill-total',
-        formatCurrency(
-            total
+    const properties =
+        Array.isArray(
+            selectedOwner?.properties
         )
-    );
+            ? selectedOwner.properties
+            : [];
+
+    select.innerHTML =
+        `<option value="">${escapeHtml(
+            translate(
+                'owners.select_building'
+            )
+        )}</option>`
+        + properties
+            .map(
+                (property) => `
+                    <option value="${escapeHtml(
+                        property.id
+                    )}">
+                        ${escapeHtml(
+                            property.name
+                            ?? ''
+                        )}
+                    </option>
+                `
+            )
+            .join('');
 }
 
+/**
+ * Validate the form and swap the drawer to the review view.
+ */
 async function submitOwnerExpenseBill() {
     if (! hasSelectedOwner()) {
         return;
@@ -4276,6 +3990,25 @@ async function submitOwnerExpenseBill() {
     hideOwnerActionError(
         'owner-expense-bill-error'
     );
+
+    const buildingId =
+        Number(
+            fieldValue(
+                'owner-expense-bill-building'
+            )
+        );
+
+    if (
+        ! Number.isInteger(buildingId)
+        || buildingId <= 0
+    ) {
+        showOwnerActionError(
+            'owner-expense-bill-error',
+            translate('owners.building_required')
+        );
+
+        return;
+    }
 
     const rows =
         document.querySelectorAll(
@@ -4291,10 +4024,6 @@ async function submitOwnerExpenseBill() {
         return;
     }
 
-    /*
-     * Every line must carry a description and a positive whole-currency
-     * amount before anything is sent to the API.
-     */
     const lines = [];
 
     let invalid = false;
@@ -4346,7 +4075,15 @@ async function submitOwnerExpenseBill() {
         return;
     }
 
-    const payload = {
+    pendingExpenseBillPayload = {
+        building_id: buildingId,
+
+        split:
+            fieldValue(
+                'owner-expense-bill-split'
+            )
+            || 'single',
+
         bill_date:
             ownerDateValue(
                 'owner-expense-bill-date'
@@ -4361,11 +4098,275 @@ async function submitOwnerExpenseBill() {
         lines,
     };
 
+    enterExpenseBillReview();
+}
+
+/**
+ * Render the read-only review and swap the drawer into review mode.
+ */
+function enterExpenseBillReview() {
+    const review =
+        document.getElementById(
+            'owner-expense-bill-review'
+        );
+
+    const payload =
+        pendingExpenseBillPayload;
+
+    if (! review || ! payload) {
+        return;
+    }
+
+    const buildingName =
+        (
+            selectedOwner?.properties
+            ?? []
+        ).find(
+            (property) =>
+                Number(property.id)
+                === Number(payload.building_id)
+        )?.name
+        ?? '';
+
+    const total =
+        payload.lines.reduce(
+            (sum, line) =>
+                sum + line.amount,
+            0
+        );
+
+    review.innerHTML = `
+        <h3
+            class="
+                text-base font-semibold
+                text-[var(--pm-text)]
+            "
+        >
+            ${escapeHtml(
+                translate(
+                    'owners.expense_review_title'
+                )
+            )}
+        </h3>
+
+        <p
+            class="
+                mt-1 text-xs
+                text-[var(--pm-text-muted)]
+            "
+        >
+            ${escapeHtml(
+                translate(
+                    'owners.expense_review_description'
+                )
+            )}
+        </p>
+
+        <div class="mt-4 space-y-2 text-sm">
+            <div class="flex justify-between gap-4">
+                <span class="text-[var(--pm-text-muted)]">
+                    ${escapeHtml(
+                        translate('owners.building')
+                    )}
+                </span>
+
+                <span class="font-medium text-[var(--pm-text)]">
+                    ${escapeHtml(buildingName)}
+                </span>
+            </div>
+
+            <div class="flex justify-between gap-4">
+                <span class="text-[var(--pm-text-muted)]">
+                    ${escapeHtml(
+                        translate('owners.billing_mode')
+                    )}
+                </span>
+
+                <span class="font-medium text-[var(--pm-text)]">
+                    ${escapeHtml(
+                        payload.split === 'split'
+                            ? translate(
+                                'owners.billing_mode_split'
+                            )
+                            : translate(
+                                'owners.billing_mode_single'
+                            )
+                    )}
+                </span>
+            </div>
+        </div>
+
+        <div
+            class="
+                mt-4 overflow-hidden rounded-xl
+                border border-[var(--pm-border)]
+            "
+        >
+            ${payload.lines
+                .map(
+                    (line) => `
+                        <div
+                            class="
+                                flex items-center justify-between gap-4
+                                border-b border-[var(--pm-border-subtle)]
+                                px-4 py-2.5 text-sm
+                                last:border-b-0
+                            "
+                        >
+                            <span class="text-[var(--pm-text-secondary)]">
+                                ${escapeHtml(line.description)}
+                            </span>
+
+                            <span class="font-medium text-[var(--pm-text)]">
+                                ${escapeHtml(
+                                    formatCurrency(line.amount)
+                                )}
+                            </span>
+                        </div>
+                    `
+                )
+                .join('')}
+
+            <div
+                class="
+                    flex items-center justify-between gap-4
+                    bg-[var(--pm-surface-subtle)]
+                    px-4 py-2.5 text-sm font-semibold
+                "
+            >
+                <span>
+                    ${escapeHtml(
+                        translate('owners.bill_total')
+                    )}
+                </span>
+
+                <span>
+                    ${escapeHtml(
+                        formatCurrency(total)
+                    )}
+                </span>
+            </div>
+        </div>
+    `;
+
+    document
+        .getElementById(
+            'owner-expense-bill-fields'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    review.classList.remove(
+        'hidden'
+    );
+
+    document
+        .getElementById(
+            'owner-expense-bill-submit'
+        )
+        ?.classList.add(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'owner-expense-bill-cancel'
+        )
+        ?.classList.add(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'owner-expense-bill-back'
+        )
+        ?.classList.remove(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'owner-expense-bill-confirm'
+        )
+        ?.classList.remove(
+            'pm-hide'
+        );
+}
+
+/**
+ * Return the drawer to the editable form.
+ */
+function exitExpenseBillReview() {
+    pendingExpenseBillPayload =
+        pendingExpenseBillPayload
+        && null;
+
+    document
+        .getElementById(
+            'owner-expense-bill-review'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'owner-expense-bill-fields'
+        )
+        ?.classList.remove(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'owner-expense-bill-back'
+        )
+        ?.classList.add(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'owner-expense-bill-confirm'
+        )
+        ?.classList.add(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'owner-expense-bill-submit'
+        )
+        ?.classList.remove(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'owner-expense-bill-cancel'
+        )
+        ?.classList.remove(
+            'pm-hide'
+        );
+}
+
+/**
+ * Perform the actual creation after review confirmation.
+ */
+async function confirmOwnerExpenseBill() {
+    const payload =
+        pendingExpenseBillPayload;
+
+    if (! payload) {
+        return;
+    }
+
     setOwnerActionSubmitting(
-        'owner-expense-bill-submit',
+        'owner-expense-bill-confirm',
         true,
         translate('owners.recording'),
-        translate('actions.save')
+        translate('owners.confirm')
     );
 
     try {
@@ -4394,10 +4395,14 @@ async function submitOwnerExpenseBill() {
 
         await refreshSelectedOwner();
 
-        showExpenseBillSuccess(
-            data?.expense_bill
-        );
+        if (data?.expense_bill) {
+            showExpenseBillSuccess(
+                data.expense_bill
+            );
+        }
     } catch (error) {
+        exitExpenseBillReview();
+
         showOwnerActionError(
             'owner-expense-bill-error',
             error instanceof Error
@@ -4406,10 +4411,10 @@ async function submitOwnerExpenseBill() {
         );
     } finally {
         setOwnerActionSubmitting(
-            'owner-expense-bill-submit',
+            'owner-expense-bill-confirm',
             false,
             translate('owners.recording'),
-            translate('actions.save')
+            translate('owners.confirm')
         );
     }
 }

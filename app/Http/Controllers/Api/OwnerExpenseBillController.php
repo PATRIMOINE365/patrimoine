@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOwnerExpenseBillRequest;
 use App\Mail\OwnerExpenseBillMail;
+use App\Models\Building;
 use App\Models\OwnerAccount;
 use App\Models\OwnerExpenseBill;
 use App\Services\ActivityLogService;
@@ -53,12 +54,64 @@ class OwnerExpenseBillController extends Controller
         ActivityLogService $activityLog
     ): JsonResponse {
         try {
+            if ($request->validated('split') === 'split') {
+                $bills = $service->recordSplit(
+                    building: Building::query()->findOrFail(
+                        (int) $request->validated('building_id')
+                    ),
+                    lines: $request->validated('lines'),
+                    billDate: $request->validated('bill_date'),
+                    notes: $request->validated('notes'),
+                    actor: $request->user(),
+                );
+
+                foreach ($bills as $splitBill) {
+                    $splitBill->load('ownerAccount.party');
+
+                    $activityLog->record(
+                        action: 'owner_expense_bill.recorded',
+                        request: $request,
+                        entityType: 'owner_expense_bill',
+                        entityId: $splitBill->id,
+                        entityLabel: $splitBill->bill_number,
+                        snapshot: [
+                            'bill_number' => $splitBill->bill_number,
+                            'owner_account_id' => $splitBill->owner_account_id,
+                            'owner_name' => $splitBill->ownerAccount->party->name
+                                ?? $splitBill->ownerAccount->party->legal_name,
+                            'bill_date' => $splitBill->bill_date->toDateString(),
+                            'line_count' => $splitBill->expenses->count(),
+                            'total_amount' => $splitBill->total_amount,
+                            'building_id' => (int) $request->validated('building_id'),
+                            'split' => true,
+                        ],
+                    );
+
+                    $this->sendBillEmail($splitBill);
+                }
+
+                return response()->json(
+                    [
+                        'bills' => collect($bills)->map(
+                            fn ($splitBill): array => [
+                                'id' => $splitBill->id,
+                                'bill_number' => $splitBill->bill_number,
+                                'owner_account_id' => $splitBill->owner_account_id,
+                                'total_amount' => $splitBill->total_amount,
+                            ]
+                        ),
+                    ],
+                    201
+                );
+            }
+
             $bill = $service->record(
                 ownerAccount: $ownerAccount,
                 lines: $request->validated('lines'),
                 billDate: $request->validated('bill_date'),
                 notes: $request->validated('notes'),
                 actor: $request->user(),
+                buildingId: (int) $request->validated('building_id'),
             );
         } catch (RuntimeException $exception) {
             throw ValidationException::withMessages([

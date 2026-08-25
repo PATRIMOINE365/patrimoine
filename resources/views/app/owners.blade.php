@@ -1304,257 +1304,7 @@
      Owner Expense Drawer
 ================================================================ --}}
 
-<x-drawer
-    id="owner-expense-modal"
-    backdrop-id="owner-expense-modal-backdrop"
-    width="sm"
->
-    <x-drawer-header
-        close-id="owner-expense-modal-close"
-        close-label="Close"
-        close-label-key="owners.close"
-    >
-        <x-slot:title>
-            <span data-i18n="owners.record_property_expense">
-    {{ __('ui.owners.record_property_expense') }}
-</span>
-        </x-slot:title>
 
-        <x-slot:description>
-            <span data-i18n="owners.expense_description">
-    {{ __('ui.owners.expense_description') }}
-</span>
-        </x-slot:description>
-    </x-drawer-header>
-
-    <form
-            id="owner-expense-form"
-            class="flex min-h-0 flex-1 flex-col"
-        >
-        <div
-            class="
-                min-h-0 flex-1
-                overflow-y-auto
-                px-6 py-6
-            "
-        >
-<div
-                id="owner-expense-error"
-                class="
-                    mb-5 hidden rounded-xl
-                    border border-[var(--pm-danger-border)]
-                    bg-[var(--pm-danger-background)] px-4 py-3
-                    text-sm text-[var(--pm-danger-text)]
-                "
-            ></div>
-
-            <div
-                id="owner-expense-sharing-warning"
-                class="
-                    mb-5 hidden rounded-xl
-                    border border-[var(--pm-warning-border)]
-                    bg-[var(--pm-warning-background)] px-4 py-3
-                    text-sm leading-6 text-[var(--pm-warning-text)]
-                "
-            ></div>
-
-            <div class="grid gap-4 md:grid-cols-2">
-                <div class="md:col-span-2">
-                    <label
-                        for="owner-expense-building"
-                        class="pm-field-label"
-                    >
-                        <span data-i18n="owners.building">
-    {{ __('ui.owners.building') }}
-</span>
-                        <span class="text-[var(--pm-danger-text)]">*</span>
-                    </label>
-
-                    <select
-                        id="owner-expense-building"
-                        required
-                        class="pm-input"
-                    >
-                        <option value="" data-i18n="owners.select_building">
-    {{ __('ui.owners.select_building') }}
-</option>
-                    </select>
-                </div>
-
-                <div class="md:col-span-2">
-                    <label
-                        for="owner-expense-unit"
-                        class="pm-field-label"
-                    >
-                        <span data-i18n="owners.unit">
-    {{ __('ui.owners.unit') }}
-</span>
-                        <span class="text-xs text-[var(--pm-text-subtle)]">
-                            <span data-i18n="owners.optional">
-    {{ __('ui.owners.optional') }}
-</span>
-                        </span>
-                    </label>
-
-                    <select
-                        id="owner-expense-unit"
-                        disabled
-                        class="pm-input"
-                    >
-                        <option value="" data-i18n="owners.select_building_first">
-    {{ __('ui.owners.select_building_first') }}
-</option>
-                    </select>
-                </div>
-
-                <div class="md:col-span-2">
-                    <label
-                        for="owner-expense-description"
-                        class="pm-field-label"
-                    >
-                        <span data-i18n="owners.description">
-    {{ __('ui.owners.description') }}
-</span>
-                        <span class="text-[var(--pm-danger-text)]">*</span>
-                    </label>
-
-                    <input
-                        id="owner-expense-description"
-                        type="text"
-                        maxlength="255"
-                        required
-                        placeholder="{{ __('ui.owners.expense_description_placeholder') }}" data-i18n-placeholder="owners.expense_description_placeholder"
-                        class="pm-input"
-                    >
-                </div>
-
-                <div>
-                    <label
-                        for="owner-expense-amount"
-                        class="pm-field-label"
-                    >
-                        <span data-i18n="owners.amount">
-    {{ __('ui.owners.amount') }}
-</span>
-                        <span class="text-[var(--pm-danger-text)]">*</span>
-                    </label>
-
-                    <div class="relative">
-                        <span
-                            class="
-                                absolute inset-y-0 left-0
-                                flex items-center pl-3.5
-                                text-sm text-[var(--pm-text-muted)]
-                            "
-                         data-currency-display>
-                        </span>
-
-                        <input
-                            id="owner-expense-amount"
-                            type="text"
-                                        inputmode="numeric"
-                                        data-money-input
-                            required
-                            class="pm-input pl-14"
-                        >
-                    </div>
-                </div>
-
-                <div>
-                    <label
-                        for="owner-expense-date"
-                        class="pm-field-label"
-                    >
-                        <span data-i18n="owners.expense_date">
-    {{ __('ui.owners.expense_date') }}
-</span>
-                        <span class="text-[var(--pm-danger-text)]">*</span>
-                    </label>
-
-                    <input
-                        id="owner-expense-date"
-                        type="text"
-                        inputmode="numeric"
-                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
-                        maxlength="10"
-                        autocomplete="off"
-                        data-owner-date-input
-                        data-pm-date-input
-                        required
-                        class="pm-input"
-                    >
-                </div>
-
-                <div class="md:col-span-2">
-                    <label
-                        for="owner-expense-reference"
-                        class="pm-field-label"
-                    >
-                        <span data-i18n="owners.reference">
-    {{ __('ui.owners.reference') }}
-</span>
-                        <span class="text-xs text-[var(--pm-text-subtle)]">
-                            <span data-i18n="owners.optional">
-    {{ __('ui.owners.optional') }}
-</span>
-                        </span>
-                    </label>
-
-                    <input
-                        id="owner-expense-reference"
-                        type="text"
-                        maxlength="255"
-                        class="pm-input"
-                    >
-                </div>
-
-                <div class="md:col-span-2">
-                    <label
-                        for="owner-expense-notes"
-                        class="pm-field-label"
-                    >
-                        <span data-i18n="owners.notes">
-    {{ __('ui.owners.notes') }}
-</span>
-                        <span class="text-xs text-[var(--pm-text-subtle)]">
-                            <span data-i18n="owners.optional">
-    {{ __('ui.owners.optional') }}
-</span>
-                        </span>
-                    </label>
-
-                    <textarea
-                        id="owner-expense-notes"
-                        rows="3"
-                        class="pm-input"
-                    ></textarea>
-                </div>
-            </div>
-        </div>
-
-        <x-drawer-footer>
-            <button
-                type="button"
-                data-close-owner-modal="owner-expense-modal"
-                class="pm-button-secondary"
-            >
-                <span data-i18n="actions.cancel">
-    {{ __('ui.actions.cancel') }}
-</span>
-            </button>
-
-            <button
-                id="owner-expense-submit"
-                type="submit"
-                class="pm-button-primary"
-            >
-                <span data-i18n="actions.save">
-    {{ __('ui.actions.save') }}
-</span>
-            </button>
-        </x-drawer-footer>
-    </form>
-</x-drawer>
 
 {{-- ================================================================
      Owner Payout Drawer
@@ -2441,33 +2191,7 @@
         </x-slot:description>
     </x-drawer-header>
 
-    {{-- Secondary route to the legacy per-Building expense drawer --}}
-
-    <div
-        class="
-            flex items-center
-            justify-between gap-4
-            border-b border-[var(--pm-border-subtle)]
-            bg-[var(--pm-surface-subtle)]
-            px-6 py-3
-        "
-    >
-        <p class="text-xs text-[var(--pm-text-muted)]">
-            <span data-i18n="owners.property_expense_switch_hint">
-    {{ __('ui.owners.property_expense_switch_hint') }}
-</span>
-        </p>
-
-        <button
-            id="owner-expense-bill-property-expense-button"
-            type="button"
-            class="pm-button-secondary shrink-0"
-        >
-            <span data-i18n="owners.property_expense">
-    {{ __('ui.owners.property_expense') }}
-</span>
-        </button>
-    </div>
+    
 
     <form
             id="owner-expense-bill-form"
@@ -2489,6 +2213,70 @@
                     text-sm text-[var(--pm-danger-text)]
                 "
             ></div>
+
+            {{--
+                V1.0.8 review step: the fields wrapper hides while the
+                read-only review renders in its place.
+            --}}
+            <div
+                id="owner-expense-bill-review"
+                class="hidden"
+            ></div>
+
+            <div id="owner-expense-bill-fields">
+
+            <div class="mb-4 grid gap-4 md:grid-cols-2">
+                <div>
+                    <label
+                        for="owner-expense-bill-building"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="owners.building">
+    {{ __('ui.owners.building') }}
+</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <select
+                        id="owner-expense-bill-building"
+                        required
+                        class="pm-input"
+                    >
+                    </select>
+                </div>
+
+                <div>
+                    <label
+                        for="owner-expense-bill-split"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="owners.billing_mode">
+    {{ __('ui.owners.billing_mode') }}
+</span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <select
+                        id="owner-expense-bill-split"
+                        required
+                        class="pm-input"
+                    >
+                        <option
+                            value="single"
+                            data-i18n="owners.billing_mode_single"
+                        >
+                            {{ __('ui.owners.billing_mode_single') }}
+                        </option>
+
+                        <option
+                            value="split"
+                            data-i18n="owners.billing_mode_split"
+                        >
+                            {{ __('ui.owners.billing_mode_split') }}
+                        </option>
+                    </select>
+                </div>
+            </div>
 
             <div class="grid gap-4 md:grid-cols-2">
                 <div>
@@ -2597,10 +2385,13 @@
                     class="pm-input"
                 ></textarea>
             </div>
+
+            </div>
         </div>
 
         <x-drawer-footer>
             <button
+                id="owner-expense-bill-cancel"
                 type="button"
                 data-close-owner-modal="owner-expense-bill-modal"
                 class="pm-button-secondary"
@@ -2615,8 +2406,28 @@
                 type="submit"
                 class="pm-button-primary"
             >
-                <span data-i18n="actions.save">
-    {{ __('ui.actions.save') }}
+                <span data-i18n="owners.review">
+    {{ __('ui.owners.review') }}
+</span>
+            </button>
+
+            <button
+                id="owner-expense-bill-back"
+                type="button"
+                class="pm-button-secondary pm-hide"
+            >
+                <span data-i18n="owners.back">
+    {{ __('ui.owners.back') }}
+</span>
+            </button>
+
+            <button
+                id="owner-expense-bill-confirm"
+                type="button"
+                class="pm-button-primary pm-hide"
+            >
+                <span data-i18n="owners.confirm">
+    {{ __('ui.owners.confirm') }}
 </span>
             </button>
         </x-drawer-footer>
