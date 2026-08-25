@@ -1959,6 +1959,99 @@
                     text-[var(--pm-text)]
                 "
             >
+                <span data-i18n="owners.accounts_breakdown">
+    {{ __('ui.owners.accounts_breakdown') }}
+</span>
+            </h3>
+
+            <p
+                class="
+                    mt-1 text-xs
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                <span data-i18n="owners.accounts_breakdown_description">
+    {{ __('ui.owners.accounts_breakdown_description') }}
+</span>
+            </p>
+
+            <div
+                class="
+                    mt-3 overflow-x-auto
+                    rounded-xl border
+                    border-[var(--pm-border)]
+                "
+            >
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr
+                            class="
+                                border-b border-[var(--pm-border-subtle)]
+                                bg-[var(--pm-surface-subtle)]
+                                text-left text-xs font-medium
+                                uppercase tracking-wide
+                                text-[var(--pm-text-muted)]
+                            "
+                        >
+                            <th class="px-4 py-2.5 font-medium">
+                                <span data-i18n="owners.account">
+    {{ __('ui.owners.account') }}
+</span>
+                            </th>
+
+                            <th class="px-4 py-2.5 text-right font-medium">
+                                <span data-i18n="owners.current_balance">
+    {{ __('ui.owners.current_balance') }}
+</span>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="owner-accounts-breakdown"></tbody>
+
+                    <tfoot>
+                        <tr
+                            class="
+                                border-t border-[var(--pm-border)]
+                                bg-[var(--pm-surface-subtle)]
+                            "
+                        >
+                            <td
+                                class="
+                                    px-4 py-2.5 text-left
+                                    text-xs font-medium
+                                    uppercase tracking-wide
+                                    text-[var(--pm-text-muted)]
+                                "
+                            >
+                                <span data-i18n="owners.current_balance">
+    {{ __('ui.owners.current_balance') }}
+</span>
+                            </td>
+
+                            <td
+                                id="owner-accounts-breakdown-total"
+                                class="
+                                    px-4 py-2.5 text-right
+                                    text-sm font-semibold
+                                    text-[var(--pm-text)]
+                                "
+                            >
+                                —
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <h3
+                class="
+                    text-base font-semibold
+                    text-[var(--pm-text)]
+                "
+            >
                 <span data-i18n="owners.recent_activity">
     {{ __('ui.owners.recent_activity') }}
 </span>

@@ -338,6 +338,8 @@ class OwnerAccountController extends Controller
 
             'debited_amount' => $ownerAccount->debitedAmount(),
 
+            'category_totals' => $ownerAccount->categoryTotals(),
+
             'party' => $ownerAccount->party,
 
             'properties' => $properties,

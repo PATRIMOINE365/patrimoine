@@ -3212,6 +3212,10 @@ function renderOwnerAccountsView(
         )
     );
 
+    renderOwnerAccountsBreakdown(
+        owner
+    );
+
     const body =
         document.getElementById(
             'owner-accounts-ledger'
@@ -3255,6 +3259,118 @@ function renderOwnerAccountsView(
             )
             .join('');
 }
+
+/**
+ * V1.0.8: tenants-style account table for the consolidated owner ledger.
+ *
+ * One row per category, always all seven, zero included. Values are the
+ * category's signed effect on the owner balance, and the footer total is
+ * the authoritative server balance.
+ *
+ * @param {object} owner
+ */
+function renderOwnerAccountsBreakdown(
+    owner
+) {
+    const body =
+        document.getElementById(
+            'owner-accounts-breakdown'
+        );
+
+    if (! body) {
+        return;
+    }
+
+    const totals =
+        owner.category_totals
+        ?? {};
+
+    body.innerHTML = [
+        'rent_entitlement',
+        'owner_deposit',
+        'management_fee',
+        'agent_commission',
+        'expense',
+        'payout',
+        'adjustment',
+    ]
+        .map(
+            (category) => {
+                const amount =
+                    Number(
+                        totals[category]
+                        ?? 0
+                    );
+
+                const amountClass =
+                    amount < 0
+                        ? 'text-[var(--pm-danger-text)]'
+                        : 'text-[var(--pm-text)]';
+
+                return `
+                    <tr
+                        class="
+                            border-b border-[var(--pm-border-subtle)]
+                            last:border-b-0
+                        "
+                    >
+                        <td
+                            class="
+                                whitespace-nowrap px-4 py-2.5
+                                text-sm
+                                text-[var(--pm-text-secondary)]
+                            "
+                        >
+                            ${escapeHtml(
+                                ownerTransactionCategoryLabel(
+                                    category
+                                )
+                            )}
+                        </td>
+
+                        <td
+                            class="
+                                whitespace-nowrap px-4 py-2.5
+                                text-right text-sm font-medium
+                                ${amountClass}
+                            "
+                        >
+                            ${escapeHtml(
+                                formatCurrency(
+                                    amount
+                                )
+                            )}
+                        </td>
+                    </tr>
+                `;
+            }
+        )
+        .join('');
+
+    const total =
+        document.getElementById(
+            'owner-accounts-breakdown-total'
+        );
+
+    if (total) {
+        const balance =
+            Number(
+                owner.balance
+                ?? 0
+            );
+
+        total.textContent =
+            formatCurrency(
+                balance
+            );
+
+        total.classList.toggle(
+            'text-[var(--pm-danger-text)]',
+            balance < 0
+        );
+    }
+}
+
 
 /**
  * Render one compact ledger row for the Accounts drawer.

@@ -79,4 +79,50 @@ class OwnerAccount extends Model
     {
         return $this->creditedAmount() - $this->debitedAmount();
     }
+
+    /**
+     * V1.0.8: net position of every ledger category in one query.
+     *
+     * Credits count positive and debits negative, so a category's value
+     * reads as its effect on the owner balance. All seven categories are
+     * always present, zero included, mirroring how tenant fund accounts
+     * are presented.
+     *
+     * @return array<string, int>
+     */
+    public function categoryTotals(): array
+    {
+        $totals = array_fill_keys(
+            [
+                'rent_entitlement',
+                'owner_deposit',
+                'management_fee',
+                'agent_commission',
+                'expense',
+                'payout',
+                'adjustment',
+            ],
+            0
+        );
+
+        $rows = $this->transactions()
+            ->selectRaw(
+                'category, direction, SUM(amount) as total'
+            )
+            ->groupBy('category', 'direction')
+            ->get();
+
+        foreach ($rows as $row) {
+            $signed =
+                $row->direction === 'credit'
+                    ? (int) $row->total
+                    : -(int) $row->total;
+
+            $totals[$row->category] =
+                ($totals[$row->category] ?? 0)
+                + $signed;
+        }
+
+        return $totals;
+    }
 }

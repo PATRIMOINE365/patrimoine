@@ -261,6 +261,83 @@ class OwnerAccountApiTest extends TestCase
     /**
      * Owner deposits expose receipts, accounting-only movements do not.
      */
+    /**
+     * V1.0.8: the Accounts drawer presents each ledger category's signed
+     * effect on the balance, always all seven, zero included.
+     */
+    public function test_owner_account_detail_includes_category_totals(): void
+    {
+        $context =
+            $this->createContext();
+
+        OwnerTransaction::create([
+            'owner_account_id' => $context['account']->id,
+            'building_id' => $context['building']->id,
+            'unit_id' => $context['unit']->id,
+            'direction' => 'credit',
+            'category' => 'rent_entitlement',
+            'amount' => 10000,
+            'transaction_date' => '2026-08-01',
+        ]);
+
+        OwnerTransaction::create([
+            'owner_account_id' => $context['account']->id,
+            'building_id' => $context['building']->id,
+            'unit_id' => $context['unit']->id,
+            'direction' => 'debit',
+            'category' => 'management_fee',
+            'amount' => 1500,
+            'transaction_date' => '2026-08-01',
+        ]);
+
+        OwnerTransaction::create([
+            'owner_account_id' => $context['account']->id,
+            'building_id' => $context['building']->id,
+            'unit_id' => $context['unit']->id,
+            'direction' => 'debit',
+            'category' => 'payout',
+            'amount' => 4000,
+            'transaction_date' => '2026-08-02',
+        ]);
+
+        $this->getJson(
+            "/api/owner-accounts/{$context['account']->id}"
+        )
+            ->assertOk()
+            ->assertJsonPath(
+                'category_totals.rent_entitlement',
+                10000
+            )
+            ->assertJsonPath(
+                'category_totals.management_fee',
+                -1500
+            )
+            ->assertJsonPath(
+                'category_totals.payout',
+                -4000
+            )
+            ->assertJsonPath(
+                'category_totals.owner_deposit',
+                0
+            )
+            ->assertJsonPath(
+                'category_totals.expense',
+                0
+            )
+            ->assertJsonPath(
+                'category_totals.agent_commission',
+                0
+            )
+            ->assertJsonPath(
+                'category_totals.adjustment',
+                0
+            )
+            ->assertJsonPath(
+                'balance',
+                4500
+            );
+    }
+
     public function test_only_owner_deposits_expose_receipt_endpoint(): void
     {
         $context =
