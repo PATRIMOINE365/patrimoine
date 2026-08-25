@@ -338,6 +338,79 @@ class OwnerAccountApiTest extends TestCase
             );
     }
 
+    /**
+     * V1.0.8 dual balance: deposits and expenses live in the
+     * Deposit/Expense account (which may go negative); rent-derived
+     * money lives in the Payout account.
+     */
+    public function test_owner_account_detail_exposes_dual_balances(): void
+    {
+        $context =
+            $this->createContext();
+
+        foreach ([
+            ['credit', 'rent_entitlement', 10000],
+            ['debit', 'management_fee', 1000],
+            ['credit', 'owner_deposit', 5000],
+            ['debit', 'expense', 8000],
+        ] as [$direction, $category, $amount]) {
+            OwnerTransaction::create([
+                'owner_account_id' => $context['account']->id,
+                'building_id' => $context['building']->id,
+                'unit_id' => $context['unit']->id,
+                'direction' => $direction,
+                'category' => $category,
+                'amount' => $amount,
+                'transaction_date' => '2026-08-01',
+            ]);
+        }
+
+        $this->getJson(
+            "/api/owner-accounts/{$context['account']->id}"
+        )
+            ->assertOk()
+            ->assertJsonPath('payout_account_balance', 9000)
+            ->assertJsonPath('deposit_account_balance', -3000)
+            ->assertJsonPath('balance', 6000);
+    }
+
+    /**
+     * A reserve transfer moves money between the two sub-balances
+     * without changing the owner's total balance.
+     */
+    public function test_reserve_transfer_shifts_sub_balances_only(): void
+    {
+        $context =
+            $this->createContext();
+
+        OwnerTransaction::create([
+            'owner_account_id' => $context['account']->id,
+            'building_id' => $context['building']->id,
+            'unit_id' => $context['unit']->id,
+            'direction' => 'credit',
+            'category' => 'rent_entitlement',
+            'amount' => 10000,
+            'transaction_date' => '2026-08-01',
+        ]);
+
+        OwnerTransaction::create([
+            'owner_account_id' => $context['account']->id,
+            'building_id' => $context['building']->id,
+            'unit_id' => $context['unit']->id,
+            'direction' => 'credit',
+            'category' => 'reserve_transfer',
+            'amount' => 4000,
+            'transaction_date' => '2026-08-02',
+        ]);
+
+        $account =
+            $context['account']->fresh();
+
+        $this->assertSame(10000, $account->balance());
+        $this->assertSame(4000, $account->depositAccountBalance());
+        $this->assertSame(6000, $account->payoutAccountBalance());
+    }
+
     public function test_only_owner_deposits_expose_receipt_endpoint(): void
     {
         $context =

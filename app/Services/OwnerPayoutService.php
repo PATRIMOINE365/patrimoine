@@ -102,7 +102,13 @@ class OwnerPayoutService
              *
              * Negative balances naturally carry forward.
              */
-            $availableBalance = $account->balance();
+            /*
+             * V1.0.8: withdrawals draw ONLY from the Payout account —
+             * the rent-derived side. Money in the Deposit/Expense
+             * account is earmarked and must be reserve-transferred back
+             * before it becomes withdrawable.
+             */
+            $availableBalance = $account->payoutAccountBalance();
 
             if ($availableBalance <= 0) {
                 throw new RuntimeException(

@@ -3212,6 +3212,52 @@ function renderOwnerAccountsView(
         )
     );
 
+    const payoutBalance =
+        Number(
+            owner.payout_account_balance
+            ?? 0
+        );
+
+    const depositBalance =
+        Number(
+            owner.deposit_account_balance
+            ?? 0
+        );
+
+    const payoutTile =
+        document.getElementById(
+            'owner-accounts-payout-balance'
+        );
+
+    if (payoutTile) {
+        payoutTile.textContent =
+            formatCurrency(
+                payoutBalance
+            );
+
+        payoutTile.classList.toggle(
+            'text-[var(--pm-danger-text)]',
+            payoutBalance < 0
+        );
+    }
+
+    const depositTile =
+        document.getElementById(
+            'owner-accounts-deposit-balance'
+        );
+
+    if (depositTile) {
+        depositTile.textContent =
+            formatCurrency(
+                depositBalance
+            );
+
+        depositTile.classList.toggle(
+            'text-[var(--pm-danger-text)]',
+            depositBalance < 0
+        );
+    }
+
     renderOwnerAccountsBreakdown(
         owner
     );
@@ -4490,6 +4536,9 @@ function ownerTransactionCategoryLabel(
 
         case 'payout':
             return translate('owners.owner_payout');
+
+        case 'reserve_transfer':
+            return translate('owners.reserve_transfer');
 
         default:
             return capitalizeWords(

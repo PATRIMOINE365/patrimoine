@@ -1825,9 +1825,83 @@
 </span>
         </div>
 
+        {{--
+            V1.0.8 dual balance: the Payout account holds rent-derived
+            money the owner can withdraw; the Deposit/Expense account
+            holds earmarked deposits that fund expenses and may go
+            negative. Reserve transfers move money between the two.
+        --}}
         <div
             class="
                 mt-5 grid gap-4
+                sm:grid-cols-2
+            "
+        >
+            <div
+                class="
+                    rounded-xl border
+                    border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] p-4
+                "
+            >
+                <div
+                    class="
+                        text-xs font-medium
+                        uppercase tracking-wide
+                        text-[var(--pm-text-muted)]
+                    "
+                >
+                    <span data-i18n="owners.payout_account_balance">
+    {{ __('ui.owners.payout_account_balance') }}
+</span>
+                </div>
+
+                <div
+                    id="owner-accounts-payout-balance"
+                    class="
+                        mt-2 text-2xl font-semibold
+                        tracking-tight text-[var(--pm-text)]
+                    "
+                >
+                    —
+                </div>
+            </div>
+
+            <div
+                class="
+                    rounded-xl border
+                    border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] p-4
+                "
+            >
+                <div
+                    class="
+                        text-xs font-medium
+                        uppercase tracking-wide
+                        text-[var(--pm-text-muted)]
+                    "
+                >
+                    <span data-i18n="owners.deposit_account_balance">
+    {{ __('ui.owners.deposit_account_balance') }}
+</span>
+                </div>
+
+                <div
+                    id="owner-accounts-deposit-balance"
+                    class="
+                        mt-2 text-2xl font-semibold
+                        tracking-tight text-[var(--pm-text)]
+                    "
+                >
+                    —
+                </div>
+            </div>
+
+        </div>
+
+        <div
+            class="
+                mt-4 grid gap-4
                 sm:grid-cols-2
             "
         >

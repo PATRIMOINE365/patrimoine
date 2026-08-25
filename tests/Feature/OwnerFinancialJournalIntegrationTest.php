@@ -115,7 +115,7 @@ class OwnerFinancialJournalIntegrationTest extends TestCase
         $allocation =
             $this->paymentAllocation(
                 $context,
-                2000
+                20000
             );
 
         $accounting =
@@ -144,8 +144,8 @@ class OwnerFinancialJournalIntegrationTest extends TestCase
         /*
          * Payout.
          *
-         * Existing Deposit and rent entitlement provide sufficient positive
-         * Owner balance.
+         * V1.0.8: withdrawals draw only from the rent-derived Payout
+         * account, so the rent entitlement alone must cover this.
          */
         app(
             OwnerPayoutService::class

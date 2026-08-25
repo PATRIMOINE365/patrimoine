@@ -57,6 +57,7 @@ class OwnerAccount extends Model
     {
         return (int) $this->transactions()
             ->where('direction', 'credit')
+            ->where('category', '<>', 'reserve_transfer')
             ->sum('amount');
     }
 
@@ -67,6 +68,7 @@ class OwnerAccount extends Model
     {
         return (int) $this->transactions()
             ->where('direction', 'debit')
+            ->where('category', '<>', 'reserve_transfer')
             ->sum('amount');
     }
 
@@ -78,6 +80,54 @@ class OwnerAccount extends Model
     public function balance(): int
     {
         return $this->creditedAmount() - $this->debitedAmount();
+    }
+
+    /**
+     * V1.0.8 Deposit/Expense account: the owner's earmarked money.
+     *
+     * Owner deposits fund it, every expense draws from it, and manual
+     * reserve transfers move money between it and the Payout account.
+     * It may go negative — expenses beyond the deposits are debt the
+     * owner owes the agency, never silently taken from rent money.
+     */
+    public function depositAccountBalance(): int
+    {
+        $deposits = (int) $this->transactions()
+            ->where('category', 'owner_deposit')
+            ->where('direction', 'credit')
+            ->sum('amount');
+
+        $expenses = (int) $this->transactions()
+            ->where('category', 'expense')
+            ->where('direction', 'debit')
+            ->sum('amount');
+
+        $transfersIn = (int) $this->transactions()
+            ->where('category', 'reserve_transfer')
+            ->where('direction', 'credit')
+            ->sum('amount');
+
+        $transfersOut = (int) $this->transactions()
+            ->where('category', 'reserve_transfer')
+            ->where('direction', 'debit')
+            ->sum('amount');
+
+        return $deposits
+            - $expenses
+            + $transfersIn
+            - $transfersOut;
+    }
+
+    /**
+     * V1.0.8 Payout account: rent-derived money the owner can withdraw.
+     *
+     * Withdrawals are capped here; deposit-side money must be
+     * reserve-transferred back before it becomes withdrawable.
+     */
+    public function payoutAccountBalance(): int
+    {
+        return $this->balance()
+            - $this->depositAccountBalance();
     }
 
     /**
@@ -101,6 +151,7 @@ class OwnerAccount extends Model
                 'expense',
                 'payout',
                 'adjustment',
+                'reserve_transfer',
             ],
             0
         );
