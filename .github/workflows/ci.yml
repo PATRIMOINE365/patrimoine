@@ -1,0 +1,49 @@
+# Permanent test environment: every push and pull request runs the full
+# PHPUnit suite against a production-shaped toolchain (PHP 8.4 + intl,
+# built Vite assets so browser/Blade tests can render).
+#
+# The suite uses SQLite :memory: (see phpunit.xml) — no services needed.
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+jobs:
+  tests:
+    name: PHPUnit (PHP 8.4)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: intl, mbstring, pdo_sqlite, gd, zip
+          coverage: none
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Build frontend assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Prepare application environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+
+      - name: Run the test suite
+        run: vendor/bin/phpunit
