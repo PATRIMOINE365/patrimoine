@@ -335,21 +335,10 @@ function populateLeaseReferenceControls() {
         )
     );
 
-    populatePartySelect(
-        'lease-tenant',
-        availableTenants,
-        translate(
-            'leases.select_tenant'
-        )
-    );
-
-    populatePartySelect(
-        'lease-agent',
-        availableAgents,
-        translate(
-            'leases.no_agent'
-        )
-    );
+    /*
+     * V1.0.8: Tenant and Agent use searchable pickers; their preloaded
+     * lists only seed the empty-search suggestions.
+     */
 
     populateBuildingFilter();
 
@@ -493,6 +482,540 @@ function populateBuildingFilter() {
 
 let selectedLeaseUnit =
     null;
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.8 Tenant / Agent searchable pickers
+|--------------------------------------------------------------------------
+|
+| Both parties are chosen through a type-ahead instead of a dropdown.
+| Suggestions come from the server (role-filtered free-text search), so
+| portfolios beyond the preloaded first page remain fully reachable.
+| The picker writes the chosen Party id into the hidden #lease-tenant /
+| #lease-agent inputs, so payload building is unchanged.
+|
+*/
+
+const leasePartyPickers = {
+    tenant: {
+        role: 'tenant',
+        selected: null,
+        searchTimer: null,
+        emptyKey: 'leases.no_matching_tenants',
+    },
+
+    agent: {
+        role: 'agent',
+        selected: null,
+        searchTimer: null,
+        emptyKey: 'leases.no_matching_agents',
+    },
+};
+
+/**
+ * The preloaded suggestion list for one picker kind.
+ *
+ * @param {string} kind
+ * @returns {Array<object>}
+ */
+function leasePartyPickerSeed(
+    kind
+) {
+    return kind === 'tenant'
+        ? availableTenants
+        : availableAgents;
+}
+
+/**
+ * Wire both party pickers.
+ */
+function initializeLeasePartyPickers() {
+    Object
+        .keys(
+            leasePartyPickers
+        )
+        .forEach(
+            (kind) => {
+                const input =
+                    document.getElementById(
+                        `lease-${kind}-search`
+                    );
+
+                const results =
+                    document.getElementById(
+                        `lease-${kind}-results`
+                    );
+
+                if (! input || ! results) {
+                    return;
+                }
+
+                input.addEventListener(
+                    'input',
+                    () => {
+                        const picker =
+                            leasePartyPickers[kind];
+
+                        /*
+                         * Typing over a selection means the user is
+                         * looking for someone else.
+                         */
+                        if (
+                            picker.selected
+                            && input.value.trim()
+                                !== partyDisplayName(
+                                    picker.selected
+                                )
+                        ) {
+                            clearLeasePartySelection(
+                                kind,
+                                false
+                            );
+                        }
+
+                        scheduleLeasePartySearch(
+                            kind,
+                            input.value
+                        );
+                    }
+                );
+
+                input.addEventListener(
+                    'focus',
+                    () => {
+                        if (
+                            ! leasePartyPickers[kind]
+                                .selected
+                        ) {
+                            scheduleLeasePartySearch(
+                                kind,
+                                input.value
+                            );
+                        }
+                    }
+                );
+
+                document
+                    .getElementById(
+                        `lease-${kind}-clear`
+                    )
+                    ?.addEventListener(
+                        'click',
+                        () => {
+                            clearLeasePartySelection(
+                                kind
+                            );
+
+                            input.focus();
+                        }
+                    );
+
+                document.addEventListener(
+                    'click',
+                    (event) => {
+                        const picker =
+                            document.getElementById(
+                                `lease-${kind}-picker`
+                            );
+
+                        if (
+                            picker
+                            && ! picker.contains(
+                                event.target
+                            )
+                        ) {
+                            results.classList.add(
+                                'hidden'
+                            );
+                        }
+                    }
+                );
+            }
+        );
+}
+
+/**
+ * Debounced suggestion refresh. An empty term shows a first sample of
+ * the preloaded list without a network round trip.
+ *
+ * @param {string} kind
+ * @param {string} term
+ */
+function scheduleLeasePartySearch(
+    kind,
+    term
+) {
+    const picker =
+        leasePartyPickers[kind];
+
+    window.clearTimeout(
+        picker.searchTimer
+    );
+
+    const trimmed =
+        String(
+            term
+            ?? ''
+        ).trim();
+
+    if (trimmed === '') {
+        renderLeasePartyResults(
+            kind,
+            leasePartyPickerSeed(
+                kind
+            ).slice(0, 12)
+        );
+
+        return;
+    }
+
+    picker.searchTimer =
+        window.setTimeout(
+            async () => {
+                try {
+                    const response =
+                        await apiRequest(
+                            `/api/parties?role=${encodeURIComponent(
+                                picker.role
+                            )}&search=${encodeURIComponent(
+                                trimmed
+                            )}&per_page=15`
+                        );
+
+                    const payload =
+                        await parseJsonResponse(
+                            response
+                        );
+
+                    renderLeasePartyResults(
+                        kind,
+                        Array.isArray(
+                            payload?.data
+                        )
+                            ? payload.data
+                            : []
+                    );
+                } catch {
+                    /*
+                     * A failed suggestion request must never block the
+                     * form; fall back to the preloaded sample.
+                     */
+                    renderLeasePartyResults(
+                        kind,
+                        leasePartyPickerSeed(
+                            kind
+                        ).slice(0, 12)
+                    );
+                }
+            },
+            250
+        );
+}
+
+/**
+ * Render party suggestions for one picker.
+ *
+ * @param {string} kind
+ * @param {Array<object>} parties
+ */
+function renderLeasePartyResults(
+    kind,
+    parties
+) {
+    const results =
+        document.getElementById(
+            `lease-${kind}-results`
+        );
+
+    if (! results) {
+        return;
+    }
+
+    if (parties.length === 0) {
+        results.innerHTML = `
+            <div
+                class="
+                    px-4 py-5
+                    text-center text-sm
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        leasePartyPickers[kind]
+                            .emptyKey
+                    )
+                )}
+            </div>
+        `;
+
+        results.classList.remove(
+            'hidden'
+        );
+
+        return;
+    }
+
+    results.innerHTML =
+        parties
+            .map(
+                (party) => {
+                    const contact =
+                        [
+                            party?.phone,
+                            party?.email,
+                        ]
+                            .filter(Boolean)
+                            .join(' · ');
+
+                    return `
+                        <button
+                            type="button"
+                            data-select-party="${escapeHtml(
+                                party.id
+                            )}"
+                            class="
+                                block w-full
+                                border-b border-[var(--pm-border-subtle)]
+                                px-4 py-3
+                                text-left
+                                transition
+                                last:border-b-0
+                                hover:bg-[var(--pm-hover)]
+                                focus:bg-[var(--pm-hover)]
+                                focus:outline-none
+                            "
+                        >
+                            <div
+                                class="
+                                    text-sm font-medium
+                                    text-[var(--pm-text)]
+                                "
+                            >
+                                ${escapeHtml(
+                                    partyDisplayName(
+                                        party
+                                    )
+                                )}
+                            </div>
+
+                            ${
+                                contact === ''
+                                    ? ''
+                                    : `
+                                        <div
+                                            class="
+                                                mt-0.5 text-xs
+                                                text-[var(--pm-text-muted)]
+                                            "
+                                        >
+                                            ${escapeHtml(
+                                                contact
+                                            )}
+                                        </div>
+                                    `
+                            }
+                        </button>
+                    `;
+                }
+            )
+            .join('');
+
+    results.classList.remove(
+        'hidden'
+    );
+
+    results
+        .querySelectorAll(
+            '[data-select-party]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        const party =
+                            parties.find(
+                                (candidate) =>
+                                    String(
+                                        candidate.id
+                                    ) === String(
+                                        button.dataset
+                                            .selectParty
+                                    )
+                            );
+
+                        if (party) {
+                            selectLeaseParty(
+                                kind,
+                                party
+                            );
+                        }
+                    }
+                );
+            }
+        );
+}
+
+/**
+ * Apply one selected Party to a picker.
+ *
+ * @param {string} kind
+ * @param {object} party
+ */
+function selectLeaseParty(
+    kind,
+    party
+) {
+    leasePartyPickers[kind]
+        .selected = party;
+
+    setFormValue(
+        `lease-${kind}`,
+        party.id
+    );
+
+    const input =
+        document.getElementById(
+            `lease-${kind}-search`
+        );
+
+    if (input) {
+        input.value =
+            partyDisplayName(
+                party
+            );
+    }
+
+    document
+        .getElementById(
+            `lease-${kind}-results`
+        )
+        ?.classList.add(
+            'hidden'
+        );
+}
+
+/**
+ * Clear one picker's selection.
+ *
+ * @param {string} kind
+ * @param {boolean} clearText
+ */
+function clearLeasePartySelection(
+    kind,
+    clearText = true
+) {
+    leasePartyPickers[kind]
+        .selected = null;
+
+    setFormValue(
+        `lease-${kind}`,
+        ''
+    );
+
+    if (clearText) {
+        const input =
+            document.getElementById(
+                `lease-${kind}-search`
+            );
+
+        if (input) {
+            input.value = '';
+        }
+
+        document
+            .getElementById(
+                `lease-${kind}-results`
+            )
+            ?.classList.add(
+                'hidden'
+            );
+    }
+}
+
+/**
+ * Restore a picker from persisted Lease data when the edit drawer opens.
+ *
+ * The id is authoritative; the display name comes from the serialized
+ * relation, the preloaded list, or a direct lookup, in that order.
+ *
+ * @param {string} kind
+ * @param {number|null} partyId
+ * @param {object|null} party
+ */
+async function setLeasePartySelectionById(
+    kind,
+    partyId,
+    party = null
+) {
+    if (! partyId) {
+        clearLeasePartySelection(
+            kind
+        );
+
+        return;
+    }
+
+    const known =
+        party
+        ?? leasePartyPickerSeed(
+            kind
+        ).find(
+            (candidate) =>
+                Number(candidate.id)
+                === Number(partyId)
+        );
+
+    if (known) {
+        selectLeaseParty(
+            kind,
+            known
+        );
+
+        return;
+    }
+
+    /*
+     * Party is outside the preloaded page: keep the id authoritative
+     * immediately, then resolve the display name.
+     */
+    setFormValue(
+        `lease-${kind}`,
+        partyId
+    );
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/parties/${encodeURIComponent(
+                    partyId
+                )}`
+            );
+
+        const resolved =
+            await parseJsonResponse(
+                response
+            );
+
+        if (
+            Number(
+                formValue(
+                    `lease-${kind}`
+                )
+            ) === Number(partyId)
+        ) {
+            selectLeaseParty(
+                kind,
+                resolved
+            );
+        }
+    } catch {
+        /*
+         * The id still submits correctly; only the label is missing.
+         */
+    }
+}
 
 /**
  * Configure the searchable Unit control.
@@ -2598,6 +3121,8 @@ function initializeLeaseForm() {
 
     initializeUnitSearch();
 
+    initializeLeasePartyPickers();
+
     initializeLeaseFinancialControls();
 
     initializeLeaseDateInputs();
@@ -2730,6 +3255,9 @@ function resetLeaseForm() {
         )
         ?.reset();
 
+    clearLeasePartySelection('tenant');
+    clearLeasePartySelection('agent');
+
     /*
      * Explicit defaults mirror Lease backend defaults and our V1
      * business rules.
@@ -2848,14 +3376,16 @@ function populateLeaseForm(
         lease.unit_id
     );
 
-    setFormValue(
-        'lease-tenant',
-        lease.tenant_id
+    setLeasePartySelectionById(
+        'tenant',
+        lease.tenant_id,
+        lease.tenant
     );
 
-    setFormValue(
-        'lease-agent',
-        lease.agent_id
+    setLeasePartySelectionById(
+        'agent',
+        lease.agent_id,
+        lease.agent
     );
 
     setFormValue(

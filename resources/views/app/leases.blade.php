@@ -712,18 +712,77 @@
                                     <span class="text-[var(--pm-danger-text)]">*</span>
                                 </label>
 
-                                <select
-                                    id="lease-tenant"
-                                    required
-                                    class="pm-input"
+                                <div
+                                    id="lease-tenant-picker"
+                                    class="relative"
                                 >
-                                    <option
-                                        value=""
-                                        data-i18n="leases.select_tenant"
+                                    {{-- Selected Party ID submitted to the API. --}}
+                                    <input
+                                        id="lease-tenant"
+                                        type="hidden"
                                     >
-                                        {{ __('ui.leases.select_tenant') }}
-                                    </option>
-                                </select>
+
+                                    <div class="relative">
+                                        <svg
+                                            class="
+                                                pointer-events-none
+                                                absolute left-3.5 top-1/2
+                                                h-4 w-4
+                                                -translate-y-1/2
+                                                text-[var(--pm-text-subtle)]
+                                            "
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                        >
+                                            <circle cx="11" cy="11" r="7"/>
+                                            <path d="m20 20-3.5-3.5"/>
+                                        </svg>
+
+                                        <input
+                                            id="lease-tenant-search"
+                                            type="search"
+                                            autocomplete="off"
+                                            data-i18n-placeholder="leases.tenant_search_placeholder"
+                                            placeholder="{{ __('ui.leases.tenant_search_placeholder') }}"
+                                            class="pm-input pm-input-search pm-input-search-clearable"
+                                        >
+
+                                        <button
+                                            id="lease-tenant-clear"
+                                            type="button"
+                                            aria-label="Clear selected Tenant"
+                                            class="
+                                                absolute right-2 top-1/2
+                                                inline-flex h-7 w-7
+                                                -translate-y-1/2
+                                                items-center justify-center
+                                                rounded-md
+                                                text-[var(--pm-text-subtle)]
+                                                transition
+                                                hover:bg-[var(--pm-hover)]
+                                                hover:text-[var(--pm-text-secondary)]
+                                            "
+                                            data-i18n-aria-label="leases.clear_selected_tenant">
+                                            <svg
+                                                class="h-4 w-4"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                            >
+                                                <path d="M18 6 6 18"/>
+                                                <path d="m6 6 12 12"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div
+                                        id="lease-tenant-results"
+                                        class="pm-card absolute z-50 mt-1 hidden max-h-80 w-full overflow-y-auto shadow-xl"
+                                    ></div>
+                                </div>
                             </div>
 
                             <div>
@@ -746,17 +805,77 @@
                                     </x-field-help>
                                 </label>
 
-                                <select
-                                    id="lease-agent"
-                                    class="pm-input"
+                                <div
+                                    id="lease-agent-picker"
+                                    class="relative"
                                 >
-                                    <option
-                                        value=""
-                                        data-i18n="leases.no_agent"
+                                    {{-- Selected Party ID submitted to the API. --}}
+                                    <input
+                                        id="lease-agent"
+                                        type="hidden"
                                     >
-                                        {{ __('ui.leases.no_agent') }}
-                                    </option>
-                                </select>
+
+                                    <div class="relative">
+                                        <svg
+                                            class="
+                                                pointer-events-none
+                                                absolute left-3.5 top-1/2
+                                                h-4 w-4
+                                                -translate-y-1/2
+                                                text-[var(--pm-text-subtle)]
+                                            "
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                        >
+                                            <circle cx="11" cy="11" r="7"/>
+                                            <path d="m20 20-3.5-3.5"/>
+                                        </svg>
+
+                                        <input
+                                            id="lease-agent-search"
+                                            type="search"
+                                            autocomplete="off"
+                                            data-i18n-placeholder="leases.agent_search_placeholder"
+                                            placeholder="{{ __('ui.leases.agent_search_placeholder') }}"
+                                            class="pm-input pm-input-search pm-input-search-clearable"
+                                        >
+
+                                        <button
+                                            id="lease-agent-clear"
+                                            type="button"
+                                            aria-label="Clear selected Agent"
+                                            class="
+                                                absolute right-2 top-1/2
+                                                inline-flex h-7 w-7
+                                                -translate-y-1/2
+                                                items-center justify-center
+                                                rounded-md
+                                                text-[var(--pm-text-subtle)]
+                                                transition
+                                                hover:bg-[var(--pm-hover)]
+                                                hover:text-[var(--pm-text-secondary)]
+                                            "
+                                            data-i18n-aria-label="leases.clear_selected_agent">
+                                            <svg
+                                                class="h-4 w-4"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                            >
+                                                <path d="M18 6 6 18"/>
+                                                <path d="m6 6 12 12"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div
+                                        id="lease-agent-results"
+                                        class="pm-card absolute z-50 mt-1 hidden max-h-80 w-full overflow-y-auto shadow-xl"
+                                    ></div>
+                                </div>
                             </div>
                         </div>
                     </section>
