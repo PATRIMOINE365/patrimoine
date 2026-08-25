@@ -232,6 +232,22 @@ async function downloadRegistryExport(
 
     hideSettingsError();
 
+    /*
+     * The PDF review tab must be opened synchronously, while the click
+     * activation is still fresh — a slow export outlives the browser's
+     * popup allowance and the tab would silently never open.
+     */
+    const pdfTab =
+        format === 'pdf'
+            ? window.open(
+                '',
+                '_blank'
+            )
+            : null;
+
+    let pdfDelivered =
+        false;
+
     try {
         button.disabled =
             true;
@@ -272,11 +288,23 @@ async function downloadRegistryExport(
             );
 
         if (format === 'pdf') {
-            window.open(
-                url,
-                '_blank',
-                'noopener'
-            );
+            if (
+                pdfTab
+                && ! pdfTab.closed
+            ) {
+                pdfTab.location.replace(
+                    url
+                );
+            } else {
+                window.open(
+                    url,
+                    '_blank',
+                    'noopener'
+                );
+            }
+
+            pdfDelivered =
+                true;
         } else {
             const link =
                 document.createElement(
@@ -322,6 +350,18 @@ async function downloadRegistryExport(
                 )
         );
     } finally {
+        /*
+         * A stub tab left open by a failed export would strand the
+         * user on about:blank.
+         */
+        if (
+            pdfTab
+            && ! pdfTab.closed
+            && ! pdfDelivered
+        ) {
+            pdfTab.close();
+        }
+
         button.disabled =
             false;
 

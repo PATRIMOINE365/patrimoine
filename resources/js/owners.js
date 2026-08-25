@@ -5,6 +5,7 @@ import {
     formatDate,
     formatNumber,
     openDrawer,
+    openPdfInNewTab,
     parseJsonResponse,
     translate,
     parseMoneyInput,
@@ -2074,40 +2075,11 @@ async function openOwnerTransferVoucher(
     button.disabled = true;
 
     try {
-        const response =
-            await apiRequest(
-                `/api/owner-reserve-transfers/${encodeURIComponent(
-                    transferId
-                )}/voucher`
-            );
-
-        if (! response.ok) {
-            throw new Error(
-                translate('owners.unable_to_open_voucher')
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        window.open(
-            url,
-            '_blank',
-            'noopener,noreferrer'
-        );
-
-        window.setTimeout(
-            () => {
-                URL.revokeObjectURL(
-                    url
-                );
-            },
-            60000
+        await openPdfInNewTab(
+            `/api/owner-reserve-transfers/${encodeURIComponent(
+                transferId
+            )}/voucher`,
+            translate('owners.unable_to_open_voucher')
         );
     } catch (error) {
         showOwnersError(
@@ -5281,44 +5253,9 @@ async function openAuthenticatedPdf(
     hideOwnersError();
 
     try {
-        const response =
-            await apiRequest(
-                endpoint,
-                {
-                    headers: {
-                        Accept:
-                            'application/pdf',
-                    },
-                }
-            );
-
-        if (! response.ok) {
-            throw new Error(
-                translate('owners.unable_to_open_document')
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        window.open(
-            url,
-            '_blank',
-            'noopener,noreferrer'
-        );
-
-        window.setTimeout(
-            () => {
-                URL.revokeObjectURL(
-                    url
-                );
-            },
-            60000
+        await openPdfInNewTab(
+            endpoint,
+            translate('owners.unable_to_open_document')
         );
     } catch (error) {
         showOwnersError(

@@ -3,6 +3,7 @@ import {
     formatCurrency,
     formatDate,
     formatNumber,
+    openPdfInNewTab,
     parseJsonResponse,
     translate,
 } from './core.js';
@@ -4327,44 +4328,10 @@ async function openAuthenticatedDocument(
     hideReportsError();
 
     try {
-        const response =
-            await apiRequest(
-                endpoint,
-                {
-                    headers: {
-                        Accept:
-                            accept,
-                    },
-                }
-            );
-
-        if (! response.ok) {
-            throw new Error(
-                translate('reports.unable_to_open')
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        window.open(
-            url,
-            '_blank',
-            'noopener,noreferrer'
-        );
-
-        window.setTimeout(
-            () => {
-                URL.revokeObjectURL(
-                    url
-                );
-            },
-            60000
+        await openPdfInNewTab(
+            endpoint,
+            translate('reports.unable_to_open'),
+            accept
         );
     } catch (error) {
         showReportsError(

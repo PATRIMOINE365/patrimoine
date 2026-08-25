@@ -34,6 +34,7 @@ import {
     getPresentationConfiguration,
     nullableFormValue,
     openDrawer,
+    openPdfInNewTab,
     parseJsonResponse,
     setText,
     translate,
@@ -5079,40 +5080,11 @@ async function openTerminationSettlementNotice() {
     }
 
     try {
-        const response =
-            await apiRequest(
-                `/api/leases/${terminationSettlementLeaseId}/termination-notice/pdf`
-            );
-
-        if (! response.ok) {
-            throw new Error(
-                translate(
-                    'leases.termination_notice_unable_open'
-                )
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        window.open(
-            url,
-            '_blank',
-            'noopener,noreferrer'
-        );
-
-        window.setTimeout(
-            () => {
-                URL.revokeObjectURL(
-                    url
-                );
-            },
-            60000
+        await openPdfInNewTab(
+            `/api/leases/${terminationSettlementLeaseId}/termination-notice/pdf`,
+            translate(
+                'leases.termination_notice_unable_open'
+            )
         );
     } catch (error) {
         window.alert(
@@ -5619,40 +5591,11 @@ async function openLeaseTerminationNotice() {
     }
 
     try {
-        const response =
-            await apiRequest(
-                `/api/leases/${terminatingLeaseId}/termination-notice/pdf`
-            );
-
-        if (! response.ok) {
-            throw new Error(
-                translate(
-                    'leases.termination_notice_unable_open'
-                )
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        window.open(
-            url,
-            '_blank',
-            'noopener,noreferrer'
-        );
-
-        window.setTimeout(
-            () => {
-                URL.revokeObjectURL(
-                    url
-                );
-            },
-            60000
+        await openPdfInNewTab(
+            `/api/leases/${terminatingLeaseId}/termination-notice/pdf`,
+            translate(
+                'leases.termination_notice_unable_open'
+            )
         );
     } catch (error) {
         showLeaseTerminationError(
@@ -9489,40 +9432,11 @@ async function openLeaseFinancialHistoryDocument(
     }
 
     try {
-        const response =
-            await apiRequest(
-                endpoint
-            );
-
-        if (! response.ok) {
-            throw new Error(
-                translate(
-                    'leases.financial_history_unable_open_document'
-                )
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        window.open(
-            url,
-            '_blank',
-            'noopener,noreferrer'
-        );
-
-        window.setTimeout(
-            () => {
-                URL.revokeObjectURL(
-                    url
-                );
-            },
-            60000
+        await openPdfInNewTab(
+            endpoint,
+            translate(
+                'leases.financial_history_unable_open_document'
+            )
         );
     } catch (error) {
         showLeaseFinancialHistoryError(

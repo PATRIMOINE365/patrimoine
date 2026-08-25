@@ -104,6 +104,9 @@ let deletingPropertyName =
 let deletingUnitId =
     null;
 
+let deletingUnitName =
+    '';
+
 /*
  * Auto-hide timer for the page activity banner.
  */
@@ -5400,6 +5403,12 @@ function openDeleteUnitModal(
     deletingUnitId =
         numericUnitId;
 
+    deletingUnitName =
+        String(
+            unitName
+            ?? ''
+        );
+
     const unitNameElement =
         document.getElementById(
             'delete-unit-name'
@@ -5443,6 +5452,9 @@ function closeDeleteUnitModal() {
             onClosed: () => {
                 deletingUnitId =
                     null;
+
+                deletingUnitName =
+                    '';
 
                 hideDeleteUnitError();
             },

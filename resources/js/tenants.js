@@ -4,8 +4,10 @@ import {
     escapeHtml,
     formatCurrency,
     formatDate,
+    formatLongDate,
     formatNumber,
     openDrawer,
+    openPdfInNewTab,
     parseJsonResponse,
     translate,
     parseMoneyInput,
@@ -1383,40 +1385,11 @@ async function openTenantInvoice(
     hideTenantError();
 
     try {
-        const response =
-            await apiRequest(
-                `/api/invoices/${encodeURIComponent(
-                    invoiceId
-                )}/pdf`
-            );
-
-        if (! response.ok) {
-            throw new Error(
-                translate('tenants.unable_to_open_invoice')
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        window.open(
-            url,
-            '_blank',
-            'noopener,noreferrer'
-        );
-
-        window.setTimeout(
-            () => {
-                URL.revokeObjectURL(
-                    url
-                );
-            },
-            60000
+        await openPdfInNewTab(
+            `/api/invoices/${encodeURIComponent(
+                invoiceId
+            )}/pdf`,
+            translate('tenants.unable_to_open_invoice')
         );
     } catch (error) {
         showTenantError(
@@ -2117,40 +2090,11 @@ async function openTenantReceipt(
     hideTenantError();
 
     try {
-        const response =
-            await apiRequest(
-                `/api/payments/${encodeURIComponent(
-                    paymentId
-                )}/receipt`
-            );
-
-        if (! response.ok) {
-            throw new Error(
-                translate('tenants.unable_to_open_receipt')
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        window.open(
-            url,
-            '_blank',
-            'noopener,noreferrer'
-        );
-
-        window.setTimeout(
-            () => {
-                URL.revokeObjectURL(
-                    url
-                );
-            },
-            60000
+        await openPdfInNewTab(
+            `/api/payments/${encodeURIComponent(
+                paymentId
+            )}/receipt`,
+            translate('tenants.unable_to_open_receipt')
         );
     } catch (error) {
         showTenantError(
@@ -2559,40 +2503,11 @@ async function openTenantTransferVoucher(
     hideTenantError();
 
     try {
-        const response =
-            await apiRequest(
-                `/api/tenant-fund-transfers/${encodeURIComponent(
-                    transactionId
-                )}/voucher`
-            );
-
-        if (! response.ok) {
-            throw new Error(
-                translate('tenants.unable_to_open_voucher')
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        window.open(
-            url,
-            '_blank',
-            'noopener,noreferrer'
-        );
-
-        window.setTimeout(
-            () => {
-                URL.revokeObjectURL(
-                    url
-                );
-            },
-            60000
+        await openPdfInNewTab(
+            `/api/tenant-fund-transfers/${encodeURIComponent(
+                transactionId
+            )}/voucher`,
+            translate('tenants.unable_to_open_voucher')
         );
     } catch (error) {
         showTenantError(
@@ -3026,38 +2941,9 @@ async function openTenantDocumentBlob(
     hideTenantError();
 
     try {
-        const response =
-            await apiRequest(
-                endpoint
-            );
-
-        if (! response.ok) {
-            throw new Error(
-                translate(errorKey)
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        window.open(
-            url,
-            '_blank',
-            'noopener,noreferrer'
-        );
-
-        window.setTimeout(
-            () => {
-                URL.revokeObjectURL(
-                    url
-                );
-            },
-            60000
+        await openPdfInNewTab(
+            endpoint,
+            translate(errorKey)
         );
     } catch (error) {
         showTenantError(
@@ -7680,40 +7566,11 @@ async function openTenantDocument(
     }
 
     try {
-        const response =
-            await apiRequest(
-                endpoint
-            );
-
-        if (! response.ok) {
-            throw new Error(
-                translate(
-                    'tenants.unable_to_open_document'
-                )
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        window.open(
-            url,
-            '_blank',
-            'noopener,noreferrer'
-        );
-
-        window.setTimeout(
-            () => {
-                URL.revokeObjectURL(
-                    url
-                );
-            },
-            60000
+        await openPdfInNewTab(
+            endpoint,
+            translate(
+                'tenants.unable_to_open_document'
+            )
         );
     } catch (error) {
         const message =
