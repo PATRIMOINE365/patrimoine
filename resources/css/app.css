@@ -287,6 +287,37 @@ html[data-shell-role="administrator"]
  * utilities live in a cascade layer and can never beat the un-layered
  * .pm-input padding, so icon clearance must be a component rule.
  */
+/*
+ * V1.0.8: duration / notice preset chips on the Lease form.
+ */
+.pm-duration-chip {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--pm-border);
+    border-radius: 9999px;
+    background: var(--pm-surface);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--pm-text-secondary);
+    cursor: pointer;
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease,
+        color 150ms ease;
+}
+
+.pm-duration-chip:hover {
+    border-color: var(--pm-border-strong);
+    background: var(--pm-hover);
+}
+
+.pm-duration-chip[aria-pressed="true"] {
+    border-color: var(--color-patrimoine-500);
+    background: var(--pm-selected);
+    color: var(--pm-text);
+}
+
 .pm-input-search {
     padding-left: 2.5rem;
 }

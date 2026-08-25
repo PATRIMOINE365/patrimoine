@@ -985,6 +985,41 @@
 </div>
                             </div>
 
+
+                            <div class="md:col-span-2 xl:col-span-4">
+                                <span class="pm-field-label">
+                                    <span data-i18n="leases.duration">
+                                        {{ __('ui.leases.duration') }}
+                                    </span>
+                                </span>
+
+                                <div
+                                    id="lease-duration-chips"
+                                    class="mt-1 flex flex-wrap gap-2"
+                                >
+                                    @foreach ([
+                                        '3m' => 'duration_3m',
+                                        '6m' => 'duration_6m',
+                                        '1y' => 'duration_1y',
+                                        '2y' => 'duration_2y',
+                                        '3y' => 'duration_3y',
+                                        '4y' => 'duration_4y',
+                                        '5y' => 'duration_5y',
+                                        'custom' => 'duration_custom',
+                                    ] as $value => $key)
+                                        <button
+                                            type="button"
+                                            data-lease-duration="{{ $value }}"
+                                            aria-pressed="false"
+                                            class="pm-duration-chip"
+                                            data-i18n="leases.{{ $key }}"
+                                        >
+                                            {{ __('ui.leases.' . $key) }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+
                             <div>
                                 <label
                                     for="lease-end-date"
@@ -1129,6 +1164,28 @@
                                         will later control when Rent Reserve consumption begins.
                                     </x-field-help>
                                 </label>
+
+                                <div
+                                    id="lease-notice-chips"
+                                    class="mb-2 flex flex-wrap gap-2"
+                                >
+                                    @foreach ([
+                                        '1m' => 'notice_1m',
+                                        '3m' => 'notice_3m',
+                                        '6m' => 'notice_6m',
+                                        'custom' => 'duration_custom',
+                                    ] as $value => $key)
+                                        <button
+                                            type="button"
+                                            data-lease-notice="{{ $value }}"
+                                            aria-pressed="false"
+                                            class="pm-duration-chip"
+                                            data-i18n="leases.{{ $key }}"
+                                        >
+                                            {{ __('ui.leases.' . $key) }}
+                                        </button>
+                                    @endforeach
+                                </div>
 
                                 <div class="pm-lease-date-control">
 <input

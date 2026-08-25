@@ -485,6 +485,326 @@ let selectedLeaseUnit =
 
 /*
 |--------------------------------------------------------------------------
+| V1.0.8 Duration and Notice preset chips
+|--------------------------------------------------------------------------
+|
+| Picking a duration computes End Date = Start Date + duration − 1 day
+| (a one-year lease starting 1 March ends 28/29 February). Picking a
+| notice preset computes Notice Date = End Date − N months. "Other"
+| hands control back to the date fields; typing in a date field flips
+| its chip row to Other automatically. Chips stay clickable at all
+| times, so a preset can always be re-applied.
+|
+*/
+
+const LEASE_DURATION_MONTHS = {
+    '3m': 3,
+    '6m': 6,
+    '1y': 12,
+    '2y': 24,
+    '3y': 36,
+    '4y': 48,
+    '5y': 60,
+};
+
+const LEASE_NOTICE_MONTHS = {
+    '1m': 1,
+    '3m': 3,
+    '6m': 6,
+};
+
+/**
+ * Add months to an ISO date with day-of-month clamping, then shift by
+ * a day offset. 2026-01-31 + 3 months = 2026-04-30, never 1 May.
+ *
+ * @param {string} isoDate
+ * @param {number} months
+ * @param {number} dayOffset
+ * @returns {string|null}
+ */
+function shiftIsoDate(
+    isoDate,
+    months,
+    dayOffset
+) {
+    const match =
+        /^(\d{4})-(\d{2})-(\d{2})$/.exec(
+            String(isoDate ?? '')
+        );
+
+    if (! match) {
+        return null;
+    }
+
+    const year =
+        Number(match[1]);
+
+    const monthIndex =
+        Number(match[2]) - 1
+        + months;
+
+    const day =
+        Number(match[3]);
+
+    const lastDayOfTargetMonth =
+        new Date(
+            Date.UTC(
+                year,
+                monthIndex + 1,
+                0
+            )
+        ).getUTCDate();
+
+    const target =
+        new Date(
+            Date.UTC(
+                year,
+                monthIndex,
+                Math.min(
+                    day,
+                    lastDayOfTargetMonth
+                )
+            )
+        );
+
+    target.setUTCDate(
+        target.getUTCDate()
+        + dayOffset
+    );
+
+    return target
+        .toISOString()
+        .slice(0, 10);
+}
+
+/**
+ * Visually activate one chip within a chip row.
+ *
+ * @param {string} containerId
+ * @param {string|null} value
+ */
+function setActiveChip(
+    containerId,
+    value
+) {
+    document
+        .querySelectorAll(
+            `#${containerId} button`
+        )
+        .forEach(
+            (chip) => {
+                const chipValue =
+                    chip.dataset.leaseDuration
+                    ?? chip.dataset.leaseNotice;
+
+                chip.setAttribute(
+                    'aria-pressed',
+                    chipValue === value
+                        ? 'true'
+                        : 'false'
+                );
+            }
+        );
+}
+
+/**
+ * Apply the currently active duration chip to the End Date field.
+ */
+function applyLeaseDurationChip() {
+    const active =
+        document.querySelector(
+            '#lease-duration-chips button[aria-pressed="true"]'
+        )?.dataset.leaseDuration;
+
+    const months =
+        LEASE_DURATION_MONTHS[active];
+
+    if (! months) {
+        return;
+    }
+
+    const startIso =
+        dateForApi(
+            formValue(
+                'lease-start-date'
+            )
+        );
+
+    const endIso =
+        startIso
+            ? shiftIsoDate(
+                startIso,
+                months,
+                -1
+            )
+            : null;
+
+    if (endIso) {
+        setFormValue(
+            'lease-end-date',
+            dateForDisplay(
+                endIso
+            )
+        );
+
+        applyLeaseNoticeChip();
+    }
+}
+
+/**
+ * Apply the currently active notice chip to the Notice Date field.
+ */
+function applyLeaseNoticeChip() {
+    const active =
+        document.querySelector(
+            '#lease-notice-chips button[aria-pressed="true"]'
+        )?.dataset.leaseNotice;
+
+    const months =
+        LEASE_NOTICE_MONTHS[active];
+
+    if (! months) {
+        return;
+    }
+
+    const endIso =
+        dateForApi(
+            formValue(
+                'lease-end-date'
+            )
+        );
+
+    const noticeIso =
+        endIso
+            ? shiftIsoDate(
+                endIso,
+                -months,
+                0
+            )
+            : null;
+
+    if (noticeIso) {
+        setFormValue(
+            'lease-notice-date',
+            dateForDisplay(
+                noticeIso
+            )
+        );
+    }
+}
+
+/**
+ * Reset both chip rows to no selection.
+ */
+function resetLeaseDurationChips() {
+    setActiveChip(
+        'lease-duration-chips',
+        null
+    );
+
+    setActiveChip(
+        'lease-notice-chips',
+        null
+    );
+}
+
+/**
+ * Wire the Duration and Notice chip rows.
+ */
+function initializeLeaseDurationChips() {
+    document
+        .querySelectorAll(
+            '#lease-duration-chips [data-lease-duration]'
+        )
+        .forEach(
+            (chip) => {
+                chip.addEventListener(
+                    'click',
+                    () => {
+                        setActiveChip(
+                            'lease-duration-chips',
+                            chip.dataset
+                                .leaseDuration
+                        );
+
+                        applyLeaseDurationChip();
+                    }
+                );
+            }
+        );
+
+    document
+        .querySelectorAll(
+            '#lease-notice-chips [data-lease-notice]'
+        )
+        .forEach(
+            (chip) => {
+                chip.addEventListener(
+                    'click',
+                    () => {
+                        setActiveChip(
+                            'lease-notice-chips',
+                            chip.dataset
+                                .leaseNotice
+                        );
+
+                        applyLeaseNoticeChip();
+                    }
+                );
+            }
+        );
+
+    /*
+     * A changed Start Date recomputes an active preset; manual typing
+     * into End or Notice hands the row over to "Other".
+     */
+    document
+        .getElementById(
+            'lease-start-date'
+        )
+        ?.addEventListener(
+            'input',
+            applyLeaseDurationChip
+        );
+
+    document
+        .getElementById(
+            'lease-end-date'
+        )
+        ?.addEventListener(
+            'input',
+            () => {
+                /*
+                 * setFormValue() fires no events, so anything arriving
+                 * here is the user editing — typed or calendar-picked.
+                 */
+                setActiveChip(
+                    'lease-duration-chips',
+                    'custom'
+                );
+
+                applyLeaseNoticeChip();
+            }
+        );
+
+    document
+        .getElementById(
+            'lease-notice-date'
+        )
+        ?.addEventListener(
+            'input',
+            () => {
+                setActiveChip(
+                    'lease-notice-chips',
+                    'custom'
+                );
+            }
+        );
+}
+
+
+/*
+|--------------------------------------------------------------------------
 | V1.0.8 Tenant / Agent searchable pickers
 |--------------------------------------------------------------------------
 |
@@ -3123,6 +3443,8 @@ function initializeLeaseForm() {
 
     initializeLeasePartyPickers();
 
+    initializeLeaseDurationChips();
+
     initializeLeaseFinancialControls();
 
     initializeLeaseDateInputs();
@@ -3257,6 +3579,8 @@ function resetLeaseForm() {
 
     clearLeasePartySelection('tenant');
     clearLeasePartySelection('agent');
+
+    resetLeaseDurationChips();
 
     /*
      * Explicit defaults mirror Lease backend defaults and our V1
