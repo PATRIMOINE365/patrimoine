@@ -447,6 +447,8 @@ return [
         'create_owner_first' => 'Créez d’abord un propriétaire…',
         'select_owner' => 'Sélectionner un propriétaire…',
         'occupied' => 'Occupée',
+        'search_owner_placeholder' => 'Rechercher un propriétaire par nom, téléphone ou e-mail…',
+        'no_matching_owners' => 'Aucun propriétaire correspondant.',
         'vacant' => 'Vacante',
         'create_new_owner' => 'Créer un nouveau propriétaire',
         'new' => '+ Nouveau',

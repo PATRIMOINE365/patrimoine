@@ -115,6 +115,8 @@ return [
         /* ---- V1.0.7 additions ---- */
         'occupancy_rate' => 'Occupancy Rate',
         'occupied' => 'Occupied',
+        'search_owner_placeholder' => 'Search owner by name, phone or email…',
+        'no_matching_owners' => 'No matching owners found.',
         'vacant' => 'Vacant',
         'vacant_commercial' => 'Commercial vacant',
         'vacant_residential' => 'Residential vacant',

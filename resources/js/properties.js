@@ -122,6 +122,8 @@ let propertiesBannerTimer =
  * about one Properties entry point.
  */
 export async function initializeProperties() {
+    initializeOwnerPickers();
+
     const container =
         document.getElementById(
             'properties-list'
@@ -2271,6 +2273,396 @@ function ownerPartyDisplayName(
  * @param {number|string|null} selectedPartyId
  * @returns {string}
  */
+/**
+ * V1.0.8: display name for a preselected owner id (edit mode / after
+ * inline owner creation).
+ */
+function ownerPartyNameById(
+    partyId
+) {
+    if (! partyId) {
+        return '';
+    }
+
+    const party =
+        availableOwnerParties.find(
+            (candidate) =>
+                Number(candidate.id)
+                === Number(partyId)
+        );
+
+    return party
+        ? ownerPartyDisplayName(
+            party
+        )
+        : '';
+}
+
+let ownerSearchTimer = null;
+
+/**
+ * Wire the searchable owner pickers once through delegation, so the
+ * dynamically added rows need no per-row setup.
+ */
+function initializeOwnerPickers() {
+    const container =
+        document.getElementById(
+            'property-owner-rows'
+        );
+
+    if (! container) {
+        return;
+    }
+
+    container.addEventListener(
+        'input',
+        (event) => {
+            const input =
+                event.target;
+
+            if (
+                ! (input instanceof HTMLInputElement)
+                || input.dataset.ownerSearch === undefined
+            ) {
+                return;
+            }
+
+            const picker =
+                input.closest(
+                    '[data-owner-picker]'
+                );
+
+            /*
+             * Typing over a selection clears it until a result is
+             * picked again.
+             */
+            picker
+                ?.querySelector(
+                    '[data-owner-party]'
+                )
+                ?.setAttribute(
+                    'value',
+                    ''
+                );
+
+            const hidden =
+                picker?.querySelector(
+                    '[data-owner-party]'
+                );
+
+            if (hidden) {
+                hidden.value = '';
+            }
+
+            renderOwnerSearchResults(
+                picker,
+                input.value
+            );
+
+            /*
+             * Remote refinement: parties beyond the preloaded page.
+             */
+            window.clearTimeout(
+                ownerSearchTimer
+            );
+
+            const term =
+                input.value.trim();
+
+            if (term === '') {
+                return;
+            }
+
+            ownerSearchTimer =
+                window.setTimeout(
+                    async () => {
+                        try {
+                            const response =
+                                await apiRequest(
+                                    `/api/parties?role=owner&search=${encodeURIComponent(
+                                        term
+                                    )}&per_page=15`
+                                );
+
+                            const payload =
+                                await parseJsonResponse(
+                                    response
+                                );
+
+                            const remote =
+                                Array.isArray(
+                                    payload?.data
+                                )
+                                    ? payload.data
+                                    : [];
+
+                            /*
+                             * Merge unseen owners into the local list
+                             * so later lookups resolve their names.
+                             */
+                            remote.forEach(
+                                (party) => {
+                                    if (
+                                        ! availableOwnerParties.some(
+                                            (known) =>
+                                                Number(known.id)
+                                                === Number(party.id)
+                                        )
+                                    ) {
+                                        availableOwnerParties.push(
+                                            party
+                                        );
+                                    }
+                                }
+                            );
+
+                            if (
+                                document.activeElement
+                                === input
+                            ) {
+                                renderOwnerSearchResults(
+                                    picker,
+                                    input.value
+                                );
+                            }
+                        } catch {
+                            /*
+                             * Local results remain shown.
+                             */
+                        }
+                    },
+                    250
+                );
+        }
+    );
+
+    container.addEventListener(
+        'focusin',
+        (event) => {
+            const input =
+                event.target;
+
+            if (
+                input instanceof HTMLInputElement
+                && input.dataset.ownerSearch !== undefined
+            ) {
+                renderOwnerSearchResults(
+                    input.closest(
+                        '[data-owner-picker]'
+                    ),
+                    input.value
+                );
+            }
+        }
+    );
+
+    /*
+     * Result selection, also via delegation.
+     */
+    container.addEventListener(
+        'click',
+        (event) => {
+            const option =
+                event.target.closest(
+                    '[data-owner-option]'
+                );
+
+            if (! option) {
+                return;
+            }
+
+            const picker =
+                option.closest(
+                    '[data-owner-picker]'
+                );
+
+            const hidden =
+                picker?.querySelector(
+                    '[data-owner-party]'
+                );
+
+            const search =
+                picker?.querySelector(
+                    '[data-owner-search]'
+                );
+
+            if (hidden) {
+                hidden.value =
+                    option.dataset.ownerOption;
+            }
+
+            if (search) {
+                search.value =
+                    ownerPartyNameById(
+                        option.dataset.ownerOption
+                    );
+            }
+
+            picker
+                ?.querySelector(
+                    '[data-owner-results]'
+                )
+                ?.classList.add(
+                    'hidden'
+                );
+        }
+    );
+
+    /*
+     * Clicking outside any picker closes its results.
+     */
+    document.addEventListener(
+        'click',
+        (event) => {
+            document
+                .querySelectorAll(
+                    '[data-owner-picker]'
+                )
+                .forEach(
+                    (picker) => {
+                        if (
+                            ! picker.contains(
+                                event.target
+                            )
+                        ) {
+                            picker
+                                .querySelector(
+                                    '[data-owner-results]'
+                                )
+                                ?.classList.add(
+                                    'hidden'
+                                );
+                        }
+                    }
+                );
+        }
+    );
+}
+
+/**
+ * Filter the owner list for one picker and render its dropdown.
+ */
+function renderOwnerSearchResults(
+    picker,
+    term
+) {
+    const results =
+        picker?.querySelector(
+            '[data-owner-results]'
+        );
+
+    if (! results) {
+        return;
+    }
+
+    const normalized =
+        String(
+            term
+            ?? ''
+        )
+            .trim()
+            .toLowerCase();
+
+    const matches =
+        availableOwnerParties
+            .filter(
+                (party) =>
+                    normalized === ''
+                    || [
+                        party.name,
+                        party.legal_name,
+                        party.phone,
+                        party.email,
+                    ]
+                        .filter(Boolean)
+                        .join(' ')
+                        .toLowerCase()
+                        .includes(normalized)
+            )
+            .slice(0, 12);
+
+    if (matches.length === 0) {
+        results.innerHTML = `
+            <div
+                class="
+                    px-4 py-4
+                    text-center text-sm
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'properties.no_matching_owners'
+                    )
+                )}
+            </div>
+        `;
+
+        results.classList.remove(
+            'hidden'
+        );
+
+        return;
+    }
+
+    results.innerHTML =
+        matches
+            .map(
+                (party) => `
+                    <button
+                        type="button"
+                        data-owner-option="${escapeHtml(
+                            party.id
+                        )}"
+                        class="
+                            block w-full
+                            border-b border-[var(--pm-border-subtle)]
+                            px-4 py-2.5
+                            text-left text-sm
+                            transition
+                            last:border-b-0
+                            hover:bg-[var(--pm-hover)]
+                        "
+                    >
+                        <span class="font-medium text-[var(--pm-text)]">
+                            ${escapeHtml(
+                                ownerPartyDisplayName(
+                                    party
+                                )
+                            )}
+                        </span>
+
+                        ${
+                            party.phone || party.email
+                                ? `
+                                    <span
+                                        class="
+                                            block text-xs
+                                            text-[var(--pm-text-muted)]
+                                        "
+                                    >
+                                        ${escapeHtml(
+                                            [
+                                                party.phone,
+                                                party.email,
+                                            ]
+                                                .filter(Boolean)
+                                                .join(' · ')
+                                        )}
+                                    </span>
+                                `
+                                : ''
+                        }
+                    </button>
+                `
+            )
+            .join('');
+
+    results.classList.remove(
+        'hidden'
+    );
+}
+
 function ownerPartyOptions(
     selectedPartyId = null
 ) {
@@ -2361,15 +2753,41 @@ function addPropertyOwnerRow(
             </label>
 
             <div class="flex gap-2">
-                <select
-                    data-owner-party
-                    required
-                    class="pm-input min-w-0 flex-1"
+                <div
+                    class="relative min-w-0 flex-1"
+                    data-owner-picker
                 >
-                    ${ownerPartyOptions(
-                        selectedPartyId
-                    )}
-                </select>
+                    <input
+                        type="hidden"
+                        data-owner-party
+                        value="${escapeHtml(
+                            selectedPartyId
+                            ?? ''
+                        )}"
+                    >
+
+                    <input
+                        type="search"
+                        data-owner-search
+                        autocomplete="off"
+                        placeholder="${escapeHtml(
+                            translate(
+                                'properties.search_owner_placeholder'
+                            )
+                        )}"
+                        value="${escapeHtml(
+                            ownerPartyNameById(
+                                selectedPartyId
+                            )
+                        )}"
+                        class="pm-input"
+                    >
+
+                    <div
+                        data-owner-results
+                        class="pm-card absolute z-50 mt-1 hidden max-h-72 w-full overflow-y-auto shadow-xl"
+                    ></div>
+                </div>
 
                 <button
                     type="button"
@@ -3781,29 +4199,38 @@ function refreshOwnerSelects(
 
     rows.forEach(
         (row) => {
-            const select =
+            const hidden =
                 row.querySelector(
                     '[data-owner-party]'
                 );
 
-            if (! select) {
+            const search =
+                row.querySelector(
+                    '[data-owner-search]'
+                );
+
+            if (! hidden) {
                 return;
             }
-
-            const previousValue =
-                select.value;
 
             const shouldSelectNewOwner =
                 ownerTargetRow === row
                 && newlyCreatedOwnerId
                     !== null;
 
-            select.innerHTML =
-                ownerPartyOptions(
-                    shouldSelectNewOwner
-                        ? newlyCreatedOwnerId
-                        : previousValue
-                );
+            if (shouldSelectNewOwner) {
+                hidden.value =
+                    String(
+                        newlyCreatedOwnerId
+                    );
+            }
+
+            if (search) {
+                search.value =
+                    ownerPartyNameById(
+                        hidden.value
+                    );
+            }
         }
     );
 }

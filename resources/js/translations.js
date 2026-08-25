@@ -158,6 +158,8 @@ export const translations = {
         'properties.filter_units_label':
             'Filter units by classification',
         'properties.occupied': 'Occupied',
+        'properties.search_owner_placeholder': 'Search owner by name, phone or email…',
+        'properties.no_matching_owners': 'No matching owners found.',
         'properties.vacant': 'Vacant',
         'properties.filter_all_units':
             'All units',
@@ -2932,6 +2934,8 @@ export const translations = {
         'properties.filter_units_label':
             'Filtrer les unités par type',
         'properties.occupied': 'Occupée',
+        'properties.search_owner_placeholder': 'Rechercher un propriétaire par nom, téléphone ou e-mail…',
+        'properties.no_matching_owners': 'Aucun propriétaire correspondant.',
         'properties.vacant': 'Vacante',
         'properties.filter_all_units':
             'Toutes les unités',
