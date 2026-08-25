@@ -13,6 +13,10 @@ import {
 } from './core.js';
 
 import {
+    browserCan,
+} from './permissions.js';
+
+import {
     dateForApi,
     dateForDisplay,
     initializeDateInputs,
@@ -829,6 +833,8 @@ function renderOwnerDetail(
     );
 
     loadOwnerTransfers();
+
+    loadOwnerExpenseBills();
 }
 
 /**
@@ -2062,6 +2068,1124 @@ function renderOwnerTransfers(
         );
 }
 
+/*
+|--------------------------------------------------------------------------
+| V1.0.8 Owner Expense Bills
+|--------------------------------------------------------------------------
+|
+| Bills are recorded unpaid and settled explicitly through the Pay
+| flow, choosing between the Deposit/Expense account (may go negative
+| by design) and the strictly capped Payout account. A payment can be
+| cancelled again; the reversal is journaled and activity-logged by
+| the backend.
+|
+*/
+
+let ownerExpenseBills = [];
+let ownerExpenseBillBalances = null;
+let pendingOwnerBillPayBill = null;
+let pendingOwnerBillPayPayload = null;
+let pendingOwnerBillCancelPaymentId = null;
+
+/**
+ * Load and render the owner's expense bills section.
+ */
+async function loadOwnerExpenseBills() {
+    const container =
+        document.getElementById(
+            'owner-expense-bills-list'
+        );
+
+    if (
+        ! container
+        || ! selectedOwner
+    ) {
+        return;
+    }
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/owner-accounts/${encodeURIComponent(
+                    selectedOwner.id
+                )}/expense-bills`
+            );
+
+        const payload =
+            await parseJsonResponse(
+                response
+            );
+
+        ownerExpenseBills =
+            Array.isArray(
+                payload?.expense_bills
+            )
+                ? payload.expense_bills
+                : [];
+
+        ownerExpenseBillBalances =
+            payload?.owner_account
+            ?? null;
+
+        renderOwnerExpenseBills();
+    } catch {
+        container.innerHTML = '';
+    }
+}
+
+/**
+ * Find one loaded expense bill.
+ *
+ * @param {number|string} billId
+ * @returns {object|null}
+ */
+function ownerExpenseBillById(
+    billId
+) {
+    return ownerExpenseBills.find(
+        (bill) =>
+            String(
+                bill?.id
+            ) === String(
+                billId
+            )
+    )
+    ?? null;
+}
+
+/**
+ * Render the expense bills table.
+ */
+function renderOwnerExpenseBills() {
+    const container =
+        document.getElementById(
+            'owner-expense-bills-list'
+        );
+
+    if (! container) {
+        return;
+    }
+
+    if (ownerExpenseBills.length === 0) {
+        container.innerHTML = `
+            <div
+                class="
+                    rounded-xl border
+                    border-dashed border-[var(--pm-border)]
+                    px-5 py-8 text-center
+                    text-sm text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'owners.no_expense_bills'
+                    )
+                )}
+            </div>
+        `;
+
+        return;
+    }
+
+    const heading =
+        (label, numeric = false) => `
+            <th
+                class="
+                    whitespace-nowrap px-4 py-3
+                    text-${numeric ? 'right' : 'left'} text-xs
+                    font-semibold uppercase tracking-wide
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(label)}
+            </th>
+        `;
+
+    container.innerHTML = `
+        <div
+            class="
+                overflow-x-auto
+                rounded-xl border
+                border-[var(--pm-border)]
+            "
+        >
+            <table
+                class="
+                    min-w-full
+                    divide-y divide-[var(--pm-border)]
+                    text-sm
+                "
+            >
+                <thead class="bg-[var(--pm-surface-subtle)]">
+                    <tr>
+                        ${heading(translate('owners.expense_bill'))}
+                        ${heading(translate('owners.date'))}
+                        ${heading(translate('owners.amount'), true)}
+                        ${heading(translate('owners.paid'), true)}
+                        ${heading(translate('owners.outstanding'), true)}
+                        ${heading(translate('owners.status'))}
+                        ${heading(translate('owners.actions'))}
+                    </tr>
+                </thead>
+
+                <tbody
+                    class="
+                        divide-y divide-[var(--pm-border-subtle)]
+                        bg-[var(--pm-surface)]
+                    "
+                >
+                    ${ownerExpenseBills
+                        .map(
+                            renderOwnerExpenseBillRow
+                        )
+                        .join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+/**
+ * Render one expense bill row.
+ *
+ * Button order is fixed: Pay, Invoice, Receipt, Resend; Cancel payment
+ * appears as soon as an active payment exists.
+ *
+ * @param {object} bill
+ * @returns {string}
+ */
+function renderOwnerExpenseBillRow(
+    bill
+) {
+    const safeId =
+        escapeAttribute(
+            bill.id
+        );
+
+    const buttonClasses = `
+        inline-flex items-center
+        rounded-lg border
+        border-[var(--pm-border)]
+        bg-[var(--pm-surface)] px-3 py-2
+        text-xs font-medium
+        text-[var(--pm-text-secondary)]
+        shadow-sm transition
+        hover:border-[var(--pm-border-strong)]
+        hover:bg-[var(--pm-hover)]
+    `;
+
+    const payments =
+        Array.isArray(
+            bill?.payments
+        )
+            ? bill.payments
+            : [];
+
+    const cancellablePayment =
+        payments.find(
+            (payment) =>
+                payment?.cancellable
+        )
+        ?? null;
+
+    const canManage =
+        browserCan(
+            'manage_finance'
+        );
+
+    const statusKey =
+        `owners.bill_status_${bill.payment_status}`;
+
+    const cell =
+        (content, numeric = false, strong = false) => `
+            <td
+                class="
+                    whitespace-nowrap px-4 py-3
+                    text-${numeric ? 'right' : 'left'}
+                    ${strong
+                        ? 'font-semibold text-[var(--pm-text)]'
+                        : 'text-[var(--pm-text-secondary)]'}
+                "
+            >
+                ${content}
+            </td>
+        `;
+
+    const payButton =
+        canManage
+        && Number(
+            bill.outstanding
+            ?? 0
+        ) > 0
+            ? `
+                <button
+                    type="button"
+                    data-pay-owner-bill="${safeId}"
+                    class="${buttonClasses}"
+                >
+                    ${escapeHtml(
+                        translate('owners.pay')
+                    )}
+                </button>
+            `
+            : '';
+
+    const cancelButton =
+        canManage
+        && cancellablePayment
+            ? `
+                <button
+                    type="button"
+                    data-cancel-owner-bill-payment="${escapeAttribute(
+                        cancellablePayment.id
+                    )}"
+                    data-cancel-owner-bill="${safeId}"
+                    class="${buttonClasses}"
+                >
+                    ${escapeHtml(
+                        translate('owners.cancel_payment')
+                    )}
+                </button>
+            `
+            : '';
+
+    const receiptButton =
+        bill.payment_status === 'paid'
+        && payments.length > 0
+            ? `
+                <button
+                    type="button"
+                    data-open-owner-bill-receipt="${safeId}"
+                    class="${buttonClasses}"
+                >
+                    ${escapeHtml(
+                        translate('owners.receipt')
+                    )}
+                </button>
+            `
+            : '';
+
+    return `
+        <tr>
+            ${cell(
+                escapeHtml(
+                    bill.bill_number
+                    ?? `#${bill.id}`
+                ),
+                false,
+                true
+            )}
+
+            ${cell(
+                escapeHtml(
+                    formatDate(
+                        bill.bill_date
+                    )
+                )
+            )}
+
+            ${cell(
+                escapeHtml(
+                    formatCurrency(
+                        bill.total_amount
+                        ?? 0
+                    )
+                ),
+                true
+            )}
+
+            ${cell(
+                escapeHtml(
+                    formatCurrency(
+                        bill.paid
+                        ?? 0
+                    )
+                ),
+                true
+            )}
+
+            ${cell(
+                escapeHtml(
+                    formatCurrency(
+                        bill.outstanding
+                        ?? 0
+                    )
+                ),
+                true,
+                true
+            )}
+
+            ${cell(
+                escapeHtml(
+                    translate(
+                        statusKey
+                    )
+                )
+            )}
+
+            ${cell(`
+                <div class="flex items-center gap-2">
+                    ${payButton}
+
+                    ${cancelButton}
+
+                    <button
+                        type="button"
+                        data-open-owner-bill="${safeId}"
+                        class="${buttonClasses}"
+                    >
+                        ${escapeHtml(
+                            translate('owners.invoice')
+                        )}
+                    </button>
+
+                    ${receiptButton}
+
+                    <button
+                        type="button"
+                        data-resend-owner-bill="${safeId}"
+                        class="${buttonClasses}"
+                    >
+                        ${escapeHtml(
+                            translate('owners.resend')
+                        )}
+                    </button>
+                </div>
+            `)}
+        </tr>
+    `;
+}
+
+/**
+ * Open the Pay drawer for one expense bill.
+ *
+ * @param {number|string} billId
+ */
+function openOwnerBillPayDrawer(
+    billId
+) {
+    const bill =
+        ownerExpenseBillById(
+            billId
+        );
+
+    if (! bill) {
+        return;
+    }
+
+    pendingOwnerBillPayBill =
+        bill;
+
+    pendingOwnerBillPayPayload =
+        null;
+
+    document
+        .getElementById(
+            'owner-bill-pay-form'
+        )
+        ?.reset();
+
+    hideOwnerActionError(
+        'owner-bill-pay-error'
+    );
+
+    exitOwnerBillPayReview();
+
+    const context =
+        document.getElementById(
+            'owner-bill-pay-context'
+        );
+
+    if (context) {
+        context.textContent =
+            bill.bill_number
+            || `#${bill.id}`;
+    }
+
+    const outstanding =
+        document.getElementById(
+            'owner-bill-pay-outstanding'
+        );
+
+    if (outstanding) {
+        outstanding.textContent =
+            formatCurrency(
+                bill.outstanding
+                ?? 0
+            );
+    }
+
+    const source =
+        document.getElementById(
+            'owner-bill-pay-source'
+        );
+
+    if (source) {
+        const deposit =
+            Number(
+                ownerExpenseBillBalances
+                    ?.deposit_account_balance
+                ?? 0
+            );
+
+        const payout =
+            Number(
+                ownerExpenseBillBalances
+                    ?.payout_account_balance
+                ?? 0
+            );
+
+        source.innerHTML = `
+            <option value="deposit_account">
+                ${escapeHtml(
+                    `${translate(
+                        'owners.deposit_account'
+                    )} · ${formatCurrency(deposit)}`
+                )}
+            </option>
+
+            <option value="payout_account">
+                ${escapeHtml(
+                    `${translate(
+                        'owners.payout_account'
+                    )} · ${formatCurrency(payout)}`
+                )}
+            </option>
+        `;
+    }
+
+    const amountInput =
+        document.getElementById(
+            'owner-bill-pay-amount'
+        );
+
+    if (amountInput) {
+        amountInput.value =
+            String(
+                bill.outstanding
+                ?? ''
+            );
+
+        amountInput.dispatchEvent(
+            new Event(
+                'input',
+                {
+                    bubbles:
+                        true,
+                }
+            )
+        );
+    }
+
+    setOwnerDateValue(
+        'owner-bill-pay-date',
+        localToday()
+    );
+
+    openDrawer(
+        'owner-bill-pay-drawer'
+    );
+}
+
+/**
+ * Validate the Pay form and swap into the read-only review.
+ *
+ * @param {SubmitEvent} event
+ */
+function submitOwnerBillPay(
+    event
+) {
+    event.preventDefault();
+
+    hideOwnerActionError(
+        'owner-bill-pay-error'
+    );
+
+    const bill =
+        pendingOwnerBillPayBill;
+
+    if (! bill) {
+        return;
+    }
+
+    const fundingSource =
+        fieldValue(
+            'owner-bill-pay-source'
+        );
+
+    const amount =
+        Number(
+            parseMoneyInput(
+                fieldValue(
+                    'owner-bill-pay-amount'
+                )
+            )
+            || NaN
+        );
+
+    const transactionDate =
+        ownerDateValue(
+            'owner-bill-pay-date'
+        );
+
+    if (
+        ! [
+            'deposit_account',
+            'payout_account',
+        ].includes(
+            fundingSource
+        )
+        || ! transactionDate
+        || ! Number.isInteger(amount)
+        || amount <= 0
+    ) {
+        showOwnerActionError(
+            'owner-bill-pay-error',
+            translate(
+                'owners.pay_fields_required'
+            )
+        );
+
+        return;
+    }
+
+    /*
+     * Browser guards mirroring authoritative backend rules: the bill
+     * cannot be overpaid, and the Payout account is strictly capped.
+     * The Deposit account may go negative by design.
+     */
+    if (
+        amount > Number(
+            bill.outstanding
+            ?? 0
+        )
+    ) {
+        showOwnerActionError(
+            'owner-bill-pay-error',
+            translate(
+                'owners.pay_exceeds_bill'
+            )
+        );
+
+        return;
+    }
+
+    if (
+        fundingSource === 'payout_account'
+        && amount > Number(
+            ownerExpenseBillBalances
+                ?.payout_account_balance
+            ?? 0
+        )
+    ) {
+        showOwnerActionError(
+            'owner-bill-pay-error',
+            translate(
+                'owners.pay_exceeds_payout'
+            )
+        );
+
+        return;
+    }
+
+    pendingOwnerBillPayPayload = {
+        funding_source:
+            fundingSource,
+
+        amount,
+
+        transaction_date:
+            transactionDate,
+    };
+
+    enterOwnerBillPayReview();
+}
+
+/**
+ * Swap the Pay drawer into the read-only review.
+ */
+function enterOwnerBillPayReview() {
+    const review =
+        document.getElementById(
+            'owner-bill-pay-review'
+        );
+
+    const payload =
+        pendingOwnerBillPayPayload;
+
+    const bill =
+        pendingOwnerBillPayBill;
+
+    if (! review || ! payload || ! bill) {
+        return;
+    }
+
+    review.innerHTML = `
+        <h3
+            class="
+                text-base font-semibold
+                text-[var(--pm-text)]
+            "
+        >
+            ${escapeHtml(
+                translate(
+                    'owners.pay_review_title'
+                )
+            )}
+        </h3>
+
+        <p
+            class="
+                mt-1 text-xs
+                text-[var(--pm-text-muted)]
+            "
+        >
+            ${escapeHtml(
+                translate(
+                    'owners.pay_review_description'
+                )
+            )}
+        </p>
+
+        <div class="mt-4 space-y-2 text-sm">
+            <div class="flex justify-between gap-4">
+                <span class="text-[var(--pm-text-muted)]">
+                    ${escapeHtml(
+                        translate('owners.expense_bill')
+                    )}
+                </span>
+
+                <span class="font-medium text-[var(--pm-text)]">
+                    ${escapeHtml(
+                        bill.bill_number
+                        ?? `#${bill.id}`
+                    )}
+                </span>
+            </div>
+
+            <div class="flex justify-between gap-4">
+                <span class="text-[var(--pm-text-muted)]">
+                    ${escapeHtml(
+                        translate('owners.pay_source_account')
+                    )}
+                </span>
+
+                <span class="font-medium text-[var(--pm-text)]">
+                    ${escapeHtml(
+                        translate(
+                            payload.funding_source
+                            === 'payout_account'
+                                ? 'owners.payout_account'
+                                : 'owners.deposit_account'
+                        )
+                    )}
+                </span>
+            </div>
+
+            <div class="flex justify-between gap-4">
+                <span class="text-[var(--pm-text-muted)]">
+                    ${escapeHtml(
+                        translate('owners.amount')
+                    )}
+                </span>
+
+                <span class="font-medium text-[var(--pm-text)]">
+                    ${escapeHtml(
+                        formatCurrency(payload.amount)
+                    )}
+                </span>
+            </div>
+
+            <div class="flex justify-between gap-4">
+                <span class="text-[var(--pm-text-muted)]">
+                    ${escapeHtml(
+                        translate('owners.date')
+                    )}
+                </span>
+
+                <span class="font-medium text-[var(--pm-text)]">
+                    ${escapeHtml(
+                        formatDate(
+                            payload.transaction_date
+                        )
+                    )}
+                </span>
+            </div>
+        </div>
+    `;
+
+    document
+        .getElementById(
+            'owner-bill-pay-fields'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    review.classList.remove(
+        'hidden'
+    );
+
+    document
+        .getElementById(
+            'owner-bill-pay-submit'
+        )
+        ?.classList.add(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'owner-bill-pay-back'
+        )
+        ?.classList.remove(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'owner-bill-pay-confirm'
+        )
+        ?.classList.remove(
+            'pm-hide'
+        );
+}
+
+/**
+ * Return the Pay drawer to the editable form.
+ */
+function exitOwnerBillPayReview() {
+    pendingOwnerBillPayPayload =
+        null;
+
+    document
+        .getElementById(
+            'owner-bill-pay-review'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'owner-bill-pay-fields'
+        )
+        ?.classList.remove(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'owner-bill-pay-back'
+        )
+        ?.classList.add(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'owner-bill-pay-confirm'
+        )
+        ?.classList.add(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'owner-bill-pay-submit'
+        )
+        ?.classList.remove(
+            'pm-hide'
+        );
+}
+
+/**
+ * Perform the payment after review confirmation.
+ */
+async function confirmOwnerBillPay() {
+    const payload =
+        pendingOwnerBillPayPayload;
+
+    const bill =
+        pendingOwnerBillPayBill;
+
+    if (! payload || ! bill) {
+        return;
+    }
+
+    const confirmButton =
+        document.getElementById(
+            'owner-bill-pay-confirm'
+        );
+
+    try {
+        if (confirmButton) {
+            confirmButton.disabled = true;
+        }
+
+        const response =
+            await apiRequest(
+                `/api/owner-expense-bills/${encodeURIComponent(
+                    bill.id
+                )}/payments`,
+                {
+                    method:
+                        'POST',
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        ),
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        closeDrawer(
+            'owner-bill-pay-drawer'
+        );
+
+        await refreshSelectedOwner();
+    } catch (error) {
+        exitOwnerBillPayReview();
+
+        showOwnerActionError(
+            'owner-bill-pay-error',
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'owners.unable_to_pay_bill'
+                )
+        );
+    } finally {
+        if (confirmButton) {
+            confirmButton.disabled = false;
+        }
+    }
+}
+
+/**
+ * Open the Cancel payment drawer for one bill payment.
+ *
+ * @param {number|string} billId
+ * @param {number|string} paymentId
+ */
+function openOwnerBillCancelPaymentDrawer(
+    billId,
+    paymentId
+) {
+    const bill =
+        ownerExpenseBillById(
+            billId
+        );
+
+    const payment =
+        (
+            bill?.payments
+            ?? []
+        ).find(
+            (candidate) =>
+                String(
+                    candidate?.id
+                ) === String(
+                    paymentId
+                )
+        );
+
+    if (! bill || ! payment) {
+        return;
+    }
+
+    pendingOwnerBillCancelPaymentId =
+        payment.id;
+
+    document
+        .getElementById(
+            'owner-bill-cancel-payment-form'
+        )
+        ?.reset();
+
+    hideOwnerActionError(
+        'owner-bill-cancel-payment-error'
+    );
+
+    const context =
+        document.getElementById(
+            'owner-bill-cancel-payment-context'
+        );
+
+    if (context) {
+        context.textContent =
+            bill.bill_number
+            || `#${bill.id}`;
+    }
+
+    const detail =
+        document.getElementById(
+            'owner-bill-cancel-payment-detail'
+        );
+
+    if (detail) {
+        detail.textContent =
+            `${formatCurrency(
+                payment.amount
+            )} · ${formatDate(
+                payment.transaction_date
+            )}`;
+    }
+
+    openDrawer(
+        'owner-bill-cancel-payment-drawer'
+    );
+}
+
+/**
+ * Cancel the pending bill payment.
+ *
+ * @param {SubmitEvent} event
+ */
+async function submitOwnerBillCancelPayment(
+    event
+) {
+    event.preventDefault();
+
+    hideOwnerActionError(
+        'owner-bill-cancel-payment-error'
+    );
+
+    const paymentId =
+        pendingOwnerBillCancelPaymentId;
+
+    const reason =
+        fieldValue(
+            'owner-bill-cancel-payment-reason'
+        ).trim();
+
+    if (! paymentId) {
+        return;
+    }
+
+    if (! reason) {
+        showOwnerActionError(
+            'owner-bill-cancel-payment-error',
+            translate(
+                'owners.cancellation_reason_required'
+            )
+        );
+
+        return;
+    }
+
+    const submitButton =
+        document.getElementById(
+            'owner-bill-cancel-payment-submit'
+        );
+
+    try {
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
+
+        const response =
+            await apiRequest(
+                `/api/owner-expense-bill-payments/${encodeURIComponent(
+                    paymentId
+                )}/cancel`,
+                {
+                    method:
+                        'POST',
+
+                    body:
+                        JSON.stringify({
+                            reason,
+                        }),
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        closeDrawer(
+            'owner-bill-cancel-payment-drawer'
+        );
+
+        await refreshSelectedOwner();
+    } catch (error) {
+        showOwnerActionError(
+            'owner-bill-cancel-payment-error',
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'owners.unable_to_cancel_payment'
+                )
+        );
+    } finally {
+        if (submitButton) {
+            submitButton.disabled = false;
+        }
+    }
+}
+
+/**
+ * Resend one expense bill email to the billed owner.
+ *
+ * @param {HTMLButtonElement} button
+ * @param {number|string} billId
+ */
+async function resendOwnerExpenseBill(
+    button,
+    billId
+) {
+    const originalLabel =
+        button.textContent;
+
+    button.disabled = true;
+    button.textContent =
+        translate('owners.sending');
+
+    hideOwnersError();
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/owner-expense-bills/${encodeURIComponent(
+                    billId
+                )}/send-email`,
+                {
+                    method:
+                        'POST',
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+    } catch (error) {
+        showOwnersError(
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'owners.unable_to_resend_bill'
+                )
+        );
+    } finally {
+        if (
+            document.body.contains(
+                button
+            )
+        ) {
+            button.textContent =
+                originalLabel;
+
+            button.disabled =
+                false;
+        }
+    }
+}
+
 async function openOwnerTransferVoucher(
     button
 ) {
@@ -2350,6 +3474,161 @@ function renderOwnerPayouts(
  * Initialize Owner financial actions and document actions.
  */
 function initializeOwnerWorkspaceActions() {
+    /*
+     * V1.0.8 Expense bill row actions.
+     *
+     * The list is re-rendered wholesale after every financial action,
+     * so one delegated listener on the static container replaces
+     * per-render wiring.
+     */
+    document
+        .getElementById(
+            'owner-expense-bills-list'
+        )
+        ?.addEventListener(
+            'click',
+            async (event) => {
+                const pay =
+                    event.target.closest(
+                        '[data-pay-owner-bill]'
+                    );
+
+                if (pay) {
+                    openOwnerBillPayDrawer(
+                        pay.dataset.payOwnerBill
+                    );
+
+                    return;
+                }
+
+                const cancel =
+                    event.target.closest(
+                        '[data-cancel-owner-bill-payment]'
+                    );
+
+                if (cancel) {
+                    openOwnerBillCancelPaymentDrawer(
+                        cancel.dataset.cancelOwnerBill,
+                        cancel.dataset.cancelOwnerBillPayment
+                    );
+
+                    return;
+                }
+
+                const bill =
+                    event.target.closest(
+                        '[data-open-owner-bill]'
+                    );
+
+                if (bill) {
+                    await openAuthenticatedPdf(
+                        `/api/owner-expense-bills/${encodeURIComponent(
+                            bill.dataset.openOwnerBill
+                        )}/pdf`
+                    );
+
+                    return;
+                }
+
+                const receipt =
+                    event.target.closest(
+                        '[data-open-owner-bill-receipt]'
+                    );
+
+                if (receipt) {
+                    await openAuthenticatedPdf(
+                        `/api/owner-expense-bills/${encodeURIComponent(
+                            receipt.dataset.openOwnerBillReceipt
+                        )}/payment-receipt`
+                    );
+
+                    return;
+                }
+
+                const resend =
+                    event.target.closest(
+                        '[data-resend-owner-bill]'
+                    );
+
+                if (resend) {
+                    await resendOwnerExpenseBill(
+                        resend,
+                        resend.dataset.resendOwnerBill
+                    );
+                }
+            }
+        );
+
+    /*
+     * V1.0.8 Expense bill Pay drawer.
+     */
+    document
+        .getElementById(
+            'owner-bill-pay-form'
+        )
+        ?.addEventListener(
+            'submit',
+            submitOwnerBillPay
+        );
+
+    document
+        .getElementById(
+            'owner-bill-pay-cancel'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                closeDrawer(
+                    'owner-bill-pay-drawer'
+                );
+            }
+        );
+
+    document
+        .getElementById(
+            'owner-bill-pay-back'
+        )
+        ?.addEventListener(
+            'click',
+            exitOwnerBillPayReview
+        );
+
+    document
+        .getElementById(
+            'owner-bill-pay-confirm'
+        )
+        ?.addEventListener(
+            'click',
+            async () => {
+                await confirmOwnerBillPay();
+            }
+        );
+
+    /*
+     * V1.0.8 Cancel expense bill payment drawer.
+     */
+    document
+        .getElementById(
+            'owner-bill-cancel-payment-form'
+        )
+        ?.addEventListener(
+            'submit',
+            submitOwnerBillCancelPayment
+        );
+
+    document
+        .getElementById(
+            'owner-bill-cancel-payment-close'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                closeDrawer(
+                    'owner-bill-cancel-payment-drawer'
+                );
+            }
+        );
+
     /*
      * Existing dynamically rendered Receipt and Report actions.
      */

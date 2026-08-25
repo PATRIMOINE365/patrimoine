@@ -915,7 +915,7 @@ function renderTenantDetail(
             "
         >
             ${renderTenantExpenses(
-                operationalHistory?.fundTransactions
+                statement?.invoices
             )}
         </div>
 
@@ -1063,12 +1063,20 @@ function renderTenantFinancialPosition(
 function renderTenantInvoices(
     invoices
 ) {
+    /*
+     * V1.0.8: expense Invoices live in their own Expenses section.
+     */
     const rows =
-        Array.isArray(
-            invoices
-        )
-            ? invoices
-            : [];
+        (
+            Array.isArray(
+                invoices
+            )
+                ? invoices
+                : []
+        ).filter(
+            (invoice) =>
+                invoice?.type !== 'expense'
+        );
 
     return `
         <div>
@@ -1105,50 +1113,65 @@ function renderTenantInvoices(
                     ? financialEmptyState(
                         translate('tenants.no_invoices')
                     )
-                    : `
-                        <div
-                            class="
-                                overflow-x-auto
-                                rounded-xl border
-                                border-[var(--pm-border)]
-                            "
-                        >
-                            <table
-                                class="
-                                    min-w-full
-                                    divide-y divide-[var(--pm-border)]
-                                    text-sm
-                                "
-                            >
-                                <thead class="bg-[var(--pm-surface-subtle)]">
-                                    <tr>
-                                        ${tableHeading(translate('tenants.invoice'))}
-                                        ${tableHeading(translate('tenants.type'))}
-                                        ${tableHeading(translate('tenants.due_date'))}
-                                        ${tableHeading(translate('tenants.amount'), true)}
-                                        ${tableHeading(translate('tenants.paid'), true)}
-                                        ${tableHeading(translate('tenants.outstanding'), true)}
-                                        ${tableHeading(translate('tenants.status'))}
-                                        ${tableHeading(translate('tenants.actions'))}
-                                    </tr>
-                                </thead>
-
-                                <tbody
-                                    class="
-                                        divide-y divide-[var(--pm-border-subtle)]
-                                        bg-[var(--pm-surface)]
-                                    "
-                                >
-                                    ${rows
-                                        .map(
-                                            renderTenantInvoiceRow
-                                        )
-                                        .join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    `
+                    : renderTenantInvoiceTable(
+                        rows
+                    )
             }
+        </div>
+    `;
+}
+
+
+/**
+ * Shared Invoice table used by the Invoices and Expenses sections.
+ *
+ * @param {Array<object>} rows
+ * @returns {string}
+ */
+function renderTenantInvoiceTable(
+    rows
+) {
+    return `
+        <div
+            class="
+                overflow-x-auto
+                rounded-xl border
+                border-[var(--pm-border)]
+            "
+        >
+            <table
+                class="
+                    min-w-full
+                    divide-y divide-[var(--pm-border)]
+                    text-sm
+                "
+            >
+                <thead class="bg-[var(--pm-surface-subtle)]">
+                    <tr>
+                        ${tableHeading(translate('tenants.invoice'))}
+                        ${tableHeading(translate('tenants.type'))}
+                        ${tableHeading(translate('tenants.due_date'))}
+                        ${tableHeading(translate('tenants.amount'), true)}
+                        ${tableHeading(translate('tenants.paid'), true)}
+                        ${tableHeading(translate('tenants.outstanding'), true)}
+                        ${tableHeading(translate('tenants.status'))}
+                        ${tableHeading(translate('tenants.actions'))}
+                    </tr>
+                </thead>
+
+                <tbody
+                    class="
+                        divide-y divide-[var(--pm-border-subtle)]
+                        bg-[var(--pm-surface)]
+                    "
+                >
+                    ${rows
+                        .map(
+                            renderTenantInvoiceRow
+                        )
+                        .join('')}
+                </tbody>
+            </table>
         </div>
     `;
 }
@@ -1221,7 +1244,7 @@ function renderTenantInvoiceRow(
             )}
 
             ${invoiceActionCell(
-                invoice?.id
+                invoice
             )}
         </tr>
     `;
@@ -1229,18 +1252,23 @@ function renderTenantInvoiceRow(
 
 
 /**
- * Render document actions for one persisted Tenant Invoice.
+ * Render actions for one persisted Tenant Invoice.
  *
- * Existing authenticated Invoice PDF and email endpoints are reused.
- * The Tenant workspace remains read-oriented and introduces no duplicate
- * billing workflow.
+ * Button order is fixed: Pay, Invoice, Receipt, Resend. Pay appears
+ * while a rent or expense Invoice still carries an outstanding
+ * balance; once an account payment exists, Cancel payment appears and
+ * reverts the most recent one. Receipt appears once the Invoice is
+ * fully paid through at least one account payment.
  *
- * @param {number|string|null} invoiceId
+ * @param {object} invoice
  * @returns {string}
  */
 function invoiceActionCell(
-    invoiceId
+    invoice
 ) {
+    const invoiceId =
+        invoice?.id;
+
     if (! invoiceId) {
         return tableCell(
             '—'
@@ -1251,6 +1279,108 @@ function invoiceActionCell(
         escapeHtml(
             invoiceId
         );
+
+    const buttonClasses = `
+        inline-flex items-center
+        rounded-lg border
+        border-[var(--pm-border)]
+        bg-[var(--pm-surface)] px-3 py-2
+        text-xs font-medium
+        text-[var(--pm-text-secondary)]
+        shadow-sm transition
+        hover:border-[var(--pm-border-strong)]
+        hover:bg-[var(--pm-hover)]
+        disabled:cursor-not-allowed
+        disabled:opacity-60
+    `;
+
+    const accountPayments =
+        Array.isArray(
+            invoice?.account_payments
+        )
+            ? invoice.account_payments
+            : [];
+
+    const cancellablePayment =
+        accountPayments.find(
+            (payment) =>
+                payment?.cancellable
+        )
+        ?? null;
+
+    const payable =
+        [
+            'rent',
+            'expense',
+        ].includes(
+            invoice?.type
+        )
+        && invoice?.status !== 'cancelled'
+        && Number(
+            invoice?.outstanding
+            ?? 0
+        ) > 0
+        && browserCan(
+            'manage_finance'
+        );
+
+    const payButton =
+        payable
+            ? `
+                <button
+                    type="button"
+                    data-pay-invoice="${safeId}"
+                    class="${buttonClasses}"
+                >
+                    ${escapeHtml(
+                        translate(
+                            'tenants.pay'
+                        )
+                    )}
+                </button>
+            `
+            : '';
+
+    const cancelButton =
+        cancellablePayment
+        && browserCan(
+            'manage_finance'
+        )
+            ? `
+                <button
+                    type="button"
+                    data-cancel-invoice-payment="${escapeHtml(
+                        cancellablePayment.id
+                    )}"
+                    data-cancel-invoice-id="${safeId}"
+                    class="${buttonClasses}"
+                >
+                    ${escapeHtml(
+                        translate(
+                            'tenants.cancel_payment'
+                        )
+                    )}
+                </button>
+            `
+            : '';
+
+    const receiptButton =
+        invoice?.status === 'paid'
+        && accountPayments.length > 0
+            ? `
+                <button
+                    type="button"
+                    data-open-invoice-payment-receipt="${safeId}"
+                    class="${buttonClasses}"
+                >
+                    ${escapeHtml(
+                        translate(
+                            'tenants.receipt'
+                        )
+                    )}
+                </button>
+            `
+            : '';
 
     return `
         <td
@@ -1264,22 +1394,14 @@ function invoiceActionCell(
                     flex items-center gap-2
                 "
             >
+                ${payButton}
+
+                ${cancelButton}
+
                 <button
                     type="button"
                     data-open-invoice="${safeId}"
-                    class="
-                        inline-flex items-center
-                        rounded-lg border
-                        border-[var(--pm-border)]
-                        bg-[var(--pm-surface)] px-3 py-2
-                        text-xs font-medium
-                        text-[var(--pm-text-secondary)]
-                        shadow-sm transition
-                        hover:border-[var(--pm-border-strong)]
-                        hover:bg-[var(--pm-hover)]
-                        disabled:cursor-not-allowed
-                        disabled:opacity-60
-                    "
+                    class="${buttonClasses}"
                 >
                     ${escapeHtml(
                         translate(
@@ -1288,22 +1410,12 @@ function invoiceActionCell(
                     )}
                 </button>
 
+                ${receiptButton}
+
                 <button
                     type="button"
                     data-resend-invoice="${safeId}"
-                    class="
-                        inline-flex items-center
-                        rounded-lg border
-                        border-[var(--pm-border)]
-                        bg-[var(--pm-surface)] px-3 py-2
-                        text-xs font-medium
-                        text-[var(--pm-text-secondary)]
-                        shadow-sm transition
-                        hover:border-[var(--pm-border-strong)]
-                        hover:bg-[var(--pm-hover)]
-                        disabled:cursor-not-allowed
-                        disabled:opacity-60
-                    "
+                    class="${buttonClasses}"
                 >
                     ${escapeHtml(
                         translate(
@@ -1354,6 +1466,877 @@ function initializeTenantInvoiceActions() {
                 );
             }
         );
+
+    /*
+     * V1.0.8 Invoice account payments.
+     */
+    document
+        .querySelectorAll(
+            '[data-pay-invoice]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        await openInvoicePayDrawer(
+                            button.dataset.payInvoice
+                        );
+                    }
+                );
+            }
+        );
+
+    document
+        .querySelectorAll(
+            '[data-cancel-invoice-payment]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        openInvoiceCancelPaymentDrawer(
+                            button.dataset.cancelInvoiceId,
+                            button.dataset.cancelInvoicePayment
+                        );
+                    }
+                );
+            }
+        );
+
+    document
+        .querySelectorAll(
+            '[data-open-invoice-payment-receipt]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        await openTenantDocument(
+                            `/api/invoices/${encodeURIComponent(
+                                button.dataset
+                                    .openInvoicePaymentReceipt
+                            )}/payment-receipt`,
+                            button
+                        );
+                    }
+                );
+            }
+        );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.8 Invoice Pay Drawer
+|--------------------------------------------------------------------------
+|
+| Pays all or part of a rent or expense Invoice from one of the
+| Invoice's Lease fund accounts. Rent invoices follow the existing
+| consumption rules (Consumable Advance anytime, Rent Reserve only in
+| termination notice, never the Security Deposit); expense invoices
+| accept any active fund account. The backend remains authoritative.
+|
+*/
+
+let pendingInvoicePayInvoice = null;
+let pendingInvoicePayPayload = null;
+let pendingCancelPaymentId = null;
+
+/**
+ * Find one Invoice in the currently loaded statement.
+ *
+ * @param {number|string} invoiceId
+ * @returns {object|null}
+ */
+function statementInvoiceById(
+    invoiceId
+) {
+    const invoices =
+        Array.isArray(
+            selectedTenantStatement?.invoices
+        )
+            ? selectedTenantStatement.invoices
+            : [];
+
+    return invoices.find(
+        (invoice) =>
+            String(
+                invoice?.id
+            ) === String(
+                invoiceId
+            )
+    )
+    ?? null;
+}
+
+/**
+ * Open the Pay drawer for one Invoice.
+ *
+ * @param {number|string} invoiceId
+ */
+async function openInvoicePayDrawer(
+    invoiceId
+) {
+    const invoice =
+        statementInvoiceById(
+            invoiceId
+        );
+
+    if (! invoice) {
+        return;
+    }
+
+    pendingInvoicePayInvoice =
+        invoice;
+
+    pendingInvoicePayPayload =
+        null;
+
+    document
+        .getElementById(
+            'invoice-pay-form'
+        )
+        ?.reset();
+
+    hideTenantTransactionError(
+        'invoice-pay-error'
+    );
+
+    exitInvoicePayReview();
+
+    const context =
+        document.getElementById(
+            'invoice-pay-invoice-context'
+        );
+
+    if (context) {
+        context.textContent =
+            invoice.invoice_number
+            || `#${invoice.id}`;
+    }
+
+    const leaseContext =
+        document.getElementById(
+            'invoice-pay-lease-context'
+        );
+
+    if (leaseContext) {
+        const lease =
+            (
+                selectedTenantStatement?.leases
+                ?? []
+            ).find(
+                (candidate) =>
+                    Number(
+                        candidate?.id
+                    ) === Number(
+                        invoice.lease_id
+                    )
+            );
+
+        leaseContext.textContent =
+            lease
+                ? `${lease.building ?? ''} / ${lease.unit ?? ''}`
+                : '';
+    }
+
+    setCurrencyPreview(
+        'invoice-pay-outstanding',
+        Number(
+            invoice.outstanding
+            ?? 0
+        )
+    );
+
+    const amountInput =
+        document.getElementById(
+            'invoice-pay-amount'
+        );
+
+    if (amountInput) {
+        amountInput.value =
+            String(
+                invoice.outstanding
+                ?? ''
+            );
+
+        amountInput.dispatchEvent(
+            new Event(
+                'input',
+                {
+                    bubbles:
+                        true,
+                }
+            )
+        );
+    }
+
+    setTenantTransactionToday(
+        'invoice-pay-date'
+    );
+
+    openDrawer(
+        'invoice-pay-drawer'
+    );
+
+    await populateInvoicePayAccounts(
+        invoice
+    );
+}
+
+/**
+ * Offer the fund accounts that may pay this Invoice.
+ *
+ * @param {object} invoice
+ */
+async function populateInvoicePayAccounts(
+    invoice
+) {
+    const select =
+        document.getElementById(
+            'invoice-pay-account'
+        );
+
+    if (! select) {
+        return;
+    }
+
+    resetTransactionSelect(
+        select,
+        translate(
+            'tenants.select_account'
+        )
+    );
+
+    try {
+        const lease =
+            await tenantLeaseDetail(
+                invoice.lease_id
+            );
+
+        if (! lease) {
+            return;
+        }
+
+        const leaseInNotice =
+            lease.status === 'notice';
+
+        const eligibleTypes =
+            invoice.type === 'expense'
+                ? [
+                    'rent_reserve',
+                    'consumable_advance',
+                    'security_deposit',
+                ]
+                : leaseInNotice
+                    ? [
+                        'consumable_advance',
+                        'rent_reserve',
+                    ]
+                    : [
+                        'consumable_advance',
+                    ];
+
+        tenantFundAccounts(
+            lease
+        )
+            .filter(
+                (account) =>
+                    eligibleTypes.includes(
+                        account.type
+                    )
+                    && tenantFundAccountStatus(
+                        account
+                    ) === 'active'
+                    && tenantFundBalance(
+                        account
+                    ) > 0
+            )
+            .forEach(
+                (account) => {
+                    appendTransactionOption(
+                        select,
+                        account.id,
+                        tenantFundAccountLabel(
+                            account
+                        ),
+                        tenantFundBalance(
+                            account
+                        ),
+                        {
+                            kind:
+                                'fund',
+                            accountId:
+                                account.id,
+                            leaseId:
+                                lease.id,
+                        }
+                    );
+                }
+            );
+
+        if (
+            select.options.length
+            <= 1
+        ) {
+            resetTransactionSelect(
+                select,
+                translate(
+                    'tenants.no_withdrawable_funds'
+                )
+            );
+
+            return;
+        }
+
+        select.disabled =
+            false;
+    } catch (error) {
+        showTenantTransactionError(
+            'invoice-pay-error',
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'tenants.unable_to_load_accounts'
+                )
+        );
+    }
+}
+
+/**
+ * Validate the Pay form and swap into the read-only review.
+ *
+ * @param {SubmitEvent} event
+ */
+function submitInvoicePay(
+    event
+) {
+    event.preventDefault();
+
+    hideTenantTransactionError(
+        'invoice-pay-error'
+    );
+
+    const invoice =
+        pendingInvoicePayInvoice;
+
+    if (! invoice) {
+        return;
+    }
+
+    const account =
+        selectedTransactionOption(
+            'invoice-pay-account'
+        );
+
+    const accountId =
+        Number(
+            account?.dataset.accountId
+            ?? account?.value
+            ?? 0
+        );
+
+    const amount =
+        Number(
+            parseMoneyInput(
+                document.getElementById(
+                    'invoice-pay-amount'
+                )?.value
+            )
+            || NaN
+        );
+
+    const transactionDate =
+        transactionDateForApi(
+            'invoice-pay-date'
+        );
+
+    if (
+        ! Number.isInteger(accountId)
+        || accountId <= 0
+        || ! transactionDate
+        || ! Number.isInteger(amount)
+        || amount <= 0
+    ) {
+        showTenantTransactionError(
+            'invoice-pay-error',
+            translate(
+                'tenants.pay_fields_required'
+            )
+        );
+
+        return;
+    }
+
+    /*
+     * Browser guards mirroring authoritative backend rules.
+     */
+    const available =
+        selectedOptionBalance(
+            account
+        );
+
+    if (
+        available !== null
+        && amount > available
+    ) {
+        showTenantTransactionError(
+            'invoice-pay-error',
+            translate(
+                'tenants.pay_exceeds_balance'
+            )
+        );
+
+        return;
+    }
+
+    if (
+        amount > Number(
+            invoice.outstanding
+            ?? 0
+        )
+    ) {
+        showTenantTransactionError(
+            'invoice-pay-error',
+            translate(
+                'tenants.pay_exceeds_invoice'
+            )
+        );
+
+        return;
+    }
+
+    pendingInvoicePayPayload = {
+        tenant_fund_account_id:
+            accountId,
+
+        amount,
+
+        transaction_date:
+            transactionDate,
+    };
+
+    enterInvoicePayReview(
+        account
+    );
+}
+
+/**
+ * Swap the Pay drawer into the read-only review.
+ *
+ * @param {HTMLOptionElement|null} accountOption
+ */
+function enterInvoicePayReview(
+    accountOption
+) {
+    const review =
+        document.getElementById(
+            'invoice-pay-review'
+        );
+
+    const payload =
+        pendingInvoicePayPayload;
+
+    const invoice =
+        pendingInvoicePayInvoice;
+
+    if (! review || ! payload || ! invoice) {
+        return;
+    }
+
+    review.innerHTML = `
+        <h3
+            class="
+                text-base font-semibold
+                text-[var(--pm-text)]
+            "
+        >
+            ${escapeHtml(
+                translate(
+                    'tenants.pay_review_title'
+                )
+            )}
+        </h3>
+
+        <p
+            class="
+                mt-1 text-xs
+                text-[var(--pm-text-muted)]
+            "
+        >
+            ${escapeHtml(
+                translate(
+                    'tenants.pay_review_description'
+                )
+            )}
+        </p>
+
+        <div class="mt-4 space-y-2 text-sm">
+            <div class="flex justify-between gap-4">
+                <span class="text-[var(--pm-text-muted)]">
+                    ${escapeHtml(
+                        translate('tenants.invoice')
+                    )}
+                </span>
+
+                <span class="font-medium text-[var(--pm-text)]">
+                    ${escapeHtml(
+                        invoice.invoice_number
+                        ?? `#${invoice.id}`
+                    )}
+                </span>
+            </div>
+
+            <div class="flex justify-between gap-4">
+                <span class="text-[var(--pm-text-muted)]">
+                    ${escapeHtml(
+                        translate('tenants.account')
+                    )}
+                </span>
+
+                <span class="font-medium text-[var(--pm-text)]">
+                    ${escapeHtml(
+                        accountOption?.textContent.trim()
+                        ?? ''
+                    )}
+                </span>
+            </div>
+
+            <div class="flex justify-between gap-4">
+                <span class="text-[var(--pm-text-muted)]">
+                    ${escapeHtml(
+                        translate('tenants.amount')
+                    )}
+                </span>
+
+                <span class="font-medium text-[var(--pm-text)]">
+                    ${escapeHtml(
+                        formatCurrency(payload.amount)
+                    )}
+                </span>
+            </div>
+
+            <div class="flex justify-between gap-4">
+                <span class="text-[var(--pm-text-muted)]">
+                    ${escapeHtml(
+                        translate('tenants.transaction_date')
+                    )}
+                </span>
+
+                <span class="font-medium text-[var(--pm-text)]">
+                    ${escapeHtml(
+                        formatLongDate(
+                            payload.transaction_date
+                        )
+                    )}
+                </span>
+            </div>
+        </div>
+    `;
+
+    document
+        .getElementById(
+            'invoice-pay-fields'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    review.classList.remove(
+        'hidden'
+    );
+
+    document
+        .getElementById(
+            'invoice-pay-submit'
+        )
+        ?.classList.add(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'invoice-pay-back'
+        )
+        ?.classList.remove(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'invoice-pay-confirm'
+        )
+        ?.classList.remove(
+            'pm-hide'
+        );
+}
+
+/**
+ * Return the Pay drawer to the editable form.
+ */
+function exitInvoicePayReview() {
+    pendingInvoicePayPayload =
+        null;
+
+    document
+        .getElementById(
+            'invoice-pay-review'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'invoice-pay-fields'
+        )
+        ?.classList.remove(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'invoice-pay-back'
+        )
+        ?.classList.add(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'invoice-pay-confirm'
+        )
+        ?.classList.add(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'invoice-pay-submit'
+        )
+        ?.classList.remove(
+            'pm-hide'
+        );
+}
+
+/**
+ * Perform the payment after review confirmation.
+ */
+async function confirmInvoicePay() {
+    const payload =
+        pendingInvoicePayPayload;
+
+    const invoice =
+        pendingInvoicePayInvoice;
+
+    if (! payload || ! invoice) {
+        return;
+    }
+
+    const confirmButton =
+        document.getElementById(
+            'invoice-pay-confirm'
+        );
+
+    try {
+        if (confirmButton) {
+            confirmButton.disabled = true;
+        }
+
+        const result =
+            await postTenantTransaction(
+                `/api/invoices/${encodeURIComponent(
+                    invoice.id
+                )}/account-payments`,
+                payload
+            );
+
+        closeDrawer(
+            'invoice-pay-drawer'
+        );
+
+        await refreshSelectedTenantAfterTransaction();
+
+        showTenantTransactionSuccess(
+            translate(
+                'tenants.payment_recorded'
+            ),
+            result?.invoice?.status === 'paid'
+                ? `/api/invoices/${invoice.id}/payment-receipt`
+                : null,
+            'tenants.download_receipt'
+        );
+    } catch (error) {
+        exitInvoicePayReview();
+
+        showTenantTransactionError(
+            'invoice-pay-error',
+            tenantTransactionErrorMessage(
+                error
+            )
+        );
+    } finally {
+        if (confirmButton) {
+            confirmButton.disabled = false;
+        }
+    }
+}
+
+/**
+ * Open the Cancel payment drawer for one Invoice payment.
+ *
+ * @param {number|string} invoiceId
+ * @param {number|string} paymentId
+ */
+function openInvoiceCancelPaymentDrawer(
+    invoiceId,
+    paymentId
+) {
+    const invoice =
+        statementInvoiceById(
+            invoiceId
+        );
+
+    const payment =
+        (
+            invoice?.account_payments
+            ?? []
+        ).find(
+            (candidate) =>
+                String(
+                    candidate?.id
+                ) === String(
+                    paymentId
+                )
+        );
+
+    if (! invoice || ! payment) {
+        return;
+    }
+
+    pendingCancelPaymentId =
+        payment.id;
+
+    document
+        .getElementById(
+            'invoice-cancel-payment-form'
+        )
+        ?.reset();
+
+    hideTenantTransactionError(
+        'invoice-cancel-payment-error'
+    );
+
+    const context =
+        document.getElementById(
+            'invoice-cancel-payment-context'
+        );
+
+    if (context) {
+        context.textContent =
+            invoice.invoice_number
+            || `#${invoice.id}`;
+    }
+
+    const detail =
+        document.getElementById(
+            'invoice-cancel-payment-detail'
+        );
+
+    if (detail) {
+        detail.textContent =
+            `${formatCurrency(
+                payment.amount
+            )} · ${formatDate(
+                payment.transaction_date
+            )}`;
+    }
+
+    openDrawer(
+        'invoice-cancel-payment-drawer'
+    );
+}
+
+/**
+ * Cancel the pending Invoice payment.
+ *
+ * @param {SubmitEvent} event
+ */
+async function submitInvoiceCancelPayment(
+    event
+) {
+    event.preventDefault();
+
+    hideTenantTransactionError(
+        'invoice-cancel-payment-error'
+    );
+
+    const paymentId =
+        pendingCancelPaymentId;
+
+    const reason =
+        nullableTrimmedValue(
+            'invoice-cancel-payment-reason'
+        );
+
+    if (! paymentId) {
+        return;
+    }
+
+    if (! reason) {
+        showTenantTransactionError(
+            'invoice-cancel-payment-error',
+            translate(
+                'tenants.cancellation_reason_required'
+            )
+        );
+
+        return;
+    }
+
+    const submitButton =
+        document.getElementById(
+            'invoice-cancel-payment-submit'
+        );
+
+    await withTenantTransactionSubmitLock(
+        submitButton,
+        async () => {
+            try {
+                await postTenantTransaction(
+                    `/api/invoice-account-payments/${encodeURIComponent(
+                        paymentId
+                    )}/cancel`,
+                    {
+                        reason,
+                    }
+                );
+
+                closeDrawer(
+                    'invoice-cancel-payment-drawer'
+                );
+
+                await refreshSelectedTenantAfterTransaction();
+
+                showTenantTransactionSuccess(
+                    translate(
+                        'tenants.payment_cancelled'
+                    ),
+                    null
+                );
+            } catch (error) {
+                showTenantTransactionError(
+                    'invoice-cancel-payment-error',
+                    tenantTransactionErrorMessage(
+                        error
+                    )
+                );
+            }
+        }
+    );
 }
 
 
@@ -2605,72 +3588,30 @@ async function resendTenantTransferVoucher(
 
 
 /**
- * V1.0.8: render the tenant's fund expenses, one row per TEX voucher.
+ * V1.0.8: the Expenses section lists the tenant's expense Invoices,
+ * exactly like the Invoices section lists rent billing. Recording an
+ * expense issues an unpaid EXP- Invoice; the Pay flow settles it from
+ * a fund account and can be cancelled again.
  *
- * @param {Array<object>} transactions
+ * @param {Array<object>} invoices
  * @returns {string}
  */
 function renderTenantExpenses(
-    transactions
+    invoices
 ) {
-    const ledger =
-        Array.isArray(
-            transactions
-        )
-            ? transactions
-            : [];
-
-    /*
-     * An expense batch shares one TEX reference across its lines; the
-     * section shows one row per voucher with the summed total.
-     */
-    const grouped = new Map();
-
-    ledger
-        .filter(
-            (transaction) =>
-                transaction?.category === 'expense'
-                && transaction?.direction === 'debit'
-        )
-        .forEach(
-            (transaction) => {
-                const key =
-                    transaction.reference
-                    ?? `#${transaction.id}`;
-
-                const existing =
-                    grouped.get(key);
-
-                if (existing) {
-                    existing.amount +=
-                        Number(
-                            transaction.amount
-                            ?? 0
-                        );
-
-                    existing.lineCount += 1;
-                } else {
-                    grouped.set(key, {
-                        ...transaction,
-
-                        amount:
-                            Number(
-                                transaction.amount
-                                ?? 0
-                            ),
-
-                        lineCount: 1,
-                    });
-                }
-            }
+    const rows =
+        (
+            Array.isArray(
+                invoices
+            )
+                ? invoices
+                : []
+        ).filter(
+            (invoice) =>
+                invoice?.type === 'expense'
         );
 
-    const expenses =
-        Array.from(
-            grouped.values()
-        );
-
-    const header = `
+    return `
         <div>
             <h3
                 class="
@@ -2693,177 +3634,22 @@ function renderTenantExpenses(
             >
                 ${escapeHtml(
                     translate(
-                        'tenants.expenses_description'
+                        'tenants.expense_invoices_description'
                     )
                 )}
             </p>
         </div>
-    `;
-
-    if (expenses.length === 0) {
-        return `
-            ${header}
-
-            <div class="mt-4">
-                ${financialEmptyState(
-                    translate('tenants.no_expenses')
-                )}
-            </div>
-        `;
-    }
-
-    const rows =
-        expenses
-            .map(
-                (expense) => {
-                    const safeId =
-                        escapeHtml(
-                            expense.id
-                        );
-
-                    return `
-                        <tr>
-                            ${tableCell(
-                                expense.transaction_date
-                                    ? formatDate(
-                                        expense.transaction_date
-                                    )
-                                    : '—'
-                            )}
-
-                            ${tableCell(
-                                expense.reference
-                                ?? '—'
-                            )}
-
-                            ${tableCell(
-                                tenantFundTypeLabel(
-                                    expense.fund_type
-                                )
-                            )}
-
-                            ${tableCell(
-                                (expense.notes ?? '—')
-                                + (
-                                    expense.lineCount > 1
-                                        ? ` (+${expense.lineCount - 1})`
-                                        : ''
-                                )
-                            )}
-
-                            ${tableCell(
-                                formatCurrency(
-                                    Number(
-                                        expense.amount
-                                        ?? 0
-                                    )
-                                ),
-                                true,
-                                true
-                            )}
-
-                            <td
-                                class="
-                                    whitespace-nowrap
-                                    px-4 py-3 text-left
-                                "
-                            >
-                                <div
-                                    class="
-                                        flex items-center gap-2
-                                    "
-                                >
-                                    <button
-                                        type="button"
-                                        data-open-tenant-expense-voucher="${safeId}"
-                                        class="
-                                            inline-flex items-center
-                                            rounded-lg border
-                                            border-[var(--pm-border)]
-                                            bg-[var(--pm-surface)] px-3 py-2
-                                            text-xs font-medium
-                                            text-[var(--pm-text-secondary)]
-                                            shadow-sm transition
-                                            hover:border-[var(--pm-border-strong)]
-                                            hover:bg-[var(--pm-hover)]
-                                        "
-                                    >
-                                        ${escapeHtml(
-                                            translate(
-                                                'tenants.voucher'
-                                            )
-                                        )}
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        data-resend-tenant-expense-voucher="${safeId}"
-                                        data-requires-capability="manage_operations"
-                                        class="
-                                            inline-flex items-center
-                                            rounded-lg border
-                                            border-[var(--pm-border)]
-                                            bg-[var(--pm-surface)] px-3 py-2
-                                            text-xs font-medium
-                                            text-[var(--pm-text-secondary)]
-                                            shadow-sm transition
-                                            hover:border-[var(--pm-border-strong)]
-                                            hover:bg-[var(--pm-hover)]
-                                        "
-                                    >
-                                        ${escapeHtml(
-                                            translate(
-                                                'tenants.resend'
-                                            )
-                                        )}
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }
-            )
-            .join('');
-
-    return `
-        ${header}
 
         <div class="mt-4">
-            <div
-                class="
-                    overflow-x-auto
-                    rounded-xl border
-                    border-[var(--pm-border)]
-                "
-            >
-                <table
-                    class="
-                        min-w-full
-                        divide-y divide-[var(--pm-border)]
-                        text-sm
-                    "
-                >
-                    <thead class="bg-[var(--pm-surface-subtle)]">
-                        <tr>
-                            ${tableHeading(translate('tenants.date'))}
-                            ${tableHeading(translate('tenants.voucher'))}
-                            ${tableHeading(translate('tenants.source_fund'))}
-                            ${tableHeading(translate('tenants.description'))}
-                            ${tableHeading(translate('tenants.amount'), true)}
-                            ${tableHeading(translate('tenants.actions'))}
-                        </tr>
-                    </thead>
-
-                    <tbody
-                        class="
-                            divide-y divide-[var(--pm-border-subtle)]
-                            bg-[var(--pm-surface)]
-                        "
-                    >
-                        ${rows}
-                    </tbody>
-                </table>
-            </div>
+            ${
+                rows.length === 0
+                    ? financialEmptyState(
+                        translate('tenants.no_expense_invoices')
+                    )
+                    : renderTenantInvoiceTable(
+                        rows
+                    )
+            }
         </div>
     `;
 }
@@ -4536,11 +5322,7 @@ function initializeTenantTransactionControls() {
         )
         ?.addEventListener(
             'change',
-            async (event) => {
-                await populateExpenseAccounts(
-                    event.target.value
-                );
-
+            () => {
                 setTenantTransactionContext(
                     'tenant-expense'
                 );
@@ -4610,6 +5392,76 @@ function initializeTenantTransactionControls() {
             'click',
             async () => {
                 await confirmTenantExpense();
+            }
+        );
+
+    /*
+     * V1.0.8 Invoice Pay drawer.
+     */
+    document
+        .getElementById(
+            'invoice-pay-form'
+        )
+        ?.addEventListener(
+            'submit',
+            submitInvoicePay
+        );
+
+    document
+        .getElementById(
+            'invoice-pay-cancel'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                closeDrawer(
+                    'invoice-pay-drawer'
+                );
+            }
+        );
+
+    document
+        .getElementById(
+            'invoice-pay-back'
+        )
+        ?.addEventListener(
+            'click',
+            exitInvoicePayReview
+        );
+
+    document
+        .getElementById(
+            'invoice-pay-confirm'
+        )
+        ?.addEventListener(
+            'click',
+            async () => {
+                await confirmInvoicePay();
+            }
+        );
+
+    /*
+     * V1.0.8 Cancel Invoice payment drawer.
+     */
+    document
+        .getElementById(
+            'invoice-cancel-payment-form'
+        )
+        ?.addEventListener(
+            'submit',
+            submitInvoiceCancelPayment
+        );
+
+    document
+        .getElementById(
+            'invoice-cancel-payment-close'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                closeDrawer(
+                    'invoice-cancel-payment-drawer'
+                );
             }
         );
 
@@ -4757,6 +5609,8 @@ function initializeTenantTransactionControls() {
                     + '#tenant-withdrawal-drawer.pm-drawer-active, '
                     + '#tenant-adjustment-drawer.pm-drawer-active, '
                     + '#tenant-expense-drawer.pm-drawer-active, '
+                    + '#invoice-pay-drawer.pm-drawer-active, '
+                    + '#invoice-cancel-payment-drawer.pm-drawer-active, '
                     + '#tenant-accounts-drawer.pm-drawer-active'
                 )
                 .forEach(
@@ -4893,8 +5747,6 @@ async function openTenantExpenseDrawer() {
         'tenant-expense-date'
     );
 
-    updateTenantExpenseCashReceiver();
-
     const lines =
         document.getElementById(
             'tenant-expense-lines'
@@ -4913,12 +5765,6 @@ async function openTenantExpenseDrawer() {
     openDrawer(
         'tenant-expense-drawer'
     );
-
-    /*
-     * V1.0.7: withdrawable accounts across ALL of the Tenant's Leases
-     * are offered immediately; the Lease selector is only a filter.
-     */
-    await populateExpenseAccounts();
 }
 
 
@@ -5431,118 +6277,6 @@ async function populateWithdrawalAccounts(
     }
 }
 
-async function populateExpenseAccounts(
-    leaseFilterId = ''
-) {
-    const select =
-        document.getElementById(
-            'tenant-expense-account'
-        );
-
-    if (! select) {
-        return;
-    }
-
-    resetTransactionSelect(
-        select,
-        translate(
-            'tenants.select_account'
-        )
-    );
-
-    updateTenantExpensePreview();
-
-    try {
-        const leases =
-            await selectedTenantLeaseDetailsForTransactions(
-                leaseFilterId
-            );
-
-        select.innerHTML =
-            `<option value="">${escapeHtml(
-                translate(
-                    'tenants.select_account'
-                )
-            )}</option>`;
-
-        leases.forEach(
-            (lease) => {
-                tenantFundAccounts(
-                    lease
-                )
-                    .filter(
-                        (account) =>
-                            [
-                                'rent_reserve',
-                                'consumable_advance',
-                                'security_deposit',
-                            ].includes(
-                                account.type
-                            )
-                            && tenantFundAccountStatus(
-                                account
-                            ) === 'active'
-                            && tenantFundBalance(
-                                account
-                            ) > 0
-                    )
-                    .forEach(
-                        (account) => {
-                            appendTransactionOption(
-                                select,
-                                account.id,
-                                `${tenantFundAccountLabel(
-                                    account
-                                )} · ${tenantLeaseLabel(
-                                    lease
-                                )}`,
-                                tenantFundBalance(
-                                    account
-                                ),
-                                {
-                                    kind:
-                                        'fund',
-                                    accountId:
-                                        account.id,
-                                    leaseId:
-                                        lease.id,
-                                }
-                            );
-                        }
-                    );
-            }
-        );
-
-        if (
-            select.options.length
-            <= 1
-        ) {
-            resetTransactionSelect(
-                select,
-                translate(
-                    'tenants.no_withdrawable_funds'
-                )
-            );
-
-            return;
-        }
-
-        select.disabled =
-            false;
-
-        updateTenantExpensePreview();
-    } catch (error) {
-        showTenantTransactionError(
-            'tenant-expense-error',
-            error instanceof Error
-                ? error.message
-                : translate(
-                    'tenants.unable_to_load_accounts'
-                )
-        );
-    }
-}
-
 
 /**
  * Load all actual fund accounts belonging to the selected Tenant for
@@ -6008,35 +6742,12 @@ function updateTenantWithdrawalPreview() {
  * Update Withdrawal Current → Amount → Resulting preview.
  */
 function updateTenantExpensePreview() {
-    const account =
-        selectedTransactionOption(
-            'tenant-expense-account'
-        );
-
-    const balance =
-        selectedOptionBalance(
-            account
-        );
-
+    /*
+     * V1.0.8: recording an expense only issues an Invoice, so the
+     * drawer previews the running lines total and nothing else.
+     */
     const total =
         tenantExpenseLinesTotal();
-
-    setCurrencyPreview(
-        'tenant-expense-current-balance',
-        balance
-    );
-
-    setCurrencyPreview(
-        'tenant-expense-preview-amount',
-        total
-    );
-
-    setCurrencyPreview(
-        'tenant-expense-resulting-balance',
-        balance === null
-            ? null
-            : balance - total
-    );
 
     const totalElement =
         document.getElementById(
@@ -6439,15 +7150,6 @@ function resetTenantExpenseDrawer() {
 
     hideTenantTransactionError(
         'tenant-expense-error'
-    );
-
-    resetTransactionSelect(
-        document.getElementById(
-            'tenant-expense-account'
-        ),
-        translate(
-            'tenants.select_account'
-        )
     );
 
     updateTenantExpensePreview();
@@ -8082,15 +8784,14 @@ async function submitTenantExpense(
         'tenant-expense-error'
     );
 
-    const account =
-        selectedTransactionOption(
-            'tenant-expense-account'
+    const leaseSelect =
+        document.getElementById(
+            'tenant-expense-lease'
         );
 
-    const accountId =
+    const leaseId =
         Number(
-            account?.dataset.accountId
-            ?? account?.value
+            leaseSelect?.value
             ?? 0
         );
 
@@ -8099,35 +8800,13 @@ async function submitTenantExpense(
             'tenant-expense-date'
         );
 
-    const paymentMethod =
-        String(
-            document
-                .getElementById(
-                    'tenant-expense-method'
-                )
-                ?.value
-            ?? ''
-        );
-
     const lines =
         collectTenantExpenseLines();
 
-    const available =
-        selectedOptionBalance(
-            account
-        );
-
     if (
-        ! Number.isInteger(accountId)
-        || accountId <= 0
+        ! Number.isInteger(leaseId)
+        || leaseId <= 0
         || ! transactionDate
-        || ! [
-            'cash',
-            'bank_transfer',
-            'momo',
-        ].includes(
-            paymentMethod
-        )
     ) {
         showTenantTransactionError(
             'tenant-expense-error',
@@ -8150,36 +8829,12 @@ async function submitTenantExpense(
         return;
     }
 
-    const total =
-        lines.reduce(
-            (sum, line) =>
-                sum + line.amount,
-            0
-        );
-
-    if (
-        available !== null
-        && total > available
-    ) {
-        showTenantTransactionError(
-            'tenant-expense-error',
-            translate(
-                'tenants.expense_exceeds_balance'
-            )
-        );
-
-        return;
-    }
-
     pendingTenantExpensePayload = {
-        tenant_fund_account_id:
-            accountId,
+        lease_id:
+            leaseId,
 
         transaction_date:
             transactionDate,
-
-        payment_method:
-            paymentMethod,
 
         reference:
             nullableTrimmedValue(
@@ -8190,7 +8845,8 @@ async function submitTenantExpense(
     };
 
     enterTenantExpenseReview(
-        account
+        leaseSelect?.selectedOptions?.[0]
+        ?? null
     );
 }
 
@@ -8373,10 +9029,10 @@ function appendTenantExpenseLine() {
 /**
  * Swap the drawer into the read-only review.
  *
- * @param {HTMLOptionElement|null} accountOption
+ * @param {HTMLOptionElement|null} leaseOption
  */
 function enterTenantExpenseReview(
-    accountOption
+    leaseOption
 ) {
     const review =
         document.getElementById(
@@ -8428,13 +9084,13 @@ function enterTenantExpenseReview(
             <div class="flex justify-between gap-4">
                 <span class="text-[var(--pm-text-muted)]">
                     ${escapeHtml(
-                        translate('tenants.account')
+                        translate('tenants.lease')
                     )}
                 </span>
 
                 <span class="font-medium text-[var(--pm-text)]">
                     ${escapeHtml(
-                        accountOption?.textContent.trim()
+                        leaseOption?.textContent.trim()
                         ?? ''
                     )}
                 </span>
@@ -8451,23 +9107,6 @@ function enterTenantExpenseReview(
                     ${escapeHtml(
                         formatLongDate(
                             payload.transaction_date
-                        )
-                    )}
-                </span>
-            </div>
-
-            <div class="flex justify-between gap-4">
-                <span class="text-[var(--pm-text-muted)]">
-                    ${escapeHtml(
-                        translate('tenants.payment_method')
-                    )}
-                </span>
-
-                <span class="font-medium text-[var(--pm-text)]">
-                    ${escapeHtml(
-                        tenantDynamicLabel(
-                            'payment_method',
-                            payload.payment_method
                         )
                     )}
                 </span>
@@ -8635,7 +9274,7 @@ async function confirmTenantExpense() {
 
         const response =
             await apiRequest(
-                '/api/tenant-fund-expenses',
+                '/api/tenant-expense-invoices',
                 {
                     method:
                         'POST',
@@ -8660,12 +9299,12 @@ async function confirmTenantExpense() {
 
         showTenantTransactionSuccess(
             translate(
-                'tenants.expense_recorded'
+                'tenants.expense_invoice_created'
             ),
-            result?.expense?.id
-                ? `/api/tenant-fund-expenses/${result.expense.id}/voucher`
+            result?.invoice?.id
+                ? `/api/invoices/${result.invoice.id}/pdf`
                 : null,
-            'tenants.download_voucher'
+            'tenants.download_invoice'
         );
     } catch (error) {
         exitTenantExpenseReview();

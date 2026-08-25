@@ -772,6 +772,46 @@
                     ></div>
                 </div>
 
+                {{-- ====================================================
+                     V1.0.8 Expenses (unpaid OEB bills paid explicitly)
+                ==================================================== --}}
+
+                <div
+                    class="
+                        border-t border-[var(--pm-border-subtle)]
+                        px-6 py-6
+                    "
+                >
+                    <div>
+                        <h3
+                            class="
+                                text-base font-semibold
+                                text-[var(--pm-text)]
+                            "
+                        >
+                            <span data-i18n="owners.expenses">
+    {{ __('ui.owners.expenses') }}
+</span>
+                        </h3>
+
+                        <p
+                            class="
+                                mt-1 text-xs
+                                text-[var(--pm-text-muted)]
+                            "
+                        >
+                            <span data-i18n="owners.expense_bills_description">
+    {{ __('ui.owners.expense_bills_description') }}
+</span>
+                        </p>
+                    </div>
+
+                    <div
+                        id="owner-expense-bills-list"
+                        class="mt-4"
+                    ></div>
+                </div>
+
             </div>
         </section>
     </div>
@@ -2429,6 +2469,306 @@
                 <span data-i18n="owners.confirm">
     {{ __('ui.owners.confirm') }}
 </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+{{-- ====================================================
+     V1.0.8 Expense Bill Pay Drawer
+
+     Pays all or part of an owner expense bill from either
+     the Deposit/Expense account (may go negative) or the
+     strictly capped Payout account, with a read-only
+     review step before anything is recorded.
+==================================================== --}}
+
+<x-drawer
+    id="owner-bill-pay-drawer"
+    backdrop-id="owner-bill-pay-drawer-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="owner-bill-pay-drawer-close"
+        close-label="Close"
+        close-label-key="owners.close"
+    >
+        <x-slot:title>
+            <span data-i18n="owners.pay_bill_title">
+                {{ __('ui.owners.pay_bill_title') }}
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="owners.pay_bill_description">
+                {{ __('ui.owners.pay_bill_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="owner-bill-pay-form"
+        class="flex min-h-0 flex-1 flex-col"
+        novalidate
+    >
+        <div class="flex-1 space-y-5 overflow-y-auto px-6 py-6">
+            <div
+                id="owner-bill-pay-error"
+                class="hidden rounded-xl border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3 text-sm
+                    text-[var(--pm-danger-text)]"
+            ></div>
+
+            <div id="owner-bill-pay-fields">
+                <div
+                    class="
+                        mb-5 rounded-xl border border-[var(--pm-border)]
+                        bg-[var(--pm-surface-subtle)] p-4
+                    "
+                >
+                    <div
+                        class="text-xs text-[var(--pm-text-muted)]"
+                        data-i18n="owners.expense_bill"
+                    >
+                        {{ __('ui.owners.expense_bill') }}
+                    </div>
+
+                    <div
+                        id="owner-bill-pay-context"
+                        class="mt-2 text-sm font-semibold text-[var(--pm-text)]"
+                    >
+                        —
+                    </div>
+
+                    <div class="mt-3 text-xs text-[var(--pm-text-muted)]"
+                        data-i18n="owners.outstanding"
+                    >
+                        {{ __('ui.owners.outstanding') }}
+                    </div>
+
+                    <div
+                        id="owner-bill-pay-outstanding"
+                        class="mt-1 font-semibold text-[var(--pm-text)]"
+                    >
+                        —
+                    </div>
+                </div>
+
+                <div class="space-y-5">
+                    <div>
+                        <label
+                            for="owner-bill-pay-source"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="owners.pay_source_account">
+                                {{ __('ui.owners.pay_source_account') }}
+                            </span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
+                        </label>
+
+                        <select
+                            id="owner-bill-pay-source"
+                            required
+                            class="pm-input"
+                        ></select>
+                    </div>
+
+                    <div>
+                        <label
+                            for="owner-bill-pay-amount"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="owners.amount">
+                                {{ __('ui.owners.amount') }}
+                            </span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
+                        </label>
+
+                        <input
+                            id="owner-bill-pay-amount"
+                            type="text"
+                            inputmode="numeric"
+                            data-money-input
+                            required
+                            class="pm-input"
+                        >
+                    </div>
+
+                    <div>
+                        <label
+                            for="owner-bill-pay-date"
+                            class="pm-field-label"
+                        >
+                            <span data-i18n="owners.date">
+                                {{ __('ui.owners.date') }}
+                            </span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
+                        </label>
+
+                        <input
+                            id="owner-bill-pay-date"
+                            type="text"
+                            inputmode="numeric"
+                            maxlength="10"
+                            autocomplete="off"
+                            data-pm-date-input
+                            required
+                            class="pm-input"
+                        >
+                    </div>
+                </div>
+            </div>
+
+            {{-- Read-only review, shown instead of the fields. --}}
+            <div
+                id="owner-bill-pay-review"
+                class="hidden"
+            ></div>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                type="button"
+                id="owner-bill-pay-cancel"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
+                </span>
+            </button>
+
+            <button
+                id="owner-bill-pay-submit"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="owners.review">
+                    {{ __('ui.owners.review') }}
+                </span>
+            </button>
+
+            <button
+                id="owner-bill-pay-back"
+                type="button"
+                class="pm-button-secondary pm-hide"
+            >
+                <span data-i18n="owners.back">
+                    {{ __('ui.owners.back') }}
+                </span>
+            </button>
+
+            <button
+                id="owner-bill-pay-confirm"
+                type="button"
+                class="pm-button-primary pm-hide"
+            >
+                <span data-i18n="owners.confirm">
+                    {{ __('ui.owners.confirm') }}
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+{{-- ====================================================
+     V1.0.8 Cancel Expense Bill Payment Drawer
+==================================================== --}}
+
+<x-drawer
+    id="owner-bill-cancel-payment-drawer"
+    backdrop-id="owner-bill-cancel-payment-drawer-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="owner-bill-cancel-payment-drawer-close"
+        close-label="Close"
+        close-label-key="owners.close"
+    >
+        <x-slot:title>
+            <span data-i18n="owners.cancel_payment_title">
+                {{ __('ui.owners.cancel_payment_title') }}
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="owners.cancel_payment_description">
+                {{ __('ui.owners.cancel_payment_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="owner-bill-cancel-payment-form"
+        class="flex min-h-0 flex-1 flex-col"
+        novalidate
+    >
+        <div class="flex-1 space-y-5 overflow-y-auto px-6 py-6">
+            <div
+                id="owner-bill-cancel-payment-error"
+                class="hidden rounded-xl border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3 text-sm
+                    text-[var(--pm-danger-text)]"
+            ></div>
+
+            <div
+                class="
+                    rounded-xl border border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] p-4
+                "
+            >
+                <div
+                    id="owner-bill-cancel-payment-context"
+                    class="text-sm font-semibold text-[var(--pm-text)]"
+                >
+                    —
+                </div>
+
+                <div
+                    id="owner-bill-cancel-payment-detail"
+                    class="mt-1 text-sm text-[var(--pm-text-muted)]"
+                ></div>
+            </div>
+
+            <div>
+                <label
+                    for="owner-bill-cancel-payment-reason"
+                    class="pm-field-label"
+                >
+                    <span data-i18n="owners.cancellation_reason">
+                        {{ __('ui.owners.cancellation_reason') }}
+                    </span>
+                    <span class="text-[var(--pm-danger-text)]">*</span>
+                </label>
+
+                <textarea
+                    id="owner-bill-cancel-payment-reason"
+                    rows="3"
+                    maxlength="500"
+                    required
+                    class="pm-input"
+                ></textarea>
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                type="button"
+                id="owner-bill-cancel-payment-close"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
+                </span>
+            </button>
+
+            <button
+                id="owner-bill-cancel-payment-submit"
+                type="submit"
+                class="pm-button-danger"
+            >
+                <span data-i18n="owners.cancel_payment">
+                    {{ __('ui.owners.cancel_payment') }}
+                </span>
             </button>
         </x-drawer-footer>
     </form>
