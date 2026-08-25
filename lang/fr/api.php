@@ -32,6 +32,7 @@ return [
         'receipt_sent' => 'L’e-mail du reçu a été envoyé avec succès.',
         'transfer_voucher_sent' => 'L’e-mail du récépissé de transfert a été envoyé avec succès.',
         'owner_reserve_transfer_sent' => 'L’e-mail du bon de transfert entre comptes a été envoyé avec succès.',
+        'tenant_expense_voucher_sent' => 'L’e-mail du bon de dépense a été envoyé avec succès.',
     ],
 
     'validation' => [

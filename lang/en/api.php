@@ -32,6 +32,7 @@ return [
         'receipt_sent' => 'Receipt email sent successfully.',
         'transfer_voucher_sent' => 'Transfer receipt email sent successfully.',
         'owner_reserve_transfer_sent' => 'Account transfer voucher email sent successfully.',
+        'tenant_expense_voucher_sent' => 'Tenant expense voucher email sent successfully.',
     ],
 
     'validation' => [

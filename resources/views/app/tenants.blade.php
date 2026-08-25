@@ -875,6 +875,380 @@
     </form>
 </x-drawer>
 
+{{-- ====================================================
+     V1.0.8 Tenant Expense Drawer
+==================================================== --}}
+
+<x-drawer
+    id="tenant-expense-drawer"
+    backdrop-id="tenant-expense-drawer-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="tenant-expense-drawer-close"
+        close-label="{{ __('ui.tenants.close') }}"
+        close-label-key="tenants.close"
+    >
+        <x-slot:title>
+            <span data-i18n="tenants.expense">
+                {{ __('ui.tenants.withdrawal') }}
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="tenants.expense_description_text">
+                {{ __('ui.tenants.expense_description_text') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="tenant-expense-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+            <div
+                id="tenant-expense-error"
+                class="
+                    mb-5 hidden rounded-xl
+                    border border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)] px-4 py-3
+                    text-sm text-[var(--pm-danger-text)]
+                "
+            ></div>
+
+            <div
+                class="
+                    mb-5 rounded-xl border border-[var(--pm-border)]
+                    bg-[var(--pm-surface-subtle)] px-4 py-4
+                "
+            >
+                <div
+                    class="
+                        text-xs font-medium uppercase
+                        tracking-wide text-[var(--pm-text-muted)]
+                    "
+                    data-i18n="tenants.transaction_context"
+                >
+                    {{ __('ui.tenants.transaction_context') }}
+                </div>
+
+                <div
+                    id="tenant-expense-tenant-context"
+                    class="mt-2 text-sm font-semibold text-[var(--pm-text)]"
+                >
+                    —
+                </div>
+
+                <div
+                    id="tenant-expense-property-context"
+                    class="mt-1 text-sm text-[var(--pm-text-muted)]"
+                ></div>
+            </div>
+
+            <div class="space-y-5">
+                <div>
+                    <label
+                        for="tenant-expense-lease"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="tenants.lease">
+                            {{ __('ui.tenants.lease') }}
+                        </span>
+
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
+                            {{ __('ui.tenants.optional') }}
+                        </span>
+                    </label>
+
+                    <select
+                        id="tenant-expense-lease"
+                        class="pm-input"
+                    >
+                        <option value="">
+                            {{ __('ui.tenants.all_leases') }}
+                        </option>
+                    </select>
+
+                    <p
+                        class="mt-1.5 text-xs text-[var(--pm-text-muted)]"
+                        data-i18n="tenants.any_account_help"
+                    >
+                        {{ __('ui.tenants.any_account_help') }}
+                    </p>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-expense-account"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="tenants.account">
+                            {{ __('ui.tenants.account') }}
+                        </span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <select
+                        id="tenant-expense-account"
+                        required
+                        disabled
+                        class="pm-input"
+                    >
+                        <option value="">
+                            {{ __('ui.tenants.select_account') }}
+                        </option>
+                    </select>
+                </div>
+
+                <div
+                    class="
+                        grid gap-3 rounded-xl border
+                        border-[var(--pm-border)] bg-[var(--pm-surface-subtle)]
+                        p-4 sm:grid-cols-3
+                    "
+                >
+                    <div>
+                        <div
+                            class="text-xs text-[var(--pm-text-muted)]"
+                            data-i18n="tenants.current_balance"
+                        >
+                            {{ __('ui.tenants.current_balance') }}
+                        </div>
+
+                        <div
+                            id="tenant-expense-current-balance"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-[var(--pm-text-muted)]"
+                            data-i18n="tenants.transaction_amount"
+                        >
+                            {{ __('ui.tenants.transaction_amount') }}
+                        </div>
+
+                        <div
+                            id="tenant-expense-preview-amount"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
+                        >
+                            —
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="text-xs text-[var(--pm-text-muted)]"
+                            data-i18n="tenants.resulting_balance"
+                        >
+                            {{ __('ui.tenants.resulting_balance') }}
+                        </div>
+
+                        <div
+                            id="tenant-expense-resulting-balance"
+                            class="mt-1 font-semibold text-[var(--pm-text)]"
+                        >
+                            —
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-expense-amount"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="tenants.amount">
+                            {{ __('ui.tenants.amount') }}
+                        </span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <input
+                        id="tenant-expense-amount"
+                        type="text"
+                                        inputmode="numeric"
+                                        data-money-input
+                        required
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-expense-method"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="tenants.payment_method_label">
+                            {{ __('ui.tenants.payment_method_label') }}
+                        </span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <select
+                        id="tenant-expense-method"
+                        required
+                        class="pm-input"
+                    >
+                        <option value="cash">
+                            {{ __('ui.tenants.payment_method_cash') }}
+                        </option>
+
+                        <option value="bank_transfer">
+                            {{ __('ui.tenants.payment_method_bank_transfer') }}
+                        </option>
+
+                        <option value="momo">
+                            {{ __('ui.tenants.payment_method_momo') }}
+                        </option>
+                    </select>
+                </div>
+
+                <div
+                    id="tenant-expense-cash-receiver-wrapper"
+                >
+                    <label
+                        for="tenant-expense-cash-receiver"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="tenants.cash_receiver">
+                            {{ __('ui.tenants.cash_receiver') }}
+                        </span>
+                    </label>
+
+                    <input
+                        id="tenant-expense-cash-receiver"
+                        type="text"
+                        readonly
+                        class="pm-input cursor-not-allowed bg-[var(--pm-input-disabled)]"
+                        placeholder="{{ __('ui.tenants.cash_receiver_automatic') }}"
+                    >
+
+                    <p
+                        class="mt-1.5 text-xs text-[var(--pm-text-muted)]"
+                        data-i18n="tenants.cash_receiver_help"
+                    >
+                        {{ __('ui.tenants.cash_receiver_help') }}
+                    </p>
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-expense-date"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="tenants.transaction_date">
+                            {{ __('ui.tenants.transaction_date') }}
+                        </span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <input
+                        id="tenant-expense-date"
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="10"
+                        autocomplete="off"
+                        data-pm-date-input
+                        required
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-expense-reference"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="tenants.reference">
+                            {{ __('ui.tenants.reference') }}
+                        </span>
+
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
+                            {{ __('ui.tenants.optional') }}
+                        </span>
+                    </label>
+
+                    <input
+                        id="tenant-expense-reference"
+                        type="text"
+                        maxlength="255"
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="tenant-expense-notes"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="tenants.notes">
+                            {{ __('ui.tenants.notes') }}
+                        </span>
+
+                        <span class="text-xs text-[var(--pm-text-subtle)]">
+                            {{ __('ui.tenants.optional') }}
+                        </span>
+                    </label>
+
+                    <textarea
+                        id="tenant-expense-notes"
+                        rows="3"
+                        maxlength="2000"
+                        class="pm-input"
+                    ></textarea>
+                </div>
+            </div>
+            <div class="mt-4">
+                    <label
+                        for="tenant-expense-description"
+                        class="pm-field-label"
+                    >
+                        <span data-i18n="tenants.expense_description_label">
+                            {{ __('ui.tenants.expense_description_label') }}
+                        </span>
+                        <span class="text-[var(--pm-danger-text)]">*</span>
+                    </label>
+
+                    <textarea
+                        id="tenant-expense-description"
+                        rows="3"
+                        required
+                        maxlength="1000"
+                        class="pm-input"
+                    ></textarea>
+                </div>
+
+</div>
+
+        <x-drawer-footer>
+            <button
+                type="button"
+                data-close-tenant-transaction="tenant-expense-drawer"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="actions.cancel">
+                    {{ __('ui.actions.cancel') }}
+                </span>
+            </button>
+
+            <button
+                id="tenant-expense-submit"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span data-i18n="actions.save">
+                    {{ __('ui.actions.save') }}
+                </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
 {{-- ================================================================
      V1.0.5 Tenant Adjustment Drawer
 ================================================================ --}}

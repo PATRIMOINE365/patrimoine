@@ -912,6 +912,17 @@ function renderTenantDetail(
                 px-6 py-6
             "
         >
+            ${renderTenantExpenses(
+                operationalHistory?.fundTransactions
+            )}
+        </div>
+
+        <div
+            class="
+                border-t border-[var(--pm-border-subtle)]
+                px-6 py-6
+            "
+        >
             ${renderTenantFundHistory(
                 operationalHistory?.fundTransactions
             )}
@@ -921,6 +932,7 @@ function renderTenantDetail(
     initializeTenantInvoiceActions();
     initializeTenantReceiptActions();
     initializeTenantTransferVoucherActions();
+    initializeTenantExpenseVoucherActions();
     initializeTenantTransactionActionButtons();
 }
 
@@ -2687,6 +2699,419 @@ async function resendTenantTransferVoucher(
 
 
 /**
+ * V1.0.8: render the tenant's fund expenses, one row per TEX voucher.
+ *
+ * @param {Array<object>} transactions
+ * @returns {string}
+ */
+function renderTenantExpenses(
+    transactions
+) {
+    const ledger =
+        Array.isArray(
+            transactions
+        )
+            ? transactions
+            : [];
+
+    const expenses =
+        ledger.filter(
+            (transaction) =>
+                transaction?.category === 'expense'
+                && transaction?.direction === 'debit'
+        );
+
+    const header = `
+        <div>
+            <h3
+                class="
+                    text-base font-semibold
+                    text-[var(--pm-text)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'tenants.expenses'
+                    )
+                )}
+            </h3>
+
+            <p
+                class="
+                    mt-1 text-xs
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'tenants.expenses_description'
+                    )
+                )}
+            </p>
+        </div>
+    `;
+
+    if (expenses.length === 0) {
+        return `
+            ${header}
+
+            <div class="mt-4">
+                ${financialEmptyState(
+                    translate('tenants.no_expenses')
+                )}
+            </div>
+        `;
+    }
+
+    const rows =
+        expenses
+            .map(
+                (expense) => {
+                    const safeId =
+                        escapeHtml(
+                            expense.id
+                        );
+
+                    return `
+                        <tr>
+                            ${tableCell(
+                                expense.transaction_date
+                                    ? formatDate(
+                                        expense.transaction_date
+                                    )
+                                    : '—'
+                            )}
+
+                            ${tableCell(
+                                expense.reference
+                                ?? '—'
+                            )}
+
+                            ${tableCell(
+                                tenantFundTypeLabel(
+                                    expense.fund_type
+                                )
+                            )}
+
+                            ${tableCell(
+                                expense.notes
+                                ?? '—'
+                            )}
+
+                            ${tableCell(
+                                formatCurrency(
+                                    Number(
+                                        expense.amount
+                                        ?? 0
+                                    )
+                                ),
+                                true,
+                                true
+                            )}
+
+                            <td
+                                class="
+                                    whitespace-nowrap
+                                    px-4 py-3 text-left
+                                "
+                            >
+                                <div
+                                    class="
+                                        flex items-center gap-2
+                                    "
+                                >
+                                    <button
+                                        type="button"
+                                        data-open-tenant-expense-voucher="${safeId}"
+                                        class="
+                                            inline-flex items-center
+                                            rounded-lg border
+                                            border-[var(--pm-border)]
+                                            bg-[var(--pm-surface)] px-3 py-2
+                                            text-xs font-medium
+                                            text-[var(--pm-text-secondary)]
+                                            shadow-sm transition
+                                            hover:border-[var(--pm-border-strong)]
+                                            hover:bg-[var(--pm-hover)]
+                                        "
+                                    >
+                                        ${escapeHtml(
+                                            translate(
+                                                'tenants.voucher'
+                                            )
+                                        )}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        data-resend-tenant-expense-voucher="${safeId}"
+                                        data-requires-capability="manage_operations"
+                                        class="
+                                            inline-flex items-center
+                                            rounded-lg border
+                                            border-[var(--pm-border)]
+                                            bg-[var(--pm-surface)] px-3 py-2
+                                            text-xs font-medium
+                                            text-[var(--pm-text-secondary)]
+                                            shadow-sm transition
+                                            hover:border-[var(--pm-border-strong)]
+                                            hover:bg-[var(--pm-hover)]
+                                        "
+                                    >
+                                        ${escapeHtml(
+                                            translate(
+                                                'tenants.resend'
+                                            )
+                                        )}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            )
+            .join('');
+
+    return `
+        ${header}
+
+        <div class="mt-4">
+            <div
+                class="
+                    overflow-x-auto
+                    rounded-xl border
+                    border-[var(--pm-border)]
+                "
+            >
+                <table
+                    class="
+                        min-w-full
+                        divide-y divide-[var(--pm-border)]
+                        text-sm
+                    "
+                >
+                    <thead class="bg-[var(--pm-surface-subtle)]">
+                        <tr>
+                            ${tableHeading(translate('tenants.date'))}
+                            ${tableHeading(translate('tenants.voucher'))}
+                            ${tableHeading(translate('tenants.source_fund'))}
+                            ${tableHeading(translate('tenants.description'))}
+                            ${tableHeading(translate('tenants.amount'), true)}
+                            ${tableHeading(translate('tenants.actions'))}
+                        </tr>
+                    </thead>
+
+                    <tbody
+                        class="
+                            divide-y divide-[var(--pm-border-subtle)]
+                            bg-[var(--pm-surface)]
+                        "
+                    >
+                        ${rows}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+
+/**
+ * Wire Expense voucher actions after Tenant detail rendering.
+ */
+function initializeTenantExpenseVoucherActions() {
+    document
+        .querySelectorAll(
+            '[data-open-tenant-expense-voucher]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        await openTenantDocumentBlob(
+                            button,
+                            `/api/tenant-fund-expenses/${encodeURIComponent(
+                                button.dataset
+                                    .openTenantExpenseVoucher
+                            )}/voucher`,
+                            'tenants.unable_to_open_voucher'
+                        );
+                    }
+                );
+            }
+        );
+
+    document
+        .querySelectorAll(
+            '[data-resend-tenant-expense-voucher]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    async () => {
+                        await resendTenantDocument(
+                            button,
+                            `/api/tenant-fund-expenses/${encodeURIComponent(
+                                button.dataset
+                                    .resendTenantExpenseVoucher
+                            )}/send-email`,
+                            'tenants.unable_to_resend_voucher'
+                        );
+                    }
+                );
+            }
+        );
+}
+
+
+/**
+ * Shared authenticated blob-open helper for row documents.
+ *
+ * @param {HTMLButtonElement} button
+ * @param {string} endpoint
+ * @param {string} errorKey
+ */
+async function openTenantDocumentBlob(
+    button,
+    endpoint,
+    errorKey
+) {
+    const originalLabel =
+        button.textContent;
+
+    button.disabled = true;
+    button.textContent =
+        translate('tenants.opening');
+
+    hideTenantError();
+
+    try {
+        const response =
+            await apiRequest(
+                endpoint
+            );
+
+        if (! response.ok) {
+            throw new Error(
+                translate(errorKey)
+            );
+        }
+
+        const blob =
+            await response.blob();
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        window.open(
+            url,
+            '_blank',
+            'noopener,noreferrer'
+        );
+
+        window.setTimeout(
+            () => {
+                URL.revokeObjectURL(
+                    url
+                );
+            },
+            60000
+        );
+    } catch (error) {
+        showTenantError(
+            error instanceof Error
+                ? error.message
+                : translate(errorKey)
+        );
+    } finally {
+        if (
+            document.body.contains(
+                button
+            )
+        ) {
+            button.textContent =
+                originalLabel;
+
+            button.disabled =
+                false;
+        }
+    }
+}
+
+
+/**
+ * Shared resend-by-email helper for row documents.
+ *
+ * @param {HTMLButtonElement} button
+ * @param {string} endpoint
+ * @param {string} errorKey
+ */
+async function resendTenantDocument(
+    button,
+    endpoint,
+    errorKey
+) {
+    const originalLabel =
+        button.textContent;
+
+    button.disabled = true;
+    button.textContent =
+        translate('tenants.sending');
+
+    hideTenantError();
+
+    try {
+        const response =
+            await apiRequest(
+                endpoint,
+                {
+                    method:
+                        'POST',
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        button.textContent =
+            translate('tenants.sent');
+
+        window.setTimeout(
+            () => {
+                if (
+                    document.body.contains(
+                        button
+                    )
+                ) {
+                    button.textContent =
+                        originalLabel;
+                    button.disabled =
+                        false;
+                }
+            },
+            1800
+        );
+    } catch (error) {
+        button.textContent =
+            originalLabel;
+        button.disabled =
+            false;
+
+        showTenantError(
+            error instanceof Error
+                ? error.message
+                : translate(errorKey)
+        );
+    }
+}
+
+
+/**
  * Render the complete tenant-held fund ledger.
  *
  * @param {Array<object>} transactions
@@ -3790,6 +4215,18 @@ function renderTenantTransactionActions() {
 
             <button
                 type="button"
+                data-tenant-transaction-action="expense"
+                class="pm-button-secondary"
+            >
+                ${escapeHtml(
+                    translate(
+                        'tenants.expense'
+                    )
+                )}
+            </button>
+
+            <button
+                type="button"
                 data-tenant-transaction-action="adjustment"
                 class="pm-button-secondary"
             >
@@ -3858,6 +4295,15 @@ function initializeTenantTransactionActionButtons() {
 
                         if (
                             action
+                            === 'expense'
+                        ) {
+                            await openTenantExpenseDrawer();
+
+                            return;
+                        }
+
+                        if (
+                            action
                             === 'adjustment'
                         ) {
                             await openTenantAdjustmentDrawer();
@@ -3885,6 +4331,7 @@ function initializeTenantTransactionControls() {
     [
         'deposit',
         'withdrawal',
+        'expense',
         'adjustment',
         'accounts',
         'transfer',
@@ -4047,6 +4494,44 @@ function initializeTenantTransactionControls() {
 
     document
         .getElementById(
+            'tenant-expense-method'
+        )
+        ?.addEventListener(
+            'change',
+            updateTenantExpenseCashReceiver
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-account'
+        )
+        ?.addEventListener(
+            'change',
+            () => {
+                updateTenantExpensePreview();
+
+                setTenantTransactionContext(
+                    'tenant-expense',
+                    transactionOptionLeaseLabel(
+                        selectedTransactionOption(
+                            'tenant-expense-account'
+                        )
+                    )
+                );
+            }
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-amount'
+        )
+        ?.addEventListener(
+            'input',
+            updateTenantExpensePreview
+        );
+
+    document
+        .getElementById(
             'tenant-adjustment-account'
         )
         ?.addEventListener(
@@ -4118,6 +4603,15 @@ function initializeTenantTransactionControls() {
         ?.addEventListener(
             'submit',
             submitTenantWithdrawal
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-form'
+        )
+        ?.addEventListener(
+            'submit',
+            submitTenantExpense
         );
 
     document
@@ -4263,6 +4757,7 @@ function initializeTenantTransactionControls() {
                     '#tenant-deposit-drawer.pm-drawer-active, '
                     + '#tenant-withdrawal-drawer.pm-drawer-active, '
                     + '#tenant-adjustment-drawer.pm-drawer-active, '
+                    + '#tenant-expense-drawer.pm-drawer-active, '
                     + '#tenant-accounts-drawer.pm-drawer-active'
                 )
                 .forEach(
@@ -4373,6 +4868,43 @@ async function openTenantWithdrawalDrawer() {
      * are offered immediately; the Lease selector is only a filter.
      */
     await populateWithdrawalAccounts();
+}
+
+/**
+ * Open the Withdrawal drawer.
+ */
+async function openTenantExpenseDrawer() {
+    if (
+        ! hasSelectedTenantTransactionContext()
+    ) {
+        return;
+    }
+
+    resetTenantExpenseDrawer();
+
+    populateTenantLeaseSelect(
+        'tenant-expense-lease'
+    );
+
+    setTenantTransactionContext(
+        'tenant-withdrawal'
+    );
+
+    setTenantTransactionToday(
+        'tenant-expense-date'
+    );
+
+    updateTenantExpenseCashReceiver();
+
+    openDrawer(
+        'tenant-expense-drawer'
+    );
+
+    /*
+     * V1.0.7: withdrawable accounts across ALL of the Tenant's Leases
+     * are offered immediately; the Lease selector is only a filter.
+     */
+    await populateExpenseAccounts();
 }
 
 
@@ -4885,6 +5417,118 @@ async function populateWithdrawalAccounts(
     }
 }
 
+async function populateExpenseAccounts(
+    leaseFilterId = ''
+) {
+    const select =
+        document.getElementById(
+            'tenant-expense-account'
+        );
+
+    if (! select) {
+        return;
+    }
+
+    resetTransactionSelect(
+        select,
+        translate(
+            'tenants.select_account'
+        )
+    );
+
+    updateTenantExpensePreview();
+
+    try {
+        const leases =
+            await selectedTenantLeaseDetailsForTransactions(
+                leaseFilterId
+            );
+
+        select.innerHTML =
+            `<option value="">${escapeHtml(
+                translate(
+                    'tenants.select_account'
+                )
+            )}</option>`;
+
+        leases.forEach(
+            (lease) => {
+                tenantFundAccounts(
+                    lease
+                )
+                    .filter(
+                        (account) =>
+                            [
+                                'rent_reserve',
+                                'consumable_advance',
+                                'security_deposit',
+                            ].includes(
+                                account.type
+                            )
+                            && tenantFundAccountStatus(
+                                account
+                            ) === 'active'
+                            && tenantFundBalance(
+                                account
+                            ) > 0
+                    )
+                    .forEach(
+                        (account) => {
+                            appendTransactionOption(
+                                select,
+                                account.id,
+                                `${tenantFundAccountLabel(
+                                    account
+                                )} · ${tenantLeaseLabel(
+                                    lease
+                                )}`,
+                                tenantFundBalance(
+                                    account
+                                ),
+                                {
+                                    kind:
+                                        'fund',
+                                    accountId:
+                                        account.id,
+                                    leaseId:
+                                        lease.id,
+                                }
+                            );
+                        }
+                    );
+            }
+        );
+
+        if (
+            select.options.length
+            <= 1
+        ) {
+            resetTransactionSelect(
+                select,
+                translate(
+                    'tenants.no_withdrawable_funds'
+                )
+            );
+
+            return;
+        }
+
+        select.disabled =
+            false;
+
+        updateTenantExpensePreview();
+    } catch (error) {
+        showTenantTransactionError(
+            'tenant-expense-error',
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'tenants.unable_to_load_accounts'
+                )
+        );
+    }
+}
+
 
 /**
  * Load all actual fund accounts belonging to the selected Tenant for
@@ -5346,6 +5990,61 @@ function updateTenantWithdrawalPreview() {
     }
 }
 
+/**
+ * Update Withdrawal Current → Amount → Resulting preview.
+ */
+function updateTenantExpensePreview() {
+    const account =
+        selectedTransactionOption(
+            'tenant-expense-account'
+        );
+
+    const current =
+        selectedOptionBalance(
+            account
+        );
+
+    const amount =
+        positiveIntegerInput(
+            'tenant-expense-amount'
+        );
+
+    setCurrencyPreview(
+        'tenant-expense-current-balance',
+        current
+    );
+
+    setCurrencyPreview(
+        'tenant-expense-preview-amount',
+        amount
+    );
+
+    setCurrencyPreview(
+        'tenant-expense-resulting-balance',
+        current === null
+            ? null
+            : current - amount
+    );
+
+    const input =
+        document.getElementById(
+            'tenant-expense-amount'
+        );
+
+    if (
+        input
+        && current !== null
+    ) {
+        input.max =
+            String(
+                Math.max(
+                    0,
+                    current
+                )
+            );
+    }
+}
+
 
 /**
  * Update Adjustment Current → Correct → Difference preview.
@@ -5466,6 +6165,15 @@ function updateTenantDepositCashReceiver() {
 function updateTenantWithdrawalCashReceiver() {
     updateTenantTransactionCashReceiver(
         'withdrawal'
+    );
+}
+
+/**
+ * Refresh Withdrawal Cash Receiver visibility.
+ */
+function updateTenantExpenseCashReceiver() {
+    updateTenantTransactionCashReceiver(
+        'expense'
     );
 }
 
@@ -5711,6 +6419,32 @@ function resetTenantWithdrawalDrawer() {
     );
 
     updateTenantWithdrawalPreview();
+}
+
+/**
+ * Reset Withdrawal controls.
+ */
+function resetTenantExpenseDrawer() {
+    document
+        .getElementById(
+            'tenant-expense-form'
+        )
+        ?.reset();
+
+    hideTenantTransactionError(
+        'tenant-expense-error'
+    );
+
+    resetTransactionSelect(
+        document.getElementById(
+            'tenant-expense-account'
+        ),
+        translate(
+            'tenants.select_account'
+        )
+    );
+
+    updateTenantExpensePreview();
 }
 
 
@@ -7353,6 +8087,171 @@ async function submitTenantWithdrawal(
             } catch (error) {
                 showTenantTransactionError(
                     'tenant-withdrawal-error',
+                    tenantTransactionErrorMessage(
+                        error
+                    )
+                );
+            }
+        }
+    );
+}
+
+async function submitTenantExpense(
+    event
+) {
+    event.preventDefault();
+
+    hideTenantTransactionError(
+        'tenant-expense-error'
+    );
+
+    const account =
+        selectedTransactionOption(
+            'tenant-expense-account'
+        );
+
+    const accountId =
+        Number(
+            account?.dataset.accountId
+            ?? account?.value
+            ?? 0
+        );
+
+    const amount =
+        requiredPositiveIntegerValue(
+            'tenant-expense-amount'
+        );
+
+    const transactionDate =
+        transactionDateForApi(
+            'tenant-expense-date'
+        );
+
+    const paymentMethod =
+        String(
+            document
+                .getElementById(
+                    'tenant-expense-method'
+                )
+                ?.value
+            ?? ''
+        );
+
+    const reference =
+        nullableTrimmedValue(
+            'tenant-expense-reference'
+        );
+
+    const notes =
+        nullableTrimmedValue(
+            'tenant-expense-notes'
+        );
+
+    const available =
+        selectedOptionBalance(
+            account
+        );
+
+    if (
+        ! Number.isInteger(
+            accountId
+        )
+        || accountId <= 0
+        || ! amount
+        || ! transactionDate
+        || ! [
+            'cash',
+            'bank_transfer',
+            'momo',
+        ].includes(
+            paymentMethod
+        )
+    ) {
+        showTenantTransactionError(
+            'tenant-expense-error',
+            translate(
+                'tenants.transaction_required_fields'
+            )
+        );
+
+        return;
+    }
+
+    /*
+     * Client-side preview guard only.
+     *
+     * The backend remains authoritative and locks/revalidates the account.
+     */
+    if (
+        available !== null
+        && amount > available
+    ) {
+        showTenantTransactionError(
+            'tenant-expense-error',
+            translate(
+                'tenants.expense_exceeds_balance'
+            )
+        );
+
+        return;
+    }
+
+    const submitButton =
+        document.getElementById(
+            'tenant-expense-submit'
+        );
+
+    await withTenantTransactionSubmitLock(
+        submitButton,
+        async () => {
+            try {
+                const result =
+                    await postTenantTransaction(
+                        '/api/tenant-fund-expenses',
+                        {
+                            tenant_fund_account_id:
+                                accountId,
+
+                            amount,
+
+                            transaction_date:
+                                transactionDate,
+
+                            payment_method:
+                                paymentMethod,
+
+                            reference,
+
+                            description:
+                                String(
+                                    document
+                                        .getElementById(
+                                            'tenant-expense-description'
+                                        )
+                                        ?.value
+                                    ?? ''
+                                ).trim(),
+                        }
+                    );
+
+                closeDrawer(
+                    'tenant-expense-drawer'
+                );
+
+                await refreshSelectedTenantAfterTransaction();
+
+                showTenantTransactionSuccess(
+                    translate(
+                        'tenants.expense_recorded'
+                    ),
+                    result?.expense?.id
+                        ? `/api/tenant-fund-expenses/${result.expense.id}/voucher`
+                        : null,
+                    'tenants.download_voucher'
+                );
+            } catch (error) {
+                showTenantTransactionError(
+                    'tenant-expense-error',
                     tenantTransactionErrorMessage(
                         error
                     )

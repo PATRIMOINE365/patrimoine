@@ -65,4 +65,11 @@ return [
         'tenant_email_missing' => 'Le locataire ne possède pas d’adresse e-mail.',
         'owner_email_missing' => 'Le propriétaire ne possède pas d’adresse e-mail.',
     ],
+
+    'tenant' => [
+        'expense_account_inactive' => 'Le compte de fonds du locataire n’est pas actif.',
+        'expense_positive' => 'Le montant de la dépense doit être supérieur à zéro.',
+        'expense_description_required' => 'La description de la dépense est obligatoire.',
+        'expense_exceeds_balance' => 'La dépense dépasse le solde disponible du fonds.',
+    ],
 ];

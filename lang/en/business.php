@@ -65,4 +65,11 @@ return [
         'tenant_email_missing' => 'Tenant does not have an email address.',
         'owner_email_missing' => 'Owner does not have an email address.',
     ],
+
+    'tenant' => [
+        'expense_account_inactive' => 'Tenant fund account is not active.',
+        'expense_positive' => 'Tenant expense amount must be greater than zero.',
+        'expense_description_required' => 'Tenant expense description is required.',
+        'expense_exceeds_balance' => 'Tenant expense exceeds the available fund balance.',
+    ],
 ];

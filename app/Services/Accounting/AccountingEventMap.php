@@ -55,6 +55,9 @@ class AccountingEventMap
     public const EVENT_TENANT_WITHDRAWAL =
         'tenant_withdrawal';
 
+    public const EVENT_TENANT_FUND_EXPENSE =
+        'tenant_fund_expense';
+
     public const EVENT_OWNER_DEPOSIT =
         'owner_deposit';
 
@@ -228,6 +231,19 @@ class AccountingEventMap
             ],
 
             self::EVENT_TENANT_WITHDRAWAL => [
+                'variable' =>
+                    'tenant_fund_liability',
+
+                'counter_variable' =>
+                    'payment_asset',
+            ],
+
+            /*
+             * V1.0.8: a lease-specific expense settled from tenant-held
+             * funds. Economically identical to a Withdrawal: held funds
+             * leave the liability through the payment asset.
+             */
+            self::EVENT_TENANT_FUND_EXPENSE => [
                 'variable' =>
                     'tenant_fund_liability',
 

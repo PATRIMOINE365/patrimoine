@@ -129,4 +129,19 @@ return [
         'reason' => 'Reason',
         'pdf_attached' => 'Your official transfer voucher is attached as a PDF.',
     ],
+
+    'tenant_fund_expense' => [
+        'title' => 'Tenant Expense Voucher',
+        'subject' => 'Tenant Expense Voucher :number - :organisation',
+        'intro' => 'Please find attached the voucher for an expense settled from funds we hold on your behalf.',
+        'amount_moved' => 'Amount',
+        'voucher' => 'Voucher',
+        'transfer_date' => 'Date',
+        'source_fund' => 'Source Fund',
+        'description' => 'Description',
+        'fund_rent_reserve' => 'Rent Reserve',
+        'fund_consumable_advance' => 'Consumable Advance',
+        'fund_security_deposit' => 'Security Deposit',
+        'pdf_attached' => 'Your official expense voucher is attached as a PDF.',
+    ],
 ];

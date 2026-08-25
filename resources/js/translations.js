@@ -473,6 +473,17 @@ export const translations = {
             'Fund-to-fund transfers with their official receipts.',
         'tenants.no_transfers':
             'No transfers recorded yet.',
+        'tenants.expense': 'Expense',
+        'tenants.expense_title': 'Record Tenant Expense',
+        'tenants.expense_description_text': "Settle a lease-specific expense from one of this tenant's fund accounts. The account can never go negative.",
+        'tenants.expense_description_label': 'Expense description',
+        'tenants.expense_recorded': 'Tenant expense recorded successfully.',
+        'tenants.expenses': 'Expenses',
+        'tenants.expenses_description': "Lease-specific expenses settled from this tenant's fund accounts, with their official vouchers.",
+        'tenants.no_expenses': 'No expenses recorded yet.',
+        'tenants.source_fund': 'Source',
+        'tenants.description': 'Description',
+        'tenants.category.expense': 'Expense',
         'tenants.voucher':
             'Receipt',
         'tenants.from_fund':
@@ -3234,6 +3245,17 @@ export const translations = {
             'Transferts entre fonds avec leurs récépissés officiels.',
         'tenants.no_transfers':
             'Aucun transfert enregistré pour le moment.',
+        'tenants.expense': 'Dépense',
+        'tenants.expense_title': 'Enregistrer une dépense locataire',
+        'tenants.expense_description_text': "Réglez une dépense liée à un bail à partir de l'un des comptes de fonds de ce locataire. Le compte ne peut jamais devenir négatif.",
+        'tenants.expense_description_label': 'Description de la dépense',
+        'tenants.expense_recorded': 'Dépense locataire enregistrée avec succès.',
+        'tenants.expenses': 'Dépenses',
+        'tenants.expenses_description': "Dépenses liées aux baux réglées à partir des comptes de fonds de ce locataire, avec leurs bons officiels.",
+        'tenants.no_expenses': 'Aucune dépense enregistrée pour le moment.',
+        'tenants.source_fund': 'Source',
+        'tenants.description': 'Description',
+        'tenants.category.expense': 'Dépense',
         'tenants.voucher':
             'Récépissé',
         'tenants.from_fund':

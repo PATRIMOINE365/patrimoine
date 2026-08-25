@@ -129,4 +129,19 @@ return [
         'reason' => 'Motif',
         'pdf_attached' => 'Votre bon de transfert officiel est joint au format PDF.',
     ],
+
+    'tenant_fund_expense' => [
+        'title' => 'Bon de dépense locataire',
+        'subject' => 'Bon de dépense :number - :organisation',
+        'intro' => 'Veuillez trouver ci-joint le bon relatif à une dépense réglée à partir des fonds que nous détenons pour votre compte.',
+        'amount_moved' => 'Montant',
+        'voucher' => 'Bon',
+        'transfer_date' => 'Date',
+        'source_fund' => 'Fonds source',
+        'description' => 'Description',
+        'fund_rent_reserve' => 'Réserve de loyer',
+        'fund_consumable_advance' => 'Avance consommable',
+        'fund_security_deposit' => 'Caution',
+        'pdf_attached' => 'Votre bon de dépense officiel est joint au format PDF.',
+    ],
 ];

@@ -255,4 +255,22 @@ return [
         'amount' => 'Montant',
         'reason' => 'Motif',
     ],
+
+    'tenant_fund_expense' => [
+        'title' => 'Bon de dépense locataire',
+        'voucher_number' => 'Numéro du bon',
+        'date' => 'Date',
+        'tenant' => 'Locataire',
+        'lease' => 'Bail',
+        'source_fund' => 'Fonds source',
+        'amount' => 'Montant',
+        'payment_method' => 'Mode de paiement',
+        'description' => 'Description',
+
+        'funds' => [
+            'rent_reserve' => 'Réserve de loyer',
+            'consumable_advance' => 'Avance consommable',
+            'security_deposit' => 'Caution',
+        ],
+    ],
 ];

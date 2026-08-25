@@ -255,4 +255,22 @@ return [
         'amount' => 'Amount',
         'reason' => 'Reason',
     ],
+
+    'tenant_fund_expense' => [
+        'title' => 'Tenant Expense Voucher',
+        'voucher_number' => 'Voucher Number',
+        'date' => 'Date',
+        'tenant' => 'Tenant',
+        'lease' => 'Lease',
+        'source_fund' => 'Source Fund',
+        'amount' => 'Amount',
+        'payment_method' => 'Payment Method',
+        'description' => 'Description',
+
+        'funds' => [
+            'rent_reserve' => 'Rent Reserve',
+            'consumable_advance' => 'Consumable Advance',
+            'security_deposit' => 'Security Deposit',
+        ],
+    ],
 ];

@@ -17,8 +17,10 @@ use App\Services\ApplicationPresentationFormatter;
 use App\Services\Documents\InvoiceDocumentService;
 use App\Services\Documents\ReceiptDocumentService;
 use App\Mail\OwnerReserveTransferVoucherMail;
+use App\Mail\TenantFundExpenseVoucherMail;
 use App\Models\OwnerTransaction;
 use App\Services\Documents\OwnerReserveTransferVoucherDocumentService;
+use App\Services\Documents\TenantFundExpenseVoucherDocumentService;
 use App\Services\Documents\TenantFundTransferVoucherDocumentService;
 use Illuminate\Support\Facades\Mail;
 use RuntimeException;
@@ -44,6 +46,7 @@ class EmailDeliveryService
         private ReceiptDocumentService $receiptDocuments,
         private TenantFundTransferVoucherDocumentService $transferVoucherDocuments,
         private OwnerReserveTransferVoucherDocumentService $ownerReserveTransferDocuments,
+        private TenantFundExpenseVoucherDocumentService $tenantExpenseDocuments,
         private ApplicationIdentityService $identity,
         private ApplicationPresentationFormatter $formatter,
         private ApplicationLocaleService $locale
@@ -104,6 +107,65 @@ class EmailDeliveryService
                 new TenantFundTransferVoucherMail(
                     debitTransaction: $debitTransaction,
                     creditTransaction: $creditTransaction,
+                    pdfContents: $contents,
+                    pdfFilename: $filename,
+                    managingOrganisation: $this
+                        ->identity
+                        ->managingOrganisation(),
+
+                    formatter: $this->formatter
+                )
+            );
+    }
+
+    /**
+     * V1.0.8: send or resend a tenant fund expense voucher.
+     */
+    public function sendTenantExpenseVoucher(
+        TenantFundTransaction $transaction
+    ): void {
+        $transaction->loadMissing([
+            'account.lease.tenant',
+            'account.lease.unit.building',
+        ]);
+
+        $email =
+            trim(
+                (string)
+                $transaction
+                    ->account
+                    ->lease
+                    ->tenant
+                    ->email
+            );
+
+        if ($email === '') {
+            throw new RuntimeException(
+                __('business.email.tenant_email_missing')
+            );
+        }
+
+        $contents =
+            $this->tenantExpenseDocuments
+                ->pdf(
+                    $transaction
+                );
+
+        $filename =
+            $this->tenantExpenseDocuments
+                ->filename(
+                    $transaction
+                );
+
+        Mail::to(
+            $email
+        )
+            ->locale(
+                $this->locale->language()
+            )
+            ->send(
+                new TenantFundExpenseVoucherMail(
+                    transaction: $transaction,
                     pdfContents: $contents,
                     pdfFilename: $filename,
                     managingOrganisation: $this
