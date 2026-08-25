@@ -93,16 +93,25 @@ class TenantFundExpenseApiTest extends TestCase
             '/api/tenant-fund-expenses',
             [
                 'tenant_fund_account_id' => $account->id,
-                'amount' => 4000,
                 'transaction_date' => '2026-08-25',
                 'payment_method' => 'bank_transfer',
-                'description' => 'Plumbing repair billed to tenant funds.',
+                'lines' => [
+                    [
+                        'description' => 'Plumbing repair billed to tenant funds.',
+                        'amount' => 2500,
+                    ],
+                    [
+                        'description' => 'Replacement lock set.',
+                        'amount' => 1500,
+                    ],
+                ],
             ]
         );
 
         $response
             ->assertCreated()
             ->assertJsonPath('account_balance', 6000)
+            ->assertJsonPath('expense.total_amount', 4000)
             ->assertJsonPath('email_sent', true);
 
         $this->assertMatchesRegularExpression(
@@ -132,10 +141,14 @@ class TenantFundExpenseApiTest extends TestCase
             '/api/tenant-fund-expenses',
             [
                 'tenant_fund_account_id' => $account->id,
-                'amount' => 3001,
                 'transaction_date' => '2026-08-25',
                 'payment_method' => 'cash',
-                'description' => 'Overdraw attempt.',
+                'lines' => [
+                    [
+                        'description' => 'Overdraw attempt.',
+                        'amount' => 3001,
+                    ],
+                ],
             ]
         )->assertUnprocessable();
 
@@ -157,10 +170,14 @@ class TenantFundExpenseApiTest extends TestCase
             '/api/tenant-fund-expenses',
             [
                 'tenant_fund_account_id' => $account->id,
-                'amount' => 1000,
                 'transaction_date' => '2026-08-25',
                 'payment_method' => 'momo',
-                'description' => 'Voucher round trip.',
+                'lines' => [
+                    [
+                        'description' => 'Voucher round trip.',
+                        'amount' => 1000,
+                    ],
+                ],
             ]
         )
             ->assertCreated()
@@ -192,10 +209,14 @@ class TenantFundExpenseApiTest extends TestCase
             '/api/tenant-fund-expenses',
             [
                 'tenant_fund_account_id' => $account->id,
-                'amount' => 1000,
                 'transaction_date' => '2026-08-25',
                 'payment_method' => 'cash',
-                'description' => 'Viewer attempt.',
+                'lines' => [
+                    [
+                        'description' => 'Viewer attempt.',
+                        'amount' => 1000,
+                    ],
+                ],
             ]
         )->assertForbidden();
     }

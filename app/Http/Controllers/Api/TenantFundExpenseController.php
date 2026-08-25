@@ -32,11 +32,12 @@ class TenantFundExpenseController extends Controller
     ): JsonResponse {
         $validated = $request->validate([
             'tenant_fund_account_id' => 'required|integer|exists:tenant_fund_accounts,id',
-            'amount' => 'required|integer|min:1',
             'transaction_date' => 'required|date',
             'payment_method' => 'required|in:cash,bank_transfer,momo',
-            'description' => 'required|string|max:1000',
             'reference' => 'nullable|string|max:255',
+            'lines' => 'required|array|min:1',
+            'lines.*.description' => 'required|string|max:255',
+            'lines.*.amount' => 'required|integer|min:1',
         ]);
 
         try {
@@ -49,16 +50,19 @@ class TenantFundExpenseController extends Controller
                     $activityLog,
                     $activitySnapshots,
                 ): TenantFundTransaction {
-                    $transaction = $expenses->expense(
+                    $transactions = $expenses->expense(
                         accountId: (int) $validated['tenant_fund_account_id'],
-                        amount: (int) $validated['amount'],
+                        lines: $validated['lines'],
                         transactionDate: $validated['transaction_date'],
                         paymentMethod: $validated['payment_method'],
-                        description: $validated['description'],
                         reference: $validated['reference'] ?? null,
                     );
 
-                    $journal->post($transaction);
+                    foreach ($transactions as $lineTransaction) {
+                        $journal->post($lineTransaction);
+                    }
+
+                    $transaction = $transactions->first();
 
                     $transaction->loadMissing('account');
 
@@ -69,8 +73,14 @@ class TenantFundExpenseController extends Controller
                         entityId: $transaction->id,
                         entityLabel: $transaction->reference
                             ?? 'Tenant expense #'.$transaction->id,
-                        snapshot: $activitySnapshots
-                            ->tenantFundTransaction($transaction),
+                        snapshot: array_merge(
+                            $activitySnapshots
+                                ->tenantFundTransaction($transaction),
+                            [
+                                'line_count' => $transactions->count(),
+                                'total_amount' => $transactions->sum('amount'),
+                            ],
+                        ),
                     );
 
                     return $transaction;
@@ -101,7 +111,10 @@ class TenantFundExpenseController extends Controller
                 'expense' => [
                     'id' => $transaction->id,
                     'reference' => $transaction->reference,
-                    'amount' => $transaction->amount,
+                    'total_amount' => TenantFundTransaction::query()
+                        ->where('category', 'expense')
+                        ->where('reference', $transaction->reference)
+                        ->sum('amount'),
                 ],
                 'email_sent' => $emailSent,
                 'account_balance' => $transaction

@@ -35,10 +35,25 @@ class TenantFundExpenseVoucherDocumentService
             'account.lease.unit.building'
         );
 
+        /*
+         * V1.0.8: an expense is a batch of lines sharing one TEX
+         * reference; the voucher itemizes all of them.
+         */
+        $lines = TenantFundTransaction::query()
+            ->where('category', 'expense')
+            ->where('direction', 'debit')
+            ->where('reference', $transaction->reference)
+            ->orderBy('id')
+            ->get();
+
         return Pdf::loadView(
             'documents.tenant-fund-expense-voucher',
             [
                 'transaction' => $transaction,
+
+                'lines' => $lines,
+
+                'totalAmount' => (int) $lines->sum('amount'),
 
                 'formatter' => $this->formatter,
 

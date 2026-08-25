@@ -917,6 +917,8 @@
                 "
             ></div>
 
+            <div id="tenant-expense-fields">
+
             <div
                 class="
                     mb-5 rounded-xl border border-[var(--pm-border)]
@@ -1057,26 +1059,7 @@
                     </div>
                 </div>
 
-                <div>
-                    <label
-                        for="tenant-expense-amount"
-                        class="pm-field-label"
-                    >
-                        <span data-i18n="tenants.amount">
-                            {{ __('ui.tenants.amount') }}
-                        </span>
-                        <span class="text-[var(--pm-danger-text)]">*</span>
-                    </label>
-
-                    <input
-                        id="tenant-expense-amount"
-                        type="text"
-                                        inputmode="numeric"
-                                        data-money-input
-                        required
-                        class="pm-input"
-                    >
-                </div>
+                
 
                 <div>
                     <label
@@ -1181,49 +1164,59 @@
                     >
                 </div>
 
-                <div>
-                    <label
-                        for="tenant-expense-notes"
-                        class="pm-field-label"
-                    >
-                        <span data-i18n="tenants.notes">
-                            {{ __('ui.tenants.notes') }}
-                        </span>
-
-                        <span class="text-xs text-[var(--pm-text-subtle)]">
-                            {{ __('ui.tenants.optional') }}
-                        </span>
-                    </label>
-
-                    <textarea
-                        id="tenant-expense-notes"
-                        rows="3"
-                        maxlength="2000"
-                        class="pm-input"
-                    ></textarea>
-                </div>
+                
             </div>
-            <div class="mt-4">
-                    <label
-                        for="tenant-expense-description"
-                        class="pm-field-label"
-                    >
-                        <span data-i18n="tenants.expense_description_label">
-                            {{ __('ui.tenants.expense_description_label') }}
+            
+
+    <div class="mt-5">
+                    <span class="pm-field-label">
+                        <span data-i18n="tenants.expense_lines">
+                            {{ __('ui.tenants.expense_lines') }}
                         </span>
                         <span class="text-[var(--pm-danger-text)]">*</span>
-                    </label>
+                    </span>
 
-                    <textarea
-                        id="tenant-expense-description"
-                        rows="3"
-                        required
-                        maxlength="1000"
-                        class="pm-input"
-                    ></textarea>
+                    <div
+                        id="tenant-expense-lines"
+                        class="mt-2 space-y-2"
+                    ></div>
+
+                    <div class="mt-2 flex items-center justify-between">
+                        <button
+                            id="tenant-expense-add-line"
+                            type="button"
+                            class="pm-button-secondary"
+                        >
+                            <span data-i18n="tenants.add_line">
+                                {{ __('ui.tenants.add_line') }}
+                            </span>
+                        </button>
+
+                        <div class="text-sm">
+                            <span
+                                class="text-[var(--pm-text-muted)]"
+                                data-i18n="tenants.expense_total"
+                            >
+                                {{ __('ui.tenants.expense_total') }}
+                            </span>
+
+                            <span
+                                id="tenant-expense-total"
+                                class="ml-2 font-semibold text-[var(--pm-text)]"
+                            >
+                                —
+                            </span>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
-</div>
+            {{-- V1.0.8 read-only review, shown instead of the fields. --}}
+            <div
+                id="tenant-expense-review"
+                class="hidden"
+            ></div>
+        </div>
 
         <x-drawer-footer>
             <button
@@ -1241,8 +1234,28 @@
                 type="submit"
                 class="pm-button-primary"
             >
-                <span data-i18n="actions.save">
-                    {{ __('ui.actions.save') }}
+                <span data-i18n="tenants.review">
+                    {{ __('ui.tenants.review') }}
+                </span>
+            </button>
+
+            <button
+                id="tenant-expense-back"
+                type="button"
+                class="pm-button-secondary pm-hide"
+            >
+                <span data-i18n="tenants.back">
+                    {{ __('ui.tenants.back') }}
+                </span>
+            </button>
+
+            <button
+                id="tenant-expense-confirm"
+                type="button"
+                class="pm-button-primary pm-hide"
+            >
+                <span data-i18n="tenants.confirm">
+                    {{ __('ui.tenants.confirm') }}
                 </span>
             </button>
         </x-drawer-footer>

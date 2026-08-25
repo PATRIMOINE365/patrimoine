@@ -2705,11 +2705,54 @@ function renderTenantExpenses(
             ? transactions
             : [];
 
-    const expenses =
-        ledger.filter(
+    /*
+     * An expense batch shares one TEX reference across its lines; the
+     * section shows one row per voucher with the summed total.
+     */
+    const grouped = new Map();
+
+    ledger
+        .filter(
             (transaction) =>
                 transaction?.category === 'expense'
                 && transaction?.direction === 'debit'
+        )
+        .forEach(
+            (transaction) => {
+                const key =
+                    transaction.reference
+                    ?? `#${transaction.id}`;
+
+                const existing =
+                    grouped.get(key);
+
+                if (existing) {
+                    existing.amount +=
+                        Number(
+                            transaction.amount
+                            ?? 0
+                        );
+
+                    existing.lineCount += 1;
+                } else {
+                    grouped.set(key, {
+                        ...transaction,
+
+                        amount:
+                            Number(
+                                transaction.amount
+                                ?? 0
+                            ),
+
+                        lineCount: 1,
+                    });
+                }
+            }
+        );
+
+    const expenses =
+        Array.from(
+            grouped.values()
         );
 
     const header = `
@@ -2785,8 +2828,12 @@ function renderTenantExpenses(
                             )}
 
                             ${tableCell(
-                                expense.notes
-                                ?? '—'
+                                (expense.notes ?? '—')
+                                + (
+                                    expense.lineCount > 1
+                                        ? ` (+${expense.lineCount - 1})`
+                                        : ''
+                                )
                             )}
 
                             ${tableCell(
@@ -4512,14 +4559,6 @@ function initializeTenantTransactionControls() {
             }
         );
 
-    document
-        .getElementById(
-            'tenant-expense-amount'
-        )
-        ?.addEventListener(
-            'input',
-            updateTenantExpensePreview
-        );
 
     document
         .getElementById(
@@ -4603,6 +4642,89 @@ function initializeTenantTransactionControls() {
         ?.addEventListener(
             'submit',
             submitTenantExpense
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-lease'
+        )
+        ?.addEventListener(
+            'change',
+            async (event) => {
+                await populateExpenseAccounts(
+                    event.target.value
+                );
+
+                setTenantTransactionContext(
+                    'tenant-expense'
+                );
+            }
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-add-line'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                appendTenantExpenseLine();
+
+                updateTenantExpensePreview();
+            }
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-lines'
+        )
+        ?.addEventListener(
+            'input',
+            updateTenantExpensePreview
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-lines'
+        )
+        ?.addEventListener(
+            'click',
+            (event) => {
+                const remove =
+                    event.target.closest(
+                        '[data-tenant-expense-remove-line]'
+                    );
+
+                if (remove) {
+                    remove
+                        .closest(
+                            '[data-tenant-expense-line]'
+                        )
+                        ?.remove();
+
+                    updateTenantExpensePreview();
+                }
+            }
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-back'
+        )
+        ?.addEventListener(
+            'click',
+            exitTenantExpenseReview
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-confirm'
+        )
+        ?.addEventListener(
+            'click',
+            async () => {
+                await confirmTenantExpense();
+            }
         );
 
     document
@@ -4886,6 +5008,21 @@ async function openTenantExpenseDrawer() {
     );
 
     updateTenantExpenseCashReceiver();
+
+    const lines =
+        document.getElementById(
+            'tenant-expense-lines'
+        );
+
+    if (lines) {
+        lines.innerHTML = '';
+    }
+
+    appendTenantExpenseLine();
+
+    exitTenantExpenseReview();
+
+    updateTenantExpensePreview();
 
     openDrawer(
         'tenant-expense-drawer'
@@ -5990,48 +6127,40 @@ function updateTenantExpensePreview() {
             'tenant-expense-account'
         );
 
-    const current =
+    const balance =
         selectedOptionBalance(
             account
         );
 
-    const amount =
-        positiveIntegerInput(
-            'tenant-expense-amount'
-        );
+    const total =
+        tenantExpenseLinesTotal();
 
     setCurrencyPreview(
         'tenant-expense-current-balance',
-        current
+        balance
     );
 
     setCurrencyPreview(
         'tenant-expense-preview-amount',
-        amount
+        total
     );
 
     setCurrencyPreview(
         'tenant-expense-resulting-balance',
-        current === null
+        balance === null
             ? null
-            : current - amount
+            : balance - total
     );
 
-    const input =
+    const totalElement =
         document.getElementById(
-            'tenant-expense-amount'
+            'tenant-expense-total'
         );
 
-    if (
-        input
-        && current !== null
-    ) {
-        input.max =
-            String(
-                Math.max(
-                    0,
-                    current
-                )
+    if (totalElement) {
+        totalElement.textContent =
+            formatCurrency(
+                total
             );
     }
 }
@@ -8108,11 +8237,6 @@ async function submitTenantExpense(
             ?? 0
         );
 
-    const amount =
-        requiredPositiveIntegerValue(
-            'tenant-expense-amount'
-        );
-
     const transactionDate =
         transactionDateForApi(
             'tenant-expense-date'
@@ -8128,15 +8252,8 @@ async function submitTenantExpense(
             ?? ''
         );
 
-    const reference =
-        nullableTrimmedValue(
-            'tenant-expense-reference'
-        );
-
-    const notes =
-        nullableTrimmedValue(
-            'tenant-expense-notes'
-        );
+    const lines =
+        collectTenantExpenseLines();
 
     const available =
         selectedOptionBalance(
@@ -8144,11 +8261,8 @@ async function submitTenantExpense(
         );
 
     if (
-        ! Number.isInteger(
-            accountId
-        )
+        ! Number.isInteger(accountId)
         || accountId <= 0
-        || ! amount
         || ! transactionDate
         || ! [
             'cash',
@@ -8161,21 +8275,34 @@ async function submitTenantExpense(
         showTenantTransactionError(
             'tenant-expense-error',
             translate(
-                'tenants.transaction_required_fields'
+                'tenants.expense_fields_required'
             )
         );
 
         return;
     }
 
-    /*
-     * Client-side preview guard only.
-     *
-     * The backend remains authoritative and locks/revalidates the account.
-     */
+    if (lines === null) {
+        showTenantTransactionError(
+            'tenant-expense-error',
+            translate(
+                'tenants.expense_line_invalid'
+            )
+        );
+
+        return;
+    }
+
+    const total =
+        lines.reduce(
+            (sum, line) =>
+                sum + line.amount,
+            0
+        );
+
     if (
         available !== null
-        && amount > available
+        && total > available
     ) {
         showTenantTransactionError(
             'tenant-expense-error',
@@ -8187,69 +8314,516 @@ async function submitTenantExpense(
         return;
     }
 
-    const submitButton =
-        document.getElementById(
-            'tenant-expense-submit'
+    pendingTenantExpensePayload = {
+        tenant_fund_account_id:
+            accountId,
+
+        transaction_date:
+            transactionDate,
+
+        payment_method:
+            paymentMethod,
+
+        reference:
+            nullableTrimmedValue(
+                'tenant-expense-reference'
+            ),
+
+        lines,
+    };
+
+    enterTenantExpenseReview(
+        account
+    );
+}
+
+
+let pendingTenantExpensePayload = null;
+
+/**
+ * Read and validate the expense lines; null when any is invalid.
+ *
+ * @returns {Array<{description: string, amount: number}>|null}
+ */
+function collectTenantExpenseLines() {
+    const rows =
+        document.querySelectorAll(
+            '#tenant-expense-lines [data-tenant-expense-line]'
         );
 
-    await withTenantTransactionSubmitLock(
-        submitButton,
-        async () => {
-            try {
-                const result =
-                    await postTenantTransaction(
-                        '/api/tenant-fund-expenses',
-                        {
-                            tenant_fund_account_id:
-                                accountId,
+    if (rows.length === 0) {
+        return null;
+    }
 
-                            amount,
+    const lines = [];
 
-                            transaction_date:
-                                transactionDate,
+    let invalid = false;
 
-                            payment_method:
-                                paymentMethod,
+    rows.forEach(
+        (row) => {
+            const description =
+                String(
+                    row.querySelector(
+                        '[data-tenant-expense-description]'
+                    )?.value
+                    ?? ''
+                ).trim();
 
-                            reference,
-
-                            description:
-                                String(
-                                    document
-                                        .getElementById(
-                                            'tenant-expense-description'
-                                        )
-                                        ?.value
-                                    ?? ''
-                                ).trim(),
-                        }
-                    );
-
-                closeDrawer(
-                    'tenant-expense-drawer'
-                );
-
-                await refreshSelectedTenantAfterTransaction();
-
-                showTenantTransactionSuccess(
-                    translate(
-                        'tenants.expense_recorded'
-                    ),
-                    result?.expense?.id
-                        ? `/api/tenant-fund-expenses/${result.expense.id}/voucher`
-                        : null,
-                    'tenants.download_voucher'
-                );
-            } catch (error) {
-                showTenantTransactionError(
-                    'tenant-expense-error',
-                    tenantTransactionErrorMessage(
-                        error
+            const amount =
+                Number(
+                    parseMoneyInput(
+                        row.querySelector(
+                            '[data-tenant-expense-amount]'
+                        )?.value
                     )
+                    || NaN
                 );
+
+            if (
+                ! description
+                || ! Number.isInteger(amount)
+                || amount <= 0
+            ) {
+                invalid = true;
+
+                return;
             }
+
+            lines.push({
+                description,
+
+                amount,
+            });
         }
     );
+
+    return invalid
+        ? null
+        : lines;
+}
+
+/**
+ * Current lines total for previews; invalid rows count as zero.
+ *
+ * @returns {number}
+ */
+function tenantExpenseLinesTotal() {
+    let total = 0;
+
+    document
+        .querySelectorAll(
+            '#tenant-expense-lines [data-tenant-expense-amount]'
+        )
+        .forEach(
+            (input) => {
+                const amount =
+                    Number(
+                        parseMoneyInput(
+                            input.value
+                        )
+                        || 0
+                    );
+
+                if (
+                    Number.isInteger(amount)
+                    && amount > 0
+                ) {
+                    total += amount;
+                }
+            }
+        );
+
+    return total;
+}
+
+/**
+ * Append one editable expense line row.
+ */
+function appendTenantExpenseLine() {
+    const container =
+        document.getElementById(
+            'tenant-expense-lines'
+        );
+
+    if (! container) {
+        return;
+    }
+
+    const row =
+        document.createElement(
+            'div'
+        );
+
+    row.dataset.tenantExpenseLine = '';
+
+    row.className =
+        'grid gap-2 sm:grid-cols-[1fr_170px_auto] sm:items-center';
+
+    row.innerHTML = `
+        <input
+            type="text"
+            data-tenant-expense-description
+            maxlength="255"
+            placeholder="${escapeHtml(
+                translate(
+                    'tenants.expense_line_description_placeholder'
+                )
+            )}"
+            class="pm-input"
+        >
+
+        <input
+            type="text"
+            inputmode="numeric"
+            data-money-input
+            data-tenant-expense-amount
+            placeholder="${escapeHtml(
+                translate(
+                    'tenants.amount'
+                )
+            )}"
+            class="pm-input"
+        >
+
+        <button
+            type="button"
+            data-tenant-expense-remove-line
+            class="pm-icon-button shrink-0"
+            aria-label="${escapeHtml(
+                translate(
+                    'tenants.remove_line'
+                )
+            )}"
+        >
+            <svg
+                class="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path d="M18 6 6 18"/>
+                <path d="m6 6 12 12"/>
+            </svg>
+        </button>
+    `;
+
+    container.appendChild(
+        row
+    );
+}
+
+/**
+ * Swap the drawer into the read-only review.
+ *
+ * @param {HTMLOptionElement|null} accountOption
+ */
+function enterTenantExpenseReview(
+    accountOption
+) {
+    const review =
+        document.getElementById(
+            'tenant-expense-review'
+        );
+
+    const payload =
+        pendingTenantExpensePayload;
+
+    if (! review || ! payload) {
+        return;
+    }
+
+    const total =
+        payload.lines.reduce(
+            (sum, line) =>
+                sum + line.amount,
+            0
+        );
+
+    review.innerHTML = `
+        <h3
+            class="
+                text-base font-semibold
+                text-[var(--pm-text)]
+            "
+        >
+            ${escapeHtml(
+                translate(
+                    'tenants.expense_review_title'
+                )
+            )}
+        </h3>
+
+        <p
+            class="
+                mt-1 text-xs
+                text-[var(--pm-text-muted)]
+            "
+        >
+            ${escapeHtml(
+                translate(
+                    'tenants.expense_review_description'
+                )
+            )}
+        </p>
+
+        <div class="mt-4 space-y-2 text-sm">
+            <div class="flex justify-between gap-4">
+                <span class="text-[var(--pm-text-muted)]">
+                    ${escapeHtml(
+                        translate('tenants.account')
+                    )}
+                </span>
+
+                <span class="font-medium text-[var(--pm-text)]">
+                    ${escapeHtml(
+                        accountOption?.textContent.trim()
+                        ?? ''
+                    )}
+                </span>
+            </div>
+
+            <div class="flex justify-between gap-4">
+                <span class="text-[var(--pm-text-muted)]">
+                    ${escapeHtml(
+                        translate('tenants.transaction_date')
+                    )}
+                </span>
+
+                <span class="font-medium text-[var(--pm-text)]">
+                    ${escapeHtml(
+                        formatLongDate(
+                            payload.transaction_date
+                        )
+                    )}
+                </span>
+            </div>
+
+            <div class="flex justify-between gap-4">
+                <span class="text-[var(--pm-text-muted)]">
+                    ${escapeHtml(
+                        translate('tenants.payment_method')
+                    )}
+                </span>
+
+                <span class="font-medium text-[var(--pm-text)]">
+                    ${escapeHtml(
+                        tenantDynamicLabel(
+                            'payment_method',
+                            payload.payment_method
+                        )
+                    )}
+                </span>
+            </div>
+        </div>
+
+        <div
+            class="
+                mt-4 overflow-hidden rounded-xl
+                border border-[var(--pm-border)]
+            "
+        >
+            ${payload.lines
+                .map(
+                    (line) => `
+                        <div
+                            class="
+                                flex items-center justify-between gap-4
+                                border-b border-[var(--pm-border-subtle)]
+                                px-4 py-2.5 text-sm
+                                last:border-b-0
+                            "
+                        >
+                            <span class="text-[var(--pm-text-secondary)]">
+                                ${escapeHtml(line.description)}
+                            </span>
+
+                            <span class="font-medium text-[var(--pm-text)]">
+                                ${escapeHtml(
+                                    formatCurrency(line.amount)
+                                )}
+                            </span>
+                        </div>
+                    `
+                )
+                .join('')}
+
+            <div
+                class="
+                    flex items-center justify-between gap-4
+                    bg-[var(--pm-surface-subtle)]
+                    px-4 py-2.5 text-sm font-semibold
+                "
+            >
+                <span>
+                    ${escapeHtml(
+                        translate('tenants.expense_total')
+                    )}
+                </span>
+
+                <span>
+                    ${escapeHtml(
+                        formatCurrency(total)
+                    )}
+                </span>
+            </div>
+        </div>
+    `;
+
+    document
+        .getElementById(
+            'tenant-expense-fields'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    review.classList.remove(
+        'hidden'
+    );
+
+    document
+        .getElementById(
+            'tenant-expense-submit'
+        )
+        ?.classList.add(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-back'
+        )
+        ?.classList.remove(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-confirm'
+        )
+        ?.classList.remove(
+            'pm-hide'
+        );
+}
+
+/**
+ * Return the drawer to the editable form.
+ */
+function exitTenantExpenseReview() {
+    pendingTenantExpensePayload =
+        null;
+
+    document
+        .getElementById(
+            'tenant-expense-review'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-fields'
+        )
+        ?.classList.remove(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-back'
+        )
+        ?.classList.add(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-confirm'
+        )
+        ?.classList.add(
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'tenant-expense-submit'
+        )
+        ?.classList.remove(
+            'pm-hide'
+        );
+}
+
+/**
+ * Perform the actual creation after review confirmation.
+ */
+async function confirmTenantExpense() {
+    const payload =
+        pendingTenantExpensePayload;
+
+    if (! payload) {
+        return;
+    }
+
+    const confirmButton =
+        document.getElementById(
+            'tenant-expense-confirm'
+        );
+
+    try {
+        if (confirmButton) {
+            confirmButton.disabled = true;
+        }
+
+        const response =
+            await apiRequest(
+                '/api/tenant-fund-expenses',
+                {
+                    method:
+                        'POST',
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        ),
+                }
+            );
+
+        const result =
+            await parseJsonResponse(
+                response
+            );
+
+        closeDrawer(
+            'tenant-expense-drawer'
+        );
+
+        await refreshSelectedTenantAfterTransaction();
+
+        showTenantTransactionSuccess(
+            translate(
+                'tenants.expense_recorded'
+            ),
+            result?.expense?.id
+                ? `/api/tenant-fund-expenses/${result.expense.id}/voucher`
+                : null,
+            'tenants.download_voucher'
+        );
+    } catch (error) {
+        exitTenantExpenseReview();
+
+        showTenantTransactionError(
+            'tenant-expense-error',
+            tenantTransactionErrorMessage(
+                error
+            )
+        );
+    } finally {
+        if (confirmButton) {
+            confirmButton.disabled = false;
+        }
+    }
 }
 
 

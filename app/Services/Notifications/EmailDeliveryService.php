@@ -157,6 +157,12 @@ class EmailDeliveryService
                     $transaction
                 );
 
+        $totalAmount =
+            (int) TenantFundTransaction::query()
+                ->where('category', 'expense')
+                ->where('reference', $transaction->reference)
+                ->sum('amount');
+
         Mail::to(
             $email
         )
@@ -166,6 +172,7 @@ class EmailDeliveryService
             ->send(
                 new TenantFundExpenseVoucherMail(
                     transaction: $transaction,
+                    totalAmount: $totalAmount,
                     pdfContents: $contents,
                     pdfFilename: $filename,
                     managingOrganisation: $this

@@ -125,18 +125,6 @@
 
         <tr>
             <th>
-                {{ __('documents.tenant_fund_expense.amount') }}
-            </th>
-
-            <td>
-                <strong>
-                    {{ $formatter->money($transaction->amount) }}
-                </strong>
-            </td>
-        </tr>
-
-        <tr>
-            <th>
                 {{ __('documents.tenant_fund_expense.payment_method') }}
             </th>
 
@@ -147,16 +135,42 @@
                 ) }}
             </td>
         </tr>
+    </table>
 
-        @if (trim((string) $transaction->notes) !== '')
+    <table>
+        <tr>
+            <th style="width: 66%; background: #efefef;">
+                {{ __('documents.tenant_fund_expense.description') }}
+            </th>
+
+            <th style="width: 34%; background: #efefef; text-align: right;">
+                {{ __('documents.tenant_fund_expense.amount') }}
+            </th>
+        </tr>
+
+        @foreach ($lines as $line)
             <tr>
-                <th>
-                    {{ __('documents.tenant_fund_expense.description') }}
-                </th>
+                <td class="description">{{ $line->notes }}</td>
 
-                <td class="description">{{ $transaction->notes }}</td>
+                <td style="text-align: right;">
+                    {{ $formatter->money($line->amount) }}
+                </td>
             </tr>
-        @endif
+        @endforeach
+
+        <tr>
+            <td style="background: #f5f5f5;">
+                <strong>
+                    {{ __('documents.tenant_fund_expense.total') }}
+                </strong>
+            </td>
+
+            <td style="background: #f5f5f5; text-align: right;">
+                <strong>
+                    {{ $formatter->money($totalAmount) }}
+                </strong>
+            </td>
+        </tr>
     </table>
 </body>
 </html>

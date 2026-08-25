@@ -85,7 +85,7 @@
                                     font-weight:bold;
                                     margin-top:8px;
                                 ">
-                                    {{ $formatter->money($transaction->amount) }}
+                                    {{ $formatter->money($totalAmount) }}
                                 </div>
                             </div>
 
@@ -128,17 +128,6 @@
                                     </td>
                                 </tr>
 
-                                @if (trim((string) $transaction->notes) !== '')
-                                    <tr>
-                                        <td>
-                                            {{ __('emails.tenant_fund_expense.description') }}
-                                        </td>
-
-                                        <td align="right">
-                                            {{ $transaction->notes }}
-                                        </td>
-                                    </tr>
-                                @endif
                             </table>
 
                             <p style="margin-top:24px;">

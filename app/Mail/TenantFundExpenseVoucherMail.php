@@ -22,6 +22,7 @@ class TenantFundExpenseVoucherMail extends Mailable
 
     public function __construct(
         public TenantFundTransaction $transaction,
+        public int $totalAmount,
         public string $pdfContents,
         public string $pdfFilename,
         public ApplicationPresentationFormatter $formatter,

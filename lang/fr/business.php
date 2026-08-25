@@ -71,5 +71,6 @@ return [
         'expense_positive' => 'Le montant de la dépense doit être supérieur à zéro.',
         'expense_description_required' => 'La description de la dépense est obligatoire.',
         'expense_exceeds_balance' => 'La dépense dépasse le solde disponible du fonds.',
+        'expense_lines_required' => 'Une dépense locataire nécessite au moins une ligne.',
     ],
 ];

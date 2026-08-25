@@ -71,5 +71,6 @@ return [
         'expense_positive' => 'Tenant expense amount must be greater than zero.',
         'expense_description_required' => 'Tenant expense description is required.',
         'expense_exceeds_balance' => 'Tenant expense exceeds the available fund balance.',
+        'expense_lines_required' => 'A tenant expense requires at least one line.',
     ],
 ];

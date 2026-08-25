@@ -4,35 +4,39 @@ namespace App\Services;
 
 use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 /**
  * V1.0.8: a lease-specific expense settled from a tenant fund account.
  *
- * Any of the three fund accounts may be the source, but the account can
- * NEVER go negative: an expense beyond the held balance is rejected.
- * The generated TEX- reference doubles as the voucher number.
+ * An expense is a batch of one or more description+amount lines sharing
+ * one TEX- voucher number, exactly like owner expense bills. Any of the
+ * three fund accounts may be the source, but the account can NEVER go
+ * negative: a batch whose total exceeds the held balance is rejected.
  */
 class TenantFundExpenseService
 {
+    /**
+     * @param  array<int, array{description: mixed, amount: mixed}>  $lines
+     * @return Collection<int, TenantFundTransaction>
+     */
     public function expense(
         int $accountId,
-        int $amount,
+        array $lines,
         string $transactionDate,
         string $paymentMethod,
-        string $description,
         ?string $reference = null,
-    ): TenantFundTransaction {
+    ): Collection {
         return DB::transaction(
             function () use (
                 $accountId,
-                $amount,
+                $lines,
                 $transactionDate,
                 $paymentMethod,
-                $description,
                 $reference,
-            ): TenantFundTransaction {
+            ): Collection {
                 $account =
                     TenantFundAccount::query()
                         ->whereKey($accountId)
@@ -45,51 +49,71 @@ class TenantFundExpenseService
                     );
                 }
 
-                if ($amount <= 0) {
+                $lines = array_values($lines);
+
+                if ($lines === []) {
                     throw new RuntimeException(
-                        __('business.tenant.expense_positive')
+                        __('business.tenant.expense_lines_required')
                     );
                 }
 
-                if (trim($description) === '') {
-                    throw new RuntimeException(
-                        __('business.tenant.expense_description_required')
-                    );
+                $total = 0;
+
+                foreach ($lines as $line) {
+                    $amount = (int) ($line['amount'] ?? 0);
+
+                    if ($amount <= 0) {
+                        throw new RuntimeException(
+                            __('business.tenant.expense_positive')
+                        );
+                    }
+
+                    if (trim((string) ($line['description'] ?? '')) === '') {
+                        throw new RuntimeException(
+                            __('business.tenant.expense_description_required')
+                        );
+                    }
+
+                    $total += $amount;
                 }
 
-                if ($amount > $account->balance()) {
+                if ($total > $account->balance()) {
                     throw new RuntimeException(
                         __('business.tenant.expense_exceeds_balance')
                     );
                 }
 
-                return TenantFundTransaction::create([
-                    'tenant_fund_account_id' => $account->id,
+                $voucherNumber = $this->nextNumber();
 
-                    'payment_id' => null,
+                $suffix =
+                    $reference !== null
+                    && trim($reference) !== ''
+                        ? ' ['.trim($reference).']'
+                        : '';
 
-                    'invoice_id' => null,
+                return collect($lines)->map(
+                    fn (array $line): TenantFundTransaction => TenantFundTransaction::create([
+                        'tenant_fund_account_id' => $account->id,
 
-                    'direction' => 'debit',
+                        'payment_id' => null,
 
-                    'category' => 'expense',
+                        'invoice_id' => null,
 
-                    'amount' => $amount,
+                        'direction' => 'debit',
 
-                    'transaction_date' => $transactionDate,
+                        'category' => 'expense',
 
-                    'payment_method' => $paymentMethod,
+                        'amount' => (int) $line['amount'],
 
-                    'reference' => $this->nextNumber(),
+                        'transaction_date' => $transactionDate,
 
-                    'notes' => trim($description)
-                        .(
-                            $reference !== null
-                            && trim($reference) !== ''
-                                ? ' ['.trim($reference).']'
-                                : ''
-                        ),
-                ]);
+                        'payment_method' => $paymentMethod,
+
+                        'reference' => $voucherNumber,
+
+                        'notes' => trim((string) $line['description']).$suffix,
+                    ])
+                );
             }
         );
     }

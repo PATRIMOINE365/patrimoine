@@ -151,6 +151,7 @@ return [
         'bill_date' => 'Date de facturation',
         'expense_lines' => 'Lignes de dépenses',
         'description' => 'Description',
+        'total' => 'Total',
         'amount' => 'Montant',
         'total' => 'Total',
         'notes' => 'Notes',
