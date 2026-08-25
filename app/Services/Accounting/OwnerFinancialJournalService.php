@@ -325,6 +325,91 @@ final class OwnerFinancialJournalService
     }
 
     /**
+     * V1.0.8: post one expense bill payment.
+     *
+     * Bills no longer settle themselves at creation; each explicit
+     * payment (possibly partial) posts its own entry using the same
+     * fixed owner-expense mapping, keyed to the payment transaction.
+     */
+    public function postExpenseBillPayment(
+        OwnerTransaction $payment
+    ): void {
+        if (! $this->runtime->enabled()) {
+            return;
+        }
+
+        if (
+            $payment->direction !== 'debit'
+            || $payment->category !== 'expense'
+            || $payment->owner_expense_bill_id === null
+        ) {
+            throw new RuntimeException(
+                'Invalid owner expense bill payment transaction.'
+            );
+        }
+
+        $amount = (int) $payment->amount;
+
+        if ($amount <= 0) {
+            throw new RuntimeException(
+                'Owner expense bill payment Journal amount must be greater than zero.'
+            );
+        }
+
+        $mapping = $this->events->fixed(
+            AccountingEventMap::EVENT_OWNER_EXPENSE
+        );
+
+        $this->postFixed(
+            event:
+                AccountingEventMap::EVENT_OWNER_EXPENSE,
+
+            journalDate:
+                $payment
+                    ->transaction_date
+                    ->toDateString(),
+
+            description:
+                'Owner expense bill payment #'.$payment->id,
+
+            sourceType:
+                OwnerTransaction::class,
+
+            sourceId:
+                $payment->id,
+
+            idempotencyKey:
+                'owner-expense-bill-payment:'.$payment->id,
+
+            amount:
+                $amount,
+
+            mapping:
+                $mapping,
+
+            snapshot: [
+                'owner_transaction_id' =>
+                    $payment->id,
+
+                'owner_expense_bill_id' =>
+                    $payment->owner_expense_bill_id,
+
+                'owner_account_id' =>
+                    $payment->owner_account_id,
+
+                'funding_source' =>
+                    $payment->funding_source,
+
+                'amount' =>
+                    $amount,
+
+                'reference' =>
+                    $payment->reference,
+            ],
+        );
+    }
+
+    /**
      * @param array<int, OwnerTransaction> $transactions
      */
     public function postRentEntitlement(

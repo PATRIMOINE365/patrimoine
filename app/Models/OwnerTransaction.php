@@ -32,6 +32,10 @@ class OwnerTransaction extends Model
         'cash_receiver_name',
         'reference',
         'notes',
+        'owner_expense_bill_id',
+        'funding_source',
+        'reversal_of_transaction_id',
+        'tenant_fund_transaction_id',
     ];
 
     /**
@@ -93,5 +97,37 @@ class OwnerTransaction extends Model
             User::class,
             'cash_receiver_user_id'
         );
+    }
+
+    /**
+     * Owner expense bill this transaction pays, when it is a payment.
+     */
+    public function ownerExpenseBill(): BelongsTo
+    {
+        return $this->belongsTo(OwnerExpenseBill::class);
+    }
+
+    /**
+     * Transaction this reversal cancels, when this row is a reversal.
+     */
+    public function reversalOf(): BelongsTo
+    {
+        return $this->belongsTo(
+            self::class,
+            'reversal_of_transaction_id'
+        );
+    }
+
+    /**
+     * Determine whether this transaction has been cancelled.
+     */
+    public function isReversed(): bool
+    {
+        return self::query()
+            ->where(
+                'reversal_of_transaction_id',
+                $this->id
+            )
+            ->exists();
     }
 }

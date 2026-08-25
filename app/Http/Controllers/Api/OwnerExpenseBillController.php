@@ -13,6 +13,7 @@ use App\Services\ApplicationIdentityService;
 use App\Services\ApplicationLocaleService;
 use App\Services\ApplicationPresentationFormatter;
 use App\Services\Documents\OwnerExpenseBillDocumentService;
+use App\Services\Documents\OwnerExpenseBillPaymentReceiptDocumentService;
 use App\Services\OwnerExpenseBillingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,11 +29,13 @@ use Throwable;
  * A bill charges multiple expense lines DIRECTLY to one owner in a
  * single validated batch. Recording a bill performs the full workflow:
  *
- * 1. Create the OwnerExpenseBill header.
- * 2. Create one OwnerExpense + one debit OwnerTransaction per line.
- * 3. Post each line into the Financial Journal (post-cutover only).
- * 4. Record the Activity Log event.
- * 5. Best-effort email of the itemized PDF bill to the owner.
+ * 1. Create the OwnerExpenseBill header and its OwnerExpense lines.
+ * 2. Record the Activity Log event.
+ * 3. Best-effort email of the itemized PDF bill to the owner.
+ *
+ * V1.0.8: recording no longer debits the owner ledger. Bills stay
+ * unpaid until settled through OwnerExpenseBillPaymentController, and
+ * their payment state is always derived from the linked ledger rows.
  */
 class OwnerExpenseBillController extends Controller
 {
@@ -167,6 +170,82 @@ class OwnerExpenseBillController extends Controller
     }
 
     /**
+     * V1.0.8: list one owner's expense bills with derived payment state.
+     *
+     * The Expenses section of the Owner workspace renders these rows;
+     * the payments array lets the browser offer Cancel for the most
+     * recent active payment.
+     */
+    public function index(
+        OwnerAccount $ownerAccount
+    ): JsonResponse {
+        $bills = OwnerExpenseBill::query()
+            ->where('owner_account_id', $ownerAccount->id)
+            ->with(['expenses', 'payments'])
+            ->orderByDesc('bill_date')
+            ->orderByDesc('id')
+            ->get();
+
+        return response()->json([
+            'expense_bills' => $bills->map(
+                function (OwnerExpenseBill $bill): array {
+                    $payments = $bill->payments
+                        ->where('category', 'expense');
+
+                    $reversedIds = $payments
+                        ->where('direction', 'credit')
+                        ->pluck('reversal_of_transaction_id')
+                        ->filter()
+                        ->all();
+
+                    return [
+                        'id' => $bill->id,
+                        'bill_number' => $bill->bill_number,
+                        'bill_date' => $bill->bill_date->toDateString(),
+                        'total_amount' => (int) $bill->total_amount,
+                        'notes' => $bill->notes,
+                        'line_count' => $bill->expenses->count(),
+                        'paid' => $bill->paidAmount(),
+                        'outstanding' => $bill->outstandingAmount(),
+                        'payment_status' => $bill->paymentStatus(),
+
+                        'payments' => $payments
+                            ->where('direction', 'debit')
+                            ->sortByDesc('id')
+                            ->values()
+                            ->map(
+                                fn ($payment): array => [
+                                    'id' => $payment->id,
+                                    'amount' => (int) $payment->amount,
+                                    'transaction_date' => $payment
+                                        ->transaction_date
+                                        ->toDateString(),
+                                    'funding_source' => $payment
+                                        ->funding_source,
+                                    'cancellable' =>
+                                        $payment->funding_source !== null
+                                        && ! in_array(
+                                            $payment->id,
+                                            $reversedIds,
+                                            true
+                                        ),
+                                ]
+                            ),
+                    ];
+                }
+            ),
+
+            'owner_account' => [
+                'id' => $ownerAccount->id,
+                'deposit_account_balance' => $ownerAccount
+                    ->depositAccountBalance(),
+                'payout_account_balance' => $ownerAccount
+                    ->payoutAccountBalance(),
+            ],
+        ]);
+    }
+
+    /**
      * Download the itemized owner expense bill PDF.
      */
     public function pdf(
@@ -192,6 +271,54 @@ class OwnerExpenseBillController extends Controller
             entityLabel: $ownerExpenseBill->bill_number,
             metadata: [
                 'document_type' => 'owner_expense_bill',
+                'format' => 'pdf',
+                'filename' => $filename,
+            ],
+        );
+
+        return response(
+            $contents,
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+
+                'Content-Disposition' => 'inline; filename="'
+                    .$filename
+                    .'"',
+
+                'Content-Length' => strlen($contents),
+            ]
+        );
+    }
+
+    /**
+     * V1.0.8: download the receipt for this bill's payments.
+     */
+    public function paymentReceipt(
+        Request $request,
+        OwnerExpenseBill $ownerExpenseBill,
+        OwnerExpenseBillPaymentReceiptDocumentService $receipts,
+        ActivityLogService $activityLog
+    ): Response {
+        try {
+            $contents = $receipts->generate($ownerExpenseBill);
+            $filename = $receipts->filename($ownerExpenseBill);
+        } catch (RuntimeException $exception) {
+            throw ValidationException::withMessages([
+                'expense_bill' => [
+                    $exception->getMessage(),
+                ],
+            ]);
+        }
+
+        $activityLog->record(
+            action: 'owner_expense_bill_payment_receipt.downloaded',
+            request: $request,
+            entityType: 'owner_expense_bill',
+            entityId: $ownerExpenseBill->id,
+            entityLabel: $ownerExpenseBill->bill_number,
+            metadata: [
+                'document_type' => 'owner_expense_bill_payment_receipt',
                 'format' => 'pdf',
                 'filename' => $filename,
             ],

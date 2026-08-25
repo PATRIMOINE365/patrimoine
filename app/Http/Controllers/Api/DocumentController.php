@@ -14,6 +14,7 @@ use App\Models\WithdrawalReceipt;
 use App\Services\ActivityLogService;
 use App\Services\Documents\AdjustmentVoucherDocumentService;
 use App\Services\Documents\InvoiceDocumentService;
+use App\Services\Documents\InvoicePaymentReceiptDocumentService;
 use App\Services\Documents\OwnerDepositReceiptDocumentService;
 use App\Services\Documents\OwnerPayoutReceiptDocumentService;
 use App\Services\Documents\ReceiptDocumentService;
@@ -153,6 +154,54 @@ class DocumentController extends Controller
                 ?: "Payment #{$payment->id}",
             metadata: [
                 'document_type' => 'receipt',
+                'format' => 'pdf',
+                'filename' => $filename,
+            ],
+        );
+
+        return response(
+            $contents,
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+
+                'Content-Disposition' => 'inline; filename="'
+                    .$filename
+                    .'"',
+
+                'Content-Length' => strlen($contents),
+            ]
+        );
+    }
+
+    /**
+     * V1.0.8: download the receipt for an Invoice's account payments.
+     */
+    public function invoicePaymentReceipt(
+        Request $request,
+        Invoice $invoice,
+        InvoicePaymentReceiptDocumentService $service,
+        ActivityLogService $activityLog
+    ): Response {
+        try {
+            $contents = $service->generate($invoice);
+            $filename = $service->filename($invoice);
+        } catch (RuntimeException $exception) {
+            throw ValidationException::withMessages([
+                'invoice' => [
+                    $exception->getMessage(),
+                ],
+            ]);
+        }
+
+        $activityLog->record(
+            action: 'invoice_payment_receipt.downloaded',
+            request: $request,
+            entityType: 'invoice',
+            entityId: $invoice->id,
+            entityLabel: $invoice->invoice_number,
+            metadata: [
+                'document_type' => 'invoice_payment_receipt',
                 'format' => 'pdf',
                 'filename' => $filename,
             ],

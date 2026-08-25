@@ -99,6 +99,17 @@ class PaymentAllocationService
                             'partial',
                         ]
                     )
+                    /*
+                     * V1.0.8 expense invoices are settled explicitly
+                     * through the Invoice Pay flow from tenant fund
+                     * accounts; ordinary cash payments must never
+                     * sweep them up in FIFO allocation.
+                     */
+                    ->where(
+                        'type',
+                        '!=',
+                        'expense'
+                    )
                     ->orderBy(
                         'due_date'
                     )

@@ -50,6 +50,15 @@ return [
         'payout_exceeds_balance' => 'Owner payout exceeds available balance.',
         'payout_allocation_failed' => 'Unable to fully allocate owner payout to net available credits.',
         'deposit_receipt_only' => 'Only Owner deposits may generate an Owner deposit receipt.',
+        'bill_payment_source' => 'Unsupported expense bill payment source account.',
+        'bill_payment_positive' => 'Expense bill payment amount must be greater than zero.',
+        'bill_payment_exceeds_bill' => 'Expense bill payment exceeds the outstanding bill amount.',
+        'bill_payment_insufficient_payout' => 'Expense bill payment exceeds the available Payout account balance.',
+        'not_a_bill_payment' => 'This transaction is not an expense bill payment.',
+        'bill_payment_already_cancelled' => 'This expense bill payment has already been cancelled.',
+        'bill_payment_reason_required' => 'A cancellation reason is required.',
+        'historical_bill_payment' => 'Historical expense bill settlements cannot be cancelled.',
+        'bill_payment_receipt_unpaid' => 'This expense bill has no payments to receipt yet.',
     ],
 
     'security_deposit' => [
@@ -72,5 +81,21 @@ return [
         'expense_description_required' => 'Tenant expense description is required.',
         'expense_exceeds_balance' => 'Tenant expense exceeds the available fund balance.',
         'expense_lines_required' => 'A tenant expense requires at least one line.',
+        'expense_draft_lease' => 'Expenses cannot be recorded for a draft Lease.',
+    ],
+
+    'invoice_payment' => [
+        'wrong_lease' => 'The fund account does not belong to the Invoice\'s Lease.',
+        'unsupported_invoice' => 'This Invoice cannot be paid from a fund account.',
+        'account_cannot_pay_rent' => 'This fund account cannot pay rent invoices.',
+        'account_closed' => 'The fund account is not active.',
+        'amount_positive' => 'Payment amount must be greater than zero.',
+        'insufficient_balance' => 'Payment exceeds the available fund account balance.',
+        'exceeds_invoice' => 'Payment exceeds the outstanding Invoice amount.',
+        'not_a_payment' => 'This transaction is not an Invoice account payment.',
+        'already_cancelled' => 'This payment has already been cancelled.',
+        'reason_required' => 'A cancellation reason is required.',
+        'historical_payment' => 'Historical consumptions cannot be cancelled.',
+        'receipt_unpaid' => 'This Invoice has no account payments to receipt yet.',
     ],
 ];

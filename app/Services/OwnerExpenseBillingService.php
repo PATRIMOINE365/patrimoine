@@ -6,9 +6,7 @@ use App\Models\Building;
 use App\Models\OwnerAccount;
 use App\Models\OwnerExpense;
 use App\Models\OwnerExpenseBill;
-use App\Models\OwnerTransaction;
 use App\Models\User;
-use App\Services\Accounting\OwnerFinancialJournalService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -20,19 +18,17 @@ use RuntimeException;
  * - A bill contains one or more expense lines (description + amount).
  * - Every line is charged 100% to the billed OwnerAccount; there is no
  *   Building context and therefore no ownership-percentage allocation.
- * - Each line produces one OwnerExpense (building_id NULL) and one
- *   debit OwnerTransaction (category 'expense').
- * - Financial Journal posting reuses the existing owner-expense event
- *   per line, so idempotency keys stay 'owner-expense:{expenseId}' and
- *   double-posting remains impossible.
+ * - V1.0.8: recording a bill creates the OEB- document and its lines
+ *   only. The owner ledger debit and Financial Journal posting happen
+ *   per explicit payment in OwnerExpenseBillPaymentService, and can be
+ *   cancelled again.
  * - The whole batch is atomic: either the complete bill exists with all
- *   of its lines, ledger debits and Journal entries, or nothing does.
+ *   of its lines, or nothing does.
  */
 class OwnerExpenseBillingService
 {
     public function __construct(
-        private readonly OwnerExpenseBillNumberService $billNumbers,
-        private readonly OwnerFinancialJournalService $journal
+        private readonly OwnerExpenseBillNumberService $billNumbers
     ) {
     }
 
@@ -140,8 +136,14 @@ class OwnerExpenseBillingService
                  *
                  * NULL building/unit context is the defining marker of a
                  * billed expense (vs. a Building-allocated expense).
+                 *
+                 * V1.0.8: recording a bill no longer debits the owner
+                 * ledger or posts to the Journal. The bill stays unpaid
+                 * until it is explicitly settled through the Pay flow
+                 * (OwnerExpenseBillPaymentService), which records the
+                 * ledger debit and Journal entry per payment.
                  */
-                $expense = OwnerExpense::create([
+                OwnerExpense::create([
                     'building_id' => $buildingId,
                     'unit_id' => null,
                     'owner_expense_bill_id' => $bill->id,
@@ -150,37 +152,6 @@ class OwnerExpenseBillingService
                     'expense_date' => $billDate,
                     'reference' => $billNumber,
                 ]);
-
-                /*
-                 * The full line amount debits the billed owner directly.
-                 * No percentage allocation applies without a Building.
-                 */
-                $transaction = OwnerTransaction::create([
-                    'owner_account_id' => $ownerAccount->id,
-                    'building_id' => $buildingId,
-                    'direction' => 'debit',
-                    'category' => 'expense',
-                    'amount' => $amount,
-                    'transaction_date' => $billDate,
-                    'reference' => $billNumber,
-                    'notes' => $description,
-                ]);
-
-                /*
-                 * Financial Journal posting per line.
-                 *
-                 * postExpense resolves its accounts from the FIXED
-                 * owner-expense event mapping (Owner Funds Payable /
-                 * Property Expense Clearing) and is therefore fully
-                 * Building-independent; building_id appears only in the
-                 * informational snapshot. The gate check and the
-                 * 'owner-expense:{expenseId}' idempotency key live inside
-                 * the Journal service, exactly as for allocated expenses.
-                 */
-                $this->journal->postExpense(
-                    $expense,
-                    [$transaction]
-                );
             }
 
             return $bill

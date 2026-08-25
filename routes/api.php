@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\ConsumableAdvanceController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\DocumentLinkController;
+use App\Http\Controllers\Api\InvoiceAccountPaymentController;
 use App\Http\Controllers\Api\EmailController;
 use App\Http\Controllers\Api\FinancialJournalController;
 use App\Http\Controllers\Api\FinancialJournalExportController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\Api\OccupancyReportController;
 use App\Http\Controllers\Api\OccupancyReportExportController;
 use App\Http\Controllers\Api\OwnerAccountController;
 use App\Http\Controllers\Api\OwnerExpenseBillController;
+use App\Http\Controllers\Api\OwnerExpenseBillPaymentController;
 use App\Http\Controllers\Api\OwnerExpenseController;
 use App\Http\Controllers\Api\OwnerLedgerController;
 use App\Http\Controllers\Api\OwnerPayoutController;
@@ -42,6 +44,7 @@ use App\Http\Controllers\Api\RentReserveController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReportExportController;
 use App\Http\Controllers\Api\SecurityDepositController;
+use App\Http\Controllers\Api\TenantExpenseInvoiceController;
 use App\Http\Controllers\Api\TenantFundController;
 use App\Http\Controllers\Api\TenantFundDepositController;
 use App\Http\Controllers\Api\TenantFundExpenseController;
@@ -529,13 +532,29 @@ Route::middleware('auth:sanctum')->group(
                 );
 
                 /*
-                 * V1.0.8: lease-specific expenses settled from tenant
-                 * fund accounts. The source account can never go
-                 * negative.
+                 * V1.0.8: a tenant expense is recorded as an unpaid
+                 * EXP- Invoice; settlement happens later through the
+                 * Invoice account-payment flow below. The historical
+                 * tenant-fund-expenses voucher/resend endpoints remain
+                 * for documents recorded under the old model.
                  */
                 Route::post(
-                    'tenant-fund-expenses',
-                    [TenantFundExpenseController::class, 'store']
+                    'tenant-expense-invoices',
+                    [TenantExpenseInvoiceController::class, 'store']
+                );
+
+                /*
+                 * V1.0.8: pay an Invoice (rent or expense) from a
+                 * tenant fund account, and cancel such a payment.
+                 */
+                Route::post(
+                    'invoices/{invoice}/account-payments',
+                    [InvoiceAccountPaymentController::class, 'store']
+                );
+
+                Route::post(
+                    'invoice-account-payments/{tenantFundTransaction}/cancel',
+                    [InvoiceAccountPaymentController::class, 'cancel']
                 );
 
                 Route::post(
@@ -623,6 +642,27 @@ Route::middleware('auth:sanctum')->group(
                     'owner-accounts/{ownerAccount}/expense-bills',
                     [OwnerExpenseBillController::class, 'store']
                 );
+
+                /*
+                 * V1.0.8: bills stay unpaid until explicitly settled;
+                 * these endpoints list them with derived payment state,
+                 * pay them from a chosen owner account side, and cancel
+                 * such payments again.
+                 */
+                Route::get(
+                    'owner-accounts/{ownerAccount}/expense-bills',
+                    [OwnerExpenseBillController::class, 'index']
+                );
+
+                Route::post(
+                    'owner-expense-bills/{ownerExpenseBill}/payments',
+                    [OwnerExpenseBillPaymentController::class, 'store']
+                );
+
+                Route::post(
+                    'owner-expense-bill-payments/{ownerTransaction}/cancel',
+                    [OwnerExpenseBillPaymentController::class, 'cancel']
+                );
             }
         );
 
@@ -662,6 +702,14 @@ Route::middleware('auth:sanctum')->group(
                     [DocumentController::class, 'invoice']
                 );
 
+                /*
+                 * V1.0.8: receipt for an Invoice's fund-account payments.
+                 */
+                Route::get(
+                    'invoices/{invoice}/payment-receipt',
+                    [DocumentController::class, 'invoicePaymentReceipt']
+                );
+
                 Route::get(
                     'payments/{payment}/receipt',
                     [DocumentController::class, 'receipt']
@@ -678,6 +726,14 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'owner-expense-bills/{ownerExpenseBill}/pdf',
                     [OwnerExpenseBillController::class, 'pdf']
+                );
+
+                /*
+                 * V1.0.8: receipt for an expense bill's payments.
+                 */
+                Route::get(
+                    'owner-expense-bills/{ownerExpenseBill}/payment-receipt',
+                    [OwnerExpenseBillController::class, 'paymentReceipt']
                 );
 
                 /*

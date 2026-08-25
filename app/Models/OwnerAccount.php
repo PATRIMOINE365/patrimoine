@@ -97,9 +97,36 @@ class OwnerAccount extends Model
             ->where('direction', 'credit')
             ->sum('amount');
 
-        $expenses = (int) $this->transactions()
+        /*
+         * V1.0.8 expense bill payments choose their funding source.
+         *
+         * Only Deposit-account-funded expenses draw from this balance;
+         * a NULL funding source is the historical default and belongs
+         * here too. Payout-funded expense payments reduce the Payout
+         * account instead, which falls out of the balance()-minus-
+         * deposit arithmetic without further work.
+         *
+         * Cancelled expense payments are credit reversal rows in the
+         * same category and funding source, so they are netted out.
+         */
+        $expenseDebits = (int) $this->transactions()
             ->where('category', 'expense')
             ->where('direction', 'debit')
+            ->where(function ($query): void {
+                $query
+                    ->whereNull('funding_source')
+                    ->orWhere('funding_source', 'deposit_account');
+            })
+            ->sum('amount');
+
+        $expenseCredits = (int) $this->transactions()
+            ->where('category', 'expense')
+            ->where('direction', 'credit')
+            ->where(function ($query): void {
+                $query
+                    ->whereNull('funding_source')
+                    ->orWhere('funding_source', 'deposit_account');
+            })
             ->sum('amount');
 
         $transfersIn = (int) $this->transactions()
@@ -113,7 +140,8 @@ class OwnerAccount extends Model
             ->sum('amount');
 
         return $deposits
-            - $expenses
+            - $expenseDebits
+            + $expenseCredits
             + $transfersIn
             - $transfersOut;
     }

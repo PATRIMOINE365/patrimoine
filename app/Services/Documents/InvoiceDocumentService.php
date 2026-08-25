@@ -44,8 +44,19 @@ class InvoiceDocumentService
             'tenantFundTransactions',
         ]);
 
+        /*
+         * V1.0.8 expense invoices are itemized documents with their own
+         * template; the rent template's contractual billing framing does
+         * not apply to them.
+         */
+        if ($invoice->isExpenseInvoice()) {
+            $invoice->loadMissing('lines');
+        }
+
         return Pdf::loadView(
-            'documents.invoice',
+            $invoice->isExpenseInvoice()
+                ? 'documents.expense-invoice'
+                : 'documents.invoice',
             [
                 'invoice' => $invoice,
                 'formatter' => $this->formatter,

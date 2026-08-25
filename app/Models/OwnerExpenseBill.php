@@ -56,4 +56,61 @@ class OwnerExpenseBill extends Model
     {
         return $this->hasMany(OwnerExpense::class);
     }
+
+    /**
+     * Ledger movements that pay (or cancel payment of) this bill.
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(OwnerTransaction::class);
+    }
+
+    /**
+     * Amount of this bill actually paid.
+     *
+     * Payments are debit rows; cancelled payments appear as credit
+     * reversal rows in the same category, so the net is what remains
+     * applied. The balance is always derived, never stored.
+     */
+    public function paidAmount(): int
+    {
+        $debits = (int) $this->payments()
+            ->where('category', 'expense')
+            ->where('direction', 'debit')
+            ->sum('amount');
+
+        $credits = (int) $this->payments()
+            ->where('category', 'expense')
+            ->where('direction', 'credit')
+            ->sum('amount');
+
+        return $debits - $credits;
+    }
+
+    /**
+     * Amount still unpaid on this bill.
+     */
+    public function outstandingAmount(): int
+    {
+        return max(
+            0,
+            (int) $this->total_amount - $this->paidAmount()
+        );
+    }
+
+    /**
+     * Derived payment lifecycle: unpaid, partial or paid.
+     */
+    public function paymentStatus(): string
+    {
+        $paid = $this->paidAmount();
+
+        if ($paid <= 0) {
+            return 'unpaid';
+        }
+
+        return $paid >= (int) $this->total_amount
+            ? 'paid'
+            : 'partial';
+    }
 }

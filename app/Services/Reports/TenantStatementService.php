@@ -158,6 +158,13 @@ class TenantStatementService
                 'paid' => $invoice->paidAmount(),
                 'outstanding' => $invoice->outstandingAmount(),
                 'status' => $invoice->status,
+
+                /*
+                 * V1.0.8: active fund-account payments, newest first,
+                 * so the browser can offer Pay / Cancel payment and
+                 * the payment receipt.
+                 */
+                'account_payments' => $this->accountPayments($invoice),
                 ])
                 ->values()
                 ->all(),
@@ -176,6 +183,70 @@ class TenantStatementService
                 ->values()
                 ->all(),
         ];
+    }
+
+    /**
+     * V1.0.8: active fund-account payments applied to one Invoice.
+     *
+     * Cancelled payments (those referenced by a credit reversal row)
+     * are excluded entirely; the browser only ever needs payments it
+     * could still cancel.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function accountPayments(
+        Invoice $invoice
+    ): array {
+        $transactions = $invoice
+            ->tenantFundTransactions()
+            ->whereIn('category', [
+                'advance_consumption',
+                'rent_consumption',
+                'expense_settlement',
+            ])
+            ->with('account')
+            ->get();
+
+        $reversedIds = $transactions
+            ->where('direction', 'credit')
+            ->pluck('reversal_of_transaction_id')
+            ->filter()
+            ->all();
+
+        return $transactions
+            ->where('direction', 'debit')
+            ->reject(
+                fn ($payment): bool => in_array(
+                    $payment->id,
+                    $reversedIds,
+                    true
+                )
+            )
+            ->sortByDesc('id')
+            ->values()
+            ->map(
+                fn ($payment): array => [
+                    'id' => $payment->id,
+                    'amount' => (int) $payment->amount,
+                    'category' => $payment->category,
+                    'transaction_date' => $payment
+                        ->transaction_date
+                        ->toDateString(),
+                    'account_type' => $payment->account?->type,
+
+                    /*
+                     * Consumptions recorded before V1.0.8 released
+                     * owner entitlement without tagging it and can
+                     * never be safely unwound.
+                     */
+                    'cancellable' =>
+                        $payment->category === 'expense_settlement'
+                        || $payment
+                            ->ownerEntitlements()
+                            ->exists(),
+                ]
+            )
+            ->all();
     }
 
     private function fundBalance(

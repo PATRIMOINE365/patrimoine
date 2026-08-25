@@ -154,7 +154,8 @@ class ConsumableAdvanceService
             $this->postOwnerEntitlement(
                 invoice: $invoice,
                 amount: $amount,
-                transactionDate: $transactionDate
+                transactionDate: $transactionDate,
+                sourceTransactionId: $transaction->id
             );
 
             /*
@@ -181,7 +182,8 @@ class ConsumableAdvanceService
     private function postOwnerEntitlement(
         Invoice $invoice,
         int $amount,
-        string $transactionDate
+        string $transactionDate,
+        ?int $sourceTransactionId = null
     ): void {
         $invoice->loadMissing(
             'lease.unit.building.ownerships'
@@ -241,6 +243,7 @@ class ConsumableAdvanceService
                 'transaction_date' => $transactionDate,
                 'reference' => $invoice->invoice_number,
                 'notes' => 'Owner rent entitlement released from tenant Consumable Advance.',
+                'tenant_fund_transaction_id' => $sourceTransactionId,
             ]);
         }
     }

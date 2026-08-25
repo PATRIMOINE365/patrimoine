@@ -58,6 +58,9 @@ class AccountingEventMap
     public const EVENT_TENANT_FUND_EXPENSE =
         'tenant_fund_expense';
 
+    public const EVENT_TENANT_EXPENSE_SETTLEMENT =
+        'tenant_expense_settlement';
+
     public const EVENT_OWNER_DEPOSIT =
         'owner_deposit';
 
@@ -249,6 +252,22 @@ class AccountingEventMap
 
                 'counter_variable' =>
                     'payment_asset',
+            ],
+
+            /*
+             * V1.0.8: an expense Invoice settled from tenant-held funds.
+             *
+             * No cash moves at settlement time — the held liability
+             * absorbs an expense already recognized in the clearing
+             * account, mirroring the owner-expense treatment. The debit
+             * side varies with the fund account type.
+             */
+            self::EVENT_TENANT_EXPENSE_SETTLEMENT => [
+                'variable' =>
+                    'tenant_fund_liability',
+
+                'credit' =>
+                    SystemChartOfAccounts::PROPERTY_EXPENSE_CLEARING,
             ],
 
             self::EVENT_OWNER_DEPOSIT => [

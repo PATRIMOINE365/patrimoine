@@ -157,20 +157,14 @@ class OwnerExpenseBillApiTest extends TestCase
                 'amount' => $amount,
                 'reference' => 'OEB-000001',
             ]);
-
-            $this->assertDatabaseHas('owner_transactions', [
-                'owner_account_id' => $context['account']->id,
-                'building_id' => $context['building']->id,
-                'direction' => 'debit',
-                'category' => 'expense',
-                'amount' => $amount,
-                'reference' => 'OEB-000001',
-                'notes' => $description,
-            ]);
         }
 
+        /*
+         * V1.0.8: recording a bill no longer touches the owner ledger.
+         * The bill stays unpaid until settled through the Pay flow.
+         */
         $this->assertSame(
-            3,
+            0,
             OwnerTransaction::query()
                 ->where(
                     'owner_account_id',
@@ -180,15 +174,17 @@ class OwnerExpenseBillApiTest extends TestCase
                 ->count()
         );
 
-        /*
-         * The full batch total debits the billed owner.
-         */
         $this->assertSame(
-            -4500,
+            0,
             $context['account']
                 ->fresh()
                 ->balance()
         );
+
+        $bill = OwnerExpenseBill::query()->firstOrFail();
+
+        $this->assertSame('unpaid', $bill->paymentStatus());
+        $this->assertSame(4500, $bill->outstandingAmount());
 
         /*
          * The owner has an email address, so the bill is delivered
@@ -451,6 +447,28 @@ class OwnerExpenseBillApiTest extends TestCase
                 $context['account']
             );
 
+        /*
+         * V1.0.8: recording posts nothing. The Journal entry belongs
+         * to the explicit payment.
+         */
+        $this->assertSame(
+            0,
+            JournalEntry::query()
+                ->where('transaction_type', 'owner_expense')
+                ->count()
+        );
+
+        $paymentId = $this->postJson(
+            "/api/owner-expense-bills/{$bill->id}/payments",
+            [
+                'funding_source' => 'deposit_account',
+                'amount' => 3000,
+                'transaction_date' => '2026-08-22',
+            ]
+        )
+            ->assertCreated()
+            ->json('payment.id');
+
         $entries =
             JournalEntry::query()
                 ->with('lines')
@@ -461,41 +479,49 @@ class OwnerExpenseBillApiTest extends TestCase
                 ->orderBy('id')
                 ->get();
 
-        /*
-         * One Journal entry per expense line.
-         */
         $this->assertCount(
-            2,
+            1,
             $entries
         );
 
-        $expenseIds = $bill
-            ->expenses
-            ->sortBy('id')
-            ->pluck('id')
-            ->values()
-            ->all();
+        $this->assertTrue(
+            $entries->first()->isBalanced()
+        );
 
-        foreach ($entries as $index => $entry) {
-            $this->assertTrue(
-                $entry->isBalanced()
-            );
+        $this->assertSame(
+            'owner-expense-bill-payment:'.$paymentId,
+            $entries->first()->idempotency_key
+        );
 
-            $this->assertSame(
-                'owner-expense:'.$expenseIds[$index],
-                $entry->idempotency_key
-            );
-        }
-
-        /*
-         * The two entries together carry the full bill total.
-         */
         $this->assertSame(
             3000,
             (int) $entries
                 ->flatMap
                 ->lines
                 ->sum('debit_amount')
+        );
+
+        /*
+         * Cancelling the payment posts an immutable Journal reversal.
+         */
+        $this->postJson(
+            "/api/owner-expense-bill-payments/{$paymentId}/cancel",
+            [
+                'reason' => 'Recorded against the wrong bill.',
+            ]
+        )->assertOk();
+
+        $original = $entries->first();
+
+        $this->assertTrue(
+            JournalEntry::query()
+                ->where('reversal_of_id', $original->id)
+                ->exists()
+        );
+
+        $this->assertSame(
+            'unpaid',
+            $bill->fresh()->paymentStatus()
         );
     }
 
@@ -584,27 +610,253 @@ class OwnerExpenseBillApiTest extends TestCase
         /*
          * 1001 at 60/40: floor gives 600 + 400, largest remainder gives
          * the extra 1 to the 60% owner (0.6 fraction beats 0.4).
+         *
+         * V1.0.8: each co-owner receives an UNPAID bill; no ledger
+         * debit exists until each bill is explicitly paid.
          */
-        $this->assertDatabaseHas('owner_transactions', [
+        $this->assertDatabaseHas('owner_expense_bills', [
             'owner_account_id' => $context['account']->id,
-            'category' => 'expense',
-            'amount' => 601,
+            'total_amount' => 601,
         ]);
 
         $secondAccount = OwnerAccount::query()
             ->where('party_id', $second->id)
             ->firstOrFail();
 
-        $this->assertDatabaseHas('owner_transactions', [
+        $this->assertDatabaseHas('owner_expense_bills', [
             'owner_account_id' => $secondAccount->id,
-            'category' => 'expense',
-            'amount' => 400,
+            'total_amount' => 400,
         ]);
 
         $this->assertSame(
-            -601,
+            0,
+            OwnerTransaction::query()
+                ->where('category', 'expense')
+                ->count()
+        );
+
+        $this->assertSame(
+            0,
             $context['account']->fresh()->depositAccountBalance()
         );
+    }
+
+    /**
+     * V1.0.8: paying from the Deposit account may drive it negative by
+     * design, and partial payments move the bill through its derived
+     * lifecycle.
+     */
+    public function test_bill_is_paid_from_the_deposit_account_in_parts(): void
+    {
+        Mail::fake();
+
+        $context = $this->createOwnerContext();
+
+        $bill = $this->recordBill($context['account']);
+
+        $this->postJson(
+            "/api/owner-expense-bills/{$bill->id}/payments",
+            [
+                'funding_source' => 'deposit_account',
+                'amount' => 1000,
+                'transaction_date' => '2026-08-22',
+            ]
+        )
+            ->assertCreated()
+            ->assertJsonPath('bill.payment_status', 'partial')
+            ->assertJsonPath('bill.outstanding', 2000);
+
+        $this->postJson(
+            "/api/owner-expense-bills/{$bill->id}/payments",
+            [
+                'funding_source' => 'deposit_account',
+                'amount' => 2000,
+                'transaction_date' => '2026-08-23',
+            ]
+        )
+            ->assertCreated()
+            ->assertJsonPath('bill.payment_status', 'paid')
+            ->assertJsonPath('bill.outstanding', 0);
+
+        /*
+         * No deposits exist, so the Deposit account is now negative:
+         * debt the owner owes the agency. The Payout account is
+         * untouched.
+         */
+        $account = $context['account']->fresh();
+
+        $this->assertSame(-3000, $account->depositAccountBalance());
+        $this->assertSame(0, $account->payoutAccountBalance());
+
+        /*
+         * Overpaying the settled bill is refused.
+         */
+        $this->postJson(
+            "/api/owner-expense-bills/{$bill->id}/payments",
+            [
+                'funding_source' => 'deposit_account',
+                'amount' => 1,
+                'transaction_date' => '2026-08-23',
+            ]
+        )->assertUnprocessable();
+
+        $this->assertDatabaseHas('activity_logs', [
+            'action' => 'owner_expense_bill_payment.recorded',
+        ]);
+    }
+
+    /**
+     * V1.0.8: the Payout account is rent-derived money and is strictly
+     * capped at its available balance.
+     */
+    public function test_payout_account_payments_are_capped(): void
+    {
+        Mail::fake();
+
+        $context = $this->createOwnerContext();
+
+        $bill = $this->recordBill($context['account']);
+
+        /*
+         * No rent has ever been collected: the Payout account is 0 and
+         * must refuse the payment outright.
+         */
+        $this->postJson(
+            "/api/owner-expense-bills/{$bill->id}/payments",
+            [
+                'funding_source' => 'payout_account',
+                'amount' => 500,
+                'transaction_date' => '2026-08-22',
+            ]
+        )->assertUnprocessable();
+
+        /*
+         * Rent entitlement funds the Payout account; the payment then
+         * draws from it.
+         */
+        OwnerTransaction::create([
+            'owner_account_id' => $context['account']->id,
+            'building_id' => $context['building']->id,
+            'direction' => 'credit',
+            'category' => 'rent_entitlement',
+            'amount' => 800,
+            'transaction_date' => '2026-08-21',
+        ]);
+
+        $this->postJson(
+            "/api/owner-expense-bills/{$bill->id}/payments",
+            [
+                'funding_source' => 'payout_account',
+                'amount' => 500,
+                'transaction_date' => '2026-08-22',
+            ]
+        )->assertCreated();
+
+        $account = $context['account']->fresh();
+
+        $this->assertSame(300, $account->payoutAccountBalance());
+        $this->assertSame(0, $account->depositAccountBalance());
+    }
+
+    /**
+     * V1.0.8: cancelling a payment restores every derived balance and
+     * the bill's lifecycle, and is itself one-shot.
+     */
+    public function test_cancelling_a_bill_payment_restores_balances(): void
+    {
+        Mail::fake();
+
+        $context = $this->createOwnerContext();
+
+        $bill = $this->recordBill($context['account']);
+
+        $paymentId = $this->postJson(
+            "/api/owner-expense-bills/{$bill->id}/payments",
+            [
+                'funding_source' => 'deposit_account',
+                'amount' => 3000,
+                'transaction_date' => '2026-08-22',
+            ]
+        )
+            ->assertCreated()
+            ->json('payment.id');
+
+        $this->postJson(
+            "/api/owner-expense-bill-payments/{$paymentId}/cancel",
+            [
+                'reason' => 'Wrong bill selected.',
+            ]
+        )
+            ->assertOk()
+            ->assertJsonPath('bill.payment_status', 'unpaid')
+            ->assertJsonPath('bill.outstanding', 3000);
+
+        $account = $context['account']->fresh();
+
+        $this->assertSame(0, $account->depositAccountBalance());
+        $this->assertSame(0, $account->balance());
+
+        /*
+         * The same payment can never be cancelled twice.
+         */
+        $this->postJson(
+            "/api/owner-expense-bill-payments/{$paymentId}/cancel",
+            [
+                'reason' => 'Duplicate cancel attempt.',
+            ]
+        )->assertUnprocessable();
+
+        $this->assertDatabaseHas('activity_logs', [
+            'action' => 'owner_expense_bill_payment.cancelled',
+        ]);
+    }
+
+    /**
+     * V1.0.8: the bills listing carries derived payment state, and the
+     * payment receipt lists active payments only.
+     */
+    public function test_bills_listing_and_payment_receipt(): void
+    {
+        Mail::fake();
+
+        $context = $this->createOwnerContext();
+
+        $bill = $this->recordBill($context['account']);
+
+        /*
+         * No payments yet: the receipt is refused.
+         */
+        $this->getJson(
+            "/api/owner-expense-bills/{$bill->id}/payment-receipt"
+        )->assertUnprocessable();
+
+        $this->postJson(
+            "/api/owner-expense-bills/{$bill->id}/payments",
+            [
+                'funding_source' => 'deposit_account',
+                'amount' => 3000,
+                'transaction_date' => '2026-08-22',
+            ]
+        )->assertCreated();
+
+        $listing = $this->getJson(
+            "/api/owner-accounts/{$context['account']->id}/expense-bills"
+        )
+            ->assertOk()
+            ->assertJsonPath('expense_bills.0.payment_status', 'paid')
+            ->assertJsonPath('expense_bills.0.paid', 3000)
+            ->assertJsonPath('expense_bills.0.payments.0.cancellable', true);
+
+        $this->assertSame(
+            3000,
+            $listing->json('expense_bills.0.total_amount')
+        );
+
+        $this->get(
+            "/api/owner-expense-bills/{$bill->id}/payment-receipt"
+        )
+            ->assertOk()
+            ->assertHeader('Content-Type', 'application/pdf');
     }
 }
 

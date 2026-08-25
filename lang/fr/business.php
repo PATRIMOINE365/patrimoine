@@ -50,6 +50,15 @@ return [
         'payout_exceeds_balance' => 'Le paiement au propriétaire dépasse le solde disponible.',
         'payout_allocation_failed' => 'Le paiement au propriétaire ne peut pas être entièrement affecté aux crédits nets disponibles.',
         'deposit_receipt_only' => 'Seuls les dépôts de propriétaire peuvent générer un reçu de dépôt de propriétaire.',
+        'bill_payment_source' => 'Le compte source du paiement de la facture de dépenses n’est pas pris en charge.',
+        'bill_payment_positive' => 'Le montant du paiement de la facture de dépenses doit être supérieur à zéro.',
+        'bill_payment_exceeds_bill' => 'Le paiement dépasse le montant restant dû de la facture de dépenses.',
+        'bill_payment_insufficient_payout' => 'Le paiement dépasse le solde disponible du compte Retraits.',
+        'not_a_bill_payment' => 'Cette transaction n’est pas un paiement de facture de dépenses.',
+        'bill_payment_already_cancelled' => 'Ce paiement de facture de dépenses a déjà été annulé.',
+        'bill_payment_reason_required' => 'Un motif d’annulation est obligatoire.',
+        'historical_bill_payment' => 'Les règlements historiques de factures de dépenses ne peuvent pas être annulés.',
+        'bill_payment_receipt_unpaid' => 'Cette facture de dépenses n’a encore aucun paiement à recevoir en reçu.',
     ],
 
     'security_deposit' => [
@@ -72,5 +81,21 @@ return [
         'expense_description_required' => 'La description de la dépense est obligatoire.',
         'expense_exceeds_balance' => 'La dépense dépasse le solde disponible du fonds.',
         'expense_lines_required' => 'Une dépense locataire nécessite au moins une ligne.',
+        'expense_draft_lease' => 'Aucune dépense ne peut être enregistrée pour un bail en brouillon.',
+    ],
+
+    'invoice_payment' => [
+        'wrong_lease' => 'Le compte de fonds n’appartient pas au bail de la facture.',
+        'unsupported_invoice' => 'Cette facture ne peut pas être payée depuis un compte de fonds.',
+        'account_cannot_pay_rent' => 'Ce compte de fonds ne peut pas payer les factures de loyer.',
+        'account_closed' => 'Le compte de fonds n’est pas actif.',
+        'amount_positive' => 'Le montant du paiement doit être supérieur à zéro.',
+        'insufficient_balance' => 'Le paiement dépasse le solde disponible du compte de fonds.',
+        'exceeds_invoice' => 'Le paiement dépasse le montant restant dû de la facture.',
+        'not_a_payment' => 'Cette transaction n’est pas un paiement de facture depuis un compte.',
+        'already_cancelled' => 'Ce paiement a déjà été annulé.',
+        'reason_required' => 'Un motif d’annulation est obligatoire.',
+        'historical_payment' => 'Les consommations historiques ne peuvent pas être annulées.',
+        'receipt_unpaid' => 'Cette facture n’a encore aucun paiement par compte à recevoir en reçu.',
     ],
 ];

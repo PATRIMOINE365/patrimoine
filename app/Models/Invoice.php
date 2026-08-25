@@ -70,6 +70,16 @@ class Invoice extends Model
     }
 
     /**
+     * Itemized lines of an expense Invoice.
+     *
+     * Rent invoices have none; their contractual amount is the Invoice.
+     */
+    public function lines(): HasMany
+    {
+        return $this->hasMany(InvoiceLine::class);
+    }
+
+    /**
      * Normal cash Payment allocations applied to this Invoice.
      */
     public function paymentAllocations(): HasMany
@@ -98,13 +108,14 @@ class Invoice extends Model
 
     /**
      * Amount settled through Rent Reserve consumption.
+     *
+     * Cancelled payments appear as credit reversal rows in the same
+     * category, so the net of debits minus credits is what actually
+     * remains applied to this Invoice.
      */
     public function reservePaidAmount(): int
     {
-        return (int) $this->tenantFundTransactions()
-            ->where('direction', 'debit')
-            ->where('category', 'rent_consumption')
-            ->sum('amount');
+        return $this->fundSettledAmount('rent_consumption');
     }
 
     /**
@@ -112,10 +123,34 @@ class Invoice extends Model
      */
     public function advancePaidAmount(): int
     {
-        return (int) $this->tenantFundTransactions()
+        return $this->fundSettledAmount('advance_consumption');
+    }
+
+    /**
+     * Amount of an expense Invoice settled from tenant fund accounts.
+     */
+    public function expenseSettledAmount(): int
+    {
+        return $this->fundSettledAmount('expense_settlement');
+    }
+
+    /**
+     * Net amount applied to this Invoice in one fund-ledger category.
+     */
+    private function fundSettledAmount(
+        string $category
+    ): int {
+        $debits = (int) $this->tenantFundTransactions()
             ->where('direction', 'debit')
-            ->where('category', 'advance_consumption')
+            ->where('category', $category)
             ->sum('amount');
+
+        $credits = (int) $this->tenantFundTransactions()
+            ->where('direction', 'credit')
+            ->where('category', $category)
+            ->sum('amount');
+
+        return $debits - $credits;
     }
 
     /**
@@ -149,6 +184,7 @@ class Invoice extends Model
         return $this->paymentPaidAmount()
             + $this->reservePaidAmount()
             + $this->advancePaidAmount()
+            + $this->expenseSettledAmount()
             + $this->securityDepositAppliedAmount();
     }
 
@@ -180,6 +216,14 @@ class Invoice extends Model
     public function isRentInvoice(): bool
     {
         return $this->type === 'rent';
+    }
+
+    /**
+     * Determine whether this Invoice bills an itemized expense.
+     */
+    public function isExpenseInvoice(): bool
+    {
+        return $this->type === 'expense';
     }
 
     /**
