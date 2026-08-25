@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Lease;
 use App\Models\Payment;
+use App\Models\TenantFundAccount;
 use Carbon\Carbon;
 
 /**
@@ -36,6 +37,19 @@ class LeaseInitializationService
         array $openingFinancialData = [],
         ?Carbon $throughDate = null
     ): Lease {
+        /*
+         * -------------------------------------------------------------
+         * Fund account provisioning
+         * -------------------------------------------------------------
+         *
+         * V1.0.8: every Lease carries all three tenant fund accounts from
+         * the moment it exists, rather than materializing them on first
+         * funding. Tenants > Accounts therefore always shows the full
+         * held-funds position (zero balances included), and Transfers can
+         * target any account without it having been funded before.
+         */
+        $this->provisionFundAccounts($lease);
+
         /*
          * -------------------------------------------------------------
          * Billing reconstruction
@@ -276,5 +290,31 @@ class LeaseInitializationService
             );
 
         return $payment->refresh();
+    }
+
+    /**
+     * Ensure the Lease owns one account of every tenant fund type.
+     *
+     * Idempotent: the (lease_id, type) unique constraint means repeat
+     * initialization simply finds the existing accounts.
+     */
+    private function provisionFundAccounts(
+        Lease $lease
+    ): void {
+        foreach ([
+            'rent_reserve',
+            'consumable_advance',
+            'security_deposit',
+        ] as $type) {
+            TenantFundAccount::firstOrCreate(
+                [
+                    'lease_id' => $lease->id,
+                    'type' => $type,
+                ],
+                [
+                    'status' => 'active',
+                ]
+            );
+        }
     }
 }

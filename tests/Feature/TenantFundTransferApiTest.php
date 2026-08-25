@@ -423,6 +423,184 @@ class TenantFundTransferApiTest extends TestCase
         );
     }
 
+    /**
+     * V1.0.8: with fund accounts provisioned eagerly on the Lease, a
+     * Transfer must work between EVERY ordered pair of the three account
+     * types — Security Deposit included — with a balanced Journal entry
+     * reclassifying between the correct liability accounts, and an
+     * Activity Log record per transfer.
+     */
+    public function test_transfer_reaches_every_fund_account_pair_on_a_provisioned_lease(): void
+    {
+        $this->createCompletedCutover();
+
+        $building =
+            Building::create([
+                'name' => 'Pairwise Transfer Building',
+            ]);
+
+        $tenant =
+            Party::create([
+                'type' => 'person',
+
+                'name' => 'Pairwise Transfer Tenant',
+
+                'phone' => '0200005902',
+
+                'email' => 'pairwise-'
+                    .uniqid()
+                    .'@example.test',
+            ]);
+
+        $unit =
+            Unit::create([
+                'building_id' => $building->id,
+
+                'name' => 'Unit P-1',
+            ]);
+
+        $lease =
+            Lease::create([
+                'unit_id' => $unit->id,
+
+                'tenant_id' => $tenant->id,
+
+                'start_date' => now()->startOfMonth()->toDateString(),
+
+                'rent_amount' => 5000,
+
+                'payment_frequency' => 'monthly',
+
+                'status' => 'active',
+            ]);
+
+        app(
+            \App\Services\LeaseInitializationService::class
+        )->initialize($lease);
+
+        $accounts =
+            TenantFundAccount::where('lease_id', $lease->id)
+                ->get()
+                ->keyBy('type');
+
+        $this->assertCount(3, $accounts);
+
+        /*
+         * Seed each provisioned account so every source can afford the
+         * 1,000 moved along each of its two outgoing pairs.
+         */
+        foreach ([
+            'rent_reserve' => 'reserve_funding',
+
+            'consumable_advance' => 'advance_funding',
+
+            'security_deposit' => 'deposit_funding',
+        ] as $type => $category) {
+            TenantFundTransaction::create([
+                'tenant_fund_account_id' => $accounts[$type]->id,
+
+                'direction' => 'credit',
+
+                'category' => $category,
+
+                'amount' => 6000,
+
+                'transaction_date' => now()->toDateString(),
+            ]);
+        }
+
+        $types = [
+            'rent_reserve',
+            'consumable_advance',
+            'security_deposit',
+        ];
+
+        foreach ($types as $sourceType) {
+            foreach ($types as $destinationType) {
+                if ($sourceType === $destinationType) {
+                    continue;
+                }
+
+                $this->postJson(
+                    '/api/tenant-funds/transfers',
+                    [
+                        'source_account_id' => $accounts[$sourceType]->id,
+
+                        'destination_account_id' => $accounts[$destinationType]->id,
+
+                        'amount' => 1000,
+
+                        'reason' => sprintf(
+                            'Pairwise move %s to %s.',
+                            $sourceType,
+                            $destinationType
+                        ),
+                    ]
+                )->assertCreated();
+            }
+        }
+
+        /*
+         * Six transfers of 1,000: every account was debited twice and
+         * credited twice, so all balances end where they started.
+         */
+        foreach ($types as $type) {
+            $this->assertSame(
+                6000,
+                $accounts[$type]->fresh()->balance()
+            );
+        }
+
+        $entries =
+            JournalEntry::query()
+                ->with('lines')
+                ->where(
+                    'transaction_type',
+                    AccountingEventMap::EVENT_TENANT_FUND_TRANSFER
+                )
+                ->get();
+
+        $this->assertCount(6, $entries);
+
+        foreach ($entries as $entry) {
+            $this->assertTrue(
+                $entry->isBalanced()
+            );
+        }
+
+        /*
+         * Spot-check the deposit-involving reclassification: money leaving
+         * Security Deposit must debit its held-liability account and
+         * credit the destination fund's.
+         */
+        $depositToReserve =
+            $entries->first(
+                fn ($entry): bool => $entry->lines->contains(
+                    fn ($line): bool => $line->account_code_snapshot
+                            === SystemChartOfAccounts::SECURITY_DEPOSIT_HELD
+                        && (int) $line->debit_amount === 1000
+                )
+                && $entry->lines->contains(
+                    fn ($line): bool => $line->account_code_snapshot
+                            === SystemChartOfAccounts::RENT_RESERVE_HELD
+                        && (int) $line->credit_amount === 1000
+                )
+            );
+
+        $this->assertNotNull(
+            $depositToReserve,
+            'Expected a Journal entry reclassifying Security Deposit into Rent Reserve.'
+        );
+
+        $this->assertSame(
+            6,
+            \App\Models\ActivityLog::where(
+                'action',
+                'tenant_fund.transfer_recorded'
+            )->count()
+        );
+    }
+
     private function createCompletedCutover(): void
     {
         AccountingCutover::create([

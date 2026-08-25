@@ -161,6 +161,47 @@ class LeaseApiTest extends TestCase
     }
 
     /**
+     * V1.0.8: every Lease owns all three tenant fund accounts from the
+     * moment it exists, so Tenants > Accounts always shows the complete
+     * held-funds position and Transfers can reach any account.
+     */
+    public function test_lease_creation_provisions_all_three_fund_accounts(): void
+    {
+        $context = $this->createContext();
+
+        $leaseId = $this->postJson(
+            '/api/leases',
+            $this->validPayload($context)
+        )
+            ->assertCreated()
+            ->json('id');
+
+        foreach ([
+            'rent_reserve',
+            'consumable_advance',
+            'security_deposit',
+        ] as $type) {
+            $this->assertDatabaseHas('tenant_fund_accounts', [
+                'lease_id' => $leaseId,
+                'type' => $type,
+                'status' => 'active',
+            ]);
+        }
+
+        /*
+         * Re-initialization (a later Lease update) must find the existing
+         * accounts rather than duplicate them.
+         */
+        app(\App\Services\LeaseInitializationService::class)
+            ->initialize(Lease::findOrFail($leaseId));
+
+        $this->assertSame(
+            3,
+            TenantFundAccount::where('lease_id', $leaseId)->count()
+        );
+    }
+
+    /**
      * Selected tenant must carry the tenant role.
      */
     public function test_lease_rejects_party_without_tenant_role(): void
@@ -1276,14 +1317,14 @@ class LeaseApiTest extends TestCase
                 'id'
             );
 
+        /*
+         * V1.0.8 provisions all three fund accounts with the Lease, so
+         * the consumable advance account already exists.
+         */
         $account =
-            TenantFundAccount::create([
-                'lease_id' => $leaseId,
-
-                'type' => 'consumable_advance',
-
-                'status' => 'active',
-            ]);
+            TenantFundAccount::where('lease_id', $leaseId)
+                ->where('type', 'consumable_advance')
+                ->firstOrFail();
 
         TenantFundTransaction::create([
             'tenant_fund_account_id' => $account->id,
@@ -1309,21 +1350,35 @@ class LeaseApiTest extends TestCase
             'transaction_date' => '2026-08-05',
         ]);
 
-        $this->getJson(
-            "/api/leases/{$leaseId}"
-        )
-            ->assertOk()
-            ->assertJsonPath(
-                'tenant_fund_accounts.0.type',
-                'consumable_advance'
+        /*
+         * V1.0.8 serializes all three provisioned accounts, so locate the
+         * consumable advance by type instead of assuming list position.
+         */
+        $serialized =
+            $this->getJson(
+                "/api/leases/{$leaseId}"
             )
-            ->assertJsonPath(
-                'tenant_fund_accounts.0.balance',
-                4500
-            )
-            ->assertJsonCount(
-                2,
-                'tenant_fund_accounts.0.transactions'
-            );
+                ->assertOk()
+                ->assertJsonCount(
+                    3,
+                    'tenant_fund_accounts'
+                )
+                ->json('tenant_fund_accounts');
+
+        $advance =
+            collect($serialized)
+                ->firstWhere('type', 'consumable_advance');
+
+        $this->assertNotNull($advance);
+
+        $this->assertSame(
+            4500,
+            $advance['balance']
+        );
+
+        $this->assertCount(
+            2,
+            $advance['transactions']
+        );
     }
 }
