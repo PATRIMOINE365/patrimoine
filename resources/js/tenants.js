@@ -40,21 +40,26 @@ let selectedTenantId = null;
 
 /*
 |--------------------------------------------------------------------------
-| V1.0.5 Apply Security Deposit — Contextual Eligibility
+| V1.0.5 Tenant Transaction State
 |--------------------------------------------------------------------------
 |
-| Apply Security Deposit is NOT a fourth primary Tenant action.
-| It is revealed contextually on a Lease only when the server-derived
-| Lease detail shows:
-|
-| - a positive Security Deposit balance; and
-| - at least one outstanding Rent or Security Deposit Debt invoice.
-|
-| The backend remains authoritative and revalidates everything when the
-| actual application is eventually submitted.
+| The browser stores presentation context only. Backend services remain
+| authoritative for balances, eligibility, FIFO allocation and accounting.
 |
 */
 
+let selectedTenant = null;
+let selectedTenantLeases = [];
+let selectedTenantLeaseDetails = new Map();
+let selectedTenantStatement = null;
+
+/*
+ * V1.0.7 Transfer presentation cache.
+ *
+ * Active-account entries currently offered by the Transfer drawer. Data
+ * still originates from cached authoritative Lease detail.
+ */
+let tenantTransferEntries = [];
 
 let tenantTransactionControlsInitialized =
     false;
