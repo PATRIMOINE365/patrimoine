@@ -29,6 +29,7 @@ import {
     escapeHtml,
     formValue,
     formatCurrency,
+    formatLongDate,
     formatDate,
     getPresentationConfiguration,
     nullableFormValue,
@@ -761,48 +762,53 @@ function initializeLeaseDurationChips() {
      * A changed Start Date recomputes an active preset; manual typing
      * into End or Notice hands the row over to "Other".
      */
-    document
-        .getElementById(
-            'lease-start-date'
-        )
-        ?.addEventListener(
-            'input',
-            applyLeaseDurationChip
-        );
-
-    document
-        .getElementById(
-            'lease-end-date'
-        )
-        ?.addEventListener(
-            'input',
-            () => {
-                /*
-                 * setFormValue() fires no events, so anything arriving
-                 * here is the user editing — typed or calendar-picked.
-                 */
-                setActiveChip(
-                    'lease-duration-chips',
-                    'custom'
+    /*
+     * setFormValue() fires no events, so anything arriving on these
+     * listeners is the user editing. Typing fires 'input'; the native
+     * calendar path dispatches 'change' — listen to both.
+     */
+    ['input', 'change'].forEach(
+        (eventName) => {
+            document
+                .getElementById(
+                    'lease-start-date'
+                )
+                ?.addEventListener(
+                    eventName,
+                    applyLeaseDurationChip
                 );
 
-                applyLeaseNoticeChip();
-            }
-        );
+            document
+                .getElementById(
+                    'lease-end-date'
+                )
+                ?.addEventListener(
+                    eventName,
+                    () => {
+                        setActiveChip(
+                            'lease-duration-chips',
+                            'custom'
+                        );
 
-    document
-        .getElementById(
-            'lease-notice-date'
-        )
-        ?.addEventListener(
-            'input',
-            () => {
-                setActiveChip(
-                    'lease-notice-chips',
-                    'custom'
+                        applyLeaseNoticeChip();
+                    }
                 );
-            }
-        );
+
+            document
+                .getElementById(
+                    'lease-notice-date'
+                )
+                ?.addEventListener(
+                    eventName,
+                    () => {
+                        setActiveChip(
+                            'lease-notice-chips',
+                            'custom'
+                        );
+                    }
+                );
+        }
+    );
 }
 
 
@@ -6314,7 +6320,15 @@ function enterLeaseSummaryMode(
             'lease-submit-button'
         )
         ?.classList.add(
-            'hidden'
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'lease-cancel-button'
+        )
+        ?.classList.add(
+            'pm-hide'
         );
 
     document
@@ -6322,7 +6336,7 @@ function enterLeaseSummaryMode(
             'lease-summary-back'
         )
         ?.classList.remove(
-            'hidden'
+            'pm-hide'
         );
 
     document
@@ -6330,7 +6344,7 @@ function enterLeaseSummaryMode(
             'lease-summary-confirm'
         )
         ?.classList.remove(
-            'hidden'
+            'pm-hide'
         );
 }
 
@@ -6362,7 +6376,7 @@ function exitLeaseSummaryMode() {
             'lease-summary-back'
         )
         ?.classList.add(
-            'hidden'
+            'pm-hide'
         );
 
     document
@@ -6370,7 +6384,7 @@ function exitLeaseSummaryMode() {
             'lease-summary-confirm'
         )
         ?.classList.add(
-            'hidden'
+            'pm-hide'
         );
 
     document
@@ -6378,7 +6392,15 @@ function exitLeaseSummaryMode() {
             'lease-submit-button'
         )
         ?.classList.remove(
-            'hidden'
+            'pm-hide'
+        );
+
+    document
+        .getElementById(
+            'lease-cancel-button'
+        )
+        ?.classList.remove(
+            'pm-hide'
         );
 }
 
@@ -6510,85 +6532,231 @@ function renderLeaseSummary(
             || 0
         );
 
-    const rows = [
-        leaseSummaryRow(
-            'leases.tenant',
-            tenant
-                ? partyDisplayName(
+    /*
+     * Review dates are written out in full — "Monday 10 October 2021" —
+     * so the operator verifies the actual day, not a digit pattern.
+     */
+    const longDate =
+        (iso) =>
+            iso
+                ? formatLongDate(
+                    iso
+                )
+                : '—';
+
+    const incrementValue =
+        payload.rent_increment_type === 'percentage'
+            ? `${payload.rent_increment_value ?? 0}%`
+            : formatCurrency(
+                payload.rent_increment_value
+            );
+
+    const feeValue =
+        payload.management_fee_type === 'percentage'
+            ? `${payload.management_fee_value ?? 0}%`
+            : formatCurrency(
+                payload.management_fee_value
+            );
+
+    const groups = [
+        {
+            titleKey: 'leases.summary_parties',
+            rows: [
+                [
+                    'leases.tenant',
                     tenant
-                )
-                : '—'
-        ),
-
-        leaseSummaryRow(
-            'leases.agent',
-            agent
-                ? partyDisplayName(
+                        ? partyDisplayName(tenant)
+                        : '—',
+                ],
+                [
+                    'leases.agent',
                     agent
-                )
-                : '—'
-        ),
-
-        leaseSummaryRow(
-            'leases.unit',
-            selectedLeaseUnit
-                ? unitSearchLabel(
+                        ? partyDisplayName(agent)
+                        : '—',
+                ],
+                [
+                    'leases.unit',
                     selectedLeaseUnit
-                )
-                : '—'
-        ),
+                        ? unitSearchLabel(
+                            selectedLeaseUnit
+                        )
+                        : '—',
+                ],
+            ],
+        },
 
-        leaseSummaryRow(
-            'leases.start_date',
-            payload.start_date
-                ? dateForDisplay(
-                    payload.start_date
-                )
-                : '—'
-        ),
+        {
+            titleKey: 'leases.lease_period',
+            rows: [
+                [
+                    'leases.start_date',
+                    longDate(payload.start_date),
+                ],
+                [
+                    'leases.end_date',
+                    longDate(payload.end_date),
+                ],
+                [
+                    'leases.notice_date',
+                    longDate(payload.termination_notice_date),
+                ],
+            ],
+        },
 
-        leaseSummaryRow(
-            'leases.end_date',
-            payload.end_date
-                ? dateForDisplay(
-                    payload.end_date
-                )
-                : '—'
-        ),
+        {
+            titleKey: 'leases.summary_rent_terms',
+            rows: [
+                [
+                    'leases.monthly_rent',
+                    formatCurrency(payload.rent_amount),
+                ],
+                [
+                    'leases.payment_frequency',
+                    translate(
+                        `leases.${payload.payment_frequency}`
+                    ),
+                ],
+                [
+                    'leases.due_day',
+                    payload.due_day
+                        ? String(payload.due_day)
+                        : translate(
+                            'leases.summary_automatic'
+                        ),
+                ],
+                [
+                    'leases.vat_rate',
+                    `${payload.vat_rate ?? 0}%`,
+                ],
+                [
+                    'leases.proration',
+                    payload.proration_amount === null
+                        ? translate(
+                            'leases.summary_automatic'
+                        )
+                        : formatCurrency(
+                            payload.proration_amount
+                        ),
+                ],
+                payload.rent_increment_type
+                && payload.rent_increment_type !== 'none'
+                    ? [
+                        'leases.rent_increment',
+                        `${incrementValue}`
+                        + (
+                            payload.next_rent_increment_date
+                                ? ` · ${longDate(
+                                    payload.next_rent_increment_date
+                                )}`
+                                : ''
+                        ),
+                    ]
+                    : null,
+            ],
+        },
 
-        leaseSummaryRow(
-            'leases.rent_amount',
-            formatCurrency(
-                payload.rent_amount
+        {
+            titleKey: 'leases.summary_money_held',
+            rows: [
+                [
+                    'leases.security_deposit',
+                    formatCurrency(
+                        payload.security_deposit_amount
+                    ),
+                ],
+                [
+                    'leases.advance_payment',
+                    formatCurrency(
+                        payload.advance_payment_amount
+                    ),
+                ],
+                [
+                    'leases.rent_reserve',
+                    formatCurrency(
+                        payload.rent_reserve_amount
+                    ),
+                ],
+                payload.advance_received
+                    ? [
+                        'leases.advance_received',
+                        longDate(
+                            payload.advance_received_date
+                        ),
+                    ]
+                    : null,
+            ],
+        },
+
+        {
+            titleKey: 'leases.summary_management',
+            rows: [
+                payload.management_fee_type
+                && payload.management_fee_type !== 'none'
+                    ? [
+                        'leases.management_fee',
+                        feeValue,
+                    ]
+                    : null,
+                [
+                    'leases.agent_commission',
+                    formatCurrency(
+                        payload.agent_commission_amount
+                    ),
+                ],
+                payload.notes
+                    ? [
+                        'leases.notes',
+                        String(payload.notes),
+                    ]
+                    : null,
+            ],
+        },
+    ];
+
+    const body =
+        groups
+            .map(
+                (group) => {
+                    const rows =
+                        group.rows
+                            .filter(Boolean)
+                            .map(
+                                ([key, value]) =>
+                                    leaseSummaryRow(
+                                        key,
+                                        value
+                                    )
+                            )
+                            .join('');
+
+                    if (rows === '') {
+                        return '';
+                    }
+
+                    return `
+                        <div class="mt-5 first:mt-0">
+                            <h4
+                                class="
+                                    text-xs font-semibold uppercase
+                                    tracking-wide
+                                    text-[var(--pm-text-muted)]
+                                "
+                            >
+                                ${escapeHtml(
+                                    translate(
+                                        group.titleKey
+                                    )
+                                )}
+                            </h4>
+
+                            <div class="mt-1">
+                                ${rows}
+                            </div>
+                        </div>
+                    `;
+                }
             )
-        ),
-
-        leaseSummaryRow(
-            'leases.payment_frequency',
-            translate(
-                `leases.${payload.payment_frequency}`
-            )
-        ),
-
-        leaseSummaryRow(
-            'leases.vat_rate',
-            `${payload.vat_rate ?? 0}%`
-        ),
-
-        leaseSummaryRow(
-            'leases.security_deposit',
-            formatCurrency(
-                payload.security_deposit_amount
-            )
-        ),
-
-        leaseSummaryRow(
-            'leases.advance_payment',
-            formatCurrency(
-                payload.advance_payment_amount
-            )
-        ),
-    ].join('');
+            .join('');
 
     const activationNote =
         invoiceCount > 0
@@ -6649,13 +6817,12 @@ function renderLeaseSummary(
         </p>
 
         <div class="mt-4">
-            ${rows}
+            ${body}
         </div>
 
         ${activationNote}
     `;
 }
-
 function buildLeasePayload() {
     return {
         unit_id:

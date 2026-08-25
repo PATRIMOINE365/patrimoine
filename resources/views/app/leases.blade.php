@@ -915,10 +915,10 @@
                         <div
                             class="
                                 grid gap-4
-                                md:grid-cols-2 xl:grid-cols-4
+                                md:grid-cols-2
                             "
                         >
-                            <div>
+                                                        <div>
                                 <label
                                     for="lease-start-date"
                                     class="pm-field-label flex items-center gap-1.5"
@@ -989,39 +989,7 @@
                             </div>
 
 
-                            <div class="md:col-span-2 xl:col-span-4">
-                                <span class="pm-field-label">
-                                    <span data-i18n="leases.duration">
-                                        {{ __('ui.leases.duration') }}
-                                    </span>
-                                </span>
-
-                                <div
-                                    id="lease-duration-chips"
-                                    class="mt-1 flex flex-wrap gap-2"
-                                >
-                                    @foreach ([
-                                        '3m' => 'duration_3m',
-                                        '6m' => 'duration_6m',
-                                        '1y' => 'duration_1y',
-                                        '2y' => 'duration_2y',
-                                        '3y' => 'duration_3y',
-                                        '4y' => 'duration_4y',
-                                        '5y' => 'duration_5y',
-                                        'custom' => 'duration_custom',
-                                    ] as $value => $key)
-                                        <button
-                                            type="button"
-                                            data-lease-duration="{{ $value }}"
-                                            aria-pressed="false"
-                                            class="pm-duration-chip"
-                                            data-i18n="leases.{{ $key }}"
-                                        >
-                                            {{ __('ui.leases.' . $key) }}
-                                        </button>
-                                    @endforeach
-                                </div>
-                            </div>
+                            
 
                             <div>
                                 <label
@@ -1089,15 +1057,71 @@
     >
 </div>
                             </div>
+                        </div>
 
-                            {{--
-                                V1.0.8: Lease status is no longer chosen at
-                                creation. Every new Lease is created Active;
-                                Notice and Terminated are lifecycle outcomes.
-                            --}}
+                        {{--
+                            V1.0.8 Duration presets: picking one computes
+                            End Date = Start Date + duration − 1 day.
+                            Editing the End Date by hand selects Other.
+                        --}}
+                        <div class="mt-4">
+                            <span class="pm-field-label">
+                                <span data-i18n="leases.duration">
+                                    {{ __('ui.leases.duration') }}
+                                </span>
+                            </span>
 
-                            <div>
-                                <label
+                            <p class="mb-2 mt-0.5 text-xs text-[var(--pm-text-muted)]">
+                                <span data-i18n="leases.duration_caption">
+                                    {{ __('ui.leases.duration_caption') }}
+                                </span>
+                            </p>
+
+                            <div
+                                id="lease-duration-chips"
+                                class="flex flex-wrap gap-2"
+                            >
+                                @foreach ([
+                                    '3m' => 'duration_3m',
+                                    '6m' => 'duration_6m',
+                                    '1y' => 'duration_1y',
+                                    '2y' => 'duration_2y',
+                                    '3y' => 'duration_3y',
+                                    '4y' => 'duration_4y',
+                                    '5y' => 'duration_5y',
+                                    'custom' => 'duration_custom',
+                                ] as $value => $key)
+                                    <button
+                                        type="button"
+                                        data-lease-duration="{{ $value }}"
+                                        aria-pressed="false"
+                                        class="pm-duration-chip"
+                                        data-i18n="leases.{{ $key }}"
+                                    >
+                                        {{ __('ui.leases.' . $key) }}
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        {{--
+                            Termination notice: optional at creation. The
+                            presets compute Notice Date = End Date − N months.
+                        --}}
+                        <div
+                            class="
+                                mt-6 border-t
+                                border-[var(--pm-border-subtle)] pt-5
+                            "
+                        >
+                            <div
+                                class="
+                                    grid gap-4
+                                    md:grid-cols-2
+                                "
+                            >
+                                <div>
+                                    <label
                                     for="lease-notice-date"
                                     class="pm-field-label flex items-center gap-1.5"
                                 >
@@ -1116,29 +1140,7 @@
                                     </x-field-help>
                                 </label>
 
-                                <div
-                                    id="lease-notice-chips"
-                                    class="mb-2 flex flex-wrap gap-2"
-                                >
-                                    @foreach ([
-                                        '1m' => 'notice_1m',
-                                        '3m' => 'notice_3m',
-                                        '6m' => 'notice_6m',
-                                        'custom' => 'duration_custom',
-                                    ] as $value => $key)
-                                        <button
-                                            type="button"
-                                            data-lease-notice="{{ $value }}"
-                                            aria-pressed="false"
-                                            class="pm-duration-chip"
-                                            data-i18n="leases.{{ $key }}"
-                                        >
-                                            {{ __('ui.leases.' . $key) }}
-                                        </button>
-                                    @endforeach
-                                </div>
-
-                                <div class="pm-lease-date-control">
+                                    <div class="pm-lease-date-control">
 <input
                                     id="lease-notice-date"
                                     data-lease-date-input
@@ -1184,6 +1186,43 @@
         data-lease-native-date-picker="lease-notice-date"
     >
 </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <span class="pm-field-label">
+                                    <span data-i18n="leases.notice_period">
+                                        {{ __('ui.leases.notice_period') }}
+                                    </span>
+                                </span>
+
+                                <p class="mb-2 mt-0.5 text-xs text-[var(--pm-text-muted)]">
+                                    <span data-i18n="leases.notice_caption">
+                                        {{ __('ui.leases.notice_caption') }}
+                                    </span>
+                                </p>
+
+                                <div
+                                    id="lease-notice-chips"
+                                    class="flex flex-wrap gap-2"
+                                >
+                                    @foreach ([
+                                    '1m' => 'notice_1m',
+                                    '3m' => 'notice_3m',
+                                    '6m' => 'notice_6m',
+                                    'custom' => 'duration_custom',
+                                ] as $value => $key)
+                                    <button
+                                        type="button"
+                                        data-lease-notice="{{ $value }}"
+                                        aria-pressed="false"
+                                        class="pm-duration-chip"
+                                        data-i18n="leases.{{ $key }}"
+                                    >
+                                        {{ __('ui.leases.' . $key) }}
+                                    </button>
+                                @endforeach
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -2240,14 +2279,14 @@
                 type="submit"
                 class="pm-button-primary"
             >
-                <span data-i18n="actions.save">
-                    {{ __('ui.actions.save') }}
+                <span data-i18n="leases.review">
+                    {{ __('ui.leases.review') }}
                 </span>
             </button>
             <button
                 id="lease-summary-back"
                 type="button"
-                class="pm-button-secondary hidden"
+                class="pm-button-secondary pm-hide"
                 data-i18n="leases.summary_back"
             >
                 {{ __('ui.leases.summary_back') }}
@@ -2256,7 +2295,7 @@
             <button
                 id="lease-summary-confirm"
                 type="button"
-                class="pm-button-primary hidden"
+                class="pm-button-primary pm-hide"
                 data-i18n="leases.summary_confirm"
             >
                 {{ __('ui.leases.summary_confirm') }}

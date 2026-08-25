@@ -290,6 +290,15 @@ html[data-shell-role="administrator"]
 /*
  * V1.0.8: duration / notice preset chips on the Lease form.
  */
+/*
+ * V1.0.8: un-layered hide utility. Tailwind's .hidden lives in a cascade
+ * layer and loses to un-layered component display rules (.pm-button-*),
+ * so component-level show/hide must use this class instead.
+ */
+.pm-hide {
+    display: none !important;
+}
+
 .pm-duration-chip {
     display: inline-flex;
     align-items: center;
