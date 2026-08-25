@@ -282,6 +282,19 @@ html[data-shell-role="administrator"]
         background-color 150ms ease;
 }
 
+/*
+ * V1.0.8: inputs that carry a leading search icon. The Tailwind pl-*
+ * utilities live in a cascade layer and can never beat the un-layered
+ * .pm-input padding, so icon clearance must be a component rule.
+ */
+.pm-input-search {
+    padding-left: 2.5rem;
+}
+
+.pm-input-search-clearable {
+    padding-right: 2.75rem;
+}
+
 .pm-input:hover:not(:disabled) {
     border-color: var(--pm-border-strong);
 }

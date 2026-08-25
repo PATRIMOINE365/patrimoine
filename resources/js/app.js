@@ -33,6 +33,7 @@ import {
 import {
     applyTranslations,
     loadPresentationConfiguration,
+    initializeMoneyInputs,
 } from './core.js';
 
 import {
@@ -119,6 +120,12 @@ document.addEventListener(
          * application modules initialize.
          */
         applyTranslations();
+
+        /*
+         * V1.0.8: live thousands grouping on all monetary inputs,
+         * using the organisation currency's separator.
+         */
+        initializeMoneyInputs();
 
         /*
          * Login and authenticated application screens are mutually

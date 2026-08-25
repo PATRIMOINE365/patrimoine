@@ -275,6 +275,18 @@ class LeaseController extends Controller
                 ]
             );
 
+        /*
+         * V1.0.8: the Cashier for a cash advance is always the logged-in
+         * user; any client-supplied name is ignored.
+         */
+        if (
+            ($openingFinancialData['advance_received_method'] ?? null)
+                === 'cash'
+        ) {
+            $openingFinancialData['advance_received_collector'] =
+                $request->user()->name;
+        }
+
         $leaseAttributes =
             Arr::except(
                 $validated,
@@ -628,6 +640,18 @@ class LeaseController extends Controller
                     'advance_received_collector',
                 ]
             );
+
+        /*
+         * V1.0.8: the Cashier for a cash advance is always the logged-in
+         * user; any client-supplied name is ignored.
+         */
+        if (
+            ($openingFinancialData['advance_received_method'] ?? null)
+                === 'cash'
+        ) {
+            $openingFinancialData['advance_received_collector'] =
+                $request->user()->name;
+        }
 
         $leaseAttributes =
             Arr::except(

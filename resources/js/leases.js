@@ -36,6 +36,8 @@ import {
     parseJsonResponse,
     setText,
     translate,
+    parseMoneyInput,
+    formatMoneyDigits,
 } from './core.js';
 
 import {
@@ -2991,10 +2993,30 @@ function setFormValue(
             id
         );
 
-    if (element) {
-        element.value =
-            value ?? '';
+    if (! element) {
+        return;
     }
+
+    /*
+     * V1.0.8: values written into money inputs are displayed grouped.
+     */
+    if (
+        element.dataset.moneyInput !== undefined
+        && value !== null
+        && value !== ''
+    ) {
+        element.value =
+            formatMoneyDigits(
+                parseMoneyInput(
+                    value
+                )
+            );
+
+        return;
+    }
+
+    element.value =
+        value ?? '';
 }
 
 
@@ -3226,19 +3248,68 @@ function updateAdvanceReceivedControls() {
         );
 
     if (collector) {
-        collector.required =
-            isCash;
-
-        if (! isCash) {
-            collector.value =
-                '';
-        }
+        /*
+         * V1.0.8: the Cashier is always the logged-in user and is not
+         * editable. The server enforces the same rule.
+         */
+        collector.value =
+            isCash
+                ? String(
+                    document.body.dataset
+                        .currentUserName
+                    ?? ''
+                )
+                : '';
     }
 }
 
 /**
  * Update Rent Increment fields according to their selected type.
  */
+/**
+ * V1.0.8: switch a dual-mode value input (fixed amount vs percentage)
+ * into or out of money entry. Fixed amounts get live thousands grouping;
+ * percentages stay a plain decimal number input.
+ *
+ * @param {HTMLInputElement|null} input
+ * @param {boolean} isMoney
+ */
+function setLeaseValueMoneyMode(
+    input,
+    isMoney
+) {
+    if (! input) {
+        return;
+    }
+
+    if (isMoney) {
+        input.type = 'text';
+
+        input.inputMode = 'numeric';
+
+        input.dataset.moneyInput = 'on';
+
+        input.value =
+            formatMoneyDigits(
+                parseMoneyInput(
+                    input.value
+                )
+            );
+
+        return;
+    }
+
+    input.dataset.moneyInput = 'off';
+
+    input.value =
+        parseMoneyInput(
+            input.value
+        );
+
+    input.type = 'number';
+}
+
+
 function updateRentIncrementControls() {
     const type =
         formValue(
@@ -3267,10 +3338,10 @@ function updateRentIncrementControls() {
         valueInput.disabled =
             disabled;
 
-        valueInput.step =
+        setLeaseValueMoneyMode(
+            valueInput,
             type === 'fixed'
-                ? '1'
-                : '0.01';
+        );
 
         if (disabled) {
             valueInput.value =
@@ -3327,10 +3398,10 @@ function updateManagementFeeControls() {
         valueInput.disabled =
             type === 'none';
 
-        valueInput.step =
+        setLeaseValueMoneyMode(
+            valueInput,
             type === 'fixed'
-                ? '1'
-                : '0.01';
+        );
 
         if (type === 'none') {
             valueInput.value =
@@ -5010,6 +5081,11 @@ function updateLeaseExtendIncrementControls() {
         value.disabled =
             disabled;
 
+        setLeaseValueMoneyMode(
+            value,
+            type === 'fixed'
+        );
+
         if (disabled) {
             value.value =
                 '0';
@@ -6509,10 +6585,20 @@ function updateRentIncrementScheduleUnit() {
         return;
     }
 
-    unit.textContent =
+    const isFixed =
         formValue(
             'rent-increment-type'
-        ) === 'fixed'
+        ) === 'fixed';
+
+    setLeaseValueMoneyMode(
+        document.getElementById(
+            'rent-increment-value'
+        ),
+        isFixed
+    );
+
+    unit.textContent =
+        isFixed
             ? (
                 getPresentationConfiguration()
                     .currency

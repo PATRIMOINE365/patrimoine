@@ -589,7 +589,7 @@
                 autocomplete="off"
                 data-i18n-placeholder="leases.unit_search_placeholder"
                 placeholder="{{ __('ui.leases.unit_search_placeholder') }}"
-                class="pm-input pl-10 pr-11"
+                class="pm-input pm-input-search pm-input-search-clearable"
             >
 
             <button
@@ -1121,9 +1121,9 @@
 
                                 <input
                                     id="lease-rent-amount"
-                                    type="number"
-                                    min="0"
-                                    step="1"
+                                    type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                                     required
                                     class="pm-input"
                                 >
@@ -1308,9 +1308,9 @@
 
                                 <input
                                     id="lease-security-deposit"
-                                    type="number"
-                                    min="0"
-                                    step="1"
+                                    type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                                     value="0"
                                     required
                                     class="pm-input"
@@ -1378,9 +1378,9 @@
 
                                 <input
                                     id="lease-advance-payment"
-                                    type="number"
-                                    min="0"
-                                    step="1"
+                                    type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                                     value="0"
                                     required
                                     class="pm-input"
@@ -1410,9 +1410,9 @@
 
                                 <input
                                     id="lease-rent-reserve"
-                                    type="number"
-                                    min="0"
-                                    step="1"
+                                    type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                                     value="0"
                                     required
                                     class="pm-input"
@@ -1674,10 +1674,10 @@
                                     <input
                                         id="lease-advance-received-collector"
                                         type="text"
-                                        maxlength="255"
+                                        readonly
                                         data-i18n-placeholder="leases.cash_collector_placeholder"
                                         placeholder="{{ __('ui.leases.cash_collector_placeholder') }}"
-                                        class="pm-input"
+                                        class="pm-input cursor-not-allowed bg-[var(--pm-input-disabled)]"
                                     >
                                 </div>
                             </div>
@@ -2038,9 +2038,9 @@
 
                                 <input
                                     id="lease-agent-commission"
-                                    type="number"
-                                    min="0"
-                                    step="1"
+                                    type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                                     value="0"
                                     required
                                     class="pm-input"
@@ -2691,9 +2691,9 @@
 
                         <input
                             id="lease-extend-rent"
-                            type="number"
-                            min="0"
-                            step="1"
+                            type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                             required
                             class="pm-input"
                         >
@@ -3601,9 +3601,9 @@
 
                         <input
                             id="termination-deduction-amount"
-                            type="number"
-                            min="1"
-                            step="1"
+                            type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                             class="pm-input"
                         >
                     </div>

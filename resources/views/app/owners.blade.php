@@ -187,7 +187,7 @@
                             type="search"
                             autocomplete="off"
                             placeholder="{{ __('ui.owners.search_placeholder') }}" data-i18n-placeholder="owners.search_placeholder"
-                            class="pm-input pl-9"
+                            class="pm-input pm-input-search"
                         >
                     </div>
                 </div>
@@ -838,9 +838,9 @@
 
                         <input
                             id="owner-deposit-amount"
-                            type="number"
-                            min="1"
-                            step="1"
+                            type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                             required
                             class="pm-input pl-14"
                         >
@@ -1041,8 +1041,10 @@
                     <input
                         id="owner-deposit-collector"
                         type="text"
-                        maxlength="255"
-                        class="pm-input"
+                        readonly
+                        placeholder="{{ __('ui.owners.collector_placeholder') }}"
+                        data-i18n-placeholder="owners.collector_placeholder"
+                        class="pm-input cursor-not-allowed bg-[var(--pm-input-disabled)]"
                     >
                 </div>
 
@@ -1247,9 +1249,9 @@
 
                         <input
                             id="owner-expense-amount"
-                            type="number"
-                            min="1"
-                            step="1"
+                            type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                             required
                             class="pm-input pl-14"
                         >
@@ -1438,9 +1440,9 @@
 
                     <input
                         id="owner-payout-amount"
-                        type="number"
-                        min="1"
-                        step="1"
+                        type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                         required
                         class="pm-input"
                     >
@@ -1673,9 +1675,9 @@
 
                     <input
                         id="owner-adjustment-amount"
-                        type="number"
-                        min="1"
-                        step="1"
+                        type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                         required
                         class="pm-input"
                     >

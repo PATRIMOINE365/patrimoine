@@ -362,9 +362,9 @@
 
                     <input
                         id="tenant-deposit-amount"
-                        type="number"
-                        min="1"
-                        step="1"
+                        type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                         required
                         class="pm-input"
                     >
@@ -716,9 +716,9 @@
 
                     <input
                         id="tenant-withdrawal-amount"
-                        type="number"
-                        min="1"
-                        step="1"
+                        type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                         required
                         class="pm-input"
                     >
@@ -1050,8 +1050,9 @@
 
                     <input
                         id="tenant-adjustment-corrected-balance"
-                        type="number"
-                        step="1"
+                        type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                         required
                         class="pm-input"
                     >
@@ -1285,9 +1286,9 @@
 
                     <input
                         id="tenant-security-application-amount"
-                        type="number"
-                        min="1"
-                        step="1"
+                        type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                         required
                         class="pm-input"
                     >
@@ -1717,9 +1718,9 @@
 
                     <input
                         id="tenant-transfer-amount"
-                        type="number"
-                        min="1"
-                        step="1"
+                        type="text"
+                                        inputmode="numeric"
+                                        data-money-input
                         required
                         class="pm-input"
                     >

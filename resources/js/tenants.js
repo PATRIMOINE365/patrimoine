@@ -8,6 +8,7 @@ import {
     openDrawer,
     parseJsonResponse,
     translate,
+    parseMoneyInput,
 } from './core.js';
 
 import {
@@ -6175,10 +6176,14 @@ function updateTenantAdjustmentPreview() {
         );
 
     const corrected =
-        correctedInput?.value === ''
+        parseMoneyInput(
+            correctedInput?.value
+        ) === ''
             ? null
             : Number(
-                correctedInput?.value
+                parseMoneyInput(
+                    correctedInput?.value
+                )
             );
 
     const difference =
@@ -6328,14 +6333,21 @@ function selectedOptionBalance(
 function positiveIntegerInput(
     inputId
 ) {
+    /*
+     * V1.0.8: money inputs carry grouping separators in their display
+     * value; strip to plain digits before converting.
+     */
     const value =
         Number(
-            document
-                .getElementById(
-                    inputId
-                )
-                ?.value
-            ?? 0
+            parseMoneyInput(
+                document
+                    .getElementById(
+                        inputId
+                    )
+                    ?.value
+                ?? ''
+            )
+            || 0
         );
 
     return (
@@ -8454,12 +8466,15 @@ function requiredPositiveIntegerValue(
 ) {
     const value =
         Number(
-            document
-                .getElementById(
-                    inputId
-                )
-                ?.value
-            ?? ''
+            parseMoneyInput(
+                document
+                    .getElementById(
+                        inputId
+                    )
+                    ?.value
+                ?? ''
+            )
+            || NaN
         );
 
     return (
@@ -8483,14 +8498,14 @@ function integerInputValue(
     inputId
 ) {
     const raw =
-        String(
+        parseMoneyInput(
             document
                 .getElementById(
                     inputId
                 )
                 ?.value
             ?? ''
-        ).trim();
+        );
 
     if (raw === '') {
         return null;

@@ -5,7 +5,8 @@ namespace Tests\Feature;
 use Tests\TestCase;
 
 /**
- * Protect the V1.0.5 Cash Receiver browser contract.
+ * Protect the Cashier browser contract (V1.0.5 mechanism,
+ * V1.0.8 terminology: Cashier / Caissier).
  *
  * Backend attribution is covered independently by
  * CashReceiverRuntimeAttributionTest and the payment/owner API tests.
@@ -118,22 +119,22 @@ class CashReceiverUiNormalizationTest extends TestCase
         $this->assertIsString($browser);
 
         $this->assertStringContainsString(
-            "'cash_collector' => 'Cash Receiver'",
+            "'cash_collector' => 'Cashier'",
             $english
         );
 
         $this->assertStringContainsString(
-            "'cash_collector' => 'Réceptionnaire des espèces'",
+            "'cash_collector' => 'Caissier'",
             $french
         );
 
         $this->assertStringContainsString(
-            "'leases.cash_collector': 'Cash Receiver'",
+            "'leases.cash_collector': 'Cashier'",
             $browser
         );
 
         $this->assertStringContainsString(
-            "'leases.cash_collector': 'Réceptionnaire des espèces'",
+            "'leases.cash_collector': 'Caissier'",
             $browser
         );
     }
@@ -181,12 +182,12 @@ class CashReceiverUiNormalizationTest extends TestCase
         $this->assertIsString($french);
 
         $this->assertStringContainsString(
-            "'collector' => 'Cash Receiver'",
+            "'collector' => 'Cashier'",
             $english
         );
 
         $this->assertStringContainsString(
-            "'collector' => 'Réceptionnaire des espèces'",
+            "'collector' => 'Caissier'",
             $french
         );
     }

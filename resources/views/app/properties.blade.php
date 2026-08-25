@@ -218,7 +218,7 @@
                             type="search"
                             data-i18n-placeholder="properties.search_placeholder"
                             placeholder="{{ __('ui.properties.search_placeholder') }}"
-                            class="pm-input pl-9"
+                            class="pm-input pm-input-search"
                         >
                     </div>
                 </div>

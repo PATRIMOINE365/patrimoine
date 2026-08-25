@@ -733,6 +733,150 @@ function presentationDate(
  * @param {string|Date|null} value
  * @returns {string}
  */
+/**
+ * V1.0.8: live thousands grouping for monetary inputs.
+ *
+ * Patrimoine money is whole currency units, so a money input accepts
+ * digits only. While the user types, digits are regrouped with the
+ * organisation currency's separator (GHS: 10,000,000 — FCFA: 10 000 000)
+ * so the magnitude stays readable and zeros are hard to mistype.
+ *
+ * Any input carrying data-money-input participates. Reading code must go
+ * through parseMoneyInput()/moneyFieldValue() rather than Number(value).
+ */
+
+/**
+ * The group separator of the organisation currency.
+ *
+ * @returns {string}
+ */
+export function moneyGroupSeparator() {
+    const separator =
+        presentationConfiguration
+            ?.currency_definition
+            ?.group_separator;
+
+    return typeof separator === 'string'
+        ? separator
+        : ',';
+}
+
+/**
+ * Strip a formatted money string back to its plain digits.
+ *
+ * @param {string|null} value
+ * @returns {string}
+ */
+export function parseMoneyInput(
+    value
+) {
+    return String(
+        value
+        ?? ''
+    ).replace(
+        /\D+/g,
+        ''
+    );
+}
+
+/**
+ * Numeric value of a money input element, separators removed.
+ *
+ * @param {string} elementId
+ * @returns {number}
+ */
+export function moneyFieldValue(
+    elementId
+) {
+    const raw =
+        parseMoneyInput(
+            document.getElementById(
+                elementId
+            )?.value
+        );
+
+    return raw === ''
+        ? NaN
+        : Number(raw);
+}
+
+/**
+ * Group a plain digit string with the organisation separator.
+ *
+ * @param {string} digits
+ * @returns {string}
+ */
+export function formatMoneyDigits(
+    digits
+) {
+    const trimmed =
+        digits.replace(
+            /^0+(?=\d)/,
+            ''
+        );
+
+    return trimmed.replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        moneyGroupSeparator()
+    );
+}
+
+/**
+ * One delegated listener formats every money input as the user types,
+ * keeping the caret anchored relative to the end of the value so
+ * mid-string edits do not jump.
+ */
+export function initializeMoneyInputs() {
+    document.addEventListener(
+        'input',
+        (event) => {
+            const input =
+                event.target;
+
+            if (
+                ! (input instanceof HTMLInputElement)
+                || input.dataset.moneyInput === undefined
+                || input.dataset.moneyInput === 'off'
+            ) {
+                return;
+            }
+
+            const caretFromEnd =
+                input.value.length
+                - (
+                    input.selectionStart
+                    ?? input.value.length
+                );
+
+            const formatted =
+                formatMoneyDigits(
+                    parseMoneyInput(
+                        input.value
+                    ).slice(0, 15)
+                );
+
+            if (formatted === input.value) {
+                return;
+            }
+
+            input.value =
+                formatted;
+
+            const caret =
+                Math.max(
+                    0,
+                    formatted.length
+                    - caretFromEnd
+                );
+
+            input.setSelectionRange(
+                caret,
+                caret
+            );
+        }
+    );
+}
+
 export function formatDate(
     value
 ) {
@@ -939,9 +1083,24 @@ export function setText(
  * @returns {string}
  */
 export function formValue(id) {
+    const element =
+        document.getElementById(id);
+
+    /*
+     * V1.0.8: money inputs display grouped separators; readers always
+     * receive the plain digits.
+     */
+    if (
+        element instanceof HTMLInputElement
+        && element.dataset.moneyInput !== undefined
+    ) {
+        return parseMoneyInput(
+            element.value
+        );
+    }
+
     return String(
-        document
-            .getElementById(id)
+        element
             ?.value
         || ''
     ).trim();

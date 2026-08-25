@@ -7,6 +7,8 @@ import {
     openDrawer,
     parseJsonResponse,
     translate,
+    parseMoneyInput,
+    formatMoneyDigits,
 } from './core.js';
 
 import {
@@ -2665,7 +2667,17 @@ function updateOwnerDepositCollector() {
         );
 
         if (input) {
-            input.required = true;
+            /*
+             * V1.0.8: the Cashier is always the logged-in user and is
+             * not editable. The server records the authenticated user
+             * regardless of what the client sends.
+             */
+            input.value =
+                String(
+                    document.body.dataset
+                        .currentUserName
+                    ?? ''
+                );
         }
 
         return;
@@ -2676,8 +2688,6 @@ function updateOwnerDepositCollector() {
     );
 
     if (input) {
-        input.required = false;
-
         input.value = '';
     }
 }
@@ -2715,18 +2725,6 @@ async function submitOwnerDeposit() {
         showOwnerActionError(
             'owner-deposit-error',
             translate('owners.invalid_deposit_amount')
-        );
-
-        return;
-    }
-
-    if (
-        method === 'cash'
-        && ! collector
-    ) {
-        showOwnerActionError(
-            'owner-deposit-error',
-            translate('owners.collector_required')
         );
 
         return;
@@ -3446,9 +3444,9 @@ function expenseBillLineTemplate() {
                 </span>
 
                 <input
-                    type="number"
-                    min="1"
-                    step="1"
+                    type="text"
+                    inputmode="numeric"
+                    data-money-input
                     required
                     data-expense-line-amount
                     class="pm-input pl-12"
@@ -3503,7 +3501,10 @@ function updateExpenseBillTotal() {
         (input) => {
             const amount =
                 Number(
-                    input.value
+                    parseMoneyInput(
+                        input.value
+                    )
+                    || 0
                 );
 
             if (
@@ -3566,9 +3567,12 @@ async function submitOwnerExpenseBill() {
 
             const amount =
                 Number(
-                    row.querySelector(
-                        '[data-expense-line-amount]'
-                    )?.value
+                    parseMoneyInput(
+                        row.querySelector(
+                            '[data-expense-line-amount]'
+                        )?.value
+                    )
+                    || NaN
                 );
 
             if (
@@ -4757,12 +4761,26 @@ function fieldValue(
             id
         );
 
-    return element
-        ? String(
+    if (! element) {
+        return '';
+    }
+
+    /*
+     * V1.0.8: money inputs display grouped separators; readers always
+     * receive the plain digits.
+     */
+    if (
+        element.dataset.moneyInput !== undefined
+    ) {
+        return parseMoneyInput(
             element.value
-            ?? ''
-        ).trim()
-        : '';
+        );
+    }
+
+    return String(
+        element.value
+        ?? ''
+    ).trim();
 }
 
 /**
@@ -4781,6 +4799,24 @@ function setFieldValue(
         );
 
     if (! element) {
+        return;
+    }
+
+    /*
+     * V1.0.8: values written into money inputs are displayed grouped.
+     */
+    if (
+        element.dataset.moneyInput !== undefined
+        && value !== null
+        && value !== ''
+    ) {
+        element.value =
+            formatMoneyDigits(
+                parseMoneyInput(
+                    value
+                )
+            );
+
         return;
     }
 
