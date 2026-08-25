@@ -488,7 +488,10 @@
         id="lease-form"
         class="flex min-h-0 flex-1 flex-col"
     >
-        <div class="pm-lease-drawer-body">
+        <div
+            id="lease-form-body"
+            class="pm-lease-drawer-body"
+        >
 
 
                     <div
@@ -1087,63 +1090,11 @@
 </div>
                             </div>
 
-                            <div>
-                                <label
-                                    for="lease-status"
-                                    class="pm-field-label flex items-center gap-1.5"
-                                >
-                                    <span data-i18n="leases.status">
-                                        {{ __('ui.leases.status') }}
-                                    </span>
-
-                                    <x-field-help
-                                        label="About Lease Status"
-                                        text-key="leases.status_help_text"
-                                        data-i18n-aria-label="leases.status_help_label"
-                                    >
-                                        Draft means the lease is prepared but not yet in force.
-                                        Active means the tenancy is currently running.
-                                        Notice means termination notice has been recorded.
-                                        Terminated means the lease has ended.
-                                    </x-field-help>
-
-                                    <span class="text-[var(--pm-danger-text)]">*</span>
-                                </label>
-
-                                <select
-                                    id="lease-status"
-                                    required
-                                    class="pm-input"
-                                >
-                                    <option
-                                        value="draft"
-                                        data-i18n="leases.status_draft"
-                                    >
-                                        {{ __('ui.leases.status_draft') }}
-                                    </option>
-
-                                    <option
-                                        value="active"
-                                        data-i18n="leases.status_active"
-                                    >
-                                        {{ __('ui.leases.status_active') }}
-                                    </option>
-
-                                    <option
-                                        value="notice"
-                                        data-i18n="leases.status_notice"
-                                    >
-                                        {{ __('ui.leases.status_notice') }}
-                                    </option>
-
-                                    <option
-                                        value="terminated"
-                                        data-i18n="leases.status_terminated"
-                                    >
-                                        {{ __('ui.leases.status_terminated') }}
-                                    </option>
-                                </select>
-                            </div>
+                            {{--
+                                V1.0.8: Lease status is no longer chosen at
+                                creation. Every new Lease is created Active;
+                                Notice and Terminated are lifecycle outcomes.
+                            --}}
 
                             <div>
                                 <label
@@ -2263,6 +2214,16 @@
                     </section>
         </div>
 
+        {{-- =====================================================
+            V1.0.8 Lease verification view: shown instead of the form
+            after Save, and must be confirmed before the Lease is
+            created Active.
+        ===================================================== --}}
+        <div
+            id="lease-summary-view"
+            class="hidden flex-1 overflow-y-auto px-6 py-6"
+        ></div>
+
         <x-drawer-footer>
             <button
                 id="lease-cancel-button"
@@ -2282,6 +2243,23 @@
                 <span data-i18n="actions.save">
                     {{ __('ui.actions.save') }}
                 </span>
+            </button>
+            <button
+                id="lease-summary-back"
+                type="button"
+                class="pm-button-secondary hidden"
+                data-i18n="leases.summary_back"
+            >
+                {{ __('ui.leases.summary_back') }}
+            </button>
+
+            <button
+                id="lease-summary-confirm"
+                type="button"
+                class="pm-button-primary hidden"
+                data-i18n="leases.summary_confirm"
+            >
+                {{ __('ui.leases.summary_confirm') }}
             </button>
         </x-drawer-footer>
     </form>

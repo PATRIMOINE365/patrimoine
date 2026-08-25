@@ -66,6 +66,9 @@ let availableUnits =
 let availableBuildings =
     [];
 
+let pendingLeasePayload =
+    null;
+
 let availableTenants =
     [];
 
@@ -3486,6 +3489,30 @@ function initializeLeaseForm() {
         submitLeaseForm
     );
 
+    document
+        .getElementById(
+            'lease-summary-back'
+        )
+        ?.addEventListener(
+            'click',
+            exitLeaseSummaryMode
+        );
+
+    document
+        .getElementById(
+            'lease-summary-confirm'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                if (pendingLeasePayload) {
+                    confirmLeaseCreation(
+                        pendingLeasePayload
+                    );
+                }
+            }
+        );
+
     document.addEventListener(
         'keydown',
         (event) => {
@@ -3584,12 +3611,10 @@ function resetLeaseForm() {
 
     /*
      * Explicit defaults mirror Lease backend defaults and our V1
-     * business rules.
+     * business rules. Status is not part of the form: V1.0.8 creates
+     * every Lease Active after explicit confirmation.
      */
-    setFormValue(
-        'lease-status',
-        'draft'
-    );
+    exitLeaseSummaryMode();
 
     setFormValue(
         'lease-frequency',
@@ -6160,14 +6185,41 @@ async function submitLeaseForm(
             return;
         }
 
-    try {
-        submitButton.disabled =
-            true;
+    /*
+     * V1.0.8: Save never creates directly. The operator reviews a
+     * summary of everything the Lease will do — including the
+     * backdated invoices activation will generate — and confirms.
+     */
+    enterLeaseSummaryMode(
+        payload
+    );
 
-        submitButton.textContent =
-            translate(
-                'leases.creating'
-            );
+    return;
+}
+
+/**
+ * Perform the actual creation after summary confirmation.
+ *
+ * @param {object} payload
+ */
+async function confirmLeaseCreation(
+    payload
+) {
+    const confirmButton =
+        document.getElementById(
+            'lease-summary-confirm'
+        );
+
+    try {
+        if (confirmButton) {
+            confirmButton.disabled =
+                true;
+
+            confirmButton.textContent =
+                translate(
+                    'leases.creating'
+                );
+        }
 
         const response =
             await apiRequest(
@@ -6193,6 +6245,12 @@ async function submitLeaseForm(
             1
         );
     } catch (error) {
+        /*
+         * Server-side rejection returns the operator to the editable
+         * form with the failure visible.
+         */
+        exitLeaseSummaryMode();
+
         showLeaseFormError(
             error instanceof Error
                 ? error.message
@@ -6201,14 +6259,401 @@ async function submitLeaseForm(
                 )
         );
     } finally {
-        submitButton.disabled =
-            false;
+        if (confirmButton) {
+            confirmButton.disabled =
+                false;
 
-        submitButton.textContent =
-            translate(
-                'actions.save'
+            confirmButton.textContent =
+                translate(
+                    'leases.summary_confirm'
+                );
+        }
+    }
+}
+
+/**
+ * V1.0.8: swap the Lease drawer from the editable form to the
+ * read-only verification summary.
+ *
+ * @param {object} payload
+ */
+function enterLeaseSummaryMode(
+    payload
+) {
+    const summary =
+        document.getElementById(
+            'lease-summary-view'
+        );
+
+    if (! summary) {
+        return;
+    }
+
+    pendingLeasePayload =
+        payload;
+
+    summary.innerHTML =
+        renderLeaseSummary(
+            payload
+        );
+
+    document
+        .getElementById(
+            'lease-form-body'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    summary.classList.remove(
+        'hidden'
+    );
+
+    document
+        .getElementById(
+            'lease-submit-button'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'lease-summary-back'
+        )
+        ?.classList.remove(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'lease-summary-confirm'
+        )
+        ?.classList.remove(
+            'hidden'
+        );
+}
+
+/**
+ * Return the Lease drawer to the editable form.
+ */
+function exitLeaseSummaryMode() {
+    pendingLeasePayload =
+        null;
+
+    document
+        .getElementById(
+            'lease-summary-view'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'lease-form-body'
+        )
+        ?.classList.remove(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'lease-summary-back'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'lease-summary-confirm'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+
+    document
+        .getElementById(
+            'lease-submit-button'
+        )
+        ?.classList.remove(
+            'hidden'
+        );
+}
+
+/**
+ * Count billing periods from the start date through today.
+ *
+ * Mirrors InvoiceGenerationService: one Invoice per period whose start
+ * is on or before today.
+ *
+ * @param {string} startIso
+ * @param {string} frequency
+ * @returns {number}
+ */
+function backdatedPeriodCount(
+    startIso,
+    frequency
+) {
+    const stepMonths = {
+        monthly: 1,
+        quarterly: 3,
+        bi_yearly: 6,
+        yearly: 12,
+    }[frequency];
+
+    if (! stepMonths || ! startIso) {
+        return 0;
+    }
+
+    const today =
+        new Date()
+            .toISOString()
+            .slice(0, 10);
+
+    let count = 0;
+
+    let cursor = startIso;
+
+    while (
+        cursor
+        && cursor <= today
+        && count < 240
+    ) {
+        count += 1;
+
+        cursor =
+            shiftIsoDate(
+                cursor,
+                stepMonths,
+                0
             );
     }
+
+    return count;
+}
+
+/**
+ * One label/value row of the verification summary.
+ *
+ * @param {string} labelKey
+ * @param {string} value
+ * @returns {string}
+ */
+function leaseSummaryRow(
+    labelKey,
+    value
+) {
+    return `
+        <div
+            class="
+                flex items-start justify-between gap-4
+                border-b border-[var(--pm-border-subtle)]
+                py-2.5 last:border-b-0
+            "
+        >
+            <span
+                class="
+                    text-sm
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        labelKey
+                    )
+                )}
+            </span>
+
+            <span
+                class="
+                    text-right text-sm font-medium
+                    text-[var(--pm-text)]
+                "
+            >
+                ${escapeHtml(
+                    value
+                )}
+            </span>
+        </div>
+    `;
+}
+
+/**
+ * Render the read-only verification summary for a Lease payload.
+ *
+ * @param {object} payload
+ * @returns {string}
+ */
+function renderLeaseSummary(
+    payload
+) {
+    const tenant =
+        leasePartyPickers.tenant.selected;
+
+    const agent =
+        leasePartyPickers.agent.selected;
+
+    const invoiceCount =
+        backdatedPeriodCount(
+            payload.start_date,
+            payload.payment_frequency
+        );
+
+    const backdatedTotal =
+        invoiceCount
+        * (
+            Number(
+                payload.rent_amount
+            )
+            || 0
+        );
+
+    const rows = [
+        leaseSummaryRow(
+            'leases.tenant',
+            tenant
+                ? partyDisplayName(
+                    tenant
+                )
+                : '—'
+        ),
+
+        leaseSummaryRow(
+            'leases.agent',
+            agent
+                ? partyDisplayName(
+                    agent
+                )
+                : '—'
+        ),
+
+        leaseSummaryRow(
+            'leases.unit',
+            selectedLeaseUnit
+                ? unitSearchLabel(
+                    selectedLeaseUnit
+                )
+                : '—'
+        ),
+
+        leaseSummaryRow(
+            'leases.start_date',
+            payload.start_date
+                ? dateForDisplay(
+                    payload.start_date
+                )
+                : '—'
+        ),
+
+        leaseSummaryRow(
+            'leases.end_date',
+            payload.end_date
+                ? dateForDisplay(
+                    payload.end_date
+                )
+                : '—'
+        ),
+
+        leaseSummaryRow(
+            'leases.rent_amount',
+            formatCurrency(
+                payload.rent_amount
+            )
+        ),
+
+        leaseSummaryRow(
+            'leases.payment_frequency',
+            translate(
+                `leases.${payload.payment_frequency}`
+            )
+        ),
+
+        leaseSummaryRow(
+            'leases.vat_rate',
+            `${payload.vat_rate ?? 0}%`
+        ),
+
+        leaseSummaryRow(
+            'leases.security_deposit',
+            formatCurrency(
+                payload.security_deposit_amount
+            )
+        ),
+
+        leaseSummaryRow(
+            'leases.advance_payment',
+            formatCurrency(
+                payload.advance_payment_amount
+            )
+        ),
+    ].join('');
+
+    const activationNote =
+        invoiceCount > 0
+            ? `
+                <div
+                    class="
+                        mt-5 rounded-lg border
+                        border-[var(--pm-warning-border)]
+                        bg-[var(--pm-warning-background)]
+                        px-4 py-3 text-sm
+                        text-[var(--pm-warning-text)]
+                    "
+                >
+                    ${escapeHtml(
+                        translate(
+                            'leases.summary_backdated_note'
+                        )
+                            .replace(
+                                ':count',
+                                String(invoiceCount)
+                            )
+                            .replace(
+                                ':total',
+                                formatCurrency(
+                                    backdatedTotal
+                                )
+                            )
+                    )}
+                </div>
+            `
+            : '';
+
+    return `
+        <h3
+            class="
+                text-base font-semibold
+                text-[var(--pm-text)]
+            "
+        >
+            ${escapeHtml(
+                translate(
+                    'leases.summary_title'
+                )
+            )}
+        </h3>
+
+        <p
+            class="
+                mt-1 text-xs
+                text-[var(--pm-text-muted)]
+            "
+        >
+            ${escapeHtml(
+                translate(
+                    'leases.summary_description'
+                )
+            )}
+        </p>
+
+        <div class="mt-4">
+            ${rows}
+        </div>
+
+        ${activationNote}
+    `;
 }
 
 function buildLeasePayload() {
@@ -6244,10 +6689,11 @@ function buildLeasePayload() {
                 'lease-end-date'
             ),
 
-        status:
-            formValue(
-                'lease-status'
-            ),
+        /*
+         * V1.0.8: Draft no longer exists in the UI. Creation is always
+         * Active, confirmed through the summary step.
+         */
+        status: 'active',
 
         termination_notice_date:
             nullableDateForApi(
