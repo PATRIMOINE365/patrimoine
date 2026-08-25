@@ -3576,10 +3576,14 @@ function configureLeaseModal() {
         )
     );
 
+    /*
+     * V1.0.8: Save became Review — submitting shows the verification
+     * summary instead of creating directly.
+     */
     setText(
         'lease-submit-button',
         translate(
-            'actions.save'
+            'leases.review'
         )
     );
 }
