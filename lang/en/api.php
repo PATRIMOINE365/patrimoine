@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'documents' => [
+        'not_signable' => 'This document cannot be opened through a signed link.',
+        'link_invalid' => 'This document link is invalid or has expired. Please open the document again.',
+    ],
+
     'auth' => [
         'password_confirmation_failed' => 'The password is incorrect.',
         'account_disabled' => 'This account has been disabled.',

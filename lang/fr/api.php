@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'documents' => [
+        'not_signable' => 'Ce document ne peut pas être ouvert via un lien signé.',
+        'link_invalid' => 'Ce lien de document est invalide ou a expiré. Veuillez ouvrir le document à nouveau.',
+    ],
+
     'auth' => [
         'password_confirmation_failed' => 'Le mot de passe est incorrect.',
         'account_disabled' => 'Ce compte a été désactivé.',

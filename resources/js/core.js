@@ -222,107 +222,59 @@ export async function parseJsonResponse(
 }
 
 /**
- * Fetch an authenticated PDF document and present it in a new tab.
+ * Open an authenticated PDF document in a new browser tab.
  *
- * Direct browser navigation cannot carry the API Bearer token, so the
- * document is retrieved through apiRequest() and shown via a temporary
- * blob URL.
+ * Tab navigation cannot carry the API Bearer token, so the endpoint is
+ * first exchanged for a short-lived signed URL and the tab navigates
+ * straight to it. The browser then streams and renders the PDF
+ * natively — with its own loading progress — regardless of how large
+ * the document is.
  *
- * The tab MUST be opened synchronously, before the download starts:
- * browsers only honour window.open() while the user's click activation
- * is still fresh, and a slow PDF download outlives that allowance —
- * the receipt then silently never appears. When no click activation
- * exists at all (for example directly after a form submission), the
- * popup is refused and the document falls back to a regular download.
+ * The signing exchange is a tiny JSON round-trip, so window.open()
+ * still runs well within the browser's click-activation allowance.
  *
  * @param {string} endpoint
  * @param {string} failureMessage Translated message thrown on failure.
- * @param {string} accept         Accept header for the document request.
  */
 export async function openPdfInNewTab(
     endpoint,
-    failureMessage,
-    accept = 'application/pdf'
+    failureMessage
 ) {
+    const response =
+        await apiRequest(
+            '/api/document-links',
+            {
+                method:
+                    'POST',
+
+                body:
+                    JSON.stringify({
+                        endpoint,
+                    }),
+            }
+        );
+
+    const data =
+        await parseJsonResponse(
+            response
+        );
+
+    if (! data?.url) {
+        throw new Error(
+            failureMessage
+        );
+    }
+
     const pdfTab =
         window.open(
-            '',
+            data.url,
             '_blank'
         );
 
-    try {
-        const response =
-            await apiRequest(
-                endpoint,
-                {
-                    headers: {
-                        Accept:
-                            accept,
-                    },
-                }
-            );
-
-        if (! response.ok) {
-            throw new Error(
-                failureMessage
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        if (
-            pdfTab
-            && ! pdfTab.closed
-        ) {
-            pdfTab.location.replace(
-                url
-            );
-        } else {
-            /*
-             * Popup refused: hand the document to the browser's
-             * download flow instead of losing it.
-             */
-            const link =
-                document.createElement(
-                    'a'
-                );
-
-            link.href = url;
-
-            link.download = '';
-
-            document.body.appendChild(
-                link
-            );
-
-            link.click();
-
-            link.remove();
-        }
-
-        window.setTimeout(
-            () => {
-                URL.revokeObjectURL(
-                    url
-                );
-            },
-            60000
+    if (! pdfTab) {
+        throw new Error(
+            failureMessage
         );
-    } catch (error) {
-        if (
-            pdfTab
-            && ! pdfTab.closed
-        ) {
-            pdfTab.close();
-        }
-
-        throw error;
     }
 }
 

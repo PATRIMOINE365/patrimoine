@@ -21,6 +21,7 @@ import {
     getPresentationConfiguration,
     loadPresentationConfiguration,
     nullableFormValue,
+    openPdfInNewTab,
     parseJsonResponse,
     translate,
 } from './core.js';
@@ -232,22 +233,6 @@ async function downloadRegistryExport(
 
     hideSettingsError();
 
-    /*
-     * The PDF review tab must be opened synchronously, while the click
-     * activation is still fresh — a slow export outlives the browser's
-     * popup allowance and the tab would silently never open.
-     */
-    const pdfTab =
-        format === 'pdf'
-            ? window.open(
-                '',
-                '_blank'
-            )
-            : null;
-
-    let pdfDelivered =
-        false;
-
     try {
         button.disabled =
             true;
@@ -256,6 +241,22 @@ async function downloadRegistryExport(
             translate(
                 'settings.exporting'
             );
+
+        /*
+         * The PDF review opens in a tab through a signed document link
+         * so the browser can stream it natively. CSV/XLSX remain
+         * authenticated blob downloads.
+         */
+        if (format === 'pdf') {
+            await openPdfInNewTab(
+                endpoint,
+                translate(
+                    'settings.unable_export'
+                )
+            );
+
+            return;
+        }
 
         const response =
             await apiRequest(
@@ -287,47 +288,27 @@ async function downloadRegistryExport(
                 blob
             );
 
-        if (format === 'pdf') {
-            if (
-                pdfTab
-                && ! pdfTab.closed
-            ) {
-                pdfTab.location.replace(
-                    url
-                );
-            } else {
-                window.open(
-                    url,
-                    '_blank',
-                    'noopener'
-                );
-            }
-
-            pdfDelivered =
-                true;
-        } else {
-            const link =
-                document.createElement(
-                    'a'
-                );
-
-            link.href =
-                url;
-
-            link.download =
-                attachmentFilename(
-                    response,
-                    fallbackFilename
-                );
-
-            document.body.appendChild(
-                link
+        const link =
+            document.createElement(
+                'a'
             );
 
-            link.click();
+        link.href =
+            url;
 
-            link.remove();
-        }
+        link.download =
+            attachmentFilename(
+                response,
+                fallbackFilename
+            );
+
+        document.body.appendChild(
+            link
+        );
+
+        link.click();
+
+        link.remove();
 
         /*
          * Revocation is deferred briefly so the browser has finished
@@ -350,18 +331,6 @@ async function downloadRegistryExport(
                 )
         );
     } finally {
-        /*
-         * A stub tab left open by a failed export would strand the
-         * user on about:blank.
-         */
-        if (
-            pdfTab
-            && ! pdfTab.closed
-            && ! pdfDelivered
-        ) {
-            pdfTab.close();
-        }
-
         button.disabled =
             false;
 

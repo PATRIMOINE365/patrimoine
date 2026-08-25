@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Middleware\ApplyApplicationLocale;
+use App\Http\Middleware\AuthenticateSignedDocumentAccess;
 use App\Http\Middleware\EnsureUserHasCapability;
 use App\Http\Middleware\EnsureUserHasRole;
+use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -57,7 +59,29 @@ return Application::configure(basePath: dirname(__DIR__))
              */
             'capability' => EnsureUserHasCapability::class,
             'role' => EnsureUserHasRole::class,
+
+            /*
+             * V1.0.8: signed-URL access to PDF document endpoints, so a
+             * browser tab can navigate straight to a document without a
+             * Bearer header.
+             */
+            'document.signed' => AuthenticateSignedDocumentAccess::class,
         ]);
+
+        /*
+         * Signed-document authentication must run before 'auth:sanctum'
+         * even when attached at route level, otherwise the group's auth
+         * middleware rejects the token-less signed request first.
+         *
+         * The kernel priority list anchors authentication through the
+         * AuthenticatesRequests contract, not the concrete Authenticate
+         * class — anchoring on the wrong one silently appends to the
+         * END of the priority list.
+         */
+        $middleware->prependToPriorityList(
+            AuthenticatesRequests::class,
+            AuthenticateSignedDocumentAccess::class
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         /*

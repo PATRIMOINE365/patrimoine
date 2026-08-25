@@ -2069,8 +2069,7 @@ function initializePaymentReportReceiptActions() {
                         }
 
                         await openAuthenticatedDocument(
-                            endpoint,
-                            'application/pdf'
+                            endpoint
                         );
                     }
                 );
@@ -4276,8 +4275,7 @@ function initializeExportActions() {
                     activePdfEndpoint
                 ) {
                     await openAuthenticatedDocument(
-                        activePdfEndpoint,
-                        'application/pdf'
+                        activePdfEndpoint
                     );
                 }
             }
@@ -4322,16 +4320,14 @@ function initializeExportActions() {
 }
 
 async function openAuthenticatedDocument(
-    endpoint,
-    accept
+    endpoint
 ) {
     hideReportsError();
 
     try {
         await openPdfInNewTab(
             endpoint,
-            translate('reports.unable_to_open'),
-            accept
+            translate('reports.unable_to_open')
         );
     } catch (error) {
         showReportsError(

@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\BuildingController;
 use App\Http\Controllers\Api\ConsumableAdvanceController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DocumentController;
+use App\Http\Controllers\Api\DocumentLinkController;
 use App\Http\Controllers\Api\EmailController;
 use App\Http\Controllers\Api\FinancialJournalController;
 use App\Http\Controllers\Api\FinancialJournalExportController;
@@ -545,7 +546,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'withdrawal-receipts/{withdrawalReceipt}/pdf',
                     [DocumentController::class, 'withdrawalReceipt']
-                );
+                )->middleware('document.signed');
 
                 Route::post(
                     'tenant-funds/{tenantFundAccount}/adjustments',
@@ -635,7 +636,21 @@ Route::middleware('auth:sanctum')->group(
         |
         */
 
-        Route::middleware('capability:export_reports')->group(
+        /*
+         * V1.0.8: exchange an authenticated request for a short-lived
+         * signed URL so a browser tab can open a PDF document directly.
+         * Authorization stays with each document route's own capability
+         * middleware, which also runs for signed requests.
+         */
+        Route::post(
+            'document-links',
+            [DocumentLinkController::class, 'store']
+        );
+
+        Route::middleware([
+            'document.signed',
+            'capability:export_reports',
+        ])->group(
             function (): void {
                 Route::get(
                     'leases/{lease}/termination-notice/pdf',
@@ -937,7 +952,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'financial-journal/pdf',
                     [FinancialJournalExportController::class, 'pdf']
-                );
+                )->middleware('document.signed');
 
                 Route::get(
                     'financial-journal/csv',
@@ -979,7 +994,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'activity-log/pdf',
                     [ActivityLogExportController::class, 'pdf']
-                );
+                )->middleware('document.signed');
 
                 Route::get(
                     'activity-log/csv',
@@ -1092,7 +1107,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'registry/export/pdf',
                     [RegistryPortabilityController::class, 'exportPdf']
-                );
+                )->middleware('document.signed');
 
                 Route::post(
                     'registry/import',
