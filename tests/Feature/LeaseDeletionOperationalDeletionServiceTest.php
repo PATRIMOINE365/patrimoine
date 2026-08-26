@@ -153,6 +153,7 @@ class LeaseDeletionOperationalDeletionServiceTest extends TestCase
          * checking deletion of the Lease itself.
          */
         $termId = DB::table('lease_term_versions')->insertGetId([
+            'organisation_id' => $this->testOrganisation->id,
             'lease_id' =>
                 $lease->id,
 
@@ -322,6 +323,7 @@ class LeaseDeletionOperationalDeletionServiceTest extends TestCase
     private function makeLease(): Lease
     {
         $owner = DB::table('parties')->insertGetId([
+            'organisation_id' => $this->testOrganisation->id,
             'type' => 'person',
             'name' => 'Operational Delete Owner '.uniqid(),
             'email' => uniqid().'@owner.test',
@@ -330,6 +332,7 @@ class LeaseDeletionOperationalDeletionServiceTest extends TestCase
         ]);
 
         $tenant = DB::table('parties')->insertGetId([
+            'organisation_id' => $this->testOrganisation->id,
             'type' => 'person',
             'name' => 'Operational Delete Tenant '.uniqid(),
             'email' => uniqid().'@tenant.test',
@@ -338,6 +341,7 @@ class LeaseDeletionOperationalDeletionServiceTest extends TestCase
         ]);
 
         $building = DB::table('buildings')->insertGetId([
+            'organisation_id' => $this->testOrganisation->id,
             'name' => 'Operational Delete Building '.uniqid(),
             'address' => 'Test Address',
             'created_at' => now(),
@@ -345,6 +349,7 @@ class LeaseDeletionOperationalDeletionServiceTest extends TestCase
         ]);
 
         DB::table('building_owners')->insert([
+            'organisation_id' => $this->testOrganisation->id,
             'building_id' => $building,
             'party_id' => $owner,
             'ownership_percentage' => 100,
@@ -353,6 +358,7 @@ class LeaseDeletionOperationalDeletionServiceTest extends TestCase
         ]);
 
         $unit = DB::table('units')->insertGetId([
+            'organisation_id' => $this->testOrganisation->id,
             'building_id' => $building,
             'name' => 'Unit '.uniqid(),
             'created_at' => now(),
@@ -360,6 +366,7 @@ class LeaseDeletionOperationalDeletionServiceTest extends TestCase
         ]);
 
         $leaseId = DB::table('leases')->insertGetId([
+            'organisation_id' => $this->testOrganisation->id,
             'unit_id' => $unit,
             'tenant_id' => $tenant,
             'start_date' => now()->startOfMonth()->toDateString(),

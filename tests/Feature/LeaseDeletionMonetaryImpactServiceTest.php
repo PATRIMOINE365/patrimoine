@@ -214,6 +214,7 @@ class LeaseDeletionMonetaryImpactServiceTest extends TestCase
             DB::table(
                 'tenant_fund_accounts'
             )->insertGetId([
+            'organisation_id' => $this->testOrganisation->id,
                 'lease_id' =>
                     $lease->id,
 
@@ -234,6 +235,9 @@ class LeaseDeletionMonetaryImpactServiceTest extends TestCase
             'tenant_fund_transactions'
         )->insert([
             [
+                'organisation_id' =>
+                    $this->testOrganisation->id,
+
                 'tenant_fund_account_id' =>
                     $accountId,
 
@@ -256,6 +260,9 @@ class LeaseDeletionMonetaryImpactServiceTest extends TestCase
                     now(),
             ],
             [
+                'organisation_id' =>
+                    $this->testOrganisation->id,
+
                 'tenant_fund_account_id' =>
                     $accountId,
 
@@ -331,6 +338,9 @@ class LeaseDeletionMonetaryImpactServiceTest extends TestCase
             'owner_transactions'
         )->insert([
             [
+                'organisation_id' =>
+                    $this->testOrganisation->id,
+
                 'owner_account_id' =>
                     $ownerAccount->id,
 
@@ -356,6 +366,9 @@ class LeaseDeletionMonetaryImpactServiceTest extends TestCase
                     now(),
             ],
             [
+                'organisation_id' =>
+                    $this->testOrganisation->id,
+
                 'owner_account_id' =>
                     $ownerAccount->id,
 
@@ -437,6 +450,7 @@ class LeaseDeletionMonetaryImpactServiceTest extends TestCase
             DB::table(
                 'tenant_fund_accounts'
             )->insertGetId([
+            'organisation_id' => $this->testOrganisation->id,
                 'lease_id' =>
                     $lease->id,
 
@@ -459,6 +473,7 @@ class LeaseDeletionMonetaryImpactServiceTest extends TestCase
         DB::table(
             'tenant_fund_transactions'
         )->insert([
+            'organisation_id' => $this->testOrganisation->id,
             'tenant_fund_account_id' =>
                 $securityDepositAccountId,
 
@@ -488,6 +503,7 @@ class LeaseDeletionMonetaryImpactServiceTest extends TestCase
             DB::table(
                 'tenant_fund_transactions'
             )->insertGetId([
+            'organisation_id' => $this->testOrganisation->id,
                 'tenant_fund_account_id' =>
                     $securityDepositAccountId,
 
@@ -513,6 +529,7 @@ class LeaseDeletionMonetaryImpactServiceTest extends TestCase
         DB::table(
             'security_deposit_applications'
         )->insert([
+            'organisation_id' => $this->testOrganisation->id,
             'lease_id' =>
                 $lease->id,
 
@@ -718,6 +735,7 @@ class LeaseDeletionMonetaryImpactServiceTest extends TestCase
         int $amount
     ): int {
         $values = [
+            'organisation_id' => $this->testOrganisation->id,
             'lease_id' => $lease->id,
             'invoice_number' =>
                 'INV-10B2-' . uniqid(),
@@ -754,6 +772,7 @@ class LeaseDeletionMonetaryImpactServiceTest extends TestCase
         int $amount
     ): int {
         $values = [
+            'organisation_id' => $this->testOrganisation->id,
             'lease_id' => $lease->id,
             'amount' => $amount,
             'payment_date' =>
@@ -782,6 +801,7 @@ class LeaseDeletionMonetaryImpactServiceTest extends TestCase
         int $amount
     ): void {
         $values = [
+            'organisation_id' => $this->testOrganisation->id,
             'payment_id' => $paymentId,
             'invoice_id' => $invoiceId,
             'amount' => $amount,
@@ -808,6 +828,9 @@ class LeaseDeletionMonetaryImpactServiceTest extends TestCase
         string $table,
         array $values
     ): void {
+        $values['organisation_id'] =
+            $this->testOrganisation->id;
+
         $filtered =
             $this->existingColumns(
                 $table,

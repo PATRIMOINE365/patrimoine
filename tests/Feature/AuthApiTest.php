@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Mail\MfaCodeMail;
 use App\Models\ApplicationSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 /**
@@ -15,21 +17,63 @@ class AuthApiTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * A valid Patrimoine user can authenticate and receive an API token.
+     * V1.1.0: signing in is a two-step exchange. A correct password
+     * opens an MFA challenge and emails a six-digit code; only the
+     * challenge token + code produce an API token.
      */
     public function test_user_can_login(): void
     {
+        Mail::fake();
+
         $user = User::factory()->create([
             'name' => 'Property Manager',
             'email' => 'manager@example.test',
             'password' => 'secure-password',
         ]);
 
-        $response = $this->postJson(
+        $challengeResponse = $this->postJson(
             '/api/auth/login',
             [
                 'email' => 'manager@example.test',
                 'password' => 'secure-password',
+                'device_name' => 'Test Client',
+            ]
+        );
+
+        $challengeResponse
+            ->assertOk()
+            ->assertJsonPath('mfa_required', true)
+            ->assertJsonStructure([
+                'challenge_token',
+                'email_hint',
+            ]);
+
+        /*
+         * The password alone must never produce a token.
+         */
+        $this->assertDatabaseCount(
+            'personal_access_tokens',
+            0
+        );
+
+        $code = null;
+
+        Mail::assertSent(
+            MfaCodeMail::class,
+            function (MfaCodeMail $mail) use (&$code, $user): bool {
+                $code = $mail->code;
+
+                return $mail->hasTo($user->email);
+            }
+        );
+
+        $this->assertIsString($code);
+
+        $response = $this->postJson(
+            '/api/auth/mfa/verify',
+            [
+                'challenge_token' => $challengeResponse->json('challenge_token'),
+                'code' => $code,
                 'device_name' => 'Test Client',
             ]
         );

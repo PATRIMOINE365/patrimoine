@@ -72,6 +72,8 @@ class UserRbacFoundationTest extends TestCase
         $userId =
             DB::table('users')
                 ->insertGetId([
+                    'organisation_id' => $this->testOrganisation->id,
+
                     'name' => 'Existing V1.0.2 User',
 
                     'email' => 'existing-v102@example.test',

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\UserRole;
+use App\Mail\MfaCodeMail;
 use App\Mail\UserInvitationMail;
 use App\Mail\UserPasswordResetMail;
 use App\Models\ActivityLog;
@@ -22,6 +23,8 @@ class AuthenticationUserActivityLogTest extends TestCase
 
     public function test_successful_login_is_recorded_without_secrets(): void
     {
+        Mail::fake();
+
         $user = User::factory()->create([
             'name' => 'Login User',
             'email' => 'login@example.test',
@@ -29,13 +32,37 @@ class AuthenticationUserActivityLogTest extends TestCase
             'email_verified_at' => now(),
         ]);
 
-        $this
+        $challenge = $this
             ->withServerVariables([
                 'REMOTE_ADDR' => '192.0.2.10',
             ])
             ->postJson('/api/auth/login', [
                 'email' => $user->email,
                 'password' => 'Password123!',
+                'device_name' => 'Activity Test',
+            ]);
+
+        $challenge->assertOk()
+            ->assertJsonPath('mfa_required', true);
+
+        $code = null;
+
+        Mail::assertSent(
+            MfaCodeMail::class,
+            function (MfaCodeMail $mail) use (&$code): bool {
+                $code = $mail->code;
+
+                return true;
+            }
+        );
+
+        $this
+            ->withServerVariables([
+                'REMOTE_ADDR' => '192.0.2.10',
+            ])
+            ->postJson('/api/auth/mfa/verify', [
+                'challenge_token' => $challenge->json('challenge_token'),
+                'code' => $code,
                 'device_name' => 'Activity Test',
             ])
             ->assertOk();

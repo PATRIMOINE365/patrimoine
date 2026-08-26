@@ -603,6 +603,9 @@ class LeaseDeletionImpactServiceTest extends TestCase
         );
 
         $values = [
+            'organisation_id' =>
+                $this->testOrganisation->id,
+
             'journal_number' =>
                 'JRN-2026-919999',
 
