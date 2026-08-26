@@ -45,10 +45,12 @@
                                     <td style="font-family:Segoe UI, Helvetica, Arial, sans-serif;">
                                         {{--
                                             The logomark is served from the marketing site so every
-                                            email client renders the real identity; the styled text
-                                            alt keeps the brand visible when images are blocked.
+                                            email client renders the real identity. Its alt is empty
+                                            on purpose: the wordmark beside it is live text, so it
+                                            survives blocked images — and an alt here would repeat
+                                            the brand name in the plain-text alternative.
                                         --}}
-                                        <img src="https://patrimoine365.com/icon-192.png" width="40" height="40" alt="Patrimoine 365" style="display:inline-block; vertical-align:middle; border:0; border-radius:10px;">
+                                        <img src="https://patrimoine365.com/icon-192.png" width="40" height="40" alt="" style="display:inline-block; vertical-align:middle; border:0; border-radius:10px;">
                                         <span style="color:#ffffff; font-size:19px; font-weight:600; letter-spacing:0.2px; padding-left:10px; vertical-align:middle;">Patrimoine <span style="color:#89c5a2;">365</span></span>
                                     </td>
                                 </tr>

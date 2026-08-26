@@ -15,6 +15,14 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.18',
+            'date' => '2026-08-26',
+            'title' => 'Finition des e-mails',
+            'changes' => [
+                'La version texte de chaque e-mail a été nettoyée : le nom Patrimoine 365 n\'y apparaît plus qu\'une seule fois.',
+            ],
+        ],
+        [
             'version' => '1.0.17',
             'date' => '2026-08-26',
             'title' => 'Une meilleure délivrabilité des e-mails et une page Licence simplifiée',

@@ -19,6 +19,14 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.18',
+            'date' => '2026-08-26',
+            'title' => 'Email polish',
+            'changes' => [
+                'Tidied the plain-text version of every email so the Patrimoine 365 name appears once, not twice.',
+            ],
+        ],
+        [
             'version' => '1.0.17',
             'date' => '2026-08-26',
             'title' => 'Better email delivery and a simpler License page',
