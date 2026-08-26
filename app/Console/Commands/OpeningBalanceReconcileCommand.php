@@ -3,19 +3,47 @@
 namespace App\Console\Commands;
 
 use App\Services\Accounting\OpeningBalanceReconciliationService;
+use App\Console\Concerns\ResolvesOrganisationOption;
+use App\Support\OrganisationContext;
 use Illuminate\Console\Command;
 use Throwable;
 
 class OpeningBalanceReconcileCommand extends Command
 {
+    use ResolvesOrganisationOption;
+
     protected $signature =
         'patrimoine:opening-balance-reconcile
-        {--json : Output reconciliation as JSON}';
+        {--json : Output reconciliation as JSON}
+        {--organisation= : Organisation ID (required when several organisations exist)}';
 
     protected $description =
         'Validate the V1.0.5 opening accounting cutover without modifying data';
 
     public function handle(
+        OpeningBalanceReconciliationService $service
+    ): int {
+        /*
+         * V1.1.0 multi-tenancy: the opening-balance suite operates
+         * on exactly one organisation's books.
+         */
+        $organisation = $this->resolveOrganisationOrFail();
+
+        if ($organisation === null) {
+            return self::FAILURE;
+        }
+
+        return OrganisationContext::runAs(
+            (int) $organisation->id,
+            fn (): int => $this->runScoped($service)
+        );
+    }
+
+    /**
+     * The original command body, executed with the organisation
+     * context bound.
+     */
+    private function runScoped(
         OpeningBalanceReconciliationService $service
     ): int {
         try {

@@ -20,10 +20,35 @@ Route::get(
     }
 );
 
+/*
+ * V1.1.0: the one-time setup wizard is retired; multi-tenant signup
+ * provisions new organisations. The old path forwards politely.
+ */
+Route::redirect('/setup', '/signup');
+
 Route::view(
-    '/setup',
-    'auth.setup'
-)->name('setup');
+    '/signup',
+    'auth.signup'
+)->name('signup');
+
+Route::view(
+    '/verify-email',
+    'auth.verify-email'
+)->name('verify-email');
+
+/*
+ * Public legal pages. Linked from signup, the application footer and
+ * outbound email.
+ */
+Route::view(
+    '/terms',
+    'legal.terms'
+)->name('terms');
+
+Route::view(
+    '/privacy',
+    'legal.privacy'
+)->name('privacy');
 
 Route::view(
     '/login',
@@ -108,3 +133,11 @@ Route::view(
     '/help',
     'app.help'
 )->name('help');
+
+/*
+ * V1.1.0: licence & plan page for the authenticated organisation.
+ */
+Route::view(
+    '/license',
+    'app.license'
+)->name('license');

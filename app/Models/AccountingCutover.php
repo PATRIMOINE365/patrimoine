@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOrganisation;
 use Illuminate\Database\Eloquent\Model;
 
 class AccountingCutover extends Model
 {
+    use BelongsToOrganisation;
+
     public const V105_OPENING_BALANCE =
         'v1.0.5-opening-balance';
 

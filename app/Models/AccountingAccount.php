@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOrganisation;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,6 +14,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class AccountingAccount extends Model
 {
+    use BelongsToOrganisation;
+
     public const TYPE_ASSET = 'asset';
 
     public const TYPE_LIABILITY = 'liability';

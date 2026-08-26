@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOrganisation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use LogicException;
@@ -11,6 +12,8 @@ use LogicException;
  */
 class JournalLine extends Model
 {
+    use BelongsToOrganisation;
+
     /**
      * @var list<string>
      */

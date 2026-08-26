@@ -26,7 +26,7 @@ class ConsumeAdvanceRequest extends FormRequest
             'invoice_id' => [
                 'required',
                 'integer',
-                'exists:invoices,id',
+                \App\Rules\OrganisationOwned::exists('invoices'),
             ],
 
             'amount' => [

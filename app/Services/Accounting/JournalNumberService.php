@@ -24,8 +24,13 @@ class JournalNumberService
         /*
          * insertOrIgnore handles the first posting of a new year without
          * requiring application-level existence checks.
+         *
+         * V1.1.0 multi-tenancy: each organisation runs its own annual
+         * sequence — the raw insert stamps the bound organisation and
+         * the JournalSequence read below is organisation-scoped.
          */
         DB::table('journal_sequences')->insertOrIgnore([
+            'organisation_id' => \App\Support\OrganisationContext::id(),
             'year' => $year,
             'next_number' => 1,
             'created_at' => now(),

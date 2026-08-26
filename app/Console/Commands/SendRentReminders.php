@@ -7,6 +7,7 @@ use App\Services\Notifications\EmailDeliveryService;
 use Carbon\Carbon;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
+use App\Console\Concerns\IteratesOrganisations;
 use Illuminate\Console\Command;
 use Throwable;
 
@@ -24,8 +25,13 @@ use Throwable;
 #[Description('Send rent reminders for due and overdue invoices')]
 class SendRentReminders extends Command
 {
+    use IteratesOrganisations;
+
     /**
      * Execute the reminder run.
+     *
+     * V1.1.0 multi-tenancy: reminders run once per active organisation
+     * with that organisation's context and language bound.
      */
     public function handle(
         EmailDeliveryService $service
@@ -36,6 +42,21 @@ class SendRentReminders extends Command
             return self::FAILURE;
         }
 
+        return $this->forEachOrganisation(
+            fn (): int => $this->runRemindersForOrganisation(
+                $service,
+                $asOf
+            )
+        );
+    }
+
+    /**
+     * Run one organisation's reminder pass.
+     */
+    private function runRemindersForOrganisation(
+        EmailDeliveryService $service,
+        Carbon $asOf
+    ): int {
         $processed = 0;
         $sent = 0;
         $failed = 0;

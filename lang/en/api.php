@@ -15,6 +15,27 @@ return [
 
         'unauthenticated' => 'Unauthenticated.',
         'forbidden' => 'You are not authorized to perform this action.',
+
+        'verification_required' => 'Verify your email address before signing in. Check your inbox for the verification link.',
+        'organisation_suspended' => 'This organisation is currently suspended. Contact support@patrimoine365.com.',
+        'mfa_challenge_expired' => 'This sign-in attempt has expired. Sign in again to receive a new code.',
+        'mfa_code_invalid' => 'The verification code is incorrect.',
+        'mfa_code_resent' => 'A new verification code has been sent to your email address.',
+    ],
+
+    'registration' => [
+        'created' => 'Your organisation has been created. Check your email to verify your address.',
+        'verified' => 'Your email address has been verified. You can now sign in.',
+        'verification_invalid' => 'This verification link is invalid or has expired. Request a new one from the sign-in page.',
+        'verification_sent' => 'If that address needs verification, a new link has been sent.',
+    ],
+
+    'license' => [
+        'user_limit_reached' => 'Your plan\'s user limit has been reached. Upgrade your plan to add more users.',
+        'lease_limit_reached' => 'Your plan\'s active lease limit has been reached. Upgrade your plan to add more active leases.',
+        'party_limit_reached' => 'Your plan\'s party limit has been reached. Upgrade your plan to add more parties.',
+        'feature_unavailable' => 'This feature is not included in your current plan.',
+        'email_cap_reached' => 'Your plan\'s monthly email allowance has been used up.',
     ],
 
     'user_management' => [

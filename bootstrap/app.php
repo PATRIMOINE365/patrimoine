@@ -3,6 +3,7 @@
 use App\Http\Middleware\ApplyApplicationLocale;
 use App\Http\Middleware\AuthenticateSignedDocumentAccess;
 use App\Http\Middleware\EnsureUserHasCapability;
+use App\Http\Middleware\SetOrganisationContext;
 use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Foundation\Application;
@@ -31,6 +32,22 @@ return Application::configure(basePath: dirname(__DIR__))
          */
         $middleware->append(
             ApplyApplicationLocale::class
+        );
+
+        /*
+         * V1.1.0 multi-tenancy: once any guard has resolved a user,
+         * bind that user's organisation as the tenant for the rest of
+         * the request (and refuse suspended organisations). Appending
+         * to both web and api groups plus anchoring after the
+         * authentication contract in the priority list guarantees it
+         * runs immediately after auth resolves.
+         */
+        $middleware->appendToGroup('api', SetOrganisationContext::class);
+        $middleware->appendToGroup('web', SetOrganisationContext::class);
+
+        $middleware->appendToPriorityList(
+            AuthenticatesRequests::class,
+            SetOrganisationContext::class
         );
         /*
         * Patrimoine currently authenticates through API endpoints rather

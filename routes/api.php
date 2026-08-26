@@ -17,7 +17,6 @@ use App\Http\Controllers\Api\FinancialJournalController;
 use App\Http\Controllers\Api\FinancialJournalExportController;
 use App\Http\Controllers\Api\FundsReportController;
 use App\Http\Controllers\Api\FundsReportExportController;
-use App\Http\Controllers\Api\InitialSetupController;
 use App\Http\Controllers\Api\LeaseController;
 use App\Http\Controllers\Api\LeaseFinancialHistoryExportController;
 use App\Http\Controllers\Api\ManagingOrganisationController;
@@ -37,6 +36,7 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PaymentRegisterController;
 use App\Http\Controllers\Api\PaymentReportController;
 use App\Http\Controllers\Api\PaymentReportExportController;
+use App\Http\Controllers\Api\RegistrationController;
 use App\Http\Controllers\Api\RegistryPortabilityController;
 use App\Http\Controllers\Api\ReleaseLogController;
 use App\Http\Controllers\Api\RentIncrementController;
@@ -83,25 +83,27 @@ Route::get(
 
 /*
 |--------------------------------------------------------------------------
-| Initial Installation
+| Public Signup (V1.1.0)
 |--------------------------------------------------------------------------
 |
-| A fresh Patrimoine installation has no authenticated user yet.
-|
-| These two endpoints are therefore public, but the POST operation becomes
-| permanently unavailable as soon as an application user or configured
-| Managing Organisation exists.
+| Multi-tenant self-service registration replaces the retired one-time
+| setup wizard. Each signup provisions a fully isolated organisation.
 |
 */
-Route::get(
-    'setup/status',
-    [InitialSetupController::class, 'status']
-);
+Route::post(
+    'auth/register',
+    [RegistrationController::class, 'register']
+)->middleware('throttle:5,1');
 
 Route::post(
-    'setup',
-    [InitialSetupController::class, 'store']
-)->middleware('throttle:5,1');
+    'auth/verify-email',
+    [RegistrationController::class, 'verifyEmail']
+)->middleware('throttle:10,1');
+
+Route::post(
+    'auth/resend-verification',
+    [RegistrationController::class, 'resendVerification']
+)->middleware('throttle:3,1');
 
 /*
 |--------------------------------------------------------------------------
@@ -116,6 +118,21 @@ Route::post(
     'auth/login',
     [AuthController::class, 'login']
 )->middleware('throttle:5,1');
+
+/*
+ * V1.1.0: second factor of every sign-in. Verification is more
+ * generously throttled than login because each attempt already costs a
+ * challenge attempt; resend is tight because each call sends mail.
+ */
+Route::post(
+    'auth/mfa/verify',
+    [AuthController::class, 'mfaVerify']
+)->middleware('throttle:10,1');
+
+Route::post(
+    'auth/mfa/resend',
+    [AuthController::class, 'mfaResend']
+)->middleware('throttle:3,1');
 
 /*
  * First-time password setup and Forgot Password are public but rate-limited.

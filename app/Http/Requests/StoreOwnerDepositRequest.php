@@ -75,13 +75,13 @@ class StoreOwnerDepositRequest extends FormRequest
             'building_id' => [
                 'nullable',
                 'integer',
-                'exists:buildings,id',
+                \App\Rules\OrganisationOwned::exists('buildings'),
             ],
 
             'unit_id' => [
                 'nullable',
                 'integer',
-                'exists:units,id',
+                \App\Rules\OrganisationOwned::exists('units'),
             ],
 
             'reference' => [

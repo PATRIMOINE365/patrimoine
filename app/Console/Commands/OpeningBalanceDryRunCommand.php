@@ -3,18 +3,46 @@
 namespace App\Console\Commands;
 
 use App\Services\Accounting\OpeningBalanceDiscoveryService;
+use App\Console\Concerns\ResolvesOrganisationOption;
+use App\Support\OrganisationContext;
 use Illuminate\Console\Command;
 
 class OpeningBalanceDryRunCommand extends Command
 {
+    use ResolvesOrganisationOption;
+
     protected $signature =
         'patrimoine:opening-balance-dry-run
-        {--json : Output complete discovery result as JSON}';
+        {--json : Output complete discovery result as JSON}
+        {--organisation= : Organisation ID (required when several organisations exist)}';
 
     protected $description =
         'Calculate the V1.0.5 opening Journal position without posting anything';
 
     public function handle(
+        OpeningBalanceDiscoveryService $discovery
+    ): int {
+        /*
+         * V1.1.0 multi-tenancy: the opening-balance suite operates
+         * on exactly one organisation's books.
+         */
+        $organisation = $this->resolveOrganisationOrFail();
+
+        if ($organisation === null) {
+            return self::FAILURE;
+        }
+
+        return OrganisationContext::runAs(
+            (int) $organisation->id,
+            fn (): int => $this->runScoped($discovery)
+        );
+    }
+
+    /**
+     * The original command body, executed with the organisation
+     * context bound.
+     */
+    private function runScoped(
         OpeningBalanceDiscoveryService $discovery
     ): int {
         $beforeEntries = \DB::table(

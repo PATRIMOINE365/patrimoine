@@ -21,7 +21,7 @@ class StoreTenantFundWithdrawalRequest extends FormRequest
             'tenant_fund_account_id' => [
                 'required',
                 'integer',
-                'exists:tenant_fund_accounts,id',
+                \App\Rules\OrganisationOwned::exists('tenant_fund_accounts'),
             ],
 
             'amount' => [

@@ -35,7 +35,7 @@ class StoreOwnerExpenseBillRequest extends FormRequest
             'building_id' => [
                 'required',
                 'integer',
-                'exists:buildings,id',
+                \App\Rules\OrganisationOwned::exists('buildings'),
             ],
 
             'split' => [

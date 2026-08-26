@@ -194,6 +194,17 @@ class ApplicationLocaleService
             return $fallback;
         }
 
+        /*
+         * V1.1.0 multi-tenancy: presentation settings belong to one
+         * organisation. Without a bound organisation context (public
+         * pages, sign-in) there is no organisation whose preference
+         * could legitimately apply, so the platform default is used
+         * instead of leaking an arbitrary organisation's choice.
+         */
+        if (! \App\Support\OrganisationContext::bound()) {
+            return $fallback;
+        }
+
         $settings =
             ApplicationSetting::query()
                 ->first();

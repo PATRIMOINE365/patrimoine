@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\OrganisationScope;
+use App\Support\OrganisationContext;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * normal application behavior.
  */
 #[Fillable([
+    'organisation_id',
     'user_id',
     'actor_name',
     'actor_email',
@@ -68,9 +71,27 @@ class ActivityLog extends Model
 
     /**
      * Activity Log rows are immutable after creation.
+     *
+     * V1.1.0 multi-tenancy: unlike other business tables, an activity
+     * event MAY belong to no organisation (a failed sign-in against an
+     * unknown email address is a platform-level fact). The organisation
+     * scope still applies to every read while a context is bound, and
+     * rows are stamped from the bound context when the writer did not
+     * resolve an organisation explicitly.
      */
     protected static function booted(): void
     {
+        static::addGlobalScope(new OrganisationScope);
+
+        static::creating(
+            function (ActivityLog $log): void {
+                if ($log->organisation_id === null) {
+                    $log->organisation_id =
+                        OrganisationContext::idOrNull();
+                }
+            }
+        );
+
         static::updating(
             function (): bool {
                 return false;

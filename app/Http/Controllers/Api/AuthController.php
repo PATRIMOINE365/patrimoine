@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\ActivityLogService;
+use App\Services\MfaService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -32,7 +33,8 @@ class AuthController extends Controller
      */
     public function login(
         Request $request,
-        ActivityLogService $activityLog
+        ActivityLogService $activityLog,
+        MfaService $mfa
     ): JsonResponse {
 
         $credentials = $request->validate([
@@ -116,33 +118,136 @@ class AuthController extends Controller
          * workflow establishes a password and verifies the email address.
          */
         if ($user->email_verified_at === null) {
+            /*
+             * V1.1.0: a self-registered administrator still holding a
+             * verification token must verify their address; an invited
+             * user must complete the invitation workflow instead.
+             */
+            $awaitingVerification =
+                $user->email_verification_token_hash !== null;
+
             $this->recordFailedLogin(
                 activityLog: $activityLog,
                 request: $request,
                 email: $credentials['email'],
-                reason: 'setup_required',
+                reason: $awaitingVerification
+                    ? 'verification_required'
+                    : 'setup_required',
                 user: $user
             );
 
             throw ValidationException::withMessages([
                 'email' => [
-                    __('api.auth.setup_required'),
+                    $awaitingVerification
+                        ? __('api.auth.verification_required')
+                        : __('api.auth.setup_required'),
                 ],
             ]);
         }
 
         /*
-         * A descriptive device name makes individual tokens identifiable
-         * should Patrimoine later expose active-session management.
+         * V1.1.0 multi-tenancy: a suspended organisation refuses
+         * sign-in outright.
          */
-        $tokenName = $credentials['device_name']
+        $organisation = $user->organisation;
+
+        if ($organisation !== null && ! $organisation->isActive()) {
+            $this->recordFailedLogin(
+                activityLog: $activityLog,
+                request: $request,
+                email: $credentials['email'],
+                reason: 'organisation_suspended',
+                user: $user
+            );
+
+            throw ValidationException::withMessages([
+                'email' => [
+                    __('api.auth.organisation_suspended'),
+                ],
+            ]);
+        }
+
+        /*
+         * V1.1.0: a correct password no longer signs the user in. Every
+         * sign-in requires a six-digit code emailed to the account; the
+         * browser exchanges the challenge token plus code for the API
+         * token at /auth/mfa/verify.
+         */
+        $challenge = $mfa->start($user);
+
+        return response()->json([
+            'mfa_required' => true,
+            'challenge_token' => $challenge->token,
+            'email_hint' => $this->maskEmail($user->email),
+        ]);
+    }
+
+    /**
+     * Exchange a challenge token and emailed six-digit code for a
+     * Sanctum access token. This is the second and final step of every
+     * Patrimoine sign-in.
+     */
+    public function mfaVerify(
+        Request $request,
+        ActivityLogService $activityLog,
+        MfaService $mfa
+    ): JsonResponse {
+        $validated = $request->validate([
+            'challenge_token' => [
+                'required',
+                'string',
+                'size:64',
+            ],
+            'code' => [
+                'required',
+                'string',
+                'size:6',
+            ],
+            'device_name' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+        ]);
+
+        try {
+            $user = $mfa->verify(
+                $validated['challenge_token'],
+                $validated['code']
+            );
+        } catch (ValidationException $exception) {
+            /*
+             * Failed code entry is a failed sign-in attempt. The
+             * challenge token maps to one known user, but that user is
+             * recorded only as affected entity context, exactly like a
+             * wrong password.
+             */
+            $challengeUser = \App\Models\MfaChallenge::query()
+                ->where('token', $validated['challenge_token'])
+                ->first()
+                ?->user;
+
+            if ($challengeUser !== null) {
+                $this->recordFailedLogin(
+                    activityLog: $activityLog,
+                    request: $request,
+                    email: $challengeUser->email,
+                    reason: 'mfa_code_invalid',
+                    user: $challengeUser
+                );
+            }
+
+            throw $exception;
+        }
+
+        $tokenName = $validated['device_name']
             ?? 'patrimoine-api';
 
         $token = $user->createToken($tokenName);
 
         /*
          * Successful authentication is one meaningful human action.
-         * The password and access token are deliberately excluded.
+         * The password, code and access token are deliberately excluded.
          */
         $activityLog->record(
             action: 'auth.login',
@@ -158,6 +263,67 @@ class AuthController extends Controller
             'access_token' => $token->plainTextToken,
             'user' => $this->serializeUser($user),
         ]);
+    }
+
+    /**
+     * Email a fresh code for a pending sign-in challenge.
+     *
+     * Always answers 200 so the endpoint cannot be used to probe which
+     * challenge tokens are live.
+     */
+    public function mfaResend(
+        Request $request,
+        MfaService $mfa
+    ): JsonResponse {
+        $validated = $request->validate([
+            'challenge_token' => [
+                'required',
+                'string',
+                'size:64',
+            ],
+        ]);
+
+        $mfa->resend($validated['challenge_token']);
+
+        return response()->json([
+            'message' => __('api.auth.mfa_code_resent'),
+        ]);
+    }
+
+    /**
+     * Obscure an email address for on-screen hints, keeping only the
+     * first character of the local part and domain name.
+     */
+    private function maskEmail(string $email): string
+    {
+        [$local, $domain] = array_pad(
+            explode('@', $email, 2),
+            2,
+            ''
+        );
+
+        $maskPart = static function (string $part): string {
+            if (mb_strlen($part) <= 1) {
+                return $part.'****';
+            }
+
+            return mb_substr($part, 0, 1).'****';
+        };
+
+        $domainName = $domain;
+        $domainTail = '';
+
+        $lastDot = mb_strrpos($domain, '.');
+
+        if ($lastDot !== false) {
+            $domainName = mb_substr($domain, 0, $lastDot);
+            $domainTail = mb_substr($domain, $lastDot);
+        }
+
+        return $maskPart($local)
+            .'@'
+            .$maskPart($domainName)
+            .$domainTail;
     }
 
     /**
@@ -534,6 +700,9 @@ class AuthController extends Controller
             metadata: [
                 'reason' => $reason,
             ],
+            organisationId: $user === null
+                ? null
+                : (int) $user->organisation_id,
         );
     }
 

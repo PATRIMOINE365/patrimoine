@@ -72,7 +72,7 @@ class UpdateBuildingRequest extends FormRequest
                 'required',
                 'integer',
                 'distinct',
-                'exists:parties,id',
+                \App\Rules\OrganisationOwned::exists('parties'),
             ],
 
             'owners.*.ownership_percentage' => [

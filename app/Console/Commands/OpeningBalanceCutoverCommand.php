@@ -4,20 +4,48 @@ namespace App\Console\Commands;
 
 use App\Services\Accounting\OpeningBalanceCutoverService;
 use Carbon\CarbonImmutable;
+use App\Console\Concerns\ResolvesOrganisationOption;
+use App\Support\OrganisationContext;
 use Illuminate\Console\Command;
 use Throwable;
 
 class OpeningBalanceCutoverCommand extends Command
 {
+    use ResolvesOrganisationOption;
+
     protected $signature =
         'patrimoine:opening-balance-cutover
         {--date= : Required V1.0.5 deployment/cutover date in YYYY-MM-DD}
-        {--yes : Execute without interactive confirmation}';
+        {--yes : Execute without interactive confirmation}
+        {--organisation= : Organisation ID (required when several organisations exist)}';
 
     protected $description =
         'Post the reconciled V1.0.5 opening Financial Journal position';
 
     public function handle(
+        OpeningBalanceCutoverService $cutover
+    ): int {
+        /*
+         * V1.1.0 multi-tenancy: the opening-balance suite operates
+         * on exactly one organisation's books.
+         */
+        $organisation = $this->resolveOrganisationOrFail();
+
+        if ($organisation === null) {
+            return self::FAILURE;
+        }
+
+        return OrganisationContext::runAs(
+            (int) $organisation->id,
+            fn (): int => $this->runScoped($cutover)
+        );
+    }
+
+    /**
+     * The original command body, executed with the organisation
+     * context bound.
+     */
+    private function runScoped(
         OpeningBalanceCutoverService $cutover
     ): int {
         $date =

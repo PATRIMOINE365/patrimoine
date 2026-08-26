@@ -144,4 +144,39 @@ return [
         'fund_security_deposit' => 'Security Deposit',
         'pdf_attached' => 'Your official expense voucher is attached as a PDF.',
     ],
+
+    /*
+    |----------------------------------------------------------------------
+    | V1.1.0 shared email layout
+    |----------------------------------------------------------------------
+    */
+    'layout' => [
+        'on_behalf_of' => 'Sent on behalf of :organisation',
+        'sent_by_product' => 'This message was sent by Patrimoine 365.',
+        'operated_by' => 'is operated by',
+        'questions' => 'Questions?',
+    ],
+
+    'email_verification' => [
+        'subject' => 'Verify your email address — Patrimoine 365',
+        'title' => 'Verify your email address',
+        'preheader' => 'One click and your Patrimoine 365 organisation is ready.',
+        'heading' => 'Verify your email address',
+        'greeting' => 'Hello :name,',
+        'introduction' => 'Welcome to Patrimoine 365! Your organisation ":organisation" has been created. Confirm your email address to activate your account and sign in.',
+        'action' => 'Verify email address',
+        'expiry' => 'This link is valid for 48 hours.',
+        'ignore' => 'If you did not create this account, you can safely ignore this email — nothing will be activated without this verification.',
+    ],
+
+    'mfa_code' => [
+        'subject' => ':code is your Patrimoine 365 sign-in code',
+        'title' => 'Your sign-in code',
+        'preheader' => 'Use this code to finish signing in.',
+        'heading' => 'Your sign-in code',
+        'greeting' => 'Hello :name,',
+        'introduction' => 'Use the code below to finish signing in to Patrimoine 365:',
+        'expiry' => 'This code expires in :minutes minutes and can only be used once.',
+        'ignore' => 'If you did not try to sign in, we recommend changing your password immediately.',
+    ],
 ];

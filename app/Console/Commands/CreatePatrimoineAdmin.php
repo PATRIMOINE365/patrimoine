@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Console\Concerns\ResolvesOrganisationOption;
 use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -21,6 +22,8 @@ use Illuminate\Validation\Rules\Password;
  */
 class CreatePatrimoineAdmin extends Command
 {
+    use ResolvesOrganisationOption;
+
     /**
      * Command name used by administrators.
      *
@@ -29,7 +32,8 @@ class CreatePatrimoineAdmin extends Command
      *
      * @var string
      */
-    protected $signature = 'patrimoine:create-admin';
+    protected $signature = 'patrimoine:create-admin
+        {--organisation= : Organisation ID (required when several organisations exist)}';
 
     /**
      * Human-readable command description.
@@ -44,6 +48,16 @@ class CreatePatrimoineAdmin extends Command
      */
     public function handle(): int
     {
+        /*
+         * V1.1.0 multi-tenancy: an administrator account always belongs
+         * to one organisation.
+         */
+        $organisation = $this->resolveOrganisationOrFail();
+
+        if ($organisation === null) {
+            return self::FAILURE;
+        }
+
         $this->newLine();
 
         $this->info(
@@ -178,26 +192,29 @@ class CreatePatrimoineAdmin extends Command
          * remains centralized in the User model.
          */
         $user =
-            User::create([
-                'name' => $name,
+            \App\Support\OrganisationContext::runAs(
+                (int) $organisation->id,
+                fn (): User => User::create([
+                    'name' => $name,
 
-                'email' => $email,
+                    'email' => $email,
 
-                'password' => $password,
+                    'password' => $password,
 
-                /*
-                 * This bootstrap command deliberately creates an
-                 * Administrator account.
-                 */
-                'role' => UserRole::Administrator,
+                    /*
+                     * This bootstrap command deliberately creates an
+                     * Administrator account.
+                     */
+                    'role' => UserRole::Administrator,
 
-                /*
-                 * Accounts are created deliberately by a trusted system
-                 * administrator, therefore the email is considered verified
-                 * at bootstrap time.
-                 */
-                'email_verified_at' => now(),
-            ]);
+                    /*
+                     * Accounts are created deliberately by a trusted system
+                     * administrator, therefore the email is considered
+                     * verified at bootstrap time.
+                     */
+                    'email_verified_at' => now(),
+                ])
+            );
 
         $this->newLine();
 

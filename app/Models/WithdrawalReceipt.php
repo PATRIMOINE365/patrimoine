@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOrganisation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WithdrawalReceipt extends Model
 {
+    use BelongsToOrganisation;
+
     protected $fillable = [
         'receipt_number',
         'tenant_fund_transaction_id',

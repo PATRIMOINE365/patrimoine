@@ -45,6 +45,7 @@ class ActivityLogService
         ?string $actorRole = null,
         ?string $ipAddress = null,
         ?string $userAgent = null,
+        ?int $organisationId = null,
     ): ActivityLog {
         /*
          * Resolve authenticated identity automatically when a request is
@@ -79,6 +80,18 @@ class ActivityLogService
             $this->userAgentContext->parse($userAgent);
 
         return ActivityLog::create([
+            /*
+             * V1.1.0 multi-tenancy: events performed by (or against) a
+             * known user always belong to that user's organisation, even
+             * when recorded before authentication completes (login and
+             * MFA run with no bound organisation context). Truly
+             * anonymous events — a failed sign-in against an unknown
+             * email — carry no organisation and are visible to nobody
+             * through the scoped API.
+             */
+            'organisation_id' => $organisationId
+                ?? $actor?->organisation_id
+                ?? \App\Support\OrganisationContext::idOrNull(),
             'user_id' => $actor?->getKey(),
             'actor_name' => $actorName,
             'actor_email' => $actorEmail,

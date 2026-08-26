@@ -382,6 +382,14 @@ export async function loadPresentationConfiguration() {
         return presentationConfigurationPromise;
     }
 
+    /*
+     * V1.1.0 multi-tenancy: with a stored token the server answers with
+     * the signed-in organisation presentation settings; without one the
+     * platform defaults keep the public screens working.
+     */
+    const storedToken =
+        token();
+
     presentationConfigurationPromise =
         fetch(
             '/api/presentation-config',
@@ -389,6 +397,15 @@ export async function loadPresentationConfiguration() {
                 headers: {
                     Accept:
                         'application/json',
+
+                    ...(
+                        storedToken
+                            ? {
+                                Authorization:
+                                    'Bearer ' + storedToken,
+                            }
+                            : {}
+                    ),
                 },
             }
         )

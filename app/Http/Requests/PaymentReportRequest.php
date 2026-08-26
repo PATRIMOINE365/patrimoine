@@ -32,25 +32,25 @@ class PaymentReportRequest extends FormRequest
             'tenant_id' => [
                 'nullable',
                 'integer',
-                'exists:parties,id',
+                \App\Rules\OrganisationOwned::exists('parties'),
             ],
 
             'lease_id' => [
                 'nullable',
                 'integer',
-                'exists:leases,id',
+                \App\Rules\OrganisationOwned::exists('leases'),
             ],
 
             'building_id' => [
                 'nullable',
                 'integer',
-                'exists:buildings,id',
+                \App\Rules\OrganisationOwned::exists('buildings'),
             ],
 
             'unit_id' => [
                 'nullable',
                 'integer',
-                'exists:units,id',
+                \App\Rules\OrganisationOwned::exists('units'),
             ],
 
             'payment_method' => [

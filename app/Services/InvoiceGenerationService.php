@@ -554,16 +554,30 @@ class InvoiceGenerationService
      * Generate the next human-readable Invoice number.
      *
      * The database ID remains the true unique identifier. This number is
-     * designed for customer-facing documents and may later be replaced by
-     * a configurable numbering policy.
+     * designed for customer-facing documents.
+     *
+     * V1.1.0 multi-tenancy: numbering is per organisation. The highest
+     * existing INV- number within the (organisation-scoped) invoices
+     * table is read rather than max(id), so every organisation runs its
+     * own gap-free INV-000001... series and the composite unique key
+     * (organisation_id, invoice_number) can never collide.
      */
     private function nextInvoiceNumber(): string
     {
-        $nextId = ((int) Invoice::query()->max('id')) + 1;
+        $prefix = 'INV-';
+
+        $last = Invoice::query()
+            ->where('invoice_number', 'like', $prefix.'%')
+            ->orderByDesc('invoice_number')
+            ->value('invoice_number');
+
+        $sequence = $last === null
+            ? 1
+            : ((int) substr($last, -6)) + 1;
 
         return sprintf(
             'INV-%06d',
-            $nextId
+            $sequence
         );
     }
 }

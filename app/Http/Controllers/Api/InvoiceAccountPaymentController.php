@@ -32,7 +32,7 @@ class InvoiceAccountPaymentController extends Controller
         FinancialActivitySnapshotService $activitySnapshots,
     ): JsonResponse {
         $validated = $request->validate([
-            'tenant_fund_account_id' => 'required|integer|exists:tenant_fund_accounts,id',
+            'tenant_fund_account_id' => ['required', 'integer', \App\Rules\OrganisationOwned::exists('tenant_fund_accounts')],
             'amount' => 'required|integer|min:1',
             'transaction_date' => 'required|date',
         ]);

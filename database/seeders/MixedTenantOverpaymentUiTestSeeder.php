@@ -37,6 +37,31 @@ class MixedTenantOverpaymentUiTestSeeder extends Seeder
      */
     public function run(): void
     {
+        /*
+         * V1.1.0 multi-tenancy: demo data belongs to a demo
+         * organisation; every row created below is stamped through
+         * the bound organisation context.
+         */
+        $demoOrganisation =
+            \App\Models\Organisation::query()->firstOrCreate(
+                ['name' => 'Demo Organisation'],
+                ['status' => 'active']
+            );
+
+        \App\Support\OrganisationContext::runAs(
+            (int) $demoOrganisation->id,
+            function (): void {
+                $this->seedScoped();
+            }
+        );
+    }
+
+    /**
+     * The original seeding body, executed with the demo
+     * organisation context bound.
+     */
+    private function seedScoped(): void
+    {
         DB::transaction(function (): void {
             /*
              * Keep the seeder safely repeatable during UI verification.

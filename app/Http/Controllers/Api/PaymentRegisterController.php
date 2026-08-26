@@ -151,6 +151,15 @@ class PaymentRegisterController extends Controller
         return DB::table(
             'payments as payments'
         )
+            /*
+             * V1.1.0 multi-tenancy: raw register queries bypass the
+             * Eloquent organisation scope, so the tenant constraint is
+             * applied explicitly here.
+             */
+            ->where(
+                'payments.organisation_id',
+                \App\Support\OrganisationContext::id()
+            )
             ->join(
                 'leases as leases',
                 'leases.id',
@@ -256,6 +265,15 @@ class PaymentRegisterController extends Controller
         return DB::table(
             'owner_transactions as owner_transactions'
         )
+            /*
+             * V1.1.0 multi-tenancy: raw register queries bypass the
+             * Eloquent organisation scope, so the tenant constraint is
+             * applied explicitly here.
+             */
+            ->where(
+                'owner_transactions.organisation_id',
+                \App\Support\OrganisationContext::id()
+            )
             ->join(
                 'owner_accounts as owner_accounts',
                 'owner_accounts.id',

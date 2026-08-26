@@ -7346,3 +7346,62 @@ html[data-theme="light"]
 }
 
 /* END PHASE 6 LEASE FINANCIAL HISTORY THEME */
+
+/* ==========================================================================
+   V1.1.0 LEGAL DOCUMENT PAGES (/terms, /privacy)
+   Simple readable typography on the shared token palette.
+   ========================================================================== */
+
+.pm-legal-document h1 {
+    font-size: 1.875rem;
+    line-height: 2.375rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--pm-text);
+}
+
+.pm-legal-document .pm-legal-meta {
+    margin-top: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--pm-text-muted);
+}
+
+.pm-legal-document h2 {
+    margin-top: 2.25rem;
+    margin-bottom: 0.625rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.pm-legal-document p {
+    margin-bottom: 0.875rem;
+    font-size: 0.9375rem;
+    line-height: 1.625rem;
+    color: var(--pm-text-secondary);
+}
+
+.pm-legal-document ul {
+    margin: 0 0 0.875rem 1.25rem;
+    list-style: disc;
+}
+
+.pm-legal-document li {
+    margin-bottom: 0.375rem;
+    font-size: 0.9375rem;
+    line-height: 1.625rem;
+    color: var(--pm-text-secondary);
+}
+
+.pm-legal-document a {
+    color: var(--pm-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.pm-legal-document strong {
+    color: var(--pm-text);
+}
+
+/* END V1.1.0 LEGAL DOCUMENT PAGES */

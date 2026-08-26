@@ -7,6 +7,7 @@ use App\Services\InvoiceGenerationService;
 use Carbon\Carbon;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
+use App\Console\Concerns\IteratesOrganisations;
 use Illuminate\Console\Command;
 use Throwable;
 
@@ -24,8 +25,14 @@ use Throwable;
 #[Description('Generate all missing rent invoices for active and notice leases')]
 class GenerateDueInvoices extends Command
 {
+    use IteratesOrganisations;
+
     /**
      * Execute the automated billing run.
+     *
+     * V1.1.0 multi-tenancy: billing runs once per active organisation
+     * with that organisation's context bound, so invoice queries,
+     * numbering and created rows all stay inside one tenant.
      */
     public function handle(
         InvoiceGenerationService $service
@@ -36,6 +43,21 @@ class GenerateDueInvoices extends Command
             return self::FAILURE;
         }
 
+        return $this->forEachOrganisation(
+            fn (): int => $this->runBillingForOrganisation(
+                $service,
+                $throughDate
+            )
+        );
+    }
+
+    /**
+     * Run one organisation's billing pass.
+     */
+    private function runBillingForOrganisation(
+        InvoiceGenerationService $service,
+        Carbon $throughDate
+    ): int {
         $generatedCount = 0;
         $processedLeaseCount = 0;
         $failedLeaseCount = 0;

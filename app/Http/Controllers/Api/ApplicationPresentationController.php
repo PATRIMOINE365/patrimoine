@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationSetting;
+use App\Models\User;
 use App\Services\ApplicationIdentityService;
 use App\Services\ApplicationLocaleService;
+use App\Support\OrganisationContext;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * Expose organisation-wide presentation settings to browser clients.
@@ -20,9 +23,29 @@ use Illuminate\Http\JsonResponse;
 class ApplicationPresentationController extends Controller
 {
     public function __invoke(
+        Request $request,
         ApplicationLocaleService $locale,
         ApplicationIdentityService $identity
     ): JsonResponse {
+        /*
+         * V1.1.0 multi-tenancy: the route stays public so the sign-in
+         * screen can render, but when a bearer token accompanies the
+         * request the caller receives THEIR organisation presentation
+         * settings rather than platform defaults. Resolving the sanctum
+         * guard directly performs token authentication without
+         * requiring auth middleware on the route.
+         */
+        $user = $request->user('sanctum');
+
+        if (
+            $user instanceof User
+            && $user->organisation_id !== null
+        ) {
+            OrganisationContext::bind(
+                (int) $user->organisation_id
+            );
+        }
+
         $configuration =
             $locale->browserConfiguration();
 

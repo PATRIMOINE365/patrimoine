@@ -20,13 +20,13 @@ class StoreTenantFundTransferRequest extends FormRequest
             'source_account_id' => [
                 'required',
                 'integer',
-                'exists:tenant_fund_accounts,id',
+                \App\Rules\OrganisationOwned::exists('tenant_fund_accounts'),
             ],
 
             'destination_account_id' => [
                 'required',
                 'integer',
-                'exists:tenant_fund_accounts,id',
+                \App\Rules\OrganisationOwned::exists('tenant_fund_accounts'),
                 'different:source_account_id',
             ],
 

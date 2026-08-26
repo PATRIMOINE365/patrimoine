@@ -144,4 +144,39 @@ return [
         'fund_security_deposit' => 'Caution',
         'pdf_attached' => 'Votre bon de dépense officiel est joint au format PDF.',
     ],
+
+    /*
+    |----------------------------------------------------------------------
+    | V1.1.0 shared email layout
+    |----------------------------------------------------------------------
+    */
+    'layout' => [
+        'on_behalf_of' => 'Envoyé pour le compte de :organisation',
+        'sent_by_product' => 'Ce message a été envoyé par Patrimoine 365.',
+        'operated_by' => 'est exploité par',
+        'questions' => 'Des questions ?',
+    ],
+
+    'email_verification' => [
+        'subject' => 'Vérifiez votre adresse e-mail — Patrimoine 365',
+        'title' => 'Vérifiez votre adresse e-mail',
+        'preheader' => 'Un clic et votre organisation Patrimoine 365 est prête.',
+        'heading' => 'Vérifiez votre adresse e-mail',
+        'greeting' => 'Bonjour :name,',
+        'introduction' => 'Bienvenue sur Patrimoine 365 ! Votre organisation « :organisation » a été créée. Confirmez votre adresse e-mail pour activer votre compte et vous connecter.',
+        'action' => 'Vérifier l\'adresse e-mail',
+        'expiry' => 'Ce lien est valable pendant 48 heures.',
+        'ignore' => 'Si vous n\'avez pas créé ce compte, vous pouvez ignorer cet e-mail en toute sécurité — rien ne sera activé sans cette vérification.',
+    ],
+
+    'mfa_code' => [
+        'subject' => ':code est votre code de connexion Patrimoine 365',
+        'title' => 'Votre code de connexion',
+        'preheader' => 'Utilisez ce code pour terminer votre connexion.',
+        'heading' => 'Votre code de connexion',
+        'greeting' => 'Bonjour :name,',
+        'introduction' => 'Utilisez le code ci-dessous pour terminer votre connexion à Patrimoine 365 :',
+        'expiry' => 'Ce code expire dans :minutes minutes et ne peut être utilisé qu\'une seule fois.',
+        'ignore' => 'Si vous n\'avez pas tenté de vous connecter, nous vous recommandons de changer votre mot de passe immédiatement.',
+    ],
 ];

@@ -1,4 +1,3 @@
-import './setup';
 /*
 |--------------------------------------------------------------------------
 | Patrimoine Browser Application Bootstrap
@@ -25,6 +24,11 @@ import {
     initializeAuthenticatedShell,
     initializeLogin,
 } from './auth.js';
+
+import {
+    initializeSignup,
+    initializeVerifyEmail,
+} from './signup.js';
 
 import {
     initializeTheme,
@@ -145,6 +149,8 @@ document.addEventListener(
             initializeForgotPassword()
             || initializeResetPassword()
             || initializeInvitation()
+            || initializeSignup()
+            || initializeVerifyEmail()
         ) {
             return;
         }

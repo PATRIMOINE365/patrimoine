@@ -140,30 +140,254 @@ export async function initializeLogin() {
         }
     }
 
+    /*
+     * V1.1.0: signing in is a two-step exchange inside one box.
+     *
+     * Step 1 posts email + password; a correct pair opens an MFA
+     * challenge and the server emails a six-digit code. Step 2 posts
+     * the challenge token + code and only then receives the API token.
+     */
+    const credentialsStep =
+        document.getElementById('login-step-credentials');
+
+    const mfaStep =
+        document.getElementById('login-step-mfa');
+
+    const mfaForm =
+        document.getElementById('mfa-form');
+
+    const mfaCodeInput =
+        document.getElementById('mfa-code');
+
+    const mfaErrorBox =
+        document.getElementById('mfa-error');
+
+    const mfaEmailHint =
+        document.getElementById('mfa-email-hint');
+
+    const mfaBackButton =
+        document.getElementById('mfa-back');
+
+    const mfaResendButton =
+        document.getElementById('mfa-resend');
+
+    const mfaResendCountdown =
+        document.getElementById('mfa-resend-countdown');
+
+    let challengeToken =
+        null;
+
+    let resendTimer =
+        null;
+
+    function showError(box, message) {
+        if (! box) {
+            return;
+        }
+
+        box.textContent =
+            message;
+
+        box.classList.remove('hidden');
+    }
+
+    function clearError(box) {
+        if (! box) {
+            return;
+        }
+
+        box.textContent =
+            '';
+
+        box.classList.add('hidden');
+    }
+
+    function setBusy(button, busyKey, idleKey) {
+        const label =
+            button.querySelector('[data-i18n]');
+
+        button.disabled =
+            true;
+
+        button.dataset.busy =
+            'true';
+
+        if (label) {
+            label.textContent =
+                translate(busyKey);
+        }
+
+        return function restore() {
+            button.disabled =
+                false;
+
+            delete button.dataset.busy;
+
+            if (label) {
+                label.textContent =
+                    translate(idleKey);
+            }
+        };
+    }
+
+    /*
+     * A fresh code can be requested after a short cooldown, keeping
+     * accidental double-clicks from burning through the resend
+     * throttle.
+     */
+    function startResendCooldown(seconds) {
+        if (! mfaResendButton) {
+            return;
+        }
+
+        let remaining =
+            seconds;
+
+        mfaResendButton.disabled =
+            true;
+
+        if (resendTimer) {
+            clearInterval(resendTimer);
+        }
+
+        function render() {
+            if (mfaResendCountdown) {
+                mfaResendCountdown.textContent =
+                    remaining > 0
+                        ? ' (' + remaining + 's)'
+                        : '';
+            }
+        }
+
+        render();
+
+        resendTimer =
+            setInterval(
+                () => {
+                    remaining -= 1;
+
+                    render();
+
+                    if (remaining <= 0) {
+                        clearInterval(resendTimer);
+
+                        resendTimer =
+                            null;
+
+                        mfaResendButton.disabled =
+                            false;
+                    }
+                },
+                1000
+            );
+    }
+
+    function showMfaStep(hint) {
+        clearError(mfaErrorBox);
+
+        if (mfaEmailHint) {
+            mfaEmailHint.textContent =
+                hint
+                || '';
+        }
+
+        if (credentialsStep) {
+            credentialsStep.classList.add('hidden');
+        }
+
+        if (mfaStep) {
+            mfaStep.classList.remove('hidden');
+        }
+
+        if (mfaCodeInput) {
+            mfaCodeInput.value =
+                '';
+
+            mfaCodeInput.focus();
+        }
+
+        startResendCooldown(30);
+    }
+
+    function showCredentialsStep() {
+        challengeToken =
+            null;
+
+        if (mfaStep) {
+            mfaStep.classList.add('hidden');
+        }
+
+        if (credentialsStep) {
+            credentialsStep.classList.remove('hidden');
+        }
+    }
+
+    async function postJson(url, payload) {
+        const response =
+            await fetch(
+                url,
+                {
+                    method: 'POST',
+
+                    headers: {
+                        Accept:
+                            'application/json',
+
+                        'Content-Type':
+                            'application/json',
+                    },
+
+                    body:
+                        JSON.stringify(payload),
+                }
+            );
+
+        return parseJsonResponse(response);
+    }
+
+    function completeSignIn(data) {
+        if (
+            typeof data.access_token
+            !== 'string'
+            || data.access_token.trim()
+            === ''
+        ) {
+            throw new Error(
+                translate(
+                    'login.missing_api_token'
+                )
+            );
+        }
+
+        saveToken(
+            data.access_token
+        );
+
+        saveUserRole(
+            data.user?.role
+        );
+
+        window.location.replace(
+            '/dashboard'
+        );
+    }
+
     form.addEventListener(
         'submit',
         async (event) => {
             event.preventDefault();
 
             const button =
-                document.getElementById(
-                    'login-button'
-                );
+                document.getElementById('login-button');
 
             const errorBox =
-                document.getElementById(
-                    'login-error'
-                );
+                document.getElementById('login-error');
 
             const emailInput =
-                document.getElementById(
-                    'email'
-                );
+                document.getElementById('email');
 
             const passwordInput =
-                document.getElementById(
-                    'password'
-                );
+                document.getElementById('password');
 
             if (
                 ! button
@@ -174,137 +398,167 @@ export async function initializeLogin() {
                 return;
             }
 
-            errorBox.classList.add(
-                'hidden'
-            );
+            clearError(errorBox);
 
-            errorBox.textContent =
-                '';
-
-            const buttonLabel =
-                button.querySelector(
-                    '[data-i18n="login.sign_in"]'
+            const restore =
+                setBusy(
+                    button,
+                    'login.signing_in',
+                    'login.sign_in'
                 );
 
-            button.disabled =
-                true;
-
-            button.dataset.busy =
-                'true';
-
-            if (buttonLabel) {
-                buttonLabel.textContent =
-                    translate(
-                        'login.signing_in'
-                    );
-            }
-
             try {
-                /*
-                 * Login itself cannot use apiRequest() because no token
-                 * exists yet.
-                 */
-                const response =
-                    await fetch(
+                const data =
+                    await postJson(
                         '/api/auth/login',
                         {
-                            method:
-                                'POST',
+                            email:
+                                emailInput.value.trim(),
 
-                            headers: {
-                                Accept:
-                                    'application/json',
+                            password:
+                                passwordInput.value,
 
-                                'Content-Type':
-                                    'application/json',
-                            },
-
-                            body:
-                                JSON.stringify({
-                                    email:
-                                        emailInput
-                                            .value
-                                            .trim(),
-
-                                    password:
-                                        passwordInput
-                                            .value,
-
-                                    device_name:
-                                        'patrimoine-web',
-                                }),
+                            device_name:
+                                'patrimoine-web',
                         }
                     );
 
-                const data =
-                    await parseJsonResponse(
-                        response
+                if (data.mfa_required) {
+                    challengeToken =
+                        data.challenge_token;
+
+                    showMfaStep(
+                        data.email_hint
                     );
 
-                /*
-                 * AuthController returns:
-                 *
-                 * {
-                 *     "token_type": "Bearer",
-                 *     "access_token": "...",
-                 *     "user": {...}
-                 * }
-                 */
-                if (
-                    typeof data.access_token
-                    !== 'string'
-                    || data
-                        .access_token
-                        .trim()
-                    === ''
-                ) {
-                    throw new Error(
-                        translate(
-                            'login.missing_api_token'
-                        )
-                    );
+                    return;
                 }
 
-                saveToken(
-                    data.access_token
-                );
-
-                saveUserRole(
-                    data.user?.role
-                );
-
-                window.location.replace(
-                    '/dashboard'
-                );
+                /*
+                 * Defensive: a server not requiring MFA would answer
+                 * with the token directly.
+                 */
+                completeSignIn(data);
             } catch (error) {
-                errorBox.textContent =
+                showError(
+                    errorBox,
                     error instanceof Error
                         ? error.message
                         : translate(
                             'login.unable_to_sign_in'
-                        );
-
-                errorBox.classList.remove(
-                    'hidden'
+                        )
                 );
             } finally {
-                button.disabled =
-                    false;
-
-                delete button.dataset.busy;
-
-                if (buttonLabel) {
-                    buttonLabel.textContent =
-                        translate(
-                            'login.sign_in'
-                        );
-                }
+                restore();
             }
         }
     );
 
+    if (mfaForm) {
+        mfaForm.addEventListener(
+            'submit',
+            async (event) => {
+                event.preventDefault();
+
+                const button =
+                    document.getElementById('mfa-button');
+
+                if (
+                    ! button
+                    || ! mfaCodeInput
+                    || ! challengeToken
+                ) {
+                    return;
+                }
+
+                clearError(mfaErrorBox);
+
+                const restore =
+                    setBusy(
+                        button,
+                        'login.mfa_verifying',
+                        'login.mfa_verify'
+                    );
+
+                try {
+                    const data =
+                        await postJson(
+                            '/api/auth/mfa/verify',
+                            {
+                                challenge_token:
+                                    challengeToken,
+
+                                code:
+                                    mfaCodeInput.value.trim(),
+
+                                device_name:
+                                    'patrimoine-web',
+                            }
+                        );
+
+                    completeSignIn(data);
+                } catch (error) {
+                    showError(
+                        mfaErrorBox,
+                        error instanceof Error
+                            ? error.message
+                            : translate(
+                                'login.unable_to_sign_in'
+                            )
+                    );
+                } finally {
+                    restore();
+                }
+            }
+        );
+    }
+
+    if (mfaBackButton) {
+        mfaBackButton.addEventListener(
+            'click',
+            () => {
+                showCredentialsStep();
+            }
+        );
+    }
+
+    if (mfaResendButton) {
+        mfaResendButton.addEventListener(
+            'click',
+            async () => {
+                if (! challengeToken) {
+                    return;
+                }
+
+                clearError(mfaErrorBox);
+
+                try {
+                    await postJson(
+                        '/api/auth/mfa/resend',
+                        {
+                            challenge_token:
+                                challengeToken,
+                        }
+                    );
+
+                    startResendCooldown(30);
+                } catch (error) {
+                    showError(
+                        mfaErrorBox,
+                        error instanceof Error
+                            ? error.message
+                            : translate(
+                                'login.unable_to_sign_in'
+                            )
+                    );
+                }
+            }
+        );
+    }
+
     return true;
 }
+
 
 /*
 |--------------------------------------------------------------------------

@@ -31,7 +31,7 @@ class TenantFundExpenseController extends Controller
         FinancialActivitySnapshotService $activitySnapshots,
     ): JsonResponse {
         $validated = $request->validate([
-            'tenant_fund_account_id' => 'required|integer|exists:tenant_fund_accounts,id',
+            'tenant_fund_account_id' => ['required', 'integer', \App\Rules\OrganisationOwned::exists('tenant_fund_accounts')],
             'transaction_date' => 'required|date',
             'payment_method' => 'required|in:cash,bank_transfer,momo',
             'reference' => 'nullable|string|max:255',

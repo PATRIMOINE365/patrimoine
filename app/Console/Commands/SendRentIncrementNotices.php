@@ -8,6 +8,7 @@ use App\Services\RentIncrementService;
 use Carbon\Carbon;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
+use App\Console\Concerns\IteratesOrganisations;
 use Illuminate\Console\Command;
 use Throwable;
 
@@ -43,8 +44,13 @@ class SendRentIncrementNotices extends Command
      */
     private const NOTICE_MONTHS = 3;
 
+    use IteratesOrganisations;
+
     /**
      * Execute the rent-increment notification run.
+     *
+     * V1.1.0 multi-tenancy: notices are sent once per active
+     * organisation with that organisation's context and language bound.
      */
     public function handle(
         EmailDeliveryService $emailDelivery,
@@ -57,6 +63,23 @@ class SendRentIncrementNotices extends Command
             return self::FAILURE;
         }
 
+        return $this->forEachOrganisation(
+            fn (): int => $this->runNoticesForOrganisation(
+                $emailDelivery,
+                $rentIncrementService,
+                $asOf
+            )
+        );
+    }
+
+    /**
+     * Run one organisation's notice pass.
+     */
+    private function runNoticesForOrganisation(
+        EmailDeliveryService $emailDelivery,
+        RentIncrementService $rentIncrementService,
+        Carbon $asOf
+    ): int {
         $processed = 0;
         $eligible = 0;
         $sent = 0;

@@ -31,13 +31,13 @@ class StoreOwnerExpenseRequest extends FormRequest
             'building_id' => [
                 'required',
                 'integer',
-                'exists:buildings,id',
+                \App\Rules\OrganisationOwned::exists('buildings'),
             ],
 
             'unit_id' => [
                 'nullable',
                 'integer',
-                'exists:units,id',
+                \App\Rules\OrganisationOwned::exists('units'),
             ],
 
             'description' => [

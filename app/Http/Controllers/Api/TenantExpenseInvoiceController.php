@@ -30,7 +30,7 @@ class TenantExpenseInvoiceController extends Controller
         ActivityLogService $activityLog,
     ): JsonResponse {
         $validated = $request->validate([
-            'lease_id' => 'required|integer|exists:leases,id',
+            'lease_id' => ['required', 'integer', \App\Rules\OrganisationOwned::exists('leases')],
             'transaction_date' => 'required|date',
             'reference' => 'nullable|string|max:255',
             'lines' => 'required|array|min:1',

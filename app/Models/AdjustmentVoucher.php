@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOrganisation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AdjustmentVoucher extends Model
 {
+    use BelongsToOrganisation;
+
     protected $fillable = [
         'voucher_number',
         'account_type',

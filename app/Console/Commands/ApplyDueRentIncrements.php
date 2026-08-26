@@ -7,6 +7,7 @@ use App\Services\RentIncrementService;
 use Carbon\Carbon;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
+use App\Console\Concerns\IteratesOrganisations;
 use Illuminate\Console\Command;
 use Throwable;
 
@@ -35,8 +36,13 @@ use Throwable;
 )]
 class ApplyDueRentIncrements extends Command
 {
+    use IteratesOrganisations;
+
     /**
      * Execute the automatic rent-increment application run.
+     *
+     * V1.1.0 multi-tenancy: increments are applied once per active
+     * organisation with that organisation's context bound.
      */
     public function handle(
         RentIncrementService $service
@@ -48,6 +54,21 @@ class ApplyDueRentIncrements extends Command
             return self::FAILURE;
         }
 
+        return $this->forEachOrganisation(
+            fn (): int => $this->runIncrementsForOrganisation(
+                $service,
+                $asOf
+            )
+        );
+    }
+
+    /**
+     * Run one organisation's increment pass.
+     */
+    private function runIncrementsForOrganisation(
+        RentIncrementService $service,
+        Carbon $asOf
+    ): int {
         $processed = 0;
         $applied = 0;
         $failed = 0;

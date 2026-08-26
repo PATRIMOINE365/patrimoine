@@ -15,6 +15,27 @@ return [
 
         'unauthenticated' => 'Vous devez être authentifié pour effectuer cette action.',
         'forbidden' => 'Vous n’êtes pas autorisé à effectuer cette action.',
+
+        'verification_required' => 'Vérifiez votre adresse e-mail avant de vous connecter. Consultez votre boîte de réception pour trouver le lien de vérification.',
+        'organisation_suspended' => 'Cette organisation est actuellement suspendue. Contactez support@patrimoine365.com.',
+        'mfa_challenge_expired' => 'Cette tentative de connexion a expiré. Reconnectez-vous pour recevoir un nouveau code.',
+        'mfa_code_invalid' => 'Le code de vérification est incorrect.',
+        'mfa_code_resent' => 'Un nouveau code de vérification a été envoyé à votre adresse e-mail.',
+    ],
+
+    'registration' => [
+        'created' => 'Votre organisation a été créée. Consultez votre e-mail pour vérifier votre adresse.',
+        'verified' => 'Votre adresse e-mail a été vérifiée. Vous pouvez maintenant vous connecter.',
+        'verification_invalid' => 'Ce lien de vérification est invalide ou a expiré. Demandez-en un nouveau depuis la page de connexion.',
+        'verification_sent' => 'Si cette adresse nécessite une vérification, un nouveau lien a été envoyé.',
+    ],
+
+    'license' => [
+        'user_limit_reached' => 'La limite d’utilisateurs de votre forfait est atteinte. Passez à un forfait supérieur pour ajouter des utilisateurs.',
+        'lease_limit_reached' => 'La limite de baux actifs de votre forfait est atteinte. Passez à un forfait supérieur pour ajouter des baux actifs.',
+        'party_limit_reached' => 'La limite de tiers de votre forfait est atteinte. Passez à un forfait supérieur pour ajouter des tiers.',
+        'feature_unavailable' => 'Cette fonctionnalité n’est pas incluse dans votre forfait actuel.',
+        'email_cap_reached' => 'Le quota mensuel d’e-mails de votre forfait est épuisé.',
     ],
 
     'user_management' => [

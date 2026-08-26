@@ -3,19 +3,47 @@
 namespace App\Console\Commands;
 
 use App\Services\Accounting\OpeningBalanceReadinessService;
+use App\Console\Concerns\ResolvesOrganisationOption;
+use App\Support\OrganisationContext;
 use Illuminate\Console\Command;
 use JsonException;
 
 class OpeningBalanceReadinessCommand extends Command
 {
+    use ResolvesOrganisationOption;
+
     protected $signature =
         'patrimoine:opening-balance-readiness
-        {--json : Emit machine-readable JSON}';
+        {--json : Emit machine-readable JSON}
+        {--organisation= : Organisation ID (required when several organisations exist)}';
 
     protected $description =
         'Read-only V1.0.5 accounting cutover readiness and completion gate';
 
     public function handle(
+        OpeningBalanceReadinessService $service
+    ): int {
+        /*
+         * V1.1.0 multi-tenancy: the opening-balance suite operates
+         * on exactly one organisation's books.
+         */
+        $organisation = $this->resolveOrganisationOrFail();
+
+        if ($organisation === null) {
+            return self::FAILURE;
+        }
+
+        return OrganisationContext::runAs(
+            (int) $organisation->id,
+            fn (): int => $this->runScoped($service)
+        );
+    }
+
+    /**
+     * The original command body, executed with the organisation
+     * context bound.
+     */
+    private function runScoped(
         OpeningBalanceReadinessService $service
     ): int {
         $result =

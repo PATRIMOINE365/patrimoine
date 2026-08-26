@@ -40,20 +40,20 @@ class StoreLeaseRequest extends FormRequest
             'unit_id' => [
                 'required',
                 'integer',
-                'exists:units,id',
+                \App\Rules\OrganisationOwned::exists('units'),
             ],
 
             'tenant_id' => [
                 'required',
                 'integer',
-                'exists:parties,id',
+                \App\Rules\OrganisationOwned::exists('parties'),
             ],
 
             'agent_id' => [
                 'nullable',
                 'integer',
                 'different:tenant_id',
-                'exists:parties,id',
+                \App\Rules\OrganisationOwned::exists('parties'),
             ],
 
             'start_date' => [

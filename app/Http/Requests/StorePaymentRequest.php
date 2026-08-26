@@ -34,7 +34,7 @@ class StorePaymentRequest extends FormRequest
             'lease_id' => [
                 'required',
                 'integer',
-                'exists:leases,id',
+                \App\Rules\OrganisationOwned::exists('leases'),
             ],
 
             /*

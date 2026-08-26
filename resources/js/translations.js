@@ -736,6 +736,141 @@ export const translations = {
         'login.missing_api_token':
             'Authentication succeeded but no API token was returned.',
 
+        'login.no_account':
+            'New to Patrimoine 365?',
+
+        'login.create_organisation':
+            'Create your organisation',
+
+        'login.mfa_heading':
+            'Check your email',
+
+        'login.mfa_description':
+            'We sent a 6-digit code to',
+
+        'login.mfa_code_label':
+            'Verification code',
+
+        'login.mfa_verify':
+            'Verify and sign in',
+
+        'login.mfa_verifying':
+            'Verifying\u2026',
+
+        'login.mfa_back':
+            'Back to sign in',
+
+        'login.mfa_resend':
+            'Resend code',
+
+        'signup.title':
+            'Create your organisation \u2014 Patrimoine 365',
+
+        'signup.heading':
+            'Create your organisation',
+
+        'signup.description':
+            'Start your 30-day Professional trial. No payment card required.',
+
+        'signup.organisation_name':
+            'Organisation name',
+
+        'signup.organisation_name_placeholder':
+            'Acme Properties Ltd',
+
+        'signup.given_names':
+            'Given names',
+
+        'signup.surname':
+            'Surname',
+
+        'signup.email':
+            'Email address',
+
+        'signup.phone':
+            'Phone (optional)',
+
+        'signup.password':
+            'Password',
+
+        'signup.password_help':
+            'At least 10 characters, with letters and numbers.',
+
+        'signup.password_confirmation':
+            'Confirm password',
+
+        'signup.accept_prefix':
+            'I accept the',
+
+        'signup.terms_link':
+            'Terms of Service',
+
+        'signup.accept_and':
+            'and the',
+
+        'signup.privacy_link':
+            'Privacy Policy',
+
+        'signup.submit':
+            'Create organisation',
+
+        'signup.submitting':
+            'Creating\u2026',
+
+        'signup.unable':
+            'Unable to create your organisation.',
+
+        'signup.have_account':
+            'Already have an account?',
+
+        'signup.sign_in_link':
+            'Sign in',
+
+        'signup.done_heading':
+            'Check your email',
+
+        'signup.done_description':
+            'We sent a verification link to',
+
+        'signup.done_back_to_login':
+            'Back to sign in',
+
+        'verify_email.title':
+            'Verify your email \u2014 Patrimoine 365',
+
+        'verify_email.pending_heading':
+            'Verifying\u2026',
+
+        'verify_email.pending_description':
+            'One moment while we confirm your email address.',
+
+        'verify_email.success_heading':
+            'Email verified',
+
+        'verify_email.success_description':
+            'Your email address has been confirmed. You can now sign in to your organisation.',
+
+        'verify_email.continue':
+            'Continue to sign in',
+
+        'verify_email.failed_heading':
+            'Link invalid or expired',
+
+        'verify_email.failed_description':
+            'This verification link is no longer valid. Enter your email address and we will send you a fresh one.',
+
+        'verify_email.resend':
+            'Send new link',
+
+        'verify_email.resent':
+            'If that address needs verification, a new link has been sent.',
+
+        'verify_email.resend_failed':
+            'Unable to send a new link right now.',
+
+        'verify_email.back_to_login':
+            'Back to sign in',
+
         'navigation.workspace':
             'Workspace',
 
@@ -3699,6 +3834,141 @@ export const translations = {
             'Impossible d’effectuer la demande de mot de passe.',
         'login.missing_api_token':
             'La connexion a réussi, mais aucun jeton API n’a été retourné.',
+
+        'login.no_account':
+            'Nouveau sur Patrimoine 365 ?',
+
+        'login.create_organisation':
+            'Cr\u00e9ez votre organisation',
+
+        'login.mfa_heading':
+            'Consultez votre e-mail',
+
+        'login.mfa_description':
+            'Nous avons envoy\u00e9 un code \u00e0 6 chiffres \u00e0',
+
+        'login.mfa_code_label':
+            'Code de v\u00e9rification',
+
+        'login.mfa_verify':
+            'V\u00e9rifier et se connecter',
+
+        'login.mfa_verifying':
+            'V\u00e9rification\u2026',
+
+        'login.mfa_back':
+            'Retour \u00e0 la connexion',
+
+        'login.mfa_resend':
+            'Renvoyer le code',
+
+        'signup.title':
+            'Cr\u00e9ez votre organisation \u2014 Patrimoine 365',
+
+        'signup.heading':
+            'Cr\u00e9ez votre organisation',
+
+        'signup.description':
+            'Commencez votre essai Professionnel de 30 jours. Aucune carte bancaire requise.',
+
+        'signup.organisation_name':
+            'Nom de l\u2019organisation',
+
+        'signup.organisation_name_placeholder':
+            'Immobilier Acme SARL',
+
+        'signup.given_names':
+            'Pr\u00e9noms',
+
+        'signup.surname':
+            'Nom',
+
+        'signup.email':
+            'Adresse e-mail',
+
+        'signup.phone':
+            'T\u00e9l\u00e9phone (facultatif)',
+
+        'signup.password':
+            'Mot de passe',
+
+        'signup.password_help':
+            'Au moins 10 caract\u00e8res, avec des lettres et des chiffres.',
+
+        'signup.password_confirmation':
+            'Confirmez le mot de passe',
+
+        'signup.accept_prefix':
+            'J\u2019accepte les',
+
+        'signup.terms_link':
+            'Conditions G\u00e9n\u00e9rales d\u2019Utilisation',
+
+        'signup.accept_and':
+            'et la',
+
+        'signup.privacy_link':
+            'Politique de Confidentialit\u00e9',
+
+        'signup.submit':
+            'Cr\u00e9er l\u2019organisation',
+
+        'signup.submitting':
+            'Cr\u00e9ation\u2026',
+
+        'signup.unable':
+            'Impossible de cr\u00e9er votre organisation.',
+
+        'signup.have_account':
+            'Vous avez d\u00e9j\u00e0 un compte ?',
+
+        'signup.sign_in_link':
+            'Se connecter',
+
+        'signup.done_heading':
+            'Consultez votre e-mail',
+
+        'signup.done_description':
+            'Nous avons envoy\u00e9 un lien de v\u00e9rification \u00e0',
+
+        'signup.done_back_to_login':
+            'Retour \u00e0 la connexion',
+
+        'verify_email.title':
+            'V\u00e9rifiez votre e-mail \u2014 Patrimoine 365',
+
+        'verify_email.pending_heading':
+            'V\u00e9rification\u2026',
+
+        'verify_email.pending_description':
+            'Un instant, nous confirmons votre adresse e-mail.',
+
+        'verify_email.success_heading':
+            'E-mail v\u00e9rifi\u00e9',
+
+        'verify_email.success_description':
+            'Votre adresse e-mail a \u00e9t\u00e9 confirm\u00e9e. Vous pouvez maintenant vous connecter \u00e0 votre organisation.',
+
+        'verify_email.continue':
+            'Continuer vers la connexion',
+
+        'verify_email.failed_heading':
+            'Lien invalide ou expir\u00e9',
+
+        'verify_email.failed_description':
+            'Ce lien de v\u00e9rification n\u2019est plus valide. Saisissez votre adresse e-mail et nous vous en enverrons un nouveau.',
+
+        'verify_email.resend':
+            'Envoyer un nouveau lien',
+
+        'verify_email.resent':
+            'Si cette adresse n\u00e9cessite une v\u00e9rification, un nouveau lien a \u00e9t\u00e9 envoy\u00e9.',
+
+        'verify_email.resend_failed':
+            'Impossible d\u2019envoyer un nouveau lien pour le moment.',
+
+        'verify_email.back_to_login':
+            'Retour \u00e0 la connexion',
 
         'navigation.workspace':
             'Espace de travail',
