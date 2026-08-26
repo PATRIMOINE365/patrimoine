@@ -62,8 +62,8 @@ return [
         'done_heading' => 'Check your email',
         'done_description' => 'We sent a verification link to',
         'done_back_to_login' => 'Back to sign in',
-        'resend_hint' => 'No email after a minute or two? Check your spam folder, or',
-        'resend_button' => 'resend it',
+        'resend_hint' => 'No email after a minute or two? Check your spam folder first.',
+        'resend_button' => 'Resend the verification email',
     ],
 
     'verify_email' => [

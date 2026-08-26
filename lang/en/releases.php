@@ -19,6 +19,15 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.16',
+            'date' => '2026-08-26',
+            'title' => 'Polish: resend buttons and branded emails',
+            'changes' => [
+                'The resend-verification actions on the sign-in and sign-up pages are now proper buttons — impossible to miss — and a sign-in resend issue was fixed.',
+                'Every email now opens with the Patrimoine 365 logo.',
+            ],
+        ],
+        [
             'version' => '1.0.15',
             'date' => '2026-08-26',
             'title' => 'Verification emails that never leave you stranded',

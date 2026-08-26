@@ -61,8 +61,8 @@ return [
         'done_heading' => 'Consultez votre e-mail',
         'done_description' => 'Nous avons envoyé un lien de vérification à',
         'done_back_to_login' => 'Retour à la connexion',
-        'resend_hint' => 'Rien reçu après une minute ou deux ? Vérifiez vos courriers indésirables, ou',
-        'resend_button' => 'renvoyez-le',
+        'resend_hint' => 'Rien reçu après une minute ou deux ? Vérifiez d\'abord vos courriers indésirables.',
+        'resend_button' => 'Renvoyer l\'e-mail de vérification',
     ],
 
     'verify_email' => [

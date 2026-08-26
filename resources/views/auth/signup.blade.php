@@ -295,15 +295,16 @@
             <span data-i18n="signup.resend_hint">
                 {{ __('ui.signup.resend_hint') }}
             </span>
-            <button
-                type="button"
-                id="signup-resend-button"
-                class="pm-auth-link font-medium disabled:opacity-50"
-                data-i18n="signup.resend_button"
-            >
-                {{ __('ui.signup.resend_button') }}
-            </button>
         </p>
+
+        <button
+            type="button"
+            id="signup-resend-button"
+            class="pm-button-secondary mt-3 w-full disabled:cursor-wait"
+            data-i18n="signup.resend_button"
+        >
+            {{ __('ui.signup.resend_button') }}
+        </button>
 
         <p
             id="signup-resend-feedback"

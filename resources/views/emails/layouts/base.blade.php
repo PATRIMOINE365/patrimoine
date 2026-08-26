@@ -43,7 +43,12 @@
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                                 <tr>
                                     <td style="font-family:Segoe UI, Helvetica, Arial, sans-serif;">
-                                        <span style="display:inline-block; background-color:#26744b; color:#ffffff; font-size:16px; font-weight:700; border-radius:8px; padding:6px 11px; vertical-align:middle;">P</span>
+                                        {{--
+                                            The logomark is served from the marketing site so every
+                                            email client renders the real identity; the styled text
+                                            alt keeps the brand visible when images are blocked.
+                                        --}}
+                                        <img src="https://patrimoine365.com/icon-192.png" width="40" height="40" alt="Patrimoine 365" style="display:inline-block; vertical-align:middle; border:0; border-radius:10px;">
                                         <span style="color:#ffffff; font-size:19px; font-weight:600; letter-spacing:0.2px; padding-left:10px; vertical-align:middle;">Patrimoine <span style="color:#89c5a2;">365</span></span>
                                     </td>
                                 </tr>

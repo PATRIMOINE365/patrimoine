@@ -495,6 +495,21 @@ export async function initializeLogin() {
                 const feedback =
                     document.getElementById('login-resend-feedback');
 
+                /*
+                 * The email field is looked up here rather than shared
+                 * with the submit handler — that handler declares its
+                 * own reference in its own scope.
+                 */
+                const email =
+                    document
+                        .getElementById('email')
+                        ?.value
+                        .trim();
+
+                if (! email) {
+                    return;
+                }
+
                 resendButton.disabled =
                     true;
 
@@ -503,8 +518,7 @@ export async function initializeLogin() {
                         await postJson(
                             '/api/auth/resend-verification',
                             {
-                                email:
-                                    emailInput.value.trim(),
+                                email,
                             }
                         );
 

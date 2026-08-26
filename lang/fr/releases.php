@@ -15,6 +15,15 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.16',
+            'date' => '2026-08-26',
+            'title' => 'Finitions : boutons de renvoi et e-mails à la nouvelle image',
+            'changes' => [
+                'Les actions de renvoi de l\'e-mail de vérification sur les pages de connexion et d\'inscription sont désormais de vrais boutons — impossibles à manquer — et un problème de renvoi à la connexion a été corrigé.',
+                'Chaque e-mail s\'ouvre maintenant avec le logo Patrimoine 365.',
+            ],
+        ],
+        [
             'version' => '1.0.15',
             'date' => '2026-08-26',
             'title' => 'Des e-mails de vérification qui ne vous laissent jamais bloqué',

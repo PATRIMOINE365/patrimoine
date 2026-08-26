@@ -956,10 +956,10 @@ export const translations = {
             'Back to sign in',
 
         'signup.resend_hint':
-            'No email after a minute or two? Check your spam folder, or',
+            'No email after a minute or two? Check your spam folder first.',
 
         'signup.resend_button':
-            'resend it',
+            'Resend the verification email',
 
         'login.resend_verification':
             'Resend the verification email',
@@ -4184,10 +4184,10 @@ export const translations = {
             'Retour \u00e0 la connexion',
 
         'signup.resend_hint':
-            'Rien re\u00e7u apr\u00e8s une minute ou deux ? V\u00e9rifiez vos courriers ind\u00e9sirables, ou',
+            'Rien re\u00e7u apr\u00e8s une minute ou deux ? V\u00e9rifiez d\'abord vos courriers ind\u00e9sirables.',
 
         'signup.resend_button':
-            'renvoyez-le',
+            'Renvoyer l\'e-mail de v\u00e9rification',
 
         'login.resend_verification':
             'Renvoyer l\'e-mail de v\u00e9rification',
