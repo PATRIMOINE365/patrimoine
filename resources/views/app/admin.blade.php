@@ -482,6 +482,11 @@
 
     <form id="admin-delete-form" class="flex min-h-0 flex-1 flex-col">
         <div class="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6">
+            <div
+                id="admin-delete-error"
+                class="pm-auth-error hidden rounded-lg px-4 py-3 text-sm"
+            ></div>
+
             <p class="text-sm leading-6 text-[var(--pm-text-secondary)]">
                 This destroys the organization and <strong>every row it
                 owns</strong> — properties, leases, financial history,

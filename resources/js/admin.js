@@ -108,13 +108,13 @@ function planBadge(plan, onTrial) {
     `;
 }
 
-function orgCell(org) {
+function orgCell(org, withAccount = true) {
     return `
         <span class="flex items-center gap-3">
             <span class="pm-admin-org-avatar">${escapeHtml(initials(org.name))}</span>
             <span class="min-w-0">
                 <span class="block font-medium text-[var(--pm-text)]">${escapeHtml(org.name)}</span>
-                <span class="block text-xs text-[var(--pm-text-muted)]">${escapeHtml(accountNumber(org.id))}</span>
+                ${withAccount ? `<span class="block text-xs text-[var(--pm-text-muted)]">${escapeHtml(accountNumber(org.id))}</span>` : ''}
             </span>
         </span>
     `;
@@ -299,7 +299,7 @@ async function loadOrganisations(page = 1) {
             : data.data.map(
                 (org) => `
                     <tr class="pm-admin-row-click" data-admin-open="${org.id}">
-                        <td>${orgCell(org)}</td>
+                        <td>${orgCell(org, false)}</td>
                         <td class="text-[var(--pm-text-muted)]">${escapeHtml(accountNumber(org.id))}</td>
                         <td>${formatNumber(org.usage.users)}</td>
                         <td>${formatNumber(org.usage.active_leases)}</td>
@@ -311,7 +311,7 @@ async function loadOrganisations(page = 1) {
     }
 
     document.getElementById('admin-orgs-count').textContent =
-        `${formatNumber(data.meta.total)} organizations`;
+        `${formatNumber(data.meta.total)} ${data.meta.total === 1 ? 'organization' : 'organizations'}`;
 
     renderPagination(
         document.getElementById('admin-pagination'),
@@ -748,7 +748,9 @@ async function submitDelete(event) {
         return;
     }
 
-    clearError();
+    const drawerError = document.getElementById('admin-delete-error');
+
+    drawerError?.classList.add('hidden');
 
     try {
         await adminRequest(
@@ -764,7 +766,17 @@ async function submitDelete(event) {
 
         await navigate('organizations');
     } catch (error) {
-        showError(error instanceof Error ? error.message : 'Unable to delete.');
+        /*
+         * The drawer stays open for a retry, so the failure must be
+         * visible inside it — the page-level error box sits behind
+         * the overlay.
+         */
+        if (drawerError) {
+            drawerError.textContent =
+                error instanceof Error ? error.message : 'Unable to delete.';
+
+            drawerError.classList.remove('hidden');
+        }
     } finally {
         document.getElementById('admin-delete-password').value = '';
     }
