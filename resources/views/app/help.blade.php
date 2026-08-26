@@ -21,7 +21,7 @@
             class="
                 text-xs font-semibold uppercase
                 tracking-[0.14em]
-                text-patrimoine-700
+                text-[var(--pm-accent)]
             "
             data-i18n="help.eyebrow"
         >

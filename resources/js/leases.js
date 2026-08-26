@@ -2334,7 +2334,16 @@ function leaseCard(lease) {
 
     return `
         <article
-            class="pm-card mb-4 p-5 last:mb-0"
+            class="
+                mb-4 rounded-xl border
+                border-[var(--pm-border)]
+                bg-[var(--pm-surface-subtle)]
+                p-4 transition-colors
+                last:mb-0
+                hover:border-[var(--pm-border-strong)]
+                hover:bg-[var(--pm-hover)]
+                sm:p-5
+            "
         >
             <div
                 class="
@@ -2555,6 +2564,7 @@ function leaseCard(lease) {
                                         text-sm font-medium
                                         text-[var(--pm-warning-text)]
                                         transition
+                                        max-sm:min-h-[2.625rem]
                                         hover:bg-[var(--pm-warning-background)]
                                     "
                                 >
@@ -2586,6 +2596,7 @@ function leaseCard(lease) {
                                         text-sm font-medium
                                         text-[var(--pm-warning-text)]
                                         transition
+                                        max-sm:min-h-[2.625rem]
                                         hover:bg-[var(--pm-warning-background)]
                                     "
                                 >
@@ -2612,6 +2623,7 @@ function leaseCard(lease) {
                             text-sm font-medium
                             text-[var(--pm-danger-text)]
                             transition
+                            max-sm:min-h-[2.625rem]
                             hover:bg-[var(--pm-danger-background)]
                         "
                     >

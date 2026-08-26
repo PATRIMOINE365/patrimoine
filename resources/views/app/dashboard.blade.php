@@ -42,14 +42,6 @@
                 </span>
             </p>
         </div>
-
-        <div
-            id="dashboard-date"
-            class="
-                text-sm font-medium
-                text-[var(--pm-text-muted)]
-            "
-        ></div>
     </div>
 
     <div

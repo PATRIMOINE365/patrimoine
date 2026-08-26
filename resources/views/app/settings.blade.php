@@ -32,7 +32,7 @@
             class="
                 text-xs font-semibold uppercase
                 tracking-[0.14em]
-                text-patrimoine-700
+                text-[var(--pm-accent)]
             "
         >
             <span data-i18n="settings.administration">{{ __('ui.settings.administration') }}</span>
@@ -1000,12 +1000,35 @@
                                 <span data-i18n="settings.import_file">{{ __('ui.settings.import_file') }}</span>
                             </label>
 
+                            {{--
+                                The native file control keeps UA chrome that
+                                ignores the theme, so the real input is
+                                visually hidden behind a tokenized button.
+                            --}}
                             <input
                                 id="settings-import-file"
                                 type="file"
                                 accept=".csv,.xlsx"
-                                class="pm-input"
+                                class="sr-only"
                             >
+
+                            <div class="flex items-center gap-3">
+                                <label
+                                    for="settings-import-file"
+                                    class="pm-button-secondary cursor-pointer"
+                                >
+                                    <span data-i18n="settings.choose_file">{{ __('ui.settings.choose_file') }}</span>
+                                </label>
+
+                                <span
+                                    id="settings-import-file-name"
+                                    class="
+                                        min-w-0 truncate text-sm
+                                        text-[var(--pm-text-muted)]
+                                    "
+                                    data-i18n="settings.no_file_selected"
+                                >{{ __('ui.settings.no_file_selected') }}</span>
+                            </div>
                         </div>
 
                         <div>

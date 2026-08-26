@@ -18,7 +18,7 @@
             <p
                 class="
                     text-sm font-medium
-                    text-patrimoine-700
+                    text-[var(--pm-accent)]
                 "
             >
                 <span data-i18n="properties.portfolio">{{ __('ui.properties.portfolio') }}</span>
@@ -1028,7 +1028,7 @@
                         mt-0.5 h-4 w-4 rounded
                         border-[var(--pm-border-strong)]
                         text-[var(--pm-accent)]
-                        focus:ring-patrimoine-500
+                        focus:ring-[var(--pm-accent)]
                     "
                 >
 

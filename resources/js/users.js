@@ -459,11 +459,11 @@ function userRow(user) {
                                     <span
                                         class="
                                             rounded-full
-                                            bg-patrimoine-50
+                                            bg-[color-mix(in_srgb,var(--pm-accent)_10%,var(--pm-surface))]
                                             px-2 py-0.5
                                             text-[11px]
                                             font-medium
-                                            text-patrimoine-700
+                                            text-[var(--pm-accent)]
                                         "
                                     >
                                         ${escapeHtml(

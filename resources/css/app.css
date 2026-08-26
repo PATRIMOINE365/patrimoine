@@ -378,6 +378,25 @@ select.pm-input {
     cursor: pointer;
 }
 
+/*
+ * Placeholders read the subtle text token in both themes instead of the
+ * browser's half-opacity currentColor default.
+ */
+.pm-input::placeholder {
+    color: var(--pm-text-subtle);
+    opacity: 1;
+}
+
+/*
+ * Native select popups follow the token theme. The closed control is
+ * covered by .pm-input; without this, the open option list renders with
+ * UA default colours.
+ */
+select.pm-input option {
+    background: var(--pm-input-background);
+    color: var(--pm-text);
+}
+
 /* --------------------------------------------------------------------------
    Buttons
    -------------------------------------------------------------------------- */
@@ -706,6 +725,50 @@ select.pm-input {
     .pm-activity-log-filters > div:first-child {
         grid-column: span 2;
     }
+}
+
+/*
+ * Shared list chrome for the Activity Log and Financial Journal rows.
+ * The JS templates supply shape utilities (radius, padding, type); these
+ * classes carry the token colours used by both pages.
+ */
+
+/* Main event badge: accent treatment consistent across both themes. */
+.pm-activity-action-badge {
+    border:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--pm-accent) 30%,
+            var(--pm-border)
+        );
+    background:
+        color-mix(
+            in srgb,
+            var(--pm-accent) 10%,
+            var(--pm-surface)
+        );
+    color: var(--pm-accent);
+}
+
+/* Role badge is deliberately quieter than the action badge. */
+.pm-activity-role-badge {
+    border: 1px solid var(--pm-border);
+    background: var(--pm-surface-muted);
+    color: var(--pm-text-secondary);
+}
+
+/* Row action ("View details"): secondary-button colours, compact shape. */
+.pm-activity-detail-button {
+    border-color: var(--pm-border);
+    background: var(--pm-surface);
+    color: var(--pm-text-secondary);
+}
+
+.pm-activity-detail-button:hover {
+    border-color: var(--pm-border-strong);
+    background: var(--pm-hover);
+    color: var(--pm-text);
 }
 
 /*
@@ -2998,7 +3061,7 @@ select {
     overflow: hidden;
     border: 1px solid var(--pm-border);
     border-radius: 0.875rem;
-    background: var(--pm-surface);
+    background: var(--pm-surface-subtle);
     transition:
         border-color 180ms ease,
         background-color 180ms ease,
@@ -3011,7 +3074,7 @@ select {
 
 .pm-party-row:hover {
     border-color: var(--pm-border-strong);
-    background: var(--pm-surface-hover);
+    background: var(--pm-hover);
 }
 
 .pm-party-row-main {
@@ -3039,11 +3102,11 @@ select {
     display: inline-flex;
     align-items: center;
     border-radius: 9999px;
-    background: var(--pm-surface-muted);
+    background: var(--pm-surface-elevated);
     padding: 0.25rem 0.625rem;
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--pm-text-muted);
+    color: var(--pm-text-secondary);
 }
 
 .pm-party-contact {
@@ -3073,11 +3136,11 @@ select {
     display: inline-flex;
     align-items: center;
     border-radius: 9999px;
-    background: var(--pm-accent-soft);
+    background: var(--pm-surface-elevated);
     padding: 0.25rem 0.625rem;
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--pm-accent);
+    color: var(--pm-text-secondary);
 }
 
 .pm-party-no-role {
@@ -3090,11 +3153,12 @@ select {
     flex-shrink: 0;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.625rem;
 }
 
 .pm-party-action {
     min-width: 5.5rem;
+    min-height: 2.5rem;
 }
 
 @media (min-width: 1024px) {
@@ -3390,256 +3454,6 @@ select {
 
 
 /* END V1.0.4 Party Drawer — Compact Single Column */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Parties Workspace
-|--------------------------------------------------------------------------
-|
-| Normalise the Parties page onto the semantic light/dark surface system
-| without changing Party business logic or the Party drawer lifecycle.
-|
-*/
-
-
-/* --------------------------------------------------------------------------
-   Page typography
-   -------------------------------------------------------------------------- */
-
-.pm-parties-page {
-    color: var(--pm-text);
-}
-
-
-/* --------------------------------------------------------------------------
-   Summary cards
-   -------------------------------------------------------------------------- */
-
-.pm-parties-page
-.pm-parties-stat-card {
-    border: 1px solid var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    box-shadow: none !important;
-}
-
-.pm-parties-page
-.pm-parties-stat-card
-> div:first-child {
-    color: var(--pm-text-muted) !important;
-}
-
-.pm-parties-page
-.pm-parties-stat-card
-[id^="parties-"][id$="-count"] {
-    color: var(--pm-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Main directory surface
-   -------------------------------------------------------------------------- */
-
-.pm-parties-page
-.pm-parties-directory {
-    border: 1px solid var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    box-shadow: none !important;
-}
-
-.pm-parties-page
-.pm-parties-directory
-> div:first-child {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-}
-
-.pm-parties-page
-#parties-list {
-    background: var(--pm-surface) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Search and filters
-   -------------------------------------------------------------------------- */
-
-.pm-parties-page
-.pm-parties-filter-control {
-    min-height: 2.75rem;
-
-    border-color: var(--pm-border) !important;
-    background: var(--pm-input-background) !important;
-    color: var(--pm-text) !important;
-
-    box-shadow: none !important;
-}
-
-.pm-parties-page
-.pm-parties-filter-control:hover {
-    border-color: var(--pm-border-strong) !important;
-}
-
-.pm-parties-page
-.pm-parties-filter-control:focus {
-    border-color: var(--color-patrimoine-500) !important;
-
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 16%,
-            transparent
-        ) !important;
-}
-
-.pm-parties-page
-.pm-parties-filter-control::placeholder {
-    color: var(--pm-text-subtle) !important;
-    opacity: 1;
-}
-
-
-/*
- * Search icon.
- */
-
-
-/* --------------------------------------------------------------------------
-   Generated Party rows
-   -------------------------------------------------------------------------- */
-
-.pm-parties-page
-.pm-party-row {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-subtle) !important;
-}
-
-.pm-parties-page
-.pm-party-row:hover {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-}
-
-.pm-parties-page
-.pm-party-name {
-    color: var(--pm-text) !important;
-}
-
-.pm-parties-page
-.pm-party-contact,
-.pm-parties-page
-.pm-party-meta {
-    color: var(--pm-text-muted) !important;
-}
-
-.pm-parties-page
-.pm-party-type-badge,
-.pm-parties-page
-.pm-party-role-badge {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-elevated) !important;
-    color: var(--pm-text-secondary) !important;
-}
-
-.pm-parties-page
-.pm-party-no-role {
-    color: var(--pm-text-subtle) !important;
-}
-
-
-/*
- * Keep both row actions visually deliberate.
- */
-.pm-parties-page
-.pm-party-actions {
-    gap: 0.625rem;
-}
-
-.pm-parties-page
-.pm-party-action {
-    min-height: 2.5rem;
-}
-
-.pm-parties-page
-.pm-party-actions
-.pm-button-secondary:hover:not(:disabled) {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Pagination
-   -------------------------------------------------------------------------- */
-
-.pm-parties-page
-#parties-pagination {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text-muted) !important;
-}
-
-.pm-parties-page
-#parties-pagination
-button {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-input-background) !important;
-    color: var(--pm-text-secondary) !important;
-}
-
-.pm-parties-page
-#parties-pagination
-button:hover:not(:disabled) {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
-.pm-parties-page
-#parties-pagination
-button:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-}
-
-
-/* --------------------------------------------------------------------------
-   Responsive adjustments
-   -------------------------------------------------------------------------- */
-
-@media (max-width: 639px) {
-    .pm-parties-page
-    .pm-parties-directory
-    > div:first-child,
-    .pm-parties-page
-    #parties-list,
-    .pm-parties-page
-    #parties-pagination {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-    }
-
-    .pm-parties-page
-    .pm-party-row-main {
-        gap: 1rem;
-    }
-
-    .pm-parties-page
-    .pm-party-actions {
-        width: 100%;
-    }
-
-    .pm-parties-page
-    .pm-party-actions
-    > button {
-        flex: 1 1 0;
-    }
-}
-
-
-/* END V1.0.4 Parties Workspace */
 
 
 /*
@@ -5509,315 +5323,6 @@ textarea::placeholder {
 /* END V1.0.4 Security Deposit Drawer — Unavailable State */
 
 
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Leases Workspace
-|--------------------------------------------------------------------------
-|
-| Normalize the main Leases page onto Patrimoine's semantic light/dark
-| surface system.
-|
-| This block is intentionally scoped to .pm-leases-page and does not alter
-| Lease drawer, Tenant Funds or Security Deposit behaviour.
-|
-*/
-
-
-/* --------------------------------------------------------------------------
-   Page typography
-   -------------------------------------------------------------------------- */
-
-.pm-leases-page {
-    color: var(--pm-text);
-}
-
-
-/* --------------------------------------------------------------------------
-   Legacy white surfaces
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Borders
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Summary cards
-   -------------------------------------------------------------------------- */
-
-
-/*
- * Existing Lease summary cards may still be plain rounded white blocks
- * without a semantic class. This catches those four cards specifically.
- */
-.pm-leases-page
-.mb-6.grid
-> div {
-    border-color:
-        var(--pm-border) !important;
-
-    background:
-        var(--pm-surface) !important;
-
-    box-shadow:
-        none !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Lease Register outer workspace
-   -------------------------------------------------------------------------- */
-
-.pm-leases-page
-section.rounded-xl,
-.pm-leases-page
-section.pm-surface-card {
-    border-color:
-        var(--pm-border) !important;
-
-    background:
-        var(--pm-surface) !important;
-
-    box-shadow:
-        none !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Filters
-   -------------------------------------------------------------------------- */
-
-.pm-leases-page
-select,
-.pm-leases-page
-input[type="search"] {
-    border-color:
-        var(--pm-border) !important;
-
-    background:
-        var(--pm-input-background) !important;
-
-    color:
-        var(--pm-text) !important;
-
-    box-shadow:
-        none;
-}
-
-.pm-leases-page
-select:hover,
-.pm-leases-page
-input[type="search"]:hover {
-    border-color:
-        var(--pm-border-strong) !important;
-}
-
-.pm-leases-page
-select:focus,
-.pm-leases-page
-input[type="search"]:focus {
-    border-color:
-        var(--pm-accent) !important;
-
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--pm-accent) 15%,
-            transparent
-        ) !important;
-}
-
-.pm-leases-page
-input::placeholder {
-    color:
-        var(--pm-text-subtle) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Individual Lease records
-   -------------------------------------------------------------------------- */
-
-/*
- * Lease cards are rendered dynamically, so target both articles and the
- * common rounded bordered record structure inside #leases-list.
- */
-.pm-leases-page
-#leases-list
-article,
-.pm-leases-page
-#leases-list
-> div.rounded-xl,
-.pm-leases-page
-#leases-list
-> article.rounded-xl {
-    border-color:
-        var(--pm-border) !important;
-
-    background:
-        var(--pm-surface-subtle) !important;
-
-    box-shadow:
-        none !important;
-
-    transition:
-        border-color 150ms ease,
-        background-color 150ms ease;
-}
-
-.pm-leases-page
-#leases-list
-article:hover,
-.pm-leases-page
-#leases-list
-> div.rounded-xl:hover {
-    border-color:
-        var(--pm-border-strong) !important;
-
-    background:
-        var(--pm-hover) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Lease status badge
-   -------------------------------------------------------------------------- */
-
-.pm-leases-page
-#leases-list
-.rounded-full {
-    border:
-        1px solid var(--pm-border) !important;
-
-    background:
-        var(--pm-surface) !important;
-
-    color:
-        var(--pm-text-secondary) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Standard Lease actions
-   -------------------------------------------------------------------------- */
-
-.pm-leases-page
-#leases-list
-button:not([data-delete-lease]) {
-    border-color:
-        var(--pm-border) !important;
-
-    background:
-        var(--pm-surface) !important;
-
-    color:
-        var(--pm-text-secondary) !important;
-
-    box-shadow:
-        none !important;
-
-    transition:
-        border-color 150ms ease,
-        background-color 150ms ease,
-        color 150ms ease;
-}
-
-.pm-leases-page
-#leases-list
-button:not([data-delete-lease]):hover {
-    border-color:
-        var(--pm-border-strong) !important;
-
-    background:
-        var(--pm-hover) !important;
-
-    color:
-        var(--pm-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Delete action
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Pagination
-   -------------------------------------------------------------------------- */
-
-.pm-leases-page
-#leases-pagination {
-    border-color:
-        var(--pm-border) !important;
-
-    color:
-        var(--pm-text-secondary) !important;
-}
-
-.pm-leases-page
-#leases-pagination
-button {
-    border-color:
-        var(--pm-border) !important;
-
-    background:
-        var(--pm-surface) !important;
-
-    color:
-        var(--pm-text-secondary) !important;
-}
-
-.pm-leases-page
-#leases-pagination
-button:hover:not(:disabled) {
-    background:
-        var(--pm-hover) !important;
-
-    color:
-        var(--pm-text) !important;
-}
-
-.pm-leases-page
-#leases-pagination
-button:disabled {
-    color:
-        var(--pm-text-subtle) !important;
-
-    opacity: 0.55;
-}
-
-
-/* --------------------------------------------------------------------------
-   Add Lease button
-   -------------------------------------------------------------------------- */
-
-
-
-/* --------------------------------------------------------------------------
-   Mobile action layout
-   -------------------------------------------------------------------------- */
-
-@media (max-width: 639px) {
-
-    .pm-leases-page
-    #leases-list
-    article {
-        padding:
-            1rem !important;
-    }
-
-    .pm-leases-page
-    #leases-list
-    button {
-        min-height:
-            2.625rem;
-    }
-}
-
-
-/* END V1.0.4 Leases Workspace */
 
 
 /*
@@ -6384,305 +5889,11 @@ section
 /* END V1.0.4 Dashboard — Dark Mode Visual Polish */
 
 /*
-|--------------------------------------------------------------------------
-| V1.0.4 Activity Log — Complete Theme Alignment
-|--------------------------------------------------------------------------
-|
-| Activity Log already uses the semantic Patrimoine theme extensively.
-| These rules close the remaining gaps for generated content, native
-| controls, badges and the read-only detail drawer.
-|
-*/
-
-
-/* --------------------------------------------------------------------------
-   Workspace
-   -------------------------------------------------------------------------- */
-
-.pm-activity-log-page {
-    color: var(--pm-text);
-}
-
-
-.pm-activity-log-shell {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-}
-
-
-.pm-activity-log-filters {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Form controls
-   -------------------------------------------------------------------------- */
-
-.pm-activity-log-page
-.pm-input {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-input-background) !important;
-    color: var(--pm-text) !important;
-}
-
-
-.pm-activity-log-page
-.pm-input::placeholder {
-    color: var(--pm-text-subtle) !important;
-    opacity: 1;
-}
-
-
-.pm-activity-log-page
-.pm-input:hover:not(:disabled) {
-    border-color: var(--pm-border-strong) !important;
-}
-
-
-.pm-activity-log-page
-.pm-input:focus {
-    border-color:
-        var(--color-patrimoine-500) !important;
-
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 18%,
-            transparent
-        ) !important;
-}
-
-
-.pm-activity-log-page
-select.pm-input,
-.pm-activity-log-page
-select.pm-input option {
-    background: var(--pm-input-background);
-    color: var(--pm-text);
-}
-
-
-html[data-theme="dark"]
-.pm-activity-log-page {
-    color-scheme: dark;
-}
-
-
-html[data-theme="light"]
-.pm-activity-log-page {
-    color-scheme: light;
-}
-
-
-/* --------------------------------------------------------------------------
-   Activity directory
-   -------------------------------------------------------------------------- */
-
-#activity-log-list {
-    background: var(--pm-surface);
-}
-
-
-#activity-log-list > article {
-    background: transparent;
-    color: var(--pm-text);
-}
-
-
-#activity-log-list > article:hover {
-    background: var(--pm-hover) !important;
-}
-
-
-#activity-log-list > article + article {
-    border-color: var(--pm-border-subtle);
-}
-
-
-/*
- * Main action badge.
- *
- * Use the same Patrimoine accent treatment in both themes rather than the
- * old Tailwind patrimoine-50 surface which becomes visually inconsistent
- * in dark mode.
+ * V1.0.9: the Activity Log / Financial Journal theme shim that lived here
+ * was removed. Both pages now render token-native markup directly, and the
+ * shared badge / row-action colours live with the V1.0.4 Activity Log
+ * Workspace component block.
  */
-.pm-activity-log-page
-.pm-activity-action-badge {
-    border:
-        1px solid
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 30%,
-            var(--pm-border)
-        );
-
-    background:
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 10%,
-            var(--pm-surface)
-        );
-
-    color:
-        var(--color-patrimoine-700);
-}
-
-
-html[data-theme="dark"]
-.pm-activity-log-page
-.pm-activity-action-badge {
-    color:
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 55%,
-            white
-        );
-}
-
-
-/*
- * Role badge is deliberately quieter than the action badge.
- */
-.pm-activity-log-page
-.pm-activity-role-badge {
-    border:
-        1px solid var(--pm-border);
-
-    background:
-        var(--pm-surface-muted);
-
-    color:
-        var(--pm-text-secondary);
-}
-
-
-/* --------------------------------------------------------------------------
-   Row action
-   -------------------------------------------------------------------------- */
-
-.pm-activity-log-page
-.pm-activity-detail-button {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text-secondary) !important;
-}
-
-
-.pm-activity-log-page
-.pm-activity-detail-button:hover {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Empty / loading / pagination states
-   -------------------------------------------------------------------------- */
-
-#activity-log-list
-.pm-activity-log-loading {
-    color: var(--pm-text-subtle) !important;
-}
-
-
-#activity-log-pagination {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface);
-}
-
-
-#activity-log-pagination button {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text-secondary) !important;
-}
-
-
-#activity-log-pagination button:hover:not(:disabled) {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Activity Detail drawer
-   -------------------------------------------------------------------------- */
-
-#activity-log-modal .pm-drawer-panel {
-    color: var(--pm-text);
-}
-
-
-#activity-log-detail {
-    background: var(--pm-surface);
-    color: var(--pm-text);
-}
-
-
-/*
- * Historical detail markup is generated dynamically. Normalize any older
- * Tailwind utility colours without modifying the immutable Activity data.
- */
-
-
-/*
- * JSON / before-after / snapshot style surfaces should remain visually
- * distinct while avoiding a bright white box in dark mode.
- */
-#activity-log-detail pre,
-#activity-log-detail code {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-subtle) !important;
-    color: var(--pm-text-secondary) !important;
-}
-
-
-#activity-log-detail pre {
-    overflow-x: auto;
-    border-radius: 0.75rem;
-}
-
-
-/* --------------------------------------------------------------------------
-   Export buttons
-   -------------------------------------------------------------------------- */
-
-#activity-log-export-pdf,
-#activity-log-export-csv {
-    min-height: 2.625rem;
-}
-
-
-/* --------------------------------------------------------------------------
-   Mobile
-   -------------------------------------------------------------------------- */
-
-@media (max-width: 639px) {
-
-    .pm-activity-log-page
-    > div:first-child
-    > div:last-child {
-        width: 100%;
-    }
-
-    #activity-log-export-pdf,
-    #activity-log-export-csv {
-        flex: 1 1 0;
-    }
-
-    #activity-log-list > article {
-        padding:
-            1rem !important;
-    }
-}
-
-
-/* END V1.0.4 Activity Log — Complete Theme Alignment */
 
 
 /*

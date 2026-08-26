@@ -48,18 +48,18 @@
         ml-1 inline-flex h-5 w-5
         shrink-0 items-center justify-center
         rounded-full
-        border border-patrimoine-300
+        border border-[var(--pm-border-strong)]
         bg-[var(--pm-surface)]
         text-[11px] font-semibold
         leading-none
         text-[var(--pm-accent)]
         transition
-        hover:border-patrimoine-500
+        hover:border-[var(--pm-accent)]
         hover:bg-[var(--pm-hover)]
         hover:text-[var(--pm-text)]
         focus:outline-none
         focus:ring-2
-        focus:ring-patrimoine-200
+        focus:ring-[var(--pm-accent)]
     "
     data-field-help
     data-field-help-text="{{ $helpText }}"

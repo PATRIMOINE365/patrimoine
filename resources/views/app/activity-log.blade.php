@@ -8,7 +8,7 @@
 <div
     id="activity-log-workspace"
     data-requires-capability="view_activity_log"
-    class="rbac-hidden pm-activity-log-page"
+    class="rbac-hidden"
 >
     <div
         class="
@@ -23,7 +23,7 @@
                 class="
                     text-xs font-semibold uppercase
                     tracking-[0.14em]
-                    text-patrimoine-700
+                    text-[var(--pm-accent)]
                 "
             >
                 <span data-i18n="activity_log.administration">{{ __('ui.activity_log.administration') }}</span>
@@ -52,12 +52,13 @@
             class="
                 flex shrink-0
                 flex-wrap gap-2
+                max-sm:w-full
             "
         >
             <button
                 id="activity-log-export-pdf"
                 type="button"
-                class="pm-button-secondary"
+                class="pm-button-secondary max-sm:flex-1"
             >
                 <span data-i18n="activity_log.export_pdf">{{ __('ui.activity_log.export_pdf') }}</span>
             </button>
@@ -73,7 +74,7 @@
             <button
                 id="activity-log-export-csv"
                 type="button"
-                class="pm-button-secondary"
+                class="pm-button-secondary max-sm:flex-1"
             >
                 <span data-i18n="activity_log.export_csv">{{ __('ui.activity_log.export_csv') }}</span>
             </button>
@@ -250,9 +251,8 @@
         >
             <div
                 class="
-                    pm-activity-log-loading
                     px-5 py-12 text-center
-                    text-sm
+                    text-sm text-[var(--pm-text-subtle)]
                 "
             >
                 <span data-i18n="activity_log.loading">{{ __('ui.activity_log.loading') }}</span>

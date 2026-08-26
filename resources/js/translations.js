@@ -404,6 +404,10 @@ export const translations = {
             'Unable to export the Registry.',
         'settings.import_heading':
             'Import / restore',
+        'settings.choose_file':
+            'Choose file…',
+        'settings.no_file_selected':
+            'No file selected',
         'settings.import_file':
             'Backup file',
         'settings.import_entity':
@@ -486,6 +490,14 @@ export const translations = {
             'Unable to schedule the rent increment.',
         'leases.increment_cancel_failed':
             'Unable to cancel the rent increment.',
+        'tenants.deposit_title':
+            'Record Tenant Deposit',
+        'tenants.withdrawal_title':
+            'Record Tenant Withdrawal',
+        'tenants.expense_title':
+            'Record Tenant Expense',
+        'tenants.adjustment_title':
+            'Record Balance Adjustment',
         'tenants.accounts':
             'Accounts',
         'tenants.accounts_description':
@@ -3358,6 +3370,10 @@ export const translations = {
             'Impossible d\'exporter le registre.',
         'settings.import_heading':
             'Importation / restauration',
+        'settings.choose_file':
+            'Choisir un fichier…',
+        'settings.no_file_selected':
+            'Aucun fichier sélectionné',
         'settings.import_file':
             'Fichier de sauvegarde',
         'settings.import_entity':
@@ -3440,6 +3456,14 @@ export const translations = {
             'Impossible de programmer l\'augmentation du loyer.',
         'leases.increment_cancel_failed':
             'Impossible d\'annuler l\'augmentation du loyer.',
+        'tenants.deposit_title':
+            'Enregistrer un dépôt du locataire',
+        'tenants.withdrawal_title':
+            'Enregistrer un retrait du locataire',
+        'tenants.expense_title':
+            'Enregistrer une dépense du locataire',
+        'tenants.adjustment_title':
+            'Enregistrer un ajustement de solde',
         'tenants.accounts':
             'Comptes',
         'tenants.accounts_description':

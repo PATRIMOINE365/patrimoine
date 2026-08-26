@@ -540,7 +540,6 @@ async function loadFinancialJournal(
     container.innerHTML = `
         <div
             class="
-                pm-activity-log-loading
                 px-5 py-12
                 text-center text-sm
             "

@@ -359,6 +359,8 @@ return [
         'exporting' => 'Exporting…',
         'unable_export' => 'Unable to export the Registry.',
         'import_heading' => 'Import / restore',
+        'choose_file' => 'Choose file…',
+        'no_file_selected' => 'No file selected',
         'import_file' => 'Backup file',
         'import_entity' => 'Data set',
         'dry_run' => 'Dry run (validate without saving)',
@@ -1472,6 +1474,12 @@ return [
         ],
     ],
     'tenants' => [
+        /* ---- V1.0.9 additions ---- */
+        'deposit_title' => 'Record Tenant Deposit',
+        'withdrawal_title' => 'Record Tenant Withdrawal',
+        'expense_title' => 'Record Tenant Expense',
+        'adjustment_title' => 'Record Balance Adjustment',
+        /* ---- end V1.0.9 additions ---- */
         /* ---- V1.0.7 additions ---- */
         'accounts' => 'Accounts',
         'accounts_description' => 'All fund accounts held for this Tenant across their leases.',

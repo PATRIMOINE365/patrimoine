@@ -1614,8 +1614,8 @@
                                     class="
                                         mt-1 h-4 w-4
                                         rounded border-[var(--pm-border-strong)]
-                                        text-patrimoine-700
-                                        focus:ring-patrimoine-200
+                                        text-[var(--pm-accent)]
+                                        focus:ring-[var(--pm-accent)]
                                     "
                                 >
 

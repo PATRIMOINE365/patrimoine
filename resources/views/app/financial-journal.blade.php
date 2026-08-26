@@ -8,7 +8,7 @@
 <div
     id="financial-journal-workspace"
     data-requires-capability="view_financial_journal"
-    class="rbac-hidden pm-activity-log-page"
+    class="rbac-hidden"
 >
     <div
         class="
@@ -23,7 +23,7 @@
                 class="
                     text-xs font-semibold uppercase
                     tracking-[0.14em]
-                    text-patrimoine-700
+                    text-[var(--pm-accent)]
                 "
                 data-i18n="financial_journal.administration"
             >
@@ -52,7 +52,7 @@
             </p>
         </div>
 
-        <div class="flex shrink-0 flex-wrap gap-2">
+        <div class="flex shrink-0 flex-wrap gap-2 max-sm:w-full">
             <button
                 id="financial-journal-export-pdf"
                 type="button"
@@ -258,7 +258,6 @@
         >
             <div
                 class="
-                    pm-activity-log-loading
                     px-5 py-12 text-center
                     text-sm
                 "

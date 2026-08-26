@@ -500,7 +500,11 @@ function initializeRegistryPortability() {
         )
         ?.addEventListener(
             'change',
-            invalidatePendingDryRun
+            () => {
+                reflectSelectedImportFileName();
+
+                invalidatePendingDryRun();
+            }
         );
 
     document
@@ -706,6 +710,47 @@ function attachmentFilename(
 
     return match?.[1]?.trim()
         || fallback;
+}
+
+/**
+ * Mirror the hidden file input's selection into the visible name label.
+ *
+ * The label carries data-i18n for its empty state, so the attribute is
+ * removed while a real file name is displayed and restored when the
+ * selection is cleared — keeping client-side language switching correct.
+ */
+function reflectSelectedImportFileName() {
+    const nameElement =
+        document.getElementById(
+            'settings-import-file-name'
+        );
+
+    if (! nameElement) {
+        return;
+    }
+
+    const file = selectedImportFile();
+
+    if (file) {
+        nameElement.removeAttribute(
+            'data-i18n'
+        );
+
+        nameElement.textContent =
+            file.name;
+
+        return;
+    }
+
+    nameElement.setAttribute(
+        'data-i18n',
+        'settings.no_file_selected'
+    );
+
+    nameElement.textContent =
+        translate(
+            'settings.no_file_selected'
+        );
 }
 
 /**

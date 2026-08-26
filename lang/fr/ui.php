@@ -359,6 +359,8 @@ return [
         'exporting' => 'Exportation…',
         'unable_export' => 'Impossible d\'exporter le registre.',
         'import_heading' => 'Importation / restauration',
+        'choose_file' => 'Choisir un fichier…',
+        'no_file_selected' => 'Aucun fichier sélectionné',
         'import_file' => 'Fichier de sauvegarde',
         'import_entity' => 'Jeu de données',
         'dry_run' => 'Simulation (valider sans enregistrer)',
@@ -1624,6 +1626,12 @@ return [
         ],
     ],
     'tenants' => [
+        /* ---- V1.0.9 additions ---- */
+        'deposit_title' => 'Enregistrer un dépôt du locataire',
+        'withdrawal_title' => 'Enregistrer un retrait du locataire',
+        'expense_title' => 'Enregistrer une dépense du locataire',
+        'adjustment_title' => 'Enregistrer un ajustement de solde',
+        /* ---- end V1.0.9 additions ---- */
         /* ---- V1.0.7 additions ---- */
         'accounts' => 'Comptes',
         'accounts_description' => 'Tous les comptes de fonds détenus pour ce locataire sur l\'ensemble de ses baux.',

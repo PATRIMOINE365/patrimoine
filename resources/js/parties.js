@@ -880,14 +880,14 @@ function partyCard(party) {
                     </div>
                 </div>
 
-                <div class="pm-party-actions">
+                <div class="pm-party-actions max-sm:w-full">
                     <button
                         type="button"
                         data-edit-party
                         data-party-id="${escapeHtml(
                             party.id
                         )}"
-                        class="pm-button-secondary pm-party-action"
+                        class="pm-button-secondary pm-party-action max-sm:flex-1"
                     >
                         ${escapeHtml(
                             translate(
@@ -905,7 +905,7 @@ function partyCard(party) {
                         data-party-name="${escapeHtml(
                             displayName
                         )}"
-                        class="pm-button-danger-outline pm-party-action"
+                        class="pm-button-danger-outline pm-party-action max-sm:flex-1"
                     >
                         ${escapeHtml(
                             translate(

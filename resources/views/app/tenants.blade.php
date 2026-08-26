@@ -19,7 +19,7 @@
             <p
                 class="
                     text-sm font-medium
-                    text-patrimoine-700
+                    text-[var(--pm-accent)]
                 "
             >
                 <span data-i18n="tenants.finance">{{ __('ui.tenants.finance') }}</span>
@@ -180,8 +180,8 @@
         close-label-key="tenants.close"
     >
         <x-slot:title>
-            <span data-i18n="tenants.deposit">
-                {{ __('ui.tenants.deposit') }}
+            <span data-i18n="tenants.deposit_title">
+                {{ __('ui.tenants.deposit_title') }}
             </span>
         </x-slot:title>
 
@@ -526,8 +526,8 @@
         close-label-key="tenants.close"
     >
         <x-slot:title>
-            <span data-i18n="tenants.withdrawal">
-                {{ __('ui.tenants.withdrawal') }}
+            <span data-i18n="tenants.withdrawal_title">
+                {{ __('ui.tenants.withdrawal_title') }}
             </span>
         </x-slot:title>
 
@@ -870,8 +870,8 @@
         close-label-key="tenants.close"
     >
         <x-slot:title>
-            <span data-i18n="tenants.expense">
-                {{ __('ui.tenants.withdrawal') }}
+            <span data-i18n="tenants.expense_title">
+                {{ __('ui.tenants.expense_title') }}
             </span>
         </x-slot:title>
 
@@ -1117,8 +1117,8 @@
         close-label-key="tenants.close"
     >
         <x-slot:title>
-            <span data-i18n="tenants.adjustment">
-                {{ __('ui.tenants.adjustment') }}
+            <span data-i18n="tenants.adjustment_title">
+                {{ __('ui.tenants.adjustment_title') }}
             </span>
         </x-slot:title>
 

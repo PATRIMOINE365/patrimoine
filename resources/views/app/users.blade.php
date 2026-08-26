@@ -22,7 +22,7 @@
                 class="
                     text-xs font-semibold uppercase
                     tracking-[0.14em]
-                    text-patrimoine-700
+                    text-[var(--pm-accent)]
                 "
             >
                 <span data-i18n="users.administration">{{ __('ui.users.administration') }}</span>
@@ -344,7 +344,7 @@
                         class="
                             h-4 w-4 rounded
                             border-[var(--pm-border-strong)]
-                            text-patrimoine-700
+                            text-[var(--pm-accent)]
                         "
                     >
 

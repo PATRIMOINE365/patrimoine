@@ -23,7 +23,6 @@ import {
     escapeHtml,
     formatCurrency,
     formatDate,
-    formatLongDate,
     getPresentationConfiguration,
     parseJsonResponse,
     setText,
@@ -47,24 +46,10 @@ export async function initializeDashboard() {
         return;
     }
 
-    const dateElement =
-        document.getElementById(
-            'dashboard-date'
-        );
-
     const errorBox =
         document.getElementById(
             'dashboard-error'
         );
-
-    /*
-     * The heading date reflects the API's as-of date once the summary
-     * lands; a placeholder is shown until then.
-     */
-    if (dateElement) {
-        dateElement.textContent =
-            '—';
-    }
 
     if (errorBox) {
         errorBox.classList.add(
@@ -104,16 +89,6 @@ export async function initializeDashboard() {
     ) {
         const summary =
             summaryResult.value;
-
-        if (
-            dateElement
-            && summary?.as_of
-        ) {
-            dateElement.textContent =
-                formatLongDate(
-                    summary.as_of
-                );
-        }
 
         renderDashboardSummary(
             summary

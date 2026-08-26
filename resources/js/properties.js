@@ -374,8 +374,8 @@ function renderProperties(
                         mx-auto flex h-11 w-11
                         items-center justify-center
                         rounded-full
-                        bg-patrimoine-50
-                        text-patrimoine-700
+                        bg-[color-mix(in_srgb,var(--pm-accent)_10%,var(--pm-surface))]
+                        text-[var(--pm-accent)]
                     "
                 >
                     <svg
@@ -802,10 +802,10 @@ function propertyCard(
                         <span
                             class="
                                 inline-flex rounded-full
-                                bg-patrimoine-50
+                                bg-[color-mix(in_srgb,var(--pm-accent)_10%,var(--pm-surface))]
                                 px-2.5 py-1
                                 text-xs font-medium
-                                text-patrimoine-700
+                                text-[var(--pm-accent)]
                             "
                         >
                             ${units.length}

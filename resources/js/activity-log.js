@@ -615,9 +615,8 @@ async function loadActivityLog(
     container.innerHTML = `
         <div
             class="
-                pm-activity-log-loading
                 px-5 py-12 text-center
-                text-sm
+                text-sm text-[var(--pm-text-subtle)]
             "
         >
             ${escapeHtml(
@@ -763,6 +762,7 @@ function activityRow(event) {
         <article
             class="
                 px-5 py-4
+                max-sm:px-4
                 transition
                 hover:bg-[var(--pm-hover)]
             "
@@ -1473,10 +1473,13 @@ function detailStructuredRow(
 
             <pre
                 class="
+                    overflow-x-auto
                     whitespace-pre-wrap
                     break-words
+                    rounded-xl
+                    bg-[var(--pm-surface-subtle)]
                     font-sans text-sm
-                    text-[var(--pm-text)]
+                    text-[var(--pm-text-secondary)]
                 "
             >${escapeHtml(display)}</pre>
         </div>

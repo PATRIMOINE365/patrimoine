@@ -351,7 +351,7 @@
                         h-4 w-4 rounded
                         border-[var(--pm-border-strong)]
                         text-[var(--pm-accent)]
-                        focus:ring-patrimoine-500
+                        focus:ring-[var(--pm-accent)]
                     "
                 >
 
@@ -373,7 +373,7 @@
         {{-- Records --}}
         <div
             id="parties-list"
-            class="p-5"
+            class="p-5 max-sm:px-4"
         >
             <div class="text-sm text-[var(--pm-text-subtle)]">
                 <span data-i18n="parties.loading">{{ __('ui.parties.loading') }}</span>
@@ -385,8 +385,8 @@
             id="parties-pagination"
             class="
                 hidden border-t
-                border-[var(--pm-border-subtle)]
-                px-5 py-4
+                border-[var(--pm-border)]
+                px-5 py-4 max-sm:px-4
             "
         ></div>
 
@@ -840,7 +840,7 @@
                                         h-4 w-4 rounded
                                         border-[var(--pm-border-strong)]
                                         text-[var(--pm-accent)]
-                                        focus:ring-patrimoine-500
+                                        focus:ring-[var(--pm-accent)]
                                     "
                                 >
 
@@ -870,7 +870,7 @@
                                         h-4 w-4 rounded
                                         border-[var(--pm-border-strong)]
                                         text-[var(--pm-accent)]
-                                        focus:ring-patrimoine-500
+                                        focus:ring-[var(--pm-accent)]
                                     "
                                 >
 
@@ -900,7 +900,7 @@
                                         h-4 w-4 rounded
                                         border-[var(--pm-border-strong)]
                                         text-[var(--pm-accent)]
-                                        focus:ring-patrimoine-500
+                                        focus:ring-[var(--pm-accent)]
                                     "
                                 >
 
