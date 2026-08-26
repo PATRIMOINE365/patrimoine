@@ -86,13 +86,38 @@ return new class extends Migration
     ];
 
     /**
+     * Explicit composite index names: MySQL limits identifiers to 64
+     * characters, and several auto-generated
+     * {table}_organisation_id_{column}_unique names exceed it.
+     *
+     * @var array<string, string>
+     */
+    private const SCOPED_UNIQUE_NAMES = [
+        'invoices' => 'uq_org_invoice_number',
+        'owner_expense_bills' => 'uq_org_bill_number',
+        'adjustment_vouchers' => 'uq_org_voucher_number',
+        'withdrawal_receipts' => 'uq_org_receipt_number',
+        'security_deposit_settlements' => 'uq_org_refund_voucher_number',
+        'journal_entries' => 'uq_org_journal_number',
+        'journal_sequences' => 'uq_org_journal_year',
+        'accounting_accounts' => 'uq_org_account_code',
+        'accounting_cutovers' => 'uq_org_cutover_key',
+    ];
+
+    /**
      * Run the migrations.
      */
     public function up(): void
     {
         /*
          * 1. Platform tables.
+         *
+         * Every step of this migration is deliberately idempotent:
+         * MySQL DDL is non-transactional, so a mid-flight failure (as
+         * any long migration can suffer once) must be recoverable by
+         * simply running the migration again.
          */
+        if (! Schema::hasTable('organisations'))
         Schema::create('organisations', function (Blueprint $table): void {
             $table->id();
 
@@ -113,6 +138,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        if (! Schema::hasTable('licenses'))
         Schema::create('licenses', function (Blueprint $table): void {
             $table->id();
 
@@ -137,6 +163,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        if (! Schema::hasTable('mfa_challenges'))
         Schema::create('mfa_challenges', function (Blueprint $table): void {
             $table->id();
 
@@ -166,6 +193,7 @@ return new class extends Migration
             $table->index(['user_id', 'created_at']);
         });
 
+        if (! Schema::hasTable('organisation_email_counters'))
         Schema::create(
             'organisation_email_counters',
             function (Blueprint $table): void {
@@ -205,7 +233,14 @@ return new class extends Migration
         $hasExistingData = DB::table('users')->exists()
             || DB::table('parties')->exists();
 
-        if ($hasExistingData) {
+        $alreadyAdopted = DB::table('organisations')->exists();
+
+        if ($alreadyAdopted) {
+            $firstOrganisationId =
+                (int) DB::table('organisations')->min('id');
+        }
+
+        if ($hasExistingData && ! $alreadyAdopted) {
             $now = now();
 
             $organisationName = $this->existingInstallationName();
@@ -234,6 +269,14 @@ return new class extends Migration
          *    backfill, then tighten to NOT NULL + foreign key.
          */
         foreach (self::TENANT_TABLES as $tableName) {
+            if (Schema::hasColumn($tableName, 'organisation_id')) {
+                /*
+                 * A previous (possibly interrupted) run already carried
+                 * this table through the whole block below.
+                 */
+                continue;
+            }
+
             Schema::table(
                 $tableName,
                 function (Blueprint $table): void {
@@ -291,29 +334,63 @@ return new class extends Migration
          * 4. Numbering and key uniqueness becomes per-organisation.
          */
         foreach (self::UNIQUES_TO_SCOPE as $tableName => $column) {
+            $indexName = self::SCOPED_UNIQUE_NAMES[$tableName];
+
             Schema::table(
                 $tableName,
-                function (Blueprint $table) use ($column): void {
-                    $table->dropUnique([$column]);
+                function (Blueprint $table) use (
+                    $tableName,
+                    $column,
+                    $indexName
+                ): void {
+                    if (Schema::hasIndex($tableName, [$column])) {
+                        $table->dropUnique([$column]);
+                    }
 
-                    $table->unique(['organisation_id', $column]);
+                    if (
+                        ! Schema::hasIndex(
+                            $tableName,
+                            ['organisation_id', $column]
+                        )
+                    ) {
+                        $table->unique(
+                            ['organisation_id', $column],
+                            $indexName
+                        );
+                    }
                 }
             );
         }
 
-        Schema::table(
-            'application_settings',
-            function (Blueprint $table): void {
-                /*
-                 * Exactly one settings row per organisation.
-                 */
-                $table->unique('organisation_id');
-            }
-        );
+        if (
+            ! Schema::hasIndex(
+                'application_settings',
+                ['organisation_id']
+            )
+        ) {
+            Schema::table(
+                'application_settings',
+                function (Blueprint $table): void {
+                    /*
+                     * Exactly one settings row per organisation.
+                     */
+                    $table->unique(
+                        'organisation_id',
+                        'uq_settings_organisation'
+                    );
+                }
+            );
+        }
 
         /*
          * 5. Signup, legal acceptance and email verification state.
          */
+        if (
+            ! Schema::hasColumn(
+                'users',
+                'email_verification_token_hash'
+            )
+        )
         Schema::table('users', function (Blueprint $table): void {
             /*
              * Pending email-verification token (hashed) for
@@ -358,15 +435,20 @@ return new class extends Migration
         Schema::table(
             'application_settings',
             function (Blueprint $table): void {
-                $table->dropUnique(['organisation_id']);
+                $table->dropUnique('uq_settings_organisation');
             }
         );
 
         foreach (self::UNIQUES_TO_SCOPE as $tableName => $column) {
+            $indexName = self::SCOPED_UNIQUE_NAMES[$tableName];
+
             Schema::table(
                 $tableName,
-                function (Blueprint $table) use ($column): void {
-                    $table->dropUnique(['organisation_id', $column]);
+                function (Blueprint $table) use (
+                    $column,
+                    $indexName
+                ): void {
+                    $table->dropUnique($indexName);
 
                     $table->unique([$column]);
                 }
