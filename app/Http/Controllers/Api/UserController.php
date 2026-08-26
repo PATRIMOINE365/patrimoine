@@ -122,9 +122,17 @@ class UserController extends Controller
     public function store(
         StoreUserRequest $request,
         UserInvitationService $invitations,
-        ActivityLogService $activityLog
+        ActivityLogService $activityLog,
+        \App\Services\LicensingService $licensing
     ): JsonResponse {
         $validated = $request->validated();
+
+        /*
+         * V1.1.0 licensing: the plan bounds ACTIVE internal users.
+         */
+        if ($validated['is_active'] ?? true) {
+            $licensing->assertCanAddUser();
+        }
 
         $user = User::create([
             'name' => $validated['name'],

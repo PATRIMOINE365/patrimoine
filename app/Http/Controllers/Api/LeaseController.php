@@ -260,6 +260,22 @@ class LeaseController extends Controller
             $request->validated();
 
         /*
+         * V1.1.0 licensing: active leases are the licensing metric. A
+         * draft costs nothing; creating a lease that starts life active
+         * (or in notice) consumes quota.
+         */
+        if (
+            in_array(
+                $validated['status'],
+                ['active', 'notice'],
+                true
+            )
+        ) {
+            app(\App\Services\LicensingService::class)
+                ->assertCanActivateLease();
+        }
+
+        /*
          * These fields describe an historical financial event rather than
          * contractual Lease attributes.
          */
@@ -624,6 +640,27 @@ class LeaseController extends Controller
     ): JsonResponse {
         $validated =
             $request->validated();
+
+        /*
+         * V1.1.0 licensing: activating a lease that was not previously
+         * counted (draft or terminated) consumes active-lease quota.
+         */
+        if (
+            array_key_exists('status', $validated)
+            && in_array(
+                $validated['status'],
+                ['active', 'notice'],
+                true
+            )
+            && ! in_array(
+                $lease->status,
+                ['active', 'notice'],
+                true
+            )
+        ) {
+            app(\App\Services\LicensingService::class)
+                ->assertCanActivateLease();
+        }
 
         /*
         * Historical payment instructions are deliberately kept separate

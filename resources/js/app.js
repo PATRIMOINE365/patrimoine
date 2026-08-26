@@ -89,6 +89,10 @@ import {
 } from './help.js';
 
 import {
+    initializeLicense,
+} from './license.js';
+
+import {
     initializeForgotPassword,
     initializeInvitation,
     initializeResetPassword,
@@ -195,5 +199,7 @@ document.addEventListener(
         await initializeFinancialJournal();
 
         await initializeHelp();
+
+        await initializeLicense();
     }
 );

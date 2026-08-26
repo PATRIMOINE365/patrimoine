@@ -49,7 +49,8 @@ class EmailDeliveryService
         private TenantFundExpenseVoucherDocumentService $tenantExpenseDocuments,
         private ApplicationIdentityService $identity,
         private ApplicationPresentationFormatter $formatter,
-        private ApplicationLocaleService $locale
+        private ApplicationLocaleService $locale,
+        private \App\Services\LicensingService $licensing
     ) {}
 
     /**
@@ -115,6 +116,14 @@ class EmailDeliveryService
 
                     formatter: $this->formatter
                 )
+            );
+
+            /*
+             * V1.1.0 licensing: every delivered product email counts
+             * against the monthly allowance.
+             */
+            $this->licensing->registerEmail(
+                'transactional'
             );
     }
 
@@ -182,6 +191,14 @@ class EmailDeliveryService
                     formatter: $this->formatter
                 )
             );
+
+            /*
+             * V1.1.0 licensing: every delivered product email counts
+             * against the monthly allowance.
+             */
+            $this->licensing->registerEmail(
+                'transactional'
+            );
     }
 
     /**
@@ -238,6 +255,14 @@ class EmailDeliveryService
 
                     formatter: $this->formatter
                 )
+            );
+
+            /*
+             * V1.1.0 licensing: every delivered product email counts
+             * against the monthly allowance.
+             */
+            $this->licensing->registerEmail(
+                'transactional'
             );
     }
 
@@ -313,6 +338,14 @@ class EmailDeliveryService
                     formatter: $this->formatter
                 )
             );
+
+            /*
+             * V1.1.0 licensing: every delivered product email counts
+             * against the monthly allowance.
+             */
+            $this->licensing->registerEmail(
+                'transactional'
+            );
     }
 
     /**
@@ -360,6 +393,14 @@ class EmailDeliveryService
 
                     formatter: $this->formatter
                 )
+            );
+
+            /*
+             * V1.1.0 licensing: every delivered product email counts
+             * against the monthly allowance.
+             */
+            $this->licensing->registerEmail(
+                'transactional'
             );
     }
 
@@ -419,6 +460,14 @@ class EmailDeliveryService
                     formatter: $this->formatter
                 )
             );
+
+            /*
+             * V1.1.0 licensing: every delivered product email counts
+             * against the monthly allowance.
+             */
+            $this->licensing->registerEmail(
+                'automated'
+            );
     }
 
     /**
@@ -466,6 +515,14 @@ class EmailDeliveryService
 
                     formatter: $this->formatter
                 )
+            );
+
+            /*
+             * V1.1.0 licensing: every delivered product email counts
+             * against the monthly allowance.
+             */
+            $this->licensing->registerEmail(
+                'automated'
             );
     }
 

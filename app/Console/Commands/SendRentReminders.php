@@ -57,6 +57,21 @@ class SendRentReminders extends Command
         EmailDeliveryService $service,
         Carbon $asOf
     ): int {
+        $licensing = app(\App\Services\LicensingService::class);
+
+        /*
+         * V1.1.0 licensing: automated reminders are a Professional
+         * feature, and the monthly email allowance is a hard cap.
+         * Skipped mail is NOT queued for later.
+         */
+        if (! $licensing->allows('automated_reminders')) {
+            $this->line(
+                '  Automated reminders are not included in this plan; skipped.'
+            );
+
+            return self::SUCCESS;
+        }
+
         $processed = 0;
         $sent = 0;
         $failed = 0;
@@ -77,6 +92,7 @@ class SendRentReminders extends Command
                 100,
                 function ($invoices) use (
                     $service,
+                    $licensing,
                     &$processed,
                     &$sent,
                     &$failed
@@ -91,6 +107,14 @@ class SendRentReminders extends Command
                                  */
                         if ($invoice->outstandingAmount() <= 0) {
                             continue;
+                        }
+
+                        if (! $licensing->canSendAutomatedEmail()) {
+                            $this->line(
+                                'Monthly email allowance exhausted; remaining reminders skipped.'
+                            );
+
+                            return;
                         }
 
                         try {

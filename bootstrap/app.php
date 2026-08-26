@@ -3,6 +3,7 @@
 use App\Http\Middleware\ApplyApplicationLocale;
 use App\Http\Middleware\AuthenticateSignedDocumentAccess;
 use App\Http\Middleware\EnsureUserHasCapability;
+use App\Http\Middleware\EnsureLicenseFeature;
 use App\Http\Middleware\SetOrganisationContext;
 use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
@@ -83,6 +84,12 @@ return Application::configure(basePath: dirname(__DIR__))
              * Bearer header.
              */
             'document.signed' => AuthenticateSignedDocumentAccess::class,
+
+            /*
+             * V1.1.0: plan-dependent feature gating, e.g.
+             * ->middleware('license:reports').
+             */
+            'license' => EnsureLicenseFeature::class,
         ]);
 
         /*

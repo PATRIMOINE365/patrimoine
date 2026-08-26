@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\FundsReportController;
 use App\Http\Controllers\Api\FundsReportExportController;
 use App\Http\Controllers\Api\LeaseController;
 use App\Http\Controllers\Api\LeaseFinancialHistoryExportController;
+use App\Http\Controllers\Api\LicenseController;
 use App\Http\Controllers\Api\ManagingOrganisationController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\OccupancyReportController;
@@ -182,6 +183,15 @@ Route::middleware('auth:sanctum')->group(
         Route::get(
             'release-log',
             [ReleaseLogController::class, 'index']
+        );
+
+        /*
+         * V1.1.0: the organisation's plan, usage and the plan matrix.
+         * Readable by every authenticated role; the licence page uses it.
+         */
+        Route::get(
+            'license',
+            [LicenseController::class, 'show']
         );
 
         Route::post(
@@ -808,17 +818,17 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'reports/payments/pdf',
                     [PaymentReportExportController::class, 'pdf']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/payments/csv',
                     [PaymentReportExportController::class, 'csv']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/payments/xlsx',
                     [PaymentReportExportController::class, 'xlsx']
-                );
+                )->middleware('license:exports');
 
                 /*
                  * V1.0.7 report subjects: portfolio Occupancy, tenant
@@ -828,152 +838,152 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'reports/occupancy/pdf',
                     [OccupancyReportExportController::class, 'pdf']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/occupancy/csv',
                     [OccupancyReportExportController::class, 'csv']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/occupancy/xlsx',
                     [OccupancyReportExportController::class, 'xlsx']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/arrears/pdf',
                     [ArrearsReportExportController::class, 'pdf']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/arrears/csv',
                     [ArrearsReportExportController::class, 'csv']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/arrears/xlsx',
                     [ArrearsReportExportController::class, 'xlsx']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/funds/pdf',
                     [FundsReportExportController::class, 'pdf']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/funds/csv',
                     [FundsReportExportController::class, 'csv']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/funds/xlsx',
                     [FundsReportExportController::class, 'xlsx']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/owners/{party}/pdf',
                     [ReportExportController::class, 'ownerPdf']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/owners/{party}/csv',
                     [ReportExportController::class, 'ownerCsv']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/owners/{party}/xlsx',
                     [ReportExportController::class, 'ownerXlsx']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/buildings/{building}/pdf',
                     [ReportExportController::class, 'buildingPdf']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/buildings/{building}/csv',
                     [ReportExportController::class, 'buildingCsv']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/buildings/{building}/xlsx',
                     [ReportExportController::class, 'buildingXlsx']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/units/{unit}/pdf',
                     [ReportExportController::class, 'unitPdf']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/units/{unit}/csv',
                     [ReportExportController::class, 'unitCsv']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/units/{unit}/xlsx',
                     [ReportExportController::class, 'unitXlsx']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/tenants/{party}/pdf',
                     [ReportExportController::class, 'tenantPdf']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/tenants/{party}/csv',
                     [ReportExportController::class, 'tenantCsv']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/tenants/{party}/xlsx',
                     [ReportExportController::class, 'tenantXlsx']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/managing-organisation/pdf',
                     [ReportExportController::class, 'managingOrganisationPdf']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/managing-organisation/csv',
                     [ReportExportController::class, 'managingOrganisationCsv']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/managing-organisation/xlsx',
                     [ReportExportController::class, 'managingOrganisationXlsx']
-                );
+                )->middleware('license:exports');
 
                 Route::get(
                     'reports/owners/{party}',
                     [ReportController::class, 'owner']
-                );
+                )->middleware('license:reports');
 
                 Route::get(
                     'reports/buildings/{building}',
                     [ReportController::class, 'building']
-                );
+                )->middleware('license:reports');
 
                 Route::get(
                     'reports/units/{unit}',
                     [ReportController::class, 'unit']
-                );
+                )->middleware('license:reports');
 
                 Route::get(
                     'reports/tenants/{party}',
                     [ReportController::class, 'tenant']
-                );
+                )->middleware('license:reports');
 
                 Route::get(
                     'reports/managing-organisation',
                     [ReportController::class, 'managingOrganisation']
-                );
+                )->middleware('license:reports');
 
                 Route::get(
                     'reports/payments',
                     PaymentReportController::class
-                );
+                )->middleware('license:reports');
 
                 /*
                  * V1.0.7 report subject data endpoints.
@@ -984,17 +994,17 @@ Route::middleware('auth:sanctum')->group(
                 Route::get(
                     'reports/occupancy',
                     OccupancyReportController::class
-                );
+                )->middleware('license:reports');
 
                 Route::get(
                     'reports/arrears',
                     ArrearsReportController::class
-                );
+                )->middleware('license:reports');
 
                 Route::get(
                     'reports/funds',
                     FundsReportController::class
-                );
+                )->middleware('license:reports');
             }
         );
 

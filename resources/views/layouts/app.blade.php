@@ -634,6 +634,41 @@
                         </div>
                     </div>
                 </a>
+
+                <a
+                    href="/license"
+                    data-requires-capability="manage_settings"
+                    class="pm-sidebar-manage-item"
+                >
+                    <div class="pm-sidebar-manage-icon">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <rect x="3" y="4" width="18" height="14" rx="2"/>
+                            <path d="M7 20h10"/>
+                            <path d="M9 9h6"/>
+                            <path d="M9 13h3"/>
+                        </svg>
+                    </div>
+
+                    <div class="min-w-0">
+                        <div
+                            class="pm-sidebar-manage-title"
+                            data-i18n="navigation.license"
+                        >
+                            {{ __('ui.navigation.license') }}
+                        </div>
+
+                        <div
+                            class="pm-sidebar-manage-description"
+                        >
+                            {{ __('ui.navigation.license_description') }}
+                        </div>
+                    </div>
+                </a>
             </div>
 
             <button

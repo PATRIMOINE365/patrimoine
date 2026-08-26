@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Models\License;
 use App\Models\Organisation;
 use App\Support\OrganisationContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -43,6 +44,21 @@ abstract class TestCase extends BaseTestCase
                 'name' => 'Test Organisation',
                 'status' => 'active',
                 'trial_ends_on' => null,
+            ]);
+
+            /*
+             * A perpetual Professional licence, exactly like the
+             * grandfathered founding installation: the pre-existing
+             * suite exercises every feature without plan friction.
+             * Licensing tests drop this licence to observe Free/trial
+             * behaviour.
+             */
+            License::query()->create([
+                'organisation_id' => $this->testOrganisation->id,
+                'plan' => 'professional',
+                'starts_on' => now()->toDateString(),
+                'expires_on' => null,
+                'notes' => 'Test suite default licence.',
             ]);
 
             OrganisationContext::bind(

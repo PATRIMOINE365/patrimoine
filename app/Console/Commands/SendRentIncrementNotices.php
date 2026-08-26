@@ -80,6 +80,22 @@ class SendRentIncrementNotices extends Command
         RentIncrementService $rentIncrementService,
         Carbon $asOf
     ): int {
+        $licensing = app(\App\Services\LicensingService::class);
+
+        /*
+         * V1.1.0 licensing: automated notices are a Professional
+         * feature, and the monthly email allowance is a hard cap.
+         * Skipped mail is NOT queued for later; unsent notices remain
+         * eligible for a future run.
+         */
+        if (! $licensing->allows('automated_reminders')) {
+            $this->line(
+                '  Automated notices are not included in this plan; skipped.'
+            );
+
+            return self::SUCCESS;
+        }
+
         $processed = 0;
         $eligible = 0;
         $sent = 0;
@@ -112,6 +128,7 @@ class SendRentIncrementNotices extends Command
                     $emailDelivery,
                     $rentIncrementService,
                     $asOf,
+                    $licensing,
                     &$processed,
                     &$eligible,
                     &$sent,
@@ -130,6 +147,14 @@ class SendRentIncrementNotices extends Command
                         }
 
                         $eligible++;
+
+                        if (! $licensing->canSendAutomatedEmail()) {
+                            $this->line(
+                                'Monthly email allowance exhausted; remaining notices skipped.'
+                            );
+
+                            return;
+                        }
 
                         try {
                             /*
