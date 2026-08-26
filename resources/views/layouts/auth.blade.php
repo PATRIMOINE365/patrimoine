@@ -105,7 +105,7 @@
                     </div>
 
                     <span class="text-xl font-semibold text-white">
-                        Patrimoine
+                        Patrimoine 365
                     </span>
                 </div>
             </div>
@@ -117,8 +117,8 @@
                         tracking-[0.24em] text-patrimoine-300
                     "
                 >
-                    <span data-i18n="product.property_management">
-                        {{ __('ui.product.property_management') }}
+                    <span data-i18n="login.hero_kicker">
+                        {{ __('ui.login.hero_kicker') }}
                     </span>
                 </p>
 
@@ -143,6 +143,31 @@
                         {{ __('ui.login.hero_description') }}
                     </span>
                 </p>
+
+                {{--
+                    Visual slot — replace with a real product image
+                    (1600 × 1000 px, shown at half size) when ready.
+                --}}
+                <div
+                    class="
+                        mt-10 flex aspect-[16/10] w-full
+                        items-center justify-center rounded-2xl
+                        border border-dashed border-patrimoine-700
+                        bg-patrimoine-900/50
+                    "
+                >
+                    <div class="px-4 text-center">
+                        <p class="text-sm font-semibold text-patrimoine-300">
+                            <span data-i18n="login.hero_image_label">
+                                {{ __('ui.login.hero_image_label') }}
+                            </span>
+                        </p>
+
+                        <p class="mt-1 font-mono text-xs text-patrimoine-400">
+                            1600 &times; 1000px
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <div
@@ -159,11 +184,75 @@
 
         <section
             class="
-                flex min-h-screen items-center justify-center
+                relative flex min-h-screen items-center justify-center
                 bg-[var(--pm-page)]
                 px-6 py-12 sm:px-10 lg:px-16
             "
         >
+            {{--
+                V1.0.12 — personal presentation controls at the door.
+                Theme follows patrimoine.theme (the whole app honours it);
+                language is the public-screen visitor override.
+            --}}
+            <div class="absolute right-6 top-6 flex items-center gap-2">
+                <button
+                    type="button"
+                    id="auth-language-toggle"
+                    class="
+                        flex h-10 min-w-10 items-center justify-center
+                        rounded-lg border border-[var(--pm-border)]
+                        bg-[var(--pm-surface)] px-2.5
+                        text-sm font-semibold text-[var(--pm-text-muted)]
+                        hover:border-[var(--pm-border-strong)]
+                        hover:text-[var(--pm-text)]
+                    "
+                >
+                    FR
+                </button>
+
+                <button
+                    type="button"
+                    id="auth-theme-toggle"
+                    class="
+                        flex h-10 w-10 items-center justify-center
+                        rounded-lg border border-[var(--pm-border)]
+                        bg-[var(--pm-surface)]
+                        text-[var(--pm-text-muted)]
+                        hover:border-[var(--pm-border-strong)]
+                        hover:text-[var(--pm-text)]
+                    "
+                >
+                    <svg
+                        data-theme-icon="moon"
+                        class="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
+                        <path d="M20.5 14.1A8.5 8.5 0 0 1 9.9 3.5a8.5 8.5 0 1 0 10.6 10.6Z" />
+                    </svg>
+
+                    <svg
+                        data-theme-icon="sun"
+                        class="hidden h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+                    </svg>
+                </button>
+            </div>
+
             <div class="w-full max-w-md">
 
                 <div class="mb-12 flex items-center gap-3 lg:hidden">
@@ -178,7 +267,7 @@
                     </div>
 
                     <span class="text-xl font-semibold text-[var(--pm-text)]">
-                        Patrimoine
+                        Patrimoine 365
                     </span>
                 </div>
 

@@ -10,6 +10,12 @@
 | confirmed language so a new document can avoid briefly painting the
 | English Blade fallback while the presentation endpoint is loading.
 |
+| Public screens additionally honour a VISITOR language choice, so the
+| marketing site can hand its language through (?lang=en|fr) and the
+| sign-in / sign-up toggles can switch it. The visitor override applies
+| only while unauthenticated; once signed in, the organisation language
+| wins and the override is cleared (see core.js).
+|
 --}}
 
 <script>
@@ -17,14 +23,53 @@
         const storageKey =
             'patrimoine.presentation.language';
 
+        const overrideStorageKey =
+            'patrimoine.presentation.language.override';
+
         let language =
             'en';
 
         try {
-            const storedLanguage =
-                window.localStorage.getItem(
-                    storageKey
+            /*
+             * 1. An explicit ?lang= parameter (handed over by the
+             *    marketing site) becomes the visitor override.
+             */
+            const requestedLanguage =
+                new URLSearchParams(
+                    window.location.search
+                ).get('lang');
+
+            if (
+                requestedLanguage === 'en'
+                || requestedLanguage === 'fr'
+            ) {
+                window.localStorage.setItem(
+                    overrideStorageKey,
+                    requestedLanguage
                 );
+
+                window.localStorage.setItem(
+                    storageKey,
+                    requestedLanguage
+                );
+            }
+
+            /*
+             * 2. A previously chosen visitor override wins over the
+             *    cached organisation language on public screens.
+             */
+            const overrideLanguage =
+                window.localStorage.getItem(
+                    overrideStorageKey
+                );
+
+            const storedLanguage =
+                overrideLanguage === 'en'
+                || overrideLanguage === 'fr'
+                    ? overrideLanguage
+                    : window.localStorage.getItem(
+                        storageKey
+                    );
 
             if (
                 storedLanguage === 'en'
@@ -46,5 +91,3 @@
             language;
     })();
 </script>
-
-

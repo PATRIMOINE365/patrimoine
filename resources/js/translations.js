@@ -629,16 +629,31 @@ export const translations = {
             'Property Management',
 
         'login.title':
-            'Sign in — Patrimoine',
+            'Sign in — Patrimoine 365',
+
+        'login.hero_kicker':
+            'Property management that minds the money',
 
         'login.hero_title':
-            'Your property portfolio, finances and tenants in one place.',
+            'Rent day, minus the drama.',
 
         'login.hero_description':
-            'Manage buildings, leases, rent collections, owner funds and financial reporting from a single workspace.',
+            'Leases, invoices, owners and tenants in perfect order — with real double-entry accounting quietly doing the math underneath. You collect the rent. We keep the receipts.',
+
+        'login.hero_image_label':
+            'Image — app preview',
 
         'login.product_name':
-            'Patrimoine Property Management',
+            'Patrimoine 365',
+
+        'login.switch_to_dark':
+            'Switch to dark mode',
+
+        'login.switch_to_light':
+            'Switch to light mode',
+
+        'login.switch_language':
+            'Switch language',
 
         'login.welcome':
             'Welcome back',
@@ -668,7 +683,7 @@ export const translations = {
             'Unable to sign in.',
 
         'login.secure_access':
-            'Secure access to Patrimoine Property Management.',
+            'Secure access to Patrimoine 365.',
 
         'password.forgot_link':
             'Forgot password?',
@@ -3833,16 +3848,31 @@ export const translations = {
             'Gestion immobilière',
 
         'login.title':
-            'Connexion — Patrimoine',
+            'Connexion — Patrimoine 365',
+
+        'login.hero_kicker':
+            'La gestion locative qui tient ses comptes',
 
         'login.hero_title':
-            'Votre patrimoine immobilier, vos finances et vos locataires réunis au même endroit.',
+            'Encaissez vos loyers, l\'esprit tranquille.',
 
         'login.hero_description':
-            'Gérez les immeubles, les baux, les encaissements de loyers, les fonds des propriétaires et les rapports financiers depuis un espace unique.',
+            'Baux, quittances, propriétaires et locataires en ordre parfait — avec un journal en partie double qui veille au grain en coulisses. Vous gérez vos biens ; les écritures, c\'est notre affaire.',
+
+        'login.hero_image_label':
+            'Image — aperçu de l\'application',
 
         'login.product_name':
-            'Patrimoine Gestion immobilière',
+            'Patrimoine 365',
+
+        'login.switch_to_dark':
+            'Passer en mode sombre',
+
+        'login.switch_to_light':
+            'Passer en mode clair',
+
+        'login.switch_language':
+            'Changer de langue',
 
         'login.welcome':
             'Bienvenue',
@@ -3872,7 +3902,7 @@ export const translations = {
             'Impossible de se connecter.',
 
         'login.secure_access':
-            'Accès sécurisé à Patrimoine Gestion immobilière.',
+            'Accès sécurisé à Patrimoine 365.',
 
         'password.forgot_link':
             'Mot de passe oublié ?',

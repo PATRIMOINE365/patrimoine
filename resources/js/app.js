@@ -35,6 +35,10 @@ import {
 } from './theme.js';
 
 import {
+    initializePublicPresentationControls,
+} from './public-presentation.js';
+
+import {
     applyTranslations,
     loadPresentationConfiguration,
     initializeMoneyInputs,
@@ -132,6 +136,12 @@ document.addEventListener(
          * application modules initialize.
          */
         applyTranslations();
+
+        /*
+         * V1.0.12: theme + language toggles on the public screens
+         * (present only in the auth layout; a no-op everywhere else).
+         */
+        initializePublicPresentationControls();
 
         /*
          * V1.0.8: live thousands grouping on all monetary inputs,

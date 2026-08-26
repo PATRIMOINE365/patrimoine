@@ -19,6 +19,16 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.12',
+            'date' => '2026-08-26',
+            'title' => 'A warmer front door: theme and language, your way',
+            'changes' => [
+                'The sign-in and sign-up pages now carry their own light/dark theme switch and English/French language switch, right at the door.',
+                'Coming from patrimoine365.com? The language and theme you chose on the website now follow you automatically onto the sign-in and sign-up pages.',
+                'The welcome panel on the sign-in pages was refreshed to match the new patrimoine365.com website.',
+            ],
+        ],
+        [
             'version' => '1.0.11',
             'date' => '2026-08-26',
             'title' => 'Plan reminders, licence confirmations, and a stronger platform behind you',

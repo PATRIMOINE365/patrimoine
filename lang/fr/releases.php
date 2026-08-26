@@ -15,6 +15,16 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.12',
+            'date' => '2026-08-26',
+            'title' => 'Un accueil plus chaleureux : thème et langue, à votre goût',
+            'changes' => [
+                'Les pages de connexion et d\'inscription disposent désormais de leur propre sélecteur clair/sombre et d\'un sélecteur de langue français/anglais, directement sur la page.',
+                'Vous arrivez depuis patrimoine365.com ? La langue et le thème choisis sur le site vous suivent maintenant automatiquement jusqu\'aux pages de connexion et d\'inscription.',
+                'Le panneau de bienvenue des pages de connexion a été rafraîchi pour s\'accorder au nouveau site patrimoine365.com.',
+            ],
+        ],
+        [
             'version' => '1.0.11',
             'date' => '2026-08-26',
             'title' => 'Rappels de forfait, confirmations de licence et une plateforme renforcée',

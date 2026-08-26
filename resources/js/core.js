@@ -295,6 +295,105 @@ export async function openPdfInNewTab(
 const PRESENTATION_LANGUAGE_STORAGE_KEY =
     'patrimoine.presentation.language';
 
+/*
+ * Visitor-chosen language for PUBLIC screens only (sign in, sign up,
+ * password ownership). Set by the marketing-site hand-over (?lang=) or by
+ * the language toggle on those screens. The organisation language remains
+ * authoritative the moment a token exists, at which point the override is
+ * cleared.
+ */
+const PRESENTATION_LANGUAGE_OVERRIDE_STORAGE_KEY =
+    'patrimoine.presentation.language.override';
+
+/**
+ * Return the visitor's public-screen language override, if any.
+ *
+ * @returns {'en'|'fr'|null}
+ */
+export function publicLanguageOverride() {
+    try {
+        const language =
+            window.localStorage.getItem(
+                PRESENTATION_LANGUAGE_OVERRIDE_STORAGE_KEY
+            );
+
+        if (
+            language === 'en'
+            || language === 'fr'
+        ) {
+            return language;
+        }
+    } catch {
+        /*
+         * Browser storage restrictions are non-fatal.
+         */
+    }
+
+    return null;
+}
+
+/**
+ * Persist and apply a visitor language choice on a public screen.
+ *
+ * Updates the live presentation configuration so translate(),
+ * applyTranslations() and the signup organisation-language capture all
+ * follow immediately.
+ *
+ * @param {'en'|'fr'} language
+ */
+export function setPublicLanguageOverride(
+    language
+) {
+    if (
+        language !== 'en'
+        && language !== 'fr'
+    ) {
+        return;
+    }
+
+    try {
+        window.localStorage.setItem(
+            PRESENTATION_LANGUAGE_OVERRIDE_STORAGE_KEY,
+            language
+        );
+
+        window.localStorage.setItem(
+            PRESENTATION_LANGUAGE_STORAGE_KEY,
+            language
+        );
+    } catch {
+        /*
+         * The current page can still switch language without storage.
+         */
+    }
+
+    presentationConfiguration.language =
+        language;
+
+    document.documentElement.lang =
+        language;
+
+    document.documentElement.dataset
+        .presentationLanguage =
+        language;
+}
+
+/**
+ * Forget the visitor override once an organisation language is
+ * authoritative (a token exists).
+ */
+function clearPublicLanguageOverride() {
+    try {
+        window.localStorage.removeItem(
+            PRESENTATION_LANGUAGE_OVERRIDE_STORAGE_KEY
+        );
+    } catch {
+        /*
+         * Non-fatal.
+         */
+    }
+}
+
 /**
  * Return the last organisation language successfully confirmed by the
  * public presentation endpoint.
@@ -435,6 +534,25 @@ export async function loadPresentationConfiguration() {
                             ),
                         },
                     };
+
+                    /*
+                     * Signed in: the organisation language is
+                     * authoritative — retire any visitor override.
+                     * Signed out: a visitor override (marketing-site
+                     * hand-over or the public-screen toggle) wins over
+                     * the platform default the endpoint answers with.
+                     */
+                    if (storedToken) {
+                        clearPublicLanguageOverride();
+                    } else {
+                        const overrideLanguage =
+                            publicLanguageOverride();
+
+                        if (overrideLanguage) {
+                            presentationConfiguration.language =
+                                overrideLanguage;
+                        }
+                    }
 
                     const confirmedLanguage =
                         presentationConfiguration
