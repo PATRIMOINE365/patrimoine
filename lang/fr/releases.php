@@ -15,6 +15,25 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.10',
+            'date' => '2026-08-26',
+            'title' => 'Patrimoine 365 : votre organisation, votre espace sécurisé',
+            'changes' => [
+                'Patrimoine devient Patrimoine 365, une plateforme multi-organisations : chaque organisation travaille dans un espace totalement isolé — ses données ne peuvent jamais être vues, mélangées ou référencées par une autre organisation.',
+                'Les nouvelles organisations s\'inscrivent elles-mêmes : la page « Créez votre organisation » provisionne tout en une étape et démarre un essai Professionnel de 30 jours, sans carte bancaire.',
+                'Les adresses e-mail sont vérifiées à l\'inscription : un lien de confirmation doit être cliqué avant la première connexion.',
+                'Chaque connexion est désormais protégée par une seconde étape : un code de sécurité à 6 chiffres vous est envoyé par e-mail et se saisit dans la même fenêtre de connexion, avec option de renvoi.',
+                'Une nouvelle page Licence et forfait (dans Gérer) affiche votre forfait actuel, votre utilisation par rapport à ses limites et une comparaison complète des forfaits Gratuit, Standard et Professionnel.',
+                'Les forfaits suivent une règle simple : les baux actifs sont la seule vraie limite — l\'historique, les immeubles et les unités n\'imposent jamais de mise à niveau, et dépasser une limite ne bloque que la création de nouveaux enregistrements, jamais vos données existantes.',
+                'Les rappels de loyer et avis d\'augmentation automatiques sont une fonctionnalité Professionnelle, avec un quota mensuel d\'e-mails ; les factures, reçus et justificatifs continuent toujours d\'être envoyés sur tous les forfaits.',
+                'De nouvelles pages publiques Conditions Générales d\'Utilisation et Politique de Confidentialité (en français et en anglais) sont acceptées à l\'inscription et liées depuis chaque e-mail.',
+                'Chaque e-mail envoyé par Patrimoine a été repensé sur une mise en page professionnelle unique, envoyé au nom de votre organisation avec un pied de page légal complet.',
+                'Chaque document PDF — factures, reçus, notes et justificatifs — s\'ouvre désormais avec l\'en-tête de votre organisation et un style cohérent et aligné sur la marque.',
+                'Le Journal financier est actif dès le premier jour pour les organisations nouvellement créées.',
+                'Les tentatives de connexion échouées, y compris les codes de sécurité erronés, sont enregistrées dans le Journal d\'activité avec les détails de l\'appareil et du navigateur.',
+            ],
+        ],
+        [
             'version' => '1.0.9',
             'date' => '2026-08-26',
             'title' => 'Réglages repensés, Rapports affinés et tableau de bord entièrement câblé',

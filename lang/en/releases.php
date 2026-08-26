@@ -19,6 +19,25 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.10',
+            'date' => '2026-08-26',
+            'title' => 'Patrimoine 365: your organisation, your own secure space',
+            'changes' => [
+                'Patrimoine is now Patrimoine 365, a multi-organisation platform: every organisation works in its own completely isolated space — its data can never be seen by, mixed with, or referenced from any other organisation.',
+                'New organisations sign up themselves: the Create your organisation page provisions everything in one step and starts a 30-day Professional trial, no payment card required.',
+                'Email addresses are verified at signup: a confirmation link must be clicked before the first sign-in.',
+                'Every sign-in is now protected by a second step: a 6-digit security code is emailed to you and entered in the same sign-in box, with a resend option.',
+                'A new License & plan page (in Manage) shows your current plan, your usage against its limits, and a full comparison of the Free, Standard and Professional plans.',
+                'Plans follow one simple rule: active leases are the only real limit — history, buildings and units never force an upgrade, and going over a limit only pauses creating new records, never your existing data.',
+                'Automated rent reminders and increment notices are a Professional feature, with a monthly email allowance; invoices, receipts and vouchers always keep sending on every plan.',
+                'New public Terms of Service and Privacy Policy pages (in English and French) are accepted at signup and linked from every email.',
+                'Every email Patrimoine sends was redesigned on one professional layout, sent on behalf of your organisation with a proper legal footer.',
+                'Every PDF document — invoices, receipts, bills and vouchers — now opens with your organisation letterhead and consistent, brand-aligned styling.',
+                'The Financial Journal is active from day one for newly created organisations.',
+                'Failed sign-in attempts, including wrong security codes, are recorded in the Activity Log with device and browser details.',
+            ],
+        ],
+        [
             'version' => '1.0.9',
             'date' => '2026-08-26',
             'title' => 'Redesigned Settings, sharper Reports, and a fully wired Dashboard',
