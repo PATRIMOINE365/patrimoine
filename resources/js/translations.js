@@ -1114,6 +1114,72 @@ export const translations = {
         'roles.viewer':
             'Viewer',
 
+        'financial_journal.transaction_types.rent_invoice':
+            'Rent Invoice',
+
+        'financial_journal.transaction_types.rent_receipt':
+            'Rent Receipt',
+
+        'financial_journal.transaction_types.owner_deposit':
+            'Owner Deposit',
+
+        'financial_journal.transaction_types.owner_payout':
+            'Owner Payout',
+
+        'financial_journal.transaction_types.owner_expense':
+            'Owner Expense',
+
+        'financial_journal.transaction_types.owner_rent_entitlement':
+            'Owner Rent Entitlement',
+
+        'financial_journal.transaction_types.owner_adjustment':
+            'Owner Adjustment',
+
+        'financial_journal.transaction_types.management_fee':
+            'Management Fee',
+
+        'financial_journal.transaction_types.advance_consumption':
+            'Advance Consumption',
+
+        'financial_journal.transaction_types.rent_reserve_consumption':
+            'Rent Reserve Consumption',
+
+        'financial_journal.transaction_types.rent_reserve_funding':
+            'Rent Reserve Funding',
+
+        'financial_journal.transaction_types.consumable_advance_funding':
+            'Consumable Advance Funding',
+
+        'financial_journal.transaction_types.security_deposit_funding':
+            'Security Deposit Funding',
+
+        'financial_journal.transaction_types.security_deposit_settlement':
+            'Security Deposit Settlement',
+
+        'financial_journal.transaction_types.security_deposit_refund':
+            'Security Deposit Refund',
+
+        'financial_journal.transaction_types.security_deposit_debt':
+            'Security Deposit Debt',
+
+        'financial_journal.transaction_types.tenant_fund_funding':
+            'Tenant Fund Funding',
+
+        'financial_journal.transaction_types.tenant_fund_expense':
+            'Tenant Fund Expense',
+
+        'financial_journal.transaction_types.tenant_fund_transfer':
+            'Tenant Fund Transfer',
+
+        'financial_journal.transaction_types.tenant_expense_settlement':
+            'Tenant Expense Settlement',
+
+        'financial_journal.transaction_types.journal_reversal':
+            'Journal Reversal',
+
+        'financial_journal.transaction_types.v1_0_5_opening_balance':
+            'Opening Balance',
+
         'financial_journal.title':
             'Financial Journal — Patrimoine',
 
@@ -4293,6 +4359,72 @@ export const translations = {
             'Gestionnaire immobilier',
         'roles.viewer':
             'Consultation',
+
+        'financial_journal.transaction_types.rent_invoice':
+            'Facture de loyer',
+
+        'financial_journal.transaction_types.rent_receipt':
+            'Encaissement de loyer',
+
+        'financial_journal.transaction_types.owner_deposit':
+            'Dépôt propriétaire',
+
+        'financial_journal.transaction_types.owner_payout':
+            'Versement propriétaire',
+
+        'financial_journal.transaction_types.owner_expense':
+            'Charge propriétaire',
+
+        'financial_journal.transaction_types.owner_rent_entitlement':
+            'Droit du propriétaire',
+
+        'financial_journal.transaction_types.owner_adjustment':
+            'Ajustement propriétaire',
+
+        'financial_journal.transaction_types.management_fee':
+            'Frais de gestion',
+
+        'financial_journal.transaction_types.advance_consumption':
+            'Consommation d’avance',
+
+        'financial_journal.transaction_types.rent_reserve_consumption':
+            'Consommation de réserve',
+
+        'financial_journal.transaction_types.rent_reserve_funding':
+            'Alimentation de réserve',
+
+        'financial_journal.transaction_types.consumable_advance_funding':
+            'Alimentation d’avance',
+
+        'financial_journal.transaction_types.security_deposit_funding':
+            'Alimentation de caution',
+
+        'financial_journal.transaction_types.security_deposit_settlement':
+            'Règlement de caution',
+
+        'financial_journal.transaction_types.security_deposit_refund':
+            'Remboursement de caution',
+
+        'financial_journal.transaction_types.security_deposit_debt':
+            'Dette sur caution',
+
+        'financial_journal.transaction_types.tenant_fund_funding':
+            'Alimentation de fonds locataire',
+
+        'financial_journal.transaction_types.tenant_fund_expense':
+            'Dépense sur fonds locataire',
+
+        'financial_journal.transaction_types.tenant_fund_transfer':
+            'Transfert de fonds locataire',
+
+        'financial_journal.transaction_types.tenant_expense_settlement':
+            'Règlement de dépense locataire',
+
+        'financial_journal.transaction_types.journal_reversal':
+            'Contre-passation',
+
+        'financial_journal.transaction_types.v1_0_5_opening_balance':
+            'Solde d’ouverture',
 
         'financial_journal.title':
             'Journal financier — Patrimoine',

@@ -783,7 +783,7 @@ function financialJournalRow(
 
                         <span>
                             ${escapeHtml(
-                                humanizeIdentifier(
+                                transactionTypeLabel(
                                     entry.transaction_type
                                 )
                             )}
@@ -1833,6 +1833,30 @@ function financialJournalKindLabel(
     return translated === key
         ? humanizeIdentifier(kind)
         : translated;
+}
+
+
+/**
+ * Human label for a journal transaction type.
+ *
+ * Types are a closed set with translations; anything new falls back to
+ * the prettified identifier so an unmapped type still reads sensibly.
+ */
+function transactionTypeLabel(type) {
+    if (! type) {
+        return '';
+    }
+
+    const key =
+        'financial_journal.transaction_types.'
+        + type;
+
+    const label =
+        translate(key);
+
+    return label === key
+        ? humanizeIdentifier(type)
+        : label;
 }
 
 function humanizeIdentifier(

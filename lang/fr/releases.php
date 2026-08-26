@@ -15,6 +15,15 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.20',
+            'date' => '2026-08-26',
+            'title' => 'Un Journal financier qui parle votre langue',
+            'changes' => [
+                'Les libellés des écritures du journal sont désormais rédigés dans la langue de votre organisation. Les organisations francophones les voyaient jusqu\'ici en anglais ; les nouvelles écritures sont correctement enregistrées, tandis que les écritures existantes conservent le libellé sous lequel elles ont été comptabilisées.',
+                'Sur le tableau de bord, les montants s\'alignent proprement même lorsque l\'intitulé d\'une tuile passe à la ligne.',
+            ],
+        ],
+        [
             'version' => '1.0.19',
             'date' => '2026-08-26',
             'title' => 'Un panneau d\'accueil plus vivant',

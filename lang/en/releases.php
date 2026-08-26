@@ -19,6 +19,15 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.20',
+            'date' => '2026-08-26',
+            'title' => 'A Financial Journal that speaks your language',
+            'changes' => [
+                'Journal entry descriptions are now written in your organisation\'s language. French organisations previously saw these in English; new entries are recorded correctly from now on, while existing entries keep the wording they were posted with.',
+                'On the Dashboard, the financial figures now line up neatly even when a tile\'s label runs onto a second line.',
+            ],
+        ],
+        [
             'version' => '1.0.19',
             'date' => '2026-08-26',
             'title' => 'A livelier welcome panel',

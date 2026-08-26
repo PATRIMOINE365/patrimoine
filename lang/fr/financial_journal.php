@@ -67,4 +67,37 @@ return [
 
         'reversal' => 'Contre-passation de :number : :reason',
     ],
+    /*
+    |--------------------------------------------------------------------------
+    | Libellés des types d'opération
+    |--------------------------------------------------------------------------
+    |
+    | Affichés sous chaque écriture. Un type absent d'ici retombe sur son
+    | identifiant mis en forme.
+    |
+    */
+    'transaction_types' => [
+        'rent_invoice' => 'Facture de loyer',
+        'rent_receipt' => 'Encaissement de loyer',
+        'owner_deposit' => 'Dépôt propriétaire',
+        'owner_payout' => 'Versement propriétaire',
+        'owner_expense' => 'Charge propriétaire',
+        'owner_rent_entitlement' => 'Droit du propriétaire',
+        'owner_adjustment' => 'Ajustement propriétaire',
+        'management_fee' => 'Frais de gestion',
+        'advance_consumption' => 'Consommation d’avance',
+        'rent_reserve_consumption' => 'Consommation de réserve',
+        'rent_reserve_funding' => 'Alimentation de réserve',
+        'consumable_advance_funding' => 'Alimentation d’avance',
+        'security_deposit_funding' => 'Alimentation de caution',
+        'security_deposit_settlement' => 'Règlement de caution',
+        'security_deposit_refund' => 'Remboursement de caution',
+        'security_deposit_debt' => 'Dette sur caution',
+        'tenant_fund_funding' => 'Alimentation de fonds locataire',
+        'tenant_fund_expense' => 'Dépense sur fonds locataire',
+        'tenant_fund_transfer' => 'Transfert de fonds locataire',
+        'tenant_expense_settlement' => 'Règlement de dépense locataire',
+        'journal_reversal' => 'Contre-passation',
+        'v1_0_5_opening_balance' => 'Solde d’ouverture',
+    ],
 ];

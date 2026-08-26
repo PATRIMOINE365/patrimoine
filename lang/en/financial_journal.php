@@ -67,4 +67,37 @@ return [
 
         'reversal' => 'Reversal of :number: :reason',
     ],
+    /*
+    |--------------------------------------------------------------------------
+    | Transaction type labels
+    |--------------------------------------------------------------------------
+    |
+    | Shown beneath each entry. Anything without an entry here falls back
+    | to the prettified identifier.
+    |
+    */
+    'transaction_types' => [
+        'rent_invoice' => 'Rent Invoice',
+        'rent_receipt' => 'Rent Receipt',
+        'owner_deposit' => 'Owner Deposit',
+        'owner_payout' => 'Owner Payout',
+        'owner_expense' => 'Owner Expense',
+        'owner_rent_entitlement' => 'Owner Rent Entitlement',
+        'owner_adjustment' => 'Owner Adjustment',
+        'management_fee' => 'Management Fee',
+        'advance_consumption' => 'Advance Consumption',
+        'rent_reserve_consumption' => 'Rent Reserve Consumption',
+        'rent_reserve_funding' => 'Rent Reserve Funding',
+        'consumable_advance_funding' => 'Consumable Advance Funding',
+        'security_deposit_funding' => 'Security Deposit Funding',
+        'security_deposit_settlement' => 'Security Deposit Settlement',
+        'security_deposit_refund' => 'Security Deposit Refund',
+        'security_deposit_debt' => 'Security Deposit Debt',
+        'tenant_fund_funding' => 'Tenant Fund Funding',
+        'tenant_fund_expense' => 'Tenant Fund Expense',
+        'tenant_fund_transfer' => 'Tenant Fund Transfer',
+        'tenant_expense_settlement' => 'Tenant Expense Settlement',
+        'journal_reversal' => 'Journal Reversal',
+        'v1_0_5_opening_balance' => 'Opening Balance',
+    ],
 ];
