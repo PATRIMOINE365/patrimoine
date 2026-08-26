@@ -1031,7 +1031,7 @@ function handlePhotoChosen(file) {
     image.src = url;
 }
 
-function initCropBox() {
+function initCropBox(attempt = 0) {
     const stageImg = document.getElementById('admin-profile-crop-img');
 
     const box = document.getElementById('admin-profile-crop-box');
@@ -1043,6 +1043,17 @@ function initCropBox() {
     const w = stageImg.clientWidth;
 
     const h = stageImg.clientHeight;
+
+    if ((w === 0 || h === 0) && attempt < 30) {
+        /*
+         * The stage image has no layout yet (its load is asynchronous
+         * and the drawer may still be animating) — try again next
+         * frame rather than laying out a zero-size square.
+         */
+        requestAnimationFrame(() => initCropBox(attempt + 1));
+
+        return;
+    }
 
     const edge = Math.min(w, h);
 
@@ -1126,6 +1137,18 @@ async function submitPhoto() {
     const stageImg = document.getElementById('admin-profile-crop-img');
 
     const box = document.getElementById('admin-profile-crop-box');
+
+    if (box.clientWidth < 10 || stageImg.clientWidth === 0) {
+        /*
+         * The square never laid out (racing image load): recover
+         * instead of cropping nothing.
+         */
+        initCropBox();
+
+        profileFeedback('One moment — the photo is still loading. Try again.', true);
+
+        return;
+    }
 
     /*
      * Map the on-screen square back to the source image's pixels.
