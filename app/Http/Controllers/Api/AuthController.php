@@ -136,13 +136,36 @@ class AuthController extends Controller
                 user: $user
             );
 
-            throw ValidationException::withMessages([
-                'email' => [
-                    $awaitingVerification
-                        ? __('api.auth.verification_required')
-                        : __('api.auth.setup_required'),
-                ],
-            ]);
+            $reason =
+                $awaitingVerification
+                    ? 'verification_required'
+                    : 'setup_required';
+
+            $message =
+                __(
+                    "api.auth.{$reason}"
+                );
+
+            /*
+             * V1.0.15: the browser needs to distinguish "verify first"
+             * from other sign-in failures so it can offer to resend the
+             * verification email. A machine-readable code rides along
+             * with the human message.
+             */
+            throw new \Illuminate\Http\Exceptions\HttpResponseException(
+                response()->json(
+                    [
+                        'message' => $message,
+                        'errors' => [
+                            'email' => [
+                                $message,
+                            ],
+                        ],
+                        'code' => $reason,
+                    ],
+                    422
+                )
+            );
         }
 
         /*

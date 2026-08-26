@@ -290,6 +290,26 @@
             {{ __('ui.signup.done_back_to_login') }}
         </a>
 
+        {{-- Escape hatch when the verification email never lands --}}
+        <p class="pm-auth-description mt-6 text-center text-sm">
+            <span data-i18n="signup.resend_hint">
+                {{ __('ui.signup.resend_hint') }}
+            </span>
+            <button
+                type="button"
+                id="signup-resend-button"
+                class="pm-auth-link font-medium disabled:opacity-50"
+                data-i18n="signup.resend_button"
+            >
+                {{ __('ui.signup.resend_button') }}
+            </button>
+        </p>
+
+        <p
+            id="signup-resend-feedback"
+            class="pm-auth-description mt-2 hidden text-center text-sm"
+        ></p>
+
     </div>
 
     <p class="pm-auth-footer mt-10 text-center text-xs leading-5">

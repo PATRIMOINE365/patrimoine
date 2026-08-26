@@ -335,6 +335,15 @@ export async function initializeLogin() {
 
                         'Content-Type':
                             'application/json',
+
+                        /*
+                         * Localize public responses (sign-in errors)
+                         * in the language the visitor is reading.
+                         */
+                        'X-Patrimoine-Language':
+                            getPresentationConfiguration()
+                                ?.language
+                            || 'en',
                     },
 
                     body:
@@ -454,11 +463,74 @@ export async function initializeLogin() {
                             'login.unable_to_sign_in'
                         )
                 );
+
+                /*
+                 * V1.0.15: an unverified account gets a one-click way
+                 * to receive a fresh verification email.
+                 */
+                document
+                    .getElementById('login-resend')
+                    ?.classList
+                    .toggle(
+                        'hidden',
+                        error?.apiCode !== 'verification_required'
+                    );
             } finally {
                 restore();
             }
         }
     );
+
+    /*
+     * Resend the verification email for the address currently in the
+     * email field. Revealed only after a verification_required failure.
+     */
+    const resendButton =
+        document.getElementById('login-resend-button');
+
+    if (resendButton) {
+        resendButton.addEventListener(
+            'click',
+            async () => {
+                const feedback =
+                    document.getElementById('login-resend-feedback');
+
+                resendButton.disabled =
+                    true;
+
+                try {
+                    const data =
+                        await postJson(
+                            '/api/auth/resend-verification',
+                            {
+                                email:
+                                    emailInput.value.trim(),
+                            }
+                        );
+
+                    if (feedback) {
+                        feedback.textContent =
+                            data.message
+                            || translate('verify_email.resent');
+
+                        feedback.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    if (feedback) {
+                        feedback.textContent =
+                            error instanceof Error
+                                ? error.message
+                                : translate('verify_email.resend_failed');
+
+                        feedback.classList.remove('hidden');
+                    }
+                } finally {
+                    resendButton.disabled =
+                        false;
+                }
+            }
+        );
+    }
 
     if (mfaForm) {
         mfaForm.addEventListener(

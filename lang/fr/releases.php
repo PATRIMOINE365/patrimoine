@@ -15,6 +15,16 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.15',
+            'date' => '2026-08-26',
+            'title' => 'Des e-mails de vérification qui ne vous laissent jamais bloqué',
+            'changes' => [
+                'L\'écran de confirmation d\'inscription propose désormais de renvoyer l\'e-mail de vérification — avec un rappel de vérifier les courriers indésirables.',
+                'Connexion avant vérification ? L\'erreur s\'accompagne maintenant d\'une action « Renvoyer l\'e-mail de vérification » en un clic.',
+                'Les messages d\'erreur de connexion et d\'inscription suivent désormais la langue dans laquelle vous lisez la page — français compris.',
+            ],
+        ],
+        [
             'version' => '1.0.14',
             'date' => '2026-08-26',
             'title' => 'Une porte d\'entrée achevée',

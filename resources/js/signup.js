@@ -35,6 +35,15 @@ async function postJson(url, payload) {
 
                     'Content-Type':
                         'application/json',
+
+                    /*
+                     * Localize public responses (validation errors)
+                     * in the language the visitor is reading.
+                     */
+                    'X-Patrimoine-Language':
+                        getPresentationConfiguration()
+                            ?.language
+                        || 'en',
                 },
 
                 body:
@@ -233,6 +242,66 @@ export function initializeSignup() {
             }
         }
     );
+
+    /*
+     * V1.0.15: the confirmation step offers a fresh verification email
+     * for the address that just signed up (shown in #signup-done-email).
+     */
+    const resendButton =
+        document.getElementById('signup-resend-button');
+
+    if (resendButton) {
+        resendButton.addEventListener(
+            'click',
+            async () => {
+                const feedback =
+                    document.getElementById('signup-resend-feedback');
+
+                const email =
+                    document
+                        .getElementById('signup-done-email')
+                        ?.textContent
+                        .trim();
+
+                if (! email) {
+                    return;
+                }
+
+                resendButton.disabled =
+                    true;
+
+                try {
+                    const data =
+                        await postJson(
+                            '/api/auth/resend-verification',
+                            {
+                                email,
+                            }
+                        );
+
+                    if (feedback) {
+                        feedback.textContent =
+                            data.message
+                            || translate('verify_email.resent');
+
+                        feedback.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    if (feedback) {
+                        feedback.textContent =
+                            error instanceof Error
+                                ? error.message
+                                : translate('verify_email.resend_failed');
+
+                        feedback.classList.remove('hidden');
+                    }
+                } finally {
+                    resendButton.disabled =
+                        false;
+                }
+            }
+        );
+    }
 
     return true;
 }

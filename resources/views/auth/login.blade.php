@@ -35,6 +35,23 @@
             "
         ></div>
 
+        {{-- Revealed only when the account still needs email verification --}}
+        <div id="login-resend" class="mb-5 hidden text-sm">
+            <button
+                type="button"
+                id="login-resend-button"
+                class="pm-auth-link font-medium disabled:opacity-50"
+                data-i18n="login.resend_verification"
+            >
+                {{ __('ui.login.resend_verification') }}
+            </button>
+
+            <p
+                id="login-resend-feedback"
+                class="pm-auth-description mt-2 hidden"
+            ></p>
+        </div>
+
         <form
             id="login-form"
             class="space-y-5"

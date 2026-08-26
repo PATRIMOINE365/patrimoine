@@ -27,14 +27,42 @@ class ApplicationLocaleService
      */
     public function language(): string
     {
-        return $this->normalizedSetting(
-            'language',
+        $supported =
             array_keys(
                 config(
                     'patrimoine.languages',
                     []
                 )
-            ),
+            );
+
+        /*
+         * V1.0.15: public screens (sign-in, sign-up, password ownership)
+         * have no bound organisation, so the visitor's declared browser
+         * language localises responses — validation messages, sign-in
+         * errors — instead of the English platform default. Once an
+         * organisation is bound, its own language remains authoritative.
+         */
+        if (! \App\Support\OrganisationContext::bound()) {
+            $requested =
+                request()?->header(
+                    'X-Patrimoine-Language'
+                );
+
+            if (
+                is_string($requested)
+                && in_array(
+                    $requested,
+                    $supported,
+                    true
+                )
+            ) {
+                return $requested;
+            }
+        }
+
+        return $this->normalizedSetting(
+            'language',
+            $supported,
             (string) config(
                 'patrimoine.defaults.language',
                 'en'

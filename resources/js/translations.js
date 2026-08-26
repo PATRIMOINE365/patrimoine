@@ -955,6 +955,15 @@ export const translations = {
         'signup.done_back_to_login':
             'Back to sign in',
 
+        'signup.resend_hint':
+            'No email after a minute or two? Check your spam folder, or',
+
+        'signup.resend_button':
+            'resend it',
+
+        'login.resend_verification':
+            'Resend the verification email',
+
         'verify_email.title':
             'Verify your email \u2014 Patrimoine 365',
 
@@ -4173,6 +4182,15 @@ export const translations = {
 
         'signup.done_back_to_login':
             'Retour \u00e0 la connexion',
+
+        'signup.resend_hint':
+            'Rien re\u00e7u apr\u00e8s une minute ou deux ? V\u00e9rifiez vos courriers ind\u00e9sirables, ou',
+
+        'signup.resend_button':
+            'renvoyez-le',
+
+        'login.resend_verification':
+            'Renvoyer l\'e-mail de v\u00e9rification',
 
         'verify_email.title':
             'V\u00e9rifiez votre e-mail \u2014 Patrimoine 365',

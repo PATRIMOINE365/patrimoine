@@ -34,6 +34,7 @@ return [
         'mfa_verifying' => 'Vérification…',
         'mfa_back' => 'Retour à la connexion',
         'mfa_resend' => 'Renvoyer le code',
+        'resend_verification' => 'Renvoyer l\'e-mail de vérification',
     ],
     'signup' => [
         'title' => 'Créez votre organisation — Patrimoine 365',
@@ -60,6 +61,8 @@ return [
         'done_heading' => 'Consultez votre e-mail',
         'done_description' => 'Nous avons envoyé un lien de vérification à',
         'done_back_to_login' => 'Retour à la connexion',
+        'resend_hint' => 'Rien reçu après une minute ou deux ? Vérifiez vos courriers indésirables, ou',
+        'resend_button' => 'renvoyez-le',
     ],
 
     'verify_email' => [

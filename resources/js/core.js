@@ -117,6 +117,18 @@ export async function apiRequest(
         'application/json'
     );
 
+    /*
+     * V1.0.15: tell the server which language the visitor is reading in,
+     * so public responses (sign-in errors, validation) localize before
+     * any organisation is known. Post-authentication, the organisation
+     * language remains authoritative server-side.
+     */
+    headers.set(
+        'X-Patrimoine-Language',
+        presentationConfiguration.language
+        || 'en'
+    );
+
     if (
         options.body
         && ! headers.has(
@@ -213,9 +225,22 @@ export async function parseJsonResponse(
             || data.message
             || translationFor('core.request_failed');
 
-        throw new Error(
-            message
-        );
+        const error =
+            new Error(
+                message
+            );
+
+        /*
+         * V1.0.15: machine-readable error code, when the server provides
+         * one (e.g. verification_required on sign-in), so callers can
+         * react beyond showing the message.
+         */
+        error.apiCode =
+            typeof data.code === 'string'
+                ? data.code
+                : null;
+
+        throw error;
     }
 
     return data;

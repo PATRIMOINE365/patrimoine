@@ -19,6 +19,16 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.15',
+            'date' => '2026-08-26',
+            'title' => 'Verification emails that never leave you stranded',
+            'changes' => [
+                'The sign-up confirmation screen now offers to resend the verification email — with a reminder to check the spam folder.',
+                'Trying to sign in before verifying? The error now comes with a one-click "Resend the verification email" action.',
+                'Sign-in and sign-up error messages now follow the language you are reading the page in — French included.',
+            ],
+        ],
+        [
             'version' => '1.0.14',
             'date' => '2026-08-26',
             'title' => 'A finished front door',

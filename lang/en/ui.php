@@ -35,6 +35,7 @@ return [
         'mfa_verifying' => 'Verifying…',
         'mfa_back' => 'Back to sign in',
         'mfa_resend' => 'Resend code',
+        'resend_verification' => 'Resend the verification email',
     ],
     'signup' => [
         'title' => 'Create your organisation — Patrimoine 365',
@@ -61,6 +62,8 @@ return [
         'done_heading' => 'Check your email',
         'done_description' => 'We sent a verification link to',
         'done_back_to_login' => 'Back to sign in',
+        'resend_hint' => 'No email after a minute or two? Check your spam folder, or',
+        'resend_button' => 'resend it',
     ],
 
     'verify_email' => [
