@@ -54,6 +54,7 @@
 
     <div
         id="dashboard-error"
+        role="alert"
         class="
             mb-6 hidden rounded-xl
             border px-4 py-3 text-sm
@@ -68,13 +69,15 @@
         class="
             grid gap-4
             sm:grid-cols-2
-            xl:grid-cols-4
+            lg:grid-cols-4
+            xl:grid-cols-5
         "
     >
         <div
             class="
                 pm-card p-5
                 sm:col-span-2
+                lg:col-span-4
                 xl:col-span-1
             "
         >
@@ -103,6 +106,12 @@
             >
                 <div
                     id="occupancy-meter"
+                    role="progressbar"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="0"
+                    aria-label="{{ __('ui.dashboard.occupancy_rate') }}"
+                    data-i18n-aria-label="dashboard.occupancy_rate"
                     class="
                         h-2 w-0 rounded-full
                         bg-[var(--pm-primary)]
@@ -256,6 +265,24 @@
                     mt-3 text-2xl font-semibold
                     tracking-tight
                     text-[var(--pm-success-text)]
+                "
+            >
+                —
+            </div>
+        </div>
+
+        <div class="pm-card p-5">
+            <div class="text-sm text-[var(--pm-text-muted)]">
+                <span data-i18n="dashboard.management_fees_this_month">
+                    {{ __('ui.dashboard.management_fees_this_month') }}
+                </span>
+            </div>
+
+            <div
+                id="metric-management-fees"
+                class="
+                    mt-3 text-2xl font-semibold
+                    tracking-tight text-[var(--pm-text)]
                 "
             >
                 —
@@ -425,7 +452,7 @@
 
             <div
                 id="overdue-list"
-                class="p-5"
+                class="p-4 sm:p-5"
             >
                 <div class="text-sm text-[var(--pm-text-subtle)]">
                     <span data-i18n="dashboard.loading">
@@ -462,7 +489,7 @@
 
             <div
                 id="upcoming-list"
-                class="p-5"
+                class="p-4 sm:p-5"
             >
                 <div class="text-sm text-[var(--pm-text-subtle)]">
                     <span data-i18n="dashboard.loading">
@@ -536,26 +563,44 @@
         <section class="pm-card">
             <div
                 class="
-                    border-b border-[var(--pm-border-subtle)]
+                    flex items-start justify-between
+                    gap-3 border-b
+                    border-[var(--pm-border-subtle)]
                     px-5 py-4
                 "
             >
-                <h2
-                    class="
-                        text-base font-semibold
-                        text-[var(--pm-text)]
-                    "
-                >
-                    <span data-i18n="dashboard.upcoming_increments">
-                        {{ __('ui.dashboard.upcoming_increments') }}
-                    </span>
-                </h2>
+                <div>
+                    <h2
+                        class="
+                            text-base font-semibold
+                            text-[var(--pm-text)]
+                        "
+                    >
+                        <span data-i18n="dashboard.upcoming_increments">
+                            {{ __('ui.dashboard.upcoming_increments') }}
+                        </span>
+                    </h2>
 
-                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
-                    <span data-i18n="dashboard.upcoming_increments_description">
-                        {{ __('ui.dashboard.upcoming_increments_description') }}
-                    </span>
-                </p>
+                    <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
+                        <span data-i18n="dashboard.upcoming_increments_description">
+                            {{ __('ui.dashboard.upcoming_increments_description') }}
+                        </span>
+                    </p>
+                </div>
+
+                <span
+                    id="increments-count"
+                    aria-label="{{ __('ui.dashboard.increments_count_aria') }}"
+                    data-i18n-aria-label="dashboard.increments_count_aria"
+                    class="
+                        hidden shrink-0 rounded-full
+                        border px-2.5 py-0.5
+                        text-xs font-semibold
+                        border-[var(--pm-info-border)]
+                        bg-[var(--pm-info-background)]
+                        text-[var(--pm-info-text)]
+                    "
+                ></span>
             </div>
 
             <div

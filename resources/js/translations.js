@@ -71,6 +71,18 @@ export const translations = {
             'No rent increments are scheduled.',
         'dashboard.no_collections':
             'No collections recorded yet.',
+        /* ---- V1.0.9 additions ---- */
+        'dashboard.management_fees_this_month':
+            'Management Fees This Month',
+        'dashboard.more_records':
+            '+:count more',
+        'dashboard.paid_of_total':
+            ':paid of :total paid',
+        'dashboard.increments_count_aria':
+            'Number of rent increments taking effect within the next 60 days',
+        'dashboard.unable_to_load_section':
+            'Unable to load this section.',
+        /* ---- end V1.0.9 additions ---- */
         'parties.given_names':
             'Given names',
         'parties.surname':
@@ -155,6 +167,16 @@ export const translations = {
             'Balance',
         'reports.account_count':
             ':count accounts',
+        'reports.select_date':
+            'Select date',
+        'reports.date_placeholder':
+            'dd/mm/yyyy',
+        'reports.reset_filters':
+            'Reset filters',
+        'reports.stale_results':
+            'Results are out of date — run the report again.',
+        'reports.result_rows':
+            ':count rows',
         'properties.filter_units_label':
             'Filter units by classification',
         'properties.occupied': 'Occupied',
@@ -796,12 +818,6 @@ export const translations = {
         'dashboard.total_units':
             'Total Units',
 
-        'dashboard.occupied_units':
-            'Occupied Units',
-
-        'dashboard.vacant_units':
-            'Vacant Units',
-
         'dashboard.rent_due':
             'Rent Due',
 
@@ -846,6 +862,12 @@ export const translations = {
 
         'language.fr':
             'French',
+
+        'currency.GHS':
+            'GHS',
+
+        'currency.FCFA':
+            'FCFA',
 
         'navigation.activity_log':
             'Activity Log',
@@ -1379,6 +1401,70 @@ export const translations = {
 
         'settings.unable_to_save':
             'Unable to save Managing Organisation.',
+
+        /* ---- V1.0.9 additions ---- */
+
+        'settings.tab_organisation':
+            'Organisation',
+
+        'settings.tab_preferences':
+            'Preferences',
+
+        'settings.tab_data':
+            'Data',
+
+        'settings.not_configured':
+            'The Managing Organisation is not configured yet. Fill in the form below and save to set it up.',
+
+        'settings.save_preferences':
+            'Save Preferences',
+
+        'settings.export_success':
+            'Export downloaded.',
+
+        'settings.export_opened':
+            'PDF opened in a new tab.',
+
+        'settings.format_csv':
+            'CSV',
+
+        'settings.format_xlsx':
+            'XLSX',
+
+        'settings.format_pdf':
+            'PDF',
+
+        'settings.run_dry_run':
+            'Run dry run',
+
+        'settings.dry_run_running':
+            'Running dry run…',
+
+        'settings.apply_restore':
+            'Apply this restore',
+
+        'settings.confirm_restore_title':
+            'Confirm restore',
+
+        'settings.confirm_restore_description':
+            'Review the dry-run result before applying this restore to the Registry.',
+
+        'settings.confirm_restore_warning':
+            'Applying this restore modifies Registry data immediately. This action cannot be undone.',
+
+        'settings.confirm_restore_apply':
+            'Apply restore',
+
+        'settings.restoring':
+            'Restoring…',
+
+        'settings.restore_success':
+            'Restore applied successfully.',
+
+        'settings.full_requires_xlsx':
+            'A full restore requires an .xlsx workbook file.',
+
+        /* ---- end V1.0.9 additions ---- */
 
 
         'parties.loading': 'Loading parties…',
@@ -2097,7 +2183,6 @@ export const translations = {
         'reports.unallocated': 'Unallocated',
         'reports.generating': 'Generating report…',
         'reports.could_not_generate': 'The report could not be generated.',
-        'reports.select_criteria': 'Select the required report criteria and run the report.',
         'reports.unable_to_open': 'Unable to open report.',
         'reports.unable_to_download': 'Unable to download report.',
         'reports.unnamed_party': 'Unnamed Party',
@@ -2940,6 +3025,18 @@ export const translations = {
             'Aucune augmentation de loyer n\'est prévue.',
         'dashboard.no_collections':
             'Aucun encaissement enregistré pour le moment.',
+        /* ---- V1.0.9 additions ---- */
+        'dashboard.management_fees_this_month':
+            'Frais de gestion ce mois-ci',
+        'dashboard.more_records':
+            '+:count autres',
+        'dashboard.paid_of_total':
+            ':paid payé sur :total',
+        'dashboard.increments_count_aria':
+            'Nombre d\'augmentations de loyer prenant effet dans les 60 prochains jours',
+        'dashboard.unable_to_load_section':
+            'Impossible de charger cette section.',
+        /* ---- end V1.0.9 additions ---- */
         'parties.given_names':
             'Prénoms',
         'parties.surname':
@@ -3024,6 +3121,16 @@ export const translations = {
             'Solde',
         'reports.account_count':
             ':count comptes',
+        'reports.select_date':
+            'Choisir une date',
+        'reports.date_placeholder':
+            'jj-mm-aaaa',
+        'reports.reset_filters':
+            'Réinitialiser les filtres',
+        'reports.stale_results':
+            'Les résultats ne sont plus à jour — générez à nouveau le rapport.',
+        'reports.result_rows':
+            ':count lignes',
         'properties.filter_units_label':
             'Filtrer les unités par type',
         'properties.occupied': 'Occupée',
@@ -3665,12 +3772,6 @@ export const translations = {
         'dashboard.total_units':
             'Unités totales',
 
-        'dashboard.occupied_units':
-            'Unités occupées',
-
-        'dashboard.vacant_units':
-            'Unités vacantes',
-
         'dashboard.rent_due':
             'Loyers dus',
 
@@ -3715,6 +3816,12 @@ export const translations = {
 
         'language.fr':
             'Français',
+
+        'currency.GHS':
+            'GHS',
+
+        'currency.FCFA':
+            'FCFA',
 
         'navigation.activity_log':
             'Journal d’activité',
@@ -4248,6 +4355,70 @@ export const translations = {
 
         'settings.unable_to_save':
             'Impossible d’enregistrer l’organisation gestionnaire.',
+
+        /* ---- V1.0.9 additions ---- */
+
+        'settings.tab_organisation':
+            'Organisation',
+
+        'settings.tab_preferences':
+            'Préférences',
+
+        'settings.tab_data':
+            'Données',
+
+        'settings.not_configured':
+            'L’organisation gestionnaire n’est pas encore configurée. Renseignez le formulaire ci-dessous et enregistrez pour la mettre en place.',
+
+        'settings.save_preferences':
+            'Enregistrer les préférences',
+
+        'settings.export_success':
+            'Exportation téléchargée.',
+
+        'settings.export_opened':
+            'PDF ouvert dans un nouvel onglet.',
+
+        'settings.format_csv':
+            'CSV',
+
+        'settings.format_xlsx':
+            'XLSX',
+
+        'settings.format_pdf':
+            'PDF',
+
+        'settings.run_dry_run':
+            'Lancer la simulation',
+
+        'settings.dry_run_running':
+            'Simulation en cours…',
+
+        'settings.apply_restore':
+            'Appliquer cette restauration',
+
+        'settings.confirm_restore_title':
+            'Confirmer la restauration',
+
+        'settings.confirm_restore_description':
+            'Vérifiez le résultat de la simulation avant d’appliquer cette restauration au registre.',
+
+        'settings.confirm_restore_warning':
+            'L’application de cette restauration modifie immédiatement les données du registre. Cette action est irréversible.',
+
+        'settings.confirm_restore_apply':
+            'Appliquer la restauration',
+
+        'settings.restoring':
+            'Restauration…',
+
+        'settings.restore_success':
+            'Restauration appliquée avec succès.',
+
+        'settings.full_requires_xlsx':
+            'Une restauration complète nécessite un classeur .xlsx.',
+
+        /* ---- end V1.0.9 additions ---- */
 
         'properties.loading':
             'Chargement des propriétés…',
@@ -5303,7 +5474,6 @@ export const translations = {
         'reports.unallocated': 'Non affecté',
         'reports.generating': 'Génération du rapport…',
         'reports.could_not_generate': "Le rapport n'a pas pu être généré.",
-        'reports.select_criteria': 'Sélectionnez les critères requis et générez le rapport.',
         'reports.unable_to_open': "Impossible d'ouvrir le rapport.",
         'reports.unable_to_download': 'Impossible de télécharger le rapport.',
         'reports.unnamed_party': 'Partie sans nom',

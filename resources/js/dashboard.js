@@ -57,11 +57,13 @@ export async function initializeDashboard() {
             'dashboard-error'
         );
 
+    /*
+     * The heading date reflects the API's as-of date once the summary
+     * lands; a placeholder is shown until then.
+     */
     if (dateElement) {
         dateElement.textContent =
-            formatLongDate(
-                new Date()
-            );
+            '—';
     }
 
     if (errorBox) {
@@ -73,39 +75,45 @@ export async function initializeDashboard() {
             '';
     }
 
-    try {
-        const [
-            summaryResponse,
-            overdueResponse,
-            upcomingResponse,
-        ] = await Promise.all([
-            apiRequest(
-                '/api/dashboard'
-            ),
+    /*
+     * V1.0.9: the three regions load independently. A failing request
+     * paints an error state in its own region only, so one outage never
+     * blanks the whole dashboard.
+     */
+    const [
+        summaryResult,
+        overdueResult,
+        upcomingResult,
+    ] = await Promise.allSettled([
+        fetchJson(
+            '/api/dashboard'
+        ),
 
-            apiRequest(
-                '/api/dashboard/overdue'
-            ),
+        fetchJson(
+            '/api/dashboard/overdue'
+        ),
 
-            apiRequest(
-                '/api/dashboard/upcoming'
-            ),
-        ]);
+        fetchJson(
+            '/api/dashboard/upcoming'
+        ),
+    ]);
 
+    if (
+        summaryResult.status
+        === 'fulfilled'
+    ) {
         const summary =
-            await parseJsonResponse(
-                summaryResponse
-            );
+            summaryResult.value;
 
-        const overdue =
-            await parseJsonResponse(
-                overdueResponse
-            );
-
-        const upcoming =
-            await parseJsonResponse(
-                upcomingResponse
-            );
+        if (
+            dateElement
+            && summary?.as_of
+        ) {
+            dateElement.textContent =
+                formatLongDate(
+                    summary.as_of
+                );
+        }
 
         renderDashboardSummary(
             summary
@@ -115,16 +123,6 @@ export async function initializeDashboard() {
             summary?.collections_trend
         );
 
-        renderInvoiceList(
-            'overdue-list',
-            overdue
-        );
-
-        renderInvoiceList(
-            'upcoming-list',
-            upcoming
-        );
-
         renderExpiringLeases(
             summary
         );
@@ -132,61 +130,161 @@ export async function initializeDashboard() {
         renderUpcomingIncrements(
             summary
         );
-    } catch (error) {
-        if (! errorBox) {
-            return;
-        }
+    } else {
+        renderRegionError(
+            'collections-chart',
+            summaryResult.reason
+        );
 
-        errorBox.textContent =
-            error instanceof Error
-                ? error.message
-                : translate(
+        renderRegionError(
+            'expiring-list',
+            summaryResult.reason
+        );
+
+        renderRegionError(
+            'increments-list',
+            summaryResult.reason
+        );
+
+        /*
+         * The metric tiles have no region error state of their own, so a
+         * failed summary — which includes total failure — also raises the
+         * page-level banner.
+         */
+        if (errorBox) {
+            errorBox.textContent =
+                errorMessage(
+                    summaryResult.reason,
                     'dashboard.unable_to_load'
                 );
 
-        errorBox.classList.remove(
-            'hidden'
+            errorBox.classList.remove(
+                'hidden'
+            );
+        }
+    }
+
+    if (
+        overdueResult.status
+        === 'fulfilled'
+    ) {
+        renderInvoiceList(
+            'overdue-list',
+            overdueResult.value
+        );
+    } else {
+        renderRegionError(
+            'overdue-list',
+            overdueResult.reason
+        );
+    }
+
+    if (
+        upcomingResult.status
+        === 'fulfilled'
+    ) {
+        renderInvoiceList(
+            'upcoming-list',
+            upcomingResult.value
+        );
+    } else {
+        renderRegionError(
+            'upcoming-list',
+            upcomingResult.reason
         );
     }
 }
 
 /**
- * Return the first present value from a collection of candidate keys.
+ * Request one API endpoint and parse its JSON body.
  *
- * This retains compatibility with earlier dashboard response names while
- * allowing the current API contract to remain authoritative.
- *
- * @param {object} object
- * @param {string[]} keys
- * @param {*} fallback
- * @returns {*}
+ * @param {string} path
+ * @returns {Promise<any>}
  */
-function firstDefined(
-    object,
-    keys,
-    fallback = 0
-) {
-    for (const key of keys) {
-        if (
-            object
-            && object[key] !== undefined
-            && object[key] !== null
-        ) {
-            return object[key];
-        }
-    }
+async function fetchJson(path) {
+    const response =
+        await apiRequest(
+            path
+        );
 
-    return fallback;
+    return parseJsonResponse(
+        response
+    );
 }
 
 /**
- * Format a "YYYY-MM" trend month using the organisation language locale.
+ * Resolve a human-readable message from a settled rejection reason.
+ *
+ * @param {*} reason
+ * @param {string} fallbackKey
+ * @returns {string}
+ */
+function errorMessage(
+    reason,
+    fallbackKey
+) {
+    return reason instanceof Error
+        && reason.message
+        ? reason.message
+        : translate(
+            fallbackKey
+        );
+}
+
+/**
+ * Paint a scoped error state inside one dashboard region.
+ *
+ * @param {string} containerId
+ * @param {*} reason
+ */
+function renderRegionError(
+    containerId,
+    reason
+) {
+    const container =
+        document.getElementById(
+            containerId
+        );
+
+    if (! container) {
+        return;
+    }
+
+    container.innerHTML = `
+        <div
+            role="alert"
+            class="
+                rounded-lg border
+                border-[var(--pm-danger-border)]
+                bg-[var(--pm-danger-background)]
+                px-4 py-8 text-center
+                text-sm text-[var(--pm-danger-text)]
+            "
+        >
+            ${escapeHtml(
+                errorMessage(
+                    reason,
+                    'dashboard.unable_to_load_section'
+                )
+            )}
+        </div>
+    `;
+}
+
+/**
+ * Format a "YYYY-MM" trend month using the active application language.
+ *
+ * The same language source drives translate(), keeping the chart labels
+ * aligned with the rest of the interface rather than the raw browser
+ * locale.
  *
  * @param {string} value
+ * @param {boolean} withYear
  * @returns {string}
  */
 function formatTrendMonth(
-    value
+    value,
+    withYear = false
 ) {
     const parts =
         String(value || '')
@@ -211,17 +309,25 @@ function formatTrendMonth(
         return String(value);
     }
 
-    return new Intl.DateTimeFormat(
+    const language =
         getPresentationConfiguration()
-            .browser_locale
-        || 'en-GB',
-        {
-            month:
-                'short',
+            .language
+        || 'en';
 
-            year:
-                '2-digit',
-        }
+    return new Intl.DateTimeFormat(
+        language,
+        withYear
+            ? {
+                month:
+                    'short',
+
+                year:
+                    'numeric',
+            }
+            : {
+                month:
+                    'short',
+            }
     ).format(
         date
     );
@@ -241,9 +347,6 @@ function formatTrendMonth(
  *     "upcoming_increments": [ ... ]
  * }
  *
- * The fallback to the root object keeps the browser tolerant of older API
- * response structures.
- *
  * @param {object} summary
  */
 function renderDashboardSummary(
@@ -254,38 +357,23 @@ function renderDashboardSummary(
         && typeof summary.metrics
             === 'object'
             ? summary.metrics
-            : summary;
+            : {};
 
     const occupied =
         Number(
-            firstDefined(
-                metrics,
-                [
-                    'occupied_units',
-                    'occupied',
-                ]
-            )
+            metrics.occupied_units
+            ?? 0
         ) || 0;
 
     const totalUnits =
         Number(
-            firstDefined(
-                metrics,
-                [
-                    'total_units',
-                    'units',
-                ]
-            )
+            metrics.total_units
+            ?? 0
         ) || 0;
 
     const providedRate =
-        firstDefined(
-            summary,
-            [
-                'occupancy_rate',
-            ],
-            null
-        );
+        summary?.occupancy_rate
+        ?? null;
 
     const rate =
         providedRate !== null
@@ -324,6 +412,11 @@ function renderDashboardSummary(
     if (meter) {
         meter.style.width =
             `${boundedRate}%`;
+
+        meter.setAttribute(
+            'aria-valuenow',
+            String(boundedRate)
+        );
     }
 
     setText(
@@ -333,44 +426,26 @@ function renderDashboardSummary(
 
     setText(
         'metric-vacant',
-        firstDefined(
-            metrics,
-            [
-                'vacant_units',
-                'vacant',
-            ]
-        )
+        metrics.vacant_units
+        ?? 0
     );
 
     setText(
         'metric-vacant-commercial',
-        firstDefined(
-            metrics,
-            [
-                'vacant_commercial_units',
-            ]
-        )
+        metrics.vacant_commercial_units
+        ?? 0
     );
 
     setText(
         'metric-vacant-residential',
-        firstDefined(
-            metrics,
-            [
-                'vacant_residential_units',
-            ]
-        )
+        metrics.vacant_residential_units
+        ?? 0
     );
 
     setText(
         'metric-buildings',
-        firstDefined(
-            metrics,
-            [
-                'total_buildings',
-                'buildings',
-            ]
-        )
+        metrics.total_buildings
+        ?? 0
     );
 
     setText(
@@ -381,66 +456,48 @@ function renderDashboardSummary(
     setText(
         'metric-rent-due',
         formatCurrency(
-            firstDefined(
-                metrics,
-                [
-                    'rent_due',
-                    'total_rent_due',
-                ]
-            )
+            metrics.rent_due
+            ?? 0
         )
     );
 
     setText(
         'metric-rent-overdue',
         formatCurrency(
-            firstDefined(
-                metrics,
-                [
-                    'rent_overdue',
-                    'total_rent_overdue',
-                ]
-            )
+            metrics.rent_overdue
+            ?? 0
         )
     );
 
     setText(
         'metric-collected',
         formatCurrency(
-            firstDefined(
-                metrics,
-                [
-                    'rent_collected_this_month',
-                    'collected_this_month',
-                    'cash_collected_this_month',
-                ]
-            )
+            metrics.rent_collected_this_month
+            ?? 0
+        )
+    );
+
+    setText(
+        'metric-management-fees',
+        formatCurrency(
+            metrics.management_fees_this_month
+            ?? 0
         )
     );
 
     setText(
         'metric-owner-funds',
         formatCurrency(
-            firstDefined(
-                metrics,
-                [
-                    'owner_funds_held',
-                    'owner_funds',
-                ]
-            )
+            metrics.owner_funds_held
+            ?? 0
         )
     );
 
     setText(
         'metric-tenant-funds',
         formatCurrency(
-            firstDefined(
-                metrics,
-                [
-                    'tenant_funds_held',
-                    'tenant_funds',
-                ]
-            )
+            metrics.tenant_funds_held
+            ?? 0
         )
     );
 }
@@ -449,7 +506,9 @@ function renderDashboardSummary(
  * Render the six-month collections trend as a hand-rolled div bar chart.
  *
  * No chart library and no canvas: a flex row of columns whose inner bar
- * heights are proportional to the highest month in the series.
+ * heights are proportional to the highest month in the series. A
+ * screen-reader summary carries the exact month/amount series while the
+ * visual bars stay decorative.
  *
  * @param {*} trend
  */
@@ -476,22 +535,10 @@ function renderCollectionsTrend(
             : [];
 
     if (months.length === 0) {
-        container.innerHTML = `
-            <div
-                class="
-                    rounded-lg border border-dashed
-                    border-[var(--pm-border)]
-                    px-4 py-8 text-center
-                    text-sm text-[var(--pm-text-muted)]
-                "
-            >
-                ${escapeHtml(
-                    translate(
-                        'dashboard.no_collections'
-                    )
-                )}
-            </div>
-        `;
+        container.innerHTML =
+            emptyStateHtml(
+                'dashboard.no_collections'
+            );
 
         return;
     }
@@ -505,6 +552,20 @@ function renderCollectionsTrend(
             ),
             1
         );
+
+    const summaryText =
+        months
+            .map(
+                (entry) =>
+                    `${formatTrendMonth(
+                        entry.month,
+                        true
+                    )}: ${formatCurrency(
+                        Number(entry.amount)
+                        || 0
+                    )}`
+            )
+            .join(', ');
 
     const bars =
         months
@@ -534,7 +595,10 @@ function renderCollectionsTrend(
                             : 0;
 
                     const tooltip =
-                        `${label} — ${formatCurrency(
+                        `${formatTrendMonth(
+                            entry.month,
+                            true
+                        )} — ${formatCurrency(
                             amount
                         )}`;
 
@@ -577,7 +641,7 @@ function renderCollectionsTrend(
 
                             <div
                                 class="
-                                    truncate text-xs
+                                    text-center text-xs
                                     text-[var(--pm-text-muted)]
                                 "
                             >
@@ -592,7 +656,16 @@ function renderCollectionsTrend(
             .join('');
 
     container.innerHTML = `
+        <p class="sr-only">
+            ${escapeHtml(
+                `${translate(
+                    'dashboard.collections_trend_description'
+                )} ${summaryText}`
+            )}
+        </p>
+
         <div
+            aria-hidden="true"
             class="
                 flex items-end gap-2
                 sm:gap-4
@@ -635,13 +708,9 @@ function renderExpiringLeases(
     if (badge) {
         const count =
             Number(
-                firstDefined(
-                    summary?.metrics,
-                    [
-                        'leases_expiring_90_days',
-                    ],
-                    leases.length
-                )
+                summary?.metrics
+                    ?.leases_expiring_90_days
+                ?? leases.length
             ) || 0;
 
         badge.textContent =
@@ -792,6 +861,28 @@ function renderUpcomingIncrements(
             ? summary.upcoming_increments
             : [];
 
+    const badge =
+        document.getElementById(
+            'increments-count'
+        );
+
+    if (badge) {
+        const count =
+            Number(
+                summary?.metrics
+                    ?.increments_upcoming_60_days
+                ?? increments.length
+            ) || 0;
+
+        badge.textContent =
+            String(count);
+
+        badge.classList.toggle(
+            'hidden',
+            count === 0
+        );
+    }
+
     if (increments.length === 0) {
         container.innerHTML =
             emptyStateHtml(
@@ -929,6 +1020,7 @@ function emptyStateHtml(
             class="
                 rounded-lg border border-dashed
                 border-[var(--pm-border)]
+                bg-[var(--pm-surface-subtle)]
                 px-4 py-8 text-center
                 text-sm text-[var(--pm-text-muted)]
             "
@@ -943,53 +1035,47 @@ function emptyStateHtml(
 }
 
 /**
- * Normalize possible API collection response formats.
+ * Normalize an obligations envelope from the dashboard API.
+ *
+ * Both /api/dashboard/overdue and /api/dashboard/upcoming respond with
+ * { as_of, count, data: [...] }; the envelope count covers the full
+ * result set, of which only a slice is rendered.
  *
  * @param {*} payload
- * @returns {Array}
+ * @returns {{items: Array, count: number}}
  */
-function normalizeItems(payload) {
-    if (Array.isArray(payload)) {
-        return payload;
-    }
+function normalizeCollection(
+    payload
+) {
+    const items =
+        Array.isArray(payload)
+            ? payload
+            : (
+                Array.isArray(
+                    payload?.data
+                )
+                    ? payload.data
+                    : []
+            );
 
-    if (
-        Array.isArray(
-            payload?.data
+    const count =
+        Number.isFinite(
+            Number(payload?.count)
         )
-    ) {
-        return payload.data;
-    }
+            ? Number(payload.count)
+            : items.length;
 
-    if (
-        Array.isArray(
-            payload?.invoices
-        )
-    ) {
-        return payload.invoices;
-    }
-
-    if (
-        Array.isArray(
-            payload?.items
-        )
-    ) {
-        return payload.items;
-    }
-
-    if (
-        Array.isArray(
-            payload?.obligations
-        )
-    ) {
-        return payload.obligations;
-    }
-
-    return [];
+    return {
+        items,
+        count,
+    };
 }
 
 /**
  * Render overdue or upcoming invoice obligations.
+ *
+ * Each row deep-links into the Tenants workspace for the row's tenant,
+ * and an overflow line surfaces obligations beyond the rendered slice.
  *
  * @param {string} containerId
  * @param {*} payload
@@ -1007,10 +1093,12 @@ function renderInvoiceList(
         return;
     }
 
-    const items =
-        normalizeItems(
-            payload
-        );
+    const {
+        items,
+        count,
+    } = normalizeCollection(
+        payload
+    );
 
     if (
         items.length === 0
@@ -1023,60 +1111,34 @@ function renderInvoiceList(
         return;
     }
 
-    container.innerHTML =
-        items
-            .slice(0, 6)
+    const shown =
+        items.slice(0, 6);
+
+    const rows =
+        shown
             .map(
                 (item) => {
                     const tenant =
                         item.tenant?.name
-                        || item.tenant
-                            ?.legal_name
-                        || item.tenant_name
                         || translate(
                             'dashboard.tenant'
                         );
 
-                    const property =
-                        item.building?.name
-                        || (
-                            typeof item.building
-                            === 'string'
-                                ? item.building
-                                : ''
-                        )
-                        || item.unit
-                            ?.building
-                            ?.name
-                        || '';
-
-                    const unit =
-                        item.unit?.name
-                        || (
-                            typeof item.unit
-                            === 'string'
-                                ? item.unit
-                                : ''
-                        )
-                        || '';
+                    const tenantId =
+                        item.tenant?.id;
 
                     const amount =
-                        item
-                            .outstanding_amount
-                        ?? item.outstanding
-                        ?? item.balance
-                        ?? item.amount
+                        item.outstanding_amount
                         ?? 0;
 
                     const date =
                         item.due_date
-                        || item.date
                         || '';
 
                     const propertyLabel =
                         [
-                            property,
-                            unit,
+                            item.building?.name,
+                            item.unit?.name,
                         ]
                             .filter(
                                 Boolean
@@ -1085,46 +1147,80 @@ function renderInvoiceList(
                                 ' / '
                             );
 
-                    return `
+                    const invoiceNumber =
+                        item.invoice_number
+                        || '';
+
+                    const paidContext =
+                        item.status === 'partial'
+                            ? translate(
+                                'dashboard.paid_of_total',
+                                {
+                                    paid:
+                                        formatCurrency(
+                                            item.paid_amount
+                                            ?? 0
+                                        ),
+
+                                    total:
+                                        formatCurrency(
+                                            item.total_amount
+                                            ?? 0
+                                        ),
+                                }
+                            )
+                            : '';
+
+                    const rowContent = `
                         <div
                             class="
-                                flex items-center gap-4
-                                border-b border-[var(--pm-border)]
-                                py-4 last:border-b-0
-                                first:pt-0 last:pb-0
+                                min-w-0 flex-1
                             "
                         >
                             <div
                                 class="
-                                    min-w-0 flex-1
+                                    truncate text-sm
+                                    font-medium
+                                    text-[var(--pm-text)]
                                 "
                             >
-                                <div
-                                    class="
-                                        truncate text-sm
-                                        font-medium
-                                        text-[var(--pm-text)]
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        tenant
-                                    )}
-                                </div>
+                                ${escapeHtml(
+                                    tenant
+                                )}
+                            </div>
 
+                            ${
+                                propertyLabel
+                                    ? `
+                                        <div
+                                            class="
+                                                mt-1 truncate
+                                                text-xs
+                                                text-[var(--pm-text-secondary)]
+                                            "
+                                        >
+                                            ${escapeHtml(
+                                                propertyLabel
+                                            )}
+                                        </div>
+                                    `
+                                    : ''
+                            }
+
+                            <div
+                                class="
+                                    mt-1 flex flex-wrap
+                                    items-center gap-x-2
+                                    text-xs
+                                    text-[var(--pm-text-muted)]
+                                "
+                            >
                                 ${
-                                    propertyLabel
+                                    invoiceNumber
                                         ? `
-                                            <div
-                                                class="
-                                                    mt-1 truncate
-                                                    text-xs
-                                                    text-[var(--pm-text-secondary)]
-                                                "
-                                            >
-                                                ${escapeHtml(
-                                                    propertyLabel
-                                                )}
-                                            </div>
+                                            <span>${escapeHtml(
+                                                invoiceNumber
+                                            )}</span>
                                         `
                                         : ''
                                 }
@@ -1132,12 +1228,7 @@ function renderInvoiceList(
                                 ${
                                     date
                                         ? `
-                                            <div
-                                                class="
-                                                    mt-1 text-xs
-                                                    text-[var(--pm-text-muted)]
-                                                "
-                                            >
+                                            <span>
                                                 ${escapeHtml(
                                                     translate(
                                                         'dashboard.due'
@@ -1148,28 +1239,114 @@ function renderInvoiceList(
                                                         date
                                                     )
                                                 )}
-                                            </div>
+                                            </span>
                                         `
                                         : ''
                                 }
                             </div>
 
-                            <div
-                                class="
-                                    shrink-0 text-sm
-                                    font-semibold
-                                    text-[var(--pm-text)]
-                                "
-                            >
-                                ${escapeHtml(
-                                    formatCurrency(
-                                        amount
-                                    )
-                                )}
-                            </div>
+                            ${
+                                paidContext
+                                    ? `
+                                        <div
+                                            class="
+                                                mt-1 text-xs
+                                                text-[var(--pm-warning-text)]
+                                            "
+                                        >
+                                            ${escapeHtml(
+                                                paidContext
+                                            )}
+                                        </div>
+                                    `
+                                    : ''
+                            }
+                        </div>
+
+                        <div
+                            class="
+                                shrink-0 text-sm
+                                font-semibold
+                                text-[var(--pm-text)]
+                            "
+                        >
+                            ${escapeHtml(
+                                formatCurrency(
+                                    amount
+                                )
+                            )}
                         </div>
                     `;
+
+                    const rowClasses = `
+                        flex items-center gap-4
+                        border-b border-[var(--pm-border)]
+                        py-4 last:border-b-0
+                        first:pt-0 last:pb-0
+                    `;
+
+                    /*
+                     * A row with a known tenant deep-links into the
+                     * Tenants workspace; tenants.js resolves the
+                     * tenant_id query parameter on load.
+                     */
+                    return tenantId
+                        ? `
+                            <a
+                                href="/tenants?tenant_id=${encodeURIComponent(
+                                    tenantId
+                                )}"
+                                class="${rowClasses}
+                                    rounded-lg
+                                    hover:bg-[var(--pm-hover)]
+                                "
+                            >
+                                ${rowContent}
+                            </a>
+                        `
+                        : `
+                            <div
+                                class="${rowClasses}"
+                            >
+                                ${rowContent}
+                            </div>
+                        `;
                 }
             )
             .join('');
+
+    const overflow =
+        count > shown.length
+            ? `
+                <div
+                    class="
+                        pt-4 text-center
+                    "
+                >
+                    <a
+                        href="/tenants"
+                        class="
+                            text-sm font-medium
+                            text-[var(--pm-accent)]
+                            hover:underline
+                        "
+                    >
+                        ${escapeHtml(
+                            translate(
+                                'dashboard.more_records',
+                                {
+                                    count:
+                                        count
+                                        - shown.length,
+                                }
+                            )
+                        )}
+                    </a>
+                </div>
+            `
+            : '';
+
+    container.innerHTML =
+        rows
+        + overflow;
 }

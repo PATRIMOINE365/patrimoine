@@ -8,7 +8,7 @@ use App\Models\Lease;
 use App\Models\OwnerAccount;
 use App\Models\OwnerExpenseBill;
 use App\Models\OwnerTransaction;
-use App\Models\Payment;
+use App\Models\PaymentAllocation;
 use App\Models\RentIncrement;
 use App\Models\TenantFundAccount;
 use App\Models\Unit;
@@ -27,29 +27,94 @@ use Illuminate\Database\Eloquent\Collection;
 class DashboardService
 {
     /**
+     * Relations consulted by Invoice::outstandingAmount().
+     *
+     * Eager-loading them lets settlement sums run against the loaded
+     * collections instead of issuing per-invoice queries (N+1).
+     *
+     * @var list<string>
+     */
+    private const INVOICE_SETTLEMENT_RELATIONS = [
+        'paymentAllocations',
+        'tenantFundTransactions',
+        'securityDepositApplications',
+    ];
+
+    /**
      * Return the primary operational and financial dashboard metrics.
      *
      * @param  Carbon|null  $asOfDate
      *                                 Date against which due/overdue calculations are evaluated.
      *                                 Defaults to the current application date.
+     * @param  int|null  $expiringLeaseCount
+     *                                        Pre-computed count of leases expiring within 90 days.
+     *                                        Pass it when the caller already fetched the list so the
+     *                                        query does not run a second time.
+     * @param  int|null  $upcomingIncrementCount
+     *                                            Pre-computed count of increments effective within 60
+     *                                            days, for the same single-execution reason.
      * @return array<string, int>
      */
-    public function metrics(?Carbon $asOfDate = null): array
-    {
+    public function metrics(
+        ?Carbon $asOfDate = null,
+        ?int $expiringLeaseCount = null,
+        ?int $upcomingIncrementCount = null
+    ): array {
         $asOfDate ??= now();
 
         $monthStart = $asOfDate->copy()->startOfMonth();
         $monthEnd = $asOfDate->copy()->endOfMonth();
 
+        /*
+         * V1.0.9: occupancy is derived from four counts computed once.
+         *
+         * is_commercial is a non-nullable boolean, so the residential
+         * split is exactly the remainder of the commercial split.
+         */
+        $totalUnits = Unit::query()->count();
+        $occupiedUnits = $this->occupiedUnitCount($asOfDate);
+
+        $commercialUnits = Unit::query()
+            ->where('is_commercial', true)
+            ->count();
+
+        $occupiedCommercialUnits = $this->occupiedUnitCount(
+            $asOfDate,
+            commercial: true
+        );
+
+        $vacantUnits = $totalUnits - $occupiedUnits;
+        $vacantCommercialUnits = $commercialUnits - $occupiedCommercialUnits;
+        $vacantResidentialUnits = $vacantUnits - $vacantCommercialUnits;
+
+        /*
+         * V1.0.9: due and overdue share one invoice materialization —
+         * every overdue invoice is by definition also due.
+         */
+        $dueInvoices = $this->openRentInvoicesDueBy($asOfDate);
+
+        $rentDue = (int) $dueInvoices->sum(
+            fn (Invoice $invoice): int => $invoice->outstandingAmount()
+        );
+
+        $rentOverdue = (int) $dueInvoices
+            ->filter(
+                fn (Invoice $invoice): bool => $invoice->due_date->toDateString()
+                    < $asOfDate->toDateString()
+            )
+            ->sum(
+                fn (Invoice $invoice): int => $invoice->outstandingAmount()
+            );
+
         return [
             'total_buildings' => Building::query()->count(),
-            'total_units' => Unit::query()->count(),
+            'total_units' => $totalUnits,
 
-            'occupied_units' => $this->occupiedUnitCount($asOfDate),
-            'vacant_units' => $this->vacantUnitCount($asOfDate),
+            'occupied_units' => $occupiedUnits,
+            'vacant_units' => $vacantUnits,
 
-            'rent_due' => $this->rentDueAmount($asOfDate),
-            'rent_overdue' => $this->rentOverdueAmount($asOfDate),
+            'rent_due' => $rentDue,
+            'rent_overdue' => $rentOverdue,
 
             'rent_collected_this_month' => $this->rentCollectedBetween(
                 $monthStart,
@@ -66,28 +131,34 @@ class DashboardService
             /*
              * V1.0.7 portfolio-health additions.
              */
-            'vacant_commercial_units' => $this->vacantUnitCount(
-                $asOfDate,
-                commercial: true
-            ),
+            'vacant_commercial_units' => $vacantCommercialUnits,
 
-            'vacant_residential_units' => $this->vacantUnitCount(
-                $asOfDate,
-                commercial: false
-            ),
+            'vacant_residential_units' => $vacantResidentialUnits,
 
             'tenant_funds_held' => $this->tenantFundsHeld(),
 
-            'leases_expiring_90_days' => $this->expiringLeases(
-                $asOfDate,
-                90
-            )->count(),
+            'leases_expiring_90_days' => $expiringLeaseCount
+                ?? $this->expiringLeases($asOfDate, 90)->count(),
 
-            'increments_upcoming_60_days' => $this->upcomingIncrements(
-                $asOfDate,
-                60
-            )->count(),
+            'increments_upcoming_60_days' => $upcomingIncrementCount
+                ?? $this->upcomingIncrements($asOfDate, 60)->count(),
         ];
+    }
+
+    /**
+     * Fetch open rent invoices due on or before the as-of date, with the
+     * settlement relations preloaded, in one materialization.
+     *
+     * @return Collection<int, Invoice>
+     */
+    private function openRentInvoicesDueBy(Carbon $asOfDate)
+    {
+        return Invoice::query()
+            ->with(self::INVOICE_SETTLEMENT_RELATIONS)
+            ->where('type', 'rent')
+            ->whereIn('status', ['issued', 'partial'])
+            ->whereDate('due_date', '<=', $asOfDate->toDateString())
+            ->get();
     }
 
     /**
@@ -263,11 +334,7 @@ class DashboardService
      */
     public function rentDueAmount(Carbon $asOfDate): int
     {
-        return Invoice::query()
-            ->where('type', 'rent')
-            ->whereIn('status', ['issued', 'partial'])
-            ->whereDate('due_date', '<=', $asOfDate->toDateString())
-            ->get()
+        return (int) $this->openRentInvoicesDueBy($asOfDate)
             ->sum(
                 fn (Invoice $invoice): int => $invoice->outstandingAmount()
             );
@@ -282,7 +349,8 @@ class DashboardService
      */
     public function rentOverdueAmount(Carbon $asOfDate): int
     {
-        return Invoice::query()
+        return (int) Invoice::query()
+            ->with(self::INVOICE_SETTLEMENT_RELATIONS)
             ->where('type', 'rent')
             ->whereIn('status', ['issued', 'partial'])
             ->whereDate('due_date', '<', $asOfDate->toDateString())
@@ -293,22 +361,40 @@ class DashboardService
     }
 
     /**
-     * Return tenant money actually received during a date range.
+     * Return rent money actually received during a date range.
      *
      * Patrimoine uses cash-basis owner accounting, and this dashboard
      * collection metric similarly represents actual Payments rather than
      * invoices issued.
+     *
+     * V1.0.9: only Payment money allocated to rent Invoices counts.
+     * Since V1.0.8 the payments table also carries expense-invoice
+     * settlements and fund top-ups, which are not rent collections and
+     * must not inflate this metric or the collections trend.
      */
     public function rentCollectedBetween(
         Carbon $from,
         Carbon $to
     ): int {
-        return (int) Payment::query()
-            ->whereBetween('payment_date', [
+        return (int) PaymentAllocation::query()
+            ->join(
+                'payments',
+                'payments.id',
+                '=',
+                'payment_allocations.payment_id'
+            )
+            ->join(
+                'invoices',
+                'invoices.id',
+                '=',
+                'payment_allocations.invoice_id'
+            )
+            ->where('invoices.type', 'rent')
+            ->whereBetween('payments.payment_date', [
                 $from->toDateString(),
                 $to->toDateString(),
             ])
-            ->sum('amount');
+            ->sum('payment_allocations.amount');
     }
 
     /**
@@ -365,6 +451,7 @@ class DashboardService
             ->with([
                 'lease.tenant',
                 'lease.unit.building',
+                ...self::INVOICE_SETTLEMENT_RELATIONS,
             ])
             ->where('type', 'rent')
             ->whereIn('status', ['issued', 'partial'])
@@ -404,6 +491,7 @@ class DashboardService
             ->with([
                 'lease.tenant',
                 'lease.unit.building',
+                ...self::INVOICE_SETTLEMENT_RELATIONS,
             ])
             ->where('type', 'expense')
             ->whereIn('status', ['issued', 'partial'])
@@ -442,6 +530,7 @@ class DashboardService
             ->with([
                 'lease.tenant',
                 'lease.unit.building',
+                ...self::INVOICE_SETTLEMENT_RELATIONS,
             ])
             ->where('type', 'rent')
             ->whereIn('status', ['issued', 'partial'])

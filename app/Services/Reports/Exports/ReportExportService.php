@@ -48,6 +48,10 @@ class ReportExportService
 
                 'managingOrganisation' => $this->identity->managingOrganisation(),
 
+                'generatedAt' => now(),
+
+                'formatter' => $this->formatter,
+
             ]
 
         )
@@ -389,6 +393,7 @@ class ReportExportService
                     'date',
                     'from',
                     'to',
+                    'as_of',
                 ],
                 true
             )
@@ -467,6 +472,21 @@ class ReportExportService
                     'security_deposit_balance',
 
                     'owner_funds_held',
+
+                    /*
+                     * Snapshot-report vocabulary (arrears aging buckets and
+                     * held funds). These reports currently ship dedicated
+                     * exporters, but the shared vocabulary is registered
+                     * here so any report routed through the generic
+                     * exporter formats them as money.
+                     */
+                    'total',
+                    'balance',
+                    'total_held',
+                    'current',
+                    'days_31_60',
+                    'days_61_90',
+                    'over_90',
                 ],
                 true
             )

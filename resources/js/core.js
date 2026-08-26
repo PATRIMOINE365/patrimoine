@@ -616,6 +616,126 @@ export function applyTranslations() {
 
 /*
 |--------------------------------------------------------------------------
+| V1.0.9 Button Busy State
+|--------------------------------------------------------------------------
+|
+| Shared busy/restore mechanism for action buttons whose label lives in
+| an inner <span data-i18n="…"> element.
+|
+| Swapping ONLY the span's text AND its data-i18n key keeps the language
+| switcher working while the button is busy and after it is restored —
+| applyTranslations() always finds an accurate key on the span.
+|
+*/
+
+/**
+ * The original translation key of each busy button's label span,
+ * captured the first time the button enters the busy state.
+ */
+const buttonBusyOriginalKeys =
+    new WeakMap();
+
+/**
+ * Put a button into its busy state.
+ *
+ * The button is disabled and its inner `<span data-i18n>` label is
+ * swapped to the supplied translation key (text and key together).
+ * Buttons without a data-i18n label span are only disabled.
+ *
+ * @param {HTMLButtonElement|null} button
+ * @param {string} translationKey
+ */
+export function setButtonBusy(
+    button,
+    translationKey
+) {
+    if (! button) {
+        return;
+    }
+
+    button.disabled =
+        true;
+
+    const label =
+        button.querySelector(
+            '[data-i18n]'
+        );
+
+    if (! label) {
+        return;
+    }
+
+    /*
+     * Only the FIRST busy transition captures the original key, so a
+     * repeated setButtonBusy() before restoreButton() cannot lose it.
+     */
+    if (! buttonBusyOriginalKeys.has(button)) {
+        buttonBusyOriginalKeys.set(
+            button,
+            label.dataset.i18n
+        );
+    }
+
+    label.dataset.i18n =
+        translationKey;
+
+    label.textContent =
+        translate(
+            translationKey
+        );
+}
+
+/**
+ * Restore a button from its busy state.
+ *
+ * Re-enables the button and restores the original data-i18n key and
+ * its translated text on the inner label span.
+ *
+ * @param {HTMLButtonElement|null} button
+ */
+export function restoreButton(
+    button
+) {
+    if (! button) {
+        return;
+    }
+
+    button.disabled =
+        false;
+
+    const originalKey =
+        buttonBusyOriginalKeys.get(
+            button
+        );
+
+    buttonBusyOriginalKeys.delete(
+        button
+    );
+
+    if (! originalKey) {
+        return;
+    }
+
+    const label =
+        button.querySelector(
+            '[data-i18n]'
+        );
+
+    if (! label) {
+        return;
+    }
+
+    label.dataset.i18n =
+        originalKey;
+
+    label.textContent =
+        translate(
+            originalKey
+        );
+}
+
+/*
+|--------------------------------------------------------------------------
 | Display Helpers
 |--------------------------------------------------------------------------
 */

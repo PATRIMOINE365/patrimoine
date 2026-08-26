@@ -5,26 +5,59 @@
 |
 | Browser-side functionality for application-wide Patrimoine settings.
 |
-| Patrimoine 1.0 currently supports one Managing Organisation.
+| V1.0.9 layout: four hash-deep-linked tabs (Organisation, Preferences,
+| Data, About) following the Help page tablist pattern.
 |
-| The backend represents that organisation as a Party and stores its Party
+| Patrimoine 1.0 currently supports one Managing Organisation. The
+| backend represents that organisation as a Party and stores its Party
 | ID in ApplicationSetting. This module intentionally works only through
-| the dedicated /api/managing-organisation endpoint instead of manipulating
-| Party records directly.
+| the dedicated /api/managing-organisation endpoint instead of
+| manipulating Party records directly.
+|
+| The Organisation and Preferences tabs edit the SAME record: the module
+| loads it once and every save — from either tab — sends one merged
+| payload built from both tabs' fields.
 |
 */
 
 import {
     apiRequest,
+    closeDrawer,
     escapeHtml,
     formValue,
     getPresentationConfiguration,
     loadPresentationConfiguration,
     nullableFormValue,
+    openDrawer,
     openPdfInNewTab,
     parseJsonResponse,
+    restoreButton,
+    setButtonBusy,
     translate,
+    wireDrawer,
 } from './core.js';
+
+/*
+|--------------------------------------------------------------------------
+| Tab Registry
+|--------------------------------------------------------------------------
+|
+| Tab names double as the location hash (/settings#data). Each tab owns
+| a #settings-tab-{name} pill, a #settings-{name}-panel section, and —
+| for the interactive tabs — #settings-{name}-error / -success feedback
+| regions rendered near its controls.
+|
+*/
+
+const SETTINGS_TABS = [
+    'organisation',
+    'preferences',
+    'data',
+    'about',
+];
+
+const DEFAULT_SETTINGS_TAB =
+    'organisation';
 
 /*
 |--------------------------------------------------------------------------
@@ -47,24 +80,255 @@ export async function initializeSettings() {
         return;
     }
 
+    initializeSettingsTabs();
     initializeAboutSection();
     initializeRegistryPortability();
+    initializeOrganisationForms();
 
-    const form =
-        document.getElementById(
-            'managing-organisation-form'
-        );
+    applySettingsLocationHash();
 
-    if (! form) {
-        return;
-    }
-
-    form.addEventListener(
-        'submit',
-        submitManagingOrganisation
+    window.addEventListener(
+        'hashchange',
+        applySettingsLocationHash
     );
 
     await loadManagingOrganisationSettings();
+}
+
+/*
+|--------------------------------------------------------------------------
+| Tabs
+|--------------------------------------------------------------------------
+*/
+
+function initializeSettingsTabs() {
+    SETTINGS_TABS.forEach(
+        (tab) => {
+            document
+                .getElementById(
+                    `settings-tab-${tab}`
+                )
+                ?.addEventListener(
+                    'click',
+                    () => {
+                        /*
+                         * The default tab keeps a clean URL; every other
+                         * tab records its hash for deep linking.
+                         */
+                        window.history.replaceState(
+                            null,
+                            '',
+                            tab === DEFAULT_SETTINGS_TAB
+                                ? window.location.pathname
+                                    + window.location.search
+                                : `#${tab}`
+                        );
+
+                        selectSettingsTab(
+                            tab
+                        );
+                    }
+                );
+        }
+    );
+}
+
+/**
+ * Reflect the current location hash into the tab state.
+ *
+ * Unknown hashes fall back to the default Organisation tab so stale
+ * links never leave the page blank.
+ */
+function applySettingsLocationHash() {
+    const requested =
+        window.location.hash
+            .replace(
+                '#',
+                ''
+            );
+
+    selectSettingsTab(
+        SETTINGS_TABS.includes(
+            requested
+        )
+            ? requested
+            : DEFAULT_SETTINGS_TAB
+    );
+}
+
+/**
+ * Activate one settings tab pill and reveal its panel.
+ *
+ * @param {string} activeTab
+ */
+function selectSettingsTab(
+    activeTab
+) {
+    const activeClasses = [
+        'bg-[var(--pm-surface)]',
+        'text-[var(--pm-text)]',
+        'shadow-sm',
+    ];
+
+    const inactiveClasses = [
+        'text-[var(--pm-text-muted)]',
+        'hover:text-[var(--pm-text)]',
+    ];
+
+    SETTINGS_TABS.forEach(
+        (tab) => {
+            const active =
+                tab === activeTab;
+
+            const button =
+                document.getElementById(
+                    `settings-tab-${tab}`
+                );
+
+            if (button) {
+                button.setAttribute(
+                    'aria-selected',
+                    active
+                        ? 'true'
+                        : 'false'
+                );
+
+                button.classList.remove(
+                    ...activeClasses,
+                    ...inactiveClasses
+                );
+
+                button.classList.add(
+                    ...(
+                        active
+                            ? activeClasses
+                            : inactiveClasses
+                    )
+                );
+            }
+
+            document
+                .getElementById(
+                    `settings-${tab}-panel`
+                )
+                ?.classList.toggle(
+                    'hidden',
+                    ! active
+                );
+        }
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Per-tab Feedback
+|--------------------------------------------------------------------------
+|
+| Every interactive tab renders its own inline error and success boxes
+| next to the controls that produced the outcome. Handlers always clear
+| BOTH boxes before starting so stale feedback can never linger.
+|
+*/
+
+/**
+ * Display an error inside one tab's feedback region.
+ *
+ * @param {string} tab
+ * @param {string} message
+ */
+function showTabError(
+    tab,
+    message
+) {
+    clearTabFeedback(
+        tab
+    );
+
+    const box =
+        document.getElementById(
+            `settings-${tab}-error`
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent =
+        message;
+
+    box.classList.remove(
+        'hidden'
+    );
+
+    box.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+    });
+}
+
+/**
+ * Display a success notice inside one tab's feedback region.
+ *
+ * @param {string} tab
+ * @param {string} message
+ */
+function showTabSuccess(
+    tab,
+    message
+) {
+    clearTabFeedback(
+        tab
+    );
+
+    const box =
+        document.getElementById(
+            `settings-${tab}-success`
+        );
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent =
+        message;
+
+    box.classList.remove(
+        'hidden'
+    );
+
+    box.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+    });
+}
+
+/**
+ * Clear BOTH the error and the success box of one tab.
+ *
+ * @param {string} tab
+ */
+function clearTabFeedback(
+    tab
+) {
+    [
+        `settings-${tab}-error`,
+        `settings-${tab}-success`,
+    ].forEach(
+        (id) => {
+            const box =
+                document.getElementById(
+                    id
+                );
+
+            if (box) {
+                box.textContent = '';
+
+                box.classList.add(
+                    'hidden'
+                );
+            }
+        }
+    );
 }
 
 /*
@@ -115,6 +379,11 @@ async function initializeAboutSection() {
 | FormData through apiRequest, which deliberately leaves the
 | Content-Type header to the browser for FormData bodies.
 |
+| V1.0.9 restore flow: the dry run is mandatory. The operator uploads a
+| file, runs the dry run, reviews its counts, and only then may apply
+| the real restore — behind a confirmation drawer. Changing the file or
+| the data set invalidates the pending dry-run state.
+|
 */
 
 const REGISTRY_MIME_TYPES = {
@@ -127,6 +396,18 @@ const REGISTRY_MIME_TYPES = {
     pdf:
         'application/pdf',
 };
+
+/**
+ * The successfully completed dry run awaiting confirmation, or null.
+ *
+ * @type {{
+ *     entity: string,
+ *     fileName: string,
+ *     result: object,
+ * }|null}
+ */
+let pendingDryRun =
+    null;
 
 function initializeRegistryPortability() {
     const section =
@@ -200,13 +481,63 @@ function initializeRegistryPortability() {
         }
     );
 
+    /*
+     * Restore controls: dry run, invalidation and the confirmation
+     * drawer around the destructive apply step.
+     */
     document
         .getElementById(
             'settings-import-run'
         )
         ?.addEventListener(
             'click',
-            runRegistryImport
+            runRegistryDryRun
+        );
+
+    document
+        .getElementById(
+            'settings-import-file'
+        )
+        ?.addEventListener(
+            'change',
+            invalidatePendingDryRun
+        );
+
+    document
+        .getElementById(
+            'settings-import-entity'
+        )
+        ?.addEventListener(
+            'change',
+            invalidatePendingDryRun
+        );
+
+    document
+        .getElementById(
+            'settings-import-apply'
+        )
+        ?.addEventListener(
+            'click',
+            openRestoreConfirmation
+        );
+
+    wireDrawer(
+        'settings-restore-drawer',
+        {
+            closers: [
+                'settings-restore-cancel',
+                'settings-restore-close',
+            ],
+        }
+    );
+
+    document
+        .getElementById(
+            'settings-restore-confirm'
+        )
+        ?.addEventListener(
+            'click',
+            applyRegistryRestore
         );
 }
 
@@ -227,20 +558,19 @@ async function downloadRegistryExport(
     format,
     fallbackFilename
 ) {
-    const originalLabel =
-        button.textContent
-            .trim();
-
-    hideSettingsError();
+    /*
+     * Every registry handler clears BOTH stale success and stale error
+     * feedback in the Data tab before starting.
+     */
+    clearTabFeedback(
+        'data'
+    );
 
     try {
-        button.disabled =
-            true;
-
-        button.textContent =
-            translate(
-                'settings.exporting'
-            );
+        setButtonBusy(
+            button,
+            'settings.exporting'
+        );
 
         /*
          * The PDF review opens in a tab through a signed document link
@@ -252,6 +582,13 @@ async function downloadRegistryExport(
                 endpoint,
                 translate(
                     'settings.unable_export'
+                )
+            );
+
+            showTabSuccess(
+                'data',
+                translate(
+                    'settings.export_opened'
                 )
             );
 
@@ -322,8 +659,16 @@ async function downloadRegistryExport(
             },
             60000
         );
+
+        showTabSuccess(
+            'data',
+            translate(
+                'settings.export_success'
+            )
+        );
     } catch (error) {
-        showSettingsError(
+        showTabError(
+            'data',
             error instanceof Error
                 ? error.message
                 : translate(
@@ -331,11 +676,9 @@ async function downloadRegistryExport(
                 )
         );
     } finally {
-        button.disabled =
-            false;
-
-        button.textContent =
-            originalLabel;
+        restoreButton(
+            button
+        );
     }
 }
 
@@ -366,37 +709,80 @@ function attachmentFilename(
 }
 
 /**
- * Restore a Registry backup from the selected file.
+ * The currently selected restore file, or null.
+ *
+ * @returns {File|null}
+ */
+function selectedImportFile() {
+    return document.getElementById(
+        'settings-import-file'
+    )?.files?.[0]
+        ?? null;
+}
+
+/**
+ * The currently selected restore data set.
+ *
+ * @returns {string}
+ */
+function selectedImportEntity() {
+    return formValue(
+        'settings-import-entity'
+    )
+        || 'parties';
+}
+
+/**
+ * Forget any completed dry run.
+ *
+ * Called whenever the file or the data-set selection changes: the
+ * pending dry-run counts no longer describe what an apply would do.
+ */
+function invalidatePendingDryRun() {
+    pendingDryRun =
+        null;
+
+    hideImportResult();
+
+    document
+        .getElementById(
+            'settings-import-apply-row'
+        )
+        ?.classList.add(
+            'hidden'
+        );
+}
+
+/**
+ * Validate the selected restore file and run the mandatory dry run.
  *
  * entity=full posts the multi-sheet workbook to the dedicated full
  * restore endpoint; every other entity posts to the per-entity one.
+ * A successful dry run reveals the destructive "Apply this restore"
+ * button.
  */
-async function runRegistryImport() {
-    const fileInput =
-        document.getElementById(
-            'settings-import-file'
-        );
-
+async function runRegistryDryRun() {
     const button =
         document.getElementById(
             'settings-import-run'
         );
 
-    if (
-        ! fileInput
-        || ! button
-    ) {
+    if (! button) {
         return;
     }
 
-    hideSettingsError();
-    hideImportResult();
+    clearTabFeedback(
+        'data'
+    );
+
+    invalidatePendingDryRun();
 
     const file =
-        fileInput.files?.[0];
+        selectedImportFile();
 
     if (! file) {
-        showSettingsError(
+        showTabError(
+            'data',
             translate(
                 'settings.import_select_file'
             )
@@ -406,17 +792,28 @@ async function runRegistryImport() {
     }
 
     const entity =
-        formValue(
-            'settings-import-entity'
-        )
-        || 'parties';
+        selectedImportEntity();
 
-    const dryRun =
-        Boolean(
-            document.getElementById(
-                'settings-import-dry-run'
-            )?.checked
+    /*
+     * A full restore reads one workbook with one sheet per entity —
+     * only .xlsx can carry that structure. Reject anything else before
+     * uploading.
+     */
+    if (
+        entity === 'full'
+        && ! file.name
+            .toLowerCase()
+            .endsWith('.xlsx')
+    ) {
+        showTabError(
+            'data',
+            translate(
+                'settings.full_requires_xlsx'
+            )
         );
+
+        return;
+    }
 
     const body =
         new FormData();
@@ -428,9 +825,7 @@ async function runRegistryImport() {
 
     body.append(
         'dry_run',
-        dryRun
-            ? '1'
-            : '0'
+        '1'
     );
 
     if (entity !== 'full') {
@@ -440,18 +835,11 @@ async function runRegistryImport() {
         );
     }
 
-    const originalLabel =
-        button.textContent
-            .trim();
-
     try {
-        button.disabled =
-            true;
-
-        button.textContent =
-            translate(
-                'settings.importing'
-            );
+        setButtonBusy(
+            button,
+            'settings.dry_run_running'
+        );
 
         const response =
             await apiRequest(
@@ -475,8 +863,29 @@ async function runRegistryImport() {
             entity,
             result
         );
+
+        /*
+         * The dry run succeeded: remember it and offer the apply step.
+         */
+        pendingDryRun = {
+            entity,
+
+            fileName:
+                file.name,
+
+            result,
+        };
+
+        document
+            .getElementById(
+                'settings-import-apply-row'
+            )
+            ?.classList.remove(
+                'hidden'
+            );
     } catch (error) {
-        showSettingsError(
+        showTabError(
+            'data',
             error instanceof Error
                 ? error.message
                 : translate(
@@ -484,11 +893,383 @@ async function runRegistryImport() {
                 )
         );
     } finally {
-        button.disabled =
-            false;
+        restoreButton(
+            button
+        );
+    }
+}
 
-        button.textContent =
-            originalLabel;
+/**
+ * Markup for one labelled line of the confirmation summary.
+ *
+ * @param {string} labelKey
+ * @param {string} value
+ * @returns {string}
+ */
+function restoreSummaryRow(
+    labelKey,
+    value
+) {
+    return `
+        <div class="mt-2 first:mt-0">
+            <dt
+                class="
+                    text-xs font-medium
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        labelKey
+                    )
+                )}
+            </dt>
+
+            <dd
+                class="
+                    mt-0.5 text-sm font-semibold
+                    break-words
+                    text-[var(--pm-text)]
+                "
+            >
+                ${escapeHtml(
+                    value
+                )}
+            </dd>
+        </div>
+    `;
+}
+
+/**
+ * One compact translated counts line, e.g. "Created 1 · Updated 0 …".
+ *
+ * @param {{created: number, updated: number, unchanged: number, skipped: Array}} counts
+ * @returns {string}
+ */
+function restoreSummaryCountsLine(
+    counts
+) {
+    const skipped =
+        Array.isArray(
+            counts.skipped
+        )
+            ? counts.skipped.length
+            : 0;
+
+    return [
+        [
+            'settings.import_created',
+            counts.created,
+        ],
+        [
+            'settings.import_updated',
+            counts.updated,
+        ],
+        [
+            'settings.import_unchanged',
+            counts.unchanged,
+        ],
+        [
+            'settings.import_skipped',
+            skipped,
+        ],
+    ]
+        .map(
+            ([key, value]) =>
+                `${translate(key)} ${Number(value || 0)}`
+        )
+        .join(' · ');
+}
+
+/**
+ * Fill the confirmation drawer with the pending dry run's summary:
+ * file name, data set and the counts the real restore would produce.
+ */
+function renderRestoreSummary() {
+    const container =
+        document.getElementById(
+            'settings-restore-summary'
+        );
+
+    if (
+        ! container
+        || ! pendingDryRun
+    ) {
+        return;
+    }
+
+    const countsMarkup =
+        pendingDryRun.entity === 'full'
+            ? Object
+                .entries(
+                    pendingDryRun.result.results
+                    || {}
+                )
+                .map(
+                    ([name, counts]) => `
+                        <div class="mt-2 first:mt-0">
+                            <div
+                                class="
+                                    text-xs font-medium
+                                    text-[var(--pm-text-muted)]
+                                "
+                            >
+                                ${escapeHtml(
+                                    translate(
+                                        `settings.entity_${name}`
+                                    )
+                                )}
+                            </div>
+
+                            <div
+                                class="
+                                    mt-0.5 text-sm
+                                    text-[var(--pm-text)]
+                                "
+                            >
+                                ${escapeHtml(
+                                    restoreSummaryCountsLine(
+                                        counts
+                                        || {}
+                                    )
+                                )}
+                            </div>
+                        </div>
+                    `
+                )
+                .join('')
+            : `
+                <div
+                    class="
+                        text-sm
+                        text-[var(--pm-text)]
+                    "
+                >
+                    ${escapeHtml(
+                        restoreSummaryCountsLine(
+                            pendingDryRun.result
+                        )
+                    )}
+                </div>
+            `;
+
+    container.innerHTML = `
+        <dl>
+            ${restoreSummaryRow(
+                'settings.import_file',
+                pendingDryRun.fileName
+            )}
+
+            ${restoreSummaryRow(
+                'settings.import_entity',
+                translate(
+                    `settings.entity_${pendingDryRun.entity}`
+                )
+            )}
+        </dl>
+
+        <div
+            class="
+                mt-4 border-t
+                border-[var(--pm-border)]
+                pt-3
+            "
+        >
+            <div
+                class="
+                    text-xs font-semibold uppercase
+                    tracking-wide
+                    text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(
+                    translate(
+                        'settings.import_result_heading'
+                    )
+                )}
+            </div>
+
+            <div class="mt-2">
+                ${countsMarkup}
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Open the destructive confirmation drawer for the pending dry run.
+ */
+function openRestoreConfirmation() {
+    if (! pendingDryRun) {
+        return;
+    }
+
+    /*
+     * Defensive guard: the selection must still match the dry run the
+     * operator is about to apply. Selection change listeners already
+     * invalidate the state, so a mismatch here means the file itself
+     * was cleared.
+     */
+    const file =
+        selectedImportFile();
+
+    if (
+        ! file
+        || file.name !== pendingDryRun.fileName
+        || selectedImportEntity() !== pendingDryRun.entity
+    ) {
+        invalidatePendingDryRun();
+
+        showTabError(
+            'data',
+            translate(
+                'settings.import_select_file'
+            )
+        );
+
+        return;
+    }
+
+    renderRestoreSummary();
+
+    openDrawer(
+        'settings-restore-drawer'
+    );
+}
+
+/**
+ * The confirmed destructive step: POST the real (non-dry-run) import.
+ */
+async function applyRegistryRestore() {
+    const button =
+        document.getElementById(
+            'settings-restore-confirm'
+        );
+
+    if (
+        ! button
+        || ! pendingDryRun
+    ) {
+        return;
+    }
+
+    const file =
+        selectedImportFile();
+
+    if (
+        ! file
+        || file.name !== pendingDryRun.fileName
+    ) {
+        closeDrawer(
+            'settings-restore-drawer'
+        );
+
+        invalidatePendingDryRun();
+
+        showTabError(
+            'data',
+            translate(
+                'settings.import_select_file'
+            )
+        );
+
+        return;
+    }
+
+    const entity =
+        pendingDryRun.entity;
+
+    const body =
+        new FormData();
+
+    body.append(
+        'file',
+        file
+    );
+
+    body.append(
+        'dry_run',
+        '0'
+    );
+
+    if (entity !== 'full') {
+        body.append(
+            'entity',
+            entity
+        );
+    }
+
+    try {
+        setButtonBusy(
+            button,
+            'settings.restoring'
+        );
+
+        const response =
+            await apiRequest(
+                entity === 'full'
+                    ? '/api/registry/import/full'
+                    : '/api/registry/import',
+                {
+                    method:
+                        'POST',
+
+                    body,
+                }
+            );
+
+        const result =
+            await parseJsonResponse(
+                response
+            );
+
+        closeDrawer(
+            'settings-restore-drawer'
+        );
+
+        /*
+         * The restore is done: show its final counts and retire the
+         * pending dry-run state (the apply button disappears with it).
+         */
+        pendingDryRun =
+            null;
+
+        document
+            .getElementById(
+                'settings-import-apply-row'
+            )
+            ?.classList.add(
+                'hidden'
+            );
+
+        renderImportResult(
+            entity,
+            result
+        );
+
+        showTabSuccess(
+            'data',
+            translate(
+                'settings.restore_success'
+            )
+        );
+    } catch (error) {
+        closeDrawer(
+            'settings-restore-drawer'
+        );
+
+        showTabError(
+            'data',
+            error instanceof Error
+                ? error.message
+                : translate(
+                    'settings.unable_import'
+                )
+        );
+    } finally {
+        restoreButton(
+            button
+        );
     }
 }
 
@@ -733,6 +1514,76 @@ function hideImportResult() {
 
 /*
 |--------------------------------------------------------------------------
+| Organisation & Preferences Forms
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * Wire both Managing Organisation forms.
+ *
+ * Each tab has its own form and save button, but both submit the same
+ * merged payload — the handlers differ only in which tab receives the
+ * inline feedback.
+ */
+function initializeOrganisationForms() {
+    document
+        .getElementById(
+            'managing-organisation-form'
+        )
+        ?.addEventListener(
+            'submit',
+            (event) =>
+                submitManagingOrganisation(
+                    event,
+                    'organisation'
+                )
+        );
+
+    document
+        .getElementById(
+            'settings-preferences-form'
+        )
+        ?.addEventListener(
+            'submit',
+            (event) =>
+                submitManagingOrganisation(
+                    event,
+                    'preferences'
+                )
+        );
+}
+
+/**
+ * Enable or disable both tab fieldsets.
+ *
+ * The forms stay disabled until the initial GET resolves so the
+ * operator can never edit values that are about to be overwritten.
+ *
+ * @param {boolean} disabled
+ */
+function setOrganisationFieldsetsDisabled(
+    disabled
+) {
+    [
+        'managing-organisation-fieldset',
+        'settings-preferences-fieldset',
+    ].forEach(
+        (id) => {
+            const fieldset =
+                document.getElementById(
+                    id
+                );
+
+            if (fieldset) {
+                fieldset.disabled =
+                    disabled;
+            }
+        }
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
 | Loading
 |--------------------------------------------------------------------------
 */
@@ -740,12 +1591,25 @@ function hideImportResult() {
 /**
  * Load the currently configured Managing Organisation.
  *
- * HTTP 404 is valid for a fresh installation. In that case the form simply
- * remains empty and becomes the initial organisation configuration form.
+ * HTTP 404 is valid for a fresh installation: the form shows a neutral
+ * "not configured yet" notice, receives the presentation-configuration
+ * defaults, and becomes the initial organisation configuration form.
  */
 async function loadManagingOrganisationSettings() {
-    hideSettingsError();
-    hideSettingsSuccess();
+    clearTabFeedback(
+        'organisation'
+    );
+
+    clearTabFeedback(
+        'preferences'
+    );
+
+    /*
+     * The presentation configuration is the single fallback source for
+     * language, currency and the default VAT rate, so it must be
+     * available before any field is populated.
+     */
+    await loadPresentationConfiguration();
 
     try {
         const response =
@@ -754,6 +1618,24 @@ async function loadManagingOrganisationSettings() {
             );
 
         if (response.status === 404) {
+            /*
+             * Fresh installation: nothing to load. Announce it instead
+             * of leaving a silently empty form, and pre-fill the
+             * preference fields from the presentation defaults so the
+             * required inputs carry sensible starting values.
+             */
+            document
+                .getElementById(
+                    'settings-not-configured'
+                )
+                ?.classList.remove(
+                    'hidden'
+                );
+
+            populateManagingOrganisationForm(
+                {}
+            );
+
             return;
         }
 
@@ -762,16 +1644,42 @@ async function loadManagingOrganisationSettings() {
                 response
             );
 
+        document
+            .getElementById(
+                'settings-not-configured'
+            )
+            ?.classList.add(
+                'hidden'
+            );
+
         populateManagingOrganisationForm(
             organisation
         );
     } catch (error) {
-        showSettingsError(
+        const message =
             error instanceof Error
                 ? error.message
                 : translate(
                     'settings.unable_to_load'
-                )
+                );
+
+        showTabError(
+            'organisation',
+            message
+        );
+
+        showTabError(
+            'preferences',
+            message
+        );
+    } finally {
+        /*
+         * The GET has resolved one way or another — the fields become
+         * editable even after a failure so the operator is never
+         * locked out of correcting the configuration.
+         */
+        setOrganisationFieldsetsDisabled(
+            false
         );
     }
 }
@@ -783,12 +1691,19 @@ async function loadManagingOrganisationSettings() {
 */
 
 /**
- * Populate the Settings form from the Managing Organisation Party returned
- * by the API.
+ * Populate both tabs' fields from the Managing Organisation Party
+ * returned by the API.
+ *
+ * Missing preference values fall back to the loaded presentation
+ * configuration — the one place that knows the application defaults —
+ * instead of duplicating hardcoded values here.
  */
 function populateManagingOrganisationForm(
     organisation
 ) {
+    const presentation =
+        getPresentationConfiguration();
+
     setFormValue(
         'organisation-legal-name',
         organisation.legal_name
@@ -842,19 +1757,19 @@ function populateManagingOrganisationForm(
     setFormValue(
         'organisation-default-vat-rate',
         organisation.default_vat_rate
-        ?? '18.00'
+        ?? presentation.default_vat_rate
     );
 
     setFormValue(
         'organisation-language',
         organisation.language
-        ?? 'en'
+        ?? presentation.language
     );
 
     setFormValue(
         'organisation-currency',
         organisation.currency
-        ?? 'GHS'
+        ?? presentation.currency
     );
 
     setFormValue(
@@ -908,37 +1823,94 @@ function setFormValue(
 */
 
 /**
+ * Validate both forms before a merged save.
+ *
+ * A form living inside a hidden tab panel cannot anchor the browser's
+ * validation bubble, so when the OTHER form is the invalid one its tab
+ * is activated first and the bubble is shown there.
+ *
+ * @returns {boolean}
+ */
+function validateOrganisationForms() {
+    const forms = [
+        [
+            'organisation',
+            document.getElementById(
+                'managing-organisation-form'
+            ),
+        ],
+        [
+            'preferences',
+            document.getElementById(
+                'settings-preferences-form'
+            ),
+        ],
+    ];
+
+    for (const [tab, form] of forms) {
+        if (
+            form
+            && ! form.checkValidity()
+        ) {
+            selectSettingsTab(
+                tab
+            );
+
+            window.history.replaceState(
+                null,
+                '',
+                tab === DEFAULT_SETTINGS_TAB
+                    ? window.location.pathname
+                        + window.location.search
+                    : `#${tab}`
+            );
+
+            form.reportValidity();
+
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
  * Create or update the singleton Managing Organisation.
  *
  * The API decides whether a new underlying Party needs to be created or
  * whether the existing Managing Organisation Party should be updated.
+ * Both tabs submit the SAME merged payload; only the feedback region
+ * and the busy button differ.
+ *
+ * @param {SubmitEvent} event
+ * @param {'organisation'|'preferences'} tab
  */
 async function submitManagingOrganisation(
-    event
+    event,
+    tab
 ) {
     event.preventDefault();
 
-    const form =
-        document.getElementById(
-            'managing-organisation-form'
-        );
-
     const submitButton =
         document.getElementById(
-            'managing-organisation-submit-button'
+            tab === 'preferences'
+                ? 'settings-preferences-submit-button'
+                : 'managing-organisation-submit-button'
         );
 
-    if (
-        ! form
-        || ! submitButton
-    ) {
+    if (! submitButton) {
         return;
     }
 
-    hideSettingsError();
-    hideSettingsSuccess();
+    clearTabFeedback(
+        'organisation'
+    );
 
-    if (! form.reportValidity()) {
+    clearTabFeedback(
+        'preferences'
+    );
+
+    if (! validateOrganisationForms()) {
         return;
     }
 
@@ -996,7 +1968,6 @@ async function submitManagingOrganisation(
                 'organisation-vat-tin'
             ),
 
-
         default_vat_rate:
             Number(
                 formValue(
@@ -1041,13 +2012,10 @@ async function submitManagingOrganisation(
     };
 
     try {
-        submitButton.disabled =
-            true;
-
-        submitButton.textContent =
-            translate(
-                'settings.saving'
-            );
+        setButtonBusy(
+            submitButton,
+            'settings.saving'
+        );
 
         const response =
             await apiRequest(
@@ -1065,6 +2033,17 @@ async function submitManagingOrganisation(
         const organisation =
             await parseJsonResponse(
                 response
+            );
+
+        /*
+         * The organisation exists now, whatever it was before.
+         */
+        document
+            .getElementById(
+                'settings-not-configured'
+            )
+            ?.classList.add(
+                'hidden'
             );
 
         /*
@@ -1108,13 +2087,15 @@ async function submitManagingOrganisation(
             return;
         }
 
-        showSettingsSuccess(
+        showTabSuccess(
+            tab,
             translate(
                 'settings.saved'
             )
         );
     } catch (error) {
-        showSettingsError(
+        showTabError(
+            tab,
             error instanceof Error
                 ? error.message
                 : translate(
@@ -1122,110 +2103,8 @@ async function submitManagingOrganisation(
                 )
         );
     } finally {
-        submitButton.disabled =
-            false;
-
-        submitButton.textContent =
-            translate(
-                'settings.save'
-            );
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
-| Feedback
-|--------------------------------------------------------------------------
-*/
-
-/**
- * Display an error on the Settings page.
- */
-function showSettingsError(message) {
-    const box =
-        document.getElementById(
-            'settings-error'
+        restoreButton(
+            submitButton
         );
-
-    if (! box) {
-        return;
     }
-
-    box.textContent =
-        message;
-
-    box.classList.remove(
-        'hidden'
-    );
-
-    box.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-    });
-}
-
-/**
- * Clear Settings errors.
- */
-function hideSettingsError() {
-    const box =
-        document.getElementById(
-            'settings-error'
-        );
-
-    if (! box) {
-        return;
-    }
-
-    box.textContent = '';
-
-    box.classList.add(
-        'hidden'
-    );
-}
-
-/**
- * Display a successful save notification.
- */
-function showSettingsSuccess(message) {
-    const box =
-        document.getElementById(
-            'settings-success'
-        );
-
-    if (! box) {
-        return;
-    }
-
-    box.textContent =
-        message;
-
-    box.classList.remove(
-        'hidden'
-    );
-
-    box.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-    });
-}
-
-/**
- * Clear successful-operation feedback.
- */
-function hideSettingsSuccess() {
-    const box =
-        document.getElementById(
-            'settings-success'
-        );
-
-    if (! box) {
-        return;
-    }
-
-    box.textContent = '';
-
-    box.classList.add(
-        'hidden'
-    );
 }

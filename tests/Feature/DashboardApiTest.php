@@ -9,6 +9,7 @@ use App\Models\Lease;
 use App\Models\OwnerTransaction;
 use App\Models\Party;
 use App\Models\Payment;
+use App\Models\PaymentAllocation;
 use App\Models\Unit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\AuthenticatesApiUser;
@@ -95,7 +96,7 @@ class DashboardApiTest extends TestCase
     {
         $context = $this->createContext();
 
-        Invoice::create([
+        $invoice = Invoice::create([
             'lease_id' => $context['lease']->id,
             'invoice_number' => 'INV-DASH-API-001',
             'period_start' => '2026-08-01',
@@ -109,11 +110,22 @@ class DashboardApiTest extends TestCase
             'vat_amount' => 0,
         ]);
 
-        Payment::create([
+        $payment = Payment::create([
             'lease_id' => $context['lease']->id,
             'amount' => 3000,
             'payment_date' => '2026-08-05',
             'payment_method' => 'bank_transfer',
+        ]);
+
+        /*
+         * V1.0.9: rent collections are measured through allocations to
+         * rent Invoices, so the Payment must actually be allocated for
+         * the metric — and the outstanding rent — to reflect it.
+         */
+        PaymentAllocation::create([
+            'payment_id' => $payment->id,
+            'invoice_id' => $invoice->id,
+            'amount' => 3000,
         ]);
 
         /*
@@ -158,11 +170,11 @@ class DashboardApiTest extends TestCase
             )
             ->assertJsonPath(
                 'metrics.rent_due',
-                5000
+                2000
             )
             ->assertJsonPath(
                 'metrics.rent_overdue',
-                5000
+                2000
             )
             ->assertJsonPath(
                 'metrics.rent_collected_this_month',

@@ -112,11 +112,16 @@ return [
         'property_manager' => 'Property Manager',
     ],
     'dashboard' => [
+        /* ---- V1.0.9 additions ---- */
+        'management_fees_this_month' => 'Management Fees This Month',
+        'more_records' => '+:count more',
+        'paid_of_total' => ':paid of :total paid',
+        'increments_count_aria' => 'Number of rent increments taking effect within the next 60 days',
+        'unable_to_load_section' => 'Unable to load this section.',
+        /* ---- end V1.0.9 additions ---- */
         /* ---- V1.0.7 additions ---- */
         'occupancy_rate' => 'Occupancy Rate',
         'occupied' => 'Occupied',
-        'search_owner_placeholder' => 'Search owner by name, phone or email…',
-        'no_matching_owners' => 'No matching owners found.',
         'vacant' => 'Vacant',
         'vacant_commercial' => 'Commercial vacant',
         'vacant_residential' => 'Residential vacant',
@@ -141,8 +146,6 @@ return [
         'description' => 'Current portfolio and financial position.',
         'buildings' => 'Buildings',
         'total_units' => 'Total Units',
-        'occupied_units' => 'Occupied Units',
-        'vacant_units' => 'Vacant Units',
         'rent_due' => 'Rent Due',
         'rent_overdue' => 'Rent Overdue',
         'collected_this_month' => 'Collected This Month',
@@ -160,6 +163,12 @@ return [
     'language' => [
         'en' => 'English',
         'fr' => 'French',
+    ],
+    'currency' => [
+        /* ---- V1.0.9 additions ---- */
+        'GHS' => 'GHS',
+        'FCFA' => 'FCFA',
+        /* ---- end V1.0.9 additions ---- */
     ],
     'roles' => [
         'administrator' => 'Administrator',
@@ -310,6 +319,28 @@ return [
         'close' => 'Close',
     ],
     'settings' => [
+        /* ---- V1.0.9 additions ---- */
+        'tab_organisation' => 'Organisation',
+        'tab_preferences' => 'Preferences',
+        'tab_data' => 'Data',
+        'not_configured' => 'The Managing Organisation is not configured yet. Fill in the form below and save to set it up.',
+        'save_preferences' => 'Save Preferences',
+        'export_success' => 'Export downloaded.',
+        'export_opened' => 'PDF opened in a new tab.',
+        'format_csv' => 'CSV',
+        'format_xlsx' => 'XLSX',
+        'format_pdf' => 'PDF',
+        'run_dry_run' => 'Run dry run',
+        'dry_run_running' => 'Running dry run…',
+        'apply_restore' => 'Apply this restore',
+        'confirm_restore_title' => 'Confirm restore',
+        'confirm_restore_description' => 'Review the dry-run result before applying this restore to the Registry.',
+        'confirm_restore_warning' => 'Applying this restore modifies Registry data immediately. This action cannot be undone.',
+        'confirm_restore_apply' => 'Apply restore',
+        'restoring' => 'Restoring…',
+        'restore_success' => 'Restore applied successfully.',
+        'full_requires_xlsx' => 'A full restore requires an .xlsx workbook file.',
+        /* ---- end V1.0.9 additions ---- */
         /* ---- V1.0.7 additions ---- */
         'about' => 'About',
         'application_version' => 'Application version',
@@ -1231,6 +1262,12 @@ return [
         'account_count' => ':count accounts',
         'unnamed_party' => '(unnamed)',
         /* ---- end V1.0.7 additions ---- */
+        'lease' => 'Lease',
+        'select_date' => 'Select date',
+        'date_placeholder' => 'dd/mm/yyyy',
+        'reset_filters' => 'Reset filters',
+        'stale_results' => 'Results are out of date — run the report again.',
+        'result_rows' => ':count rows',
         'title' => 'Reports — Patrimoine',
         'finance' => 'Finance',
         'heading' => 'Reports',
@@ -1419,7 +1456,6 @@ return [
         'unallocated' => 'Unallocated',
         'generating' => 'Generating report…',
         'could_not_generate' => 'The report could not be generated.',
-        'select_criteria' => 'Select the required report criteria and run the report.',
         'unable_to_open' => 'Unable to open report.',
         'unable_to_download' => 'Unable to download report.',
         'unnamed_party' => 'Unnamed Party',

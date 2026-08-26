@@ -112,6 +112,13 @@ return [
         'property_manager' => 'Gestionnaire immobilier',
     ],
     'dashboard' => [
+        /* ---- V1.0.9 additions ---- */
+        'management_fees_this_month' => 'Frais de gestion ce mois-ci',
+        'more_records' => '+:count autres',
+        'paid_of_total' => ':paid payé sur :total',
+        'increments_count_aria' => 'Nombre d\'augmentations de loyer prenant effet dans les 60 prochains jours',
+        'unable_to_load_section' => 'Impossible de charger cette section.',
+        /* ---- end V1.0.9 additions ---- */
         /* ---- V1.0.7 additions ---- */
         'occupancy_rate' => 'Taux d\'occupation',
         'occupied' => 'Occupées',
@@ -139,8 +146,6 @@ return [
         'description' => 'Situation actuelle du portefeuille et des finances.',
         'buildings' => 'Immeubles',
         'total_units' => 'Unités totales',
-        'occupied_units' => 'Unités occupées',
-        'vacant_units' => 'Unités vacantes',
         'rent_due' => 'Loyers dus',
         'rent_overdue' => 'Loyers en retard',
         'collected_this_month' => 'Encaissé ce mois-ci',
@@ -158,6 +163,12 @@ return [
     'language' => [
         'en' => 'Anglais',
         'fr' => 'Français',
+    ],
+    'currency' => [
+        /* ---- V1.0.9 additions ---- */
+        'GHS' => 'GHS',
+        'FCFA' => 'FCFA',
+        /* ---- end V1.0.9 additions ---- */
     ],
     'roles' => [
         'administrator' => 'Administrateur',
@@ -308,6 +319,28 @@ return [
         'close' => 'Fermer',
     ],
     'settings' => [
+        /* ---- V1.0.9 additions ---- */
+        'tab_organisation' => 'Organisation',
+        'tab_preferences' => 'Préférences',
+        'tab_data' => 'Données',
+        'not_configured' => 'L\'organisation gestionnaire n\'est pas encore configurée. Renseignez le formulaire ci-dessous et enregistrez pour la mettre en place.',
+        'save_preferences' => 'Enregistrer les préférences',
+        'export_success' => 'Exportation téléchargée.',
+        'export_opened' => 'PDF ouvert dans un nouvel onglet.',
+        'format_csv' => 'CSV',
+        'format_xlsx' => 'XLSX',
+        'format_pdf' => 'PDF',
+        'run_dry_run' => 'Lancer la simulation',
+        'dry_run_running' => 'Simulation en cours…',
+        'apply_restore' => 'Appliquer cette restauration',
+        'confirm_restore_title' => 'Confirmer la restauration',
+        'confirm_restore_description' => 'Vérifiez le résultat de la simulation avant d\'appliquer cette restauration au registre.',
+        'confirm_restore_warning' => 'L\'application de cette restauration modifie immédiatement les données du registre. Cette action est irréversible.',
+        'confirm_restore_apply' => 'Appliquer la restauration',
+        'restoring' => 'Restauration…',
+        'restore_success' => 'Restauration appliquée avec succès.',
+        'full_requires_xlsx' => 'Une restauration complète nécessite un classeur .xlsx.',
+        /* ---- end V1.0.9 additions ---- */
         /* ---- V1.0.7 additions ---- */
         'about' => 'À propos',
         'application_version' => 'Version de l\'application',
@@ -1381,6 +1414,12 @@ return [
         'account_count' => ':count comptes',
         'unnamed_party' => '(sans nom)',
         /* ---- end V1.0.7 additions ---- */
+        'lease' => 'Bail',
+        'select_date' => 'Choisir une date',
+        'date_placeholder' => 'jj-mm-aaaa',
+        'reset_filters' => 'Réinitialiser les filtres',
+        'stale_results' => 'Les résultats ne sont plus à jour — générez à nouveau le rapport.',
+        'result_rows' => ':count lignes',
         'title' => 'Rapports — Patrimoine',
         'finance' => 'Finance',
         'heading' => 'Rapports',
@@ -1569,7 +1608,6 @@ return [
         'unallocated' => 'Non affecté',
         'generating' => 'Génération du rapport…',
         'could_not_generate' => 'Le rapport n\'a pas pu être généré.',
-        'select_criteria' => 'Sélectionnez les critères requis et générez le rapport.',
         'unable_to_open' => 'Impossible d\'ouvrir le rapport.',
         'unable_to_download' => 'Impossible de télécharger le rapport.',
         'unnamed_party' => 'Partie sans nom',

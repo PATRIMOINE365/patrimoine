@@ -619,158 +619,6 @@ select.pm-input {
 
 /*
 |--------------------------------------------------------------------------
-| V1.0.4 Settings Workspace
-|--------------------------------------------------------------------------
-*/
-
-.pm-settings-shell {
-    overflow: visible;
-}
-
-.pm-settings-intro {
-    margin-bottom: 1.25rem;
-    padding: 0 0.125rem;
-}
-
-.pm-settings-form-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1rem;
-}
-
-.pm-settings-form-grid > section {
-    min-width: 0;
-    border: 1px solid var(--pm-border);
-    border-radius: 0.875rem;
-    background: var(--pm-surface);
-    padding: 1.25rem;
-}
-
-.pm-settings-form-grid > section > h3 {
-    color: var(--pm-text);
-}
-
-.pm-settings-form-grid > section > p {
-    color: var(--pm-text-muted);
-}
-
-/*
- * The first major identity/contact areas deserve the full content width.
- * Smaller configuration groups can sit side-by-side on larger screens.
- */
-@media (min-width: 1024px) {
-    .pm-settings-form-grid {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-    }
-
-    .pm-settings-form-grid > section:nth-child(1),
-    .pm-settings-form-grid > section:nth-child(2),
-    .pm-settings-form-grid > section:nth-child(6),
-    .pm-settings-form-grid > .pm-settings-notes-card {
-        grid-column: 1 / -1;
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
-| Settings Form Controls
-|--------------------------------------------------------------------------
-|
-| Existing IDs and markup are intentionally preserved. These selectors
-| provide semantic-theme styling without rewriting Settings business logic.
-|
-*/
-
-.pm-settings-page label {
-    color: var(--pm-text-secondary);
-}
-
-.pm-settings-page input:not([type="checkbox"]):not([type="radio"]),
-.pm-settings-page select,
-.pm-settings-page textarea {
-    width: 100%;
-    border-color: var(--pm-border) !important;
-    background: var(--pm-input-background) !important;
-    color: var(--pm-text) !important;
-}
-
-.pm-settings-page input:not([type="checkbox"]):not([type="radio"]):hover,
-.pm-settings-page select:hover,
-.pm-settings-page textarea:hover {
-    border-color: var(--pm-border-strong) !important;
-}
-
-.pm-settings-page input:not([type="checkbox"]):not([type="radio"]):focus,
-.pm-settings-page select:focus,
-.pm-settings-page textarea:focus {
-    border-color: var(--color-patrimoine-500) !important;
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 16%,
-            transparent
-        ) !important;
-}
-
-.pm-settings-page input::placeholder,
-.pm-settings-page textarea::placeholder {
-    color: var(--pm-text-subtle);
-}
-
-/*
-|--------------------------------------------------------------------------
-| Settings Save Bar
-|--------------------------------------------------------------------------
-*/
-
-.pm-settings-save-bar {
-    position: sticky;
-    bottom: 1rem;
-    z-index: 20;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-top: 1rem;
-    border: 1px solid var(--pm-border);
-    border-radius: 0.875rem;
-    background:
-        color-mix(
-            in srgb,
-            var(--pm-surface) 94%,
-            transparent
-        );
-    padding: 0.75rem 0.875rem 0.75rem 1.125rem;
-    box-shadow:
-        0 8px 30px rgb(15 23 42 / 0.08);
-    backdrop-filter: blur(12px);
-}
-
-@media (max-width: 639px) {
-    .pm-settings-intro,
-    .pm-settings-form-grid > section {
-        padding: 1rem;
-    }
-
-    .pm-settings-save-bar {
-        bottom: 0.75rem;
-        padding: 0.75rem;
-    }
-
-    .pm-settings-save-bar > div:first-child {
-        display: none;
-    }
-
-    .pm-settings-save-bar .pm-button-primary {
-        width: 100%;
-    }
-}
-
-
-/*
-|--------------------------------------------------------------------------
 | V1.0.4 Activity Log Workspace
 |--------------------------------------------------------------------------
 */
@@ -2047,263 +1895,37 @@ html[data-theme="light"]
 /* END V1.0.4 OWNER FINANCIAL DRAWERS VISUAL FIX */
 
 
-/* V1.0.4 REPORTS WORKSPACE THEME */
+/* REPORTS WORKSPACE */
 
 /*
 |--------------------------------------------------------------------------
 | Reports Workspace
 |--------------------------------------------------------------------------
 |
-| Reports are read-only financial presentation screens. Keep all existing
-| report calculations, endpoints and exports intact while normalising the
-| browser workspace onto the semantic V1.0.4 light/dark surface system.
+| The Reports page markup and its JS templates speak --pm-* tokens
+| directly, so no ID-scoped or !important shims are required. The only
+| component rule the page needs is the selected/hover state of the
+| report-type cards, which is toggled through the .is-active class.
 |
 */
 
-.pm-reports-page {
+.report-type-button {
+    color: var(--pm-text-secondary);
+    background: transparent;
+}
+
+.report-type-button:hover {
+    background: var(--pm-hover);
     color: var(--pm-text);
 }
 
-
-/* --------------------------------------------------------------------------
-   Page typography
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Main surfaces
-   -------------------------------------------------------------------------- */
-
-.pm-reports-controls,
-.pm-reports-output-shell {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    box-shadow: none !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Report type selector
-   -------------------------------------------------------------------------- */
-
-.pm-reports-controls .report-type-button {
-    color: var(--pm-text-secondary) !important;
-    background: transparent !important;
-}
-
-.pm-reports-controls .report-type-button:hover {
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
-.pm-reports-controls .report-type-button.is-active {
-    background: var(--pm-selected) !important;
-    color: var(--pm-text) !important;
-}
-
-.pm-reports-controls .report-type-button.is-active:hover {
-    background: var(--pm-selected) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Search / reporting-period controls
-   -------------------------------------------------------------------------- */
-
-.pm-reports-controls .pm-input {
-    border-color: var(--pm-border);
-    background: var(--pm-input-background);
+.report-type-button.is-active,
+.report-type-button.is-active:hover {
+    background: var(--pm-selected);
     color: var(--pm-text);
 }
 
-.pm-reports-controls .pm-input::placeholder {
-    color: var(--pm-text-subtle);
-    opacity: 1;
-}
-
-.pm-reports-controls .pm-input:hover:not(:disabled) {
-    border-color: var(--pm-border-strong);
-}
-
-.pm-reports-controls .pm-input:focus {
-    border-color: var(--color-patrimoine-500);
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 16%,
-            transparent
-        );
-}
-
-.pm-reports-controls [data-report-date-input] {
-    color-scheme: inherit;
-}
-
-.pm-reports-controls
-#report-subject-results {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-}
-
-.pm-reports-controls
-#report-subject-results
-button {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text) !important;
-}
-
-.pm-reports-controls
-#report-subject-results
-button:hover {
-    background: var(--pm-hover) !important;
-}
-
-.pm-reports-controls
-#report-selected-subject {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-selected) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Report output header
-   -------------------------------------------------------------------------- */
-
-.pm-reports-output-shell
-> div:first-child {
-    border-color: var(--pm-border) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Generated report identity cards
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Generated report metric cards
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Generated report secondary metric cards
-   -------------------------------------------------------------------------- */
-
-.pm-reports-output
-.rounded-lg.border {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-subtle);
-}
-
-
-/* --------------------------------------------------------------------------
-   Report sections
-   -------------------------------------------------------------------------- */
-
-.pm-reports-output
-section {
-    border-color: var(--pm-border) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Tables
-   -------------------------------------------------------------------------- */
-
-.pm-reports-output
-.overflow-x-auto.rounded-xl.border {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-}
-
-.pm-reports-output table {
-    background: var(--pm-surface) !important;
-    color: var(--pm-text);
-}
-
-.pm-reports-output th {
-    color: var(--pm-text-muted) !important;
-}
-
-.pm-reports-output td {
-    color: var(--pm-text-secondary) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Empty / loading / error report states
-   -------------------------------------------------------------------------- */
-
-.pm-reports-output
-.border-dashed {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-subtle) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Export actions
-   -------------------------------------------------------------------------- */
-
-#report-export-actions {
-    align-items: center;
-}
-
-#report-export-actions
-.pm-button-secondary {
-    min-width: 5rem;
-}
-
-
-/* --------------------------------------------------------------------------
-   Page error
-   -------------------------------------------------------------------------- */
-
-.pm-reports-page
-#reports-error {
-    border-color:
-        color-mix(
-            in srgb,
-            var(--pm-danger-text) 30%,
-            var(--pm-border)
-        ) !important;
-
-    background:
-        color-mix(
-            in srgb,
-            var(--pm-danger-text) 8%,
-            var(--pm-surface)
-        ) !important;
-
-    color: var(--pm-danger-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Responsive
-   -------------------------------------------------------------------------- */
-
-@media (min-width: 1280px) {
-    .pm-reports-controls {
-        position: sticky;
-        top: 5.75rem;
-    }
-}
-
-@media (max-width: 639px) {
-    #report-export-actions {
-        width: 100%;
-    }
-
-    #report-export-actions
-    .pm-button-secondary {
-        flex: 1 1 0;
-    }
-}
-
-/* END V1.0.4 REPORTS WORKSPACE THEME */
+/* END REPORTS WORKSPACE */
 
 
 /*
@@ -6629,17 +6251,6 @@ button:hover:not(:disabled) {
 }
 
 
-/*
- * Keep the Dashboard eyebrow aligned with the Patrimoine accent rather than
- * allowing older patrimoine utility values to become too dark in dark mode.
- */
-.pm-dashboard-page
-.text-patrimoine-700 {
-    color:
-        var(--pm-accent) !important;
-}
-
-
 /* --------------------------------------------------------------------------
    Metric cards
    -------------------------------------------------------------------------- */
@@ -6656,106 +6267,11 @@ button:hover:not(:disabled) {
    -------------------------------------------------------------------------- */
 
 
-/* --------------------------------------------------------------------------
-   Dynamic invoice rows
-   -------------------------------------------------------------------------- */
-
-.pm-dashboard-page
-#overdue-list
-> div:not(:only-child),
-.pm-dashboard-page
-#upcoming-list
-> div:not(:only-child) {
-    border-color:
-        var(--pm-border) !important;
-}
-
-
-.pm-dashboard-page
-#overdue-list
-.text-\[var\(--pm-text\)\],
-.pm-dashboard-page
-#upcoming-list
-.text-\[var\(--pm-text\)\] {
-    color:
-        var(--pm-text) !important;
-}
-
-
-.pm-dashboard-page
-#overdue-list
-.text-\[var\(--pm-text-secondary\)\],
-.pm-dashboard-page
-#upcoming-list
-.text-\[var\(--pm-text-secondary\)\] {
-    color:
-        var(--pm-text-secondary) !important;
-}
-
-
-.pm-dashboard-page
-#overdue-list
-.text-\[var\(--pm-text-muted\)\],
-.pm-dashboard-page
-#upcoming-list
-.text-\[var\(--pm-text-muted\)\] {
-    color:
-        var(--pm-text-muted) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Empty state
-   -------------------------------------------------------------------------- */
-
-.pm-dashboard-page
-#overdue-list
-.border-dashed,
-.pm-dashboard-page
-#upcoming-list
-.border-dashed {
-    border-color:
-        var(--pm-border) !important;
-
-    background:
-        var(--pm-surface-subtle) !important;
-
-    color:
-        var(--pm-text-muted) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Error state
-   -------------------------------------------------------------------------- */
-
-.pm-dashboard-page
-#dashboard-error {
-    border-color:
-        var(--pm-danger-border) !important;
-
-    background:
-        var(--pm-danger-background) !important;
-
-    color:
-        var(--pm-danger-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Mobile
-   -------------------------------------------------------------------------- */
-
-@media (max-width: 639px) {
-
-    .pm-dashboard-page
-    #overdue-list,
-    .pm-dashboard-page
-    #upcoming-list {
-        padding:
-            1rem !important;
-    }
-}
+/*
+ * V1.0.9: the invoice-row, empty-state, error-state and mobile-padding
+ * shims that lived here were removed. The Dashboard markup (Blade and
+ * dashboard.js) now speaks pm tokens and responsive utilities directly.
+ */
 
 
 /* END V1.0.4 Dashboard Workspace */
@@ -6776,29 +6292,8 @@ button:hover:not(:disabled) {
    -------------------------------------------------------------------------- */
 
 /*
- * Restore the section eyebrow as the Patrimoine accent.
- */
-.pm-dashboard-page
-> div:first-child
-.text-patrimoine-700 {
-    color:
-        var(--color-patrimoine-600) !important;
-}
-
-
-/*
  * Keep the page description clearly secondary.
  */
-
-
-/*
- * Dashboard date should be useful but not compete with the heading.
- */
-.pm-dashboard-page
-#dashboard-date {
-    color:
-        var(--pm-text-muted) !important;
-}
 
 
 /* --------------------------------------------------------------------------
@@ -6859,72 +6354,10 @@ section
 }
 
 
-/* --------------------------------------------------------------------------
-   Overdue rows
-   -------------------------------------------------------------------------- */
-
-.pm-dashboard-page
-#overdue-list
-> div {
-    border-color:
-        var(--pm-border) !important;
-}
-
-
 /*
- * Tenant is the primary row identifier.
+ * V1.0.9: the overdue-row and empty-state shims that lived here were
+ * removed — dashboard.js renders those blocks with pm tokens directly.
  */
-.pm-dashboard-page
-#overdue-list
-> div
-.text-\[var\(--pm-text\)\] {
-    color:
-        var(--pm-text) !important;
-}
-
-
-/*
- * Property and due-date information are intentionally quieter.
- */
-.pm-dashboard-page
-#overdue-list
-.text-\[var\(--pm-text-secondary\)\] {
-    color:
-        var(--pm-text-secondary) !important;
-}
-
-
-.pm-dashboard-page
-#overdue-list
-.text-\[var\(--pm-text-muted\)\] {
-    color:
-        var(--pm-text-muted) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Empty state
-   -------------------------------------------------------------------------- */
-
-/*
- * Match the empty-state language used elsewhere in V1.0.4:
- * subtle contained surface with an intentionally quiet dashed boundary.
- */
-.pm-dashboard-page
-#overdue-list
-.border-dashed,
-.pm-dashboard-page
-#upcoming-list
-.border-dashed {
-    border-color:
-        var(--pm-border) !important;
-
-    background:
-        var(--pm-surface-subtle) !important;
-
-    color:
-        var(--pm-text-muted) !important;
-}
 
 
 /* END V1.0.4 Dashboard — Dark Mode Visual Polish */

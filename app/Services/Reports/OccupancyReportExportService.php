@@ -2,6 +2,7 @@
 
 namespace App\Services\Reports;
 
+use App\Services\ApplicationIdentityService;
 use App\Services\ApplicationPresentationFormatter;
 use Barryvdh\DomPDF\Facade\Pdf;
 use OpenSpout\Common\Entity\Row;
@@ -12,6 +13,7 @@ class OccupancyReportExportService
 {
     public function __construct(
         private readonly OccupancyReportService $reports,
+        private readonly ApplicationIdentityService $identity,
         private readonly ApplicationPresentationFormatter $formatter
     ) {}
 
@@ -48,13 +50,18 @@ class OccupancyReportExportService
     }
 
     /**
+     * The already-calculated projection may be supplied to avoid
+     * regenerating the report for one export.
+     *
      * @param  array<string, mixed>  $filters
+     * @param  array<string, mixed>|null  $projection
      * @return list<array<string, string>>
      */
     public function rows(
-        array $filters = []
+        array $filters = [],
+        ?array $projection = null
     ): array {
-        $projection =
+        $projection ??=
             $this->projection(
                 $filters
             );
@@ -101,6 +108,71 @@ class OccupancyReportExportService
     }
 
     /**
+     * Leading summary rows shared by the CSV and XLSX writers: snapshot
+     * totals plus the commercial/residential classification split.
+     *
+     * @param  array<string, mixed>  $projection
+     * @return list<list<string>>
+     */
+    private function summaryRows(
+        array $projection
+    ): array {
+        $totals =
+            $projection['totals']
+            ?? [];
+
+        $classification =
+            $projection['classification']
+            ?? [];
+
+        $rows = [
+            [
+                __('reports.as_of'),
+                $this->formatter->date(
+                    $projection['as_of']
+                    ?? null
+                ),
+            ],
+            [
+                __('reports.labels.units'),
+                (string) ($totals['units'] ?? 0),
+            ],
+            [
+                __('reports.labels.occupied'),
+                (string) ($totals['occupied'] ?? 0),
+            ],
+            [
+                __('reports.labels.vacant'),
+                (string) ($totals['vacant'] ?? 0),
+            ],
+            [
+                __('reports.labels.occupancy_rate'),
+                ($totals['occupancy_rate'] ?? 0).'%',
+            ],
+            [''],
+            [
+                __('reports.labels.classification'),
+                __('reports.labels.units'),
+                __('reports.labels.occupied'),
+                __('reports.labels.vacant'),
+                __('reports.labels.occupancy_rate'),
+            ],
+        ];
+
+        foreach (['commercial', 'residential'] as $segment) {
+            $rows[] = [
+                __('reports.labels.'.$segment),
+                (string) ($classification[$segment]['units'] ?? 0),
+                (string) ($classification[$segment]['occupied'] ?? 0),
+                (string) ($classification[$segment]['vacant'] ?? 0),
+                ($classification[$segment]['occupancy_rate'] ?? 0).'%',
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
      * @param  array<string, mixed>  $filters
      */
     public function pdf(
@@ -117,7 +189,8 @@ class OccupancyReportExportService
                 'columns' => $this->columns(),
 
                 'rows' => $this->rows(
-                    $filters
+                    $filters,
+                    $projection
                 ),
 
                 'totals' => $projection['totals']
@@ -128,6 +201,8 @@ class OccupancyReportExportService
 
                 'asOf' => $projection['as_of']
                     ?? null,
+
+                'managingOrganisation' => $this->identity->managingOrganisation(),
 
                 'generatedAt' => now(),
 
@@ -147,6 +222,11 @@ class OccupancyReportExportService
     public function csv(
         array $filters = []
     ): string {
+        $projection =
+            $this->projection(
+                $filters
+            );
+
         $stream =
             fopen(
                 'php://temp',
@@ -158,6 +238,28 @@ class OccupancyReportExportService
                 'Unable to create Occupancy Report CSV stream.'
             );
         }
+
+        foreach (
+            $this->summaryRows(
+                $projection
+            ) as $summaryRow
+        ) {
+            fputcsv(
+                $stream,
+                $summaryRow,
+                ',',
+                '"',
+                ''
+            );
+        }
+
+        fputcsv(
+            $stream,
+            [''],
+            ',',
+            '"',
+            ''
+        );
 
         fputcsv(
             $stream,
@@ -171,7 +273,8 @@ class OccupancyReportExportService
 
         foreach (
             $this->rows(
-                $filters
+                $filters,
+                $projection
             ) as $row
         ) {
             fputcsv(
@@ -214,6 +317,11 @@ class OccupancyReportExportService
     public function xlsx(
         array $filters = []
     ): string {
+        $projection =
+            $this->projection(
+                $filters
+            );
+
         $path =
             tempnam(
                 sys_get_temp_dir(),
@@ -234,6 +342,24 @@ class OccupancyReportExportService
                 $path
             );
 
+            foreach (
+                $this->summaryRows(
+                    $projection
+                ) as $summaryRow
+            ) {
+                $writer->addRow(
+                    Row::fromValues(
+                        $summaryRow
+                    )
+                );
+            }
+
+            $writer->addRow(
+                Row::fromValues(
+                    ['']
+                )
+            );
+
             $writer->addRow(
                 Row::fromValues(
                     array_values(
@@ -244,7 +370,8 @@ class OccupancyReportExportService
 
             foreach (
                 $this->rows(
-                    $filters
+                    $filters,
+                    $projection
                 ) as $row
             ) {
                 $writer->addRow(

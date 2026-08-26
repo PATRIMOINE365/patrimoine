@@ -53,19 +53,13 @@
         .amount {
             text-align: right;
         }
-
-        .generated {
-            margin-top: 12px;
-            font-size: 8px;
-            color: #6b7280;
-        }
     </style>
 </head>
 
 <body>
-    <h1>
-        {{ __('reports.funds_report') }}
-    </h1>
+    @include('reports.partials.letterhead', [
+        'title' => __('reports.funds_report'),
+    ])
 
     <div class="summary">
         <strong>{{ __('reports.as_of') }}:</strong>
@@ -125,7 +119,7 @@
             @forelse ($tenantRows as $row)
                 <tr>
                     @foreach (array_keys($tenantColumns) as $column)
-                        <td class="{{ in_array($column, ['tenant', 'property'], true) ? '' : 'amount' }}">
+                        <td class="{{ in_array($column, ['tenant', 'lease', 'building', 'unit'], true) ? '' : 'amount' }}">
                             {{ $row[$column] ?? '' }}
                         </td>
                     @endforeach
@@ -182,9 +176,6 @@
         </tbody>
     </table>
 
-    <div class="generated">
-        {{ __('reports.generated') }}
-        {{ $generatedAt->format('d-m-Y H:i:s') }}
-    </div>
+    @include('reports.partials.footer')
 </body>
 </html>

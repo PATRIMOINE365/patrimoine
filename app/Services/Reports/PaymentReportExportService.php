@@ -2,6 +2,7 @@
 
 namespace App\Services\Reports;
 
+use App\Services\ApplicationIdentityService;
 use App\Services\ApplicationPresentationFormatter;
 use Barryvdh\DomPDF\Facade\Pdf;
 use OpenSpout\Common\Entity\Row;
@@ -12,6 +13,7 @@ class PaymentReportExportService
 {
     public function __construct(
         private readonly PaymentReportService $reports,
+        private readonly ApplicationIdentityService $identity,
         private readonly ApplicationPresentationFormatter $formatter
     ) {}
 
@@ -52,13 +54,18 @@ class PaymentReportExportService
     }
 
     /**
+     * The already-calculated projection may be supplied to avoid
+     * regenerating the report for one export.
+     *
      * @param  array<string, mixed>  $filters
+     * @param  array<string, mixed>|null  $projection
      * @return list<array<string, string>>
      */
     public function rows(
-        array $filters = []
+        array $filters = [],
+        ?array $projection = null
     ): array {
-        $projection =
+        $projection ??=
             $this->projection(
                 $filters
             );
@@ -136,7 +143,8 @@ class PaymentReportExportService
                 'columns' => $this->columns(),
 
                 'rows' => $this->rows(
-                    $filters
+                    $filters,
+                    $projection
                 ),
 
                 'summary' => $projection['summary']
@@ -144,6 +152,8 @@ class PaymentReportExportService
 
                 'filters' => $projection['filters']
                     ?? [],
+
+                'managingOrganisation' => $this->identity->managingOrganisation(),
 
                 'generatedAt' => now(),
 

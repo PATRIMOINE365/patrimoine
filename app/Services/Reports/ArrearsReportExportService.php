@@ -2,6 +2,7 @@
 
 namespace App\Services\Reports;
 
+use App\Services\ApplicationIdentityService;
 use App\Services\ApplicationPresentationFormatter;
 use Barryvdh\DomPDF\Facade\Pdf;
 use OpenSpout\Common\Entity\Row;
@@ -12,6 +13,7 @@ class ArrearsReportExportService
 {
     public function __construct(
         private readonly ArrearsReportService $reports,
+        private readonly ApplicationIdentityService $identity,
         private readonly ApplicationPresentationFormatter $formatter
     ) {}
 
@@ -35,7 +37,11 @@ class ArrearsReportExportService
         return [
             'tenant' => __('reports.labels.tenant'),
 
-            'property' => __('reports.labels.property'),
+            'lease' => __('reports.labels.lease'),
+
+            'building' => __('reports.labels.building'),
+
+            'unit' => __('reports.labels.unit'),
 
             'invoice_count' => __('reports.labels.invoices_count'),
 
@@ -52,13 +58,18 @@ class ArrearsReportExportService
     }
 
     /**
+     * The already-calculated projection may be supplied to avoid
+     * regenerating the report for one export.
+     *
      * @param  array<string, mixed>  $filters
+     * @param  array<string, mixed>|null  $projection
      * @return list<array<string, string>>
      */
     public function rows(
-        array $filters = []
+        array $filters = [],
+        ?array $projection = null
     ): array {
-        $projection =
+        $projection ??=
             $this->projection(
                 $filters
             );
@@ -74,15 +85,19 @@ class ArrearsReportExportService
                         ?? ''
                     ),
 
-                    'property' => collect([
-                        $tenant['building']['name']
-                            ?? null,
+                    'lease' => isset($tenant['lease']['id'])
+                        ? '#'.$tenant['lease']['id']
+                        : '',
 
+                    'building' => (string) (
+                        $tenant['building']['name']
+                        ?? ''
+                    ),
+
+                    'unit' => (string) (
                         $tenant['unit']['name']
-                            ?? null,
-                    ])
-                        ->filter()
-                        ->implode(' · '),
+                        ?? ''
+                    ),
 
                     'invoice_count' => (string) (
                         $tenant['invoice_count']
@@ -120,6 +135,73 @@ class ArrearsReportExportService
     }
 
     /**
+     * Leading aging-total rows shared by the CSV and XLSX writers so the
+     * flat exports carry the same summary as the screen and the PDF.
+     *
+     * @param  array<string, mixed>  $projection
+     * @return list<list<string>>
+     */
+    private function summaryRows(
+        array $projection
+    ): array {
+        $totals =
+            $projection['totals']
+            ?? [];
+
+        return [
+            [
+                __('reports.as_of'),
+                $this->formatter->date(
+                    $projection['as_of']
+                    ?? null
+                ),
+            ],
+            [
+                __('reports.labels.invoices_count'),
+                (string) (
+                    $totals['invoice_count']
+                    ?? 0
+                ),
+            ],
+            [
+                __('reports.labels.current_0_30'),
+                $this->formatter->money(
+                    $totals['current']
+                    ?? 0
+                ),
+            ],
+            [
+                __('reports.labels.days_31_60'),
+                $this->formatter->money(
+                    $totals['days_31_60']
+                    ?? 0
+                ),
+            ],
+            [
+                __('reports.labels.days_61_90'),
+                $this->formatter->money(
+                    $totals['days_61_90']
+                    ?? 0
+                ),
+            ],
+            [
+                __('reports.labels.over_90'),
+                $this->formatter->money(
+                    $totals['over_90']
+                    ?? 0
+                ),
+            ],
+            [
+                __('reports.labels.grand_total'),
+                $this->formatter->money(
+                    $totals['total']
+                    ?? 0
+                ),
+            ],
+        ];
+    }
+
+    /**
      * @param  array<string, mixed>  $filters
      */
     public function pdf(
@@ -136,7 +218,8 @@ class ArrearsReportExportService
                 'columns' => $this->columns(),
 
                 'rows' => $this->rows(
-                    $filters
+                    $filters,
+                    $projection
                 ),
 
                 'totals' => $projection['totals']
@@ -144,6 +227,8 @@ class ArrearsReportExportService
 
                 'asOf' => $projection['as_of']
                     ?? null,
+
+                'managingOrganisation' => $this->identity->managingOrganisation(),
 
                 'generatedAt' => now(),
 
@@ -163,6 +248,11 @@ class ArrearsReportExportService
     public function csv(
         array $filters = []
     ): string {
+        $projection =
+            $this->projection(
+                $filters
+            );
+
         $stream =
             fopen(
                 'php://temp',
@@ -174,6 +264,28 @@ class ArrearsReportExportService
                 'Unable to create Arrears Report CSV stream.'
             );
         }
+
+        foreach (
+            $this->summaryRows(
+                $projection
+            ) as $summaryRow
+        ) {
+            fputcsv(
+                $stream,
+                $summaryRow,
+                ',',
+                '"',
+                ''
+            );
+        }
+
+        fputcsv(
+            $stream,
+            [''],
+            ',',
+            '"',
+            ''
+        );
 
         fputcsv(
             $stream,
@@ -187,7 +299,8 @@ class ArrearsReportExportService
 
         foreach (
             $this->rows(
-                $filters
+                $filters,
+                $projection
             ) as $row
         ) {
             fputcsv(
@@ -230,6 +343,11 @@ class ArrearsReportExportService
     public function xlsx(
         array $filters = []
     ): string {
+        $projection =
+            $this->projection(
+                $filters
+            );
+
         $path =
             tempnam(
                 sys_get_temp_dir(),
@@ -250,6 +368,24 @@ class ArrearsReportExportService
                 $path
             );
 
+            foreach (
+                $this->summaryRows(
+                    $projection
+                ) as $summaryRow
+            ) {
+                $writer->addRow(
+                    Row::fromValues(
+                        $summaryRow
+                    )
+                );
+            }
+
+            $writer->addRow(
+                Row::fromValues(
+                    ['']
+                )
+            );
+
             $writer->addRow(
                 Row::fromValues(
                     array_values(
@@ -260,7 +396,8 @@ class ArrearsReportExportService
 
             foreach (
                 $this->rows(
-                    $filters
+                    $filters,
+                    $projection
                 ) as $row
             ) {
                 $writer->addRow(

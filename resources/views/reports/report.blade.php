@@ -17,29 +17,6 @@
             line-height: 1.4;
         }
 
-        .header {
-            margin-bottom: 24px;
-            border-bottom: 2px solid #222222;
-            padding-bottom: 12px;
-        }
-
-        .brand {
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .subtitle {
-            margin-top: 2px;
-            color: #666666;
-            font-size: 9px;
-        }
-
-        .report-title {
-            margin-top: 14px;
-            font-size: 17px;
-            font-weight: bold;
-        }
-
         .section {
             margin-top: 20px;
             page-break-inside: avoid;
@@ -83,62 +60,11 @@
             font-style: italic;
             padding: 8px 0;
         }
-
-        .footer {
-            margin-top: 30px;
-            border-top: 1px solid #dddddd;
-            padding-top: 8px;
-            color: #888888;
-            font-size: 8px;
-        }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <div class="brand">
-            {{ $managingOrganisation?->legal_name
-                ?? $managingOrganisation?->name
-                ?? 'Patrimoine' }}
-        </div>
-
-        <div class="subtitle">
-            {{ __('reports.property_management') }}
-        </div>
-
-        @if($managingOrganisation)
-            @if($managingOrganisation->address)
-                <div class="subtitle">
-                    {{ $managingOrganisation->address }}
-                </div>
-            @endif
-
-            @if($managingOrganisation->phone || $managingOrganisation->email)
-                <div class="subtitle">
-                    {{ $managingOrganisation->phone }}
-
-                    @if(
-                        $managingOrganisation->phone
-                        && $managingOrganisation->email
-                    )
-                        |
-                    @endif
-
-                    {{ $managingOrganisation->email }}
-                </div>
-            @endif
-
-            @if($managingOrganisation->vat_tin)
-                <div class="subtitle">
-                    {{ __('reports.vat_tin') }}: {{ $managingOrganisation->vat_tin }}
-                </div>
-            @endif
-        @endif
-
-        <div class="report-title">
-            {{ $title }}
-        </div>
-    </div>
+    @include('reports.partials.letterhead')
 
     @foreach($sections as $section)
         <div class="section">
@@ -202,11 +128,6 @@
         </div>
     @endforeach
 
-    <div class="footer">
-        {{ __('reports.generated_by_patrimoine_for') }}
-        {{ $managingOrganisation?->legal_name
-            ?? $managingOrganisation?->name
-            ?? __('reports.this_installation') }}.
-    </div>
+    @include('reports.partials.footer')
 </body>
 </html>

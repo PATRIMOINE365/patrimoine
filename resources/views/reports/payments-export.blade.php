@@ -48,19 +48,13 @@
         .amount {
             text-align: right;
         }
-
-        .generated {
-            margin-top: 12px;
-            font-size: 8px;
-            color: #6b7280;
-        }
     </style>
 </head>
 
 <body>
-    <h1>
-        {{ __('ui.reports.payments_report') }}
-    </h1>
+    @include('reports.partials.letterhead', [
+        'title' => __('ui.reports.payments_report'),
+    ])
 
     <div class="summary">
         <strong>{{ __('ui.reports.payment_count') }}:</strong>
@@ -112,9 +106,6 @@
         </tbody>
     </table>
 
-    <div class="generated">
-        {{ __('ui.reports.generated') }}
-        {{ $generatedAt->format('d-m-Y H:i:s') }}
-    </div>
+    @include('reports.partials.footer')
 </body>
 </html>

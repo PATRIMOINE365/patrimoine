@@ -264,7 +264,7 @@ class ReportingServiceTest extends TestCase
 
         $this->assertSame(
             4000,
-            $report['summary']['outstanding']
+            $report['summary']['total_outstanding']
         );
 
         $this->assertSame(
@@ -297,7 +297,7 @@ class ReportingServiceTest extends TestCase
 
         $this->assertSame(
             4000,
-            $report['summary']['outstanding']
+            $report['summary']['total_outstanding']
         );
     }
 
@@ -320,7 +320,7 @@ class ReportingServiceTest extends TestCase
 
         $this->assertSame(
             4000,
-            $report['summary']['outstanding']
+            $report['summary']['total_outstanding']
         );
 
         $this->assertSame(
@@ -424,7 +424,7 @@ class ReportingServiceTest extends TestCase
 
         $this->assertSame(
             6000,
-            $report['summary']['outstanding']
+            $report['summary']['total_outstanding']
         );
 
         /*

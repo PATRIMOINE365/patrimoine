@@ -92,10 +92,6 @@ class TenantStatementService
                     fn (Invoice $invoice): int => $invoice->paidAmount()
                 ),
 
-                'outstanding' => (int) $invoices->sum(
-                    fn (Invoice $invoice): int => $invoice->outstandingAmount()
-                ),
-
                 /*
      * V1.0.1 explicitly separates contractual rent from Security Deposit
      * close-out debt so non-rent receivables are never presented as rent.

@@ -102,6 +102,15 @@ class Invoice extends Model
      */
     public function paymentPaidAmount(): int
     {
+        /*
+         * V1.0.9: when the relation has been eager-loaded (dashboard
+         * list queries), sum the loaded collection instead of issuing
+         * one query per Invoice.
+         */
+        if ($this->relationLoaded('paymentAllocations')) {
+            return (int) $this->paymentAllocations->sum('amount');
+        }
+
         return (int) $this->paymentAllocations()
             ->sum('amount');
     }
@@ -140,6 +149,25 @@ class Invoice extends Model
     private function fundSettledAmount(
         string $category
     ): int {
+        /*
+         * V1.0.9: prefer the eager-loaded collection so dashboard list
+         * queries do not re-query per Invoice and per category.
+         */
+        if ($this->relationLoaded('tenantFundTransactions')) {
+            $transactions = $this->tenantFundTransactions
+                ->where('category', $category);
+
+            $debits = (int) $transactions
+                ->where('direction', 'debit')
+                ->sum('amount');
+
+            $credits = (int) $transactions
+                ->where('direction', 'credit')
+                ->sum('amount');
+
+            return $debits - $credits;
+        }
+
         $debits = (int) $this->tenantFundTransactions()
             ->where('direction', 'debit')
             ->where('category', $category)
@@ -166,6 +194,11 @@ class Invoice extends Model
      */
     public function securityDepositAppliedAmount(): int
     {
+        // V1.0.9: see paymentPaidAmount() — avoid the per-Invoice query.
+        if ($this->relationLoaded('securityDepositApplications')) {
+            return (int) $this->securityDepositApplications->sum('amount');
+        }
+
         return (int) $this->securityDepositApplications()
             ->sum('amount');
     }

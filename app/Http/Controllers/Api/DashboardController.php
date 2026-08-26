@@ -28,21 +28,39 @@ class DashboardController extends Controller
     ): JsonResponse {
         $asOfDate = $this->resolveAsOfDate($request);
 
+        /*
+         * V1.0.9: fetch the expiry and increment lists once and feed
+         * their counts into metrics(), so neither query runs twice per
+         * request. The occupancy percentage is likewise derived from the
+         * unit counts metrics() already computed.
+         */
+        $expiringLeases = $service->expiringLeases($asOfDate);
+        $upcomingIncrements = $service->upcomingIncrements($asOfDate);
+
+        $metrics = $service->metrics(
+            $asOfDate,
+            $expiringLeases->count(),
+            $upcomingIncrements->count()
+        );
+
         return response()->json([
             'as_of' => $asOfDate->toDateString(),
-            'metrics' => $service->metrics($asOfDate),
+            'metrics' => $metrics,
 
             /*
              * V1.0.7 dashboard additions: occupancy percentage, trailing
              * collections trend, expiring leases and upcoming increments —
              * one round trip paints the whole dashboard.
              */
-            'occupancy_rate' => $service->occupancyRate($asOfDate),
+            'occupancy_rate' => $metrics['total_units'] > 0
+                ? (int) round(
+                    $metrics['occupied_units'] * 100 / $metrics['total_units']
+                )
+                : 0,
 
             'collections_trend' => $service->collectionsTrend($asOfDate),
 
-            'expiring_leases' => $service
-                ->expiringLeases($asOfDate)
+            'expiring_leases' => $expiringLeases
                 ->map(fn ($lease): array => [
                     'id' => $lease->id,
                     'tenant_name' => $lease->tenant?->name,
@@ -53,8 +71,7 @@ class DashboardController extends Controller
                 ])
                 ->values(),
 
-            'upcoming_increments' => $service
-                ->upcomingIncrements($asOfDate)
+            'upcoming_increments' => $upcomingIncrements
                 ->map(fn ($increment): array => [
                     'id' => $increment->id,
                     'lease_id' => $increment->lease_id,
@@ -161,26 +178,26 @@ class DashboardController extends Controller
         return [
             'id' => $invoice->id,
             'invoice_number' => $invoice->invoice_number,
-            'due_date' => $invoice->due_date->toDateString(),
+            'due_date' => $invoice->due_date?->toDateString(),
             'status' => $invoice->status,
             'total_amount' => $invoice->total_amount,
             'paid_amount' => $invoice->paidAmount(),
             'outstanding_amount' => $invoice->outstandingAmount(),
 
             'tenant' => [
-                'id' => $invoice->lease->tenant->id,
-                'name' => $invoice->lease->tenant->name
-                    ?? $invoice->lease->tenant->legal_name,
+                'id' => $invoice->lease?->tenant?->id,
+                'name' => $invoice->lease?->tenant?->name
+                    ?? $invoice->lease?->tenant?->legal_name,
             ],
 
             'unit' => [
-                'id' => $invoice->lease->unit->id,
-                'name' => $invoice->lease->unit->name,
+                'id' => $invoice->lease?->unit?->id,
+                'name' => $invoice->lease?->unit?->name,
             ],
 
             'building' => [
-                'id' => $invoice->lease->unit->building->id,
-                'name' => $invoice->lease->unit->building->name,
+                'id' => $invoice->lease?->unit?->building?->id,
+                'name' => $invoice->lease?->unit?->building?->name,
             ],
         ];
     }

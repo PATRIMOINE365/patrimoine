@@ -280,35 +280,69 @@ class DashboardServiceTest extends TestCase
     }
 
     /**
-     * Rent collected this month is based on Payments actually received.
+     * Rent collected this month is based on Payment money actually
+     * allocated to rent Invoices.
      */
     public function test_dashboard_reports_current_month_cash_collections(): void
     {
         $context = $this->createPropertyContext();
 
-        Payment::create([
+        $invoice = Invoice::create([
+            'lease_id' => $context['lease']->id,
+            'invoice_number' => 'INV-DASH-COLLECT',
+            'type' => 'rent',
+            'period_start' => '2026-08-01',
+            'period_end' => '2026-08-31',
+            'issue_date' => '2026-08-01',
+            'due_date' => '2026-08-10',
+            'status' => 'partial',
+            'total_amount' => 20000,
+            'vat_rate' => 0,
+            'net_amount' => 20000,
+            'vat_amount' => 0,
+        ]);
+
+        $firstPayment = Payment::create([
             'lease_id' => $context['lease']->id,
             'amount' => 4000,
             'payment_date' => '2026-08-05',
             'payment_method' => 'bank_transfer',
         ]);
 
-        Payment::create([
+        PaymentAllocation::create([
+            'payment_id' => $firstPayment->id,
+            'invoice_id' => $invoice->id,
+            'amount' => 4000,
+        ]);
+
+        $secondPayment = Payment::create([
             'lease_id' => $context['lease']->id,
             'amount' => 3000,
             'payment_date' => '2026-08-10',
             'payment_method' => 'momo',
         ]);
 
+        PaymentAllocation::create([
+            'payment_id' => $secondPayment->id,
+            'invoice_id' => $invoice->id,
+            'amount' => 3000,
+        ]);
+
         /*
          * Previous month and therefore excluded.
          */
-        Payment::create([
+        $julyPayment = Payment::create([
             'lease_id' => $context['lease']->id,
             'amount' => 9000,
             'payment_date' => '2026-07-31',
             'payment_method' => 'cash',
             'collector_name' => 'Test Collector',
+        ]);
+
+        PaymentAllocation::create([
+            'payment_id' => $julyPayment->id,
+            'invoice_id' => $invoice->id,
+            'amount' => 9000,
         ]);
 
         $metrics = app(DashboardService::class)->metrics(
@@ -318,6 +352,106 @@ class DashboardServiceTest extends TestCase
         $this->assertSame(
             7000,
             $metrics['rent_collected_this_month']
+        );
+    }
+
+    /**
+     * V1.0.9: expense-invoice settlements and unallocated fund top-ups
+     * travel through the payments table too, but they are not rent and
+     * must stay out of the collections metric and trend.
+     */
+    public function test_rent_collections_exclude_expense_settlements_and_top_ups(): void
+    {
+        $context = $this->createPropertyContext();
+
+        $rentInvoice = Invoice::create([
+            'lease_id' => $context['lease']->id,
+            'invoice_number' => 'INV-DASH-RENT-COLLECT',
+            'type' => 'rent',
+            'period_start' => '2026-08-01',
+            'period_end' => '2026-08-31',
+            'issue_date' => '2026-08-01',
+            'due_date' => '2026-08-10',
+            'status' => 'paid',
+            'total_amount' => 5000,
+            'vat_rate' => 0,
+            'net_amount' => 5000,
+            'vat_amount' => 0,
+        ]);
+
+        $rentPayment = Payment::create([
+            'lease_id' => $context['lease']->id,
+            'amount' => 5000,
+            'payment_date' => '2026-08-05',
+            'payment_method' => 'bank_transfer',
+        ]);
+
+        PaymentAllocation::create([
+            'payment_id' => $rentPayment->id,
+            'invoice_id' => $rentInvoice->id,
+            'amount' => 5000,
+        ]);
+
+        /*
+         * Expense-invoice settlement — must not count as rent collected.
+         */
+        $expenseInvoice = Invoice::create([
+            'lease_id' => $context['lease']->id,
+            'invoice_number' => 'EXP-DASH-001',
+            'type' => 'expense',
+            'period_start' => '2026-08-01',
+            'period_end' => '2026-08-31',
+            'issue_date' => '2026-08-01',
+            'due_date' => '2026-08-01',
+            'status' => 'paid',
+            'total_amount' => 2000,
+            'vat_rate' => 0,
+            'net_amount' => 2000,
+            'vat_amount' => 0,
+        ]);
+
+        $expensePayment = Payment::create([
+            'lease_id' => $context['lease']->id,
+            'amount' => 2000,
+            'payment_date' => '2026-08-06',
+            'payment_method' => 'cash',
+            'collector_name' => 'Test Collector',
+        ]);
+
+        PaymentAllocation::create([
+            'payment_id' => $expensePayment->id,
+            'invoice_id' => $expenseInvoice->id,
+            'amount' => 2000,
+        ]);
+
+        /*
+         * Unallocated fund top-up — also not rent collected.
+         */
+        Payment::create([
+            'lease_id' => $context['lease']->id,
+            'amount' => 3000,
+            'payment_date' => '2026-08-07',
+            'payment_method' => 'momo',
+        ]);
+
+        $service = app(DashboardService::class);
+
+        $asOfDate = Carbon::parse('2026-08-11');
+
+        $metrics = $service->metrics($asOfDate);
+
+        $this->assertSame(
+            5000,
+            $metrics['rent_collected_this_month']
+        );
+
+        $trend = collect(
+            $service->collectionsTrend($asOfDate)
+        );
+
+        $this->assertSame(
+            5000,
+            $trend->firstWhere('month', '2026-08')['amount']
         );
     }
 

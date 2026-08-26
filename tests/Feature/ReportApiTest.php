@@ -182,7 +182,7 @@ class ReportApiTest extends TestCase
                 6000
             )
             ->assertJsonPath(
-                'summary.outstanding',
+                'summary.total_outstanding',
                 4000
             );
     }

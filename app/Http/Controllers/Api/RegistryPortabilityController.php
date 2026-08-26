@@ -276,11 +276,19 @@ class RegistryPortabilityController extends Controller
         RegistryImportService $import,
         ActivityLogService $activityLog
     ): JsonResponse {
+        /*
+         * V1.0.9: uploads are constrained server-side — a sane size cap
+         * and the two restore formats. "txt" is accepted alongside
+         * "csv" because browsers and the MIME sniffer routinely
+         * identify plain CSV content as text/plain.
+         */
         $validated =
             $request->validate([
                 'file' => [
                     'required',
                     'file',
+                    'max:20480',
+                    'mimes:csv,txt,xlsx',
                 ],
 
                 'entity' => [
@@ -378,10 +386,16 @@ class RegistryPortabilityController extends Controller
         RegistryImportService $import,
         ActivityLogService $activityLog
     ): JsonResponse {
+        /*
+         * V1.0.9: a full restore is always one multi-sheet workbook, so
+         * only .xlsx uploads are meaningful here.
+         */
         $request->validate([
             'file' => [
                 'required',
                 'file',
+                'max:20480',
+                'mimes:xlsx',
             ],
 
             'dry_run' => [

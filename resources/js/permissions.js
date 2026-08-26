@@ -125,6 +125,15 @@ const CAPABILITY_SELECTORS = {
         '[data-delete-party]',
     ],
 
+    /*
+     * All three fixed roles currently carry export_reports, so this is a
+     * forward-looking gate: report export clusters declare the capability
+     * declaratively and hide automatically if a future role loses it.
+     */
+    export_reports: [
+        '[data-requires-capability="export_reports"]',
+    ],
+
     manage_settings: [
         '[data-requires-capability="manage_settings"]',
     ],

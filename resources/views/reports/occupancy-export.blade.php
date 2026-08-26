@@ -53,19 +53,13 @@
         .number {
             text-align: right;
         }
-
-        .generated {
-            margin-top: 12px;
-            font-size: 8px;
-            color: #6b7280;
-        }
     </style>
 </head>
 
 <body>
-    <h1>
-        {{ __('reports.occupancy_report') }}
-    </h1>
+    @include('reports.partials.letterhead', [
+        'title' => __('reports.occupancy_report'),
+    ])
 
     <div class="summary">
         <strong>{{ __('reports.as_of') }}:</strong>
@@ -164,9 +158,6 @@
         </tbody>
     </table>
 
-    <div class="generated">
-        {{ __('reports.generated') }}
-        {{ $generatedAt->format('d-m-Y H:i:s') }}
-    </div>
+    @include('reports.partials.footer')
 </body>
 </html>

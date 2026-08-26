@@ -100,14 +100,14 @@ class ActivityLogClientContextTest extends TestCase
         );
 
         $this->actingAs($user)
-            ->getJson('/api/activity-logs')
+            ->getJson('/api/activity-log')
             ->assertOk()
             ->assertJsonPath('data.0.browser', 'Safari 17')
             ->assertJsonPath('data.0.platform', 'iOS')
             ->assertJsonPath('data.0.device', 'Mobile');
 
         $this->actingAs($user)
-            ->getJson("/api/activity-logs/{$event->id}")
+            ->getJson("/api/activity-log/{$event->id}")
             ->assertOk()
             ->assertJsonPath('browser', 'Safari 17')
             ->assertJsonPath('platform', 'iOS')

@@ -131,6 +131,46 @@ class ApplicationPresentationFormatter
         );
     }
 
+    /**
+     * Format an instant (date and time) according to the active
+     * organisation language.
+     *
+     * Used for generated-at stamps on exports so timestamp presentation
+     * follows the same language-driven convention as business dates.
+     */
+    public function dateTime(
+        DateTimeInterface|string|null $value,
+        ?string $language = null
+    ): string {
+        if ($value === null || $value === '') {
+            return '';
+        }
+
+        $language =
+            strtolower(
+                $language
+                ?? $this->localeService->language()
+            );
+
+        try {
+            $instant =
+                $value instanceof DateTimeInterface
+                    ? CarbonImmutable::instance($value)
+                    : CarbonImmutable::parse(
+                        $value,
+                        config('app.timezone')
+                    );
+        } catch (\Throwable) {
+            return (string) $value;
+        }
+
+        return $instant->format(
+            $language === 'fr'
+                ? 'd-m-Y H:i:s'
+                : 'd/m/Y H:i:s'
+        );
+    }
+
     private function integerValue(
         int|float|string|null $value
     ): int {

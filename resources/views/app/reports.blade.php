@@ -5,7 +5,7 @@
 
 @section('content')
 
-<div class="pm-reports-page mx-auto max-w-[1600px]">
+<div class="pm-reports-page mx-auto max-w-[1600px] text-[var(--pm-text)]">
 
     {{-- ============================================================
          Page Header
@@ -21,7 +21,7 @@
             <p
                 class="
                     text-sm font-medium
-                    text-patrimoine-700
+                    text-[var(--pm-accent)]
                 "
             >
                 <span data-i18n="reports.finance">{{ __('ui.reports.finance') }}</span>
@@ -70,6 +70,7 @@
                 pm-reports-controls
                 pm-card
                 self-start shadow-sm
+                xl:sticky xl:top-[5.75rem]
             "
         >
             <div
@@ -93,14 +94,78 @@
             </div>
 
             {{--
-                Report types read as a single column in the xl sidebar but
-                pair up on small/medium screens where the aside spans the
-                full page width.
+                Below the xl breakpoint the nine full-height type cards are
+                replaced by one compact select so the criteria column stays
+                short before the results. Both controls stay in sync via
+                updateReportTypeUi().
+            --}}
+            <div class="p-3 xl:hidden">
+                <label
+                    for="report-type-select"
+                    class="sr-only"
+                >
+                    <span data-i18n="reports.report_type">{{ __('ui.reports.report_type') }}</span>
+                </label>
+
+                <select
+                    id="report-type-select"
+                    class="pm-input"
+                >
+                    <option
+                        value="managing-organisation"
+                        data-i18n="reports.managing_organisation"
+                    >{{ __('ui.reports.managing_organisation') }}</option>
+
+                    <option
+                        value="owner"
+                        data-i18n="reports.owner_report"
+                    >{{ __('ui.reports.owner_report') }}</option>
+
+                    <option
+                        value="building"
+                        data-i18n="reports.building_report"
+                    >{{ __('ui.reports.building_report') }}</option>
+
+                    <option
+                        value="unit"
+                        data-i18n="reports.unit_report"
+                    >{{ __('ui.reports.unit_report') }}</option>
+
+                    <option
+                        value="tenant"
+                        data-i18n="reports.tenant_statement"
+                    >{{ __('ui.reports.tenant_statement') }}</option>
+
+                    <option
+                        value="payments"
+                        data-i18n="reports.payments"
+                    >{{ __('ui.reports.payments') }}</option>
+
+                    <option
+                        value="occupancy"
+                        data-i18n="reports.occupancy_report"
+                    >{{ __('ui.reports.occupancy_report') }}</option>
+
+                    <option
+                        value="arrears"
+                        data-i18n="reports.arrears_report"
+                    >{{ __('ui.reports.arrears_report') }}</option>
+
+                    <option
+                        value="funds"
+                        data-i18n="reports.funds_report"
+                    >{{ __('ui.reports.funds_report') }}</option>
+                </select>
+            </div>
+
+            {{--
+                Report type cards: a single column in the xl sidebar,
+                hidden below xl where the select above replaces them.
             --}}
             <div
                 class="
-                    grid gap-1 p-3
-                    sm:grid-cols-2
+                    hidden gap-1 p-3
+                    xl:grid
                     xl:grid-cols-1
                 "
             >
@@ -393,12 +458,17 @@
                         id="report-subject-search"
                         type="search"
                         autocomplete="off"
+                        role="combobox"
+                        aria-expanded="false"
+                        aria-autocomplete="list"
+                        aria-controls="report-subject-results"
                         placeholder="{{ __('ui.reports.search_placeholder') }}" data-i18n-placeholder="reports.search_placeholder"
                         class="pm-input"
                     >
 
                     <div
                         id="report-subject-results"
+                        role="listbox"
                         class="
                             absolute z-30 mt-1 hidden
                             max-h-72 w-full
@@ -508,7 +578,7 @@
                             id="payment-report-tenant"
                             class="pm-input"
                         >
-                            <option value="">
+                            <option value="" data-i18n="reports.all_tenants">
                                 {{ __('ui.reports.all_tenants') }}
                             </option>
                         </select>
@@ -528,7 +598,7 @@
                             id="payment-report-lease"
                             class="pm-input"
                         >
-                            <option value="">
+                            <option value="" data-i18n="reports.all_leases">
                                 {{ __('ui.reports.all_leases') }}
                             </option>
                         </select>
@@ -548,7 +618,7 @@
                             id="payment-report-building"
                             class="pm-input"
                         >
-                            <option value="">
+                            <option value="" data-i18n="reports.all_buildings">
                                 {{ __('ui.reports.all_buildings') }}
                             </option>
                         </select>
@@ -568,7 +638,7 @@
                             id="payment-report-unit"
                             class="pm-input"
                         >
-                            <option value="">
+                            <option value="" data-i18n="reports.all_units">
                                 {{ __('ui.reports.all_units') }}
                             </option>
                         </select>
@@ -588,19 +658,19 @@
                             id="payment-report-method"
                             class="pm-input"
                         >
-                            <option value="">
+                            <option value="" data-i18n="reports.all_payment_methods">
                                 {{ __('ui.reports.all_payment_methods') }}
                             </option>
 
-                            <option value="cash">
+                            <option value="cash" data-i18n="reports.payment_method_cash">
                                 {{ __('ui.reports.payment_method_cash') }}
                             </option>
 
-                            <option value="bank_transfer">
+                            <option value="bank_transfer" data-i18n="reports.payment_method_bank">
                                 {{ __('ui.reports.payment_method_bank') }}
                             </option>
 
-                            <option value="momo">
+                            <option value="momo" data-i18n="reports.payment_method_mobile">
                                 {{ __('ui.reports.payment_method_mobile') }}
                             </option>
                         </select>
@@ -691,6 +761,7 @@
                                 type="text"
                                 inputmode="numeric"
                                 placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                data-i18n-placeholder="reports.date_placeholder"
                                 maxlength="10"
                                 autocomplete="off"
                                 data-report-date-input
@@ -701,7 +772,8 @@
                             <button
                                 type="button"
                                 data-report-date-picker="report-from"
-                                aria-label="Select date"
+                                aria-label="{{ __('ui.reports.select_date') }}"
+                                data-i18n-aria-label="reports.select_date"
                                 class="
                                     absolute inset-y-0 right-0
                                     flex w-10 items-center
@@ -759,6 +831,7 @@
                                 type="text"
                                 inputmode="numeric"
                                 placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                data-i18n-placeholder="reports.date_placeholder"
                                 maxlength="10"
                                 autocomplete="off"
                                 data-report-date-input
@@ -769,7 +842,8 @@
                             <button
                                 type="button"
                                 data-report-date-picker="report-to"
-                                aria-label="Select date"
+                                aria-label="{{ __('ui.reports.select_date') }}"
+                                data-i18n-aria-label="reports.select_date"
                                 class="
                                     absolute inset-y-0 right-0
                                     flex w-10 items-center
@@ -851,6 +925,7 @@
                                 type="text"
                                 inputmode="numeric"
                                 placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                data-i18n-placeholder="reports.date_placeholder"
                                 maxlength="10"
                                 autocomplete="off"
                                 data-report-date-input
@@ -861,7 +936,8 @@
                             <button
                                 type="button"
                                 data-report-date-picker="report-as-of"
-                                aria-label="Select date"
+                                aria-label="{{ __('ui.reports.select_date') }}"
+                                data-i18n-aria-label="reports.select_date"
                                 class="
                                     absolute inset-y-0 right-0
                                     flex w-10 items-center
@@ -916,6 +992,17 @@
                 >
                     <span data-i18n="reports.run_report">{{ __('ui.reports.run_report') }}</span>
                 </button>
+
+                <button
+                    id="report-reset-filters"
+                    type="button"
+                    class="
+                        pm-button-secondary
+                        mt-2 w-full
+                    "
+                >
+                    <span data-i18n="reports.reset_filters">{{ __('ui.reports.reset_filters') }}</span>
+                </button>
             </div>
         </aside>
 
@@ -967,14 +1054,20 @@
 
                 <div
                     id="report-export-actions"
+                    data-requires-capability="export_reports"
                     class="
-                        hidden flex-wrap gap-2
+                        hidden flex-wrap
+                        items-center gap-2
+                        max-sm:w-full
                     "
                 >
                     <button
                         id="report-pdf-button"
                         type="button"
-                        class="pm-button-secondary"
+                        class="
+                            pm-button-secondary
+                            min-w-[5rem] max-sm:flex-1
+                        "
                     >
                         <span data-i18n="reports.pdf">{{ __('ui.reports.pdf') }}</span>
                     </button>
@@ -985,6 +1078,7 @@
                         class="
                             pm-button-secondary
                             hidden
+                            min-w-[5rem] max-sm:flex-1
                         "
                     >
                         <span data-i18n="reports.xlsx">
@@ -995,11 +1089,31 @@
                     <button
                         id="report-csv-button"
                         type="button"
-                        class="pm-button-secondary"
+                        class="
+                            pm-button-secondary
+                            min-w-[5rem] max-sm:flex-1
+                        "
                     >
                         <span data-i18n="reports.csv">{{ __('ui.reports.csv') }}</span>
                     </button>
                 </div>
+            </div>
+
+            {{--
+                Stale-results notice: shown by reports.js whenever a report
+                criterion changes after a run, until the report is re-run.
+            --}}
+            <div
+                id="report-stale-notice"
+                class="
+                    hidden border-b
+                    border-[var(--pm-warning-border)]
+                    bg-[var(--pm-warning-background)]
+                    px-4 py-2.5 sm:px-6
+                    text-sm text-[var(--pm-warning-text)]
+                "
+            >
+                <span data-i18n="reports.stale_results">{{ __('ui.reports.stale_results') }}</span>
             </div>
 
             <div
