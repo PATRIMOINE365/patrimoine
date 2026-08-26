@@ -11,7 +11,7 @@ use Illuminate\Support\Carbon;
  * a period of time.
  *
  * Licences are issued and extended by the platform operator (Kality
- * Ltd); Patrimoine V1.1.0 has no self-service purchase flow. A licence
+ * Ltd); Patrimoine V1.0.10 has no self-service purchase flow. A licence
  * with no expiry date is perpetual: the migration grandfathers existing
  * installations this way.
  *

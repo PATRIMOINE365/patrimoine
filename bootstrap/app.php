@@ -36,7 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         /*
-         * V1.1.0 multi-tenancy: once any guard has resolved a user,
+         * V1.0.10 multi-tenancy: once any guard has resolved a user,
          * bind that user's organisation as the tenant for the rest of
          * the request (and refuse suspended organisations). Appending
          * to both web and api groups plus anchoring after the
@@ -86,7 +86,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'document.signed' => AuthenticateSignedDocumentAccess::class,
 
             /*
-             * V1.1.0: plan-dependent feature gating, e.g.
+             * V1.0.10: plan-dependent feature gating, e.g.
              * ->middleware('license:reports').
              */
             'license' => EnsureLicenseFeature::class,

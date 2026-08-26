@@ -16,7 +16,7 @@ use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 /**
- * V1.1.0 multi-tenancy: two organisations must never see, reference or
+ * V1.0.10 multi-tenancy: two organisations must never see, reference or
  * affect each other's data through any layer — query scope, validation,
  * route model binding or numbering.
  */

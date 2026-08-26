@@ -48,8 +48,11 @@
             white-space: pre-wrap;
         }
     </style>
+    @include('documents.partials.base-styles')
 </head>
 <body>
+
+@include('documents.partials.letterhead')
 
 <h1>
     {{ __('documents.adjustment_voucher.title') }}
@@ -144,6 +147,8 @@
         </td>
     </tr>
 </table>
+
+@include('documents.partials.doc-footer')
 
 </body>
 </html>

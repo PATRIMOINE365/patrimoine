@@ -1,168 +1,99 @@
-<!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
-<head>
-    <meta charset="UTF-8">
+@extends('emails.layouts.base')
 
-    <title>
+@php($organisationName = $managingOrganisation?->legal_name ?? $managingOrganisation?->name ?? null)
+
+@section('title', __('emails.transfer_voucher.title'))
+
+@section('preheader')
+    {{ __('emails.transfer_voucher.amount_moved') }}: {{ $formatter->money($debitTransaction->amount) }}
+@endsection
+
+@section('content')
+    <h1 style="margin:0 0 18px 0; font-size:21px; line-height:30px; color:#123527; font-weight:600;">
         {{ __('emails.transfer_voucher.title') }}
-    </title>
-</head>
+    </h1>
 
-<body style="
-    margin:0;
-    padding:0;
-    background:#f5f5f5;
-    font-family:Arial, Helvetica, sans-serif;
-    color:#222222;
-">
-    <table
-        width="100%"
-        cellpadding="0"
-        cellspacing="0"
-        border="0"
-        style="background:#f5f5f5;padding:30px 0;"
-    >
+    <p style="margin:0 0 14px 0;">
+        {{ __('emails.common.dear') }}
+        <strong>
+            {{ $debitTransaction->account->lease->tenant->name
+                ?? $debitTransaction->account->lease->tenant->legal_name }}
+        </strong>,
+    </p>
+
+    <p style="margin:0 0 22px 0;">
+        {{ __('emails.transfer_voucher.intro') }}
+    </p>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-            <td align="center">
-
-                <table
-                    width="620"
-                    cellpadding="0"
-                    cellspacing="0"
-                    border="0"
-                    style="
-                        background:#ffffff;
-                        padding:32px;
-                        border-collapse:collapse;
-                    "
-                >
-                    <tr>
-                        <td>
-                            <div style="
-                                font-size:26px;
-                                font-weight:bold;
-                            ">
-                                {{ $managingOrganisation?->legal_name
-    ?? $managingOrganisation?->name
-    ?? 'Patrimoine' }}
-                            </div>
-
-                            <div style="
-                                color:#666666;
-                                font-size:13px;
-                                margin-bottom:28px;
-                            ">
-                                {{ __('emails.common.property_management') }}
-                            </div>
-
-                            <p>
-                                {{ __('emails.common.dear') }}
-                                <strong>
-                                    {{ $debitTransaction->account->lease->tenant->name
-                                        ?? $debitTransaction->account->lease->tenant->legal_name }}
-                                </strong>,
-                            </p>
-
-                            <p>
-                                {{ __('emails.transfer_voucher.intro') }}
-                            </p>
-
-                            <div style="
-                                text-align:center;
-                                margin:28px 0;
-                                padding:24px;
-                                background:#f7f7f7;
-                            ">
-                                <div style="
-                                    color:#666666;
-                                    font-size:13px;
-                                ">
-                                    {{ __('emails.transfer_voucher.amount_moved') }}
-                                </div>
-
-                                <div style="
-                                    font-size:28px;
-                                    font-weight:bold;
-                                    margin-top:8px;
-                                ">
-                                    {{ $formatter->money($debitTransaction->amount) }}
-                                </div>
-                            </div>
-
-                            <table
-                                width="100%"
-                                cellpadding="6"
-                                cellspacing="0"
-                                border="0"
-                            >
-                                <tr>
-                                    <td>
-                                        {{ __('emails.transfer_voucher.voucher') }}
-                                    </td>
-
-                                    <td align="right">
-                                        {{ $debitTransaction->reference }}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        {{ __('emails.transfer_voucher.transfer_date') }}
-                                    </td>
-
-                                    <td align="right">
-                                        {{ $formatter->date($debitTransaction->transaction_date) }}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        {{ __('emails.transfer_voucher.from_fund') }}
-                                    </td>
-
-                                    <td align="right">
-                                        {{ __(
-                                            'emails.transfer_voucher.fund_'
-                                            . $debitTransaction->account->type
-                                        ) }}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        {{ __('emails.transfer_voucher.to_fund') }}
-                                    </td>
-
-                                    <td align="right">
-                                        {{ __(
-                                            'emails.transfer_voucher.fund_'
-                                            . $creditTransaction->account->type
-                                        ) }}
-                                    </td>
-                                </tr>
-
-                                @if (trim((string) $debitTransaction->notes) !== '')
-                                    <tr>
-                                        <td>
-                                            {{ __('emails.transfer_voucher.reason') }}
-                                        </td>
-
-                                        <td align="right">
-                                            {{ $debitTransaction->notes }}
-                                        </td>
-                                    </tr>
-                                @endif
-                            </table>
-
-                            <p style="margin-top:24px;">
-                                {{ __('emails.transfer_voucher.pdf_attached') }}
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-
+            <td align="center" style="padding:0 0 22px 0;">
+                <div style="display:inline-block; background-color:#f0f5f2; border:1px solid #d4e2da; border-radius:10px; padding:18px 40px;">
+                    <div style="font-size:12px; text-transform:uppercase; letter-spacing:1px; color:#51615a;">
+                        {{ __('emails.transfer_voucher.amount_moved') }}
+                    </div>
+                    <div style="margin-top:6px; font-size:28px; font-weight:700; color:#123527;">
+                        {{ $formatter->money($debitTransaction->amount) }}
+                    </div>
+                </div>
             </td>
         </tr>
     </table>
-</body>
-</html>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px 0;">
+        <tr>
+            <td style="padding:10px 4px; font-size:13px; color:#51615a; border-bottom:1px solid #e3ede7;">
+                {{ __('emails.transfer_voucher.voucher') }}
+            </td>
+            <td align="right" style="padding:10px 4px; color:#1d2a24; border-bottom:1px solid #e3ede7;">
+                {{ $debitTransaction->reference }}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:10px 4px; font-size:13px; color:#51615a; border-bottom:1px solid #e3ede7;">
+                {{ __('emails.transfer_voucher.transfer_date') }}
+            </td>
+            <td align="right" style="padding:10px 4px; color:#1d2a24; border-bottom:1px solid #e3ede7;">
+                {{ $formatter->date($debitTransaction->transaction_date) }}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:10px 4px; font-size:13px; color:#51615a; border-bottom:1px solid #e3ede7;">
+                {{ __('emails.transfer_voucher.from_fund') }}
+            </td>
+            <td align="right" style="padding:10px 4px; color:#1d2a24; border-bottom:1px solid #e3ede7;">
+                {{ __(
+                    'emails.transfer_voucher.fund_'
+                    . $debitTransaction->account->type
+                ) }}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:10px 4px; font-size:13px; color:#51615a; {{ trim((string) $debitTransaction->notes) !== '' ? 'border-bottom:1px solid #e3ede7;' : '' }}">
+                {{ __('emails.transfer_voucher.to_fund') }}
+            </td>
+            <td align="right" style="padding:10px 4px; color:#1d2a24; {{ trim((string) $debitTransaction->notes) !== '' ? 'border-bottom:1px solid #e3ede7;' : '' }}">
+                {{ __(
+                    'emails.transfer_voucher.fund_'
+                    . $creditTransaction->account->type
+                ) }}
+            </td>
+        </tr>
+        @if (trim((string) $debitTransaction->notes) !== '')
+            <tr>
+                <td style="padding:10px 4px; font-size:13px; color:#51615a;">
+                    {{ __('emails.transfer_voucher.reason') }}
+                </td>
+                <td align="right" style="padding:10px 4px; color:#1d2a24;">
+                    {{ $debitTransaction->notes }}
+                </td>
+            </tr>
+        @endif
+    </table>
+
+    <p style="margin:0 0 22px 0; color:#51615a; font-size:13px;">
+        {{ __('emails.transfer_voucher.pdf_attached') }}
+    </p>
+
+    @include('emails.partials.regards')
+@endsection

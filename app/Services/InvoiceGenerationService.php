@@ -556,7 +556,7 @@ class InvoiceGenerationService
      * The database ID remains the true unique identifier. This number is
      * designed for customer-facing documents.
      *
-     * V1.1.0 multi-tenancy: numbering is per organisation. The highest
+     * V1.0.10 multi-tenancy: numbering is per organisation. The highest
      * existing INV- number within the (organisation-scoped) invoices
      * table is read rather than max(id), so every organisation runs its
      * own gap-free INV-000001... series and the composite unique key

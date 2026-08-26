@@ -56,8 +56,10 @@
             white-space: pre-wrap;
         }
     </style>
+    @include('documents.partials.base-styles')
 </head>
 <body>
+
     <div class="organisation">
         <h1>
             {{ $managingOrganisation?->legal_name
@@ -172,5 +174,7 @@
             </td>
         </tr>
     </table>
+@include('documents.partials.doc-footer')
+
 </body>
 </html>

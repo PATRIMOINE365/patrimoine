@@ -1,5 +1,5 @@
 {{--
-    Patrimoine 365 transactional email layout (V1.1.0).
+    Patrimoine 365 transactional email layout (V1.0.10).
 
     Every outbound email renders inside this shell so the product speaks
     with one visual voice: centred 600px card, forest-green masthead,

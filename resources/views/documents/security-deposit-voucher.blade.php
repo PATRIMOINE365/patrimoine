@@ -134,9 +134,11 @@
             text-align: center;
         }
     </style>
+    @include('documents.partials.base-styles')
 </head>
 
 <body>
+
     @php
         $lease = $settlement->lease;
         $tenant = $lease->tenant;

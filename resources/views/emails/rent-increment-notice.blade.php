@@ -1,375 +1,105 @@
-<!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
-<head>
-    <meta charset="UTF-8">
+@extends('emails.layouts.base')
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+@php
+    $increment = $rentIncrement;
+    $lease = $increment->lease;
+    $tenant = $lease->tenant;
+    $unit = $lease->unit;
+    $building = $unit?->building;
 
-    <title>{{ __('emails.rent_increment.title') }}</title>
-</head>
+    $organisationName =
+        $managingOrganisation?->legal_name
+        ?? $managingOrganisation?->name
+        ?? null;
 
-<body
-    style="
-        margin: 0;
-        padding: 0;
-        background-color: #f8fafc;
-        font-family:
-            Arial,
-            Helvetica,
-            sans-serif;
-        color: #0f172a;
-    "
->
-    @php
-        $increment =
-            $rentIncrement;
+    $tenantName =
+        $tenant?->name
+        ?? $tenant?->legal_name
+        ?? __('emails.common.tenant');
 
-        $lease =
-            $increment->lease;
+    $propertyName =
+        collect([
+            $building?->name,
+            $unit?->name,
+        ])
+            ->filter()
+            ->implode(' — ');
+@endphp
 
-        $tenant =
-            $lease->tenant;
+@section('title', __('emails.rent_increment.title'))
 
-        $unit =
-            $lease->unit;
+@section('preheader')
+    {{ __('emails.rent_increment.new_rent') }}: {{ $formatter->money($increment->new_rent_amount) }}
+@endsection
 
-        $building =
-            $unit?->building;
+@section('content')
+    <h1 style="margin:0 0 18px 0; font-size:21px; line-height:30px; color:#123527; font-weight:600;">
+        {{ __('emails.rent_increment.title') }}
+    </h1>
 
-        $organisationName =
-            $managingOrganisation?->legal_name
-            ?? $managingOrganisation?->name
-            ?? 'Patrimoine';
+    <p style="margin:0 0 14px 0;">
+        {{ __('emails.common.dear') }} <strong>{{ $tenantName }}</strong>,
+    </p>
 
-        $tenantName =
-            $tenant?->name
-            ?? $tenant?->legal_name
-            ?? __('emails.common.tenant');
+    <p style="margin:0 0 22px 0;">
+        {{ __('emails.rent_increment.intro_before_property') }}
+        @if($propertyName !== '')
+            {{ __('emails.rent_increment.at') }}
+            <strong>{{ $propertyName }}</strong>
+        @endif
+        {{ __('emails.rent_increment.intro_before_date') }}
+        <strong>{{ $formatter->date($increment->effective_date) }}</strong>.
+    </p>
 
-        $propertyName =
-            collect([
-                $building?->name,
-                $unit?->name,
-            ])
-                ->filter()
-                ->implode(' — ');
-    @endphp
-
-    <table
-        role="presentation"
-        width="100%"
-        cellspacing="0"
-        cellpadding="0"
-        border="0"
-        style="
-            width: 100%;
-            background-color: #f8fafc;
-            padding: 32px 16px;
-        "
-    >
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+           style="margin:0 0 22px 0; background-color:#f6faf8; border:1px solid #dbe7e0; border-radius:10px;">
         <tr>
-            <td align="center">
-
-                <table
-                    role="presentation"
-                    width="620"
-                    cellspacing="0"
-                    cellpadding="0"
-                    border="0"
-                    style="
-                        width: 100%;
-                        max-width: 620px;
-                        background-color: #ffffff;
-                        border: 1px solid #e2e8f0;
-                        border-radius: 12px;
-                    "
-                >
-                    <tr>
-                        <td
-                            style="
-                                padding: 32px;
-                            "
-                        >
-                            <div
-                                style="
-                                    margin-bottom: 24px;
-                                "
-                            >
-                                <div
-                                    style="
-                                        font-size: 13px;
-                                        font-weight: 600;
-                                        color: #475569;
-                                        margin-bottom: 6px;
-                                    "
-                                >
-                                    {{ $organisationName }}
-                                </div>
-
-                                <h1
-                                    style="
-                                        margin: 0;
-                                        font-size: 24px;
-                                        line-height: 1.3;
-                                        color: #0f172a;
-                                    "
-                                >
-                                    {{ __('emails.rent_increment.title') }}
-                                </h1>
-                            </div>
-
-                            <p
-                                style="
-                                    margin:
-                                        0
-                                        0
-                                        18px;
-                                    font-size: 15px;
-                                    line-height: 1.7;
-                                "
-                            >
-                                {{ __('emails.common.dear') }} {{ $tenantName }},
-                            </p>
-
-                            <p
-                                style="
-                                    margin:
-                                        0
-                                        0
-                                        18px;
-                                    font-size: 15px;
-                                    line-height: 1.7;
-                                "
-                            >
-                                {{ __('emails.rent_increment.intro_before_property') }}
-                                @if($propertyName !== '')
-                                    {{ __('emails.rent_increment.at') }}
-                                    <strong>{{ $propertyName }}</strong>
-                                @endif
-                                {{ __('emails.rent_increment.intro_before_date') }}
-                                <strong>
-                                    {{ $formatter->date($increment->effective_date) }}
-                                </strong>.
-                            </p>
-
-                            <table
-                                role="presentation"
-                                width="100%"
-                                cellspacing="0"
-                                cellpadding="0"
-                                border="0"
-                                style="
-                                    width: 100%;
-                                    margin: 24px 0;
-                                    border-collapse: collapse;
-                                "
-                            >
-                                <tr>
-                                    <td
-                                        style="
-                                            width: 50%;
-                                            padding: 14px;
-                                            border: 1px solid #e2e8f0;
-                                            background-color: #f8fafc;
-                                            font-size: 13px;
-                                            color: #64748b;
-                                        "
-                                    >
-                                        {{ __('emails.rent_increment.current_rent') }}
-                                    </td>
-
-                                    <td
-                                        style="
-                                            padding: 14px;
-                                            border: 1px solid #e2e8f0;
-                                            font-size: 14px;
-                                            font-weight: 600;
-                                            text-align: right;
-                                        "
-                                    >
-                                        {{ $formatter->money(
-                                            $increment->old_rent_amount
-                                        ) }}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td
-                                        style="
-                                            padding: 14px;
-                                            border: 1px solid #e2e8f0;
-                                            background-color: #f8fafc;
-                                            font-size: 13px;
-                                            color: #64748b;
-                                        "
-                                    >
-                                        {{ __('emails.rent_increment.increment') }}
-                                    </td>
-
-                                    <td
-                                        style="
-                                            padding: 14px;
-                                            border: 1px solid #e2e8f0;
-                                            font-size: 14px;
-                                            font-weight: 600;
-                                            text-align: right;
-                                        "
-                                    >
-                                        @if(
-                                            $increment->increment_type
-                                            === 'percentage'
-                                        )
-                                            {{ number_format(
-                                                (float) $increment->increment_value,
-                                                2
-                                            ) }}%
-                                        @else
-                                            {{ $formatter->money(
-                                                $increment->increment_value
-                                            ) }}
-                                        @endif
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td
-                                        style="
-                                            padding: 14px;
-                                            border: 1px solid #e2e8f0;
-                                            background-color: #f8fafc;
-                                            font-size: 13px;
-                                            color: #64748b;
-                                        "
-                                    >
-                                        {{ __('emails.rent_increment.new_rent') }}
-                                    </td>
-
-                                    <td
-                                        style="
-                                            padding: 14px;
-                                            border: 1px solid #e2e8f0;
-                                            font-size: 15px;
-                                            font-weight: 700;
-                                            text-align: right;
-                                        "
-                                    >
-                                        {{ $formatter->money(
-                                            $increment->new_rent_amount
-                                        ) }}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td
-                                        style="
-                                            padding: 14px;
-                                            border: 1px solid #e2e8f0;
-                                            background-color: #f8fafc;
-                                            font-size: 13px;
-                                            color: #64748b;
-                                        "
-                                    >
-                                        {{ __('emails.rent_increment.effective_date') }}
-                                    </td>
-
-                                    <td
-                                        style="
-                                            padding: 14px;
-                                            border: 1px solid #e2e8f0;
-                                            font-size: 14px;
-                                            font-weight: 600;
-                                            text-align: right;
-                                        "
-                                    >
-                                        {{ $formatter->date($increment->effective_date) }}
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <p
-                                style="
-                                    margin:
-                                        0
-                                        0
-                                        18px;
-                                    font-size: 15px;
-                                    line-height: 1.7;
-                                "
-                            >
-                                {{ __('emails.rent_increment.unchanged_until') }}
-                            </p>
-
-                            <p
-                                style="
-                                    margin:
-                                        0
-                                        0
-                                        18px;
-                                    font-size: 15px;
-                                    line-height: 1.7;
-                                "
-                            >
-                                {{ __('emails.rent_increment.contact_before') }}
-                                {{ $organisationName }}
-                                {{ __('emails.rent_increment.contact_after') }}
-                            </p>
-
-                            <p
-                                style="
-                                    margin:
-                                        26px
-                                        0
-                                        0;
-                                    font-size: 15px;
-                                    line-height: 1.7;
-                                "
-                            >
-                                {{ __('emails.common.regards') }},<br>
-
-                                <strong>
-                                    {{ $organisationName }}
-                                </strong>
-                            </p>
-
-                            @if(
-                                $managingOrganisation?->phone
-                                || $managingOrganisation?->email
-                            )
-                                <div
-                                    style="
-                                        margin-top: 28px;
-                                        padding-top: 18px;
-                                        border-top: 1px solid #e2e8f0;
-                                        font-size: 12px;
-                                        line-height: 1.6;
-                                        color: #64748b;
-                                    "
-                                >
-                                    @if($managingOrganisation?->phone)
-                                        {{ $managingOrganisation->phone }}
-                                    @endif
-
-                                    @if(
-                                        $managingOrganisation?->phone
-                                        && $managingOrganisation?->email
-                                    )
-                                        <br>
-                                    @endif
-
-                                    @if($managingOrganisation?->email)
-                                        {{ $managingOrganisation->email }}
-                                    @endif
-                                </div>
-                            @endif
-                        </td>
-                    </tr>
-                </table>
-
+            <td style="padding:12px 18px; font-size:13px; color:#51615a; border-bottom:1px solid #e3ede7;">
+                {{ __('emails.rent_increment.current_rent') }}
+            </td>
+            <td align="right" style="padding:12px 18px; color:#1d2a24; border-bottom:1px solid #e3ede7;">
+                {{ $formatter->money($increment->old_rent_amount) }}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:12px 18px; font-size:13px; color:#51615a; border-bottom:1px solid #e3ede7;">
+                {{ __('emails.rent_increment.increment') }}
+            </td>
+            <td align="right" style="padding:12px 18px; color:#1d2a24; border-bottom:1px solid #e3ede7;">
+                @if($increment->increment_type === 'percentage')
+                    {{ number_format((float) $increment->increment_value, 2) }}%
+                @else
+                    {{ $formatter->money($increment->increment_value) }}
+                @endif
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:12px 18px; font-size:13px; color:#51615a; border-bottom:1px solid #e3ede7;">
+                {{ __('emails.rent_increment.new_rent') }}
+            </td>
+            <td align="right" style="padding:12px 18px; font-weight:700; color:#123527; border-bottom:1px solid #e3ede7;">
+                {{ $formatter->money($increment->new_rent_amount) }}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:12px 18px; font-size:13px; color:#51615a;">
+                {{ __('emails.rent_increment.effective_date') }}
+            </td>
+            <td align="right" style="padding:12px 18px; color:#1d2a24;">
+                {{ $formatter->date($increment->effective_date) }}
             </td>
         </tr>
     </table>
-</body>
-</html>
+
+    <p style="margin:0 0 14px 0;">
+        {{ __('emails.rent_increment.unchanged_until') }}
+    </p>
+
+    <p style="margin:0 0 22px 0;">
+        {{ __('emails.rent_increment.contact_before') }}
+        {{ $organisationName ?? config('legal.product.name') }}
+        {{ __('emails.rent_increment.contact_after') }}
+    </p>
+
+    @include('emails.partials.regards')
+@endsection

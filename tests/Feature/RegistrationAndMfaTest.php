@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 /**
- * V1.1.0 public signup, email verification and MFA sign-in.
+ * V1.0.10 public signup, email verification and MFA sign-in.
  */
 class RegistrationAndMfaTest extends TestCase
 {

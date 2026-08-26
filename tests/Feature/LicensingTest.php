@@ -14,7 +14,7 @@ use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 /**
- * V1.1.0 licensing: plan resolution, limit enforcement and feature
+ * V1.0.10 licensing: plan resolution, limit enforcement and feature
  * gating.
  *
  * The default test organisation has no trial and no licence, so it sits

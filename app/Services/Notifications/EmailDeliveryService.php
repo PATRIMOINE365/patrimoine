@@ -119,7 +119,7 @@ class EmailDeliveryService
             );
 
             /*
-             * V1.1.0 licensing: every delivered product email counts
+             * V1.0.10 licensing: every delivered product email counts
              * against the monthly allowance.
              */
             $this->licensing->registerEmail(
@@ -193,7 +193,7 @@ class EmailDeliveryService
             );
 
             /*
-             * V1.1.0 licensing: every delivered product email counts
+             * V1.0.10 licensing: every delivered product email counts
              * against the monthly allowance.
              */
             $this->licensing->registerEmail(
@@ -258,7 +258,7 @@ class EmailDeliveryService
             );
 
             /*
-             * V1.1.0 licensing: every delivered product email counts
+             * V1.0.10 licensing: every delivered product email counts
              * against the monthly allowance.
              */
             $this->licensing->registerEmail(
@@ -340,7 +340,7 @@ class EmailDeliveryService
             );
 
             /*
-             * V1.1.0 licensing: every delivered product email counts
+             * V1.0.10 licensing: every delivered product email counts
              * against the monthly allowance.
              */
             $this->licensing->registerEmail(
@@ -396,7 +396,7 @@ class EmailDeliveryService
             );
 
             /*
-             * V1.1.0 licensing: every delivered product email counts
+             * V1.0.10 licensing: every delivered product email counts
              * against the monthly allowance.
              */
             $this->licensing->registerEmail(
@@ -462,7 +462,7 @@ class EmailDeliveryService
             );
 
             /*
-             * V1.1.0 licensing: every delivered product email counts
+             * V1.0.10 licensing: every delivered product email counts
              * against the monthly allowance.
              */
             $this->licensing->registerEmail(
@@ -518,7 +518,7 @@ class EmailDeliveryService
             );
 
             /*
-             * V1.1.0 licensing: every delivered product email counts
+             * V1.0.10 licensing: every delivered product email counts
              * against the monthly allowance.
              */
             $this->licensing->registerEmail(

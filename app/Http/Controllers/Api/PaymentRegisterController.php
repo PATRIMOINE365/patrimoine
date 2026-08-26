@@ -152,7 +152,7 @@ class PaymentRegisterController extends Controller
             'payments as payments'
         )
             /*
-             * V1.1.0 multi-tenancy: raw register queries bypass the
+             * V1.0.10 multi-tenancy: raw register queries bypass the
              * Eloquent organisation scope, so the tenant constraint is
              * applied explicitly here.
              */
@@ -266,7 +266,7 @@ class PaymentRegisterController extends Controller
             'owner_transactions as owner_transactions'
         )
             /*
-             * V1.1.0 multi-tenancy: raw register queries bypass the
+             * V1.0.10 multi-tenancy: raw register queries bypass the
              * Eloquent organisation scope, so the tenant constraint is
              * applied explicitly here.
              */

@@ -30,7 +30,7 @@ class GenerateDueInvoices extends Command
     /**
      * Execute the automated billing run.
      *
-     * V1.1.0 multi-tenancy: billing runs once per active organisation
+     * V1.0.10 multi-tenancy: billing runs once per active organisation
      * with that organisation's context bound, so invoice queries,
      * numbering and created rows all stay inside one tenant.
      */

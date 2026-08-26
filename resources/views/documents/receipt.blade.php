@@ -128,6 +128,7 @@
             color: #777;
         }
     </style>
+    @include('documents.partials.base-styles')
 </head>
 
 <body>

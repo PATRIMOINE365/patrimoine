@@ -17,7 +17,7 @@ abstract class TestCase extends BaseTestCase
     protected ?Organisation $testOrganisation = null;
 
     /**
-     * V1.1.0 multi-tenancy: the entire pre-existing suite exercises ONE
+     * V1.0.10 multi-tenancy: the entire pre-existing suite exercises ONE
      * organisation, exactly as production did before multi-tenancy.
      *
      * Database-backed tests therefore start with a default organisation

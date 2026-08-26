@@ -90,7 +90,7 @@ class PartyController extends Controller
         \App\Services\LicensingService $licensing
     ): JsonResponse {
         /*
-         * V1.1.0 licensing: the parties cap is an anti-abuse ceiling.
+         * V1.0.10 licensing: the parties cap is an anti-abuse ceiling.
          * Existing parties are never affected — only new creation.
          */
         $licensing->assertCanCreateParty();

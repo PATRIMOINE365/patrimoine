@@ -56,8 +56,10 @@
             white-space: pre-wrap;
         }
     </style>
+    @include('documents.partials.base-styles')
 </head>
 <body>
+
 
 @php
     $sourceAccount = $debitTransaction->account;
@@ -181,6 +183,8 @@
         </td>
     </tr>
 </table>
+
+@include('documents.partials.doc-footer')
 
 </body>
 </html>

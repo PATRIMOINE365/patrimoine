@@ -39,7 +39,7 @@ class TenantFundUiTestSeeder extends Seeder
     public function run(): void
     {
         /*
-         * V1.1.0 multi-tenancy: demo data belongs to a demo
+         * V1.0.10 multi-tenancy: demo data belongs to a demo
          * organisation; every row created below is stamped through
          * the bound organisation context.
          */

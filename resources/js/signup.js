@@ -1,6 +1,6 @@
 /*
 |--------------------------------------------------------------------------
-| Patrimoine Public Signup & Email Verification (V1.1.0)
+| Patrimoine Public Signup & Email Verification (V1.0.10)
 |--------------------------------------------------------------------------
 |
 | Multi-tenant self-service registration:

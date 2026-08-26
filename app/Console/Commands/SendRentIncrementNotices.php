@@ -49,7 +49,7 @@ class SendRentIncrementNotices extends Command
     /**
      * Execute the rent-increment notification run.
      *
-     * V1.1.0 multi-tenancy: notices are sent once per active
+     * V1.0.10 multi-tenancy: notices are sent once per active
      * organisation with that organisation's context and language bound.
      */
     public function handle(
@@ -83,7 +83,7 @@ class SendRentIncrementNotices extends Command
         $licensing = app(\App\Services\LicensingService::class);
 
         /*
-         * V1.1.0 licensing: automated notices are a Professional
+         * V1.0.10 licensing: automated notices are a Professional
          * feature, and the monthly email allowance is a hard cap.
          * Skipped mail is NOT queued for later; unsent notices remain
          * eligible for a future run.

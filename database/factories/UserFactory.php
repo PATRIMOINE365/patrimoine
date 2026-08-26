@@ -27,7 +27,7 @@ class UserFactory extends Factory
     {
         return [
             /*
-             * V1.1.0 multi-tenancy: users always belong to an
+             * V1.0.10 multi-tenancy: users always belong to an
              * organisation. Tests overwhelmingly exercise ONE
              * organisation, so every factory user joins the first
              * existing organisation by default; isolation tests create

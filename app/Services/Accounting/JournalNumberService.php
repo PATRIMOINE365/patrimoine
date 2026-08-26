@@ -25,7 +25,7 @@ class JournalNumberService
          * insertOrIgnore handles the first posting of a new year without
          * requiring application-level existence checks.
          *
-         * V1.1.0 multi-tenancy: each organisation runs its own annual
+         * V1.0.10 multi-tenancy: each organisation runs its own annual
          * sequence — the raw insert stamps the bound organisation and
          * the JournalSequence read below is organisation-scoped.
          */

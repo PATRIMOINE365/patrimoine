@@ -26,7 +26,7 @@ class OpeningBalanceCutoverCommand extends Command
         OpeningBalanceCutoverService $cutover
     ): int {
         /*
-         * V1.1.0 multi-tenancy: the opening-balance suite operates
+         * V1.0.10 multi-tenancy: the opening-balance suite operates
          * on exactly one organisation's books.
          */
         $organisation = $this->resolveOrganisationOrFail();

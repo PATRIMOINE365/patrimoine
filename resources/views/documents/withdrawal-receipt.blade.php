@@ -44,8 +44,11 @@
             margin-bottom: 18px;
         }
     </style>
+    @include('documents.partials.base-styles')
 </head>
 <body>
+
+@include('documents.partials.letterhead')
 
 <h1>
     {{ __('documents.withdrawal_receipt.title') }}
@@ -137,6 +140,8 @@
         <td>{{ $receipt->performed_by_name }}</td>
     </tr>
 </table>
+
+@include('documents.partials.doc-footer')
 
 </body>
 </html>

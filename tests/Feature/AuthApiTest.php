@@ -17,7 +17,7 @@ class AuthApiTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * V1.1.0: signing in is a two-step exchange. A correct password
+     * V1.0.10: signing in is a two-step exchange. A correct password
      * opens an MFA challenge and emails a six-digit code; only the
      * challenge token + code produce an API token.
      */

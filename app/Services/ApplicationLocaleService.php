@@ -195,7 +195,7 @@ class ApplicationLocaleService
         }
 
         /*
-         * V1.1.0 multi-tenancy: presentation settings belong to one
+         * V1.0.10 multi-tenancy: presentation settings belong to one
          * organisation. Without a bound organisation context (public
          * pages, sign-in) there is no organisation whose preference
          * could legitimately apply, so the platform default is used

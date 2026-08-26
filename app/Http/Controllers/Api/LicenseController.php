@@ -12,7 +12,7 @@ use Illuminate\Http\JsonResponse;
  *
  * Read-only: licences are issued and extended by the platform operator
  * (a future administration console); no self-service purchase exists in
- * V1.1.0.
+ * V1.0.10.
  */
 class LicenseController extends Controller
 {

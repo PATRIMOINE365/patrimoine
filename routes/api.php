@@ -84,7 +84,7 @@ Route::get(
 
 /*
 |--------------------------------------------------------------------------
-| Public Signup (V1.1.0)
+| Public Signup (V1.0.10)
 |--------------------------------------------------------------------------
 |
 | Multi-tenant self-service registration replaces the retired one-time
@@ -121,7 +121,7 @@ Route::post(
 )->middleware('throttle:5,1');
 
 /*
- * V1.1.0: second factor of every sign-in. Verification is more
+ * V1.0.10: second factor of every sign-in. Verification is more
  * generously throttled than login because each attempt already costs a
  * challenge attempt; resend is tight because each call sends mail.
  */
@@ -186,7 +186,7 @@ Route::middleware('auth:sanctum')->group(
         );
 
         /*
-         * V1.1.0: the organisation's plan, usage and the plan matrix.
+         * V1.0.10: the organisation's plan, usage and the plan matrix.
          * Readable by every authenticated role; the licence page uses it.
          */
         Route::get(

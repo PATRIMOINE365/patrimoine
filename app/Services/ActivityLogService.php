@@ -81,7 +81,7 @@ class ActivityLogService
 
         return ActivityLog::create([
             /*
-             * V1.1.0 multi-tenancy: events performed by (or against) a
+             * V1.0.10 multi-tenancy: events performed by (or against) a
              * known user always belong to that user's organisation, even
              * when recorded before authentication completes (login and
              * MFA run with no bound organisation context). Truly

@@ -8,7 +8,7 @@ use Closure;
 /**
  * Holds the organisation the current unit of work belongs to.
  *
- * Patrimoine V1.1.0 is multi-tenant: every business row carries an
+ * Patrimoine V1.0.10 is multi-tenant: every business row carries an
  * organisation_id and every query is constrained to exactly one
  * organisation. This class is the single authority on WHICH organisation
  * that is.

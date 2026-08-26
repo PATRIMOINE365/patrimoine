@@ -72,7 +72,7 @@ class ActivityLog extends Model
     /**
      * Activity Log rows are immutable after creation.
      *
-     * V1.1.0 multi-tenancy: unlike other business tables, an activity
+     * V1.0.10 multi-tenancy: unlike other business tables, an activity
      * event MAY belong to no organisation (a failed sign-in against an
      * unknown email address is a platform-level fact). The organisation
      * scope still applies to every read while a context is bound, and

@@ -119,7 +119,7 @@ class AuthController extends Controller
          */
         if ($user->email_verified_at === null) {
             /*
-             * V1.1.0: a self-registered administrator still holding a
+             * V1.0.10: a self-registered administrator still holding a
              * verification token must verify their address; an invited
              * user must complete the invitation workflow instead.
              */
@@ -146,7 +146,7 @@ class AuthController extends Controller
         }
 
         /*
-         * V1.1.0 multi-tenancy: a suspended organisation refuses
+         * V1.0.10 multi-tenancy: a suspended organisation refuses
          * sign-in outright.
          */
         $organisation = $user->organisation;
@@ -168,7 +168,7 @@ class AuthController extends Controller
         }
 
         /*
-         * V1.1.0: a correct password no longer signs the user in. Every
+         * V1.0.10: a correct password no longer signs the user in. Every
          * sign-in requires a six-digit code emailed to the account; the
          * browser exchanges the challenge token plus code for the API
          * token at /auth/mfa/verify.

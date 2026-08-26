@@ -30,7 +30,7 @@ class SendRentReminders extends Command
     /**
      * Execute the reminder run.
      *
-     * V1.1.0 multi-tenancy: reminders run once per active organisation
+     * V1.0.10 multi-tenancy: reminders run once per active organisation
      * with that organisation's context and language bound.
      */
     public function handle(
@@ -60,7 +60,7 @@ class SendRentReminders extends Command
         $licensing = app(\App\Services\LicensingService::class);
 
         /*
-         * V1.1.0 licensing: automated reminders are a Professional
+         * V1.0.10 licensing: automated reminders are a Professional
          * feature, and the monthly email allowance is a hard cap.
          * Skipped mail is NOT queued for later.
          */

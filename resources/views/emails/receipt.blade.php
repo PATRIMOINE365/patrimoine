@@ -1,197 +1,90 @@
-<!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
-<head>
-    <meta charset="UTF-8">
+@extends('emails.layouts.base')
 
-    <title>
+@php($organisationName = $managingOrganisation?->legal_name ?? $managingOrganisation?->name ?? null)
+
+@section('title', __('emails.receipt.title'))
+
+@section('preheader')
+    {{ __('emails.receipt.amount_received') }}: {{ $formatter->money($payment->amount) }}
+@endsection
+
+@section('content')
+    <h1 style="margin:0 0 18px 0; font-size:21px; line-height:30px; color:#123527; font-weight:600;">
         {{ __('emails.receipt.title') }}
-    </title>
-</head>
+    </h1>
 
-<body style="
-    margin:0;
-    padding:0;
-    background:#f5f5f5;
-    font-family:Arial, Helvetica, sans-serif;
-    color:#222222;
-">
-    <table
-        width="100%"
-        cellpadding="0"
-        cellspacing="0"
-        border="0"
-        style="background:#f5f5f5;padding:30px 0;"
-    >
+    <p style="margin:0 0 14px 0;">
+        {{ __('emails.common.dear') }}
+        <strong>
+            {{ $payment->lease->tenant->name
+                ?? $payment->lease->tenant->legal_name }}
+        </strong>,
+    </p>
+
+    <p style="margin:0 0 22px 0;">
+        {{ __('emails.receipt.confirm_before_property') }}
+        <strong>
+            {{ $payment->lease->unit->building->name }}
+            /
+            {{ $payment->lease->unit->name }}
+        </strong>.
+    </p>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-            <td align="center">
-
-                <table
-                    width="620"
-                    cellpadding="0"
-                    cellspacing="0"
-                    border="0"
-                    style="
-                        background:#ffffff;
-                        padding:32px;
-                        border-collapse:collapse;
-                    "
-                >
-                    <tr>
-                        <td>
-                            <div style="
-                                font-size:26px;
-                                font-weight:bold;
-                            ">
-                                {{ $managingOrganisation?->legal_name
-    ?? $managingOrganisation?->name
-    ?? 'Patrimoine' }}
-                            </div>
-
-                            <div style="
-                                color:#666666;
-                                font-size:13px;
-                                margin-bottom:28px;
-                            ">
-                                {{ __('emails.common.property_management') }}
-                            </div>
-
-                            <p>
-                                {{ __('emails.common.dear') }}
-                                <strong>
-                                    {{ $payment->lease->tenant->name
-                                        ?? $payment->lease->tenant->legal_name }}
-                                </strong>,
-                            </p>
-
-                            <p>
-                                {{ __('emails.receipt.confirm_before_property') }}
-                                <strong>
-                                    {{ $payment->lease->unit->building->name }}
-                                    /
-                                    {{ $payment->lease->unit->name }}
-                                </strong>.
-                            </p>
-
-                            <div style="
-                                text-align:center;
-                                margin:28px 0;
-                                padding:24px;
-                                background:#f7f7f7;
-                            ">
-                                <div style="
-                                    color:#666666;
-                                    font-size:13px;
-                                ">
-                                    {{ __('emails.receipt.amount_received') }}
-                                </div>
-
-                                <div style="
-                                    font-size:28px;
-                                    font-weight:bold;
-                                    margin-top:8px;
-                                ">
-                                    {{ $formatter->money($payment->amount) }}
-                                </div>
-                            </div>
-
-                            <table
-                                width="100%"
-                                cellpadding="6"
-                                cellspacing="0"
-                                border="0"
-                            >
-                                <tr>
-                                    <td>
-                                        {{ __('emails.receipt.receipt') }}
-                                    </td>
-
-                                    <td align="right">
-                                        RCT-{{ str_pad(
-                                            $payment->id,
-                                            6,
-                                            '0',
-                                            STR_PAD_LEFT
-                                        ) }}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        {{ __('emails.receipt.payment_date') }}
-                                    </td>
-
-                                    <td align="right">
-                                        {{ $formatter->date($payment->payment_date) }}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        {{ __('emails.receipt.payment_method') }}
-                                    </td>
-
-                                    <td align="right">
-                                        {{ __(
-                                            'emails.payment_methods.'
-                                            . $payment->payment_method
-                                        ) }}
-                                    </td>
-                                </tr>
-
-                                @if($payment->reference)
-                                    <tr>
-                                        <td>
-                                            {{ __('emails.receipt.reference') }}
-                                        </td>
-
-                                        <td align="right">
-                                            {{ $payment->reference }}
-                                        </td>
-                                    </tr>
-                                @endif
-                            </table>
-
-                            <p style="margin-top:24px;">
-                                {{ __('emails.receipt.pdf_attached') }}
-                            </p>
-
-                            <p style="margin-top:28px;">
-                                {{ __('emails.common.regards') }},<br>
-
-<strong>
-    {{ $managingOrganisation?->legal_name
-        ?? $managingOrganisation?->name
-        ?? 'Patrimoine' }}
-</strong>
-
-@if($managingOrganisation)
-    @if($managingOrganisation->phone)
-        <br>
-        {{ $managingOrganisation->phone }}
-    @endif
-
-    @if($managingOrganisation->email)
-        <br>
-        {{ $managingOrganisation->email }}
-    @endif
-@endif
-                            </p>
-
-                            <div style="
-                                margin-top:32px;
-                                padding-top:16px;
-                                border-top:1px solid #dddddd;
-                                color:#888888;
-                                font-size:11px;
-                            ">
-                                {{ __('emails.common.generated_by') }}
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-
+            <td align="center" style="padding:0 0 22px 0;">
+                <div style="display:inline-block; background-color:#f0f5f2; border:1px solid #d4e2da; border-radius:10px; padding:18px 40px;">
+                    <div style="font-size:12px; text-transform:uppercase; letter-spacing:1px; color:#51615a;">
+                        {{ __('emails.receipt.amount_received') }}
+                    </div>
+                    <div style="margin-top:6px; font-size:28px; font-weight:700; color:#123527;">
+                        {{ $formatter->money($payment->amount) }}
+                    </div>
+                </div>
             </td>
         </tr>
     </table>
-</body>
-</html>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px 0;">
+        <tr>
+            <td style="padding:10px 4px; font-size:13px; color:#51615a; border-bottom:1px solid #e3ede7;">
+                {{ __('emails.receipt.receipt') }}
+            </td>
+            <td align="right" style="padding:10px 4px; color:#1d2a24; border-bottom:1px solid #e3ede7;">
+                RCT-{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:10px 4px; font-size:13px; color:#51615a; border-bottom:1px solid #e3ede7;">
+                {{ __('emails.receipt.payment_date') }}
+            </td>
+            <td align="right" style="padding:10px 4px; color:#1d2a24; border-bottom:1px solid #e3ede7;">
+                {{ $formatter->date($payment->payment_date) }}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:10px 4px; font-size:13px; color:#51615a; {{ $payment->reference ? 'border-bottom:1px solid #e3ede7;' : '' }}">
+                {{ __('emails.receipt.payment_method') }}
+            </td>
+            <td align="right" style="padding:10px 4px; color:#1d2a24; {{ $payment->reference ? 'border-bottom:1px solid #e3ede7;' : '' }}">
+                {{ __('emails.payment_methods.'.$payment->payment_method) }}
+            </td>
+        </tr>
+        @if($payment->reference)
+            <tr>
+                <td style="padding:10px 4px; font-size:13px; color:#51615a;">
+                    {{ __('emails.receipt.reference') }}
+                </td>
+                <td align="right" style="padding:10px 4px; color:#1d2a24;">
+                    {{ $payment->reference }}
+                </td>
+            </tr>
+        @endif
+    </table>
+
+    <p style="margin:0 0 22px 0; color:#51615a; font-size:13px;">
+        {{ __('emails.receipt.pdf_attached') }}
+    </p>
+
+    @include('emails.partials.regards')
+@endsection

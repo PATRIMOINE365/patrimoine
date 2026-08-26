@@ -141,7 +141,7 @@ export async function initializeLogin() {
     }
 
     /*
-     * V1.1.0: signing in is a two-step exchange inside one box.
+     * V1.0.10: signing in is a two-step exchange inside one box.
      *
      * Step 1 posts email + password; a correct pair opens an MFA
      * challenge and the server emails a six-digit code. Step 2 posts

@@ -128,7 +128,7 @@ class UserController extends Controller
         $validated = $request->validated();
 
         /*
-         * V1.1.0 licensing: the plan bounds ACTIVE internal users.
+         * V1.0.10 licensing: the plan bounds ACTIVE internal users.
          */
         if ($validated['is_active'] ?? true) {
             $licensing->assertCanAddUser();

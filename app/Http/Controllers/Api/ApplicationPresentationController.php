@@ -28,7 +28,7 @@ class ApplicationPresentationController extends Controller
         ApplicationIdentityService $identity
     ): JsonResponse {
         /*
-         * V1.1.0 multi-tenancy: the route stays public so the sign-in
+         * V1.0.10 multi-tenancy: the route stays public so the sign-in
          * screen can render, but when a bearer token accompanies the
          * request the caller receives THEIR organisation presentation
          * settings rather than platform defaults. Resolving the sanctum

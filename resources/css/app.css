@@ -7348,7 +7348,7 @@ html[data-theme="light"]
 /* END PHASE 6 LEASE FINANCIAL HISTORY THEME */
 
 /* ==========================================================================
-   V1.1.0 LEGAL DOCUMENT PAGES (/terms, /privacy)
+   V1.0.10 LEGAL DOCUMENT PAGES (/terms, /privacy)
    Simple readable typography on the shared token palette.
    ========================================================================== */
 
@@ -7404,4 +7404,4 @@ html[data-theme="light"]
     color: var(--pm-text);
 }
 
-/* END V1.1.0 LEGAL DOCUMENT PAGES */
+/* END V1.0.10 LEGAL DOCUMENT PAGES */

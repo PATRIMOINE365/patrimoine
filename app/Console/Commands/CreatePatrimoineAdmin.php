@@ -49,7 +49,7 @@ class CreatePatrimoineAdmin extends Command
     public function handle(): int
     {
         /*
-         * V1.1.0 multi-tenancy: an administrator account always belongs
+         * V1.0.10 multi-tenancy: an administrator account always belongs
          * to one organisation.
          */
         $organisation = $this->resolveOrganisationOrFail();

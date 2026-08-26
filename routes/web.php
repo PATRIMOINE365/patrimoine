@@ -21,7 +21,7 @@ Route::get(
 );
 
 /*
- * V1.1.0: the one-time setup wizard is retired; multi-tenant signup
+ * V1.0.10: the one-time setup wizard is retired; multi-tenant signup
  * provisions new organisations. The old path forwards politely.
  */
 Route::redirect('/setup', '/signup');
@@ -135,7 +135,7 @@ Route::view(
 )->name('help');
 
 /*
- * V1.1.0: licence & plan page for the authenticated organisation.
+ * V1.0.10: licence & plan page for the authenticated organisation.
  */
 Route::view(
     '/license',

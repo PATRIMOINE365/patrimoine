@@ -6,7 +6,7 @@
 @section('content')
 
 {{--
-    V1.1.0 licence & plan page.
+    V1.0.10 licence & plan page.
 
     Static shell only: the current plan card, usage meters and the plan
     comparison table are rendered by resources/js/license.js from

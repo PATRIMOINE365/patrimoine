@@ -1,6 +1,6 @@
 /*
 |--------------------------------------------------------------------------
-| Patrimoine Licence & Plan Page (V1.1.0)
+| Patrimoine Licence & Plan Page (V1.0.10)
 |--------------------------------------------------------------------------
 |
 | Renders the organisation's current plan, usage meters and the plan

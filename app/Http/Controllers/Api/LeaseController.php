@@ -260,7 +260,7 @@ class LeaseController extends Controller
             $request->validated();
 
         /*
-         * V1.1.0 licensing: active leases are the licensing metric. A
+         * V1.0.10 licensing: active leases are the licensing metric. A
          * draft costs nothing; creating a lease that starts life active
          * (or in notice) consumes quota.
          */
@@ -642,7 +642,7 @@ class LeaseController extends Controller
             $request->validated();
 
         /*
-         * V1.1.0 licensing: activating a lease that was not previously
+         * V1.0.10 licensing: activating a lease that was not previously
          * counted (draft or terminated) consumes active-lease quota.
          */
         if (

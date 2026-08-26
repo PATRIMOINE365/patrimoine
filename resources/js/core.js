@@ -383,7 +383,7 @@ export async function loadPresentationConfiguration() {
     }
 
     /*
-     * V1.1.0 multi-tenancy: with a stored token the server answers with
+     * V1.0.10 multi-tenancy: with a stored token the server answers with
      * the signed-in organisation presentation settings; without one the
      * platform defaults keep the public screens working.
      */

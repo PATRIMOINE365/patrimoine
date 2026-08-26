@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * V1.1.0 multi-tenancy foundation.
+ * V1.0.10 multi-tenancy foundation.
  *
  * Introduces organisations, licensing and MFA storage, then stamps
  * every business table with a NOT NULL organisation_id foreign key.
@@ -223,7 +223,7 @@ return new class extends Migration
                 'plan' => 'professional',
                 'starts_on' => $now->toDateString(),
                 'expires_on' => null,
-                'notes' => 'Founding installation, grandfathered at V1.1.0.',
+                'notes' => 'Founding installation, grandfathered at V1.0.10.',
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);

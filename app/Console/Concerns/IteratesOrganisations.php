@@ -12,7 +12,7 @@ use Throwable;
  * Runs a console workload once per active organisation, with the
  * organisation context bound for the duration of each run.
  *
- * V1.1.0 multi-tenancy: scheduled jobs (billing, reminders, notices,
+ * V1.0.10 multi-tenancy: scheduled jobs (billing, reminders, notices,
  * increments) are platform-wide crons but tenant-scoped workloads. The
  * binding guarantees every query and every created row inside the
  * callback belongs to exactly one organisation, and each organisation's

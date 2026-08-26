@@ -41,7 +41,7 @@ class ApplyDueRentIncrements extends Command
     /**
      * Execute the automatic rent-increment application run.
      *
-     * V1.1.0 multi-tenancy: increments are applied once per active
+     * V1.0.10 multi-tenancy: increments are applied once per active
      * organisation with that organisation's context bound.
      */
     public function handle(

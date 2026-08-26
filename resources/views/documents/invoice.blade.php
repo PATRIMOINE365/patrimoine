@@ -141,6 +141,7 @@
             line-height: 1.2;
         }
     </style>
+    @include('documents.partials.base-styles')
 </head>
 
 <body>
