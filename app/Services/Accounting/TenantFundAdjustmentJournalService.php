@@ -165,7 +165,9 @@ final class TenantFundAdjustmentJournalService
 
                 'transaction_type' => AccountingEventMap::EVENT_ADJUSTMENT,
 
-                'description' => 'Tenant fund balance adjustment.',
+                'description' => __(
+                    'financial_journal.descriptions.tenant_fund_adjustment'
+                ),
 
                 'source_type' => TenantFundTransaction::class,
 

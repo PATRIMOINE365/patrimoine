@@ -14,6 +14,11 @@
 
     <link
         rel="icon"
+        sizes="48x48"
+        href="/favicon.ico"
+    >
+    <link
+        rel="icon"
         type="image/png"
         sizes="32x32"
         href="/branding/favicon/favicon-32.png"

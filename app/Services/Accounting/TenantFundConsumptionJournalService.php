@@ -258,10 +258,10 @@ class TenantFundConsumptionJournalService
         TenantFundAccount $account,
         Invoice $invoice
     ): string {
-        $label =
+        $key =
             $account->type === 'rent_reserve'
-                ? 'Rent Reserve consumption'
-                : 'Consumable Advance consumption';
+                ? 'rent_reserve_consumption'
+                : 'consumable_advance_consumption';
 
         $invoiceIdentity =
             is_string($invoice->invoice_number)
@@ -269,9 +269,9 @@ class TenantFundConsumptionJournalService
                 ? trim($invoice->invoice_number)
                 : '#'.$invoice->getKey();
 
-        return
-            $label
-            .' for rent invoice '
-            .$invoiceIdentity;
+        return __(
+            'financial_journal.descriptions.'.$key,
+            ['reference' => $invoiceIdentity]
+        );
     }
 }

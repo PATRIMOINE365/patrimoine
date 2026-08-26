@@ -108,10 +108,12 @@ class JournalReversalService
                     'transaction_type' =>
                         'journal_reversal',
 
-                    'description' => sprintf(
-                        'Reversal of %s: %s',
-                        $original->journal_number,
-                        $reason
+                    'description' => __(
+                        'financial_journal.descriptions.reversal',
+                        [
+                            'number' => $original->journal_number,
+                            'reason' => $reason,
+                        ]
                     ),
 
                     'source_type' =>

@@ -316,19 +316,19 @@ class TenantFundFundingJournalService
         string $fundType,
         Payment $payment
     ): string {
-        $label =
+        $key =
             match ($fundType) {
                 'rent_reserve' =>
-                    'Rent Reserve funding',
+                    'rent_reserve_funding',
 
                 'consumable_advance' =>
-                    'Consumable Advance funding',
+                    'consumable_advance_funding',
 
                 'security_deposit' =>
-                    'Security Deposit funding',
+                    'security_deposit_funding',
 
                 default =>
-                    'Tenant fund funding',
+                    'tenant_fund_funding',
             };
 
         $reference =
@@ -339,9 +339,13 @@ class TenantFundFundingJournalService
                 )
             );
 
-        return
-            $reference !== ''
-                ? $label.' '.$reference
-                : $label.' #'.$payment->id;
+        return __(
+            'financial_journal.descriptions.'.$key,
+            [
+                'reference' => $reference !== ''
+                    ? $reference
+                    : '#'.$payment->id,
+            ]
+        );
     }
 }

@@ -140,7 +140,9 @@ final class TenantFundTransferJournalService
 
                 'transaction_type' => AccountingEventMap::EVENT_TENANT_FUND_TRANSFER,
 
-                'description' => 'Tenant fund transfer.',
+                'description' => __(
+                    'financial_journal.descriptions.tenant_fund_transfer'
+                ),
 
                 'source_type' => TenantFundTransaction::class,
 

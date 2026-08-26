@@ -118,7 +118,9 @@ final class OwnerAdjustmentJournalService
 
                 'transaction_type' => AccountingEventMap::EVENT_ADJUSTMENT,
 
-                'description' => 'Owner Account balance adjustment.',
+                'description' => __(
+                    'financial_journal.descriptions.owner_adjustment'
+                ),
 
                 'source_type' => OwnerTransaction::class,
 

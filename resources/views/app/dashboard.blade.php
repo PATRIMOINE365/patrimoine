@@ -207,7 +207,7 @@
             </div>
         </div>
 
-        <div class="pm-card p-5">
+        <div class="pm-card flex h-full flex-col p-5">
             <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.rent_overdue">
                     {{ __('ui.dashboard.rent_overdue') }}
@@ -217,7 +217,7 @@
             <div
                 id="metric-rent-overdue"
                 class="
-                    mt-3 text-2xl font-semibold
+                    mt-auto pt-3 text-2xl font-semibold
                     tracking-tight
                     text-[var(--pm-danger-text)]
                 "
@@ -226,7 +226,7 @@
             </div>
         </div>
 
-        <div class="pm-card p-5">
+        <div class="pm-card flex h-full flex-col p-5">
             <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.rent_due">
                     {{ __('ui.dashboard.rent_due') }}
@@ -236,7 +236,7 @@
             <div
                 id="metric-rent-due"
                 class="
-                    mt-3 text-2xl font-semibold
+                    mt-auto pt-3 text-2xl font-semibold
                     tracking-tight text-[var(--pm-text)]
                 "
             >
@@ -244,7 +244,7 @@
             </div>
         </div>
 
-        <div class="pm-card p-5">
+        <div class="pm-card flex h-full flex-col p-5">
             <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.collected_this_month">
                     {{ __('ui.dashboard.collected_this_month') }}
@@ -254,7 +254,7 @@
             <div
                 id="metric-collected"
                 class="
-                    mt-3 text-2xl font-semibold
+                    mt-auto pt-3 text-2xl font-semibold
                     tracking-tight
                     text-[var(--pm-success-text)]
                 "
@@ -263,7 +263,7 @@
             </div>
         </div>
 
-        <div class="pm-card p-5">
+        <div class="pm-card flex h-full flex-col p-5">
             <div class="text-sm text-[var(--pm-text-muted)]">
                 <span data-i18n="dashboard.management_fees_this_month">
                     {{ __('ui.dashboard.management_fees_this_month') }}
@@ -273,7 +273,7 @@
             <div
                 id="metric-management-fees"
                 class="
-                    mt-3 text-2xl font-semibold
+                    mt-auto pt-3 text-2xl font-semibold
                     tracking-tight text-[var(--pm-text)]
                 "
             >

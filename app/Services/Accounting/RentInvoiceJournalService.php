@@ -71,8 +71,10 @@ class RentInvoiceJournalService
                 'transaction_type' =>
                     self::TRANSACTION_TYPE,
 
-                'description' =>
-                    'Rent invoice '.$invoice->invoice_number,
+                'description' => __(
+                    'financial_journal.descriptions.rent_invoice',
+                    ['reference' => $invoice->invoice_number]
+                ),
 
                 'source_type' =>
                     Invoice::class,

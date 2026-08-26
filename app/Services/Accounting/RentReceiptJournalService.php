@@ -128,9 +128,10 @@ class RentReceiptJournalService
                 'transaction_type' =>
                     self::TRANSACTION_TYPE,
 
-                'description' =>
-                    'Rent receipt allocation #'
-                    .$allocation->getKey(),
+                'description' => __(
+                    'financial_journal.descriptions.rent_receipt',
+                    ['reference' => $allocation->getKey()]
+                ),
 
                 'source_type' =>
                     PaymentAllocation::class,

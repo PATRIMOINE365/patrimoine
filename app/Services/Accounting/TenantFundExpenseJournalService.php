@@ -101,8 +101,10 @@ class TenantFundExpenseJournalService
 
                 'transaction_type' => AccountingEventMap::EVENT_TENANT_FUND_EXPENSE,
 
-                'description' => 'Tenant fund Withdrawal #'
-                    .$transaction->id,
+                'description' => __(
+                    'financial_journal.descriptions.tenant_fund_withdrawal',
+                    ['reference' => $transaction->id]
+                ),
 
                 'source_type' => TenantFundTransaction::class,
 

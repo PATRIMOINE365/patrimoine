@@ -46,7 +46,36 @@ use RuntimeException;
  */
 class ShowcaseDemoSeeder extends Seeder
 {
-    private const ORGANISATION = 'Akwaba Property Management';
+    /*
+     * Two editions exist, one per language, because journal descriptions
+     * are written in the organisation's language and frozen at posting
+     * time. Set SHOWCASE_NAME / SHOWCASE_LANG / SHOWCASE_CURRENCY to pick.
+     */
+    private function organisationName(): string
+    {
+        return (string) (env('SHOWCASE_NAME') ?: 'Akwaba Property Management');
+    }
+
+    private function language(): string
+    {
+        return env('SHOWCASE_LANG') === 'fr' ? 'fr' : 'en';
+    }
+
+    private function currency(): string
+    {
+        return env('SHOWCASE_CURRENCY') === 'FCFA' ? 'FCFA' : 'GHS';
+    }
+
+    /**
+     * User email addresses are unique across the whole platform, so the
+     * two editions need distinct sign-ins.
+     */
+    private function adminEmail(): string
+    {
+        return $this->language() === 'fr'
+            ? 'ama.mensah.fr@akwaba.example'
+            : 'ama.mensah@akwaba.example';
+    }
 
     private const MARKER = 'SHOWCASE DATASET';
 
@@ -65,7 +94,7 @@ class ShowcaseDemoSeeder extends Seeder
 
     public function run(): void
     {
-        if (Organisation::query()->where('name', self::ORGANISATION)->exists()) {
+        if (Organisation::query()->where('name', $this->organisationName())->exists()) {
             throw new RuntimeException(
                 'The showcase organisation already exists. Refusing to duplicate it.'
             );
@@ -80,13 +109,13 @@ class ShowcaseDemoSeeder extends Seeder
 
         $user = app(RegistrationService::class)->register(
             [
-                'organisation_name' => self::ORGANISATION,
+                'organisation_name' => $this->organisationName(),
                 'given_names' => 'Ama',
                 'surname' => 'Mensah',
-                'email' => 'ama.mensah@akwaba.example',
+                'email' => $this->adminEmail(),
                 'phone' => '+233 24 000 0100',
                 'password' => 'ShowcaseDemo!2026',
-                'language' => 'en',
+                'language' => $this->language(),
             ],
             Request::create('/api/auth/register', 'POST')
         );
@@ -111,9 +140,20 @@ class ShowcaseDemoSeeder extends Seeder
             'notes' => self::MARKER.' — perpetual licence for screenshots.',
         ]);
 
+        /*
+         * Registration always writes GHS; switch the presentation currency
+         * for this edition, and post every journal entry in the
+         * organisation's own language.
+         */
         OrganisationContext::runAs(
             $organisationId,
             function (): void {
+                ApplicationSetting::query()->firstOrFail()->forceFill([
+                    'currency' => $this->currency(),
+                ])->save();
+
+                app()->setLocale($this->language());
+
                 $this->seedScoped();
             }
         );

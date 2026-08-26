@@ -105,11 +105,14 @@ class SecurityDepositSettlementJournalService
                     AccountingEventMap::
                         EVENT_SECURITY_DEPOSIT_APPLIED,
 
-                'description' =>
-                    'Security Deposit applied '
-                    .$this->settlementIdentity(
-                        $settlement
-                    ),
+                'description' => __(
+                    'financial_journal.descriptions.security_deposit_applied',
+                    [
+                        'reference' => $this->settlementIdentity(
+                            $settlement
+                        ),
+                    ]
+                ),
 
                 'source_type' =>
                     TenantFundTransaction::class,
@@ -223,9 +226,10 @@ class SecurityDepositSettlementJournalService
                     AccountingEventMap::
                         EVENT_SECURITY_DEPOSIT_DEBT_INVOICE,
 
-                'description' =>
-                    'Security Deposit debt invoice '
-                    .$invoice->invoice_number,
+                'description' => __(
+                    'financial_journal.descriptions.security_deposit_debt_invoice',
+                    ['reference' => $invoice->invoice_number]
+                ),
 
                 'source_type' =>
                     Invoice::class,
@@ -379,11 +383,14 @@ class SecurityDepositSettlementJournalService
                     AccountingEventMap::
                         EVENT_SECURITY_DEPOSIT_REFUND,
 
-                'description' =>
-                    'Security Deposit refund '
-                    .$this->settlementIdentity(
-                        $settlement
-                    ),
+                'description' => __(
+                    'financial_journal.descriptions.security_deposit_refund',
+                    [
+                        'reference' => $this->settlementIdentity(
+                            $settlement
+                        ),
+                    ]
+                ),
 
                 'source_type' =>
                     TenantFundTransaction::class,

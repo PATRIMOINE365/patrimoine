@@ -93,8 +93,10 @@ class TenantExpenseSettlementJournalService
 
                 'transaction_type' => AccountingEventMap::EVENT_TENANT_EXPENSE_SETTLEMENT,
 
-                'description' => 'Expense Invoice settlement #'
-                    .$transaction->id,
+                'description' => __(
+                    'financial_journal.descriptions.expense_invoice_settlement',
+                    ['reference' => $transaction->id]
+                ),
 
                 'source_type' => TenantFundTransaction::class,
 

@@ -90,8 +90,10 @@ final class OwnerFinancialJournalService
                 'transaction_type' =>
                     AccountingEventMap::EVENT_OWNER_DEPOSIT,
 
-                'description' =>
-                    'Owner Deposit #'.$transaction->id,
+                'description' => __(
+                    'financial_journal.descriptions.owner_deposit',
+                    ['reference' => $transaction->id]
+                ),
 
                 'source_type' =>
                     OwnerTransaction::class,
@@ -191,8 +193,10 @@ final class OwnerFinancialJournalService
                 'transaction_type' =>
                     AccountingEventMap::EVENT_OWNER_PAYOUT,
 
-                'description' =>
-                    'Owner Payout #'.$payout->id,
+                'description' => __(
+                    'financial_journal.descriptions.owner_payout',
+                    ['reference' => $payout->id]
+                ),
 
                 'source_type' =>
                     OwnerPayout::class,
@@ -452,8 +456,10 @@ final class OwnerFinancialJournalService
                     ->toDateString(),
 
             description:
-                'Owner rent entitlement for Payment Allocation #'
-                .$allocation->id,
+                __(
+                    'financial_journal.descriptions.owner_rent_entitlement',
+                    ['reference' => $allocation->id]
+                ),
 
             sourceType:
                 PaymentAllocation::class,
@@ -539,8 +545,10 @@ final class OwnerFinancialJournalService
                     ->toDateString(),
 
             description:
-                'Management Fee for Payment Allocation #'
-                .$sourceAllocationId,
+                __(
+                    'financial_journal.descriptions.management_fee',
+                    ['reference' => $sourceAllocationId]
+                ),
 
             sourceType:
                 PaymentAllocation::class,

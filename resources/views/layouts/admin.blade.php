@@ -10,6 +10,7 @@
 
     <title>@yield('title', 'Administration — Patrimoine 365')</title>
 
+    <link rel="icon" sizes="48x48" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/branding/favicon/favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/branding/favicon/favicon-16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/branding/favicon/apple-touch-icon.png">
