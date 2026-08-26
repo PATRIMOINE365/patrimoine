@@ -167,8 +167,13 @@
                         shadow-2xl
                     "
                 >
+                    {{--
+                        Server-rendered default matches the default paint
+                        (English, light page → dark preview); the module
+                        corrects it for the visitor's language and theme.
+                    --}}
                     <img
-                        src="/branding/auth-preview-en.png"
+                        src="/branding/auth-preview-en-dark.png"
                         data-auth-preview
                         alt="{{ __('ui.login.hero_image_label') }}"
                         class="w-full rounded-xl"

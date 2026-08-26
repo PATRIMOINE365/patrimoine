@@ -35,6 +35,41 @@ import {
 export function initializePublicPresentationControls() {
     initializeThemeToggle();
     initializeLanguageToggle();
+    updateAuthPreview();
+}
+
+/**
+ * Point the welcome panel's product preview at the right edition.
+ *
+ * The language matches what the visitor is reading. The THEME is
+ * deliberately inverted — a light page shows the app in dark mode and a
+ * dark page shows it in light mode — so every visitor sees the theme they
+ * are not currently looking at.
+ */
+function updateAuthPreview() {
+    const images =
+        document.querySelectorAll('[data-auth-preview]');
+
+    if (images.length === 0) {
+        return;
+    }
+
+    const language =
+        getPresentationConfiguration()
+            ?.language
+        === 'fr'
+            ? 'fr'
+            : 'en';
+
+    const shown =
+        document.documentElement.dataset.theme === 'dark'
+            ? 'light'
+            : 'dark';
+
+    images.forEach((image) => {
+        image.src =
+            `/branding/auth-preview-${language}-${shown}.png`;
+    });
 }
 
 function initializeThemeToggle() {
@@ -68,6 +103,12 @@ function initializeThemeToggle() {
                     : 'login.switch_to_dark'
             )
         );
+
+        /*
+         * The preview shows the opposite theme, so it changes whenever
+         * this one does.
+         */
+        updateAuthPreview();
     };
 
     toggle.addEventListener(
@@ -139,17 +180,7 @@ function initializeLanguageToggle() {
                         : 'https://patrimoine365.com/';
             });
 
-        /*
-         * The panel's product preview has an edition per language.
-         */
-        document
-            .querySelectorAll('[data-auth-preview]')
-            .forEach((image) => {
-                image.src =
-                    language === 'fr'
-                        ? '/branding/auth-preview-fr.png'
-                        : '/branding/auth-preview-en.png';
-            });
+        updateAuthPreview();
     };
 
     toggle.addEventListener(

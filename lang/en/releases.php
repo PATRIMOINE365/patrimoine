@@ -19,6 +19,14 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.19',
+            'date' => '2026-08-26',
+            'title' => 'A livelier welcome panel',
+            'changes' => [
+                'The preview on the sign-in and sign-up pages now shows a real workspace in your language, and in the opposite theme to the page — so you can see how Patrimoine 365 looks in the mode you are not using.',
+            ],
+        ],
+        [
             'version' => '1.0.18',
             'date' => '2026-08-26',
             'title' => 'Email polish',

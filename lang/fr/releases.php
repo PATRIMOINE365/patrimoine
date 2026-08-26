@@ -15,6 +15,14 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.19',
+            'date' => '2026-08-26',
+            'title' => 'Un panneau d\'accueil plus vivant',
+            'changes' => [
+                'L\'aperçu des pages de connexion et d\'inscription montre désormais un véritable espace de travail dans votre langue, et dans le thème opposé à celui de la page — de quoi découvrir Patrimoine 365 dans le mode que vous n\'utilisez pas.',
+            ],
+        ],
+        [
             'version' => '1.0.18',
             'date' => '2026-08-26',
             'title' => 'Finition des e-mails',
