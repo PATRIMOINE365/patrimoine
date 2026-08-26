@@ -31,6 +31,10 @@ class License extends Model
         'plan',
         'starts_on',
         'expires_on',
+        'amount',
+        'currency',
+        'payment_method',
+        'payment_reference',
         'notes',
     ];
 
@@ -44,6 +48,8 @@ class License extends Model
         return [
             'starts_on' => 'date',
             'expires_on' => 'date',
+            'amount' => 'integer',
+            'revoked_at' => 'datetime',
         ];
     }
 
@@ -60,6 +66,10 @@ class License extends Model
      */
     public function coversToday(): bool
     {
+        if ($this->revoked_at !== null) {
+            return false;
+        }
+
         $today = Carbon::now();
 
         if ($this->starts_on !== null && $this->starts_on->startOfDay()->gt($today)) {

@@ -179,4 +179,35 @@ return [
         'expiry' => 'This code expires in :minutes minutes and can only be used once.',
         'ignore' => 'If you did not try to sign in, we recommend changing your password immediately.',
     ],
+
+    'plans' => [
+        'free' => 'Free',
+        'standard' => 'Standard',
+        'professional' => 'Professional',
+    ],
+
+    'license_issued' => [
+        'subject' => 'Your Patrimoine 365 plan: :plan',
+        'title' => 'Your plan has been updated',
+        'preheader' => 'Your organisation is now on the :plan plan.',
+        'heading' => 'Your plan has been updated',
+        'greeting' => 'Hello :name,',
+        'introduction' => 'A new licence has been activated for ":organisation". Here is what now applies:',
+        'plan' => 'Plan',
+        'starts_on' => 'Starts',
+        'expires_on' => 'Valid until',
+        'no_expiry' => 'No expiry',
+        'questions' => 'Questions about your plan or invoice?',
+    ],
+
+    'plan_expiry' => [
+        'subject' => 'Your Patrimoine 365 plan ends in :days day(s)',
+        'title' => 'Your plan is ending soon',
+        'heading' => 'Your plan ends in :days day(s)',
+        'greeting' => 'Hello :name,',
+        'introduction_trial' => 'The Professional trial for ":organisation" ends on :date.',
+        'introduction_license' => 'The :plan licence for ":organisation" ends on :date.',
+        'what_changes' => 'Afterwards your organisation continues on the Free plan: all of your data stays exactly as it is, but reports, exports and automated reminders pause, and the Free plan limits apply to creating new records.',
+        'renew' => 'To renew or change plans, contact',
+    ],
 ];

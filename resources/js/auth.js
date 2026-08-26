@@ -602,6 +602,25 @@ export async function initializeAuthenticatedShell() {
         authenticatedShellUser =
             user;
 
+        /*
+         * V1.0.11: platform staff see the administration console entry.
+         * The admin API stays guarded server-side either way.
+         */
+        if (user.is_platform_admin) {
+            document.body.dataset.platformAdmin =
+                'true';
+
+            document
+                .querySelectorAll('[data-platform-admin-only]')
+                .forEach(
+                    (element) => {
+                        element.hidden = false;
+
+                        element.classList.remove('hidden');
+                    }
+                );
+        }
+
         renderCurrentUser(
             user
         );

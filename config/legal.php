@@ -41,6 +41,7 @@ return [
     */
 
     'mailboxes' => [
+        'hello' => 'hello@patrimoine365.com',
         'support' => 'support@patrimoine365.com',
         'privacy' => 'privacy@patrimoine365.com',
         'legal' => 'legal@patrimoine365.com',

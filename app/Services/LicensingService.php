@@ -49,6 +49,24 @@ class LicensingService
             return (string) config('licensing.fallback_plan', 'free');
         }
 
+        return $this->planFor($organisation);
+    }
+
+    /**
+     * The effective plan of an explicit organisation — used by the
+     * platform console, which reads across customers with no bound
+     * organisation context.
+     */
+    public function planFor(Organisation $organisation): string
+    {
+        /*
+         * V1.0.11: the internal platform organisation is not a
+         * customer; its staff must never hit plan walls.
+         */
+        if ($organisation->isPlatform()) {
+            return (string) config('licensing.trial_plan', 'professional');
+        }
+
         $licensed = $organisation
             ->licenses
             ->first(
@@ -64,6 +82,59 @@ class LicensingService
         }
 
         return (string) config('licensing.fallback_plan', 'free');
+    }
+
+    /**
+     * Whether an explicit organisation is on its trial with no
+     * covering licence.
+     */
+    public function onTrialFor(Organisation $organisation): bool
+    {
+        if (! $organisation->onTrial()) {
+            return false;
+        }
+
+        return $organisation
+            ->licenses
+            ->first(
+                fn (License $license): bool => $license->coversToday()
+            ) === null;
+    }
+
+    /**
+     * Usage of an explicit organisation, bypassing the bound context.
+     *
+     * @return array<string, int>
+     */
+    public function usageFor(Organisation $organisation): array
+    {
+        $id = (int) $organisation->id;
+
+        $emailRow = DB::table('organisation_email_counters')
+            ->where('organisation_id', $id)
+            ->where('period', now()->format('Y-m'))
+            ->first();
+
+        return [
+            'users' => User::withoutGlobalScopes()
+                ->where('organisation_id', $id)
+                ->where('is_active', true)
+                ->count(),
+
+            'active_leases' => Lease::withoutGlobalScopes()
+                ->where('organisation_id', $id)
+                ->whereIn('status', self::COUNTED_LEASE_STATUSES)
+                ->count(),
+
+            'parties' => Party::withoutGlobalScopes()
+                ->where('organisation_id', $id)
+                ->count(),
+
+            'emails_this_month' => $emailRow === null
+                ? 0
+                : (int) $emailRow->automated_sent
+                    + (int) $emailRow->transactional_sent,
+        ];
     }
 
     /**

@@ -1,6 +1,12 @@
 <?php
 
 use App\Http\Controllers\Api\ActivityLogController;
+use App\Http\Controllers\Api\Admin\AdminDashboardController;
+use App\Http\Controllers\Api\Admin\AdminLicenseController;
+use App\Http\Controllers\Api\Admin\AdminOrganisationController;
+use App\Http\Controllers\Api\Admin\AdminOrganisationDeletionController;
+use App\Http\Controllers\Api\Admin\AdminOrganisationStatusController;
+use App\Http\Controllers\Api\Admin\AdminSupportController;
 use App\Http\Controllers\Api\ActivityLogExportController;
 use App\Http\Controllers\Api\ApplicationPresentationController;
 use App\Http\Controllers\Api\ArrearsReportController;
@@ -1209,3 +1215,73 @@ Route::middleware('auth:sanctum')->group(
         );
     }
 );
+
+/*
+|--------------------------------------------------------------------------
+| Platform Administration Console (V1.0.11)
+|--------------------------------------------------------------------------
+|
+| Kality Ltd staff only: verified @patrimoine365.com accounts inside
+| the internal platform organisation. Reads span every customer
+| organisation; every mutation is written to both audit trails.
+|
+*/
+
+Route::middleware(['auth:sanctum', 'platform.admin'])
+    ->prefix('admin')
+    ->group(function (): void {
+        Route::get(
+            'dashboard',
+            AdminDashboardController::class
+        );
+
+        Route::get(
+            'organisations',
+            [AdminOrganisationController::class, 'index']
+        );
+
+        Route::get(
+            'organisations/{organisation}',
+            [AdminOrganisationController::class, 'show']
+        );
+
+        Route::post(
+            'licenses',
+            [AdminLicenseController::class, 'store']
+        );
+
+        Route::post(
+            'licenses/{license}/revoke',
+            [AdminLicenseController::class, 'revoke']
+        );
+
+        Route::post(
+            'organisations/{organisation}/suspend',
+            [AdminOrganisationStatusController::class, 'suspend']
+        );
+
+        Route::post(
+            'organisations/{organisation}/reactivate',
+            [AdminOrganisationStatusController::class, 'reactivate']
+        );
+
+        Route::delete(
+            'organisations/{organisation}',
+            [AdminOrganisationDeletionController::class, 'destroy']
+        );
+
+        Route::post(
+            'users/{user}/resend-verification',
+            [AdminSupportController::class, 'resendVerification']
+        );
+
+        Route::patch(
+            'users/{user}/active',
+            [AdminSupportController::class, 'setActive']
+        );
+
+        Route::post(
+            'users/{user}/password-reset',
+            [AdminSupportController::class, 'sendPasswordReset']
+        );
+    });

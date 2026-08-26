@@ -4,6 +4,7 @@ use App\Http\Middleware\ApplyApplicationLocale;
 use App\Http\Middleware\AuthenticateSignedDocumentAccess;
 use App\Http\Middleware\EnsureUserHasCapability;
 use App\Http\Middleware\EnsureLicenseFeature;
+use App\Http\Middleware\EnsurePlatformAdmin;
 use App\Http\Middleware\SetOrganisationContext;
 use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
@@ -90,6 +91,11 @@ return Application::configure(basePath: dirname(__DIR__))
              * ->middleware('license:reports').
              */
             'license' => EnsureLicenseFeature::class,
+
+            /*
+             * V1.0.11: platform administration console access.
+             */
+            'platform.admin' => EnsurePlatformAdmin::class,
         ]);
 
         /*

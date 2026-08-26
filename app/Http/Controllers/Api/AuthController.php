@@ -723,6 +723,14 @@ class AuthController extends Controller
             'phone' => $user->phone,
             'role' => $user->role,
             'is_active' => (bool) $user->is_active,
+
+            /*
+             * V1.0.11: lets the browser shell reveal the platform
+             * console entry. The API itself stays guarded by the
+             * platform.admin middleware.
+             */
+            'is_platform_admin' => $user->isPlatformAdmin(),
+
             'email_verified_at' => $user->email_verified_at,
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,

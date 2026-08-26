@@ -141,3 +141,13 @@ Route::view(
     '/license',
     'app.license'
 )->name('license');
+
+/*
+ * V1.0.11: the platform administration console. The API behind it is
+ * platform.admin-guarded; the shell page itself 403s for non-staff
+ * through the browser module's own check.
+ */
+Route::view(
+    '/admin',
+    'app.admin'
+)->name('admin');

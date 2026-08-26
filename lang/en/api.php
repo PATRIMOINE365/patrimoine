@@ -28,6 +28,7 @@ return [
         'verified' => 'Your email address has been verified. You can now sign in.',
         'verification_invalid' => 'This verification link is invalid or has expired. Request a new one from the sign-in page.',
         'verification_sent' => 'If that address needs verification, a new link has been sent.',
+        'platform_domain_blocked' => 'This email domain is reserved. Contact support@patrimoine365.com.',
     ],
 
     'license' => [
@@ -39,6 +40,8 @@ return [
     ],
 
     'user_management' => [
+        'platform_domain_required' => 'Platform staff accounts must use an @patrimoine365.com email address.',
+        'platform_domain_reserved' => 'This email domain is reserved for platform staff.',
         'cannot_change_own_role' => 'You cannot change your own Administrator role.',
         'cannot_disable_self' => 'You cannot disable your own account.',
         'cannot_delete_self' => 'You cannot delete your own account.',

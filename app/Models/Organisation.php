@@ -43,6 +43,7 @@ class Organisation extends Model
     {
         return [
             'trial_ends_on' => 'date',
+            'is_platform' => 'boolean',
         ];
     }
 
@@ -68,6 +69,23 @@ class Organisation extends Model
     public function isActive(): bool
     {
         return $this->status === 'active';
+    }
+
+    /**
+     * V1.0.11: the internal Kality Ltd staff organisation, excluded
+     * from every customer-facing count, list and licensing rule.
+     */
+    public function isPlatform(): bool
+    {
+        return (bool) $this->is_platform;
+    }
+
+    /**
+     * Query scope: customer organisations only.
+     */
+    public function scopeCustomers($query)
+    {
+        return $query->where('is_platform', false);
     }
 
     /**

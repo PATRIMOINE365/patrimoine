@@ -31,7 +31,12 @@ class UserPasswordService
      */
     public function sendResetLink(string $email): void
     {
-        $user = User::query()
+        /*
+         * Emails are platform-wide identities; the lookup deliberately
+         * ignores any bound organisation context so the platform
+         * console can serve customers of every organisation.
+         */
+        $user = User::withoutGlobalScopes()
             ->where('email', mb_strtolower(trim($email)))
             ->first();
 

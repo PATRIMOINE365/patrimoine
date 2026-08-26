@@ -71,6 +71,30 @@ class StoreUserRequest extends FormRequest
                 'email',
                 'max:255',
                 Rule::unique('users', 'email'),
+
+                /*
+                 * V1.0.11: inside the internal platform organisation,
+                 * every account must belong to the platform domain —
+                 * and no customer organisation may recruit one.
+                 */
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    $isPlatformOrganisation = (bool) \App\Models\Organisation::query()
+                        ->whereKey(\App\Support\OrganisationContext::idOrNull())
+                        ->value('is_platform');
+
+                    $isPlatformDomain = str_ends_with(
+                        mb_strtolower(trim((string) $value)),
+                        '@'.\App\Models\User::PLATFORM_EMAIL_DOMAIN
+                    );
+
+                    if ($isPlatformOrganisation && ! $isPlatformDomain) {
+                        $fail(__('api.user_management.platform_domain_required'));
+                    }
+
+                    if (! $isPlatformOrganisation && $isPlatformDomain) {
+                        $fail(__('api.user_management.platform_domain_reserved'));
+                    }
+                },
             ],
 
             'phone' => [

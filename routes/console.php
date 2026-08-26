@@ -85,3 +85,22 @@ Schedule::command('patrimoine:send-rent-reminders')
     ->dailyAt('08:00')
     ->withoutOverlapping()
     ->onOneServer();
+
+/*
+|--------------------------------------------------------------------------
+| Plan Expiry Reminders (V1.0.11)
+|--------------------------------------------------------------------------
+|
+| Customer administrators hear 7 days and 1 day before their trial or
+| licence ends; billing@ receives a weekly forward look.
+|
+*/
+Schedule::command('patrimoine:send-plan-expiry-reminders')
+    ->dailyAt('08:30')
+    ->withoutOverlapping()
+    ->onOneServer();
+
+Schedule::command('patrimoine:send-platform-expiry-digest')
+    ->weeklyOn(1, '08:00')
+    ->withoutOverlapping()
+    ->onOneServer();

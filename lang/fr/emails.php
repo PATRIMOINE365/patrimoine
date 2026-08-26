@@ -179,4 +179,35 @@ return [
         'expiry' => 'Ce code expire dans :minutes minutes et ne peut être utilisé qu\'une seule fois.',
         'ignore' => 'Si vous n\'avez pas tenté de vous connecter, nous vous recommandons de changer votre mot de passe immédiatement.',
     ],
+
+    'plans' => [
+        'free' => 'Gratuit',
+        'standard' => 'Standard',
+        'professional' => 'Professionnel',
+    ],
+
+    'license_issued' => [
+        'subject' => 'Votre forfait Patrimoine 365 : :plan',
+        'title' => 'Votre forfait a été mis à jour',
+        'preheader' => 'Votre organisation est désormais sur le forfait :plan.',
+        'heading' => 'Votre forfait a été mis à jour',
+        'greeting' => 'Bonjour :name,',
+        'introduction' => 'Une nouvelle licence a été activée pour « :organisation ». Voici ce qui s\'applique désormais :',
+        'plan' => 'Forfait',
+        'starts_on' => 'Début',
+        'expires_on' => 'Valable jusqu\'au',
+        'no_expiry' => 'Sans expiration',
+        'questions' => 'Des questions sur votre forfait ou votre facture ?',
+    ],
+
+    'plan_expiry' => [
+        'subject' => 'Votre forfait Patrimoine 365 se termine dans :days jour(s)',
+        'title' => 'Votre forfait se termine bientôt',
+        'heading' => 'Votre forfait se termine dans :days jour(s)',
+        'greeting' => 'Bonjour :name,',
+        'introduction_trial' => 'L\'essai Professionnel de « :organisation » se termine le :date.',
+        'introduction_license' => 'La licence :plan de « :organisation » se termine le :date.',
+        'what_changes' => 'Ensuite, votre organisation continue sur le forfait Gratuit : toutes vos données restent exactement en l\'état, mais les rapports, exports et rappels automatiques sont suspendus, et les limites du forfait Gratuit s\'appliquent à la création de nouveaux enregistrements.',
+        'renew' => 'Pour renouveler ou changer de forfait, contactez',
+    ],
 ];

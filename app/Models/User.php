@@ -108,4 +108,35 @@ class User extends Authenticatable
     {
         return $this->is_active;
     }
+
+    /**
+     * The email domain whose verified members may staff the platform
+     * administration console.
+     */
+    public const PLATFORM_EMAIL_DOMAIN = 'patrimoine365.com';
+
+    /**
+     * Whether this account belongs to the platform email domain.
+     */
+    public function hasPlatformEmailDomain(): bool
+    {
+        return str_ends_with(
+            mb_strtolower((string) $this->email),
+            '@'.self::PLATFORM_EMAIL_DOMAIN
+        );
+    }
+
+    /**
+     * V1.0.11: whether this user staffs the platform administration
+     * console.
+     *
+     * Both conditions are deliberate: membership of the internal
+     * platform organisation AND a platform-domain email address.
+     */
+    public function isPlatformAdmin(): bool
+    {
+        return $this->isActive()
+            && $this->hasPlatformEmailDomain()
+            && (bool) $this->organisation?->is_platform;
+    }
 }

@@ -93,6 +93,10 @@ import {
 } from './license.js';
 
 import {
+    initializeAdmin,
+} from './admin.js';
+
+import {
     initializeForgotPassword,
     initializeInvitation,
     initializeResetPassword,
@@ -201,5 +205,7 @@ document.addEventListener(
         await initializeHelp();
 
         await initializeLicense();
+
+        await initializeAdmin();
     }
 );

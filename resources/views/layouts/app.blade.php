@@ -669,6 +669,39 @@
                         </div>
                     </div>
                 </a>
+
+                {{--
+                    V1.0.11: platform staff only; revealed by auth.js
+                    once /api/auth/me confirms is_platform_admin.
+                --}}
+                <a
+                    href="/admin"
+                    data-platform-admin-only
+                    hidden
+                    class="pm-sidebar-manage-item hidden"
+                >
+                    <div class="pm-sidebar-manage-icon">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <path d="M12 3l8 4v5c0 4.4-3.2 8.4-8 9-4.8-.6-8-4.6-8-9V7l8-4z"/>
+                            <path d="M9.5 12l2 2 3.5-4"/>
+                        </svg>
+                    </div>
+
+                    <div class="min-w-0">
+                        <div class="pm-sidebar-manage-title">
+                            Administration
+                        </div>
+
+                        <div class="pm-sidebar-manage-description">
+                            Platform console
+                        </div>
+                    </div>
+                </a>
             </div>
 
             <button

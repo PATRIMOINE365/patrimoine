@@ -58,6 +58,22 @@ class RegistrationController extends Controller
                 'email',
                 'max:255',
                 'unique:users,email',
+
+                /*
+                 * V1.0.11: the platform's own domain can never own a
+                 * customer organisation — staff accounts exist only
+                 * through platform invitations.
+                 */
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (
+                        str_ends_with(
+                            mb_strtolower(trim((string) $value)),
+                            '@'.\App\Models\User::PLATFORM_EMAIL_DOMAIN
+                        )
+                    ) {
+                        $fail(__('api.registration.platform_domain_blocked'));
+                    }
+                },
             ],
 
             'phone' => [

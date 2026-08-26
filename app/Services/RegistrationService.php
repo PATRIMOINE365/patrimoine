@@ -104,6 +104,28 @@ class RegistrationService
 
         $this->sendVerificationEmail($user, $plainVerificationToken);
 
+        /*
+         * V1.0.11: tell the operating company. A failure here must
+         * never cost the customer their signup.
+         */
+        try {
+            $organisation = Organisation::query()
+                ->find($user->organisation_id);
+
+            if ($organisation !== null) {
+                Mail::to(
+                    (string) config('legal.mailboxes.hello', 'hello@patrimoine365.com')
+                )->send(
+                    new \App\Mail\SignupAlertMail(
+                        organisation: $organisation,
+                        administrator: $user
+                    )
+                );
+            }
+        } catch (Throwable $exception) {
+            report($exception);
+        }
+
         return $user;
     }
 
@@ -115,7 +137,12 @@ class RegistrationService
      */
     public function resendVerification(string $email): void
     {
-        $user = User::query()
+        /*
+         * Emails are platform-wide identities; the lookup ignores any
+         * bound organisation context so the platform console can
+         * re-send verification for customers of every organisation.
+         */
+        $user = User::withoutGlobalScopes()
             ->where('email', mb_strtolower(trim($email)))
             ->whereNull('email_verified_at')
             ->whereNotNull('email_verification_token_hash')
