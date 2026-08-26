@@ -15,6 +15,25 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.9',
+            'date' => '2026-08-26',
+            'title' => 'Réglages repensés, Rapports affinés et tableau de bord entièrement câblé',
+            'changes' => [
+                'Les Réglages sont désormais un espace à onglets — Organisation, Préférences, Données et À propos — avec des liens directs vers chaque onglet.',
+                'Sauvegarde des données : chaque registre (Parties, Immeubles, Unités, Baux) s\'exporte en PDF, XLSX ou CSV depuis un seul endroit, à côté de la Sauvegarde complète en un clic.',
+                'La restauration d\'une sauvegarde est plus sûre : Vérifier la restauration analyse toujours le fichier d\'abord et montre exactement ce qui changerait avant que vous confirmiez la restauration.',
+                'Les Rapports ne gardent plus de résultats périmés : modifier un filtre ou une date après une exécution estompe les résultats et désactive les exports jusqu\'à la prochaine exécution.',
+                'Les résultats affichent leur date de référence et le nombre de lignes ; chaque rapport PDF porte désormais l\'en-tête de l\'organisation, et les exports CSV/XLSX incluent les totaux récapitulatifs déjà présents dans les PDF.',
+                'Les colonnes des rapports à l\'écran et dans les exports correspondent désormais (Arriérés et Fonds détenus ont gagné la colonne Bail), et les montants sont alignés à droite partout.',
+                'Rapports sur téléphone : la liste des rapports devient un sélecteur compact, et les champs de date ouvrent le même calendrier Patrimoine qu\'ailleurs.',
+                'Tableau de bord : Encaissé ce mois-ci et la tendance des encaissements ne comptent plus que l\'argent des loyers — les règlements de dépenses et les approvisionnements de fonds ne les gonflent plus.',
+                'Les lignes du tableau de bord mènent directement au locataire, affichent les numéros de facture et l\'avancement des paiements partiels, et de nouvelles tuiles présentent les frais de gestion et les prochaines augmentations de loyer.',
+                'Le journal d\'activité enregistre l\'appareil, le navigateur, la plateforme et l\'adresse IP de chaque action, visibles sur chaque événement et dans tous les exports.',
+                'Les volets d\'argent du locataire portent des titres cohérents avec ceux du propriétaire : Enregistrer un dépôt, un retrait, une dépense ou un ajustement de solde.',
+                'Une passe visuelle sur chaque page et chaque volet : boutons, libellés, badges et couleurs du mode sombre cohérents dans toute l\'application.',
+            ],
+        ],
+        [
             'version' => '1.0.8',
             'date' => '2026-08-26',
             'title' => 'Dépenses payables, comptes propriétaires et documents plus rapides',

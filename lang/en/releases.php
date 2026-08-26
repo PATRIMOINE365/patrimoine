@@ -19,6 +19,25 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.9',
+            'date' => '2026-08-26',
+            'title' => 'Redesigned Settings, sharper Reports, and a fully wired Dashboard',
+            'changes' => [
+                'Settings is now a tabbed workspace — Organisation, Preferences, Data and About — with direct links to each tab.',
+                'Data backup: every registry (Parties, Buildings, Units, Leases) exports as PDF, XLSX or CSV from one place, next to the one-click Full Backup.',
+                'Restoring a backup is safer: Review Restore always checks the file first and shows exactly what would change before you confirm the restore.',
+                'Reports remembers nothing stale: changing any filter or date after a run dims the results and disables exports until the report is run again.',
+                'Report results show their reference date and row count; every report PDF now carries the organisation letterhead, and CSV/XLSX exports include the summary totals the PDFs already had.',
+                'Report columns on screen and in exports now match (Arrears and Funds gained the Lease column), and money columns are right-aligned everywhere.',
+                'Reports on phones: the report list becomes a compact selector, and date fields open the same Patrimoine calendar used elsewhere.',
+                'Dashboard: Collected This Month and the collections trend now count rent money only — expense settlements and fund top-ups no longer inflate them.',
+                'Dashboard rows link straight to the tenant, show invoice numbers and partial-payment progress, and new tiles surface management fees and upcoming rent increments.',
+                'Activity Log records the device, browser, platform and IP address of every action, visible on each event and in all exports.',
+                'Tenant money drawers are titled like the Owner ones: Record Tenant Deposit, Withdrawal, Expense and Balance Adjustment.',
+                'A visual pass over every page and drawer: consistent buttons, labels, badges and dark-mode colors throughout the application.',
+            ],
+        ],
+        [
             'version' => '1.0.8',
             'date' => '2026-08-26',
             'title' => 'Payable expenses, owner accounts, and faster documents',
