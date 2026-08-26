@@ -161,7 +161,7 @@
     <section id="admin-section-users" data-admin-section hidden>
         <div class="pm-admin-eyebrow">Workspace</div>
         <h1 class="pm-admin-title">Users</h1>
-        <p class="pm-admin-subtitle">The Kality staff who operate the platform.</p>
+        <p class="pm-admin-subtitle">The staff who operate the platform.</p>
 
         <div class="pm-admin-card pm-admin-card-flush mt-6">
             <div class="pm-admin-card-header">
@@ -208,12 +208,12 @@
 
             <dl class="mt-4 grid gap-x-8 gap-y-3 text-sm sm:grid-cols-2">
                 <div>
-                    <dt class="text-[var(--pm-text-muted)]">Operating company</dt>
-                    <dd class="mt-0.5 font-medium text-[var(--pm-text)]">{{ config('legal.company.name') }}</dd>
+                    <dt class="text-[var(--pm-text-muted)]">Product</dt>
+                    <dd class="mt-0.5 font-medium text-[var(--pm-text)]">{{ config('legal.product.name') }}</dd>
                 </div>
                 <div>
-                    <dt class="text-[var(--pm-text-muted)]">Address</dt>
-                    <dd class="mt-0.5 font-medium text-[var(--pm-text)]">{{ config('legal.company.address') }}</dd>
+                    <dt class="text-[var(--pm-text-muted)]">Domain</dt>
+                    <dd class="mt-0.5 font-medium text-[var(--pm-text)]">{{ config('legal.product.domain') }}</dd>
                 </div>
                 <div>
                     <dt class="text-[var(--pm-text-muted)]">Signup alerts</dt>

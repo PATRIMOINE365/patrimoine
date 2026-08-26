@@ -82,9 +82,6 @@
                                 {{ __('emails.layout.sent_by_product') }}
                                 {{ __('emails.layout.tagline') }}
                             </p>
-                            <p style="margin:0 0 6px 0;">
-                                {{ config('legal.product.name') }} {{ __('emails.layout.operated_by') }} {{ config('legal.company.name') }}, {{ config('legal.company.address') }}
-                            </p>
                             <p style="margin:0;">
                                 {{ __('emails.layout.questions') }}
                                 <a href="mailto:{{ config('legal.mailboxes.support') }}" style="color:#2f6f52; text-decoration:none;">{{ config('legal.mailboxes.support') }}</a>

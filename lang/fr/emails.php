@@ -154,7 +154,6 @@ return [
         'on_behalf_of' => 'Envoyé pour le compte de :organisation',
         'sent_by_product' => 'Ce message a été envoyé par Patrimoine 365.',
         'tagline' => 'La gestion locative, sans le drame.',
-        'operated_by' => 'est exploité par',
         'questions' => 'Des questions ?',
     ],
 
@@ -166,8 +165,11 @@ return [
         'greeting' => 'Bonjour :name,',
         'introduction' => 'Bienvenue sur Patrimoine 365 ! Votre organisation « :organisation » a été créée. Confirmez votre adresse e-mail pour activer votre compte et vous connecter.',
         'action' => 'Vérifier l\'adresse e-mail',
+        'link_fallback' => 'Si le bouton ne fonctionne pas, copiez cette adresse dans votre navigateur :',
         'expiry' => 'Ce lien est valable pendant 48 heures.',
+        'next_steps' => 'Une fois votre adresse vérifiée, vous pourrez vous connecter et commencer à enregistrer vos immeubles, vos locataires et vos baux. Chaque connexion est protégée par un code à six chiffres envoyé à cette adresse.',
         'ignore' => 'Si vous n\'avez pas créé ce compte, vous pouvez ignorer cet e-mail en toute sécurité — rien ne sera activé sans cette vérification.',
+        'sent_to' => 'Ce message a été envoyé à :email car cette adresse a été utilisée pour créer une organisation sur patrimoine365.com.',
     ],
 
     'mfa_code' => [

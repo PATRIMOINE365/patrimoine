@@ -71,7 +71,7 @@ class PlatformAuditService
             entityId: $entityId ?? $customerOrganisation->id,
             entityLabel: $entityLabel ?? $customerOrganisation->name,
             metadata: $metadata,
-            actorName: (string) config('legal.company.name').' (platform)',
+            actorName: (string) config('legal.product.name').' (platform)',
             actorEmail: (string) config('legal.mailboxes.support'),
             ipAddress: $request->ip(),
             userAgent: $request->userAgent(),

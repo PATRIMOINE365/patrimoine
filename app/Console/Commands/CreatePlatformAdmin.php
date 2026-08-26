@@ -120,7 +120,7 @@ class CreatePlatformAdmin extends Command
         $organisation = Organisation::query()->firstOrCreate(
             ['is_platform' => true],
             [
-                'name' => (string) config('legal.company.name'),
+                'name' => (string) config('legal.product.name'),
                 'status' => 'active',
                 'trial_ends_on' => null,
             ]

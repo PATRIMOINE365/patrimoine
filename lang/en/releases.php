@@ -19,6 +19,17 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.17',
+            'date' => '2026-08-26',
+            'title' => 'Better email delivery and a simpler License page',
+            'changes' => [
+                'Every email now sends in both rich and plain-text form, which helps it reach the inbox instead of the spam or quarantine folder.',
+                'The verification email explains what happens next and shows its link in full, so it reads as the routine message it is.',
+                'The License page now focuses on what matters day to day: your plan and your usage against its limits. Full plan comparison lives on patrimoine365.com/pricing.',
+                'On the Help page, the Guide and Update log tabs now line up neatly with the search field.',
+            ],
+        ],
+        [
             'version' => '1.0.16',
             'date' => '2026-08-26',
             'title' => 'Polish: resend buttons and branded emails',
@@ -73,7 +84,7 @@ return [
             'changes' => [
                 'Your administrators now receive an email 7 days and 1 day before your trial or licence ends, explaining exactly what changes on the Free plan and how to renew.',
                 'Whenever a licence is assigned or extended for your organisation, your administrators receive an email confirming the new plan, its start date and its validity.',
-                'Kality Ltd now operates Patrimoine 365 through a dedicated administration console: licences, account health and support requests are handled faster, and every action on your organisation is recorded in your own Activity Log.',
+                'Patrimoine 365 is now operated through a dedicated administration console: licences, account health and support requests are handled faster, and every action on your organisation is recorded in your own Activity Log.',
                 'Account email addresses are further protected: an account can never be moved onto a reserved platform address.',
                 'Security and reliability improvements across sign-in, image handling and the platform infrastructure.',
             ],

@@ -778,9 +778,6 @@ export const translations = {
         'license.upgrade_hint':
             'To subscribe, extend or change plans, contact',
 
-        'license.compare_heading':
-            'Compare plans',
-
         'license.footnotes':
             'Every new organisation starts with a 30-day Professional trial — no payment card required. Prices in USD; annual billing gives two months free. Above 1 000 active leases, talk to us. Financial integrity and transactional document email are identical on every plan, and sign-in email is never blocked.',
 
@@ -792,18 +789,6 @@ export const translations = {
 
         'license.trial_until':
             'Professional trial until',
-
-        'license.your_plan':
-            'Your plan',
-
-        'license.most_popular':
-            'Most popular',
-
-        'license.per_month':
-            '/mo',
-
-        'license.price_free':
-            'Free',
 
         'license.plan_free':
             'Free',
@@ -825,39 +810,6 @@ export const translations = {
 
         'license.usage_emails':
             'Emails this month',
-
-        'license.row_price':
-            'Price',
-
-        'license.row_users':
-            'Internal users (staff)',
-
-        'license.row_active_leases':
-            'Active leases',
-
-        'license.row_parties':
-            'Parties',
-
-        'license.row_emails':
-            'Email allowance',
-
-        'license.row_reports':
-            'Reports',
-
-        'license.row_exports':
-            'Exports (PDF / XLSX / CSV)',
-
-        'license.row_automated':
-            'Automated reminders & notices',
-
-        'license.row_sms':
-            'SMS notifications',
-
-        'license.row_portal':
-            'Party Portal',
-
-        'license.row_api':
-            'Third-party API access',
 
         'login.create_organisation':
             'Create your organisation',
@@ -4006,9 +3958,6 @@ export const translations = {
         'license.upgrade_hint':
             'Pour souscrire, prolonger ou changer de forfait, contactez',
 
-        'license.compare_heading':
-            'Comparer les forfaits',
-
         'license.footnotes':
             'Toute nouvelle organisation commence par un essai Professionnel de 30 jours — sans carte bancaire. Prix en USD ; la facturation annuelle offre deux mois gratuits. Au-delà de 1 000 baux actifs, parlons-en. L\'intégrité financière et les e-mails de documents transactionnels sont identiques sur tous les forfaits, et les e-mails de connexion ne sont jamais bloqués.',
 
@@ -4020,18 +3969,6 @@ export const translations = {
 
         'license.trial_until':
             'Essai Professionnel jusqu\'au',
-
-        'license.your_plan':
-            'Votre forfait',
-
-        'license.most_popular':
-            'Le plus populaire',
-
-        'license.per_month':
-            '/mois',
-
-        'license.price_free':
-            'Gratuit',
 
         'license.plan_free':
             'Gratuit',
@@ -4053,39 +3990,6 @@ export const translations = {
 
         'license.usage_emails':
             'E-mails ce mois-ci',
-
-        'license.row_price':
-            'Prix',
-
-        'license.row_users':
-            'Utilisateurs internes (personnel)',
-
-        'license.row_active_leases':
-            'Baux actifs',
-
-        'license.row_parties':
-            'Tiers',
-
-        'license.row_emails':
-            'Quota d\'e-mails',
-
-        'license.row_reports':
-            'Rapports',
-
-        'license.row_exports':
-            'Exports (PDF / XLSX / CSV)',
-
-        'license.row_automated':
-            'Rappels et avis automatiques',
-
-        'license.row_sms':
-            'Notifications SMS',
-
-        'license.row_portal':
-            'Portail des tiers',
-
-        'license.row_api':
-            'Accès API tiers',
 
         'login.create_organisation':
             'Cr\u00e9ez votre organisation',

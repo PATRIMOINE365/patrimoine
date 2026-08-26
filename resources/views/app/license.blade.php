@@ -119,27 +119,6 @@
         ></div>
     </div>
 
-    {{-- Plan comparison --}}
-    <h2
-        class="
-            mt-10 text-lg font-semibold
-            tracking-tight text-[var(--pm-text)]
-        "
-        data-i18n="license.compare_heading"
-    >
-        Compare plans
-    </h2>
-
-    <div class="mt-4 overflow-x-auto">
-        <table
-            id="license-plans-table"
-            class="
-                w-full min-w-[640px] border-separate
-                border-spacing-0 text-sm
-            "
-        ></table>
-    </div>
-
     <p
         class="
             mt-6 text-sm leading-6
@@ -147,11 +126,10 @@
         "
         data-i18n="license.footnotes"
     >
-        Every new organisation starts with a 30-day Professional trial —
-        no payment card required. Prices in USD; annual billing gives two
-        months free. Above 1 000 active leases, talk to us. Financial
-        integrity and transactional document email are identical on every
-        plan, and sign-in email is never blocked.
+        Going over a limit only pauses creating new records — your existing
+        data is never touched. Financial integrity and transactional
+        document email are identical on every plan, and sign-in email is
+        never blocked.
     </p>
 </div>
 

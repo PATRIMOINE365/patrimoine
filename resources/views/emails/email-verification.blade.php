@@ -32,11 +32,32 @@
         </tr>
     </table>
 
+    {{--
+        Showing the destination in full is deliberate: a visible address
+        reads as transactional rather than as a token hidden behind a
+        button, and it keeps the message usable when the button fails.
+    --}}
+    <p style="margin:0 0 6px 0; color:#51615a; font-size:13px; line-height:21px;">
+        {{ __('emails.email_verification.link_fallback') }}
+    </p>
+
+    <p style="margin:0 0 22px 0; font-size:12px; line-height:19px; word-break:break-all;">
+        <a href="{{ $verificationUrl }}" style="color:#2f6f52; text-decoration:underline;">{{ $verificationUrl }}</a>
+    </p>
+
     <p style="margin:0 0 14px 0; color:#51615a; font-size:13px; line-height:21px;">
         {{ __('emails.email_verification.expiry') }}
     </p>
 
-    <p style="margin:0; color:#51615a; font-size:13px; line-height:21px;">
+    <p style="margin:0 0 14px 0; color:#51615a; font-size:13px; line-height:21px;">
+        {{ __('emails.email_verification.next_steps') }}
+    </p>
+
+    <p style="margin:0 0 14px 0; color:#51615a; font-size:13px; line-height:21px;">
         {{ __('emails.email_verification.ignore') }}
+    </p>
+
+    <p style="margin:0; color:#51615a; font-size:12px; line-height:19px;">
+        {{ __('emails.email_verification.sent_to', ['email' => $user->email]) }}
     </p>
 @endsection

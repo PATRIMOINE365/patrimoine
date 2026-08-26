@@ -154,7 +154,6 @@ return [
         'on_behalf_of' => 'Sent on behalf of :organisation',
         'sent_by_product' => 'This message was sent by Patrimoine 365.',
         'tagline' => 'Property management, minus the drama.',
-        'operated_by' => 'is operated by',
         'questions' => 'Questions?',
     ],
 
@@ -166,8 +165,11 @@ return [
         'greeting' => 'Hello :name,',
         'introduction' => 'Welcome to Patrimoine 365! Your organisation ":organisation" has been created. Confirm your email address to activate your account and sign in.',
         'action' => 'Verify email address',
+        'link_fallback' => 'If the button does not work, copy this address into your browser:',
         'expiry' => 'This link is valid for 48 hours.',
+        'next_steps' => 'Once verified, you can sign in and start adding your buildings, tenants and leases. Every sign-in is protected by a six-digit code sent to this address.',
         'ignore' => 'If you did not create this account, you can safely ignore this email — nothing will be activated without this verification.',
+        'sent_to' => 'This message was sent to :email because that address was used to create an organisation on patrimoine365.com.',
     ],
 
     'mfa_code' => [

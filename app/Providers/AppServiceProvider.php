@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Listeners\AttachPlainTextEmailPart;
 use App\Support\OrganisationContext;
+use Illuminate\Mail\Events\MessageSending;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,6 +29,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        /*
+         * V1.0.17: every email ships a plain-text alternative alongside
+         * its HTML body. HTML-only mail scores worse with spam and phish
+         * filters — one of the signals behind the Microsoft 365
+         * quarantine of our verification email.
+         */
+        Event::listen(
+            MessageSending::class,
+            AttachPlainTextEmailPart::class
+        );
     }
 }

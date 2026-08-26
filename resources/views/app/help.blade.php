@@ -67,11 +67,18 @@
                     md:flex-row md:items-end
                 "
             >
+                {{--
+                    self-start keeps the tabs left-aligned while the toolbar
+                    is a column (mobile); md:self-end bottom-aligns them with
+                    the labelled search + category fields once it becomes a
+                    row, so the controls sit on one line.
+                --}}
                 <div
                     role="tablist"
                     class="
                         inline-flex shrink-0
-                        self-start rounded-xl
+                        self-start md:self-end
+                        rounded-xl
                         border border-[var(--pm-border)]
                         bg-[var(--pm-surface-subtle)]
                         p-1
