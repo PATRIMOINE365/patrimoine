@@ -492,8 +492,19 @@ return new class extends Migration
                 ->where('id', $settings->managing_organisation_party_id)
                 ->first();
 
-            if ($party !== null && trim((string) $party->name) !== '') {
-                return $party->name;
+            if ($party !== null) {
+                /*
+                 * Organisation parties usually carry their business
+                 * name in legal_name; person-style name is the
+                 * fallback.
+                 */
+                $partyName = trim((string) $party->legal_name) !== ''
+                    ? $party->legal_name
+                    : (string) $party->name;
+
+                if (trim($partyName) !== '') {
+                    return $partyName;
+                }
             }
         }
 
