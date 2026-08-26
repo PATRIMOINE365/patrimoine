@@ -15,6 +15,15 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.14',
+            'date' => '2026-08-26',
+            'title' => 'Une porte d\'entrée achevée',
+            'changes' => [
+                'Les pages de connexion et d\'inscription affichent désormais un aperçu réel du tableau de bord Patrimoine 365, dans votre langue.',
+                'Cliquer sur le logo Patrimoine 365 depuis la connexion ou l\'inscription mène à patrimoine365.com.',
+            ],
+        ],
+        [
             'version' => '1.0.13',
             'date' => '2026-08-26',
             'title' => 'Une seule identité partout : le nouveau visage de Patrimoine 365',

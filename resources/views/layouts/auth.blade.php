@@ -103,7 +103,12 @@
             ></div>
 
             <div class="relative z-10">
-                <div class="flex items-center gap-3">
+                {{-- The brand is the way back to the marketing site --}}
+                <a
+                    href="https://patrimoine365.com/"
+                    data-marketing-home
+                    class="flex items-center gap-3"
+                >
                     <img
                         src="/branding/patrimoine-logo.svg"
                         alt="Patrimoine 365"
@@ -113,7 +118,7 @@
                     <span class="text-xl font-semibold text-white">
                         Patrimoine <span class="text-patrimoine-300">365</span>
                     </span>
-                </div>
+                </a>
             </div>
 
             <div class="relative z-10 max-w-lg">
@@ -151,28 +156,25 @@
                 </p>
 
                 {{--
-                    Visual slot — replace with a real product image
-                    (1600 × 1000 px, shown at half size) when ready.
+                    Live product preview. public-presentation.js swaps the
+                    edition when the visitor changes language.
                 --}}
                 <div
                     class="
-                        mt-10 flex aspect-[16/10] w-full
-                        items-center justify-center rounded-2xl
-                        border border-dashed border-patrimoine-700
-                        bg-patrimoine-900/50
+                        mt-10 overflow-hidden rounded-2xl
+                        border border-patrimoine-800
+                        bg-patrimoine-900/50 p-1.5
+                        shadow-2xl
                     "
                 >
-                    <div class="px-4 text-center">
-                        <p class="text-sm font-semibold text-patrimoine-300">
-                            <span data-i18n="login.hero_image_label">
-                                {{ __('ui.login.hero_image_label') }}
-                            </span>
-                        </p>
-
-                        <p class="mt-1 font-mono text-xs text-patrimoine-400">
-                            1600 &times; 1000px
-                        </p>
-                    </div>
+                    <img
+                        src="/branding/auth-preview-en.png"
+                        data-auth-preview
+                        alt="{{ __('ui.login.hero_image_label') }}"
+                        class="w-full rounded-xl"
+                        width="2400"
+                        height="1500"
+                    >
                 </div>
             </div>
 
@@ -261,7 +263,11 @@
 
             <div class="w-full max-w-md">
 
-                <div class="mb-12 flex items-center gap-3 lg:hidden">
+                <a
+                    href="https://patrimoine365.com/"
+                    data-marketing-home
+                    class="mb-12 flex items-center gap-3 lg:hidden"
+                >
                     <img
                         src="/branding/patrimoine-logo.svg"
                         alt="Patrimoine 365"
@@ -271,7 +277,7 @@
                     <span class="text-xl font-semibold text-[var(--pm-text)]">
                         Patrimoine <span class="text-[var(--pm-accent)]">365</span>
                     </span>
-                </div>
+                </a>
 
                 @yield('content')
 

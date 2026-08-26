@@ -9,7 +9,7 @@ return [
         'hero_kicker' => 'Property management, minus the drama',
         'hero_title' => 'Rent day, minus the drama.',
         'hero_description' => 'Leases, invoices, owners and tenants in perfect order — with real double-entry accounting quietly doing the math underneath. You collect the rent. We keep the receipts.',
-        'hero_image_label' => 'Image — app preview',
+        'hero_image_label' => 'Patrimoine 365 dashboard preview',
         'product_name' => '© 2026 Patrimoine 365. All rights reserved.',
         'switch_to_dark' => 'Switch to dark mode',
         'switch_to_light' => 'Switch to light mode',

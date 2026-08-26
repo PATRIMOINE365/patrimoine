@@ -19,6 +19,15 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.14',
+            'date' => '2026-08-26',
+            'title' => 'A finished front door',
+            'changes' => [
+                'The sign-in and sign-up pages now show a live preview of the Patrimoine 365 dashboard, in your language.',
+                'Clicking the Patrimoine 365 logo on the sign-in and sign-up pages takes you to patrimoine365.com.',
+            ],
+        ],
+        [
             'version' => '1.0.13',
             'date' => '2026-08-26',
             'title' => 'One identity everywhere: the new Patrimoine 365 look',

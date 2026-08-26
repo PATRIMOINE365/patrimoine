@@ -125,6 +125,31 @@ function initializeLanguageToggle() {
             'aria-label',
             translate('login.switch_language')
         );
+
+        /*
+         * The brand links back to the marketing site — keep it pointing
+         * at the matching language edition.
+         */
+        document
+            .querySelectorAll('[data-marketing-home]')
+            .forEach((link) => {
+                link.href =
+                    language === 'fr'
+                        ? 'https://patrimoine365.com/fr/'
+                        : 'https://patrimoine365.com/';
+            });
+
+        /*
+         * The panel's product preview has an edition per language.
+         */
+        document
+            .querySelectorAll('[data-auth-preview]')
+            .forEach((image) => {
+                image.src =
+                    language === 'fr'
+                        ? '/branding/auth-preview-fr.png'
+                        : '/branding/auth-preview-en.png';
+            });
     };
 
     toggle.addEventListener(

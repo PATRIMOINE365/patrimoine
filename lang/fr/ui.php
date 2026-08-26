@@ -9,7 +9,7 @@ return [
         'hero_kicker' => 'La gestion locative, sans le drame',
         'hero_title' => 'Encaissez vos loyers, l\'esprit tranquille.',
         'hero_description' => 'Baux, quittances, propriétaires et locataires en ordre parfait — avec un journal en partie double qui veille au grain en coulisses. Vous gérez vos biens ; les écritures, c\'est notre affaire.',
-        'hero_image_label' => 'Image — aperçu de l\'application',
+        'hero_image_label' => 'Aperçu du tableau de bord Patrimoine 365',
         'product_name' => '© 2026 Patrimoine 365. Tous droits réservés.',
         'switch_to_dark' => 'Passer en mode sombre',
         'switch_to_light' => 'Passer en mode clair',

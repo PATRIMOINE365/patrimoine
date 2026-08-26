@@ -641,7 +641,7 @@ export const translations = {
             'Leases, invoices, owners and tenants in perfect order — with real double-entry accounting quietly doing the math underneath. You collect the rent. We keep the receipts.',
 
         'login.hero_image_label':
-            'Image — app preview',
+            'Patrimoine 365 dashboard preview',
 
         'login.product_name':
             '© 2026 Patrimoine 365. All rights reserved.',
@@ -3860,7 +3860,7 @@ export const translations = {
             'Baux, quittances, propriétaires et locataires en ordre parfait — avec un journal en partie double qui veille au grain en coulisses. Vous gérez vos biens ; les écritures, c\'est notre affaire.',
 
         'login.hero_image_label':
-            'Image — aperçu de l\'application',
+            'Aperçu du tableau de bord Patrimoine 365',
 
         'login.product_name':
             '© 2026 Patrimoine 365. Tous droits réservés.',
