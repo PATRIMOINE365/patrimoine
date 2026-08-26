@@ -27,7 +27,7 @@
 <div class="pm-doc-footer">
     {{ $footerName }}
     ·
-    {{ config('legal.product.name') }}
+    Patrimoine <span style="color: #26744b;">365</span>
     ·
     {{ now()->format('Y-m-d') }}
 </div>

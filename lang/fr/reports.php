@@ -15,7 +15,7 @@ return [
     'vat_tin' => 'TVA/NIF',
     'no_information_available' => 'Aucune information disponible.',
     'no_records_for_section' => 'Aucun enregistrement pour cette section.',
-    'generated_by_patrimoine_for' => 'Généré par Patrimoine pour',
+    'generated_by_patrimoine_for' => 'Généré par Patrimoine 365 pour',
     'this_installation' => 'cette installation',
     'field' => 'Champ',
     'value' => 'Valeur',

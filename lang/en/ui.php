@@ -6,11 +6,11 @@ return [
     ],
     'login' => [
         'title' => 'Sign in — Patrimoine 365',
-        'hero_kicker' => 'Property management that minds the money',
+        'hero_kicker' => 'Property management, minus the drama',
         'hero_title' => 'Rent day, minus the drama.',
         'hero_description' => 'Leases, invoices, owners and tenants in perfect order — with real double-entry accounting quietly doing the math underneath. You collect the rent. We keep the receipts.',
         'hero_image_label' => 'Image — app preview',
-        'product_name' => 'Patrimoine 365',
+        'product_name' => '© 2026 Patrimoine 365. All rights reserved.',
         'switch_to_dark' => 'Switch to dark mode',
         'switch_to_light' => 'Switch to light mode',
         'switch_language' => 'Switch language',
@@ -197,7 +197,7 @@ return [
         'theme_system' => 'System',
     ],
     'release' => [
-        'summary_line' => 'This update brings new features and improvements across Patrimoine.',
+        'summary_line' => 'This update brings new features and improvements across Patrimoine 365.',
         'view_details' => 'View the full update log',
         'v104_heading' => 'You are now on Patrimoine v1.0.4',
         'v104_ui' => 'Updated interface for a cleaner experience.',

@@ -30,7 +30,7 @@ export const translations = {
         'leases.deduction_record_failed':
             'Unable to record the deduction.',
         'release.summary_line':
-            'This update brings new features and improvements across Patrimoine.',
+            'This update brings new features and improvements across Patrimoine 365.',
         'release.view_details':
             'View the full update log',
         'dashboard.occupancy_rate':
@@ -632,7 +632,7 @@ export const translations = {
             'Sign in — Patrimoine 365',
 
         'login.hero_kicker':
-            'Property management that minds the money',
+            'Property management, minus the drama',
 
         'login.hero_title':
             'Rent day, minus the drama.',
@@ -644,7 +644,7 @@ export const translations = {
             'Image — app preview',
 
         'login.product_name':
-            'Patrimoine 365',
+            '© 2026 Patrimoine 365. All rights reserved.',
 
         'login.switch_to_dark':
             'Switch to dark mode',
@@ -3249,7 +3249,7 @@ export const translations = {
         'leases.deduction_record_failed':
             'Impossible d\'enregistrer la retenue.',
         'release.summary_line':
-            'Cette mise à jour apporte de nouvelles fonctionnalités et des améliorations dans tout Patrimoine.',
+            'Cette mise à jour apporte de nouvelles fonctionnalités et des améliorations dans tout Patrimoine 365.',
         'release.view_details':
             'Voir le journal complet des mises à jour',
         'dashboard.occupancy_rate':
@@ -3851,7 +3851,7 @@ export const translations = {
             'Connexion — Patrimoine 365',
 
         'login.hero_kicker':
-            'La gestion locative qui tient ses comptes',
+            'La gestion locative, sans le drame',
 
         'login.hero_title':
             'Encaissez vos loyers, l\'esprit tranquille.',
@@ -3863,7 +3863,7 @@ export const translations = {
             'Image — aperçu de l\'application',
 
         'login.product_name':
-            'Patrimoine 365',
+            '© 2026 Patrimoine 365. Tous droits réservés.',
 
         'login.switch_to_dark':
             'Passer en mode sombre',

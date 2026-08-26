@@ -30,6 +30,16 @@
         href="/branding/favicon/apple-touch-icon.png"
     >
 
+    <link
+        rel="manifest"
+        href="/branding/site.webmanifest"
+    >
+
+    <meta
+        name="theme-color"
+        content="#26744b"
+    >
+
     <x-presentation-language-bootstrap />
 
     <x-theme-bootstrap />
@@ -94,18 +104,14 @@
 
             <div class="relative z-10">
                 <div class="flex items-center gap-3">
-                    <div
-                        class="
-                            flex h-11 w-11 items-center justify-center
-                            rounded-xl bg-white
-                            font-semibold text-patrimoine-950
-                        "
+                    <img
+                        src="/branding/patrimoine-logo.svg"
+                        alt="Patrimoine 365"
+                        class="h-11 w-11"
                     >
-                        P
-                    </div>
 
                     <span class="text-xl font-semibold text-white">
-                        Patrimoine 365
+                        Patrimoine <span class="text-patrimoine-300">365</span>
                     </span>
                 </div>
             </div>
@@ -256,18 +262,14 @@
             <div class="w-full max-w-md">
 
                 <div class="mb-12 flex items-center gap-3 lg:hidden">
-                    <div
-                        class="
-                            flex h-10 w-10 items-center justify-center
-                            rounded-xl bg-patrimoine-950
-                            font-semibold text-white
-                        "
+                    <img
+                        src="/branding/patrimoine-logo.svg"
+                        alt="Patrimoine 365"
+                        class="h-10 w-10"
                     >
-                        P
-                    </div>
 
                     <span class="text-xl font-semibold text-[var(--pm-text)]">
-                        Patrimoine 365
+                        Patrimoine <span class="text-[var(--pm-accent)]">365</span>
                     </span>
                 </div>
 

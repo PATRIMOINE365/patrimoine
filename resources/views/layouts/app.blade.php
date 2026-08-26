@@ -13,7 +13,7 @@
             data-i18n-title="@yield('title-i18n')"
         @endif
     >
-        @yield('title', 'Patrimoine')
+        @yield('title', 'Patrimoine 365')
     </title>
 
     <link
@@ -32,6 +32,16 @@
         rel="apple-touch-icon"
         sizes="180x180"
         href="/branding/favicon/apple-touch-icon.png"
+    >
+
+    <link
+        rel="manifest"
+        href="/branding/site.webmanifest"
+    >
+
+    <meta
+        name="theme-color"
+        content="#26744b"
     >
 
     <script>
@@ -169,19 +179,11 @@
                 href="/dashboard"
                 class="flex items-center gap-3"
             >
-                <div
-                    class="
-                        flex h-10 w-10 shrink-0
-                        items-center justify-center
-                        overflow-hidden rounded-xl bg-white
-                    "
+                <img
+                    src="/branding/patrimoine-logo.svg"
+                    alt="Patrimoine 365"
+                    class="h-10 w-10 shrink-0"
                 >
-                    <img
-                        src="/branding/patrimoine-logo.svg"
-                        alt="Patrimoine"
-                        class="h-9 w-9 object-contain"
-                    >
-                </div>
 
                 <div>
                     <div
@@ -190,7 +192,7 @@
                             tracking-tight text-white
                         "
                     >
-                        Patrimoine
+                        Patrimoine <span class="text-patrimoine-300">365</span>
                     </div>
 
                     <div
@@ -995,7 +997,7 @@
                                 "
                                 data-i18n="release.summary_line"
                             >
-                                This update brings new features and improvements across Patrimoine.
+                                This update brings new features and improvements across Patrimoine 365.
                             </p>
 
                             <a

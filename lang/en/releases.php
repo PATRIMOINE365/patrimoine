@@ -19,6 +19,16 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.13',
+            'date' => '2026-08-26',
+            'title' => 'One identity everywhere: the new Patrimoine 365 look',
+            'changes' => [
+                'Patrimoine 365 has a new visual identity — the green house logomark and the Patrimoine 365 wordmark now appear consistently across the application, sign-in pages, emails and PDF documents.',
+                'New app icon: saving Patrimoine 365 to your phone\'s home screen (Android or iPhone) or pinning a browser tab now shows the new logo.',
+                'A new motto to match: “Property management, minus the drama.”',
+            ],
+        ],
+        [
             'version' => '1.0.12',
             'date' => '2026-08-26',
             'title' => 'A warmer front door: theme and language, your way',

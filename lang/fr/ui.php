@@ -6,11 +6,11 @@ return [
     ],
     'login' => [
         'title' => 'Connexion — Patrimoine 365',
-        'hero_kicker' => 'La gestion locative qui tient ses comptes',
+        'hero_kicker' => 'La gestion locative, sans le drame',
         'hero_title' => 'Encaissez vos loyers, l\'esprit tranquille.',
         'hero_description' => 'Baux, quittances, propriétaires et locataires en ordre parfait — avec un journal en partie double qui veille au grain en coulisses. Vous gérez vos biens ; les écritures, c\'est notre affaire.',
         'hero_image_label' => 'Image — aperçu de l\'application',
-        'product_name' => 'Patrimoine 365',
+        'product_name' => '© 2026 Patrimoine 365. Tous droits réservés.',
         'switch_to_dark' => 'Passer en mode sombre',
         'switch_to_light' => 'Passer en mode clair',
         'switch_language' => 'Changer de langue',
@@ -196,7 +196,7 @@ return [
         'theme_system' => 'Système',
     ],
     'release' => [
-        'summary_line' => 'Cette mise à jour apporte de nouvelles fonctionnalités et des améliorations dans tout Patrimoine.',
+        'summary_line' => 'Cette mise à jour apporte de nouvelles fonctionnalités et des améliorations dans tout Patrimoine 365.',
         'view_details' => 'Voir le journal complet des mises à jour',
         'v104_heading' => 'Vous utilisez maintenant Patrimoine v1.0.4',
         'v104_ui' => 'Interface mise à jour pour une utilisation plus claire.',

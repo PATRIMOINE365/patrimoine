@@ -153,6 +153,7 @@ return [
     'layout' => [
         'on_behalf_of' => 'Sent on behalf of :organisation',
         'sent_by_product' => 'This message was sent by Patrimoine 365.',
+        'tagline' => 'Property management, minus the drama.',
         'operated_by' => 'is operated by',
         'questions' => 'Questions?',
     ],

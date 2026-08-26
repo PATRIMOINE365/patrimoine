@@ -12,6 +12,9 @@
 
     <link rel="icon" type="image/png" sizes="32x32" href="/branding/favicon/favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/branding/favicon/favicon-16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/branding/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="/branding/site.webmanifest">
+    <meta name="theme-color" content="#26744b">
 
     <x-theme-bootstrap />
 
@@ -51,9 +54,13 @@
     <aside class="pm-admin-sidebar">
 
         <div class="pm-admin-brand">
-            <span class="pm-admin-brand-mark">P</span>
+            <img
+                src="/branding/patrimoine-logo.svg"
+                alt="Patrimoine 365"
+                class="pm-admin-brand-logo"
+            >
 
-            <span class="pm-admin-brand-name">Patrimoine&nbsp;365</span>
+            <span class="pm-admin-brand-name">Patrimoine&nbsp;<span class="pm-admin-brand-365">365</span></span>
 
             <span class="pm-admin-chip">Admin</span>
         </div>
@@ -123,6 +130,12 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h2"/></svg>
                 </button>
             </div>
+        </div>
+
+        {{-- Brand footer: same message as the marketing site --}}
+        <div class="pm-admin-brand-footer">
+            <p>Property management, minus the drama.</p>
+            <p>&copy; 2026 Patrimoine 365. All rights reserved.</p>
         </div>
 
     </aside>

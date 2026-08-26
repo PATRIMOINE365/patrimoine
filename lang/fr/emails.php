@@ -153,6 +153,7 @@ return [
     'layout' => [
         'on_behalf_of' => 'Envoyé pour le compte de :organisation',
         'sent_by_product' => 'Ce message a été envoyé par Patrimoine 365.',
+        'tagline' => 'La gestion locative, sans le drame.',
         'operated_by' => 'est exploité par',
         'questions' => 'Des questions ?',
     ],

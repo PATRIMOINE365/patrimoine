@@ -15,6 +15,16 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.13',
+            'date' => '2026-08-26',
+            'title' => 'Une seule identité partout : le nouveau visage de Patrimoine 365',
+            'changes' => [
+                'Patrimoine 365 a une nouvelle identité visuelle — le logo maison vert et le nom Patrimoine 365 apparaissent désormais de façon cohérente dans l\'application, sur les pages de connexion, dans les e-mails et sur les documents PDF.',
+                'Nouvelle icône : enregistrer Patrimoine 365 sur l\'écran d\'accueil de votre téléphone (Android ou iPhone) ou épingler l\'onglet affiche maintenant le nouveau logo.',
+                'Et une devise assortie : « La gestion locative, sans le drame. »',
+            ],
+        ],
+        [
             'version' => '1.0.12',
             'date' => '2026-08-26',
             'title' => 'Un accueil plus chaleureux : thème et langue, à votre goût',

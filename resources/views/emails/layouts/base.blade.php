@@ -43,8 +43,13 @@
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                                 <tr>
                                     <td style="font-family:Segoe UI, Helvetica, Arial, sans-serif;">
-                                        <span style="display:inline-block; background-color:#ffffff; color:#123527; font-size:16px; font-weight:700; border-radius:8px; padding:6px 11px; vertical-align:middle;">P</span>
-                                        <span style="color:#ffffff; font-size:19px; font-weight:600; letter-spacing:0.2px; padding-left:10px; vertical-align:middle;">{{ config('legal.product.name') }}</span>
+                                        <span style="display:inline-block; background-color:#26744b; color:#ffffff; font-size:16px; font-weight:700; border-radius:8px; padding:6px 11px; vertical-align:middle;">P</span>
+                                        <span style="color:#ffffff; font-size:19px; font-weight:600; letter-spacing:0.2px; padding-left:10px; vertical-align:middle;">Patrimoine <span style="color:#89c5a2;">365</span></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-family:Segoe UI, Helvetica, Arial, sans-serif; color:#9fc3b2; font-size:12px; padding-top:6px;">
+                                        {{ __('emails.layout.tagline') }}
                                     </td>
                                 </tr>
                                 @isset($organisationName)
@@ -70,6 +75,7 @@
                         <td style="padding:26px 40px 8px 40px; font-family:Segoe UI, Helvetica, Arial, sans-serif; color:#6d7d75; font-size:12px; line-height:19px;" align="center">
                             <p style="margin:0 0 6px 0;">
                                 {{ __('emails.layout.sent_by_product') }}
+                                {{ __('emails.layout.tagline') }}
                             </p>
                             <p style="margin:0 0 6px 0;">
                                 {{ config('legal.product.name') }} {{ __('emails.layout.operated_by') }} {{ config('legal.company.name') }}, {{ config('legal.company.address') }}
