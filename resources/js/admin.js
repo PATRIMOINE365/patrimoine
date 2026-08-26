@@ -125,12 +125,16 @@ function accountNumber(id) {
 }
 
 function metricCard(label, value, hint) {
+    /*
+     * Untitled UI metric card: 14px medium label over a display-md
+     * (36px) semibold figure.
+     */
     return `
         <div class="pm-admin-card">
             <div class="text-sm font-medium text-[var(--pm-text-muted)]">
                 ${escapeHtml(label)}
             </div>
-            <div class="mt-2 text-3xl font-semibold tracking-tight text-[var(--pm-text)]">
+            <div class="mt-3 text-[2.25rem] leading-[2.75rem] font-semibold tracking-tight text-[var(--pm-text)]">
                 ${escapeHtml(String(value))}
             </div>
             ${hint ? `<div class="mt-2 text-sm text-[var(--pm-text-muted)]">${escapeHtml(hint)}</div>` : ''}
@@ -307,7 +311,7 @@ async function loadOrganisations(page = 1) {
     }
 
     document.getElementById('admin-orgs-count').textContent =
-        `${formatNumber(data.meta.total)} result(s)`;
+        `${formatNumber(data.meta.total)} organizations`;
 
     renderPagination(
         document.getElementById('admin-pagination'),
@@ -837,12 +841,40 @@ export async function initializeAdmin() {
     /*
      * Theme toggle: light ↔ dark.
      */
-    document.getElementById('admin-theme-toggle')
-        ?.addEventListener('click', () => {
-            const current = getThemePreference();
+    const themeToggle = document.getElementById('admin-theme-toggle');
 
-            setThemePreference(current === 'dark' ? 'light' : 'dark');
-        });
+    const SUN_ICON =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+
+    const MOON_ICON =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+
+    function renderThemeIcon() {
+        if (! themeToggle) {
+            return;
+        }
+
+        const dark =
+            document.documentElement.dataset.theme === 'dark';
+
+        /*
+         * The icon previews the theme the button switches TO.
+         */
+        themeToggle.innerHTML = dark ? SUN_ICON : MOON_ICON;
+    }
+
+    themeToggle?.addEventListener('click', () => {
+        const current = getThemePreference();
+
+        const dark =
+            document.documentElement.dataset.theme === 'dark';
+
+        setThemePreference(dark ? 'light' : 'dark');
+
+        renderThemeIcon();
+    });
+
+    renderThemeIcon();
 
     /*
      * Global search: routes to the Organizations page and filters it.

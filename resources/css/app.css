@@ -8109,6 +8109,97 @@ body.pm-admin .pm-drawer-panel {
     background: var(--pm-surface);
 }
 
+/* ---------------- Focus: UUI rings, never the UA outline ----------- */
+
+body.pm-admin .pm-admin-nav-item:focus,
+body.pm-admin .pm-icon-button:focus,
+body.pm-admin .pm-admin-row-click:focus {
+    outline: none;
+}
+
+body.pm-admin .pm-admin-nav-item:focus-visible,
+body.pm-admin .pm-icon-button:focus-visible {
+    outline: none;
+    box-shadow: var(--uui-ring-gray);
+}
+
+/* Icon-only buttons: UUI tertiary-gray, 40px square */
+body.pm-admin .pm-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    color: var(--pm-text-subtle);
+    transition: background-color 120ms ease, color 120ms ease;
+}
+
+body.pm-admin .pm-icon-button:hover {
+    background: var(--pm-hover);
+    color: var(--pm-text-secondary);
+}
+
+/* -------------- Card tables: full bleed, UUI structure -------------- */
+
+.pm-admin-card-flush {
+    padding: 0;
+    overflow: hidden;
+}
+
+.pm-admin-card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+}
+
+.pm-admin-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid var(--pm-border);
+    font-size: 0.875rem;
+}
+
+.pm-admin-card-flush .pm-admin-table th:first-child,
+.pm-admin-card-flush .pm-admin-table td:first-child {
+    padding-left: 1.5rem;
+}
+
+.pm-admin-card-flush .pm-admin-table th:last-child,
+.pm-admin-card-flush .pm-admin-table td:last-child {
+    padding-right: 1.5rem;
+}
+
+.pm-admin-card-flush .pm-admin-table th {
+    border-top: 1px solid var(--pm-border);
+    border-radius: 0;
+}
+
+.pm-admin-card-flush .pm-admin-table tr:last-child td {
+    border-bottom: 0;
+}
+
+/* Count pill beside a card title (UUI table-header convention) */
+.pm-admin-count-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.125rem 0.5rem;
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+    line-height: 1.125rem;
+    font-weight: 500;
+    color: var(--uui-badge-brand-text);
+    background: var(--uui-badge-brand-bg);
+    border: 1px solid var(--uui-badge-brand-border);
+}
+
 /* ============================ Responsive ============================ */
 
 @media (max-width: 900px) {

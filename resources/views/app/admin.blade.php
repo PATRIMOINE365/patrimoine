@@ -42,27 +42,30 @@
         <h1 class="pm-admin-title">Organizations</h1>
         <p class="pm-admin-subtitle">See workspaces, usage, and account health.</p>
 
-        <div class="pm-admin-card mt-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <input
-                    id="admin-search"
-                    type="search"
-                    class="pm-input w-72"
-                    placeholder="Search organization…"
-                >
+        <div class="pm-admin-card pm-admin-card-flush mt-6">
+            <div class="pm-admin-card-header">
+                <span class="flex items-center">
+                    <span class="pm-admin-card-title">All organizations</span>
+                    <span id="admin-orgs-count" class="pm-admin-count-pill"></span>
+                </span>
 
                 <span class="flex items-center gap-3">
+                    <input
+                        id="admin-search"
+                        type="search"
+                        class="pm-input w-72"
+                        placeholder="Search organization…"
+                    >
+
                     <select id="admin-status-filter" class="pm-input w-40">
                         <option value="">All statuses</option>
                         <option value="active">Active</option>
                         <option value="suspended">Suspended</option>
                     </select>
-
-                    <span id="admin-orgs-count" class="text-sm text-[var(--pm-text-muted)]"></span>
                 </span>
             </div>
 
-            <div class="mt-4 overflow-x-auto">
+            <div class="overflow-x-auto">
                 <table class="pm-admin-table min-w-[820px]">
                     <thead>
                         <tr>
@@ -78,7 +81,7 @@
                 </table>
             </div>
 
-            <div id="admin-pagination" class="mt-4 flex items-center justify-between text-sm"></div>
+            <div id="admin-pagination" class="pm-admin-card-footer"></div>
         </div>
     </section>
 
@@ -90,21 +93,25 @@
 
         <div id="admin-license-metrics" class="mt-6 grid gap-4 sm:grid-cols-3"></div>
 
-        <div class="pm-admin-card mt-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <input
-                    id="admin-license-search"
-                    type="search"
-                    class="pm-input w-72"
-                    placeholder="Search organization…"
-                >
+        <div class="pm-admin-card pm-admin-card-flush mt-6">
+            <div class="pm-admin-card-header">
+                <span class="pm-admin-card-title">Subscriptions</span>
 
-                <button type="button" class="pm-button-primary" data-admin-assign>
-                    + Assign License
-                </button>
+                <span class="flex items-center gap-3">
+                    <input
+                        id="admin-license-search"
+                        type="search"
+                        class="pm-input w-72"
+                        placeholder="Search organization…"
+                    >
+
+                    <button type="button" class="pm-button-secondary" data-admin-assign>
+                        Assign License
+                    </button>
+                </span>
             </div>
 
-            <div class="mt-4 overflow-x-auto">
+            <div class="overflow-x-auto">
                 <table class="pm-admin-table min-w-[900px]">
                     <thead>
                         <tr>
@@ -120,7 +127,7 @@
                 </table>
             </div>
 
-            <div id="admin-licenses-pagination" class="mt-4 flex items-center justify-between text-sm"></div>
+            <div id="admin-licenses-pagination" class="pm-admin-card-footer"></div>
         </div>
     </section>
 
@@ -130,7 +137,7 @@
         <h1 class="pm-admin-title">Activity</h1>
         <p class="pm-admin-subtitle">Every console action, newest first — the platform's own audit trail.</p>
 
-        <div class="pm-admin-card mt-6">
+        <div class="pm-admin-card pm-admin-card-flush mt-6">
             <div class="overflow-x-auto">
                 <table class="pm-admin-table min-w-[820px]">
                     <thead>
@@ -146,7 +153,7 @@
                 </table>
             </div>
 
-            <div id="admin-activity-pagination" class="mt-4 flex items-center justify-between text-sm"></div>
+            <div id="admin-activity-pagination" class="pm-admin-card-footer"></div>
         </div>
     </section>
 
@@ -156,20 +163,21 @@
         <h1 class="pm-admin-title">Settings</h1>
         <p class="pm-admin-subtitle">Team access and platform identity.</p>
 
-        <div class="pm-admin-card mt-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <h2 class="pm-admin-card-title">Team access</h2>
+        <div class="pm-admin-card pm-admin-card-flush mt-6">
+            <div class="pm-admin-card-header">
+                <span>
+                    <span class="pm-admin-card-title">Team access</span>
+                    <span class="mt-0.5 block text-sm text-[var(--pm-text-muted)]">
+                        Staff accounts must use an @patrimoine365.com address; invitations arrive by email.
+                    </span>
+                </span>
 
                 <button id="admin-invite-staff" type="button" class="pm-button-secondary">
-                    + Invite staff
+                    Invite staff
                 </button>
             </div>
 
-            <p class="mt-1 text-sm text-[var(--pm-text-muted)]">
-                Staff accounts must use an @patrimoine365.com address; invitations arrive by email.
-            </p>
-
-            <div class="mt-4 overflow-x-auto">
+            <div class="overflow-x-auto">
                 <table class="pm-admin-table min-w-[640px]">
                     <thead>
                         <tr>
@@ -279,10 +287,12 @@
             ></div>
         </div>
 
-        <div class="pm-admin-card mt-6">
-            <h3 class="pm-admin-card-title">License history</h3>
+        <div class="pm-admin-card pm-admin-card-flush mt-6">
+            <div class="pm-admin-card-header">
+                <span class="pm-admin-card-title">License history</span>
+            </div>
 
-            <div class="mt-3 overflow-x-auto">
+            <div class="overflow-x-auto">
                 <table class="pm-admin-table min-w-[720px]">
                     <thead>
                         <tr>
@@ -299,10 +309,12 @@
             </div>
         </div>
 
-        <div class="pm-admin-card mt-6">
-            <h3 class="pm-admin-card-title">Users</h3>
+        <div class="pm-admin-card pm-admin-card-flush mt-6">
+            <div class="pm-admin-card-header">
+                <span class="pm-admin-card-title">Users</span>
+            </div>
 
-            <div class="mt-3 overflow-x-auto">
+            <div class="overflow-x-auto">
                 <table class="pm-admin-table min-w-[760px]">
                     <thead>
                         <tr>
