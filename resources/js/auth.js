@@ -367,8 +367,14 @@ export async function initializeLogin() {
             data.user?.role
         );
 
+        /*
+         * V1.0.11: platform staff live in the administration console,
+         * not the customer workspace.
+         */
         window.location.replace(
-            '/dashboard'
+            data.user?.is_platform_admin
+                ? '/admin'
+                : '/dashboard'
         );
     }
 

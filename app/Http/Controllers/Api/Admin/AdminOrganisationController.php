@@ -49,16 +49,33 @@ class AdminOrganisationController extends Controller
 
         return response()->json([
             'data' => collect($page->items())->map(
-                fn (Organisation $organisation): array => [
-                    'id' => $organisation->id,
-                    'name' => $organisation->name,
-                    'status' => $organisation->status,
-                    'plan' => $licensing->planFor($organisation),
-                    'on_trial' => $licensing->onTrialFor($organisation),
-                    'trial_ends_on' => $organisation->trial_ends_on?->toDateString(),
-                    'created_at' => $organisation->created_at?->toDateString(),
-                    'usage' => $licensing->usageFor($organisation),
-                ]
+                function (Organisation $organisation) use ($licensing): array {
+                    $plan = $licensing->planFor($organisation);
+
+                    $covering = $organisation->licenses->first(
+                        fn (License $license): bool => $license->coversToday()
+                    );
+
+                    return [
+                        'id' => $organisation->id,
+                        'name' => $organisation->name,
+                        'status' => $organisation->status,
+                        'plan' => $plan,
+                        'on_trial' => $licensing->onTrialFor($organisation),
+                        'trial_ends_on' => $organisation->trial_ends_on?->toDateString(),
+                        'created_at' => $organisation->created_at?->toDateString(),
+                        'usage' => $licensing->usageFor($organisation),
+                        'limits' => config('licensing.plans.'.$plan.'.limits', []),
+                        'current_license' => $covering === null
+                            ? null
+                            : [
+                                'id' => $covering->id,
+                                'plan' => $covering->plan,
+                                'starts_on' => $covering->starts_on?->toDateString(),
+                                'expires_on' => $covering->expires_on?->toDateString(),
+                            ],
+                    ];
+                }
             ),
             'meta' => [
                 'current_page' => $page->currentPage(),

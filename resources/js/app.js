@@ -164,6 +164,14 @@ document.addEventListener(
         }
 
         /*
+         * V1.0.11: the platform administration console runs its own
+         * shell and its own authentication bootstrap.
+         */
+        if (await initializeAdmin()) {
+            return;
+        }
+
+        /*
          * Verify authentication before any protected business module
          * communicates with the Patrimoine API.
          */
@@ -205,7 +213,5 @@ document.addEventListener(
         await initializeHelp();
 
         await initializeLicense();
-
-        await initializeAdmin();
     }
 );

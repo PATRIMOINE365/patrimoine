@@ -7405,3 +7405,376 @@ html[data-theme="light"]
 }
 
 /* END V1.0.10 LEGAL DOCUMENT PAGES */
+
+/* ==========================================================================
+   V1.0.11 PLATFORM ADMINISTRATION SHELL
+   The console recolours entirely through the central --pm-* tokens.
+   ========================================================================== */
+
+.pm-admin-shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+}
+
+.pm-admin-sidebar {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--pm-border);
+    background: var(--pm-surface);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+.pm-admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1.25rem 1rem;
+    border-bottom: 1px solid var(--pm-border);
+}
+
+.pm-admin-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.6rem;
+    background: var(--pm-primary, var(--pm-accent));
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.pm-admin-brand-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--pm-text);
+    white-space: nowrap;
+}
+
+.pm-admin-chip {
+    margin-left: auto;
+    border-radius: 999px;
+    padding: 0.15rem 0.55rem;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pm-accent);
+    background: color-mix(in srgb, var(--pm-accent) 12%, transparent);
+}
+
+.pm-admin-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 0.6rem;
+}
+
+.pm-admin-nav-group {
+    padding: 0.9rem 0.6rem 0.4rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pm-text-muted);
+}
+
+.pm-admin-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    border-radius: 0.6rem;
+    padding: 0.55rem 0.6rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--pm-text-secondary);
+    text-align: left;
+}
+
+.pm-admin-nav-item svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+}
+
+.pm-admin-nav-item:hover {
+    background: var(--pm-hover);
+    color: var(--pm-text);
+}
+
+.pm-admin-nav-item.pm-admin-nav-active {
+    background: color-mix(in srgb, var(--pm-accent) 12%, transparent);
+    color: var(--pm-accent);
+}
+
+.pm-admin-sidebar-footer {
+    border-top: 1px solid var(--pm-border);
+    padding: 0.9rem 0.8rem;
+}
+
+.pm-admin-user {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.pm-admin-user-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--pm-accent) 15%, transparent);
+    color: var(--pm-accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.pm-admin-user-name {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--pm-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pm-admin-user-role {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--pm-text-muted);
+}
+
+.pm-admin-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.pm-admin-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.8rem 1.5rem;
+    border-bottom: 1px solid var(--pm-border);
+    background: var(--pm-surface);
+    position: sticky;
+    top: 0;
+    z-index: 30;
+}
+
+.pm-admin-search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    max-width: 30rem;
+    border: 1px solid var(--pm-border);
+    border-radius: 0.6rem;
+    padding: 0.45rem 0.75rem;
+    color: var(--pm-text-muted);
+    background: var(--pm-page);
+}
+
+.pm-admin-search input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    outline: none;
+    font-size: 0.875rem;
+    color: var(--pm-text);
+}
+
+.pm-admin-search kbd {
+    border: 1px solid var(--pm-border);
+    border-radius: 0.35rem;
+    padding: 0.05rem 0.4rem;
+    font-size: 0.65rem;
+    color: var(--pm-text-muted);
+    white-space: nowrap;
+}
+
+.pm-admin-content {
+    flex: 1;
+    padding: 1.75rem 1.5rem 3rem;
+    max-width: 1180px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.pm-admin-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pm-accent);
+}
+
+.pm-admin-title {
+    margin-top: 0.4rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--pm-text);
+}
+
+.pm-admin-subtitle {
+    margin-top: 0.35rem;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+    color: var(--pm-text-muted);
+}
+
+.pm-admin-card {
+    border: 1px solid var(--pm-border);
+    border-radius: 1rem;
+    background: var(--pm-surface);
+    padding: 1.25rem;
+}
+
+.pm-admin-card-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.pm-admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.875rem;
+}
+
+.pm-admin-table th {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--pm-border);
+    text-align: left;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--pm-text-muted);
+}
+
+.pm-admin-table td {
+    padding: 0.8rem 0.75rem;
+    border-bottom: 1px solid var(--pm-border);
+    color: var(--pm-text-secondary);
+    vertical-align: middle;
+}
+
+.pm-admin-table tr:last-child td {
+    border-bottom: 0;
+}
+
+.pm-admin-row-click {
+    cursor: pointer;
+}
+
+.pm-admin-row-click:hover td {
+    background: var(--pm-hover);
+}
+
+.pm-admin-org-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    flex-shrink: 0;
+    border-radius: 0.55rem;
+    background: color-mix(in srgb, var(--pm-accent) 14%, transparent);
+    color: var(--pm-accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.pm-admin-plan-badge {
+    display: inline-block;
+    border-radius: 0.4rem;
+    padding: 0.15rem 0.55rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.pm-admin-plan-professional {
+    color: var(--pm-accent);
+    background: color-mix(in srgb, var(--pm-accent) 14%, transparent);
+}
+
+.pm-admin-plan-standard {
+    color: var(--pm-info, #2563eb);
+    background: color-mix(in srgb, var(--pm-info, #2563eb) 12%, transparent);
+}
+
+.pm-admin-plan-free {
+    color: var(--pm-text-muted);
+    background: var(--pm-hover);
+}
+
+.pm-admin-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.pm-admin-status::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 999px;
+    background: currentColor;
+}
+
+.pm-admin-status-active {
+    color: var(--pm-accent);
+    background: color-mix(in srgb, var(--pm-accent) 12%, transparent);
+}
+
+.pm-admin-status-suspended {
+    color: var(--pm-danger, #b3261e);
+    background: color-mix(in srgb, var(--pm-danger, #b3261e) 12%, transparent);
+}
+
+@media (max-width: 900px) {
+    .pm-admin-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .pm-admin-sidebar {
+        position: static;
+        height: auto;
+        flex-direction: row;
+        align-items: center;
+        overflow-x: auto;
+    }
+
+    .pm-admin-nav {
+        display: flex;
+        padding: 0.4rem;
+    }
+
+    .pm-admin-nav-group {
+        display: none;
+    }
+
+    .pm-admin-sidebar-footer {
+        border-top: 0;
+        margin-left: auto;
+    }
+}
+
+/* END V1.0.11 PLATFORM ADMINISTRATION SHELL */

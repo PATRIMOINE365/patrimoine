@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ActivityLogController;
+use App\Http\Controllers\Api\Admin\AdminActivityController;
 use App\Http\Controllers\Api\Admin\AdminDashboardController;
 use App\Http\Controllers\Api\Admin\AdminLicenseController;
 use App\Http\Controllers\Api\Admin\AdminOrganisationController;
@@ -1233,6 +1234,11 @@ Route::middleware(['auth:sanctum', 'platform.admin'])
         Route::get(
             'dashboard',
             AdminDashboardController::class
+        );
+
+        Route::get(
+            'activity',
+            [AdminActivityController::class, 'index']
         );
 
         Route::get(

@@ -87,6 +87,45 @@ class PlatformAdminConsoleTest extends TestCase
         $this->getJson('/api/admin/dashboard')->assertForbidden();
     }
 
+    public function test_admin_shell_page_renders(): void
+    {
+        /*
+         * The shell is served to any visitor (admin.js performs the
+         * authentication bootstrap); this compiles the dedicated admin
+         * layout so template errors fail the suite, not the deploy.
+         */
+        $this->get('/admin')
+            ->assertOk()
+            ->assertSee('Assign License')
+            ->assertSee('Organizations');
+    }
+
+    public function test_activity_feed_lists_platform_actions(): void
+    {
+        $this->actAsPlatformAdmin();
+
+        $this->postJson(
+            '/api/admin/organisations/'.$this->testOrganisation->id.'/suspend',
+            ['reason' => 'test']
+        )->assertOk();
+
+        $rows = $this->getJson('/api/admin/activity')
+            ->assertOk()
+            ->json('data');
+
+        $this->assertNotEmpty($rows);
+
+        $this->assertSame(
+            'platform.organisation_suspended',
+            $rows[0]['action']
+        );
+
+        $this->assertSame(
+            'Test Organisation',
+            $rows[0]['customer_organisation']
+        );
+    }
+
     public function test_platform_admin_reaches_the_console(): void
     {
         $this->actAsPlatformAdmin();
