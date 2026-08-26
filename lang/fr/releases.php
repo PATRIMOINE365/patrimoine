@@ -15,6 +15,18 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.11',
+            'date' => '2026-08-26',
+            'title' => 'Rappels de forfait, confirmations de licence et une plateforme renforcée',
+            'changes' => [
+                'Vos administrateurs reçoivent désormais un e-mail 7 jours et 1 jour avant la fin de votre essai ou de votre licence, expliquant exactement ce qui change sur le forfait Gratuit et comment renouveler.',
+                'À chaque attribution ou prolongation de licence pour votre organisation, vos administrateurs reçoivent un e-mail confirmant le nouveau forfait, sa date de début et sa validité.',
+                'Kality Ltd exploite désormais Patrimoine 365 via une console d\'administration dédiée : licences, santé des comptes et demandes d\'assistance sont traitées plus rapidement, et chaque action sur votre organisation est enregistrée dans votre propre Journal d\'activité.',
+                'Les adresses e-mail des comptes sont mieux protégées : un compte ne peut jamais être déplacé vers une adresse réservée à la plateforme.',
+                'Améliorations de sécurité et de fiabilité de la connexion, du traitement des images et de l\'infrastructure de la plateforme.',
+            ],
+        ],
+        [
             'version' => '1.0.10',
             'date' => '2026-08-26',
             'title' => 'Patrimoine 365 : votre organisation, votre espace sécurisé',

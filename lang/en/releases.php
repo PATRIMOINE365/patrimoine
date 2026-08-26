@@ -19,6 +19,18 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.11',
+            'date' => '2026-08-26',
+            'title' => 'Plan reminders, licence confirmations, and a stronger platform behind you',
+            'changes' => [
+                'Your administrators now receive an email 7 days and 1 day before your trial or licence ends, explaining exactly what changes on the Free plan and how to renew.',
+                'Whenever a licence is assigned or extended for your organisation, your administrators receive an email confirming the new plan, its start date and its validity.',
+                'Kality Ltd now operates Patrimoine 365 through a dedicated administration console: licences, account health and support requests are handled faster, and every action on your organisation is recorded in your own Activity Log.',
+                'Account email addresses are further protected: an account can never be moved onto a reserved platform address.',
+                'Security and reliability improvements across sign-in, image handling and the platform infrastructure.',
+            ],
+        ],
+        [
             'version' => '1.0.10',
             'date' => '2026-08-26',
             'title' => 'Patrimoine 365: your organisation, your own secure space',
