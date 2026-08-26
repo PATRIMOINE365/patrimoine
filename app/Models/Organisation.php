@@ -32,6 +32,13 @@ class Organisation extends Model
         'name',
         'status',
         'trial_ends_on',
+
+        /*
+         * Only the platform bootstrap command and tests ever assign
+         * this; no HTTP endpoint mass-assigns raw input into
+         * Organisation.
+         */
+        'is_platform',
     ];
 
     /**

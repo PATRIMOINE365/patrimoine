@@ -101,6 +101,57 @@ class PlatformAdminConsoleTest extends TestCase
             ]);
     }
 
+    public function test_bootstrap_command_creates_a_working_platform_admin(): void
+    {
+        /*
+         * Remove the setUp() platform organisation so the command
+         * exercises its own firstOrCreate path — the path that once
+         * dropped is_platform through mass-assignment protection.
+         */
+        \Illuminate\Support\Facades\DB::table('users')
+            ->where('id', $this->platformAdmin->id)
+            ->delete();
+
+        \Illuminate\Support\Facades\DB::table('organisations')
+            ->where('id', $this->platformOrganisation->id)
+            ->delete();
+
+        $this->artisan('patrimoine:create-platform-admin')
+            ->expectsQuestion('Full name', 'Igor Kutsienyo')
+            ->expectsQuestion('Email address', 'igor@patrimoine365.com')
+            ->expectsQuestion('Password', 'Sup3rSecret42')
+            ->expectsQuestion('Confirm password', 'Sup3rSecret42')
+            ->assertExitCode(0);
+
+        $created = User::withoutGlobalScopes()
+            ->where('email', 'igor@patrimoine365.com')
+            ->sole()
+            ->load('organisation');
+
+        $this->assertTrue($created->isPlatformAdmin());
+
+        $this->assertTrue(
+            (bool) $created->organisation->is_platform
+        );
+
+        /*
+         * A rejected domain never creates anything.
+         */
+        $this->artisan('patrimoine:create-platform-admin')
+            ->expectsQuestion('Full name', 'Wrong Domain')
+            ->expectsQuestion('Email address', 'wrong@gmail.test')
+            ->expectsQuestion('Password', 'Sup3rSecret42')
+            ->expectsQuestion('Confirm password', 'Sup3rSecret42')
+            ->assertExitCode(1);
+
+        $this->assertSame(
+            0,
+            User::withoutGlobalScopes()
+                ->where('email', 'wrong@gmail.test')
+                ->count()
+        );
+    }
+
     public function test_me_exposes_the_platform_flag(): void
     {
         $this->actAsPlatformAdmin();
