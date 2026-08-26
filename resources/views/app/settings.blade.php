@@ -895,10 +895,10 @@
                                             type="button"
                                             data-registry-export
                                             data-entity="{{ $entity }}"
-                                            data-format="csv"
+                                            data-format="pdf"
                                             class="pm-button-secondary px-3 py-2 text-xs"
                                         >
-                                            <span data-i18n="settings.format_csv">{{ __('ui.settings.format_csv') }}</span>
+                                            <span data-i18n="settings.format_pdf">{{ __('ui.settings.format_pdf') }}</span>
                                         </button>
 
                                         <button
@@ -910,18 +910,22 @@
                                         >
                                             <span data-i18n="settings.format_xlsx">{{ __('ui.settings.format_xlsx') }}</span>
                                         </button>
+
+                                        <button
+                                            type="button"
+                                            data-registry-export
+                                            data-entity="{{ $entity }}"
+                                            data-format="csv"
+                                            class="pm-button-secondary px-3 py-2 text-xs"
+                                        >
+                                            <span data-i18n="settings.format_csv">{{ __('ui.settings.format_csv') }}</span>
+                                        </button>
                                     </span>
                                 </div>
                             @endforeach
                         </div>
 
-                        <div
-                            class="
-                                mt-4 flex flex-col gap-3
-                                sm:flex-row sm:items-center
-                                sm:justify-between
-                            "
-                        >
+                        <div class="mt-4 flex justify-end">
                             <button
                                 id="settings-export-full"
                                 type="button"
@@ -929,33 +933,6 @@
                             >
                                 <span data-i18n="settings.export_full">{{ __('ui.settings.export_full') }}</span>
                             </button>
-
-                            <div class="flex items-center gap-2">
-                                <label
-                                    for="settings-export-pdf-entity"
-                                    class="pm-field-label mb-0 whitespace-nowrap"
-                                >
-                                    <span data-i18n="settings.export_pdf_review">{{ __('ui.settings.export_pdf_review') }}</span>
-                                </label>
-
-                                <select
-                                    id="settings-export-pdf-entity"
-                                    class="pm-input w-auto"
-                                >
-                                    <option value="parties" data-i18n="settings.entity_parties">{{ __('ui.settings.entity_parties') }}</option>
-                                    <option value="buildings" data-i18n="settings.entity_buildings">{{ __('ui.settings.entity_buildings') }}</option>
-                                    <option value="units" data-i18n="settings.entity_units">{{ __('ui.settings.entity_units') }}</option>
-                                    <option value="leases" data-i18n="settings.entity_leases">{{ __('ui.settings.entity_leases') }}</option>
-                                </select>
-
-                                <button
-                                    id="settings-export-pdf"
-                                    type="button"
-                                    class="pm-button-secondary"
-                                >
-                                    <span data-i18n="settings.format_pdf">{{ __('ui.settings.format_pdf') }}</span>
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </section>

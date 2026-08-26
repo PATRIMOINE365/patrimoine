@@ -395,9 +395,7 @@ export const translations = {
         'settings.entity_full':
             'Full backup (all entities)',
         'settings.export_full':
-            'Full backup (XLSX)',
-        'settings.export_pdf_review':
-            'PDF review',
+            'Full Backup',
         'settings.exporting':
             'Exporting…',
         'settings.unable_export':
@@ -1447,7 +1445,7 @@ export const translations = {
             'PDF',
 
         'settings.run_dry_run':
-            'Run dry run',
+            'Review Restore',
 
         'settings.dry_run_running':
             'Running dry run…',
@@ -3361,9 +3359,7 @@ export const translations = {
         'settings.entity_full':
             'Sauvegarde complète (toutes les entités)',
         'settings.export_full':
-            'Sauvegarde complète (XLSX)',
-        'settings.export_pdf_review':
-            'Révision PDF',
+            'Sauvegarde complète',
         'settings.exporting':
             'Exportation…',
         'settings.unable_export':
@@ -4413,7 +4409,7 @@ export const translations = {
             'PDF',
 
         'settings.run_dry_run':
-            'Lancer la simulation',
+            'Vérifier la restauration',
 
         'settings.dry_run_running':
             'Simulation en cours…',

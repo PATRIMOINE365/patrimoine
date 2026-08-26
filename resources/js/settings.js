@@ -425,18 +425,29 @@ function initializeRegistryPortability() {
         )
         .forEach(
             (button) => {
+                const entity =
+                    button.dataset.entity;
+
+                const format =
+                    button.dataset.format;
+
+                /*
+                 * PDF opens through a signed document link on its own
+                 * endpoint; CSV/XLSX are direct authenticated downloads.
+                 */
+                const endpoint =
+                    format === 'pdf'
+                        ? `/api/registry/export/pdf?entity=${encodeURIComponent(entity)}`
+                        : `/api/registry/export?entity=${encodeURIComponent(entity)}&format=${encodeURIComponent(format)}`;
+
                 button.addEventListener(
                     'click',
                     () =>
                         downloadRegistryExport(
                             button,
-                            `/api/registry/export?entity=${encodeURIComponent(
-                                button.dataset.entity
-                            )}&format=${encodeURIComponent(
-                                button.dataset.format
-                            )}`,
-                            button.dataset.format,
-                            `registry-${button.dataset.entity}.${button.dataset.format}`
+                            endpoint,
+                            format,
+                            `registry-${entity}.${format}`
                         )
                 );
             }
@@ -456,29 +467,6 @@ function initializeRegistryPortability() {
                 'xlsx',
                 'registry-full.xlsx'
             )
-    );
-
-    const pdfButton =
-        document.getElementById(
-            'settings-export-pdf'
-        );
-
-    pdfButton?.addEventListener(
-        'click',
-        () => {
-            const entity =
-                formValue(
-                    'settings-export-pdf-entity'
-                )
-                || 'parties';
-
-            downloadRegistryExport(
-                pdfButton,
-                `/api/registry/export/pdf?entity=${encodeURIComponent(entity)}`,
-                'pdf',
-                `registry-${entity}.pdf`
-            );
-        }
     );
 
     /*
