@@ -15,10 +15,15 @@
 
     <x-theme-bootstrap />
 
+    {{-- Untitled UI's typeface. --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        html, body { background-color: #f5f7f6; }
+        html, body { background-color: #f9fafb; }
         html[data-theme="dark"],
-        html[data-theme="dark"] body { background-color: #0e1311; }
+        html[data-theme="dark"] body { background-color: #0c111d; }
     </style>
 
     @vite([
@@ -38,7 +43,7 @@
     No data-auth-required here: admin.js performs its own
     authentication bootstrap and redirects non-staff away.
 --}}
-<body class="min-h-screen bg-[var(--pm-page)] font-sans text-[var(--pm-text)]">
+<body class="pm-admin min-h-screen bg-[var(--pm-page)] font-sans text-[var(--pm-text)]">
 
 <div class="pm-admin-shell">
 
@@ -57,29 +62,29 @@
             <div class="pm-admin-nav-group">Workspace</div>
 
             <button type="button" class="pm-admin-nav-item" data-admin-nav="dashboard">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15v2M12 11v6M16 7v10"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
                 Dashboard
             </button>
 
             <button type="button" class="pm-admin-nav-item" data-admin-nav="organizations">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="8" height="14" rx="1"/><rect x="13" y="3" width="8" height="18" rx="1"/><path d="M6 11h2M6 15h2M16 7h2M16 11h2M16 15h2"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 11h-2c-.93 0-1.4 0-1.77.15a2 2 0 0 0-1.08 1.08C2.5 12.6 2.5 13.07 2.5 14v7h19v-7c0-.93 0-1.4-.15-1.77a2 2 0 0 0-1.08-1.08C19.9 11 19.43 11 18.5 11h-2"/><path d="M7.5 21V6.2c0-1.12 0-1.68.22-2.11a2 2 0 0 1 .87-.87C9.02 3 9.58 3 10.7 3h2.6c1.12 0 1.68 0 2.11.22a2 2 0 0 1 .87.87c.22.43.22.99.22 2.11V21"/><path d="M11 7h2M11 11h2M11 15h2"/></svg>
                 Organizations
             </button>
 
             <button type="button" class="pm-admin-nav-item" data-admin-nav="licenses">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 15h4M7 11h2"/><circle cx="16" cy="13" r="2.2"/><path d="M16 15.2V18"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18.5H6.2c-1.12 0-1.68 0-2.11-.22a2 2 0 0 1-.87-.87C3 16.98 3 16.42 3 15.3V6.7c0-1.12 0-1.68.22-2.11a2 2 0 0 1 .87-.87C4.52 3.5 5.08 3.5 6.2 3.5h11.6c1.12 0 1.68 0 2.11.22a2 2 0 0 1 .87.87c.22.43.22.99.22 2.11v5.3"/><path d="M6.5 12h3M6.5 8.5h6"/><circle cx="18" cy="15.5" r="2.5"/><path d="M16.5 17.5l-.5 4 2-1.2 2 1.2-.5-4"/></svg>
                 Licenses
             </button>
 
             <div class="pm-admin-nav-group">Operations</div>
 
             <button type="button" class="pm-admin-nav-item" data-admin-nav="activity">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
                 Activity
             </button>
 
             <button type="button" class="pm-admin-nav-item" data-admin-nav="settings">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.1a1.7 1.7 0 0 0-1.4-1.5 1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h-.1"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M18.73 14.6a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V20.6a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H2.4a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.08 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.08a1.65 1.65 0 0 0 1-1.51V2.4a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.08a1.65 1.65 0 0 0 1.51 1h.17a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 Settings
             </button>
         </nav>
@@ -100,7 +105,7 @@
                     aria-label="Sign out"
                     title="Sign out"
                 >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><path d="M15 4h4v16h-4"/><path d="M10 8l-4 4 4 4"/><path d="M6 12h9"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h2"/></svg>
                 </button>
             </div>
         </div>
@@ -112,7 +117,7 @@
 
         <header class="pm-admin-topbar">
             <div class="pm-admin-search">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4 shrink-0"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 shrink-0"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
 
                 <input
                     id="admin-global-search"
@@ -121,7 +126,7 @@
                     autocomplete="off"
                 >
 
-                <kbd>Ctrl K</kbd>
+                <kbd>&#8984;K</kbd>
             </div>
 
             <div class="flex items-center gap-2">
@@ -132,7 +137,7 @@
                     aria-label="Toggle theme"
                     title="Toggle theme"
                 >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
                 </button>
 
                 <button
@@ -140,7 +145,8 @@
                     type="button"
                     class="pm-button-primary"
                 >
-                    + Assign License
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M12 5v14M5 12h14"/></svg>
+                    Assign License
                 </button>
             </div>
         </header>

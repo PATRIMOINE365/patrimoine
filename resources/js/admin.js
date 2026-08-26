@@ -127,13 +127,13 @@ function accountNumber(id) {
 function metricCard(label, value, hint) {
     return `
         <div class="pm-admin-card">
-            <div class="text-xs font-medium uppercase tracking-wide text-[var(--pm-text-muted)]">
+            <div class="text-sm font-medium text-[var(--pm-text-muted)]">
                 ${escapeHtml(label)}
             </div>
-            <div class="mt-2 text-2xl font-semibold text-[var(--pm-text)]">
+            <div class="mt-2 text-3xl font-semibold tracking-tight text-[var(--pm-text)]">
                 ${escapeHtml(String(value))}
             </div>
-            ${hint ? `<div class="mt-1 text-xs text-[var(--pm-text-muted)]">${escapeHtml(hint)}</div>` : ''}
+            ${hint ? `<div class="mt-2 text-sm text-[var(--pm-text-muted)]">${escapeHtml(hint)}</div>` : ''}
         </div>
     `;
 }

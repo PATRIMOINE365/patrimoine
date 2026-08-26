@@ -7407,13 +7407,200 @@ html[data-theme="light"]
 /* END V1.0.10 LEGAL DOCUMENT PAGES */
 
 /* ==========================================================================
-   V1.0.11 PLATFORM ADMINISTRATION SHELL
-   The console recolours entirely through the central --pm-* tokens.
+   V1.0.11 PLATFORM ADMINISTRATION SHELL — UNTITLED UI EDITION
+   --------------------------------------------------------------------------
+   The console follows Untitled UI conventions in both themes. Inside
+   body.pm-admin the shared --pm-* tokens are RE-MAPPED to the Untitled
+   UI palette, so every shared component (inputs, buttons, drawers)
+   adopts the system automatically while the CSS stays central: swap the
+   ramps below and the whole console recolours.
+
+   Ramps (Untitled UI): gray 25–950, brand (Patrimoine green expressed
+   as a UUI ramp), error, warning, success, blue.
    ========================================================================== */
+
+body.pm-admin {
+    /* ------------------------------ ramps ------------------------------ */
+    --uui-gray-25: #fcfcfd;
+    --uui-gray-50: #f9fafb;
+    --uui-gray-100: #f2f4f7;
+    --uui-gray-200: #eaecf0;
+    --uui-gray-300: #d0d5dd;
+    --uui-gray-400: #98a2b3;
+    --uui-gray-500: #667085;
+    --uui-gray-600: #475467;
+    --uui-gray-700: #344054;
+    --uui-gray-800: #182230;
+    --uui-gray-900: #101828;
+    --uui-gray-950: #0c111d;
+
+    --uui-brand-25: #f6faf8;
+    --uui-brand-50: #eef6f1;
+    --uui-brand-100: #d8ebe0;
+    --uui-brand-200: #b5d8c5;
+    --uui-brand-300: #8bbda2;
+    --uui-brand-400: #5d9c7c;
+    --uui-brand-500: #3f7d5e;
+    --uui-brand-600: #2f6b4e;
+    --uui-brand-700: #275741;
+    --uui-brand-800: #224635;
+    --uui-brand-900: #1d3a2d;
+    --uui-brand-950: #10231a;
+
+    --uui-error-50: #fef3f2;
+    --uui-error-100: #fee4e2;
+    --uui-error-200: #fecdca;
+    --uui-error-300: #fda29b;
+    --uui-error-400: #f97066;
+    --uui-error-500: #f04438;
+    --uui-error-600: #d92d20;
+    --uui-error-700: #b42318;
+
+    --uui-warning-50: #fffaeb;
+    --uui-warning-200: #fedf89;
+    --uui-warning-400: #fdb022;
+    --uui-warning-700: #b54708;
+
+    --uui-success-50: #ecfdf3;
+    --uui-success-200: #abefc6;
+    --uui-success-400: #47cd89;
+    --uui-success-500: #17b26a;
+    --uui-success-700: #067647;
+
+    --uui-blue-50: #eff8ff;
+    --uui-blue-200: #b2ddff;
+    --uui-blue-400: #53b1fd;
+    --uui-blue-700: #175cd3;
+
+    /* --------------------------- elevation ---------------------------- */
+    --uui-shadow-xs: 0 1px 2px 0 rgb(16 24 40 / 0.05);
+    --uui-shadow-sm:
+        0 1px 3px 0 rgb(16 24 40 / 0.10),
+        0 1px 2px -1px rgb(16 24 40 / 0.10);
+    --uui-ring-brand: 0 0 0 4px color-mix(in srgb, var(--uui-brand-500) 24%, transparent);
+    --uui-ring-gray: 0 0 0 4px color-mix(in srgb, var(--uui-gray-400) 14%, transparent);
+    --uui-ring-error: 0 0 0 4px color-mix(in srgb, var(--uui-error-500) 24%, transparent);
+
+    /* ------------- shared tokens re-mapped to Untitled UI ------------- */
+    --pm-page: var(--uui-gray-50);
+    --pm-surface: #ffffff;
+    --pm-surface-subtle: var(--uui-gray-50);
+    --pm-surface-muted: var(--uui-gray-100);
+    --pm-surface-elevated: #ffffff;
+    --pm-text: var(--uui-gray-900);
+    --pm-text-secondary: var(--uui-gray-700);
+    --pm-text-muted: var(--uui-gray-600);
+    --pm-text-subtle: var(--uui-gray-500);
+    --pm-border: var(--uui-gray-200);
+    --pm-border-subtle: var(--uui-gray-100);
+    --pm-border-strong: var(--uui-gray-300);
+    --pm-hover: var(--uui-gray-50);
+    --pm-selected: var(--uui-gray-100);
+    --pm-input-background: #ffffff;
+    --pm-accent: var(--uui-brand-700);
+    --pm-primary: var(--uui-brand-600);
+    --pm-primary-hover: var(--uui-brand-700);
+    --pm-primary-text: #ffffff;
+    --pm-danger: var(--uui-error-600);
+    --pm-danger-solid: var(--uui-error-600);
+    --pm-danger-solid-hover: var(--uui-error-700);
+
+    /* badge tints */
+    --uui-badge-success-bg: var(--uui-success-50);
+    --uui-badge-success-text: var(--uui-success-700);
+    --uui-badge-success-border: var(--uui-success-200);
+    --uui-badge-error-bg: var(--uui-error-50);
+    --uui-badge-error-text: var(--uui-error-700);
+    --uui-badge-error-border: var(--uui-error-200);
+    --uui-badge-brand-bg: var(--uui-brand-50);
+    --uui-badge-brand-text: var(--uui-brand-700);
+    --uui-badge-brand-border: var(--uui-brand-200);
+    --uui-badge-blue-bg: var(--uui-blue-50);
+    --uui-badge-blue-text: var(--uui-blue-700);
+    --uui-badge-blue-border: var(--uui-blue-200);
+    --uui-badge-gray-bg: var(--uui-gray-50);
+    --uui-badge-gray-text: var(--uui-gray-700);
+    --uui-badge-gray-border: var(--uui-gray-200);
+
+    --uui-nav-item-text: var(--uui-gray-700);
+    --uui-nav-item-icon: var(--uui-gray-500);
+    --uui-nav-item-active-bg: var(--uui-gray-50);
+    --uui-nav-item-active-text: var(--uui-gray-800);
+    --uui-table-header-bg: var(--uui-gray-50);
+    --uui-secondary-btn-bg: #ffffff;
+    --uui-secondary-btn-border: var(--uui-gray-300);
+    --uui-secondary-btn-text: var(--uui-gray-700);
+    --uui-secondary-btn-hover: var(--uui-gray-50);
+
+    font-family: 'Inter', var(--font-sans);
+    font-feature-settings: 'cv05', 'cv11';
+    letter-spacing: -0.006em;
+}
+
+/* ----------------------- Untitled UI dark mode ----------------------- */
+html[data-theme="dark"] body.pm-admin {
+    --pm-page: var(--uui-gray-950);
+    --pm-surface: var(--uui-gray-900);
+    --pm-surface-subtle: #161b26;
+    --pm-surface-muted: #1f242f;
+    --pm-surface-elevated: var(--uui-gray-900);
+    --pm-text: #f5f5f6;
+    --pm-text-secondary: #cecfd2;
+    --pm-text-muted: #94969c;
+    --pm-text-subtle: #85888e;
+    --pm-border: #1f242f;
+    --pm-border-subtle: #161b26;
+    --pm-border-strong: #333741;
+    --pm-hover: #161b26;
+    --pm-selected: #1f242f;
+    --pm-input-background: var(--uui-gray-950);
+    --pm-accent: var(--uui-brand-400);
+    --pm-primary: var(--uui-brand-600);
+    --pm-primary-hover: var(--uui-brand-500);
+    --pm-danger: var(--uui-error-400);
+
+    --uui-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.30);
+    --uui-shadow-sm:
+        0 1px 3px 0 rgb(0 0 0 / 0.35),
+        0 1px 2px -1px rgb(0 0 0 / 0.35);
+
+    --uui-badge-success-bg: color-mix(in srgb, var(--uui-success-500) 12%, transparent);
+    --uui-badge-success-text: var(--uui-success-400);
+    --uui-badge-success-border: color-mix(in srgb, var(--uui-success-500) 32%, transparent);
+    --uui-badge-error-bg: color-mix(in srgb, var(--uui-error-500) 12%, transparent);
+    --uui-badge-error-text: var(--uui-error-400);
+    --uui-badge-error-border: color-mix(in srgb, var(--uui-error-500) 32%, transparent);
+    --uui-badge-brand-bg: color-mix(in srgb, var(--uui-brand-500) 14%, transparent);
+    --uui-badge-brand-text: var(--uui-brand-300);
+    --uui-badge-brand-border: color-mix(in srgb, var(--uui-brand-500) 34%, transparent);
+    --uui-badge-blue-bg: color-mix(in srgb, var(--uui-blue-400) 12%, transparent);
+    --uui-badge-blue-text: var(--uui-blue-400);
+    --uui-badge-blue-border: color-mix(in srgb, var(--uui-blue-400) 32%, transparent);
+    --uui-badge-gray-bg: #1f242f;
+    --uui-badge-gray-text: #cecfd2;
+    --uui-badge-gray-border: #333741;
+
+    --uui-nav-item-text: #cecfd2;
+    --uui-nav-item-icon: #85888e;
+    --uui-nav-item-active-bg: #1f242f;
+    --uui-nav-item-active-text: #f5f5f6;
+    --uui-table-header-bg: #161b26;
+    --uui-secondary-btn-bg: var(--uui-gray-900);
+    --uui-secondary-btn-border: #333741;
+    --uui-secondary-btn-text: #cecfd2;
+    --uui-secondary-btn-hover: #1f242f;
+}
+
+body.pm-admin {
+    background: var(--pm-page);
+    color: var(--pm-text);
+}
+
+/* ============================== Layout ============================== */
 
 .pm-admin-shell {
     display: grid;
-    grid-template-columns: 240px 1fr;
+    grid-template-columns: 280px 1fr;
     min-height: 100vh;
 }
 
@@ -7430,9 +7617,8 @@ html[data-theme="light"]
 .pm-admin-brand {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    padding: 1.25rem 1rem;
-    border-bottom: 1px solid var(--pm-border);
+    gap: 0.625rem;
+    padding: 1.25rem 1.25rem 1.125rem;
 }
 
 .pm-admin-brand-mark {
@@ -7441,106 +7627,115 @@ html[data-theme="light"]
     justify-content: center;
     width: 2rem;
     height: 2rem;
-    border-radius: 0.6rem;
-    background: var(--pm-primary, var(--pm-accent));
+    border-radius: 0.5rem;
+    background: var(--uui-brand-600);
     color: #ffffff;
-    font-weight: 700;
-    font-size: 0.9rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    box-shadow: var(--uui-shadow-xs);
 }
 
 .pm-admin-brand-name {
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9375rem;
     color: var(--pm-text);
     white-space: nowrap;
 }
 
 .pm-admin-chip {
     margin-left: auto;
+    display: inline-flex;
+    align-items: center;
     border-radius: 999px;
-    padding: 0.15rem 0.55rem;
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--pm-accent);
-    background: color-mix(in srgb, var(--pm-accent) 12%, transparent);
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--uui-badge-brand-text);
+    background: var(--uui-badge-brand-bg);
+    border: 1px solid var(--uui-badge-brand-border);
 }
 
 .pm-admin-nav {
     flex: 1;
     overflow-y: auto;
-    padding: 1rem 0.6rem;
+    padding: 0.25rem 1rem 1rem;
 }
 
 .pm-admin-nav-group {
-    padding: 0.9rem 0.6rem 0.4rem;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--pm-text-muted);
+    padding: 1rem 0.75rem 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--pm-text-subtle);
 }
 
 .pm-admin-nav-item {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.625rem;
     width: 100%;
-    border-radius: 0.6rem;
-    padding: 0.55rem 0.6rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--pm-text-secondary);
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.125rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--uui-nav-item-text);
     text-align: left;
+    transition: background-color 120ms ease, color 120ms ease;
 }
 
 .pm-admin-nav-item svg {
-    width: 1.1rem;
-    height: 1.1rem;
+    width: 1.25rem;
+    height: 1.25rem;
     flex-shrink: 0;
+    color: var(--uui-nav-item-icon);
 }
 
 .pm-admin-nav-item:hover {
-    background: var(--pm-hover);
-    color: var(--pm-text);
+    background: var(--uui-nav-item-active-bg);
+    color: var(--uui-nav-item-active-text);
 }
 
 .pm-admin-nav-item.pm-admin-nav-active {
-    background: color-mix(in srgb, var(--pm-accent) 12%, transparent);
-    color: var(--pm-accent);
+    background: var(--uui-nav-item-active-bg);
+    color: var(--uui-nav-item-active-text);
+}
+
+.pm-admin-nav-item.pm-admin-nav-active svg,
+.pm-admin-nav-item:hover svg {
+    color: var(--pm-text-subtle);
 }
 
 .pm-admin-sidebar-footer {
     border-top: 1px solid var(--pm-border);
-    padding: 0.9rem 0.8rem;
+    padding: 1rem 1.25rem 1.25rem;
 }
 
 .pm-admin-user {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.625rem;
 }
 
 .pm-admin-user-avatar {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.1rem;
-    height: 2.1rem;
+    width: 2.5rem;
+    height: 2.5rem;
     flex-shrink: 0;
     border-radius: 999px;
-    background: color-mix(in srgb, var(--pm-accent) 15%, transparent);
-    color: var(--pm-accent);
-    font-size: 0.75rem;
-    font-weight: 700;
+    background: var(--uui-badge-brand-bg);
+    color: var(--uui-badge-brand-text);
+    border: 1px solid var(--uui-badge-brand-border);
+    font-size: 0.875rem;
+    font-weight: 600;
 }
 
 .pm-admin-user-name {
     display: block;
-    font-size: 0.82rem;
+    font-size: 0.875rem;
     font-weight: 600;
-    color: var(--pm-text);
+    color: var(--pm-text-secondary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -7548,7 +7743,7 @@ html[data-theme="light"]
 
 .pm-admin-user-role {
     display: block;
-    font-size: 0.7rem;
+    font-size: 0.875rem;
     color: var(--pm-text-muted);
 }
 
@@ -7563,7 +7758,7 @@ html[data-theme="light"]
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: 0.8rem 1.5rem;
+    padding: 0.75rem 2rem;
     border-bottom: 1px solid var(--pm-border);
     background: var(--pm-surface);
     position: sticky;
@@ -7576,12 +7771,19 @@ html[data-theme="light"]
     align-items: center;
     gap: 0.5rem;
     flex: 1;
-    max-width: 30rem;
-    border: 1px solid var(--pm-border);
-    border-radius: 0.6rem;
-    padding: 0.45rem 0.75rem;
-    color: var(--pm-text-muted);
-    background: var(--pm-page);
+    max-width: 27.5rem;
+    border: 1px solid var(--pm-border-strong);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    color: var(--pm-text-subtle);
+    background: var(--pm-input-background);
+    box-shadow: var(--uui-shadow-xs);
+    transition: box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.pm-admin-search:focus-within {
+    border-color: var(--uui-brand-300);
+    box-shadow: var(--uui-shadow-xs), var(--uui-ring-brand);
 }
 
 .pm-admin-search input {
@@ -7590,62 +7792,74 @@ html[data-theme="light"]
     background: transparent;
     border: 0;
     outline: none;
-    font-size: 0.875rem;
+    font-size: 1rem;
     color: var(--pm-text);
+}
+
+.pm-admin-search input::placeholder {
+    color: var(--pm-text-subtle);
 }
 
 .pm-admin-search kbd {
     border: 1px solid var(--pm-border);
-    border-radius: 0.35rem;
-    padding: 0.05rem 0.4rem;
-    font-size: 0.65rem;
-    color: var(--pm-text-muted);
+    border-radius: 0.25rem;
+    padding: 0.0625rem 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    font-family: inherit;
+    color: var(--pm-text-subtle);
     white-space: nowrap;
 }
 
 .pm-admin-content {
     flex: 1;
-    padding: 1.75rem 1.5rem 3rem;
-    max-width: 1180px;
+    padding: 2rem 2rem 4rem;
+    max-width: 1216px;
     width: 100%;
     margin: 0 auto;
 }
 
+/* ============================ Typography ============================ */
+
 .pm-admin-eyebrow {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-size: 0.875rem;
+    font-weight: 600;
     color: var(--pm-accent);
 }
 
 .pm-admin-title {
-    margin-top: 0.4rem;
+    margin-top: 0.25rem;
     font-size: 1.5rem;
+    line-height: 2rem;
     font-weight: 600;
-    letter-spacing: -0.02em;
     color: var(--pm-text);
 }
 
 .pm-admin-subtitle {
-    margin-top: 0.35rem;
-    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    font-size: 1rem;
     line-height: 1.5rem;
     color: var(--pm-text-muted);
 }
 
+/* =============================== Cards =============================== */
+
 .pm-admin-card {
     border: 1px solid var(--pm-border);
-    border-radius: 1rem;
+    border-radius: 0.75rem;
     background: var(--pm-surface);
-    padding: 1.25rem;
+    padding: 1.5rem;
+    box-shadow: var(--uui-shadow-xs);
 }
 
 .pm-admin-card-title {
-    font-size: 0.875rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
     font-weight: 600;
     color: var(--pm-text);
 }
+
+/* =============================== Tables ============================== */
 
 .pm-admin-table {
     width: 100%;
@@ -7655,20 +7869,32 @@ html[data-theme="light"]
 }
 
 .pm-admin-table th {
-    padding: 0.6rem 0.75rem;
+    padding: 0.75rem;
+    background: var(--uui-table-header-bg);
+    border-top: 1px solid var(--pm-border);
     border-bottom: 1px solid var(--pm-border);
     text-align: left;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
+    font-size: 0.75rem;
+    line-height: 1.125rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
     color: var(--pm-text-muted);
+    white-space: nowrap;
+}
+
+.pm-admin-table th:first-child {
+    border-top-left-radius: 0.5rem;
+}
+
+.pm-admin-table th:last-child {
+    border-top-right-radius: 0.5rem;
 }
 
 .pm-admin-table td {
-    padding: 0.8rem 0.75rem;
+    padding: 1rem 0.75rem;
     border-bottom: 1px solid var(--pm-border);
-    color: var(--pm-text-secondary);
+    color: var(--pm-text-muted);
     vertical-align: middle;
 }
 
@@ -7688,66 +7914,202 @@ html[data-theme="light"]
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.1rem;
-    height: 2.1rem;
+    width: 2.5rem;
+    height: 2.5rem;
     flex-shrink: 0;
-    border-radius: 0.55rem;
-    background: color-mix(in srgb, var(--pm-accent) 14%, transparent);
-    color: var(--pm-accent);
-    font-size: 0.8rem;
-    font-weight: 700;
+    border-radius: 999px;
+    background: var(--uui-badge-brand-bg);
+    border: 1px solid var(--uui-badge-brand-border);
+    color: var(--uui-badge-brand-text);
+    font-size: 0.875rem;
+    font-weight: 600;
 }
 
+/* =============================== Badges ============================== */
+
 .pm-admin-plan-badge {
-    display: inline-block;
-    border-radius: 0.4rem;
-    padding: 0.15rem 0.55rem;
-    font-size: 0.7rem;
-    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.75rem;
+    line-height: 1.125rem;
+    font-weight: 500;
+    border: 1px solid transparent;
 }
 
 .pm-admin-plan-professional {
-    color: var(--pm-accent);
-    background: color-mix(in srgb, var(--pm-accent) 14%, transparent);
+    color: var(--uui-badge-brand-text);
+    background: var(--uui-badge-brand-bg);
+    border-color: var(--uui-badge-brand-border);
 }
 
 .pm-admin-plan-standard {
-    color: var(--pm-info, #2563eb);
-    background: color-mix(in srgb, var(--pm-info, #2563eb) 12%, transparent);
+    color: var(--uui-badge-blue-text);
+    background: var(--uui-badge-blue-bg);
+    border-color: var(--uui-badge-blue-border);
 }
 
 .pm-admin-plan-free {
-    color: var(--pm-text-muted);
-    background: var(--pm-hover);
+    color: var(--uui-badge-gray-text);
+    background: var(--uui-badge-gray-bg);
+    border-color: var(--uui-badge-gray-border);
 }
 
 .pm-admin-status {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.375rem;
     border-radius: 999px;
-    padding: 0.2rem 0.65rem;
-    font-size: 0.7rem;
-    font-weight: 700;
+    padding: 0.125rem 0.625rem 0.125rem 0.5rem;
+    font-size: 0.75rem;
+    line-height: 1.125rem;
+    font-weight: 500;
+    border: 1px solid transparent;
 }
 
 .pm-admin-status::before {
     content: '';
-    width: 0.4rem;
-    height: 0.4rem;
+    width: 0.5rem;
+    height: 0.5rem;
     border-radius: 999px;
     background: currentColor;
 }
 
 .pm-admin-status-active {
-    color: var(--pm-accent);
-    background: color-mix(in srgb, var(--pm-accent) 12%, transparent);
+    color: var(--uui-badge-success-text);
+    background: var(--uui-badge-success-bg);
+    border-color: var(--uui-badge-success-border);
+}
+
+.pm-admin-status-active::before {
+    background: var(--uui-success-500);
 }
 
 .pm-admin-status-suspended {
-    color: var(--pm-danger, #b3261e);
-    background: color-mix(in srgb, var(--pm-danger, #b3261e) 12%, transparent);
+    color: var(--uui-badge-error-text);
+    background: var(--uui-badge-error-bg);
+    border-color: var(--uui-badge-error-border);
 }
+
+.pm-admin-status-suspended::before {
+    background: var(--uui-error-500);
+}
+
+/* ======================= Buttons (UUI hierarchy) ===================== */
+
+body.pm-admin .pm-button-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--pm-primary);
+    background: var(--pm-primary);
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ffffff;
+    box-shadow: var(--uui-shadow-xs);
+    transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+
+body.pm-admin .pm-button-primary:hover {
+    background: var(--pm-primary-hover);
+    border-color: var(--pm-primary-hover);
+}
+
+body.pm-admin .pm-button-primary:focus-visible {
+    outline: none;
+    box-shadow: var(--uui-shadow-xs), var(--uui-ring-brand);
+}
+
+body.pm-admin .pm-button-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--uui-secondary-btn-border);
+    background: var(--uui-secondary-btn-bg);
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--uui-secondary-btn-text);
+    box-shadow: var(--uui-shadow-xs);
+    transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+
+body.pm-admin .pm-button-secondary:hover {
+    background: var(--uui-secondary-btn-hover);
+}
+
+body.pm-admin .pm-button-secondary:focus-visible {
+    outline: none;
+    box-shadow: var(--uui-shadow-xs), var(--uui-ring-gray);
+}
+
+body.pm-admin .pm-button-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--uui-error-600);
+    background: var(--uui-error-600);
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ffffff;
+    box-shadow: var(--uui-shadow-xs);
+    transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+
+body.pm-admin .pm-button-danger:hover {
+    background: var(--uui-error-700);
+    border-color: var(--uui-error-700);
+}
+
+body.pm-admin .pm-button-danger:focus-visible {
+    outline: none;
+    box-shadow: var(--uui-shadow-xs), var(--uui-ring-error);
+}
+
+/* ========================== Inputs (UUI) ============================ */
+
+body.pm-admin .pm-input {
+    border-radius: 0.5rem;
+    border: 1px solid var(--pm-border-strong);
+    background: var(--pm-input-background);
+    color: var(--pm-text);
+    box-shadow: var(--uui-shadow-xs);
+    padding: 0.5rem 0.875rem;
+    font-size: 1rem;
+    transition: box-shadow 120ms ease, border-color 120ms ease;
+}
+
+body.pm-admin .pm-input::placeholder {
+    color: var(--pm-text-subtle);
+}
+
+body.pm-admin .pm-input:focus {
+    outline: none;
+    border-color: var(--uui-brand-300);
+    box-shadow: var(--uui-shadow-xs), var(--uui-ring-brand);
+}
+
+body.pm-admin .pm-field-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--pm-text-secondary);
+}
+
+/* Drawers inherit the re-mapped tokens; soften their chrome to match. */
+body.pm-admin .pm-drawer-panel {
+    background: var(--pm-surface);
+}
+
+/* ============================ Responsive ============================ */
 
 @media (max-width: 900px) {
     .pm-admin-shell {
@@ -7764,7 +8126,7 @@ html[data-theme="light"]
 
     .pm-admin-nav {
         display: flex;
-        padding: 0.4rem;
+        padding: 0.25rem;
     }
 
     .pm-admin-nav-group {
