@@ -996,15 +996,21 @@ function handlePhotoChosen(file) {
 
         const stageImg = document.getElementById('admin-profile-crop-img');
 
+        /*
+         * The square can only be laid out once the STAGE image has
+         * loaded and has real dimensions — its load is asynchronous
+         * from the probe image above.
+         */
+        stageImg.addEventListener(
+            'load',
+            () => requestAnimationFrame(initCropBox),
+            { once: true }
+        );
+
         stageImg.src = url;
 
         document.getElementById('admin-profile-crop')
             ?.classList.remove('hidden');
-
-        /*
-         * Lay the square out once the stage has real dimensions.
-         */
-        requestAnimationFrame(initCropBox);
     };
 
     image.onerror = () => {
