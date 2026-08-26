@@ -114,13 +114,13 @@ export const translations = {
         'reports.occupancy_report_description':
             'Occupied and vacant units across the portfolio, split by classification and building.',
         'reports.arrears_report':
-            'Arrears aging',
+            'Arrears Aging',
         'reports.arrears_report_summary':
             'Outstanding tenant balances by age bucket.',
         'reports.arrears_report_description':
             'Outstanding invoices grouped into aging buckets per tenant.',
         'reports.funds_report':
-            'Funds held',
+            'Funds Held',
         'reports.funds_report_summary':
             'Tenant and owner funds currently held.',
         'reports.funds_report_description':
@@ -411,7 +411,7 @@ export const translations = {
         'settings.dry_run':
             'Dry run (validate without saving)',
         'settings.dry_run_help':
-            'Runs the full import and reports the result without changing any data.',
+            'The dry run reads the file and reports what would change without touching any data. Apply the restore afterwards from the result.',
         'settings.run_import':
             'Run import',
         'settings.importing':
@@ -439,17 +439,17 @@ export const translations = {
         'users.surname':
             'Surname',
         'activity_log.export_xlsx':
-            'Export XLSX',
+            'XLSX',
         'leases.building':
             'Building',
         'leases.all_buildings':
-            'All buildings',
+            'All Buildings',
         'leases.all_frequencies':
-            'All frequencies',
+            'All Frequencies',
         'leases.expiring_before':
             'Expiring before',
         'leases.rent_increments':
-            'Rent increments',
+            'Rent Increments',
         'leases.rent_increments_description':
             'Review scheduled, applied and cancelled rent increases for this Lease.',
         'leases.rent_increments_loading':
@@ -1073,11 +1073,11 @@ export const translations = {
         'activity_log.user':
             'User',
         'activity_log.all_users':
-            'All users',
+            'All Users',
         'activity_log.role':
             'Role',
         'activity_log.all_roles':
-            'All roles',
+            'All Roles',
         'activity_log.action':
             'Action',
         'activity_log.action_placeholder':
@@ -1089,9 +1089,9 @@ export const translations = {
         'activity_log.clear_filters':
             'Clear Filters',
         'activity_log.export_pdf':
-            'Export PDF',
+            'PDF',
         'activity_log.export_csv':
-            'Export CSV',
+            'CSV',
         'activity_log.exporting':
             'Exporting...',
         'activity_log.unable_export':
@@ -1188,9 +1188,9 @@ export const translations = {
         'users.search_placeholder':
             'Search name, email or phone...',
         'users.all_roles':
-            'All roles',
+            'All Roles',
         'users.all_statuses':
-            'All statuses',
+            'All Statuses',
         'users.active':
             'Active',
         'users.inactive':
@@ -2137,7 +2137,7 @@ export const translations = {
         'reports.all_tenants': 'All tenants',
         'reports.lease': 'Lease',
         'reports.all_leases': 'All leases',
-        'reports.all_buildings': 'All buildings',
+        'reports.all_buildings': 'All Buildings',
         'reports.all_units': 'All units',
         'reports.all_payment_methods': 'All payment methods',
         'reports.payment_method_label': 'Payment Method',
@@ -3365,7 +3365,7 @@ export const translations = {
         'settings.dry_run':
             'Simulation (valider sans enregistrer)',
         'settings.dry_run_help':
-            'Exécute l\'importation complète et présente le résultat sans modifier aucune donnée.',
+            'La simulation lit le fichier et présente ce qui changerait sans toucher aux données. Appliquez ensuite la restauration depuis le résultat.',
         'settings.run_import':
             'Lancer l\'importation',
         'settings.importing':
@@ -3393,7 +3393,7 @@ export const translations = {
         'users.surname':
             'Nom de famille',
         'activity_log.export_xlsx':
-            'Exporter en XLSX',
+            'XLSX',
         'leases.building':
             'Immeuble',
         'leases.all_buildings':
@@ -4043,9 +4043,9 @@ export const translations = {
         'activity_log.clear_filters':
             'Effacer les filtres',
         'activity_log.export_pdf':
-            'Exporter en PDF',
+            'PDF',
         'activity_log.export_csv':
-            'Exporter en CSV',
+            'CSV',
         'activity_log.exporting':
             'Export en cours...',
         'activity_log.unable_export':

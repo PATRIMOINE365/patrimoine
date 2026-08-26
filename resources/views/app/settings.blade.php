@@ -933,7 +933,7 @@
                             <div class="flex items-center gap-2">
                                 <label
                                     for="settings-export-pdf-entity"
-                                    class="pm-field-label mb-0"
+                                    class="pm-field-label mb-0 whitespace-nowrap"
                                 >
                                     <span data-i18n="settings.export_pdf_review">{{ __('ui.settings.export_pdf_review') }}</span>
                                 </label>

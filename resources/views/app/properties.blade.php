@@ -238,23 +238,17 @@
                         <option
                             value="all"
                             data-i18n="properties.filter_all_units"
-                        >
-                            {{ __('ui.properties.filter_all_units') }}
-                        </option>
+                        >{{ __('ui.properties.filter_all_units') }}</option>
 
                         <option
                             value="commercial"
                             data-i18n="properties.commercial"
-                        >
-                            {{ __('ui.properties.commercial') }}
-                        </option>
+                        >{{ __('ui.properties.commercial') }}</option>
 
                         <option
                             value="residential"
                             data-i18n="properties.residential"
-                        >
-                            {{ __('ui.properties.residential') }}
-                        </option>
+                        >{{ __('ui.properties.residential') }}</option>
                     </select>
                 </div>
             </div>
@@ -672,23 +666,17 @@
                     <option
                         value="person"
                         data-i18n="properties.person"
-                    >
-                        {{ __('ui.properties.person') }}
-                    </option>
+                    >{{ __('ui.properties.person') }}</option>
 
                     <option
                         value="organisation"
                         data-i18n="properties.organisation"
-                    >
-                        {{ __('ui.properties.organisation') }}
-                    </option>
+                    >{{ __('ui.properties.organisation') }}</option>
 
                     <option
                         value="association"
                         data-i18n="properties.association"
-                    >
-                        {{ __('ui.properties.association') }}
-                    </option>
+                    >{{ __('ui.properties.association') }}</option>
                 </select>
             </div>
 

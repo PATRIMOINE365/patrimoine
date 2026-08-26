@@ -4902,7 +4902,7 @@ function renderTenantTransactionActions() {
             <button
                 type="button"
                 data-tenant-transaction-action="deposit"
-                class="pm-button-primary"
+                class="pm-button-secondary"
             >
                 ${escapeHtml(
                     translate(

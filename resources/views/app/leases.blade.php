@@ -238,37 +238,27 @@
                             <option
                                         value=""
                                         data-i18n="leases.all_statuses"
-                                    >
-                                        {{ __('ui.leases.all_statuses') }}
-                                    </option>
+                                    >{{ __('ui.leases.all_statuses') }}</option>
 
                             <option
                                         value="draft"
                                         data-i18n="leases.status_draft"
-                                    >
-                                        {{ __('ui.leases.status_draft') }}
-                                    </option>
+                                    >{{ __('ui.leases.status_draft') }}</option>
 
                             <option
                                         value="active"
                                         data-i18n="leases.status_active"
-                                    >
-                                        {{ __('ui.leases.status_active') }}
-                                    </option>
+                                    >{{ __('ui.leases.status_active') }}</option>
 
                             <option
                                         value="notice"
                                         data-i18n="leases.status_notice"
-                                    >
-                                        {{ __('ui.leases.status_notice') }}
-                                    </option>
+                                    >{{ __('ui.leases.status_notice') }}</option>
 
                             <option
                                         value="terminated"
                                         data-i18n="leases.status_terminated"
-                                    >
-                                        {{ __('ui.leases.status_terminated') }}
-                                    </option>
+                                    >{{ __('ui.leases.status_terminated') }}</option>
                         </select>
                     </div>
 
@@ -289,9 +279,7 @@
                             <option
                                         value=""
                                         data-i18n="leases.all_tenants"
-                                    >
-                                        {{ __('ui.leases.all_tenants') }}
-                                    </option>
+                                    >{{ __('ui.leases.all_tenants') }}</option>
                         </select>
                     </div>
 
@@ -312,9 +300,7 @@
                             <option
                                 value=""
                                 data-i18n="leases.all_buildings"
-                            >
-                                All buildings
-                            </option>
+                            >All buildings</option>
                         </select>
                     </div>
 
@@ -335,37 +321,27 @@
                             <option
                                 value=""
                                 data-i18n="leases.all_frequencies"
-                            >
-                                All frequencies
-                            </option>
+                            >All frequencies</option>
 
                             <option
                                 value="monthly"
                                 data-i18n="leases.monthly"
-                            >
-                                {{ __('ui.leases.monthly') }}
-                            </option>
+                            >{{ __('ui.leases.monthly') }}</option>
 
                             <option
                                 value="quarterly"
                                 data-i18n="leases.quarterly"
-                            >
-                                {{ __('ui.leases.quarterly') }}
-                            </option>
+                            >{{ __('ui.leases.quarterly') }}</option>
 
                             <option
                                 value="bi_yearly"
                                 data-i18n="leases.bi_yearly"
-                            >
-                                {{ __('ui.leases.bi_yearly') }}
-                            </option>
+                            >{{ __('ui.leases.bi_yearly') }}</option>
 
                             <option
                                 value="yearly"
                                 data-i18n="leases.yearly"
-                            >
-                                {{ __('ui.leases.yearly') }}
-                            </option>
+                            >{{ __('ui.leases.yearly') }}</option>
                         </select>
                     </div>
 
@@ -1325,30 +1301,22 @@
                                     <option
                                         value="monthly"
                                         data-i18n="leases.monthly"
-                                    >
-                                        {{ __('ui.leases.monthly') }}
-                                    </option>
+                                    >{{ __('ui.leases.monthly') }}</option>
 
                                     <option
                                         value="quarterly"
                                         data-i18n="leases.quarterly"
-                                    >
-                                        {{ __('ui.leases.quarterly') }}
-                                    </option>
+                                    >{{ __('ui.leases.quarterly') }}</option>
 
                                     <option
                                         value="bi_yearly"
                                         data-i18n="leases.bi_yearly"
-                                    >
-                                        {{ __('ui.leases.bi_yearly') }}
-                                    </option>
+                                    >{{ __('ui.leases.bi_yearly') }}</option>
 
                                     <option
                                         value="yearly"
                                         data-i18n="leases.yearly"
-                                    >
-                                        {{ __('ui.leases.yearly') }}
-                                    </option>
+                                    >{{ __('ui.leases.yearly') }}</option>
                                 </select>
                             </div>
 
@@ -1776,30 +1744,22 @@
                                         <option
                                         value=""
                                         data-i18n="leases.select_method"
-                                    >
-                                        {{ __('ui.leases.select_method') }}
-                                    </option>
+                                    >{{ __('ui.leases.select_method') }}</option>
 
                                         <option
                                         value="bank_transfer"
                                         data-i18n="leases.bank_transfer"
-                                    >
-                                        {{ __('ui.leases.bank_transfer') }}
-                                    </option>
+                                    >{{ __('ui.leases.bank_transfer') }}</option>
 
                                         <option
                                         value="momo"
                                         data-i18n="leases.mobile_money"
-                                    >
-                                        {{ __('ui.leases.mobile_money') }}
-                                    </option>
+                                    >{{ __('ui.leases.mobile_money') }}</option>
 
                                         <option
                                         value="cash"
                                         data-i18n="leases.cash"
-                                    >
-                                        {{ __('ui.leases.cash') }}
-                                    </option>
+                                    >{{ __('ui.leases.cash') }}</option>
                                     </select>
                                 </div>
 
@@ -1915,23 +1875,17 @@
                                     <option
                                         value="none"
                                         data-i18n="leases.none"
-                                    >
-                                        {{ __('ui.leases.none') }}
-                                    </option>
+                                    >{{ __('ui.leases.none') }}</option>
 
                                     <option
                                         value="percentage"
                                         data-i18n="leases.percentage"
-                                    >
-                                        {{ __('ui.leases.percentage') }}
-                                    </option>
+                                    >{{ __('ui.leases.percentage') }}</option>
 
                                     <option
                                         value="fixed"
                                         data-i18n="leases.fixed_amount"
-                                    >
-                                        {{ __('ui.leases.fixed_amount') }}
-                                    </option>
+                                    >{{ __('ui.leases.fixed_amount') }}</option>
                                 </select>
                             </div>
 
@@ -2116,23 +2070,17 @@
                                     <option
                                         value="none"
                                         data-i18n="leases.none"
-                                    >
-                                        {{ __('ui.leases.none') }}
-                                    </option>
+                                    >{{ __('ui.leases.none') }}</option>
 
                                     <option
                                         value="percentage"
                                         data-i18n="leases.percentage"
-                                    >
-                                        {{ __('ui.leases.percentage') }}
-                                    </option>
+                                    >{{ __('ui.leases.percentage') }}</option>
 
                                     <option
                                         value="fixed"
                                         data-i18n="leases.fixed_amount"
-                                    >
-                                        {{ __('ui.leases.fixed_amount') }}
-                                    </option>
+                                    >{{ __('ui.leases.fixed_amount') }}</option>
                                 </select>
                             </div>
 
@@ -2908,18 +2856,10 @@
                             required
                             class="pm-input"
                         >
-                            <option value="monthly" data-i18n="leases.monthly">
-                                Monthly
-                            </option>
-                            <option value="quarterly" data-i18n="leases.quarterly">
-                                Quarterly
-                            </option>
-                            <option value="bi_yearly" data-i18n="leases.bi_yearly">
-                                Bi-yearly
-                            </option>
-                            <option value="yearly" data-i18n="leases.yearly">
-                                Yearly
-                            </option>
+                            <option value="monthly" data-i18n="leases.monthly">Monthly</option>
+                            <option value="quarterly" data-i18n="leases.quarterly">Quarterly</option>
+                            <option value="bi_yearly" data-i18n="leases.bi_yearly">Bi-yearly</option>
+                            <option value="yearly" data-i18n="leases.yearly">Yearly</option>
                         </select>
                     </div>
 
@@ -2999,15 +2939,9 @@
                             required
                             class="pm-input"
                         >
-                            <option value="none" data-i18n="leases.none">
-                                None
-                            </option>
-                            <option value="percentage" data-i18n="leases.percentage">
-                                Percentage
-                            </option>
-                            <option value="fixed" data-i18n="leases.fixed_amount">
-                                Fixed Amount
-                            </option>
+                            <option value="none" data-i18n="leases.none">None</option>
+                            <option value="percentage" data-i18n="leases.percentage">Percentage</option>
+                            <option value="fixed" data-i18n="leases.fixed_amount">Fixed Amount</option>
                         </select>
                     </div>
 
@@ -4096,16 +4030,12 @@
                             <option
                                 value="percentage"
                                 data-i18n="leases.percentage"
-                            >
-                                {{ __('ui.leases.percentage') }}
-                            </option>
+                            >{{ __('ui.leases.percentage') }}</option>
 
                             <option
                                 value="fixed"
                                 data-i18n="leases.fixed_amount"
-                            >
-                                {{ __('ui.leases.fixed_amount') }}
-                            </option>
+                            >{{ __('ui.leases.fixed_amount') }}</option>
                         </select>
                     </div>
 

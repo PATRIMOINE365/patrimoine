@@ -264,6 +264,15 @@ html[data-shell-role="administrator"]
     color: var(--pm-text-secondary);
 }
 
+/*
+ * Native toggles pick up the brand colour everywhere. Individual pages
+ * must not re-declare accent-color with raw palette values.
+ */
+input[type='checkbox'],
+input[type='radio'] {
+    accent-color: var(--pm-primary);
+}
+
 .pm-input {
     display: block;
     width: 100%;
@@ -439,6 +448,38 @@ select.pm-input {
 }
 
 .pm-button-danger:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/*
+ * Outlined destructive secondary action (row-level deletes). The quiet
+ * counterpart of .pm-button-danger for lists where a filled red button
+ * would shout on every row.
+ */
+.pm-button-danger-outline {
+    display: inline-flex;
+    min-height: 2.625rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid var(--pm-danger-border);
+    border-radius: 0.5rem;
+    background: var(--pm-surface);
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--pm-danger-text);
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease;
+}
+
+.pm-button-danger-outline:hover:not(:disabled) {
+    background: var(--pm-danger-background);
+}
+
+.pm-button-danger-outline:disabled {
     cursor: not-allowed;
     opacity: 0.5;
 }
@@ -3220,7 +3261,7 @@ select {
 
     margin: 0 !important;
 
-    accent-color: var(--color-patrimoine-600);
+    accent-color: var(--pm-primary);
 }
 
 
@@ -3691,7 +3732,7 @@ input[type="checkbox"] {
 
     margin: 0;
 
-    accent-color: var(--color-patrimoine-600);
+    accent-color: var(--pm-primary);
 }
 
 
@@ -3823,7 +3864,7 @@ div:has(> #lease-advance-received) {
     flex: 0 0 1.125rem;
 
     accent-color:
-        var(--color-patrimoine-600);
+        var(--pm-primary);
 }
 
 
@@ -5752,26 +5793,6 @@ button:disabled {
    Add Lease button
    -------------------------------------------------------------------------- */
 
-.pm-leases-page
-#add-lease-button {
-    border-color:
-        transparent !important;
-
-    background:
-        var(--color-patrimoine-950) !important;
-
-    color:
-        white !important;
-}
-
-.pm-leases-page
-#add-lease-button:hover {
-    background:
-        var(--color-patrimoine-900) !important;
-
-    color:
-        white !important;
-}
 
 
 /* --------------------------------------------------------------------------

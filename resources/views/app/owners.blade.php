@@ -884,16 +884,12 @@
                         <option
                             value="to_expense"
                             data-i18n="owners.transfer_to_expense"
-                        >
-                            {{ __('ui.owners.transfer_to_expense') }}
-                        </option>
+                        >{{ __('ui.owners.transfer_to_expense') }}</option>
 
                         <option
                             value="to_payout"
                             data-i18n="owners.transfer_to_payout"
-                        >
-                            {{ __('ui.owners.transfer_to_payout') }}
-                        </option>
+                        >{{ __('ui.owners.transfer_to_payout') }}</option>
                     </select>
                 </div>
 
@@ -1134,17 +1130,11 @@
                         required
                         class="pm-input"
                     >
-                        <option value="bank_transfer" data-i18n="owners.bank_transfer">
-    {{ __('ui.owners.bank_transfer') }}
-</option>
+                        <option value="bank_transfer" data-i18n="owners.bank_transfer">{{ __('ui.owners.bank_transfer') }}</option>
 
-                        <option value="momo" data-i18n="owners.momo">
-    {{ __('ui.owners.momo') }}
-</option>
+                        <option value="momo" data-i18n="owners.momo">{{ __('ui.owners.momo') }}</option>
 
-                        <option value="cash" data-i18n="owners.cash">
-    {{ __('ui.owners.cash') }}
-</option>
+                        <option value="cash" data-i18n="owners.cash">{{ __('ui.owners.cash') }}</option>
                     </select>
                 </div>
 
@@ -1166,21 +1156,13 @@
                         required
                         class="pm-input"
                     >
-                        <option value="general_funding" data-i18n="owners.general_funding">
-    {{ __('ui.owners.general_funding') }}
-</option>
+                        <option value="general_funding" data-i18n="owners.general_funding">{{ __('ui.owners.general_funding') }}</option>
 
-                        <option value="property_expense" data-i18n="owners.property_expense">
-    {{ __('ui.owners.property_expense') }}
-</option>
+                        <option value="property_expense" data-i18n="owners.property_expense">{{ __('ui.owners.property_expense') }}</option>
 
-                        <option value="repair_maintenance" data-i18n="owners.repair_maintenance_static">
-    {{ __('ui.owners.repair_maintenance_static') }}
-</option>
+                        <option value="repair_maintenance" data-i18n="owners.repair_maintenance_static">{{ __('ui.owners.repair_maintenance_static') }}</option>
 
-                        <option value="other" data-i18n="owners.other">
-    {{ __('ui.owners.other') }}
-</option>
+                        <option value="other" data-i18n="owners.other">{{ __('ui.owners.other') }}</option>
                     </select>
                 </div>
 
@@ -1205,9 +1187,7 @@
                         id="owner-deposit-building"
                         class="pm-input"
                     >
-                        <option value="" data-i18n="owners.no_specific_building">
-    {{ __('ui.owners.no_specific_building') }}
-</option>
+                        <option value="" data-i18n="owners.no_specific_building">{{ __('ui.owners.no_specific_building') }}</option>
                     </select>
                 </div>
 
@@ -1233,9 +1213,7 @@
                         disabled
                         class="pm-input"
                     >
-                        <option value="" data-i18n="owners.select_building_first">
-    {{ __('ui.owners.select_building_first') }}
-</option>
+                        <option value="" data-i18n="owners.select_building_first">{{ __('ui.owners.select_building_first') }}</option>
                     </select>
                 </div>
 
@@ -1481,17 +1459,11 @@
                         required
                         class="pm-input"
                     >
-                        <option value="bank_transfer" data-i18n="owners.bank_transfer">
-    {{ __('ui.owners.bank_transfer') }}
-</option>
+                        <option value="bank_transfer" data-i18n="owners.bank_transfer">{{ __('ui.owners.bank_transfer') }}</option>
 
-                        <option value="momo" data-i18n="owners.momo">
-    {{ __('ui.owners.momo') }}
-</option>
+                        <option value="momo" data-i18n="owners.momo">{{ __('ui.owners.momo') }}</option>
 
-                        <option value="cash" data-i18n="owners.cash">
-    {{ __('ui.owners.cash') }}
-</option>
+                        <option value="cash" data-i18n="owners.cash">{{ __('ui.owners.cash') }}</option>
                     </select>
                 </div>
 
@@ -1644,13 +1616,9 @@
                         required
                         class="pm-input"
                     >
-                        <option value="credit" data-i18n="owners.credit_increase_balance">
-    {{ __('ui.owners.credit_increase_balance') }}
-</option>
+                        <option value="credit" data-i18n="owners.credit_increase_balance">{{ __('ui.owners.credit_increase_balance') }}</option>
 
-                        <option value="debit" data-i18n="owners.debit_reduce_balance">
-    {{ __('ui.owners.debit_reduce_balance') }}
-</option>
+                        <option value="debit" data-i18n="owners.debit_reduce_balance">{{ __('ui.owners.debit_reduce_balance') }}</option>
                     </select>
                 </div>
 
@@ -2304,16 +2272,12 @@
                         <option
                             value="single"
                             data-i18n="owners.billing_mode_single"
-                        >
-                            {{ __('ui.owners.billing_mode_single') }}
-                        </option>
+                        >{{ __('ui.owners.billing_mode_single') }}</option>
 
                         <option
                             value="split"
                             data-i18n="owners.billing_mode_split"
-                        >
-                            {{ __('ui.owners.billing_mode_split') }}
-                        </option>
+                        >{{ __('ui.owners.billing_mode_split') }}</option>
                     </select>
                 </div>
             </div>

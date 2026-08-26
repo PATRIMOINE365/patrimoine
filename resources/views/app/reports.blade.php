@@ -578,9 +578,7 @@
                             id="payment-report-tenant"
                             class="pm-input"
                         >
-                            <option value="" data-i18n="reports.all_tenants">
-                                {{ __('ui.reports.all_tenants') }}
-                            </option>
+                            <option value="" data-i18n="reports.all_tenants">{{ __('ui.reports.all_tenants') }}</option>
                         </select>
                     </div>
 
@@ -598,9 +596,7 @@
                             id="payment-report-lease"
                             class="pm-input"
                         >
-                            <option value="" data-i18n="reports.all_leases">
-                                {{ __('ui.reports.all_leases') }}
-                            </option>
+                            <option value="" data-i18n="reports.all_leases">{{ __('ui.reports.all_leases') }}</option>
                         </select>
                     </div>
 
@@ -618,9 +614,7 @@
                             id="payment-report-building"
                             class="pm-input"
                         >
-                            <option value="" data-i18n="reports.all_buildings">
-                                {{ __('ui.reports.all_buildings') }}
-                            </option>
+                            <option value="" data-i18n="reports.all_buildings">{{ __('ui.reports.all_buildings') }}</option>
                         </select>
                     </div>
 
@@ -638,9 +632,7 @@
                             id="payment-report-unit"
                             class="pm-input"
                         >
-                            <option value="" data-i18n="reports.all_units">
-                                {{ __('ui.reports.all_units') }}
-                            </option>
+                            <option value="" data-i18n="reports.all_units">{{ __('ui.reports.all_units') }}</option>
                         </select>
                     </div>
 
@@ -658,21 +650,13 @@
                             id="payment-report-method"
                             class="pm-input"
                         >
-                            <option value="" data-i18n="reports.all_payment_methods">
-                                {{ __('ui.reports.all_payment_methods') }}
-                            </option>
+                            <option value="" data-i18n="reports.all_payment_methods">{{ __('ui.reports.all_payment_methods') }}</option>
 
-                            <option value="cash" data-i18n="reports.payment_method_cash">
-                                {{ __('ui.reports.payment_method_cash') }}
-                            </option>
+                            <option value="cash" data-i18n="reports.payment_method_cash">{{ __('ui.reports.payment_method_cash') }}</option>
 
-                            <option value="bank_transfer" data-i18n="reports.payment_method_bank">
-                                {{ __('ui.reports.payment_method_bank') }}
-                            </option>
+                            <option value="bank_transfer" data-i18n="reports.payment_method_bank">{{ __('ui.reports.payment_method_bank') }}</option>
 
-                            <option value="momo" data-i18n="reports.payment_method_mobile">
-                                {{ __('ui.reports.payment_method_mobile') }}
-                            </option>
+                            <option value="momo" data-i18n="reports.payment_method_mobile">{{ __('ui.reports.payment_method_mobile') }}</option>
                         </select>
                     </div>
 

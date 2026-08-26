@@ -1679,97 +1679,37 @@ function renderResultsBar(report) {
         );
     }
 
-    const exports = [
-        activePdfEndpoint
-            ? exportBarButton('pdf', 'reports.pdf')
-            : '',
-        activeXlsxEndpoint
-            ? exportBarButton('xlsx', 'reports.xlsx')
-            : '',
-        activeCsvEndpoint
-            ? exportBarButton('csv', 'reports.csv')
-            : '',
-    ].join('');
+    const meta =
+        metaParts
+            .filter(Boolean)
+            .join(' · ');
 
+    if (! meta) {
+        return;
+    }
+
+    /*
+     * The panel header above the output already carries the report title
+     * and the export actions, so the bar deliberately shows only the
+     * resolved criteria: reference date or period, and the row count.
+     */
     output.insertAdjacentHTML(
         'afterbegin',
         `
             <div
                 class="
-                    mb-6 flex flex-wrap
-                    items-center justify-between gap-3
-                    rounded-xl
+                    mb-6 rounded-xl
                     border border-[var(--pm-border)]
                     bg-[var(--pm-surface-subtle)]
-                    px-4 py-3
+                    px-4 py-2.5
+                    text-xs
+                    text-[var(--pm-text-muted)]
                 "
             >
-                <div class="min-w-0">
-                    <div
-                        class="
-                            text-sm font-semibold
-                            text-[var(--pm-text)]
-                        "
-                    >
-                        ${escapeHtml(translate(definition.titleKey))}
-                    </div>
-
-                    <div
-                        class="
-                            mt-0.5 text-xs
-                            text-[var(--pm-text-muted)]
-                        "
-                    >
-                        ${escapeHtml(
-                            metaParts
-                                .filter(Boolean)
-                                .join(' · ')
-                        )}
-                    </div>
-                </div>
-
-                <div
-                    class="
-                        flex flex-wrap
-                        items-center gap-2
-                    "
-                    data-requires-capability="export_reports"
-                    data-report-results-exports
-                >
-                    ${exports}
-                </div>
+                ${escapeHtml(meta)}
             </div>
         `
     );
-
-    initializeResultsBarExports(output);
-}
-
-function exportBarButton(format, labelKey) {
-    return `
-        <button
-            type="button"
-            data-report-export="${escapeHtml(format)}"
-            class="
-                pm-button-secondary
-                text-xs
-            "
-        >
-            ${escapeHtml(translate(labelKey))}
-        </button>
-    `;
-}
-
-function initializeResultsBarExports(output) {
-    output
-        .querySelectorAll('[data-report-export]')
-        .forEach((button) => {
-            button.addEventListener('click', async () => {
-                await triggerExport(
-                    button.dataset.reportExport
-                );
-            });
-        });
 }
 
 /**
@@ -2061,7 +2001,6 @@ function renderManagingOrganisationReport(report) {
         report.tenant_funds ?? {};
 
     renderReportHtml(`
-        ${periodHtml(report.period)}
 
         ${metricGrid([
             [
@@ -2204,8 +2143,6 @@ function renderOwnerReport(report) {
                 .join(' · ')
         )}
 
-        ${periodHtml(report.period)}
-
         ${metricGrid([
             [
                 translate('reports.opening_balance'),
@@ -2304,8 +2241,6 @@ function renderBuildingReport(report) {
                 .filter(Boolean)
                 .join(' · ')
         )}
-
-        ${periodHtml(report.period)}
 
         ${metricGrid([
             [
@@ -2431,8 +2366,6 @@ function renderUnitReport(report) {
             ?? ''
         )}
 
-        ${periodHtml(report.period)}
-
         ${metricGrid([
             [
                 translate('reports.leases'),
@@ -2552,8 +2485,6 @@ function renderTenantReport(report) {
                 .join(' · ')
         )}
 
-        ${periodHtml(report.period)}
-
         ${metricGrid([
             [
                 translate('reports.rent_outstanding'),
@@ -2663,7 +2594,6 @@ function renderOccupancyReport(report) {
             : [];
 
     renderReportHtml(`
-        ${asOfHtml(report?.as_of)}
 
         ${metricGrid([
             [
@@ -2840,7 +2770,6 @@ function renderArrearsReport(report) {
             : [];
 
     renderReportHtml(`
-        ${asOfHtml(report?.as_of)}
 
         ${metricGrid([
             [
@@ -2955,7 +2884,6 @@ function renderFundsReport(report) {
             : [];
 
     renderReportHtml(`
-        ${asOfHtml(report?.as_of)}
 
         ${reportSection(
             translate('reports.tenant_funds'),
@@ -3140,39 +3068,6 @@ function identityCard(
                     `
                     : ''
             }
-        </div>
-    `;
-}
-
-function periodHtml(period) {
-    return `
-        <div
-            class="
-                mb-6 text-xs
-                text-[var(--pm-text-muted)]
-            "
-        >
-            ${escapeHtml(periodSummaryText(period))}
-        </div>
-    `;
-}
-
-/**
- * Reference-date line for snapshot reports.
- *
- * Snapshot services always resolve as_of to a concrete date, so no
- * textual fallback is required here.
- */
-function asOfHtml(asOf) {
-    return `
-        <div
-            class="
-                mb-6 text-xs
-                text-[var(--pm-text-muted)]
-            "
-        >
-            ${escapeHtml(translate('reports.as_of'))}:
-            ${escapeHtml(formatDate(asOf))}
         </div>
     `;
 }

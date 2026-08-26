@@ -67,13 +67,13 @@
                 type="button"
                 class="pm-button-secondary"
             >
-                <span data-i18n="activity_log.export_xlsx">Export XLSX</span>
+                <span data-i18n="activity_log.export_xlsx">{{ __('ui.activity_log.export_xlsx') }}</span>
             </button>
 
             <button
                 id="activity-log-export-csv"
                 type="button"
-                class="pm-button-primary"
+                class="pm-button-secondary"
             >
                 <span data-i18n="activity_log.export_csv">{{ __('ui.activity_log.export_csv') }}</span>
             </button>

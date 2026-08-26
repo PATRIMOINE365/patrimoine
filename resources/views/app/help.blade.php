@@ -157,79 +157,57 @@
                             <option
                                 value=""
                                 data-i18n="help.all_categories"
-                            >
-                                All categories
-                            </option>
+                            >All categories</option>
 
                             <option
                                 value="getting_started"
                                 data-i18n="help.category_getting_started"
-                            >
-                                Getting started
-                            </option>
+                            >Getting started</option>
 
                             <option
                                 value="properties"
                                 data-i18n="help.category_properties"
-                            >
-                                Properties &amp; units
-                            </option>
+                            >Properties &amp; units</option>
 
                             <option
                                 value="parties"
                                 data-i18n="help.category_parties"
-                            >
-                                Parties
-                            </option>
+                            >Parties</option>
 
                             <option
                                 value="leases"
                                 data-i18n="help.category_leases"
-                            >
-                                Leases
-                            </option>
+                            >Leases</option>
 
                             <option
                                 value="money_in"
                                 data-i18n="help.category_money_in"
-                            >
-                                Money in
-                            </option>
+                            >Money in</option>
 
                             <option
                                 value="owners"
                                 data-i18n="help.category_owners"
-                            >
-                                Owners
-                            </option>
+                            >Owners</option>
 
                             <option
                                 value="invoicing"
                                 data-i18n="help.category_invoicing"
-                            >
-                                Invoicing &amp; automation
-                            </option>
+                            >Invoicing &amp; automation</option>
 
                             <option
                                 value="reports"
                                 data-i18n="help.category_reports"
-                            >
-                                Reports &amp; exports
-                            </option>
+                            >Reports &amp; exports</option>
 
                             <option
                                 value="journal"
                                 data-i18n="help.category_journal"
-                            >
-                                Financial journal &amp; activity log
-                            </option>
+                            >Financial journal &amp; activity log</option>
 
                             <option
                                 value="admin"
                                 data-i18n="help.category_admin"
-                            >
-                                Users &amp; settings
-                            </option>
+                            >Users &amp; settings</option>
                         </select>
                     </div>
                 </div>

@@ -240,30 +240,22 @@
                             <option
                                 value=""
                                 data-i18n="parties.all_types"
-                            >
-                                {{ __('ui.parties.all_types') }}
-</option>
+                            >{{ __('ui.parties.all_types') }}</option>
 
                             <option
                                 value="person"
                                 data-i18n="parties.people"
-                            >
-                                {{ __('ui.parties.people') }}
-</option>
+                            >{{ __('ui.parties.people') }}</option>
 
                             <option
                                 value="organisation"
                                 data-i18n="parties.organisations"
-                            >
-                                {{ __('ui.parties.organisations') }}
-</option>
+                            >{{ __('ui.parties.organisations') }}</option>
 
                             <option
                                 value="association"
                                 data-i18n="parties.associations"
-                            >
-                                {{ __('ui.parties.associations') }}
-</option>
+                            >{{ __('ui.parties.associations') }}</option>
                         </select>
                     </div>
 
@@ -283,37 +275,27 @@
                             <option
                                 value=""
                                 data-i18n="parties.all_roles"
-                            >
-                                {{ __('ui.parties.all_roles') }}
-</option>
+                            >{{ __('ui.parties.all_roles') }}</option>
 
                             <option
                                 value="owner"
                                 data-i18n="parties.owners"
-                            >
-                                {{ __('ui.parties.owners') }}
-</option>
+                            >{{ __('ui.parties.owners') }}</option>
 
                             <option
                                 value="tenant"
                                 data-i18n="parties.tenants"
-                            >
-                                {{ __('ui.parties.tenants') }}
-</option>
+                            >{{ __('ui.parties.tenants') }}</option>
 
                             <option
                                 value="agent"
                                 data-i18n="parties.agents"
-                            >
-                                {{ __('ui.parties.agents') }}
-</option>
+                            >{{ __('ui.parties.agents') }}</option>
 
                             <option
                                 value="managing_organisation"
                                 data-i18n="parties.managing_organisation"
-                            >
-                                {{ __('ui.parties.managing_organisation') }}
-</option>
+                            >{{ __('ui.parties.managing_organisation') }}</option>
                         </select>
                     </div>
 
@@ -333,23 +315,17 @@
                             <option
                                 value=""
                                 data-i18n="parties.has_email_all"
-                            >
-                                {{ __('ui.parties.has_email_all') }}
-</option>
+                            >{{ __('ui.parties.has_email_all') }}</option>
 
                             <option
                                 value="yes"
                                 data-i18n="parties.has_email_yes"
-                            >
-                                {{ __('ui.parties.has_email_yes') }}
-</option>
+                            >{{ __('ui.parties.has_email_yes') }}</option>
 
                             <option
                                 value="no"
                                 data-i18n="parties.has_email_no"
-                            >
-                                {{ __('ui.parties.has_email_no') }}
-</option>
+                            >{{ __('ui.parties.has_email_no') }}</option>
                         </select>
                     </div>
 
@@ -486,23 +462,17 @@
                             <option
                                 value="person"
                                 data-i18n="parties.person"
-                            >
-                                {{ __('ui.parties.person') }}
-</option>
+                            >{{ __('ui.parties.person') }}</option>
 
                             <option
                                 value="organisation"
                                 data-i18n="parties.organisation"
-                            >
-                                {{ __('ui.parties.organisation') }}
-</option>
+                            >{{ __('ui.parties.organisation') }}</option>
 
                             <option
                                 value="association"
                                 data-i18n="parties.association"
-                            >
-                                {{ __('ui.parties.association') }}
-</option>
+                            >{{ __('ui.parties.association') }}</option>
                         </select>
                     </section>
 

@@ -15,6 +15,7 @@ import {
     escapeHtml,
     formValue,
     formatCurrency,
+    formatDate,
     getPresentationConfiguration,
     parseJsonResponse,
     translate,
@@ -1878,20 +1879,12 @@ function financialJournalSource(
 function formatJournalDate(
     value
 ) {
-    if (! value) {
-        return '';
-    }
-
-    const parts =
-        String(value)
-            .slice(0, 10)
-            .split('-');
-
-    if (parts.length !== 3) {
-        return String(value);
-    }
-
-    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    /*
+     * V1.0.9: business dates follow the application-wide presentation
+     * standard (DD/MM/YYYY in English, DD-MM-YYYY in French) instead of
+     * a Journal-only hardcoded dash format.
+     */
+    return formatDate(value);
 }
 
 function formatJournalTimestamp(

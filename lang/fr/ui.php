@@ -177,7 +177,7 @@ return [
     ],
     'activity_log' => [
         /* ---- V1.0.7 additions ---- */
-        'export_xlsx' => 'Exporter en XLSX',
+        'export_xlsx' => 'XLSX',
         /* ---- end V1.0.7 additions ---- */
         'title' => 'Journal d’activité — Patrimoine',
         'administration' => 'Administration',
@@ -362,7 +362,7 @@ return [
         'import_file' => 'Fichier de sauvegarde',
         'import_entity' => 'Jeu de données',
         'dry_run' => 'Simulation (valider sans enregistrer)',
-        'dry_run_help' => 'Exécute l\'importation complète et présente le résultat sans modifier aucune donnée.',
+        'dry_run_help' => 'La simulation lit le fichier et présente ce qui changerait sans toucher aux données. Appliquez ensuite la restauration depuis le résultat.',
         'run_import' => 'Lancer l\'importation',
         'importing' => 'Importation…',
         'import_select_file' => 'Choisissez d\'abord un fichier de sauvegarde.',

@@ -50,8 +50,19 @@
         <button
             id="add-user-button"
             type="button"
-            class="pm-button-primary"
+            class="pm-button-primary gap-2"
         >
+            <svg
+                class="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path d="M12 5v14"/>
+                <path d="M5 12h14"/>
+            </svg>
+
             <span data-i18n="users.add_user">{{ __('ui.users.add_user') }}</span>
         </button>
     </div>
@@ -308,17 +319,11 @@
                         required
                         class="pm-input"
                     >
-                        <option value="administrator" data-i18n="roles.administrator">
-                            Administrator
-                        </option>
+                        <option value="administrator" data-i18n="roles.administrator">Administrator</option>
 
-                        <option value="property_manager" data-i18n="roles.property_manager">
-                            Property Manager
-                        </option>
+                        <option value="property_manager" data-i18n="roles.property_manager">Property Manager</option>
 
-                        <option value="viewer" data-i18n="roles.viewer">
-                            Viewer
-                        </option>
+                        <option value="viewer" data-i18n="roles.viewer">Viewer</option>
                     </select>
                 </div>
 

@@ -178,30 +178,22 @@
                     <option
                         value=""
                         data-i18n="financial_journal.all_entry_kinds"
-                    >
-                        {{ __('ui.financial_journal.all_entry_kinds') }}
-                    </option>
+                    >{{ __('ui.financial_journal.all_entry_kinds') }}</option>
 
                     <option
                         value="financial"
                         data-i18n="financial_journal.kind_financial"
-                    >
-                        {{ __('ui.financial_journal.kind_financial') }}
-                    </option>
+                    >{{ __('ui.financial_journal.kind_financial') }}</option>
 
                     <option
                         value="reversal"
                         data-i18n="financial_journal.kind_reversal"
-                    >
-                        {{ __('ui.financial_journal.kind_reversal') }}
-                    </option>
+                    >{{ __('ui.financial_journal.kind_reversal') }}</option>
 
                     <option
                         value="informational"
                         data-i18n="financial_journal.kind_informational"
-                    >
-                        {{ __('ui.financial_journal.kind_informational') }}
-                    </option>
+                    >{{ __('ui.financial_journal.kind_informational') }}</option>
                 </select>
             </div>
 
@@ -222,9 +214,7 @@
                     <option
                         value=""
                         data-i18n="financial_journal.all_transaction_types"
-                    >
-                        {{ __('ui.financial_journal.all_transaction_types') }}
-                    </option>
+                    >{{ __('ui.financial_journal.all_transaction_types') }}</option>
                 </select>
             </div>
 
@@ -245,9 +235,7 @@
                     <option
                         value=""
                         data-i18n="financial_journal.all_accounts"
-                    >
-                        {{ __('ui.financial_journal.all_accounts') }}
-                    </option>
+                    >{{ __('ui.financial_journal.all_accounts') }}</option>
                 </select>
             </div>
 
