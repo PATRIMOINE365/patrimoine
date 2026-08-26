@@ -42,12 +42,15 @@ let currentSection = 'dashboard';
 
 const SECTIONS = [
     'dashboard',
+    'users',
     'organizations',
     'licenses',
     'activity',
     'settings',
     'organisation',
 ];
+
+let currentUser = null;
 
 /*
 |--------------------------------------------------------------------------
@@ -186,7 +189,7 @@ async function navigate(name) {
             await Promise.all([loadLicenseMetrics(), loadSubscriptions()]);
         } else if (name === 'activity') {
             await loadActivity();
-        } else if (name === 'settings') {
+        } else if (name === 'users') {
             await loadStaff();
         }
     } catch (error) {
@@ -470,6 +473,13 @@ async function loadStaff() {
     const data = await adminRequest('/api/users', 'GET');
 
     const staff = data.data ?? data;
+
+    const count = document.getElementById('admin-staff-count');
+
+    if (count) {
+        count.textContent =
+            `${staff.length} ${staff.length === 1 ? 'member' : 'members'}`;
+    }
 
     const body = document.getElementById('admin-staff-body');
 
@@ -784,6 +794,430 @@ async function submitDelete(event) {
 
 /*
 |--------------------------------------------------------------------------
+| My profile
+|--------------------------------------------------------------------------
+*/
+
+function profileFeedback(message, isError) {
+    const box = document.getElementById('admin-profile-feedback');
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent = message;
+
+    box.className =
+        'rounded-lg px-4 py-3 text-sm '
+        + (isError
+            ? 'pm-auth-error'
+            : 'border border-[var(--uui-badge-success-border)] bg-[var(--uui-badge-success-bg)] text-[var(--uui-badge-success-text)]');
+
+    box.classList.remove('hidden');
+}
+
+function clearProfileFeedback() {
+    document.getElementById('admin-profile-feedback')?.classList.add('hidden');
+}
+
+function renderAvatar(user) {
+    for (const prefix of ['admin-user', 'admin-profile']) {
+        const img = document.getElementById(prefix + '-avatar-img');
+
+        const initialsEl =
+            document.getElementById(prefix + '-avatar-initials');
+
+        if (! img || ! initialsEl) {
+            continue;
+        }
+
+        if (user?.avatar) {
+            img.src = user.avatar;
+
+            img.classList.remove('hidden');
+
+            initialsEl.classList.add('hidden');
+        } else {
+            img.classList.add('hidden');
+
+            initialsEl.classList.remove('hidden');
+
+            initialsEl.textContent = initials(user?.name ?? '');
+        }
+    }
+}
+
+function openProfileDrawer() {
+    if (! currentUser) {
+        return;
+    }
+
+    clearProfileFeedback();
+
+    resetCropStage();
+
+    document.getElementById('admin-profile-given').value =
+        currentUser.given_names ?? '';
+
+    document.getElementById('admin-profile-surname').value =
+        currentUser.surname ?? '';
+
+    document.getElementById('admin-profile-email').value =
+        currentUser.email ?? '';
+
+    document.getElementById('admin-profile-phone').value =
+        currentUser.phone ?? '';
+
+    document.getElementById('admin-profile-photo-remove')
+        ?.classList.toggle('hidden', ! currentUser.avatar);
+
+    renderAvatar(currentUser);
+
+    openDrawer('admin-profile-modal');
+}
+
+async function submitProfile(event) {
+    event.preventDefault();
+
+    clearProfileFeedback();
+
+    try {
+        const data = await adminRequest('/api/auth/me', 'PATCH', {
+            given_names:
+                document.getElementById('admin-profile-given').value.trim(),
+            surname:
+                document.getElementById('admin-profile-surname').value.trim(),
+            email:
+                document.getElementById('admin-profile-email').value.trim(),
+            phone:
+                document.getElementById('admin-profile-phone').value.trim() || null,
+        });
+
+        currentUser = data;
+
+        document.getElementById('admin-user-name').textContent =
+            data.name ?? '';
+
+        renderAvatar(currentUser);
+
+        profileFeedback('Details saved.', false);
+    } catch (error) {
+        profileFeedback(
+            error instanceof Error ? error.message : 'Unable to save your details.',
+            true
+        );
+    }
+}
+
+async function submitPassword(event) {
+    event.preventDefault();
+
+    clearProfileFeedback();
+
+    const newPassword =
+        document.getElementById('admin-password-new').value;
+
+    const confirmation =
+        document.getElementById('admin-password-confirm').value;
+
+    if (newPassword !== confirmation) {
+        profileFeedback('The new passwords do not match.', true);
+
+        return;
+    }
+
+    try {
+        await adminRequest('/api/auth/me', 'PATCH', {
+            given_names:
+                document.getElementById('admin-profile-given').value.trim()
+                || currentUser.given_names,
+            surname:
+                document.getElementById('admin-profile-surname').value.trim()
+                || currentUser.surname,
+            email:
+                document.getElementById('admin-profile-email').value.trim()
+                || currentUser.email,
+            phone:
+                document.getElementById('admin-profile-phone').value.trim() || null,
+            current_password:
+                document.getElementById('admin-password-current').value,
+            password: newPassword,
+            password_confirmation: confirmation,
+        });
+
+        /*
+         * A password change revokes every token, including this
+         * session's — land back on sign-in.
+         */
+        clearToken();
+
+        window.location.replace('/login');
+    } catch (error) {
+        profileFeedback(
+            error instanceof Error ? error.message : 'Unable to change the password.',
+            true
+        );
+    }
+}
+
+/*
+ * ---- Avatar: decode, drag-to-frame, canvas crop, upload ----
+ */
+
+let cropImage = null;
+
+let cropBoxPosition = { x: 0, y: 0 };
+
+function resetCropStage() {
+    cropImage = null;
+
+    document.getElementById('admin-profile-crop')?.classList.add('hidden');
+
+    const input = document.getElementById('admin-profile-photo-input');
+
+    if (input) {
+        input.value = '';
+    }
+}
+
+function handlePhotoChosen(file) {
+    clearProfileFeedback();
+
+    if (! file) {
+        return;
+    }
+
+    const url = URL.createObjectURL(file);
+
+    const image = new Image();
+
+    image.onload = () => {
+        cropImage = image;
+
+        const stageImg = document.getElementById('admin-profile-crop-img');
+
+        stageImg.src = url;
+
+        document.getElementById('admin-profile-crop')
+            ?.classList.remove('hidden');
+
+        /*
+         * Lay the square out once the stage has real dimensions.
+         */
+        requestAnimationFrame(initCropBox);
+    };
+
+    image.onerror = () => {
+        URL.revokeObjectURL(url);
+
+        /*
+         * HEIC decodes natively on Safari; other browsers cannot read
+         * it, so ask for a converted copy rather than failing quietly.
+         */
+        profileFeedback(
+            /\.hei[cf]$/i.test(file.name)
+                ? 'This browser cannot read HEIC photos — please choose a JPG or PNG copy.'
+                : 'That file could not be read as an image.',
+            true
+        );
+    };
+
+    image.src = url;
+}
+
+function initCropBox() {
+    const stageImg = document.getElementById('admin-profile-crop-img');
+
+    const box = document.getElementById('admin-profile-crop-box');
+
+    if (! stageImg || ! box) {
+        return;
+    }
+
+    const w = stageImg.clientWidth;
+
+    const h = stageImg.clientHeight;
+
+    const edge = Math.min(w, h);
+
+    cropBoxPosition = {
+        x: Math.floor((w - edge) / 2),
+        y: Math.floor((h - edge) / 2),
+    };
+
+    box.style.width = edge + 'px';
+
+    box.style.height = edge + 'px';
+
+    positionCropBox();
+}
+
+function positionCropBox() {
+    const box = document.getElementById('admin-profile-crop-box');
+
+    box.style.left = cropBoxPosition.x + 'px';
+
+    box.style.top = cropBoxPosition.y + 'px';
+}
+
+function wireCropDrag() {
+    const stage = document.getElementById('admin-profile-crop-stage');
+
+    const box = document.getElementById('admin-profile-crop-box');
+
+    if (! stage || ! box) {
+        return;
+    }
+
+    let dragging = null;
+
+    box.addEventListener('pointerdown', (event) => {
+        dragging = {
+            startX: event.clientX,
+            startY: event.clientY,
+            originX: cropBoxPosition.x,
+            originY: cropBoxPosition.y,
+        };
+
+        box.setPointerCapture(event.pointerId);
+    });
+
+    box.addEventListener('pointermove', (event) => {
+        if (! dragging) {
+            return;
+        }
+
+        const stageImg = document.getElementById('admin-profile-crop-img');
+
+        const maxX = stageImg.clientWidth - box.clientWidth;
+
+        const maxY = stageImg.clientHeight - box.clientHeight;
+
+        cropBoxPosition = {
+            x: Math.min(maxX, Math.max(0, dragging.originX + event.clientX - dragging.startX)),
+            y: Math.min(maxY, Math.max(0, dragging.originY + event.clientY - dragging.startY)),
+        };
+
+        positionCropBox();
+    });
+
+    const stop = () => {
+        dragging = null;
+    };
+
+    box.addEventListener('pointerup', stop);
+
+    box.addEventListener('pointercancel', stop);
+}
+
+async function submitPhoto() {
+    if (! cropImage) {
+        return;
+    }
+
+    clearProfileFeedback();
+
+    const stageImg = document.getElementById('admin-profile-crop-img');
+
+    const box = document.getElementById('admin-profile-crop-box');
+
+    /*
+     * Map the on-screen square back to the source image's pixels.
+     */
+    const scale = cropImage.naturalWidth / stageImg.clientWidth;
+
+    const sourceEdge = Math.round(box.clientWidth * scale);
+
+    const sourceX = Math.round(cropBoxPosition.x * scale);
+
+    const sourceY = Math.round(cropBoxPosition.y * scale);
+
+    const canvas = document.createElement('canvas');
+
+    canvas.width = 512;
+
+    canvas.height = 512;
+
+    canvas.getContext('2d').drawImage(
+        cropImage,
+        sourceX,
+        sourceY,
+        sourceEdge,
+        sourceEdge,
+        0,
+        0,
+        512,
+        512
+    );
+
+    const blob = await new Promise((resolve) =>
+        canvas.toBlob(resolve, 'image/jpeg', 0.85)
+    );
+
+    if (! blob) {
+        profileFeedback('Unable to process the photo.', true);
+
+        return;
+    }
+
+    const form = new FormData();
+
+    form.append('photo', blob, 'avatar.jpg');
+
+    try {
+        const response = await apiRequest('/api/auth/me/avatar', {
+            method: 'POST',
+            body: form,
+        });
+
+        const data = await parseJsonResponse(response);
+
+        currentUser.avatar = data.avatar;
+
+        renderAvatar(currentUser);
+
+        resetCropStage();
+
+        document.getElementById('admin-profile-photo-remove')
+            ?.classList.remove('hidden');
+
+        profileFeedback('Profile photo updated.', false);
+    } catch (error) {
+        profileFeedback(
+            error instanceof Error ? error.message : 'Unable to upload the photo.',
+            true
+        );
+    }
+}
+
+async function removePhoto() {
+    clearProfileFeedback();
+
+    try {
+        const response = await apiRequest('/api/auth/me/avatar', {
+            method: 'DELETE',
+        });
+
+        await parseJsonResponse(response);
+
+        currentUser.avatar = null;
+
+        renderAvatar(currentUser);
+
+        document.getElementById('admin-profile-photo-remove')
+            ?.classList.add('hidden');
+
+        profileFeedback('Profile photo removed.', false);
+    } catch (error) {
+        profileFeedback(
+            error instanceof Error ? error.message : 'Unable to remove the photo.',
+            true
+        );
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
 | Bootstrap
 |--------------------------------------------------------------------------
 */
@@ -832,10 +1266,11 @@ export async function initializeAdmin() {
     /*
      * Sidebar identity + sign-out.
      */
+    currentUser = user;
+
     document.getElementById('admin-user-name').textContent = user.name ?? '';
 
-    document.getElementById('admin-user-avatar').textContent =
-        initials(user.name ?? '');
+    renderAvatar(user);
 
     document.getElementById('admin-logout')
         ?.addEventListener('click', async () => {
@@ -950,6 +1385,36 @@ export async function initializeAdmin() {
     wireDrawer('admin-staff-modal', {
         closers: ['admin-staff-close', 'admin-staff-cancel', 'admin-staff-backdrop'],
     });
+
+    wireDrawer('admin-profile-modal', {
+        closers: ['admin-profile-close', 'admin-profile-backdrop'],
+        onClose: resetCropStage,
+    });
+
+    document.getElementById('admin-user-button')
+        ?.addEventListener('click', openProfileDrawer);
+
+    document.getElementById('admin-profile-form')
+        ?.addEventListener('submit', submitProfile);
+
+    document.getElementById('admin-password-form')
+        ?.addEventListener('submit', submitPassword);
+
+    document.getElementById('admin-profile-photo-input')
+        ?.addEventListener('change', (event) =>
+            handlePhotoChosen(event.target.files?.[0])
+        );
+
+    document.getElementById('admin-profile-photo-save')
+        ?.addEventListener('click', submitPhoto);
+
+    document.getElementById('admin-profile-photo-cancel')
+        ?.addEventListener('click', resetCropStage);
+
+    document.getElementById('admin-profile-photo-remove')
+        ?.addEventListener('click', removePhoto);
+
+    wireCropDrag();
 
     document.getElementById('admin-license-form')
         ?.addEventListener('submit', submitLicense);

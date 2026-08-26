@@ -385,6 +385,30 @@ class AuthController extends Controller
                     'users',
                     'email'
                 )->ignore($user->id),
+
+                /*
+                 * V1.0.11: the platform staff domain is load-bearing.
+                 * A staff member may not move their account off the
+                 * domain (that would silently revoke console access),
+                 * and a customer may not move onto it.
+                 */
+                function (string $attribute, mixed $value, \Closure $fail) use ($user): void {
+                    $isPlatformDomain = str_ends_with(
+                        mb_strtolower(trim((string) $value)),
+                        '@'.User::PLATFORM_EMAIL_DOMAIN
+                    );
+
+                    $isPlatformMember =
+                        (bool) $user->organisation?->is_platform;
+
+                    if ($isPlatformMember && ! $isPlatformDomain) {
+                        $fail(__('api.user_management.platform_domain_required'));
+                    }
+
+                    if (! $isPlatformMember && $isPlatformDomain) {
+                        $fail(__('api.user_management.platform_domain_reserved'));
+                    }
+                },
             ],
 
             'phone' => [
@@ -719,8 +743,19 @@ class AuthController extends Controller
         return [
             'id' => $user->id,
             'name' => $user->name,
+            'given_names' => $user->given_names,
+            'surname' => $user->surname,
             'email' => $user->email,
             'phone' => $user->phone,
+
+            /*
+             * V1.0.11: the profile photo travels as a data URI — no
+             * file storage, no probeable URL.
+             */
+            'avatar' => $user->profile_photo === null
+                ? null
+                : 'data:'.$user->profile_photo_mime
+                    .';base64,'.base64_encode($user->profile_photo),
             'role' => $user->role,
             'is_active' => (bool) $user->is_active,
 

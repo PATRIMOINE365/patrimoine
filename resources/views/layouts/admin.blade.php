@@ -66,6 +66,11 @@
                 Dashboard
             </button>
 
+            <button type="button" class="pm-admin-nav-item" data-admin-nav="users">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7.5" r="3.5"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Users
+            </button>
+
             <button type="button" class="pm-admin-nav-item" data-admin-nav="organizations">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 11h-2c-.93 0-1.4 0-1.77.15a2 2 0 0 0-1.08 1.08C2.5 12.6 2.5 13.07 2.5 14v7h19v-7c0-.93 0-1.4-.15-1.77a2 2 0 0 0-1.08-1.08C19.9 11 19.43 11 18.5 11h-2"/><path d="M7.5 21V6.2c0-1.12 0-1.68.22-2.11a2 2 0 0 1 .87-.87C9.02 3 9.58 3 10.7 3h2.6c1.12 0 1.68 0 2.11.22a2 2 0 0 1 .87.87c.22.43.22.99.22 2.11V21"/><path d="M11 7h2M11 11h2M11 15h2"/></svg>
                 Organizations
@@ -91,12 +96,22 @@
 
         <div class="pm-admin-sidebar-footer">
             <div class="pm-admin-user">
-                <span id="admin-user-avatar" class="pm-admin-user-avatar"></span>
+                <button
+                    id="admin-user-button"
+                    type="button"
+                    class="pm-admin-user-open"
+                    title="My profile"
+                >
+                    <span id="admin-user-avatar" class="pm-admin-user-avatar">
+                        <img id="admin-user-avatar-img" alt="" class="hidden h-full w-full rounded-full object-cover">
+                        <span id="admin-user-avatar-initials"></span>
+                    </span>
 
-                <span class="min-w-0">
-                    <span id="admin-user-name" class="pm-admin-user-name"></span>
-                    <span class="pm-admin-user-role">super admin</span>
-                </span>
+                    <span class="min-w-0 text-left">
+                        <span id="admin-user-name" class="pm-admin-user-name"></span>
+                        <span class="pm-admin-user-role">super admin</span>
+                    </span>
+                </button>
 
                 <button
                     id="admin-logout"

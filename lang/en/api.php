@@ -31,6 +31,12 @@ return [
         'platform_domain_blocked' => 'This email domain is reserved. Contact support@patrimoine365.com.',
     ],
 
+    'profile' => [
+        'photo_invalid' => 'That file could not be read as an image. Use a JPG, PNG, WEBP or GIF.',
+        'photo_updated' => 'Profile photo updated.',
+        'photo_removed' => 'Profile photo removed.',
+    ],
+
     'license' => [
         'user_limit_reached' => 'Your plan\'s user limit has been reached. Upgrade your plan to add more users.',
         'lease_limit_reached' => 'Your plan\'s active lease limit has been reached. Upgrade your plan to add more active leases.',

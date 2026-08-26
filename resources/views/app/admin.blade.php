@@ -157,19 +157,17 @@
         </div>
     </section>
 
-    {{-- ========================= Settings ========================= --}}
-    <section id="admin-section-settings" data-admin-section hidden>
-        <div class="pm-admin-eyebrow">Operations</div>
-        <h1 class="pm-admin-title">Settings</h1>
-        <p class="pm-admin-subtitle">Team access and platform identity.</p>
+    {{-- ========================== Users =========================== --}}
+    <section id="admin-section-users" data-admin-section hidden>
+        <div class="pm-admin-eyebrow">Workspace</div>
+        <h1 class="pm-admin-title">Users</h1>
+        <p class="pm-admin-subtitle">The Kality staff who operate the platform.</p>
 
         <div class="pm-admin-card pm-admin-card-flush mt-6">
             <div class="pm-admin-card-header">
-                <span>
-                    <span class="pm-admin-card-title">Team access</span>
-                    <span class="mt-0.5 block text-sm text-[var(--pm-text-muted)]">
-                        Staff accounts must use an @patrimoine365.com address; invitations arrive by email.
-                    </span>
+                <span class="flex items-center">
+                    <span class="pm-admin-card-title">Team members</span>
+                    <span id="admin-staff-count" class="pm-admin-count-pill"></span>
                 </span>
 
                 <button id="admin-invite-staff" type="button" class="pm-button-secondary">
@@ -190,7 +188,20 @@
                     <tbody id="admin-staff-body"></tbody>
                 </table>
             </div>
+
+            <div class="pm-admin-card-footer">
+                <span class="text-[var(--pm-text-muted)]">
+                    Staff accounts must use an @patrimoine365.com address; invitations arrive by email.
+                </span>
+            </div>
         </div>
+    </section>
+
+    {{-- ========================= Settings ========================= --}}
+    <section id="admin-section-settings" data-admin-section hidden>
+        <div class="pm-admin-eyebrow">Operations</div>
+        <h1 class="pm-admin-title">Settings</h1>
+        <p class="pm-admin-subtitle">Platform identity and legal versions.</p>
 
         <div class="pm-admin-card mt-6">
             <h2 class="pm-admin-card-title">Platform identity</h2>
@@ -510,6 +521,145 @@
             <button id="admin-delete-submit" type="submit" class="pm-button-danger">Delete permanently</button>
         </x-drawer-footer>
     </form>
+</x-drawer>
+
+{{-- ======================= My profile drawer ======================= --}}
+<x-drawer
+    id="admin-profile-modal"
+    backdrop-id="admin-profile-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="admin-profile-close"
+        close-label="Close"
+    >
+        <x-slot:title>My profile</x-slot:title>
+        <x-slot:description>
+            Your details, password and photo.
+        </x-slot:description>
+    </x-drawer-header>
+
+    <div class="flex min-h-0 flex-1 flex-col">
+        <div class="min-h-0 flex-1 space-y-8 overflow-y-auto px-6 py-6">
+
+            <div
+                id="admin-profile-feedback"
+                class="hidden rounded-lg px-4 py-3 text-sm"
+            ></div>
+
+            {{-- ------------------------- Photo ------------------------- --}}
+            <div>
+                <div class="pm-field-label mb-3 text-sm font-medium">Profile photo</div>
+
+                <div class="flex items-center gap-4">
+                    <span id="admin-profile-avatar" class="pm-admin-user-avatar !h-16 !w-16 text-lg">
+                        <img id="admin-profile-avatar-img" alt="" class="hidden h-full w-full rounded-full object-cover">
+                        <span id="admin-profile-avatar-initials"></span>
+                    </span>
+
+                    <span class="flex flex-wrap items-center gap-2">
+                        <label class="pm-button-secondary cursor-pointer">
+                            Upload photo
+                            <input
+                                id="admin-profile-photo-input"
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.gif,.heic,.heif"
+                                class="hidden"
+                            >
+                        </label>
+
+                        <button id="admin-profile-photo-remove" type="button" class="pm-button-secondary hidden">
+                            Remove
+                        </button>
+                    </span>
+                </div>
+
+                {{-- Crop stage: drag the square to frame the photo. --}}
+                <div id="admin-profile-crop" class="mt-4 hidden">
+                    <p class="mb-2 text-sm text-[var(--pm-text-muted)]">
+                        Drag the square to frame your photo.
+                    </p>
+
+                    <div id="admin-profile-crop-stage" class="pm-admin-crop-stage">
+                        <img id="admin-profile-crop-img" alt="" draggable="false">
+                        <div id="admin-profile-crop-box" class="pm-admin-crop-box"></div>
+                    </div>
+
+                    <div class="mt-3 flex items-center gap-2">
+                        <button id="admin-profile-photo-save" type="button" class="pm-button-primary">
+                            Save photo
+                        </button>
+
+                        <button id="admin-profile-photo-cancel" type="button" class="pm-button-secondary">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ---------------------- Details form --------------------- --}}
+            <form id="admin-profile-form" class="space-y-5 border-t border-[var(--pm-border)] pt-6">
+                <div class="pm-field-label text-sm font-medium">Details</div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-profile-given">Given names</label>
+                        <input id="admin-profile-given" type="text" class="pm-input" required>
+                    </div>
+                    <div>
+                        <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-profile-surname">Surname</label>
+                        <input id="admin-profile-surname" type="text" class="pm-input" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-profile-email">Email address</label>
+                    <input id="admin-profile-email" type="email" class="pm-input" required>
+                    <p class="mt-1.5 text-xs text-[var(--pm-text-muted)]">
+                        Staff accounts stay on @patrimoine365.com.
+                    </p>
+                </div>
+
+                <div>
+                    <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-profile-phone">Phone</label>
+                    <input id="admin-profile-phone" type="tel" class="pm-input">
+                </div>
+
+                <button id="admin-profile-save" type="submit" class="pm-button-primary">
+                    Save details
+                </button>
+            </form>
+
+            {{-- ------------------------ Password ------------------------ --}}
+            <form id="admin-password-form" class="space-y-5 border-t border-[var(--pm-border)] pt-6">
+                <div class="pm-field-label text-sm font-medium">Change password</div>
+
+                <div>
+                    <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-password-current">Current password</label>
+                    <input id="admin-password-current" type="password" autocomplete="current-password" class="pm-input" required>
+                </div>
+
+                <div>
+                    <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-password-new">New password</label>
+                    <input id="admin-password-new" type="password" autocomplete="new-password" minlength="10" class="pm-input" required>
+                </div>
+
+                <div>
+                    <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-password-confirm">Confirm new password</label>
+                    <input id="admin-password-confirm" type="password" autocomplete="new-password" minlength="10" class="pm-input" required>
+                </div>
+
+                <p class="text-xs text-[var(--pm-text-muted)]">
+                    Changing your password signs you out everywhere, including here.
+                </p>
+
+                <button id="admin-password-save" type="submit" class="pm-button-secondary">
+                    Update password
+                </button>
+            </form>
+
+        </div>
+    </div>
 </x-drawer>
 
 {{-- ===================== Invite staff drawer ===================== --}}

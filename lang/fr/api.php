@@ -31,6 +31,12 @@ return [
         'platform_domain_blocked' => 'Ce domaine e-mail est réservé. Contactez support@patrimoine365.com.',
     ],
 
+    'profile' => [
+        'photo_invalid' => 'Ce fichier n\'a pas pu être lu comme une image. Utilisez un JPG, PNG, WEBP ou GIF.',
+        'photo_updated' => 'Photo de profil mise à jour.',
+        'photo_removed' => 'Photo de profil supprimée.',
+    ],
+
     'license' => [
         'user_limit_reached' => 'La limite d’utilisateurs de votre forfait est atteinte. Passez à un forfait supérieur pour ajouter des utilisateurs.',
         'lease_limit_reached' => 'La limite de baux actifs de votre forfait est atteinte. Passez à un forfait supérieur pour ajouter des baux actifs.',

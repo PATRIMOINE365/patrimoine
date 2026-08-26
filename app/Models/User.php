@@ -36,6 +36,8 @@ use Laravel\Sanctum\HasApiTokens;
     'password',
     'remember_token',
     'email_verification_token_hash',
+    'profile_photo',
+    'profile_photo_mime',
 ])]
 class User extends Authenticatable
 {

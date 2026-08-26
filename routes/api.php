@@ -40,6 +40,7 @@ use App\Http\Controllers\Api\OwnerPayoutController;
 use App\Http\Controllers\Api\OwnerReserveTransferController;
 use App\Http\Controllers\Api\PartyController;
 use App\Http\Controllers\Api\PasswordController;
+use App\Http\Controllers\Api\ProfilePhotoController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PaymentRegisterController;
 use App\Http\Controllers\Api\PaymentReportController;
@@ -174,6 +175,20 @@ Route::middleware('auth:sanctum')->group(
         Route::patch(
             'auth/me',
             [AuthController::class, 'updateMe']
+        );
+
+        /*
+         * V1.0.11: profile photo — uploaded bytes are re-encoded
+         * server-side and stored on the user row.
+         */
+        Route::post(
+            'auth/me/avatar',
+            [ProfilePhotoController::class, 'store']
+        );
+
+        Route::delete(
+            'auth/me/avatar',
+            [ProfilePhotoController::class, 'destroy']
         );
 
         Route::post(
