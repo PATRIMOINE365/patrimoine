@@ -1003,7 +1003,7 @@ function handlePhotoChosen(file) {
          */
         stageImg.addEventListener(
             'load',
-            () => requestAnimationFrame(initCropBox),
+            () => initCropBox(),
             { once: true }
         );
 
@@ -1044,13 +1044,14 @@ function initCropBox(attempt = 0) {
 
     const h = stageImg.clientHeight;
 
-    if ((w === 0 || h === 0) && attempt < 30) {
+    if ((w === 0 || h === 0) && attempt < 40) {
         /*
          * The stage image has no layout yet (its load is asynchronous
-         * and the drawer may still be animating) — try again next
-         * frame rather than laying out a zero-size square.
+         * and the drawer may still be animating). setTimeout rather
+         * than requestAnimationFrame: rAF never fires in a background
+         * or non-composited tab.
          */
-        requestAnimationFrame(() => initCropBox(attempt + 1));
+        setTimeout(() => initCropBox(attempt + 1), 50);
 
         return;
     }
