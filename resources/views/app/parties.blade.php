@@ -183,12 +183,13 @@
                     class="
                         grid w-full gap-3
                         sm:grid-cols-2
-                        xl:w-auto xl:grid-cols-4
+                        xl:w-auto
+                        xl:grid-cols-[minmax(18rem,1.5fr)_repeat(3,minmax(9.5rem,1fr))]
                     "
                 >
 
                     {{-- Search --}}
-                    <div class="sm:min-w-72">
+                    <div>
                         <label
                             for="party-search"
                             class="sr-only"
