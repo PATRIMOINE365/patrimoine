@@ -786,18 +786,6 @@
                                     <path d="M3 11h18"/>
                                 </svg>
                             </button>
-
-                            <input
-                                id="report-from-picker"
-                                type="date"
-                                tabindex="-1"
-                                aria-hidden="true"
-                                class="
-                                    pointer-events-none
-                                    absolute h-px w-px
-                                    overflow-hidden opacity-0
-                                "
-                            >
                         </div>
                     </div>
 
@@ -856,18 +844,6 @@
                                     <path d="M3 11h18"/>
                                 </svg>
                             </button>
-
-                            <input
-                                id="report-to-picker"
-                                type="date"
-                                tabindex="-1"
-                                aria-hidden="true"
-                                class="
-                                    pointer-events-none
-                                    absolute h-px w-px
-                                    overflow-hidden opacity-0
-                                "
-                            >
                         </div>
                     </div>
 
@@ -950,18 +926,6 @@
                                     <path d="M3 11h18"/>
                                 </svg>
                             </button>
-
-                            <input
-                                id="report-as-of-picker"
-                                type="date"
-                                tabindex="-1"
-                                aria-hidden="true"
-                                class="
-                                    pointer-events-none
-                                    absolute h-px w-px
-                                    overflow-hidden opacity-0
-                                "
-                            >
                         </div>
                     </div>
                 </div>

@@ -10,8 +10,8 @@ import {
 
 import {
     dateForApi,
-    dateForDisplay,
     initializeDateInputs,
+    openDatePicker,
 } from './date-input.js';
 
 /*
@@ -1170,50 +1170,25 @@ function hideSubjectResults() {
 */
 
 /**
- * Keep Patrimoine DD-MM-YYYY display fields while retaining a native
- * calendar selector.
+ * Calendar buttons open the shared Patrimoine calendar — the same
+ * picker the Leases workspace uses — which writes the selected date
+ * back into the visible DD/MM/YYYY field and fires its change event.
  */
 function initializeReportDatePickers() {
     document
         .querySelectorAll('[data-report-date-picker]')
         .forEach((button) => {
-            const fieldId =
-                button.dataset.reportDatePicker;
-
             const visibleInput =
-                document.getElementById(fieldId);
+                document.getElementById(
+                    button.dataset.reportDatePicker
+                );
 
-            const picker =
-                document.getElementById(`${fieldId}-picker`);
-
-            if (! visibleInput || ! picker) {
+            if (! visibleInput) {
                 return;
             }
 
             button.addEventListener('click', () => {
-                const iso =
-                    dateForApi(visibleInput.value);
-
-                if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
-                    picker.value = iso;
-                }
-
-                if (typeof picker.showPicker === 'function') {
-                    picker.showPicker();
-                } else {
-                    picker.click();
-                }
-            });
-
-            picker.addEventListener('change', () => {
-                visibleInput.value =
-                    dateForDisplay(picker.value);
-
-                visibleInput.dispatchEvent(
-                    new Event('change', {
-                        bubbles: true,
-                    })
-                );
+                openDatePicker(visibleInput);
             });
         });
 }
