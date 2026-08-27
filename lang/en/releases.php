@@ -19,6 +19,14 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.22',
+            'date' => '2026-08-27',
+            'title' => 'Closing the owner Transfer panel',
+            'changes' => [
+                'On the Owner account, the Transfer panel can now be closed with its X, by clicking outside it, or with the Escape key. Escape closes one panel at a time, so the account behind it stays open.',
+            ],
+        ],
+        [
             'version' => '1.0.21',
             'date' => '2026-08-27',
             'title' => 'Cheque payments, and an interface that stays in your language',

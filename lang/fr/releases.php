@@ -15,6 +15,14 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.22',
+            'date' => '2026-08-27',
+            'title' => 'Fermeture du panneau Transfert',
+            'changes' => [
+                'Sur le compte d\'un propriétaire, le panneau Transfert peut désormais être fermé par sa croix, en cliquant à l\'extérieur, ou avec la touche Échap. Échap ferme un panneau à la fois, de sorte que le compte situé derrière reste ouvert.',
+            ],
+        ],
+        [
             'version' => '1.0.21',
             'date' => '2026-08-27',
             'title' => 'Le paiement par chèque, et une interface qui reste dans votre langue',
