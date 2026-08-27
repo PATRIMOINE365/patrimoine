@@ -3759,6 +3759,7 @@ function initializeOwnerWorkspaceActions() {
         'owner-expense-bill-modal',
         'owner-payout-modal',
         'owner-adjustment-modal',
+        'owner-transfer-modal',
     ].forEach(
         (id) => {
             document
@@ -3786,6 +3787,7 @@ function initializeOwnerWorkspaceActions() {
         'owner-expense-bill-modal',
         'owner-payout-modal',
         'owner-adjustment-modal',
+        'owner-transfer-modal',
     ].forEach(
         (id) => {
             document
@@ -3816,6 +3818,7 @@ function initializeOwnerWorkspaceActions() {
                 'owner-expense-bill-modal',
                 'owner-payout-modal',
                 'owner-adjustment-modal',
+                'owner-transfer-modal',
             ].forEach(
                 (id) => {
                     const modal =
