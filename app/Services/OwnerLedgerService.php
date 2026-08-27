@@ -59,6 +59,7 @@ class OwnerLedgerService
                     'cash',
                     'bank_transfer',
                     'momo',
+                    'cheque',
                 ],
                 true
             )

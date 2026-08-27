@@ -444,6 +444,37 @@ class PaymentApiTest extends TestCase
     }
 
     /**
+     * Cheque is the fourth supported payment channel, alongside cash,
+     * bank transfer and mobile payment.
+     */
+    public function test_payment_can_be_recorded_by_cheque(): void
+    {
+        $context = $this->createContext();
+
+        $response = $this->postJson('/api/payments', [
+            'lease_id' => $context['lease']->id,
+            'amount' => 5000,
+            'payment_date' => '2026-01-15',
+            'payment_method' => 'cheque',
+            'reference' => 'CHQ-000123',
+        ]);
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath(
+                'payment_method',
+                'cheque'
+            );
+
+        $this->assertDatabaseHas('payments', [
+            'lease_id' => $context['lease']->id,
+            'amount' => 5000,
+            'payment_method' => 'cheque',
+            'reference' => 'CHQ-000123',
+        ]);
+    }
+
+    /**
      * Payment listing may be filtered by Lease.
      */
     public function test_payments_can_be_filtered_by_lease(): void

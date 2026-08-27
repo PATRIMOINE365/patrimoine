@@ -39,6 +39,7 @@ import {
 } from './public-presentation.js';
 
 import {
+    applyCachedPresentationLanguage,
     applyTranslations,
     loadPresentationConfiguration,
     initializeMoneyInputs,
@@ -121,6 +122,18 @@ document.addEventListener(
          * authentication or organisation configuration.
          */
         initializeTheme();
+
+        /*
+         * Translate from the cached language FIRST, synchronously.
+         *
+         * Menu items are ordinary links, so each navigation is a fresh
+         * Blade document. When Blade could not resolve an organisation it
+         * renders English, and awaiting the presentation endpoint before
+         * translating left that English visible for a whole network round
+         * trip. Applying the cached language up front closes that window;
+         * the endpoint still corrects the page immediately below.
+         */
+        applyCachedPresentationLanguage();
 
         /*
          * Presentation configuration is public and must be available before

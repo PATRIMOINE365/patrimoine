@@ -31,6 +31,7 @@ return new class extends Migration
                 'cash',
                 'bank_transfer',
                 'momo',
+                'cheque', // added in 2026_08_27_090000_add_cheque_payment_method
             ]);
 
             $table->string('reference')->nullable();

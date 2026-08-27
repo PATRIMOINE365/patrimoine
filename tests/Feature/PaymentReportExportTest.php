@@ -173,7 +173,7 @@ class PaymentReportExportTest extends TestCase
         $this
             ->getJson(
                 '/api/reports/payments/csv'
-                .'?payment_method=cheque'
+                .'?payment_method=crypto'
             )
             ->assertUnprocessable()
             ->assertJsonValidationErrors([

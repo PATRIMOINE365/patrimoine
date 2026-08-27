@@ -387,6 +387,8 @@
                         <option value="bank_transfer">{{ __('ui.tenants.payment_method_bank_transfer') }}</option>
 
                         <option value="momo">{{ __('ui.tenants.payment_method_momo') }}</option>
+
+                        <option value="cheque">{{ __('ui.tenants.payment_method_cheque') }}</option>
                     </select>
                 </div>
 
@@ -731,6 +733,8 @@
                         <option value="bank_transfer">{{ __('ui.tenants.payment_method_bank_transfer') }}</option>
 
                         <option value="momo">{{ __('ui.tenants.payment_method_momo') }}</option>
+
+                        <option value="cheque">{{ __('ui.tenants.payment_method_cheque') }}</option>
                     </select>
                 </div>
 

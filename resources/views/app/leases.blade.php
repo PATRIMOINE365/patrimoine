@@ -1760,6 +1760,11 @@
                                         value="cash"
                                         data-i18n="leases.cash"
                                     >{{ __('ui.leases.cash') }}</option>
+
+                                        <option
+                                        value="cheque"
+                                        data-i18n="leases.cheque"
+                                    >{{ __('ui.leases.cheque') }}</option>
                                     </select>
                                 </div>
 

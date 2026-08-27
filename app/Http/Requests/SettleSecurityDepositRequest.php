@@ -42,7 +42,7 @@ class SettleSecurityDepositRequest extends FormRequest
             'refund_payment_method' => [
                 'nullable',
                 'string',
-                'in:cash,bank_transfer,momo',
+                'in:cash,bank_transfer,momo,cheque',
             ],
 
             'notes' => [

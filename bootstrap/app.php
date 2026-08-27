@@ -37,6 +37,18 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         /*
+         * The first-paint language hint is written by the browser, so it
+         * cannot participate in Laravel's cookie encryption — an encrypted
+         * cookie the browser cannot produce would simply be discarded.
+         * It carries a language code and nothing else.
+         */
+        $middleware->encryptCookies(
+            except: [
+                \App\Services\ApplicationLocaleService::LANGUAGE_COOKIE,
+            ]
+        );
+
+        /*
          * V1.0.10 multi-tenancy: once any guard has resolved a user,
          * bind that user's organisation as the tenant for the rest of
          * the request (and refuse suspended organisations). Appending

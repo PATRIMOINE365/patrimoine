@@ -630,7 +630,7 @@ class SecurityDepositApiTest extends TestCase
                     '2026-08-11',
 
                 'refund_payment_method' =>
-                    'cheque',
+                    'crypto',
             ]
         )
             ->assertUnprocessable()

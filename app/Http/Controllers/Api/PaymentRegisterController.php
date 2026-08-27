@@ -46,6 +46,7 @@ class PaymentRegisterController extends Controller
                     'cash',
                     'bank_transfer',
                     'momo',
+                    'cheque',
                 ]),
             ],
 

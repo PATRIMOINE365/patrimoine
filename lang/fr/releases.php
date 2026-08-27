@@ -15,6 +15,17 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.21',
+            'date' => '2026-08-27',
+            'title' => 'Le paiement par chèque, et une interface qui reste dans votre langue',
+            'changes' => [
+                'Le chèque est désormais un mode de paiement partout où vous enregistrez de l\'argent : paiements et retraits des locataires, dépôts et reversements des propriétaires, avances de bail, dépenses et rapports.',
+                'Le passage d\'un menu à l\'autre n\'affiche plus brièvement l\'interface en anglais avant de revenir à votre langue : les pages s\'affichent directement dans votre langue.',
+                'Sur le compte d\'un propriétaire, le panneau Transfert s\'ouvre maintenant au-dessus du compte auquel il appartient, et non derrière.',
+                'La suppression d\'un bail ayant reçu un paiement de loyer était refusée comme non sécurisée. Ces paiements sont désormais correctement rattachés, de sorte qu\'un bail que vous êtes en droit de supprimer peut l\'être.',
+            ],
+        ],
+        [
             'version' => '1.0.20',
             'date' => '2026-08-26',
             'title' => 'Un Journal financier qui parle votre langue',

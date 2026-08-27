@@ -657,6 +657,8 @@
                             <option value="bank_transfer" data-i18n="reports.payment_method_bank">{{ __('ui.reports.payment_method_bank') }}</option>
 
                             <option value="momo" data-i18n="reports.payment_method_mobile">{{ __('ui.reports.payment_method_mobile') }}</option>
+
+                            <option value="cheque" data-i18n="reports.payment_method_cheque">{{ __('ui.reports.payment_method_cheque') }}</option>
                         </select>
                     </div>
 

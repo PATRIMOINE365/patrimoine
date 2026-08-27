@@ -89,5 +89,28 @@
 
         document.documentElement.dataset.presentationLanguage =
             language;
+
+        /*
+         * Republish the resolved language to the server so the NEXT
+         * document is rendered in it directly, instead of painting the
+         * English Blade fallback and letting JavaScript translate it
+         * afterwards. A ?lang= hand-over therefore takes effect
+         * server-side from the following navigation onwards.
+         */
+        try {
+            document.cookie =
+                'patrimoine_language='
+                + language
+                + '; Path=/; Max-Age=31536000; SameSite=Lax'
+                + (
+                    window.location.protocol === 'https:'
+                        ? '; Secure'
+                        : ''
+                );
+        } catch (error) {
+            /*
+             * Cookie restrictions cost only the server-rendered hint.
+             */
+        }
     })();
 </script>

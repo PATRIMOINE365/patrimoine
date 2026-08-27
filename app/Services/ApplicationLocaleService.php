@@ -20,6 +20,15 @@ use InvalidArgumentException;
 class ApplicationLocaleService
 {
     /**
+     * Browser-published first-paint language hint.
+     *
+     * Written by resources/js/core.js and read only when no organisation
+     * is bound. It must stay out of Laravel's cookie encryption so the
+     * browser can write a value the server can read (see bootstrap/app.php).
+     */
+    public const LANGUAGE_COOKIE = 'patrimoine_language';
+
+    /**
      * Return the configured language code.
      *
      * Existing installations without persisted V1.0.2 values fall back to
@@ -57,6 +66,33 @@ class ApplicationLocaleService
                 )
             ) {
                 return $requested;
+            }
+
+            /*
+             * Blade documents are requested by ordinary navigation and
+             * carry no API token, so no organisation is ever bound while
+             * rendering them and the English platform default would win.
+             *
+             * The browser publishes the language it has confirmed as a
+             * plain cookie precisely so the server can render the right
+             * language in the first byte rather than letting JavaScript
+             * repaint the whole interface after boot. A bound
+             * organisation still overrides this below.
+             */
+            $cookie =
+                request()?->cookie(
+                    self::LANGUAGE_COOKIE
+                );
+
+            if (
+                is_string($cookie)
+                && in_array(
+                    $cookie,
+                    $supported,
+                    true
+                )
+            ) {
+                return $cookie;
             }
         }
 

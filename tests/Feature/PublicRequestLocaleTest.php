@@ -112,6 +112,141 @@ class PublicRequestLocaleTest extends TestCase
         );
     }
 
+    /**
+     * Menu items are ordinary links, so every navigation renders a fresh
+     * Blade document with no API token and therefore no bound
+     * organisation. Without a first-paint hint the server answered in
+     * English and the browser repainted the whole interface in French a
+     * network round trip later. The browser-published language cookie is
+     * what lets the server render the right language immediately.
+     */
+    public function test_language_cookie_localises_a_request_without_an_organisation(): void
+    {
+        $this->actAsPublicVisitor();
+
+        /*
+         * JSON test requests drop cookies unless credentials are opted in;
+         * a same-origin browser fetch always sends them.
+         */
+        $response = $this->withCredentials()->withUnencryptedCookie(
+            \App\Services\ApplicationLocaleService::LANGUAGE_COOKIE,
+            'fr'
+        )->postJson(
+            '/api/auth/register',
+            [
+                'email' => 'not-an-email',
+            ]
+        );
+
+        $response->assertStatus(422);
+
+        $this->assertStringContainsString(
+            'adresse e-mail valide',
+            implode(
+                ' ',
+                $response->json('errors.email') ?? []
+            )
+        );
+    }
+
+    public function test_language_header_wins_over_the_language_cookie(): void
+    {
+        $this->actAsPublicVisitor();
+
+        /*
+         * JSON test requests drop cookies unless credentials are opted in;
+         * a same-origin browser fetch always sends them.
+         */
+        $response = $this->withCredentials()->withUnencryptedCookie(
+            \App\Services\ApplicationLocaleService::LANGUAGE_COOKIE,
+            'fr'
+        )->postJson(
+            '/api/auth/register',
+            [
+                'email' => 'not-an-email',
+            ],
+            [
+                'X-Patrimoine-Language' => 'en',
+            ]
+        );
+
+        $response->assertStatus(422);
+
+        $this->assertStringContainsString(
+            'valid email address',
+            implode(
+                ' ',
+                $response->json('errors.email') ?? []
+            )
+        );
+    }
+
+    public function test_invalid_language_cookie_is_ignored(): void
+    {
+        $this->actAsPublicVisitor();
+
+        /*
+         * JSON test requests drop cookies unless credentials are opted in;
+         * a same-origin browser fetch always sends them.
+         */
+        $response = $this->withCredentials()->withUnencryptedCookie(
+            \App\Services\ApplicationLocaleService::LANGUAGE_COOKIE,
+            'xx'
+        )->postJson(
+            '/api/auth/register',
+            [
+                'email' => 'not-an-email',
+            ]
+        );
+
+        $response->assertStatus(422);
+
+        $this->assertStringContainsString(
+            'valid email address',
+            implode(
+                ' ',
+                $response->json('errors.email') ?? []
+            )
+        );
+    }
+
+    /**
+     * The bug the cookie exists to fix: a Blade shell rendered in English
+     * and then repainted in French by JavaScript. With the hint present
+     * the very first byte is already French, so there is nothing to
+     * repaint.
+     */
+    public function test_application_shell_is_rendered_in_the_cookie_language(): void
+    {
+        $this->actAsPublicVisitor();
+
+        $response = $this->withUnencryptedCookie(
+            \App\Services\ApplicationLocaleService::LANGUAGE_COOKIE,
+            'fr'
+        )->get('/owners');
+
+        $response->assertOk();
+
+        $response->assertSee(
+            'Propriétaires',
+            false
+        );
+    }
+
+    public function test_application_shell_falls_back_to_english_without_the_cookie(): void
+    {
+        $this->actAsPublicVisitor();
+
+        $response = $this->get('/owners');
+
+        $response->assertOk();
+
+        $response->assertSee(
+            'Owners',
+            false
+        );
+    }
+
     public function test_invalid_language_header_is_ignored(): void
     {
         $this->actAsPublicVisitor();

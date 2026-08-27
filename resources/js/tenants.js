@@ -8486,6 +8486,7 @@ async function submitTenantDeposit(
             'cash',
             'bank_transfer',
             'momo',
+            'cheque',
         ].includes(
             paymentMethod
         )
@@ -8685,6 +8686,7 @@ async function submitTenantWithdrawal(
             'cash',
             'bank_transfer',
             'momo',
+            'cheque',
         ].includes(
             paymentMethod
         )

@@ -369,6 +369,16 @@ class AccountingEventMap
             'mobile_payment' =>
                 SystemChartOfAccounts::MOBILE_PAYMENT_CLEARING,
 
+            /*
+             * A cheque is a bank instrument: it is banked rather than
+             * held, so it settles through the same Bank asset account as
+             * a transfer. No separate clearing account is introduced,
+             * which would otherwise change the chart of accounts and the
+             * opening-balance reconciliation.
+             */
+            'cheque' =>
+                SystemChartOfAccounts::BANK,
+
             default =>
                 throw new InvalidArgumentException(
                     sprintf(

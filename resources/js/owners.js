@@ -4,6 +4,7 @@ import {
     formatCurrency,
     formatDate,
     formatNumber,
+    isTopmostDrawer,
     openDrawer,
     openPdfInNewTab,
     parseJsonResponse,
@@ -3812,7 +3813,7 @@ function initializeOwnerWorkspaceActions() {
             [
                 'owner-accounts-modal',
                 'owner-deposit-modal',
-                        'owner-expense-bill-modal',
+                'owner-expense-bill-modal',
                 'owner-payout-modal',
                 'owner-adjustment-modal',
             ].forEach(
@@ -3823,8 +3824,10 @@ function initializeOwnerWorkspaceActions() {
                         );
 
                     /*
-                     * Only dismiss drawers that are actually open and not
-                     * already animating shut.
+                     * Only dismiss drawers that are actually open, not
+                     * already animating shut, and on top of the stack —
+                     * Escape inside an action drawer launched from the
+                     * Accounts drawer must not close both at once.
                      */
                     if (
                         modal
@@ -3834,6 +3837,7 @@ function initializeOwnerWorkspaceActions() {
                         && ! modal.classList.contains(
                             'pm-drawer-closing'
                         )
+                        && isTopmostDrawer(modal)
                     ) {
                         closeDrawer(
                             modal
@@ -6601,6 +6605,9 @@ function paymentMethodLabel(
 
         case 'momo':
             return translate('owners.momo');
+
+        case 'cheque':
+            return translate('owners.cheque');
 
         default:
             return capitalizeWords(

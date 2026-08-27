@@ -330,6 +330,55 @@ const PRESENTATION_LANGUAGE_STORAGE_KEY =
 const PRESENTATION_LANGUAGE_OVERRIDE_STORAGE_KEY =
     'patrimoine.presentation.language.override';
 
+/*
+ * Menu items are ordinary links, so every navigation is a fresh document
+ * rendered by Blade. Blade requests carry no API token, so the server has
+ * no organisation to take a language from and falls back to English —
+ * which the browser then paints before JavaScript can translate it.
+ *
+ * Publishing the confirmed language as a plain cookie lets the server
+ * render the correct language in the very first byte. It is a first-paint
+ * hint only: a bound organisation's own setting always wins server-side.
+ */
+const PRESENTATION_LANGUAGE_COOKIE = 'patrimoine_language';
+
+const PRESENTATION_LANGUAGE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
+/**
+ * Publish the language to the server for the next document request.
+ *
+ * @param {'en'|'fr'} language
+ */
+function publishPresentationLanguageCookie(language) {
+    if (
+        language !== 'en'
+        && language !== 'fr'
+    ) {
+        return;
+    }
+
+    try {
+        const secure =
+            window.location.protocol === 'https:'
+                ? '; Secure'
+                : '';
+
+        document.cookie =
+            PRESENTATION_LANGUAGE_COOKIE
+            + '='
+            + language
+            + '; Path=/; Max-Age='
+            + PRESENTATION_LANGUAGE_COOKIE_MAX_AGE
+            + '; SameSite=Lax'
+            + secure;
+    } catch {
+        /*
+         * Cookie restrictions only cost us the server-rendered hint; the
+         * browser still translates the page after boot.
+         */
+    }
+}
+
 /**
  * Return the visitor's public-screen language override, if any.
  *
@@ -401,6 +450,10 @@ export function setPublicLanguageOverride(
     document.documentElement.dataset
         .presentationLanguage =
         language;
+
+    publishPresentationLanguageCookie(
+        language
+    );
 }
 
 /**
@@ -605,6 +658,14 @@ export async function loadPresentationConfiguration() {
                         document.documentElement.dataset
                             .presentationLanguage =
                             confirmedLanguage;
+
+                        /*
+                         * Let the next Blade document render in this
+                         * language instead of the English fallback.
+                         */
+                        publishPresentationLanguageCookie(
+                            confirmedLanguage
+                        );
                     }
 
                     return presentationConfiguration;
@@ -616,6 +677,35 @@ export async function loadPresentationConfiguration() {
             );
 
     return presentationConfigurationPromise;
+}
+
+/**
+ * Translate the document from the cached language, without waiting for the
+ * presentation endpoint.
+ *
+ * The head bootstrap has already resolved which language this document
+ * should be in (visitor override, then the last confirmed organisation
+ * language) and recorded it on the root element. Applying it before the
+ * network round trip is what stops the English Blade fallback from being
+ * visible while /api/presentation-config is in flight.
+ *
+ * loadPresentationConfiguration() remains authoritative and re-applies
+ * translations once it answers.
+ */
+export function applyCachedPresentationLanguage() {
+    const language =
+        document.documentElement.dataset
+            .presentationLanguage;
+
+    if (
+        language === 'en'
+        || language === 'fr'
+    ) {
+        presentationConfiguration.language =
+            language;
+    }
+
+    applyTranslations();
 }
 
 /**
@@ -1859,6 +1949,67 @@ const DRAWER_TRANSITION_MS = 820;
 /** In-flight close timers, keyed by drawer element. */
 const drawerCloseTimers = new WeakMap();
 
+/*
+ * Drawer stacking.
+ *
+ * Every drawer shares the same z-[70] layer, so when two are open at once
+ * the browser falls back to document order — which made a drawer opened
+ * FROM another drawer (Owner ▸ Accounts ▸ Transfer) paint underneath the
+ * one that launched it, purely because its markup appears earlier in the
+ * page. Each open therefore claims the next layer above whatever is
+ * already on screen, and the counter resets once the stack empties.
+ */
+const DRAWER_BASE_Z_INDEX = 70;
+
+let drawerStackDepth = 0;
+
+/**
+ * Return the drawers currently on screen, deepest layer last.
+ *
+ * @returns {HTMLElement[]}
+ */
+function activeDrawers() {
+    return Array.from(
+        document.querySelectorAll(
+            '.pm-drawer.pm-drawer-active:not(.pm-drawer-closing)'
+        )
+    );
+}
+
+/**
+ * Return the drawer currently on top of the stack.
+ *
+ * @returns {HTMLElement|null}
+ */
+function topmostDrawer() {
+    let topmost = null;
+    let topmostZIndex = -Infinity;
+
+    for (const element of activeDrawers()) {
+        const zIndex =
+            Number.parseInt(
+                element.style.zIndex,
+                10
+            );
+
+        const resolved =
+            Number.isNaN(zIndex)
+                ? DRAWER_BASE_Z_INDEX
+                : zIndex;
+
+        /*
+         * `>=` keeps document order as the tie-breaker, matching how the
+         * browser would paint two drawers sharing a layer.
+         */
+        if (resolved >= topmostZIndex) {
+            topmost = element;
+            topmostZIndex = resolved;
+        }
+    }
+
+    return topmost;
+}
+
 /**
  * Resolve a drawer reference (element or element id) to an element.
  *
@@ -1869,6 +2020,22 @@ function resolveDrawer(drawer) {
     return typeof drawer === 'string'
         ? document.getElementById(drawer)
         : drawer;
+}
+
+/**
+ * Report whether a drawer is the one currently on top of the stack.
+ *
+ * Pages that wire their own Escape handling use this so a stacked drawer
+ * dismisses one layer at a time instead of collapsing the whole stack.
+ *
+ * @param {HTMLElement|string} drawer element or id
+ * @returns {boolean}
+ */
+export function isTopmostDrawer(drawer) {
+    const element = resolveDrawer(drawer);
+
+    return element !== null
+        && topmostDrawer() === element;
 }
 
 /**
@@ -1889,6 +2056,19 @@ export function openDrawer(drawer) {
     if (pendingClose) {
         window.clearTimeout(pendingClose);
         drawerCloseTimers.delete(element);
+    }
+
+    /*
+     * Claim a layer above every drawer already on screen. Re-opening a
+     * drawer that is still active keeps its existing layer so a repeated
+     * open cannot inflate the stack.
+     */
+    if (! element.style.zIndex) {
+        drawerStackDepth += 1;
+
+        element.style.zIndex = String(
+            DRAWER_BASE_Z_INDEX + drawerStackDepth
+        );
     }
 
     element.classList.remove('pm-drawer-open', 'pm-drawer-closing');
@@ -1929,10 +2109,19 @@ export function closeDrawer(drawer, options = {}) {
 
         element.classList.remove('pm-drawer-active', 'pm-drawer-closing');
         element.setAttribute('hidden', '');
+        element.style.removeProperty('z-index');
 
         // Only release page scroll once no other drawer remains open.
-        if (! document.querySelector('.pm-drawer.pm-drawer-active:not(.pm-drawer-closing)')) {
+        if (activeDrawers().length === 0) {
             document.body.classList.remove('overflow-hidden');
+        }
+
+        /*
+         * Restart the stack only once nothing is on screen at all —
+         * drawers still animating out still occupy their layer.
+         */
+        if (! document.querySelector('.pm-drawer.pm-drawer-active')) {
+            drawerStackDepth = 0;
         }
 
         if (typeof options.onClosed === 'function') {
@@ -1992,12 +2181,17 @@ export function wireDrawer(drawer, options = {}) {
     element.querySelector('.pm-drawer-backdrop')
         ?.addEventListener('click', close);
 
-    // Escape dismisses the drawer while it is open.
+    /*
+     * Escape dismisses the drawer while it is open — but only the one on
+     * top, so dismissing a drawer opened from another drawer no longer
+     * takes the drawer underneath with it.
+     */
     document.addEventListener('keydown', (event) => {
         if (
             event.key === 'Escape'
             && element.classList.contains('pm-drawer-active')
             && ! element.classList.contains('pm-drawer-closing')
+            && topmostDrawer() === element
         ) {
             close();
         }

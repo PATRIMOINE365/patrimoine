@@ -412,6 +412,7 @@
                     <option value="bank_transfer">Bank transfer</option>
                     <option value="momo">Mobile money</option>
                     <option value="cash">Cash</option>
+                    <option value="cheque">Cheque</option>
                     <option value="other">Other</option>
                 </select>
             </div>

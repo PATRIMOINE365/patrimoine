@@ -33,7 +33,7 @@ class TenantFundExpenseController extends Controller
         $validated = $request->validate([
             'tenant_fund_account_id' => ['required', 'integer', \App\Rules\OrganisationOwned::exists('tenant_fund_accounts')],
             'transaction_date' => 'required|date',
-            'payment_method' => 'required|in:cash,bank_transfer,momo',
+            'payment_method' => 'required|in:cash,bank_transfer,momo,cheque',
             'reference' => 'nullable|string|max:255',
             'lines' => 'required|array|min:1',
             'lines.*.description' => 'required|string|max:255',

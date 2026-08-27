@@ -60,6 +60,7 @@ class StorePaymentRequest extends FormRequest
                     'cash',
                     'bank_transfer',
                     'momo',
+                    'cheque',
                 ]),
             ],
 

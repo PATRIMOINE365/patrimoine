@@ -38,6 +38,7 @@ class StoreOwnerPayoutRequest extends FormRequest
                     'cash',
                     'bank_transfer',
                     'momo',
+                    'cheque',
                 ]),
             ],
 

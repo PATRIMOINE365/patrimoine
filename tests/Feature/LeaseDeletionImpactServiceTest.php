@@ -346,6 +346,121 @@ class LeaseDeletionImpactServiceTest extends TestCase
         );
     }
 
+    /**
+     * Regression: rent receipts, owner entitlements and management fees are
+     * all posted with PaymentAllocation as their structured source. While
+     * allocations were missing from the source inventory those entries could
+     * only ever be discovered by snapshot, so every Lease that had received a
+     * rent payment was permanently undeletable.
+     */
+    public function test_payment_allocation_sourced_journal_entry_is_classified_as_active(): void
+    {
+        $lease = $this->createLease();
+
+        $allocation =
+            $this->createLeasePaymentAllocation(
+                $lease
+            );
+
+        $journalId = $this->createJournalEntry([
+            'journal_number' => 'JRN-2026-910010',
+            'transaction_type' => 'rent_receipt',
+
+            'source_type' =>
+                \App\Models\PaymentAllocation::class,
+
+            'source_id' =>
+                $allocation->id,
+
+            'description' =>
+                'Rent receipt allocation.',
+
+            'snapshot' => [
+                'payment_allocation_id' =>
+                    $allocation->id,
+
+                'lease_id' =>
+                    $lease->id,
+            ],
+        ]);
+
+        $this->enableAccountingRuntime();
+
+        $impact = app(
+            LeaseDeletionImpactService::class
+        )->calculate($lease);
+
+        $activeIds = collect(
+            $impact['journal']['active_entries']
+        )->pluck('id')->map(
+            fn ($id) => (int) $id
+        )->all();
+
+        $this->assertContains(
+            $journalId,
+            $activeIds
+        );
+
+        $this->assertSame(
+            [],
+            $impact['journal']['unclassified_entries']
+        );
+
+        $this->assertTrue(
+            $impact['accounting']['impact_classified']
+        );
+    }
+
+    /**
+     * Regression: snapshot discovery matches on a substring, so
+     * '"lease_id":1' also matches leases 10, 19 and 100. A neighbouring
+     * Lease's posting must never enter this Lease's impact set.
+     */
+    public function test_snapshot_lease_id_prefix_does_not_match_another_lease(): void
+    {
+        $lease = $this->createLease();
+
+        $neighbourLeaseId =
+            (int) ($lease->id . '9');
+
+        $journalId = $this->createJournalEntry([
+            'journal_number' => 'JRN-2026-910011',
+            'transaction_type' => 'manual_test',
+            'source_type' => 'unknown_source',
+            'source_id' => 987654,
+
+            'description' =>
+                'Posting belonging to a different Lease.',
+
+            'snapshot' => [
+                'lease_id' =>
+                    $neighbourLeaseId,
+            ],
+        ]);
+
+        $this->enableAccountingRuntime();
+
+        $impact = app(
+            LeaseDeletionImpactService::class
+        )->calculate($lease);
+
+        $discoveredIds = collect(
+            $impact['journal']['entries']
+        )->pluck('id')->map(
+            fn ($id) => (int) $id
+        )->all();
+
+        $this->assertNotContains(
+            $journalId,
+            $discoveredIds
+        );
+
+        $this->assertSame(
+            [],
+            $impact['journal']['unclassified_entries']
+        );
+    }
+
     public function test_shared_owner_payout_journal_attribution_fails_closed(): void
     {
         $lease = $this->createLease();
@@ -592,6 +707,44 @@ class LeaseDeletionImpactServiceTest extends TestCase
 
                 'transaction_date' =>
                     now()->toDateString(),
+            ]);
+    }
+
+    /**
+     * Create an Invoice, a Payment and the allocation that links them,
+     * all belonging to the supplied Lease.
+     */
+    private function createLeasePaymentAllocation(
+        Lease $lease
+    ): \App\Models\PaymentAllocation {
+        $invoice =
+            \App\Models\Invoice::query()->create([
+                'lease_id' => $lease->id,
+                'invoice_number' => 'INV-910010',
+                'period_start' => '2026-01-01',
+                'period_end' => '2026-01-31',
+                'issue_date' => '2026-01-01',
+                'due_date' => '2026-01-05',
+                'status' => 'issued',
+                'total_amount' => 1000,
+                'vat_rate' => 0,
+                'net_amount' => 1000,
+                'vat_amount' => 0,
+            ]);
+
+        $payment =
+            \App\Models\Payment::query()->create([
+                'lease_id' => $lease->id,
+                'amount' => 1000,
+                'payment_date' => '2026-01-05',
+                'payment_method' => 'bank_transfer',
+            ]);
+
+        return \App\Models\PaymentAllocation::query()
+            ->create([
+                'payment_id' => $payment->id,
+                'invoice_id' => $invoice->id,
+                'amount' => 1000,
             ]);
     }
 

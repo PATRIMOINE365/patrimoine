@@ -50,6 +50,7 @@ class StoreOwnerDepositRequest extends FormRequest
                     'cash',
                     'bank_transfer',
                     'momo',
+                    'cheque',
                 ]),
             ],
 

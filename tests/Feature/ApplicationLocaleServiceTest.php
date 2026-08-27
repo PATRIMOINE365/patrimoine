@@ -57,6 +57,34 @@ class ApplicationLocaleServiceTest extends TestCase
         );
     }
 
+    /**
+     * The first-paint language cookie is only a hint for requests that
+     * have no organisation to ask. A bound organisation's own setting
+     * stays authoritative, whatever the browser last cached.
+     */
+    public function test_bound_organisation_language_beats_the_first_paint_cookie(): void
+    {
+        ApplicationSetting::create([
+            'language' => 'en',
+            'currency' => 'GHS',
+        ]);
+
+        request()->cookies->set(
+            ApplicationLocaleService::LANGUAGE_COOKIE,
+            'fr'
+        );
+
+        $service =
+            app(
+                ApplicationLocaleService::class
+            );
+
+        $this->assertSame(
+            'en',
+            $service->language()
+        );
+    }
+
     public function test_all_v1_0_2_combinations_are_supported(): void
     {
         $service =

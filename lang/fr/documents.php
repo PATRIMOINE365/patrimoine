@@ -72,6 +72,7 @@ return [
             'cash' => 'Espèces',
             'bank_transfer' => 'Virement bancaire',
             'momo' => 'Paiement mobile',
+            'cheque' => 'Chèque',
         ],
     ],
 

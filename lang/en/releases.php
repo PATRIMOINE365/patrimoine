@@ -19,6 +19,17 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.21',
+            'date' => '2026-08-27',
+            'title' => 'Cheque payments, and an interface that stays in your language',
+            'changes' => [
+                'Cheque is now a payment method everywhere you record money: tenant payments and withdrawals, owner deposits and payouts, lease advances, expenses and reports.',
+                'Moving between menus no longer flashes the interface in English before returning to your language — pages now arrive in your language straight away.',
+                'On the Owner account, the Transfer panel now opens on top of the account it belongs to instead of behind it.',
+                'Deleting a lease that had received a rent payment was refused as unsafe. Those payments are now recognised properly, so a lease you are entitled to delete can be deleted.',
+            ],
+        ],
+        [
             'version' => '1.0.20',
             'date' => '2026-08-26',
             'title' => 'A Financial Journal that speaks your language',

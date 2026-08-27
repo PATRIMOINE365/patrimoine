@@ -1135,6 +1135,8 @@
                         <option value="momo" data-i18n="owners.momo">{{ __('ui.owners.momo') }}</option>
 
                         <option value="cash" data-i18n="owners.cash">{{ __('ui.owners.cash') }}</option>
+
+                        <option value="cheque" data-i18n="owners.cheque">{{ __('ui.owners.cheque') }}</option>
                     </select>
                 </div>
 
@@ -1464,6 +1466,8 @@
                         <option value="momo" data-i18n="owners.momo">{{ __('ui.owners.momo') }}</option>
 
                         <option value="cash" data-i18n="owners.cash">{{ __('ui.owners.cash') }}</option>
+
+                        <option value="cheque" data-i18n="owners.cheque">{{ __('ui.owners.cheque') }}</option>
                     </select>
                 </div>
 

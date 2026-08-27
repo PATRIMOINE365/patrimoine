@@ -313,6 +313,8 @@ class PaymentReportExportService
 
             'momo' => __('ui.reports.payment_method_mobile'),
 
+            'cheque' => __('ui.reports.payment_method_cheque'),
+
             default => $method
                     ? ucwords(
                         str_replace(

@@ -51,7 +51,7 @@ class AdminLicenseController extends Controller
             'currency' => ['nullable', 'string', 'max:10'],
             'payment_method' => [
                 'nullable',
-                Rule::in(['bank_transfer', 'momo', 'cash', 'other']),
+                Rule::in(['bank_transfer', 'momo', 'cash', 'cheque', 'other']),
             ],
             'payment_reference' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:255'],

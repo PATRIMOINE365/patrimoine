@@ -160,6 +160,7 @@ class LeaseDeletionImpactService
         $journal = $this->journalImpact(
             $lease,
             $direct,
+            $paymentAllocations,
             $tenantFundTransactions,
             $unknownDependencies
         );
@@ -650,6 +651,7 @@ class LeaseDeletionImpactService
      * No Journal mutation occurs here.
      *
      * @param array<string, mixed> $direct
+     * @param array<string, mixed> $paymentAllocations
      * @param array<string, mixed> $tenantFundTransactions
      * @param array<int, array<string, mixed>> $unknown
      *
@@ -658,6 +660,7 @@ class LeaseDeletionImpactService
     private function journalImpact(
         Lease $lease,
         array $direct,
+        array $paymentAllocations,
         array $tenantFundTransactions,
         array &$unknown
     ): array {
@@ -707,6 +710,27 @@ class LeaseDeletionImpactService
             }
         }
 
+        /*
+         * Payment allocations are Lease-owned even though they carry no
+         * lease_id of their own: they are reached through this Lease's
+         * Payments and Invoices, and paymentAllocations() has already
+         * refused to continue when an allocation crosses a Lease boundary.
+         *
+         * The rent-receipt, owner-entitlement and management-fee postings
+         * all record PaymentAllocation as their structured source, so
+         * omitting allocations here left every Lease that had ever
+         * received a rent payment permanently undeletable.
+         */
+        foreach (
+            $paymentAllocations['ids'] ?? []
+            as $id
+        ) {
+            $sourceIds[] = [
+                'table' => 'payment_allocations',
+                'id' => (int) $id,
+            ];
+        }
+
         foreach (
             $tenantFundTransactions['ids'] ?? []
             as $id
@@ -719,6 +743,30 @@ class LeaseDeletionImpactService
         }
 
         $entries = collect();
+
+        /*
+         * Journal discovery must never reach outside the Lease's own
+         * Organisation. Lease ids are globally unique, but snapshot text
+         * matching is not id-aware, so the tenant boundary is enforced on
+         * every Journal query rather than assumed.
+         */
+        $organisationId =
+            Schema::hasColumn($table, 'organisation_id')
+                ? $lease->organisation_id
+                : null;
+
+        $scoped = function () use ($table, $organisationId) {
+            $query = DB::table($table);
+
+            if ($organisationId !== null) {
+                $query->where(
+                    'organisation_id',
+                    $organisationId
+                );
+            }
+
+            return $query;
+        };
 
         /*
          * Prefer structured source references when available.
@@ -736,7 +784,7 @@ class LeaseDeletionImpactService
                 foreach ($types as $type) {
                     $entries =
                         $entries->merge(
-                            DB::table($table)
+                            $scoped()
                                 ->where(
                                     'source_type',
                                     $type
@@ -769,17 +817,32 @@ class LeaseDeletionImpactService
                 continue;
             }
 
+            /*
+             * The LIKE is only a cheap prefilter: '"lease_id":1' also
+             * matches lease 10, 19 and 100, which would drag another
+             * Lease's postings into this impact set and block deletion
+             * forever. Every candidate is therefore re-checked by
+             * decoding the frozen document and comparing the value.
+             */
+            $candidates =
+                $scoped()
+                    ->where(
+                        $column,
+                        'like',
+                        '%"lease_id":'
+                        . $lease->id
+                        . '%'
+                    )
+                    ->get();
+
             $entries =
                 $entries->merge(
-                    DB::table($table)
-                        ->where(
-                            $column,
-                            'like',
-                            '%"lease_id":'
-                            . $lease->id
-                            . '%'
+                    $candidates->filter(
+                        fn ($row) => $this->documentNamesLease(
+                            ((array) $row)[$column] ?? null,
+                            (int) $lease->id
                         )
-                        ->get()
+                    )
                 );
         }
 
@@ -968,6 +1031,65 @@ class LeaseDeletionImpactService
             'warning' =>
                 'Snapshot matches are discovery evidence only and must not independently authorize accounting reversal.',
         ];
+    }
+
+    /**
+     * Decide whether a frozen Journal document really names this Lease.
+     *
+     * Snapshot discovery uses a substring LIKE, which cannot distinguish
+     * lease 1 from lease 10. Decoding the document and comparing the value
+     * makes the match exact and keeps one Lease's deletion from being
+     * blocked by another Lease's postings.
+     */
+    private function documentNamesLease(
+        mixed $document,
+        int $leaseId
+    ): bool {
+        if (! is_string($document) || $document === '') {
+            return false;
+        }
+
+        $decoded = json_decode($document, true);
+
+        if (! is_array($decoded)) {
+            /*
+             * An unreadable document is not evidence of attribution. The
+             * structured source pair remains the authoritative path, and
+             * anything genuinely unattributable still fails closed.
+             */
+            return false;
+        }
+
+        return $this->arrayNamesLease($decoded, $leaseId);
+    }
+
+    /**
+     * Recursively look for a lease_id equal to the supplied Lease.
+     *
+     * @param array<mixed> $document
+     */
+    private function arrayNamesLease(
+        array $document,
+        int $leaseId
+    ): bool {
+        foreach ($document as $key => $value) {
+            if (
+                $key === 'lease_id'
+                && is_numeric($value)
+                && (int) $value === $leaseId
+            ) {
+                return true;
+            }
+
+            if (
+                is_array($value)
+                && $this->arrayNamesLease($value, $leaseId)
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -9422,6 +9422,9 @@ function financialHistoryPaymentMethodLabel(
 
             momo:
                 'leases.financial_history_method_mobile_payment',
+
+            cheque:
+                'leases.financial_history_method_cheque',
         }[method];
 
     return key

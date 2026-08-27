@@ -30,8 +30,32 @@ class ApplyApplicationLocale
     ): Response {
         $this->locale->applyLanguage();
 
-        return $next(
+        $response = $next(
             $request
         );
+
+        /*
+         * Rendered language can now depend on the first-paint language
+         * cookie, so any shared or heuristic HTTP cache must key on it.
+         */
+        $existing =
+            $response->headers->get('Vary');
+
+        if (
+            $existing === null
+            || ! preg_match(
+                '/\bCookie\b/i',
+                $existing
+            )
+        ) {
+            $response->headers->set(
+                'Vary',
+                $existing === null || $existing === ''
+                    ? 'Cookie'
+                    : $existing.', Cookie'
+            );
+        }
+
+        return $response;
     }
 }

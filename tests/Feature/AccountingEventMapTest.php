@@ -183,6 +183,19 @@ class AccountingEventMapTest extends TestCase
             ->fixed('does_not_exist');
     }
 
+    /**
+     * A cheque is banked rather than held, so it posts to the same Bank
+     * asset account as a transfer.
+     */
+    public function test_cheque_settles_through_the_bank_account(): void
+    {
+        $this->assertSame(
+            SystemChartOfAccounts::BANK,
+            app(AccountingEventMap::class)
+                ->paymentAsset('cheque')
+        );
+    }
+
     public function test_unknown_payment_method_is_rejected(): void
     {
         $this->expectException(
@@ -190,7 +203,7 @@ class AccountingEventMapTest extends TestCase
         );
 
         app(AccountingEventMap::class)
-            ->paymentAsset('cheque');
+            ->paymentAsset('crypto');
     }
 
     public function test_unknown_tenant_fund_type_is_rejected(): void
