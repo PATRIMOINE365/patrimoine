@@ -10,12 +10,20 @@
 
     <title>@yield('title', 'Administration — Patrimoine 365')</title>
 
-    <link rel="icon" sizes="48x48" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/branding/favicon/favicon-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/branding/favicon/favicon-16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/branding/favicon/apple-touch-icon.png">
-    <link rel="manifest" href="/branding/site.webmanifest">
-    <meta name="theme-color" content="#26744b">
+    {{--
+        The platform console wears the same mark as the customer app, in a
+        dark red rather than the brand green, so an admin tab is
+        identifiable at a glance among a row of Patrimoine tabs. The icons
+        are the customer set with every pixel's hue rotated to red and its
+        saturation, lightness and alpha left alone -- #26744b becomes
+        #742626. This is the only place the red set is referenced.
+    --}}
+    <link rel="icon" sizes="48x48" href="/branding/favicon/favicon-admin.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/branding/favicon/favicon-admin-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/branding/favicon/favicon-admin-16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/branding/favicon/apple-touch-icon-admin.png">
+    <link rel="manifest" href="/branding/admin.webmanifest">
+    <meta name="theme-color" content="#742626">
 
     <x-theme-bootstrap />
 

@@ -19,6 +19,14 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.24',
+            'date' => '2026-08-28',
+            'title' => 'A red tab for the admin console',
+            'changes' => [
+                'The platform administration console now shows the Patrimoine mark in dark red instead of green, so you can pick its browser tab out from your customer tabs at a glance.',
+            ],
+        ],
+        [
             'version' => '1.0.23',
             'date' => '2026-08-27',
             'title' => 'VAT moves to your management fee',

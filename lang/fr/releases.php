@@ -15,6 +15,14 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.24',
+            'date' => '2026-08-28',
+            'title' => 'Un onglet rouge pour la console d\'administration',
+            'changes' => [
+                'La console d\'administration affiche désormais la marque Patrimoine en rouge foncé plutôt qu\'en vert, afin de repérer son onglet d\'un coup d\'œil parmi vos onglets clients.',
+            ],
+        ],
+        [
             'version' => '1.0.23',
             'date' => '2026-08-27',
             'title' => 'La TVA passe sur vos frais de gestion',
