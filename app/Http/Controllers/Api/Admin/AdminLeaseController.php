@@ -147,6 +147,26 @@ class AdminLeaseController extends Controller
 
         $reason = trim((string) ($validated['reason'] ?? ''));
 
+        /*
+         * Refuse a request that carries no editable field at all.
+         *
+         * Without this an unparseable or empty body validates cleanly --
+         * every field is nullable -- and the endpoint answers 200 with an
+         * empty change set, which reads to the operator as "saved". A tool
+         * that corrects money must never look like it worked when nothing
+         * reached it.
+         */
+        $submittedFields = array_intersect(
+            array_keys($validated),
+            array_merge(self::SAFE_FIELDS, self::POSTED_IMPACT_FIELDS)
+        );
+
+        if ($submittedFields === []) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'lease' => 'No lease fields were submitted.',
+            ]);
+        }
+
         $actor = $request->user();
 
         $result = OrganisationContext::runAs(

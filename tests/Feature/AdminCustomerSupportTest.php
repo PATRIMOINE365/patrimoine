@@ -323,6 +323,39 @@ class AdminCustomerSupportTest extends TestCase
         );
     }
 
+    /**
+     * An empty or unparseable body must not read as a successful save.
+     * Every field is nullable, so without an explicit guard the request
+     * would validate cleanly and answer 200 having changed nothing.
+     */
+    public function test_a_request_with_no_lease_fields_is_refused(): void
+    {
+        $this->actAsPlatformAdmin();
+
+        $this->patchJson(
+            "/api/admin/organisations/{$this->customer->id}/leases/{$this->lease->id}",
+            ['reason' => 'Only a reason, no fields.']
+        )
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['lease']);
+    }
+
+    /**
+     * Submitting the values a lease already holds is a genuine no-op and
+     * stays a success, distinct from submitting nothing at all.
+     */
+    public function test_submitting_unchanged_values_is_a_no_op(): void
+    {
+        $this->actAsPlatformAdmin();
+
+        $this->patchJson(
+            "/api/admin/organisations/{$this->customer->id}/leases/{$this->lease->id}",
+            ['rent_amount' => 10000]
+        )
+            ->assertOk()
+            ->assertJsonPath('changed', []);
+    }
+
     public function test_emails_endpoint_degrades_without_a_provider_key(): void
     {
         config(['services.resend.key' => null]);
