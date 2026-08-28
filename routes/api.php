@@ -3,6 +3,9 @@
 use App\Http\Controllers\Api\AccountingController;
 use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\Admin\AdminActivityController;
+use App\Http\Controllers\Api\Admin\AdminEmailController;
+use App\Http\Controllers\Api\Admin\AdminLeaseController;
+use App\Http\Controllers\Api\Admin\AdminOrganisationDataController;
 use App\Http\Controllers\Api\Admin\AdminDashboardController;
 use App\Http\Controllers\Api\Admin\AdminLicenseController;
 use App\Http\Controllers\Api\Admin\AdminOrganisationController;
@@ -1316,5 +1319,61 @@ Route::middleware(['auth:sanctum', 'platform.admin'])
         Route::post(
             'users/{user}/password-reset',
             [AdminSupportController::class, 'sendPasswordReset']
+        );
+
+        /*
+        |------------------------------------------------------------------
+        | Support mailbox
+        |------------------------------------------------------------------
+        |
+        | Sent and received platform mail, read straight from Resend, plus
+        | sending. Nothing is mirrored locally.
+        |
+        */
+
+        Route::get(
+            'emails',
+            [AdminEmailController::class, 'index']
+        );
+
+        Route::get(
+            'emails/mailboxes',
+            [AdminEmailController::class, 'mailboxes']
+        );
+
+        Route::get(
+            'emails/{id}',
+            [AdminEmailController::class, 'show']
+        );
+
+        Route::post(
+            'emails',
+            [AdminEmailController::class, 'store']
+        );
+
+        /*
+        |------------------------------------------------------------------
+        | Customer records
+        |------------------------------------------------------------------
+        |
+        | Read a customer organisation's operational data, and correct a
+        | Lease on their behalf. Both run inside OrganisationContext so
+        | the ordinary tenant scopes still apply.
+        |
+        */
+
+        Route::get(
+            'organisations/{organisation}/records',
+            [AdminOrganisationDataController::class, 'index']
+        );
+
+        Route::get(
+            'organisations/{organisation}/leases/{lease}',
+            [AdminLeaseController::class, 'show']
+        );
+
+        Route::patch(
+            'organisations/{organisation}/leases/{lease}',
+            [AdminLeaseController::class, 'update']
         );
     });

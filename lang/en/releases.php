@@ -19,6 +19,16 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.25',
+            'date' => '2026-08-28',
+            'title' => 'Support tools in the admin console',
+            'changes' => [
+                'The console has a new Emails page showing everything Patrimoine has sent and everything received at a @patrimoine365.com address, with replying and composing in the same place.',
+                'Opening an organisation now shows their owners, tenants, agents, buildings, units, leases, invoices and payments, so support can see exactly what a customer sees.',
+                'Support can correct a customer lease on their behalf. Terms that invoices or journal entries were derived from require a written reason, and every correction is recorded in the customer activity log against the staff member who made it.',
+            ],
+        ],
+        [
             'version' => '1.0.24',
             'date' => '2026-08-28',
             'title' => 'A red tab for the admin console',

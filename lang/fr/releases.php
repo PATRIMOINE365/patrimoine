@@ -15,6 +15,16 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.25',
+            'date' => '2026-08-28',
+            'title' => 'Des outils de support dans la console',
+            'changes' => [
+                'La console dispose d\'une nouvelle page Emails qui présente tout ce que Patrimoine a envoyé et tout ce qui est arrivé sur une adresse @patrimoine365.com, avec la réponse et la rédaction au même endroit.',
+                'L\'ouverture d\'une organisation affiche désormais ses propriétaires, locataires, agents, immeubles, lots, baux, factures et paiements : le support voit exactement ce que voit le client.',
+                'Le support peut corriger un bail pour le compte du client. Les termes dont découlent des factures ou des écritures comptables exigent un motif écrit, et chaque correction est consignée dans le journal d\'activité du client au nom de la personne qui l\'a effectuée.',
+            ],
+        ],
+        [
             'version' => '1.0.24',
             'date' => '2026-08-28',
             'title' => 'Un onglet rouge pour la console d\'administration',

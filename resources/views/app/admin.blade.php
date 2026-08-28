@@ -132,6 +132,53 @@
     </section>
 
     {{-- ========================= Activity ========================= --}}
+    {{-- ========================== Emails ========================== --}}
+    <section id="admin-section-emails" data-admin-section hidden>
+        <div class="pm-admin-eyebrow">Operations</div>
+        <h1 class="pm-admin-title">Emails</h1>
+        <p class="pm-admin-subtitle">
+            Everything Patrimoine has sent, everything that has arrived at an
+            @patrimoine365.com address, and somewhere to answer from.
+        </p>
+
+        <div class="pm-admin-card pm-admin-card-flush mt-6">
+            <div class="pm-admin-card-header">
+                <span class="flex items-center gap-2">
+                    <button id="admin-emails-received" type="button" class="pm-button-secondary">
+                        Received
+                    </button>
+
+                    <button id="admin-emails-sent" type="button" class="pm-button-secondary">
+                        Sent
+                    </button>
+
+                    <span id="admin-emails-count" class="pm-admin-count-pill"></span>
+                </span>
+
+                <button id="admin-email-compose" type="button" class="pm-button-primary">
+                    Compose
+                </button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="pm-admin-table min-w-[900px]">
+                    <thead>
+                        <tr>
+                            <th>When</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Subject</th>
+                            <th>State</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-emails-body"></tbody>
+                </table>
+            </div>
+
+            <div id="admin-emails-footer" class="pm-admin-card-footer"></div>
+        </div>
+    </section>
+
     <section id="admin-section-activity" data-admin-section hidden>
         <div class="pm-admin-eyebrow">Operations</div>
         <h1 class="pm-admin-title">Activity</h1>
@@ -339,6 +386,37 @@
                     <tbody id="admin-detail-users"></tbody>
                 </table>
             </div>
+        </div>
+
+        {{--
+            Customer records. Read-only across the board except Leases,
+            which support may correct on the customer's behalf.
+        --}}
+        <div class="pm-admin-card pm-admin-card-flush mt-6">
+            <div class="pm-admin-card-header">
+                <span class="flex flex-wrap items-center gap-2">
+                    <span class="pm-admin-card-title">Records</span>
+                    <span id="admin-records-tabs" class="flex flex-wrap items-center gap-1"></span>
+                </span>
+
+                <input
+                    id="admin-records-search"
+                    type="search"
+                    class="pm-input max-w-[240px]"
+                    placeholder="Search…"
+                >
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="pm-admin-table min-w-[900px]">
+                    <thead>
+                        <tr id="admin-records-head"></tr>
+                    </thead>
+                    <tbody id="admin-records-body"></tbody>
+                </table>
+            </div>
+
+            <div id="admin-records-footer" class="pm-admin-card-footer"></div>
         </div>
 
     </section>
@@ -703,6 +781,134 @@
         <x-drawer-footer>
             <button id="admin-staff-cancel" type="button" class="pm-button-secondary">Cancel</button>
             <button id="admin-staff-submit" type="submit" class="pm-button-primary">Send invitation</button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+{{-- ======================= Email reader ======================== --}}
+<x-drawer
+    id="admin-email-modal"
+    backdrop-id="admin-email-backdrop"
+    width="lg"
+>
+    <x-drawer-header
+        close-id="admin-email-close"
+        close-label="Close"
+    >
+        <x-slot:title>Message</x-slot:title>
+        <x-slot:description>
+            Read straight from Resend; nothing is stored in Patrimoine.
+        </x-slot:description>
+    </x-drawer-header>
+
+    <div class="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6">
+        <div>
+            <div id="admin-email-subject" class="text-base font-semibold text-[var(--pm-text)]"></div>
+            <div id="admin-email-meta" class="mt-1 text-sm text-[var(--pm-text-muted)]"></div>
+        </div>
+
+        <pre id="admin-email-body" class="whitespace-pre-wrap break-words rounded-xl border border-[var(--pm-border)] p-4 text-sm leading-6"></pre>
+    </div>
+
+    <x-drawer-footer>
+        <button id="admin-email-dismiss" type="button" class="pm-button-secondary">Close</button>
+        <button id="admin-email-reply" type="button" class="pm-button-primary">Reply</button>
+    </x-drawer-footer>
+</x-drawer>
+
+{{-- ======================== Compose mail ======================= --}}
+<x-drawer
+    id="admin-compose-modal"
+    backdrop-id="admin-compose-backdrop"
+    width="lg"
+>
+    <x-drawer-header
+        close-id="admin-compose-close"
+        close-label="Close"
+    >
+        <x-slot:title>New email</x-slot:title>
+        <x-slot:description>
+            Sent through Resend from a Patrimoine 365 mailbox.
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form id="admin-compose-form" class="flex min-h-0 flex-1 flex-col">
+        <div class="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6">
+            <div id="admin-compose-error" class="hidden rounded-xl border border-[var(--pm-danger-border)] bg-[var(--pm-danger-background)] px-4 py-3 text-sm text-[var(--pm-danger-text)]"></div>
+
+            <div>
+                <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-compose-from">From</label>
+                <select id="admin-compose-from" class="pm-input" required></select>
+            </div>
+
+            <div>
+                <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-compose-to">To</label>
+                <input id="admin-compose-to" type="text" class="pm-input" placeholder="name@example.com, second@example.com" required>
+                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">Separate multiple recipients with commas.</p>
+            </div>
+
+            <div>
+                <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-compose-subject">Subject</label>
+                <input id="admin-compose-subject" type="text" class="pm-input" required>
+            </div>
+
+            <div>
+                <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-compose-body">Message</label>
+                <textarea id="admin-compose-body" rows="12" class="pm-input" required></textarea>
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button id="admin-compose-cancel" type="button" class="pm-button-secondary">Cancel</button>
+            <button id="admin-compose-submit" type="submit" class="pm-button-primary">Send</button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+{{-- ====================== Correct a lease ====================== --}}
+<x-drawer
+    id="admin-lease-modal"
+    backdrop-id="admin-lease-backdrop"
+    width="lg"
+>
+    <x-drawer-header
+        close-id="admin-lease-close"
+        close-label="Close"
+    >
+        <x-slot:title>Correct lease</x-slot:title>
+        <x-slot:description>
+            Changes are made on the customer's behalf and recorded against
+            your account in their activity log.
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form id="admin-lease-form" class="flex min-h-0 flex-1 flex-col">
+        <div class="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6">
+            <div id="admin-lease-error" class="hidden rounded-xl border border-[var(--pm-danger-border)] bg-[var(--pm-danger-background)] px-4 py-3 text-sm text-[var(--pm-danger-text)]"></div>
+
+            <div id="admin-lease-summary" class="rounded-xl border border-[var(--pm-border)] px-4 py-3 text-sm"></div>
+
+            {{--
+                What already exists downstream of these terms. Editing a
+                term does not rewrite what was posted from it, so support
+                sees the footprint before deciding.
+            --}}
+            <div id="admin-lease-posted" class="rounded-xl border border-[var(--pm-border)] px-4 py-3 text-sm"></div>
+
+            <div id="admin-lease-fields" class="space-y-5"></div>
+
+            <div>
+                <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-lease-reason">Reason</label>
+                <textarea id="admin-lease-reason" rows="3" class="pm-input" placeholder="Why this correction is being made"></textarea>
+                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
+                    Required when changing a term that invoices or journal entries were derived from.
+                </p>
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button id="admin-lease-cancel" type="button" class="pm-button-secondary">Cancel</button>
+            <button id="admin-lease-submit" type="submit" class="pm-button-primary">Save correction</button>
         </x-drawer-footer>
     </form>
 </x-drawer>

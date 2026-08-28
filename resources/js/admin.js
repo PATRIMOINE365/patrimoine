@@ -40,11 +40,25 @@ let searchDebounce = null;
 
 let currentSection = 'dashboard';
 
+/** Which mailbox the Emails page is showing. */
+let currentMailbox = 'received';
+
+/** The message currently open in the reader, for Reply. */
+let openEmail = null;
+
+/** Which customer record set the organisation page is showing. */
+let currentDataset = 'leases';
+
+/** Lease being corrected, and the field split the API reported. */
+let editingLease = null;
+let leaseFieldGroups = { safe: [], posted_impact: [] };
+
 const SECTIONS = [
     'dashboard',
     'users',
     'organizations',
     'licenses',
+    'emails',
     'activity',
     'settings',
     'organisation',
@@ -191,6 +205,8 @@ async function navigate(name) {
             await loadActivity();
         } else if (name === 'users') {
             await loadStaff();
+        } else if (name === 'emails') {
+            await loadEmails();
         }
     } catch (error) {
         showError(error instanceof Error ? error.message : 'Unable to load this page.');
@@ -409,6 +425,504 @@ async function loadSubscriptions(page = 1) {
     );
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| Emails
+|--------------------------------------------------------------------------
+|
+| The platform support mailbox. Sent and received mail both come from
+| Resend, which already holds them, so nothing is mirrored locally and
+| there is no state to keep in sync.
+|
+*/
+
+function emailTimestamp(value) {
+    if (! value) {
+        return '—';
+    }
+
+    return String(value).replace('T', ' ').slice(0, 16);
+}
+
+function deliveryBadge(status) {
+    if (! status) {
+        return '';
+    }
+
+    return `<span class="pm-admin-plan-badge">${escapeHtml(status)}</span>`;
+}
+
+async function loadEmails() {
+    const body = document.getElementById('admin-emails-body');
+
+    if (! body) {
+        return;
+    }
+
+    document.getElementById('admin-emails-received')?.classList.toggle(
+        'pm-button-primary',
+        currentMailbox === 'received'
+    );
+
+    document.getElementById('admin-emails-sent')?.classList.toggle(
+        'pm-button-primary',
+        currentMailbox === 'sent'
+    );
+
+    const data = await adminRequest(
+        `/api/admin/emails?box=${currentMailbox}&limit=100`,
+        'GET'
+    );
+
+    const count = document.getElementById('admin-emails-count');
+
+    if (count) {
+        count.textContent = String(data.data.length);
+    }
+
+    const footer = document.getElementById('admin-emails-footer');
+
+    if (footer) {
+        footer.textContent = data.configured
+            ? (data.has_more
+                ? 'Showing the most recent 100 messages.'
+                : `${data.data.length} message(s).`)
+            : 'Support mail is not configured in this environment.';
+    }
+
+    if (data.data.length === 0) {
+        body.innerHTML = `
+            <tr><td colspan="5" class="py-6 text-center text-[var(--pm-text-muted)]">
+                Nothing here yet.
+            </td></tr>
+        `;
+
+        return;
+    }
+
+    body.innerHTML = data.data.map((email) => `
+        <tr class="cursor-pointer" data-admin-email="${escapeHtml(String(email.id))}">
+            <td>${escapeHtml(emailTimestamp(email.created_at))}</td>
+            <td>${escapeHtml(email.from ?? '—')}</td>
+            <td>${escapeHtml((email.to ?? []).join(', ') || '—')}</td>
+            <td>${escapeHtml(email.subject ?? '(no subject)')}</td>
+            <td>${deliveryBadge(email.status)}</td>
+        </tr>
+    `).join('');
+}
+
+async function openEmailMessage(id) {
+    const data = await adminRequest(
+        `/api/admin/emails/${encodeURIComponent(id)}?box=${currentMailbox}`,
+        'GET'
+    );
+
+    openEmail = data.email ?? {};
+
+    document.getElementById('admin-email-subject').textContent =
+        openEmail.subject ?? '(no subject)';
+
+    document.getElementById('admin-email-meta').textContent =
+        `From ${openEmail.from ?? '—'} · To ${(openEmail.to ?? []).join(', ') || '—'}`
+        + ` · ${emailTimestamp(openEmail.created_at)}`;
+
+    document.getElementById('admin-email-body').textContent =
+        openEmail.text
+        || stripHtml(openEmail.html)
+        || '(no readable body)';
+
+    openDrawer('admin-email-modal');
+}
+
+/**
+ * Resend returns HTML for messages sent as HTML. The reader shows text,
+ * so tags are dropped rather than rendered -- this pane must never
+ * execute markup that arrived from outside.
+ */
+function stripHtml(html) {
+    if (! html) {
+        return '';
+    }
+
+    const container = document.createElement('div');
+    container.innerHTML = String(html);
+
+    return (container.textContent || '').trim();
+}
+
+async function openCompose(prefill) {
+    const select = document.getElementById('admin-compose-from');
+
+    if (select && select.options.length === 0) {
+        const data = await adminRequest('/api/admin/emails/mailboxes', 'GET');
+
+        select.innerHTML = data.mailboxes
+            .map((address) => `<option value="${escapeHtml(address)}">${escapeHtml(address)}</option>`)
+            .join('');
+
+        select.value = data.default;
+    }
+
+    document.getElementById('admin-compose-error')?.classList.add('hidden');
+    document.getElementById('admin-compose-to').value = prefill?.to ?? '';
+    document.getElementById('admin-compose-subject').value = prefill?.subject ?? '';
+    document.getElementById('admin-compose-body').value = '';
+
+    openDrawer('admin-compose-modal');
+}
+
+async function submitCompose() {
+    const errorBox = document.getElementById('admin-compose-error');
+
+    errorBox?.classList.add('hidden');
+
+    const recipients = document.getElementById('admin-compose-to').value
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean);
+
+    try {
+        await adminRequest('/api/admin/emails', 'POST', {
+            from: document.getElementById('admin-compose-from').value,
+            to: recipients,
+            subject: document.getElementById('admin-compose-subject').value,
+            body: document.getElementById('admin-compose-body').value,
+        });
+
+        closeDrawer('admin-compose-modal');
+
+        currentMailbox = 'sent';
+
+        await loadEmails();
+    } catch (error) {
+        if (errorBox) {
+            errorBox.textContent = error instanceof Error
+                ? error.message
+                : 'The email could not be sent.';
+
+            errorBox.classList.remove('hidden');
+        }
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Customer records
+|--------------------------------------------------------------------------
+|
+| One organisation's own data, read through the ordinary tenant scopes.
+| Leases are the only set support may change.
+|
+*/
+
+const DATASETS = [
+    { key: 'leases', label: 'Leases' },
+    { key: 'parties', label: 'Owners, tenants & agents' },
+    { key: 'buildings', label: 'Buildings' },
+    { key: 'units', label: 'Units' },
+    { key: 'invoices', label: 'Invoices' },
+    { key: 'payments', label: 'Payments' },
+];
+
+const DATASET_COLUMNS = {
+    leases: ['Lease', 'Tenant', 'Property', 'Term', 'Rent', 'Status', ''],
+    parties: ['Name', 'Type', 'Roles', 'Email', 'Phone'],
+    buildings: ['Building', 'Address', 'Units', 'Owners'],
+    units: ['Unit', 'Building'],
+    invoices: ['Invoice', 'Tenant', 'Issued', 'Due', 'Total', 'Status'],
+    payments: ['Payment', 'Tenant', 'Date', 'Method', 'Reference', 'Amount'],
+};
+
+async function loadRecords() {
+    if (! currentOrganisation) {
+        return;
+    }
+
+    const head = document.getElementById('admin-records-head');
+    const body = document.getElementById('admin-records-body');
+
+    if (! head || ! body) {
+        return;
+    }
+
+    const search = document.getElementById('admin-records-search')?.value ?? '';
+
+    const data = await adminRequest(
+        `/api/admin/organisations/${currentOrganisation.id}/records`
+        + `?dataset=${currentDataset}`
+        + (search ? `&search=${encodeURIComponent(search)}` : ''),
+        'GET'
+    );
+
+    const tabs = document.getElementById('admin-records-tabs');
+
+    if (tabs) {
+        tabs.innerHTML = DATASETS.map((set) => `
+            <button
+                type="button"
+                data-admin-dataset="${set.key}"
+                class="pm-admin-count-pill ${set.key === currentDataset ? 'font-semibold text-[var(--pm-text)]' : ''}"
+            >${escapeHtml(set.label)} ${escapeHtml(String(data.counts[set.key] ?? 0))}</button>
+        `).join('');
+    }
+
+    head.innerHTML = (DATASET_COLUMNS[currentDataset] ?? [])
+        .map((column) => `<th>${escapeHtml(column)}</th>`)
+        .join('');
+
+    if (data.data.length === 0) {
+        body.innerHTML = `
+            <tr><td colspan="7" class="py-6 text-center text-[var(--pm-text-muted)]">
+                Nothing recorded here.
+            </td></tr>
+        `;
+    } else {
+        body.innerHTML = data.data.map(recordRow).join('');
+    }
+
+    const footer = document.getElementById('admin-records-footer');
+
+    if (footer) {
+        footer.textContent = data.data.length >= 500
+            ? 'Showing the first 500 records. Narrow with search.'
+            : `${data.data.length} record(s).`;
+    }
+}
+
+function recordRow(row) {
+    if (currentDataset === 'leases') {
+        return `
+            <tr>
+                <td>#${escapeHtml(String(row.id))}</td>
+                <td>${escapeHtml(row.tenant_name ?? '—')}</td>
+                <td>${escapeHtml([row.building_name, row.unit_name].filter(Boolean).join(' — ') || '—')}</td>
+                <td>${escapeHtml(`${row.start_date ?? '—'} → ${row.end_date ?? '—'}`)}</td>
+                <td>${escapeHtml(formatNumber(row.rent_amount ?? 0))}</td>
+                <td>${escapeHtml(row.status ?? '—')}</td>
+                <td class="text-right">
+                    <button type="button" class="pm-button-secondary" data-admin-lease="${escapeHtml(String(row.id))}">Correct</button>
+                </td>
+            </tr>
+        `;
+    }
+
+    if (currentDataset === 'parties') {
+        return `
+            <tr>
+                <td>${escapeHtml(row.name ?? '—')}</td>
+                <td>${escapeHtml(row.type ?? '—')}</td>
+                <td>${escapeHtml((row.roles ?? []).join(', ') || '—')}</td>
+                <td>${escapeHtml(row.email ?? '—')}</td>
+                <td>${escapeHtml(row.phone ?? '—')}</td>
+            </tr>
+        `;
+    }
+
+    if (currentDataset === 'buildings') {
+        return `
+            <tr>
+                <td>${escapeHtml(row.name ?? '—')}</td>
+                <td>${escapeHtml(row.address ?? '—')}</td>
+                <td>${escapeHtml(String(row.units_count ?? 0))}</td>
+                <td>${escapeHtml((row.owners ?? []).map((o) => `${o.name} (${o.percentage}%)`).join(', ') || '—')}</td>
+            </tr>
+        `;
+    }
+
+    if (currentDataset === 'units') {
+        return `
+            <tr>
+                <td>${escapeHtml(row.name ?? '—')}</td>
+                <td>${escapeHtml(row.building_name ?? '—')}</td>
+            </tr>
+        `;
+    }
+
+    if (currentDataset === 'invoices') {
+        return `
+            <tr>
+                <td>${escapeHtml(row.invoice_number ?? '—')}</td>
+                <td>${escapeHtml(row.tenant_name ?? '—')}</td>
+                <td>${escapeHtml(row.issue_date ?? '—')}</td>
+                <td>${escapeHtml(row.due_date ?? '—')}</td>
+                <td>${escapeHtml(formatNumber(row.total_amount ?? 0))}</td>
+                <td>${escapeHtml(row.status ?? '—')}</td>
+            </tr>
+        `;
+    }
+
+    return `
+        <tr>
+            <td>#${escapeHtml(String(row.id))}</td>
+            <td>${escapeHtml(row.tenant_name ?? '—')}</td>
+            <td>${escapeHtml(row.payment_date ?? '—')}</td>
+            <td>${escapeHtml(row.payment_method ?? '—')}</td>
+            <td>${escapeHtml(row.reference ?? '—')}</td>
+            <td>${escapeHtml(formatNumber(row.amount ?? 0))}</td>
+        </tr>
+    `;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Lease correction
+|--------------------------------------------------------------------------
+*/
+
+const LEASE_FIELD_LABELS = {
+    notes: 'Notes',
+    agent_id: 'Agent (party id)',
+    end_date: 'End date',
+    next_rent_increment_date: 'Next increment date',
+    rent_increment_type: 'Increment type',
+    rent_increment_value: 'Increment value',
+    start_date: 'Start date',
+    rent_amount: 'Rent amount',
+    payment_frequency: 'Payment frequency',
+    due_day: 'Due day',
+    vat_rate: 'Management fee VAT rate',
+    management_fee_type: 'Management fee type',
+    management_fee_value: 'Management fee value',
+    security_deposit_amount: 'Security deposit',
+    advance_payment_amount: 'Advance payment',
+    rent_reserve_amount: 'Rent reserve',
+};
+
+const LEASE_FIELD_CHOICES = {
+    payment_frequency: ['monthly', 'quarterly', 'semi_annual', 'annual'],
+    rent_increment_type: ['none', 'percentage', 'fixed'],
+    management_fee_type: ['none', 'percentage', 'fixed'],
+};
+
+async function openLeaseCorrection(leaseId) {
+    const data = await adminRequest(
+        `/api/admin/organisations/${currentOrganisation.id}/leases/${leaseId}`,
+        'GET'
+    );
+
+    editingLease = data.lease;
+    leaseFieldGroups = data.fields;
+
+    document.getElementById('admin-lease-error')?.classList.add('hidden');
+    document.getElementById('admin-lease-reason').value = '';
+
+    document.getElementById('admin-lease-summary').innerHTML = `
+        <div class="font-medium text-[var(--pm-text)]">
+            Lease #${escapeHtml(String(data.lease.id))} — ${escapeHtml(data.lease.tenant_name ?? '—')}
+        </div>
+        <div class="mt-1 text-[var(--pm-text-muted)]">
+            ${escapeHtml([data.lease.building_name, data.lease.unit_name].filter(Boolean).join(' — ') || '—')}
+            · ${escapeHtml(data.lease.status ?? '')}
+        </div>
+    `;
+
+    const posted = data.posted;
+
+    document.getElementById('admin-lease-posted').innerHTML = posted.has_posted_records
+        ? `
+            <div class="font-medium text-[var(--pm-text)]">Already posted from these terms</div>
+            <div class="mt-1 text-[var(--pm-text-muted)]">
+                ${escapeHtml(String(posted.invoices))} invoice(s) totalling
+                ${escapeHtml(formatNumber(posted.invoiced_total))},
+                ${escapeHtml(String(posted.payments))} payment(s),
+                ${escapeHtml(String(posted.journal_entries))} journal entr(ies).
+                Changing a term below does not rewrite them.
+            </div>
+        `
+        : `<div class="text-[var(--pm-text-muted)]">Nothing has been posted from this lease yet.</div>`;
+
+    const container = document.getElementById('admin-lease-fields');
+
+    container.innerHTML = [
+        leaseFieldSection('Safe to change', leaseFieldGroups.safe, data.lease, false),
+        leaseFieldSection('Posted records were derived from these', leaseFieldGroups.posted_impact, data.lease, true),
+    ].join('');
+
+    openDrawer('admin-lease-modal');
+}
+
+function leaseFieldSection(heading, fields, lease, risky) {
+    const inputs = fields.map((field) => {
+        const label = LEASE_FIELD_LABELS[field] ?? field;
+        const value = lease[field] ?? '';
+        const choices = LEASE_FIELD_CHOICES[field];
+
+        const control = choices
+            ? `<select id="admin-lease-field-${field}" class="pm-input">
+                   ${choices.map((choice) => `
+                       <option value="${escapeHtml(choice)}"${String(value) === choice ? ' selected' : ''}>${escapeHtml(choice)}</option>
+                   `).join('')}
+               </select>`
+            : `<input
+                   id="admin-lease-field-${field}"
+                   type="${field.endsWith('_date') ? 'date' : 'text'}"
+                   class="pm-input"
+                   value="${escapeHtml(String(value))}"
+               >`;
+
+        return `
+            <div>
+                <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-lease-field-${field}">
+                    ${escapeHtml(label)}
+                </label>
+                ${control}
+            </div>
+        `;
+    }).join('');
+
+    return `
+        <div>
+            <div class="mb-3 text-sm font-semibold ${risky ? 'text-[var(--pm-danger-text)]' : 'text-[var(--pm-text)]'}">
+                ${escapeHtml(heading)}
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2">${inputs}</div>
+        </div>
+    `;
+}
+
+async function submitLeaseCorrection() {
+    const errorBox = document.getElementById('admin-lease-error');
+
+    errorBox?.classList.add('hidden');
+
+    const payload = {
+        reason: document.getElementById('admin-lease-reason').value,
+    };
+
+    for (const field of [...leaseFieldGroups.safe, ...leaseFieldGroups.posted_impact]) {
+        const input = document.getElementById(`admin-lease-field-${field}`);
+
+        if (! input) {
+            continue;
+        }
+
+        const value = input.value.trim();
+
+        payload[field] = value === '' ? null : value;
+    }
+
+    try {
+        await adminRequest(
+            `/api/admin/organisations/${currentOrganisation.id}/leases/${editingLease.id}`,
+            'PATCH',
+            payload
+        );
+
+        closeDrawer('admin-lease-modal');
+
+        await loadRecords();
+    } catch (error) {
+        if (errorBox) {
+            errorBox.textContent = error instanceof Error
+                ? error.message
+                : 'The correction could not be saved.';
+
+            errorBox.classList.remove('hidden');
+        }
+    }
+}
+
 /*
 |--------------------------------------------------------------------------
 | Activity
@@ -430,6 +944,8 @@ const ACTION_LABELS = {
     'auth.login_failed': 'Failed sign-in',
     'user.created': 'Staff user created',
     'user.updated': 'Staff user updated',
+    'platform.email.sent': 'Support email sent',
+    'platform.lease.corrected': 'Lease corrected for customer',
 };
 
 async function loadActivity(page = 1) {
@@ -526,6 +1042,8 @@ async function submitStaffInvite(event) {
 */
 
 async function openOrganisation(id) {
+    currentDataset = 'leases';
+
     clearError();
 
     const data = await adminRequest(
@@ -631,6 +1149,14 @@ async function openOrganisation(id) {
             `
         ).join('');
     }
+
+    const recordSearch = document.getElementById('admin-records-search');
+
+    if (recordSearch) {
+        recordSearch.value = '';
+    }
+
+    await loadRecords();
 }
 
 /*
@@ -1619,6 +2145,126 @@ export async function initializeAdmin() {
             showError(error instanceof Error ? error.message : 'The action failed.');
         }
     });
+
+    /*
+     * Emails.
+     */
+    document.getElementById('admin-emails-received')
+        ?.addEventListener('click', async () => {
+            currentMailbox = 'received';
+            await loadEmails();
+        });
+
+    document.getElementById('admin-emails-sent')
+        ?.addEventListener('click', async () => {
+            currentMailbox = 'sent';
+            await loadEmails();
+        });
+
+    document.getElementById('admin-email-compose')
+        ?.addEventListener('click', () => {
+            void openCompose();
+        });
+
+    document.getElementById('admin-emails-body')
+        ?.addEventListener('click', async (event) => {
+            const row = event.target.closest('[data-admin-email]');
+
+            if (! row) {
+                return;
+            }
+
+            try {
+                await openEmailMessage(row.dataset.adminEmail);
+            } catch (error) {
+                showError(error instanceof Error ? error.message : 'Unable to open that message.');
+            }
+        });
+
+    for (const id of ['admin-email-dismiss', 'admin-email-close', 'admin-email-backdrop']) {
+        document.getElementById(id)
+            ?.addEventListener('click', () => closeDrawer('admin-email-modal'));
+    }
+
+    document.getElementById('admin-email-reply')
+        ?.addEventListener('click', () => {
+            const subject = openEmail?.subject ?? '';
+
+            closeDrawer('admin-email-modal');
+
+            void openCompose({
+                to: openEmail?.from ?? '',
+                subject: subject.toLowerCase().startsWith('re:')
+                    ? subject
+                    : `Re: ${subject}`,
+            });
+        });
+
+    for (const id of ['admin-compose-cancel', 'admin-compose-close', 'admin-compose-backdrop']) {
+        document.getElementById(id)
+            ?.addEventListener('click', () => closeDrawer('admin-compose-modal'));
+    }
+
+    document.getElementById('admin-compose-form')
+        ?.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            await submitCompose();
+        });
+
+    /*
+     * Customer records.
+     */
+    document.getElementById('admin-records-tabs')
+        ?.addEventListener('click', async (event) => {
+            const tab = event.target.closest('[data-admin-dataset]');
+
+            if (! tab) {
+                return;
+            }
+
+            currentDataset = tab.dataset.adminDataset;
+
+            try {
+                await loadRecords();
+            } catch (error) {
+                showError(error instanceof Error ? error.message : 'Unable to load those records.');
+            }
+        });
+
+    document.getElementById('admin-records-search')
+        ?.addEventListener('input', () => {
+            window.clearTimeout(searchDebounce);
+
+            searchDebounce = window.setTimeout(() => {
+                void loadRecords();
+            }, 300);
+        });
+
+    document.getElementById('admin-records-body')
+        ?.addEventListener('click', async (event) => {
+            const button = event.target.closest('[data-admin-lease]');
+
+            if (! button) {
+                return;
+            }
+
+            try {
+                await openLeaseCorrection(button.dataset.adminLease);
+            } catch (error) {
+                showError(error instanceof Error ? error.message : 'Unable to open that lease.');
+            }
+        });
+
+    for (const id of ['admin-lease-cancel', 'admin-lease-close', 'admin-lease-backdrop']) {
+        document.getElementById(id)
+            ?.addEventListener('click', () => closeDrawer('admin-lease-modal'));
+    }
+
+    document.getElementById('admin-lease-form')
+        ?.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            await submitLeaseCorrection();
+        });
 
     /*
      * Land on the hash-requested page, defaulting to the dashboard.

@@ -99,6 +99,11 @@
 
             <div class="pm-admin-nav-group">Operations</div>
 
+            <button type="button" class="pm-admin-nav-item" data-admin-nav="emails">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="m3 7 8.15 5.43a1.5 1.5 0 0 0 1.7 0L21 7"/></svg>
+                Emails
+            </button>
+
             <button type="button" class="pm-admin-nav-item" data-admin-nav="activity">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
                 Activity
