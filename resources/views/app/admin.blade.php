@@ -991,4 +991,44 @@
     </form>
 </x-drawer>
 
+{{-- =================== Change a user's role ================== --}}
+<x-drawer
+    id="admin-role-modal"
+    backdrop-id="admin-role-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="admin-role-close"
+        close-label="Close"
+    >
+        <x-slot:title>Change role</x-slot:title>
+        <x-slot:description>
+            An organisation must keep at least one administrator, so the
+            last one cannot be demoted.
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form id="admin-role-form" class="flex min-h-0 flex-1 flex-col">
+        <div class="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6">
+            <div id="admin-role-error" class="hidden rounded-xl border border-[var(--pm-danger-border)] bg-[var(--pm-danger-background)] px-4 py-3 text-sm text-[var(--pm-danger-text)]"></div>
+
+            <div id="admin-role-who" class="text-sm text-[var(--pm-text-muted)]"></div>
+
+            <div>
+                <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-role-select">Role</label>
+                <select id="admin-role-select" class="pm-input" required>
+                    <option value="administrator">Administrator</option>
+                    <option value="property_manager">Property manager</option>
+                    <option value="viewer">Viewer</option>
+                </select>
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button id="admin-role-cancel" type="button" class="pm-button-secondary">Cancel</button>
+            <button id="admin-role-submit" type="submit" class="pm-button-primary">Save role</button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
 @endsection

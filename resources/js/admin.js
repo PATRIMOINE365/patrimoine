@@ -46,6 +46,9 @@ let currentMailbox = 'received';
 /** The message currently open in the reader, for Reply. */
 let openEmail = null;
 
+/** The customer user whose role is being changed. */
+let roleTargetUserId = null;
+
 /** Which customer record set the organisation page is showing. */
 let currentDataset = 'leases';
 
@@ -978,6 +981,47 @@ function openCustomerUserDrawer() {
     openDrawer('admin-customer-user-modal');
 }
 
+async function submitRoleChange() {
+    const errorBox = document.getElementById('admin-role-error');
+    const button = document.getElementById('admin-role-submit');
+
+    errorBox?.classList.add('hidden');
+
+    if (! roleTargetUserId) {
+        return;
+    }
+
+    if (button) {
+        button.disabled = true;
+    }
+
+    try {
+        await adminRequest(
+            `/api/admin/users/${roleTargetUserId}/role`,
+            'PATCH',
+            { role: document.getElementById('admin-role-select').value }
+        );
+
+        closeDrawer('admin-role-modal');
+
+        if (currentOrganisation) {
+            await openOrganisation(currentOrganisation.id);
+        }
+    } catch (error) {
+        if (errorBox) {
+            errorBox.textContent = error instanceof Error
+                ? error.message
+                : 'The role could not be changed.';
+
+            errorBox.classList.remove('hidden');
+        }
+    } finally {
+        if (button) {
+            button.disabled = false;
+        }
+    }
+}
+
 async function submitCustomerUser() {
     const errorBox = document.getElementById('admin-customer-user-error');
     const button = document.getElementById('admin-customer-user-submit');
@@ -1246,15 +1290,7 @@ async function openOrganisation(id) {
                                 ${user.is_active ? 'Deactivate' : 'Reactivate'}
                             </button>
                             <button type="button" class="text-[var(--pm-accent)]" data-admin-pwreset="${user.id}">Password reset</button>
-                            <select
-                                class="pm-input h-8 w-auto py-0 text-sm"
-                                data-admin-role-for="${user.id}"
-                                aria-label="Role"
-                            >
-                                ${['administrator','property_manager','viewer'].map((role) => `
-                                    <option value="${role}"${String(user.role) === role ? ' selected' : ''}>${escapeHtml(role.replace('_',' '))}</option>
-                                `).join('')}
-                            </select>
+                            <button type="button" class="text-[var(--pm-accent)]" data-admin-role="${user.id}" data-admin-role-current="${escapeHtml(String(user.role))}" data-admin-role-name="${escapeHtml(user.name)}">Change role</button>
                         </span>
                     </td>
                 </tr>
@@ -2383,35 +2419,53 @@ export async function initializeAdmin() {
         ?.addEventListener('click', openCustomerUserDrawer);
 
     /*
-     * Changing a customer user's role. The safeguard that keeps at least
-     * one administrator lives in the service, so a refusal comes back as
-     * a normal validation error.
+     * Changing a customer user's role. A form control in the table cell
+     * dwarfed the row and repeated what the Role column already said, so
+     * this is a text link like the other support actions, opening the
+     * same kind of drawer the console uses everywhere else.
      */
-    document.addEventListener('change', async (event) => {
-        const select = event.target.closest('[data-admin-role-for]');
+    document
+        .getElementById('admin-detail-users')
+        ?.addEventListener('click', (event) => {
+            const trigger = event.target.closest('[data-admin-role]');
 
-        if (! select) {
-            return;
-        }
-
-        try {
-            await adminRequest(
-                `/api/admin/users/${select.dataset.adminRoleFor}/role`,
-                'PATCH',
-                { role: select.value }
-            );
-
-            if (currentOrganisation) {
-                await openOrganisation(currentOrganisation.id);
+            if (! trigger) {
+                return;
             }
-        } catch (error) {
-            showError(error instanceof Error ? error.message : 'The role could not be changed.');
 
-            if (currentOrganisation) {
-                await openOrganisation(currentOrganisation.id);
+            roleTargetUserId = Number(trigger.dataset.adminRole);
+
+            const who = document.getElementById('admin-role-who');
+
+            if (who) {
+                who.textContent = `${trigger.dataset.adminRoleName} · ${trigger.dataset.adminRoleCurrent.replace('_', ' ')}`;
             }
-        }
-    });
+
+            const select = document.getElementById('admin-role-select');
+
+            if (select) {
+                select.value = trigger.dataset.adminRoleCurrent;
+            }
+
+            document
+                .getElementById('admin-role-error')
+                ?.classList.add('hidden');
+
+            openDrawer('admin-role-modal');
+        });
+
+    document
+        .getElementById('admin-role-form')
+        ?.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            await submitRoleChange();
+        });
+
+    for (const id of ['admin-role-cancel', 'admin-role-close', 'admin-role-backdrop']) {
+        document
+            .getElementById(id)
+            ?.addEventListener('click', () => closeDrawer('admin-role-modal'));
+    }
 
     document
         .getElementById('admin-customer-user-form')
