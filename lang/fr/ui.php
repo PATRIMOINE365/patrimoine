@@ -908,6 +908,7 @@ return [
         'cancel' => 'Annuler',
     ],
     'leases' => [
+        'payment_method' => 'Mode de paiement',
         /* ---- V1.0.7 additions ---- */
         'record_deduction' => 'Enregistrer une retenue sur caution',
         'record_deduction_description' => 'Les retenues détaillées réduisent la caution remboursable avant le règlement.',
@@ -1389,6 +1390,11 @@ return [
         'classification_notes_placeholder' => 'Notes facultatives sur le classement',
     ],
     'owners' => [
+        'payment_method' => 'Mode de paiement',
+        'pay_bill_description' => 'Régler cette facture depuis le compte du propriétaire.',
+        'expense_bills_description' => 'Les factures de dépenses restent impayées jusqu’à leur règlement depuis un compte propriétaire via l’action Payer ; un paiement peut ensuite être annulé.',
+        'cancellation_reason' => 'Motif d’annulation',
+        'cancel_payment_description' => 'Annule le paiement le plus récent de cette facture. L’annulation est enregistrée au journal et au journal d’activité.',
         'management_fee_vat' => 'TVA sur frais de gestion',
         'statement' => 'Relevé',
         'statement_title' => 'Relevé du propriétaire',
@@ -1483,6 +1489,7 @@ return [
         'credit' => 'Crédit',
         'debit' => 'Débit',
         'reference_short' => 'Réf. :',
+        'collector_placeholder' => 'Défini automatiquement selon l\'utilisateur connecté',
         'collector_short' => 'Caissier :',
         'invoice' => 'Facture',
         'page_of' => 'Page {current} sur {last}',
@@ -1628,6 +1635,7 @@ return [
         'repair_maintenance_static' => 'Réparation et entretien',
     ],
     'reports' => [
+        'period' => 'Période',
         /* ---- V1.0.7 additions ---- */
         'occupancy_report' => 'Occupation',
         'occupancy_report_summary' => 'Occupation et vacance de l\'ensemble du portefeuille par immeuble.',
@@ -1873,6 +1881,9 @@ return [
         ],
     ],
     'tenants' => [
+        'expense_invoice_help' => 'L’enregistrement crée une facture EXP impayée. L’argent ne quitte un compte de fonds que lorsque la facture est réglée via l’action Payer.',
+        'cancellation_reason' => 'Motif d’annulation',
+        'cancel_payment_description' => 'Annule le paiement le plus récent de cette facture. L’annulation est enregistrée au journal et au journal d’activité.',
         /* ---- V1.0.9 additions ---- */
         'deposit_title' => 'Enregistrer un dépôt du locataire',
         'withdrawal_title' => 'Enregistrer un retrait du locataire',
@@ -2134,6 +2145,26 @@ return [
     ],
 
     'financial_journal' => [
+        'transaction_type' => 'Type de transaction',
+        'to' => 'Au',
+        'search_placeholder' => 'Numéro du journal, description, acteur, compte ou source...',
+        'search' => 'Rechercher',
+        'kind_reversal' => 'Contre-passation',
+        'kind_informational' => 'Informationnelle',
+        'kind_financial' => 'Financière',
+        'from' => 'Du',
+        'export_xlsx' => 'XLSX',
+        'export_pdf' => 'PDF',
+        'export_csv' => 'CSV',
+        'entry_kind' => 'Type d’écriture',
+        'detail_heading' => 'Écriture du journal',
+        'detail_description' => 'Détails immuables de la transaction comptable.',
+        'close' => 'Fermer',
+        'clear_filters' => 'Effacer les filtres',
+        'all_transaction_types' => 'Tous les types de transaction',
+        'all_entry_kinds' => 'Tous les types d’écriture',
+        'all_accounts' => 'Tous les comptes',
+        'account' => 'Compte',
         'title' => 'Journal financier — Patrimoine',
         'administration' => 'Administration',
         'heading' => 'Journal financier',

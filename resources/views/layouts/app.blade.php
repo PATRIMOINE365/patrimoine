@@ -561,6 +561,7 @@
 
                         <div
                             class="pm-sidebar-manage-description"
+                            data-i18n="navigation.activity_log_description"
                         >
                             {{ __('ui.navigation.activity_log_description') }}
                         </div>
@@ -636,6 +637,7 @@
 
                         <div
                             class="pm-sidebar-manage-description"
+                            data-i18n="navigation.users_description"
                         >
                             {{ __('ui.navigation.users_description') }}
                         </div>
@@ -669,6 +671,7 @@
 
                         <div
                             class="pm-sidebar-manage-description"
+                            data-i18n="navigation.settings_description"
                         >
                             {{ __('ui.navigation.settings_description') }}
                         </div>
@@ -704,6 +707,7 @@
 
                         <div
                             class="pm-sidebar-manage-description"
+                            data-i18n="navigation.license_description"
                         >
                             {{ __('ui.navigation.license_description') }}
                         </div>
@@ -1188,6 +1192,7 @@
                                             block text-sm font-semibold
                                             text-[var(--pm-text)]
                                         "
+                                        data-i18n="shell.my_profile"
                                     >
                                         {{ __('ui.shell.my_profile') }}
                                     </span>
@@ -1197,6 +1202,7 @@
                                             mt-0.5 block text-xs
                                             text-[var(--pm-text-muted)]
                                         "
+                                        data-i18n="shell.my_profile_description"
                                     >
                                         {{ __('ui.shell.my_profile_description') }}
                                     </span>
@@ -1415,11 +1421,12 @@
         close-label-key="actions.close"
     >
         <x-slot:title>
-            {{ __('ui.shell.my_profile') }}
+            {{-- A slot is not an element, so the span carries the hook. --}}
+            <span data-i18n="shell.my_profile">{{ __('ui.shell.my_profile') }}</span>
         </x-slot:title>
 
         <x-slot:description>
-            {{ __('ui.shell.profile_description') }}
+            <span data-i18n="shell.profile_description">{{ __('ui.shell.profile_description') }}</span>
         </x-slot:description>
     </x-drawer-header>
 
@@ -1491,6 +1498,7 @@
                     <label
                         for="profile-email"
                         class="pm-field-label"
+                        data-i18n="users.email"
                     >
                         {{ __('ui.users.email') }}
                     </label>
@@ -1508,6 +1516,7 @@
                     <label
                         for="profile-phone"
                         class="pm-field-label"
+                        data-i18n="users.phone"
                     >
                         {{ __('ui.users.phone') }}
                     </label>
@@ -1524,6 +1533,7 @@
                     <label
                         for="profile-role"
                         class="pm-field-label"
+                        data-i18n="users.role"
                     >
                         {{ __('ui.users.role') }}
                     </label>
@@ -1540,6 +1550,7 @@
                     <label
                         for="profile-status"
                         class="pm-field-label"
+                        data-i18n="users.status"
                     >
                         {{ __('ui.users.status') }}
                     </label>
@@ -1568,6 +1579,7 @@
                             tracking-wide
                             text-[var(--pm-text-subtle)]
                         "
+                        data-i18n="password.section"
                     >
                         {{ __('ui.password.section') }}
                     </div>
@@ -1577,6 +1589,7 @@
                             <label
                                 for="profile-new-password"
                                 class="pm-field-label"
+                                data-i18n="password.new_password"
                             >
                                 {{ __('ui.password.new_password') }}
                             </label>
@@ -1621,6 +1634,7 @@
                                     mt-2 text-xs
                                     text-[var(--pm-text-muted)]
                                 "
+                                data-i18n="password.profile_new_help"
                             >
                                 {{ __('ui.password.profile_new_help') }}
                             </p>
@@ -1630,6 +1644,7 @@
                             <label
                                 for="profile-current-password"
                                 class="pm-field-label"
+                                data-i18n="password.current_password"
                             >
                                 {{ __('ui.password.current_password') }}
                             </label>
@@ -1673,6 +1688,7 @@
                                     mt-2 text-xs
                                     text-[var(--pm-text-muted)]
                                 "
+                                data-i18n="password.profile_current_help"
                             >
                                 {{ __('ui.password.profile_current_help') }}
                             </p>

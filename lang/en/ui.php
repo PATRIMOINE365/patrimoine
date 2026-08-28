@@ -757,6 +757,7 @@ return [
         'cancel' => 'Cancel',
     ],
     'leases' => [
+        'payment_method' => 'Payment Method',
         /* ---- V1.0.7 additions ---- */
         'record_deduction' => 'Record a security deposit deduction',
         'record_deduction_description' => 'Itemized deductions reduce the refundable deposit before settlement.',
@@ -1238,6 +1239,8 @@ return [
         'classification_notes_placeholder' => 'Optional classification notes',
     ],
     'owners' => [
+        'payment_method' => 'Payment Method',
+        'pay_bill_description' => 'Settle this bill from the owner account.',
         'management_fee_vat' => 'VAT on management fee',
         'statement' => 'Statement',
         'statement_title' => 'Owner statement',
@@ -1332,6 +1335,7 @@ return [
         'credit' => 'Credit',
         'debit' => 'Debit',
         'reference_short' => 'Ref:',
+        'collector_placeholder' => 'Automatically set to the logged-in User',
         'collector_short' => 'Cashier:',
         'invoice' => 'Invoice',
         'page_of' => 'Page {current} of {last}',
@@ -1477,6 +1481,7 @@ return [
         'repair_maintenance_static' => 'Repair & Maintenance',
     ],
     'reports' => [
+        'period' => 'Period',
         /* ---- V1.0.7 additions ---- */
         'occupancy_report' => 'Occupancy',
         'occupancy_report_summary' => 'Portfolio-wide occupancy and vacancy by building.',
@@ -1722,6 +1727,7 @@ return [
         ],
     ],
     'tenants' => [
+        'pay_invoice_description' => 'Settle this invoice from one of the lease\'s fund accounts.',
         /* ---- V1.0.9 additions ---- */
         'deposit_title' => 'Record Tenant Deposit',
         'withdrawal_title' => 'Record Tenant Withdrawal',
@@ -2133,6 +2139,27 @@ return [
     ],
 
     'financial_journal' => [
+        'transaction_type' => 'Transaction Type',
+        'to' => 'To',
+        'search_placeholder' => 'Journal number, description, actor, account or source...',
+        'search' => 'Search',
+        'kind_reversal' => 'Reversal',
+        'kind_informational' => 'Informational',
+        'kind_financial' => 'Financial',
+        'from' => 'From',
+        'export_xlsx' => 'XLSX',
+        'export_pdf' => 'PDF',
+        'export_csv' => 'CSV',
+        'entry_kind' => 'Entry Kind',
+        'detail_heading' => 'Journal Entry',
+        'detail_description' => 'Immutable accounting transaction details.',
+        'description' => 'Review Patrimoine\'s permanent double-entry accounting record.',
+        'close' => 'Close',
+        'clear_filters' => 'Clear Filters',
+        'all_transaction_types' => 'All Transaction Types',
+        'all_entry_kinds' => 'All Entry Kinds',
+        'all_accounts' => 'All Accounts',
+        'account' => 'Account',
         'title' => 'Financial Journal — Patrimoine',
         'administration' => 'Administration',
         'heading' => 'Financial Journal',

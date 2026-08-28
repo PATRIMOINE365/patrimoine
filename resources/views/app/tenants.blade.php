@@ -256,7 +256,7 @@
                         id="tenant-deposit-lease"
                         class="pm-input"
                     >
-                        <option value="">{{ __('ui.tenants.all_leases') }}</option>
+                        <option value="" data-i18n="tenants.all_leases">{{ __('ui.tenants.all_leases') }}</option>
                     </select>
 
                     <p
@@ -284,7 +284,7 @@
                         disabled
                         class="pm-input"
                     >
-                        <option value="">{{ __('ui.tenants.select_account') }}</option>
+                        <option value="" data-i18n="tenants.select_account">{{ __('ui.tenants.select_account') }}</option>
                     </select>
                 </div>
 
@@ -382,13 +382,13 @@
                         required
                         class="pm-input"
                     >
-                        <option value="cash">{{ __('ui.tenants.payment_method_cash') }}</option>
+                        <option value="cash" data-i18n="tenants.payment_method_cash">{{ __('ui.tenants.payment_method_cash') }}</option>
 
-                        <option value="bank_transfer">{{ __('ui.tenants.payment_method_bank_transfer') }}</option>
+                        <option value="bank_transfer" data-i18n="tenants.payment_method_bank_transfer">{{ __('ui.tenants.payment_method_bank_transfer') }}</option>
 
-                        <option value="momo">{{ __('ui.tenants.payment_method_momo') }}</option>
+                        <option value="momo" data-i18n="tenants.payment_method_momo">{{ __('ui.tenants.payment_method_momo') }}</option>
 
-                        <option value="cheque">{{ __('ui.tenants.payment_method_cheque') }}</option>
+                        <option value="cheque" data-i18n="tenants.payment_method_cheque">{{ __('ui.tenants.payment_method_cheque') }}</option>
                     </select>
                 </div>
 
@@ -603,7 +603,7 @@
                         id="tenant-withdrawal-lease"
                         class="pm-input"
                     >
-                        <option value="">{{ __('ui.tenants.all_leases') }}</option>
+                        <option value="" data-i18n="tenants.all_leases">{{ __('ui.tenants.all_leases') }}</option>
                     </select>
 
                     <p
@@ -631,7 +631,7 @@
                         disabled
                         class="pm-input"
                     >
-                        <option value="">{{ __('ui.tenants.select_account') }}</option>
+                        <option value="" data-i18n="tenants.select_account">{{ __('ui.tenants.select_account') }}</option>
                     </select>
                 </div>
 
@@ -728,13 +728,13 @@
                         required
                         class="pm-input"
                     >
-                        <option value="cash">{{ __('ui.tenants.payment_method_cash') }}</option>
+                        <option value="cash" data-i18n="tenants.payment_method_cash">{{ __('ui.tenants.payment_method_cash') }}</option>
 
-                        <option value="bank_transfer">{{ __('ui.tenants.payment_method_bank_transfer') }}</option>
+                        <option value="bank_transfer" data-i18n="tenants.payment_method_bank_transfer">{{ __('ui.tenants.payment_method_bank_transfer') }}</option>
 
-                        <option value="momo">{{ __('ui.tenants.payment_method_momo') }}</option>
+                        <option value="momo" data-i18n="tenants.payment_method_momo">{{ __('ui.tenants.payment_method_momo') }}</option>
 
-                        <option value="cheque">{{ __('ui.tenants.payment_method_cheque') }}</option>
+                        <option value="cheque" data-i18n="tenants.payment_method_cheque">{{ __('ui.tenants.payment_method_cheque') }}</option>
                     </select>
                 </div>
 
@@ -949,7 +949,7 @@
                         required
                         class="pm-input"
                     >
-                        <option value="">{{ __('ui.tenants.select_lease') }}</option>
+                        <option value="" data-i18n="tenants.select_lease">{{ __('ui.tenants.select_lease') }}</option>
                     </select>
 
                     {{-- V1.0.8: recording creates an unpaid EXP- invoice;
@@ -1206,7 +1206,7 @@
                         required
                         class="pm-input"
                     >
-                        <option value="">{{ __('ui.tenants.select_account') }}</option>
+                        <option value="" data-i18n="tenants.select_account">{{ __('ui.tenants.select_account') }}</option>
                     </select>
                 </div>
 
@@ -1560,7 +1560,7 @@
                         disabled
                         class="pm-input"
                     >
-                        <option value="">{{ __('ui.tenants.select_source_account') }}</option>
+                        <option value="" data-i18n="tenants.select_source_account">{{ __('ui.tenants.select_source_account') }}</option>
                     </select>
                 </div>
 
@@ -1581,7 +1581,7 @@
                         disabled
                         class="pm-input"
                     >
-                        <option value="">{{ __('ui.tenants.select_destination_account') }}</option>
+                        <option value="" data-i18n="tenants.select_destination_account">{{ __('ui.tenants.select_destination_account') }}</option>
                     </select>
                 </div>
 
@@ -1850,7 +1850,7 @@
                             required
                             class="pm-input"
                         >
-                            <option value="">{{ __('ui.tenants.select_account') }}</option>
+                            <option value="" data-i18n="tenants.select_account">{{ __('ui.tenants.select_account') }}</option>
                         </select>
                     </div>
 

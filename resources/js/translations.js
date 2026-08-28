@@ -293,6 +293,48 @@ export const translations = {
         'activity_entities.activity_log':
             'Activity Log',
 
+        'navigation.activity_log_description':
+            'Track and review events',
+
+        'navigation.users_description':
+            'Manage users and their access',
+
+        'navigation.settings_description':
+            'Preferences and configuration',
+
+        'shell.my_profile':
+            'My Profile',
+
+        'shell.my_profile_description':
+            'Update my profile',
+
+        'shell.profile_description':
+            'Update your account information.',
+
+        'password.section':
+            'Password',
+
+        'password.profile_new_help':
+            'Leave blank to keep your current password.',
+
+        'password.profile_current_help':
+            'Required only when setting a new password.',
+
+        'tenants.payment_method_cash':
+            'Cash',
+
+        'tenants.payment_method_bank_transfer':
+            'Bank Transfer',
+
+        'tenants.payment_method_momo':
+            'Mobile Payment',
+
+        'tenants.payment_method_cheque':
+            'Cheque',
+
+        'owners.collector_placeholder':
+            'Automatically set to the logged-in User',
+
         'wizard.title':
             'Guided lease',
 
@@ -4251,6 +4293,48 @@ export const translations = {
 
         'activity_entities.activity_log':
             'Journal d’activité',
+
+        'navigation.activity_log_description':
+            'Suivre et consulter les événements',
+
+        'navigation.users_description':
+            'Gérer les utilisateurs et leurs accès',
+
+        'navigation.settings_description':
+            'Préférences et configuration',
+
+        'shell.my_profile':
+            'Mon profil',
+
+        'shell.my_profile_description':
+            'Mettre à jour mon profil',
+
+        'shell.profile_description':
+            'Mettez à jour les informations de votre compte.',
+
+        'password.section':
+            'Mot de passe',
+
+        'password.profile_new_help':
+            'Laissez vide pour conserver votre mot de passe actuel.',
+
+        'password.profile_current_help':
+            'Requis uniquement lorsque vous définissez un nouveau mot de passe.',
+
+        'tenants.payment_method_cash':
+            'Espèces',
+
+        'tenants.payment_method_bank_transfer':
+            'Virement bancaire',
+
+        'tenants.payment_method_momo':
+            'Paiement mobile',
+
+        'tenants.payment_method_cheque':
+            'Chèque',
+
+        'owners.collector_placeholder':
+            'Défini automatiquement selon l\'utilisateur connecté',
 
         'wizard.title':
             'Assistant de bail',
