@@ -268,6 +268,19 @@ function populatePartyOptions(role) {
         select.innerHTML = markup;
     }
 
+    /*
+     * A first-time organisation has no parties yet. Offering to choose
+     * one produces an empty picker and, worse, a submission with nobody
+     * in it, so the choice is withdrawn until there is somebody to pick.
+     */
+    disableExistingChoice(
+        document.getElementById(`wizard-${role}-mode`),
+        partyCache[role].length === 0,
+        role === 'agent'
+            ? 'none'
+            : 'new'
+    );
+
     if (role === 'owner') {
         document
             .querySelectorAll('[data-owner-party-select]')
@@ -282,6 +295,38 @@ function populatePartyOptions(role) {
                     }
                 }
             );
+    }
+}
+
+/**
+ * Withdraw the "choose an existing one" option while there is nothing to
+ * choose, falling back to the mode that can still be completed.
+ *
+ * @param {HTMLSelectElement|null} select
+ * @param {boolean} empty
+ * @param {string} fallback
+ */
+function disableExistingChoice(select, empty, fallback) {
+    if (! select) {
+        return;
+    }
+
+    const option = [...select.options].find(
+        (candidate) => candidate.value === 'existing'
+    );
+
+    if (! option) {
+        return;
+    }
+
+    option.disabled = empty;
+
+    if (empty && select.value === 'existing') {
+        select.value = fallback;
+
+        select.dispatchEvent(
+            new Event('change')
+        );
     }
 }
 
@@ -644,6 +689,12 @@ function appendOwnerRow() {
         ?.addEventListener('input', updateOwnerTotal);
 
     populatePartyOptions('owner');
+
+    disableExistingChoice(
+        mode,
+        partyCache.owner.length === 0,
+        'new'
+    );
 
     applyMode();
 
@@ -1077,9 +1128,14 @@ function agentSummary() {
 
     const commission = value('wizard-agent-commission');
 
-    return commission && commission !== '0'
-        ? `${name} · ${commission}`
-        : name;
+    return [
+        name,
+        commission && commission !== '0'
+            ? commission
+            : null,
+    ]
+        .filter(Boolean)
+        .join(' · ');
 }
 
 /*
@@ -1113,25 +1169,25 @@ async function submitWizard(status, button) {
             }
         );
 
-        if (response.status === 422) {
-            const payload = await parseJsonResponse(
-                response
-            );
-
-            reportValidationErrors(payload);
-
-            return;
-        }
-
+        /*
+         * Read the body directly rather than through parseJsonResponse,
+         * which throws on a non-ok response: a rejection carries the
+         * field keys this page needs to send the operator back to the
+         * question that was wrong.
+         */
         if (! response.ok) {
-            const payload = await parseJsonResponse(
-                response
-            );
+            const payload = await response
+                .json()
+                .catch(() => ({}));
 
-            showError(
-                payload?.message
-                ?? translate('wizard.save_failed')
-            );
+            if (response.status === 422) {
+                reportValidationErrors(payload);
+            } else {
+                showError(
+                    payload?.message
+                    ?? translate('wizard.save_failed')
+                );
+            }
 
             return;
         }
