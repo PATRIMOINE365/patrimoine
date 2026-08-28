@@ -101,6 +101,11 @@ Route::view(
 )->name('tenants');
 
 Route::view(
+    '/accounting',
+    'app.accounting'
+)->name('accounting');
+
+Route::view(
     '/reports',
     'app.reports'
 )->name('reports');

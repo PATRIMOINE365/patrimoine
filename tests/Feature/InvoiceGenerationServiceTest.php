@@ -196,9 +196,13 @@ class InvoiceGenerationServiceTest extends TestCase
     }
 
     /**
-     * VAT is snapshotted and split from the VAT-inclusive gross amount.
+     * Rent carries no VAT.
+     *
+     * The Lease VAT rate applies to the managing organisation's fee and is
+     * billed to the Owner, so it must never reach the tenant Invoice: the
+     * tenant is billed the contractual rent and nothing more.
      */
-    public function test_vat_is_snapshotted_on_invoice(): void
+    public function test_rent_invoice_carries_no_vat(): void
     {
         $lease = $this->createLease([
             'rent_amount' => 11800,
@@ -211,9 +215,9 @@ class InvoiceGenerationServiceTest extends TestCase
                 Carbon::parse('2026-08-01')
             );
 
-        $this->assertSame('18.00', $invoice->vat_rate);
-        $this->assertSame(10000, $invoice->net_amount);
-        $this->assertSame(1800, $invoice->vat_amount);
+        $this->assertSame('0.00', $invoice->vat_rate);
+        $this->assertSame(11800, $invoice->net_amount);
+        $this->assertSame(0, $invoice->vat_amount);
         $this->assertSame(11800, $invoice->total_amount);
     }
 
@@ -429,17 +433,17 @@ class InvoiceGenerationServiceTest extends TestCase
         );
 
         $this->assertSame(
-            '18.00',
+            '0.00',
             $historical->vat_rate
         );
 
         $this->assertSame(
-            10000,
+            11800,
             $historical->net_amount
         );
 
         $this->assertSame(
-            1800,
+            0,
             $historical->vat_amount
         );
 

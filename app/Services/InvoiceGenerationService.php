@@ -193,17 +193,19 @@ class InvoiceGenerationService
             }
 
             /*
-             * VAT-inclusive billing:
+             * Rent carries no VAT.
              *
-             * gross = net + VAT
+             * VAT is charged on the managing organisation's fee and billed
+             * to the Owner (see OwnerAccountingService::postManagementFee),
+             * so the tenant is billed the contractual rent and nothing more.
+             * The Lease VAT rate is the fee rate and deliberately does not
+             * reach the tenant Invoice.
              *
-             * The stored VAT rate is snapshotted from the Lease so future
-             * rate changes do not alter historical Invoices.
+             * Invoices issued before this change keep the VAT they were
+             * posted with: they are frozen accounting records.
              */
-            [$netAmount, $vatAmount] = $this->splitVatInclusiveAmount(
-                $grossAmount,
-                (float) $billingLease->vat_rate
-            );
+            $netAmount = $grossAmount;
+            $vatAmount = 0;
 
             $dueDate = $this->dueDate(
                 $billingLease,
@@ -225,7 +227,7 @@ class InvoiceGenerationService
                 'due_date' => $dueDate->toDateString(),
                 'status' => 'issued',
                 'total_amount' => $grossAmount,
-                'vat_rate' => $billingLease->vat_rate,
+                'vat_rate' => 0,
                 'net_amount' => $netAmount,
                 'vat_amount' => $vatAmount,
                 'proration_amount' => $prorationAmount,
@@ -518,37 +520,6 @@ class InvoiceGenerationService
         );
     }
 
-    /**
-     * Split a VAT-inclusive amount into net and VAT portions.
-     *
-     * Integer rounding is deliberate because Patrimoine stores whole
-     * currency units only.
-     *
-     * @return array{0:int,1:int}
-     */
-    private function splitVatInclusiveAmount(
-        int $grossAmount,
-        float $vatRate
-    ): array {
-        if ($vatRate <= 0) {
-            return [
-                $grossAmount,
-                0,
-            ];
-        }
-
-        $netAmount = (int) round(
-            $grossAmount
-            / (1 + ($vatRate / 100))
-        );
-
-        $vatAmount = $grossAmount - $netAmount;
-
-        return [
-            $netAmount,
-            $vatAmount,
-        ];
-    }
 
     /**
      * Generate the next human-readable Invoice number.

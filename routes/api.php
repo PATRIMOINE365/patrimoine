@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AccountingController;
 use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\Admin\AdminActivityController;
 use App\Http\Controllers\Api\Admin\AdminDashboardController;
@@ -1044,6 +1045,17 @@ Route::middleware('auth:sanctum')->group(
 
         Route::middleware('capability:view_financial_journal')->group(
             function (): void {
+                /*
+                 * The managing organisation's own accounting: fee income
+                 * earned and VAT charged on those fees. It reads the same
+                 * ledger the Financial Journal does, so it sits behind the
+                 * same capability.
+                 */
+                Route::get(
+                    'accounting/summary',
+                    [AccountingController::class, 'summary']
+                );
+
                 Route::get(
                     'financial-journal',
                     [FinancialJournalController::class, 'index']

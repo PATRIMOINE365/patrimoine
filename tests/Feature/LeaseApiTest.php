@@ -1264,11 +1264,29 @@ class LeaseApiTest extends TestCase
              *
              * GHS 48,000 rent entitlement
              * - GHS 5,760 Managing Organisation fee
+             * - GHS 1,036 VAT on that fee
              * - GHS 12,000 Agent commission
-             * = GHS 30,240.
+             * = GHS 29,204.
+             *
+             * The VAT total is 1,036 rather than 1,037 because the fee is
+             * charged per collection and each charge rounds its own VAT.
              */
             $this->assertSame(
-                30240,
+                1036,
+                (int) OwnerTransaction::query()
+                    ->where(
+                        'owner_account_id',
+                        $ownerAccount->id
+                    )
+                    ->where(
+                        'category',
+                        'management_fee_vat'
+                    )
+                    ->sum('amount')
+            );
+
+            $this->assertSame(
+                29204,
                 $ownerAccount->balance()
             );
 

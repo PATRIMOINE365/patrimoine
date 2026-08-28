@@ -43,6 +43,7 @@ return [
         'owner_payout' => 'Versement propriétaire n° :reference',
         'owner_rent_entitlement' => 'Droit du propriétaire sur l\'imputation de paiement n° :reference',
         'management_fee' => 'Frais de gestion sur l\'imputation de paiement n° :reference',
+        'management_fee_vat' => 'TVA sur les frais de gestion pour l\'imputation de paiement n° :reference',
         'owner_adjustment' => 'Ajustement du solde du compte propriétaire.',
 
         'rent_invoice' => 'Facture de loyer :reference',
@@ -85,6 +86,7 @@ return [
         'owner_rent_entitlement' => 'Droit du propriétaire',
         'owner_adjustment' => 'Ajustement propriétaire',
         'management_fee' => 'Frais de gestion',
+        'management_fee_vat' => 'TVA sur frais de gestion',
         'advance_consumption' => 'Consommation d’avance',
         'rent_reserve_consumption' => 'Consommation de réserve',
         'rent_reserve_funding' => 'Alimentation de réserve',

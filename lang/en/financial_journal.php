@@ -43,6 +43,7 @@ return [
         'owner_payout' => 'Owner Payout #:reference',
         'owner_rent_entitlement' => 'Owner rent entitlement for payment allocation #:reference',
         'management_fee' => 'Management fee for payment allocation #:reference',
+        'management_fee_vat' => 'VAT on management fee for payment allocation #:reference',
         'owner_adjustment' => 'Owner Account balance adjustment.',
 
         'rent_invoice' => 'Rent invoice :reference',
@@ -85,6 +86,7 @@ return [
         'owner_rent_entitlement' => 'Owner Rent Entitlement',
         'owner_adjustment' => 'Owner Adjustment',
         'management_fee' => 'Management Fee',
+        'management_fee_vat' => 'Management fee VAT',
         'advance_consumption' => 'Advance Consumption',
         'rent_reserve_consumption' => 'Rent Reserve Consumption',
         'rent_reserve_funding' => 'Rent Reserve Funding',

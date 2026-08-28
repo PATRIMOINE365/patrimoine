@@ -194,7 +194,7 @@ class JournalIdempotencyFoundationTest extends TestCase
 
         $this->assertDatabaseCount(
             'accounting_accounts',
-            18
+            19
         );
 
         $this->assertTrue(
@@ -217,7 +217,7 @@ class JournalIdempotencyFoundationTest extends TestCase
 
         $this->assertDatabaseCount(
             'accounting_accounts',
-            18
+            19
         );
     }
 
@@ -232,7 +232,7 @@ class JournalIdempotencyFoundationTest extends TestCase
 
         $this->assertDatabaseCount(
             'accounting_accounts',
-            18
+            19
         );
     }
 

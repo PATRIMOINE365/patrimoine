@@ -379,6 +379,48 @@ class OwnerAccountingService
                     $transactions
                 );
 
+                /*
+                 * VAT is charged on the management fee only, never on the
+                 * rent itself, and is billed to the Owner on top of the fee.
+                 *
+                 * On a 100,000 collection with a 10% fee and a 20% VAT rate
+                 * the Owner is debited 10,000 fee + 2,000 VAT and therefore
+                 * nets 88,000. The rate is the one snapshotted on the Lease,
+                 * so a Lease may legitimately carry 0 and charge no VAT.
+                 */
+                $vatAmount = (int) round(
+                    $feeAmount
+                    * (float) $lease->vat_rate
+                    / 100
+                );
+
+                if ($vatAmount > 0) {
+                    $vatTransactions =
+                        $this->allocateOwnerDebit(
+                            building: $lease->unit->building,
+                            amount: $vatAmount,
+                            category: 'management_fee_vat',
+                            transactionDate: $allocation->payment->payment_date->toDateString(),
+                            leaseId: $lease->id,
+                            unitId: $lease->unit_id,
+                            invoiceId: $invoice->id,
+                            paymentAllocationId: $allocation->id,
+                            reference: $allocation->payment->reference
+                                ?? $invoice->invoice_number,
+                            notes: 'VAT charged on the management fee.'
+                        );
+
+                    $this->journal->postManagementFeeVat(
+                        $allocation,
+                        $vatTransactions
+                    );
+
+                    $transactions = array_merge(
+                        $transactions,
+                        $vatTransactions
+                    );
+                }
+
                 return $transactions;
             }
         );

@@ -401,25 +401,34 @@
 
 <div class="summary-wrapper">
     <table class="summary-table">
-        <tr>
-            <td>
-                {{ __('documents.invoice.net_amount') }}
-            </td>
-            <td class="numeric">
-                {{ $formatter->money($invoice->net_amount) }}
-            </td>
-        </tr>
+        {{--
+            Rent no longer carries VAT: it is charged on the managing
+            organisation's fee and billed to the Owner instead. Invoices
+            issued before that change keep the VAT they were posted with,
+            so the net and VAT lines are shown only when there is VAT to
+            show, and a VAT-free Invoice reads as a single total.
+        --}}
+        @if($invoice->vat_amount > 0)
+            <tr>
+                <td>
+                    {{ __('documents.invoice.net_amount') }}
+                </td>
+                <td class="numeric">
+                    {{ $formatter->money($invoice->net_amount) }}
+                </td>
+            </tr>
 
-        <tr>
-            <td>
-                {{ __('documents.invoice.vat') }}
-                ({{ $vatRate }}%)
-            </td>
+            <tr>
+                <td>
+                    {{ __('documents.invoice.vat') }}
+                    ({{ $vatRate }}%)
+                </td>
 
-            <td class="numeric">
-                {{ $formatter->money($invoice->vat_amount) }}
-            </td>
-        </tr>
+                <td class="numeric">
+                    {{ $formatter->money($invoice->vat_amount) }}
+                </td>
+            </tr>
+        @endif
 
         <tr class="total">
             <td>

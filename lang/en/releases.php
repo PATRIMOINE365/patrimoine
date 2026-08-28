@@ -19,6 +19,17 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.23',
+            'date' => '2026-08-27',
+            'title' => 'VAT moves to your management fee',
+            'changes' => [
+                'VAT is now charged on your management fee instead of on rent, and billed to the owner. On 100,000 rent with a 10% fee and a 20% VAT rate, the owner is charged 10,000 in fees plus 2,000 in VAT and receives 88,000.',
+                'Rent invoices no longer carry VAT. Invoices issued before this update keep the VAT they were issued with.',
+                'Each lease sets its own management fee VAT rate, and may use 0% where VAT does not apply. Leases created before this update keep the rate already stored against them, which now applies to the fee rather than to rent.',
+                'A new Accounting page under Finance shows what you have earned in management fees and the VAT you have charged on them, over any period you choose.',
+            ],
+        ],
+        [
             'version' => '1.0.22',
             'date' => '2026-08-27',
             'title' => 'Closing the owner Transfer panel',

@@ -196,13 +196,17 @@ class RentInvoiceJournalIntegrationTest extends TestCase
             $entry->snapshot['total_amount']
         );
 
+        /*
+         * Rent no longer carries VAT, so the net equals the total and the
+         * receivable posted to the Journal is the whole contractual rent.
+         */
         $this->assertSame(
-            10000,
+            11800,
             $entry->snapshot['net_amount']
         );
 
         $this->assertSame(
-            1800,
+            0,
             $entry->snapshot['vat_amount']
         );
     }

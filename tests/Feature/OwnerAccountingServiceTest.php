@@ -382,9 +382,11 @@ class OwnerAccountingServiceTest extends TestCase
         * GHS 10,000 cash collected creates:
         *
         * + GHS 10,000 rent entitlement
-        * - GHS  1,000 management fee
+        * - GHS  1,000 management fee (10%)
+        * - GHS    180 VAT on that fee (18%)
         *
-        * Owner funds held therefore equal GHS 9,000.
+        * Owner funds held therefore equal GHS 8,820. VAT is charged on the
+        * fee alone, never on the rent.
         */
         $this->assertSame(
             10000,
@@ -403,9 +405,237 @@ class OwnerAccountingServiceTest extends TestCase
         );
 
         $this->assertSame(
-            9000,
+            180,
+            (int) $ownerAccount->transactions()
+                ->where('direction', 'debit')
+                ->where('category', 'management_fee_vat')
+                ->sum('amount')
+        );
+
+        $this->assertSame(
+            8820,
             $ownerAccount->balance()
         );
+    }
+
+    /**
+     * The worked example the VAT rule was specified from.
+     *
+     * On 100,000 rent collected, with a 10%% managing organisation fee and a
+     * 20%% VAT rate, the owner receives 88,000:
+     *
+     *   100,000 rent
+     *  -  10,000 management fee
+     *  -   2,000 VAT on that fee
+     *  =  88,000
+     *
+     * VAT is charged on the fee alone. It never touches the rent, and it
+     * never becomes fee income: the accounting map credits VAT Payable.
+     */
+    public function test_vat_is_charged_on_the_management_fee_only(): void
+    {
+        $building = Building::create([
+            'name' => 'VAT Example Building',
+        ]);
+
+        $owner = Party::create([
+            'type' => 'person',
+            'name' => 'VAT Example Owner',
+            'phone' => '0200000400',
+            'email' => 'vat-example-owner@example.test',
+        ]);
+
+        BuildingOwner::create([
+            'building_id' => $building->id,
+            'party_id' => $owner->id,
+            'ownership_percentage' => 100.00,
+        ]);
+
+        $unit = Unit::create([
+            'building_id' => $building->id,
+            'name' => 'VAT Example Unit',
+        ]);
+
+        $tenant = Party::create([
+            'type' => 'person',
+            'name' => 'VAT Example Tenant',
+            'phone' => '0200000401',
+            'email' => 'vat-example-tenant@example.test',
+        ]);
+
+        $lease = Lease::create([
+            'unit_id' => $unit->id,
+            'tenant_id' => $tenant->id,
+            'start_date' => '2026-01-01',
+            'rent_amount' => 100000,
+            'status' => 'active',
+            'management_fee_type' => 'percentage',
+            'management_fee_value' => 10,
+            'vat_rate' => 20,
+        ]);
+
+        $invoice = Invoice::create([
+            'lease_id' => $lease->id,
+            'invoice_number' => 'INV-VAT-EX-001',
+            'period_start' => '2026-01-01',
+            'period_end' => '2026-01-31',
+            'issue_date' => '2026-01-01',
+            'due_date' => '2026-01-01',
+            'status' => 'issued',
+            'total_amount' => 100000,
+            'vat_rate' => 0,
+            'net_amount' => 100000,
+            'vat_amount' => 0,
+        ]);
+
+        $payment = Payment::create([
+            'lease_id' => $lease->id,
+            'amount' => 100000,
+            'payment_date' => '2026-01-05',
+            'payment_method' => 'bank_transfer',
+            'reference' => 'VAT-EX-PAY-001',
+        ]);
+
+        $allocation = PaymentAllocation::create([
+            'payment_id' => $payment->id,
+            'invoice_id' => $invoice->id,
+            'amount' => 100000,
+        ]);
+
+        app(OwnerAccountingService::class)
+            ->postCollectedRentEntitlement($allocation);
+
+        app(OwnerAccountingService::class)
+            ->postManagementFee($allocation);
+
+        $ownerAccount = OwnerAccount::query()
+            ->where('party_id', $owner->id)
+            ->firstOrFail();
+
+        $this->assertSame(
+            100000,
+            (int) $ownerAccount->transactions()
+                ->where('category', 'rent_entitlement')
+                ->sum('amount')
+        );
+
+        $this->assertSame(
+            10000,
+            (int) $ownerAccount->transactions()
+                ->where('category', 'management_fee')
+                ->sum('amount')
+        );
+
+        $this->assertSame(
+            2000,
+            (int) $ownerAccount->transactions()
+                ->where('category', 'management_fee_vat')
+                ->sum('amount')
+        );
+
+        $this->assertSame(
+            88000,
+            $ownerAccount->balance()
+        );
+
+    }
+
+    /**
+     * A Lease may legitimately carry a zero VAT rate, in which case the fee
+     * is charged with no VAT alongside it and the owner keeps the rest.
+     */
+    public function test_zero_vat_rate_charges_the_fee_without_vat(): void
+    {
+        $building = Building::create([
+            'name' => 'Zero VAT Building',
+        ]);
+
+        $owner = Party::create([
+            'type' => 'person',
+            'name' => 'Zero VAT Owner',
+            'phone' => '0200000500',
+            'email' => 'zero-vat-owner@example.test',
+        ]);
+
+        BuildingOwner::create([
+            'building_id' => $building->id,
+            'party_id' => $owner->id,
+            'ownership_percentage' => 100.00,
+        ]);
+
+        $unit = Unit::create([
+            'building_id' => $building->id,
+            'name' => 'Zero VAT Unit',
+        ]);
+
+        $tenant = Party::create([
+            'type' => 'person',
+            'name' => 'Zero VAT Tenant',
+            'phone' => '0200000501',
+            'email' => 'zero-vat-tenant@example.test',
+        ]);
+
+        $lease = Lease::create([
+            'unit_id' => $unit->id,
+            'tenant_id' => $tenant->id,
+            'start_date' => '2026-01-01',
+            'rent_amount' => 100000,
+            'status' => 'active',
+            'management_fee_type' => 'percentage',
+            'management_fee_value' => 10,
+            'vat_rate' => 0,
+        ]);
+
+        $invoice = Invoice::create([
+            'lease_id' => $lease->id,
+            'invoice_number' => 'INV-ZERO-VAT-001',
+            'period_start' => '2026-01-01',
+            'period_end' => '2026-01-31',
+            'issue_date' => '2026-01-01',
+            'due_date' => '2026-01-01',
+            'status' => 'issued',
+            'total_amount' => 100000,
+            'vat_rate' => 0,
+            'net_amount' => 100000,
+            'vat_amount' => 0,
+        ]);
+
+        $payment = Payment::create([
+            'lease_id' => $lease->id,
+            'amount' => 100000,
+            'payment_date' => '2026-01-05',
+            'payment_method' => 'bank_transfer',
+            'reference' => 'ZERO-VAT-PAY-001',
+        ]);
+
+        $allocation = PaymentAllocation::create([
+            'payment_id' => $payment->id,
+            'invoice_id' => $invoice->id,
+            'amount' => 100000,
+        ]);
+
+        app(OwnerAccountingService::class)
+            ->postCollectedRentEntitlement($allocation);
+
+        app(OwnerAccountingService::class)
+            ->postManagementFee($allocation);
+
+        $ownerAccount = OwnerAccount::query()
+            ->where('party_id', $owner->id)
+            ->firstOrFail();
+
+        $this->assertSame(
+            0,
+            $ownerAccount->transactions()
+                ->where('category', 'management_fee_vat')
+                ->count()
+        );
+
+        $this->assertSame(
+            90000,
+            $ownerAccount->balance()
+        );
+
     }
 
     /**

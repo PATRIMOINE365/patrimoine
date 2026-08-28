@@ -1012,6 +1012,81 @@ export const translations = {
         'navigation.owners':
             'Owners',
 
+        'navigation.accounting':
+            'Accounting',
+
+        'accounting.title':
+            'Accounting',
+
+        'accounting.subtitle':
+            'What your organisation has earned in management fees, and the VAT you have charged on them.',
+
+        'accounting.fee_income':
+            'Fee income',
+
+        'accounting.fee_income_hint':
+            'Management fees charged to owners.',
+
+        'accounting.vat_charged':
+            'VAT charged',
+
+        'accounting.vat_charged_hint':
+            'Collected on your fees and owed onward.',
+
+        'accounting.charged_to_owners':
+            'Total charged to owners',
+
+        'accounting.charged_to_owners_hint':
+            'Fees plus the VAT on them.',
+
+        'accounting.from':
+            'From',
+
+        'accounting.to':
+            'To',
+
+        'accounting.apply':
+            'Apply',
+
+        'accounting.reset':
+            'Reset',
+
+        'accounting.transactions':
+            'Charges',
+
+        'accounting.date':
+            'Date',
+
+        'accounting.type':
+            'Type',
+
+        'accounting.owner':
+            'Owner',
+
+        'accounting.property':
+            'Property',
+
+        'accounting.reference':
+            'Reference',
+
+        'accounting.amount':
+            'Amount',
+
+        'accounting.management_fee':
+            'Management fee',
+
+        'accounting.management_fee_vat':
+            'VAT on fee',
+
+        'accounting.empty':
+            'No management fees were charged in this period.',
+
+        'accounting.capped':
+            'Showing the 200 most recent charges. The Financial Journal holds the complete record.',
+
+        'accounting.vat_note':
+            'VAT shown here is collected on behalf of the tax authority. It is not income.',
+
         'navigation.reports':
             'Reports',
 
@@ -1647,16 +1722,16 @@ export const translations = {
             'Defaults apply to newly created records only. Existing leases and invoices keep their stored values.',
 
         'settings.default_vat_rate':
-            'Default VAT Rate %',
+            'Default Management Fee VAT Rate %',
 
         'settings.vat_help_label':
-            'About Default VAT Rate',
+            'About Default Management Fee VAT',
 
         'settings.vat_help_text':
-            'This rate is pre-filled when creating a new Lease. Individual Leases may still override the value, including using 0% where applicable. Changing this setting does not alter existing Leases or historical Invoices.',
+            'This rate is pre-filled when creating a new Lease and applies to your management fee, not to rent. Individual Leases may still override it, including 0% where applicable. Changing this setting does not alter existing Leases or historical Invoices.',
 
         'settings.vat_starting_rate':
-            'Used as the starting VAT rate for new Leases.',
+            'Used as the starting management fee VAT rate for new Leases.',
 
         'settings.banking_details':
             'Banking Details',
@@ -2056,7 +2131,7 @@ export const translations = {
         'leases.payment_frequency': 'Payment Frequency',
         'leases.due_day': 'Due Day',
         'leases.due_day_override': 'Due Day Override',
-        'leases.vat_rate': 'VAT Rate %',
+        'leases.vat_rate': 'Management Fee VAT Rate %',
         'leases.proration_override': 'Proration Override',
         'leases.security_deposit': 'Security Deposit',
         'leases.monthly': 'Monthly',
@@ -2119,8 +2194,8 @@ export const translations = {
         'leases.payment_frequency_help_text': 'Controls how often the Monthly Rent becomes due: Monthly, Quarterly, every six months, or Yearly.',
         'leases.due_day_help_label': 'About Due Day Override',
         'leases.due_day_help_text': 'Leave blank to use the day of the Lease Start Date as the rent due day. For example, a lease starting on the 15th will normally be due on the 15th. Enter another day here to override that rule.',
-        'leases.vat_rate_help_label': 'About VAT Rate',
-        'leases.vat_rate_help_text': 'Patrimoine treats configured Monthly Rent as VAT inclusive. The default rate is 18%, but this lease may use another rate, including 0% where applicable.',
+        'leases.vat_rate_help_label': 'About Management Fee VAT',
+        'leases.vat_rate_help_text': 'VAT is charged on your management fee, never on the rent. On 100,000 rent with a 10% fee and a 20% rate, the owner is charged 10,000 fee plus 2,000 VAT and receives 88,000. Use 0% where VAT does not apply.',
         'leases.proration_help_label': 'About Proration Override',
         'leases.proration_help_text': 'Leave blank to let Patrimoine calculate the prorated amount automatically for a partial billing period. Enter 0 to deliberately charge no proration. Any other amount replaces the automatic calculation.',
         'leases.security_deposit_help_label': 'About Security Deposit',
@@ -4265,6 +4340,81 @@ export const translations = {
         'navigation.owners':
             'Propriétaires',
 
+        'navigation.accounting':
+            'Comptabilité',
+
+        'accounting.title':
+            'Comptabilité',
+
+        'accounting.subtitle':
+            'Ce que votre organisation a gagné en frais de gestion, et la TVA que vous avez facturée dessus.',
+
+        'accounting.fee_income':
+            'Produits d’honoraires',
+
+        'accounting.fee_income_hint':
+            'Frais de gestion facturés aux propriétaires.',
+
+        'accounting.vat_charged':
+            'TVA facturée',
+
+        'accounting.vat_charged_hint':
+            'Collectée sur vos frais et due au Trésor.',
+
+        'accounting.charged_to_owners':
+            'Total facturé aux propriétaires',
+
+        'accounting.charged_to_owners_hint':
+            'Les frais et la TVA correspondante.',
+
+        'accounting.from':
+            'Du',
+
+        'accounting.to':
+            'Au',
+
+        'accounting.apply':
+            'Appliquer',
+
+        'accounting.reset':
+            'Réinitialiser',
+
+        'accounting.transactions':
+            'Facturations',
+
+        'accounting.date':
+            'Date',
+
+        'accounting.type':
+            'Type',
+
+        'accounting.owner':
+            'Propriétaire',
+
+        'accounting.property':
+            'Bien',
+
+        'accounting.reference':
+            'Référence',
+
+        'accounting.amount':
+            'Montant',
+
+        'accounting.management_fee':
+            'Frais de gestion',
+
+        'accounting.management_fee_vat':
+            'TVA sur frais',
+
+        'accounting.empty':
+            'Aucun frais de gestion facturé sur cette période.',
+
+        'accounting.capped':
+            'Les 200 facturations les plus récentes sont affichées. Le Journal financier conserve l’enregistrement complet.',
+
+        'accounting.vat_note':
+            'La TVA affichée ici est collectée pour le compte du Trésor. Ce n’est pas un produit.',
+
         'navigation.reports':
             'Rapports',
 
@@ -4900,16 +5050,16 @@ export const translations = {
             'Les valeurs par défaut s’appliquent uniquement aux nouveaux enregistrements. Les baux et factures existants conservent leurs valeurs enregistrées.',
 
         'settings.default_vat_rate':
-            'Taux de TVA par défaut %',
+            'Taux de TVA par défaut sur frais de gestion %',
 
         'settings.vat_help_label':
-            'À propos du taux de TVA par défaut',
+            'À propos du taux de TVA par défaut sur les frais de gestion',
 
         'settings.vat_help_text':
-            'Ce taux est prérempli lors de la création d’un nouveau bail. Chaque bail peut toujours remplacer cette valeur, y compris par 0 % lorsque cela s’applique. La modification de ce paramètre ne change pas les baux existants ni les factures historiques.',
+            'Ce taux est prérempli lors de la création d’un nouveau bail et s’applique à vos frais de gestion, non au loyer. Chaque bail peut toujours le remplacer, y compris par 0 % lorsque cela s’applique. La modification de ce paramètre ne change pas les baux existants ni les factures historiques.',
 
         'settings.vat_starting_rate':
-            'Utilisé comme taux de TVA initial pour les nouveaux baux.',
+            'Utilisé comme taux de TVA initial sur les frais de gestion pour les nouveaux baux.',
 
         'settings.banking_details':
             'Coordonnées bancaires',
@@ -5646,7 +5796,7 @@ export const translations = {
         'leases.payment_frequency': 'Fréquence de paiement',
         'leases.due_day': 'Jour d’échéance',
         'leases.due_day_override': 'Jour d’échéance personnalisé',
-        'leases.vat_rate': 'Taux de TVA %',
+        'leases.vat_rate': 'Taux de TVA sur frais de gestion %',
         'leases.proration_override': 'Prorata personnalisé',
         'leases.security_deposit': 'Dépôt de garantie',
         'leases.monthly': 'Mensuel',
@@ -5709,8 +5859,8 @@ export const translations = {
         'leases.payment_frequency_help_text': 'Détermine la fréquence à laquelle le loyer mensuel devient exigible : mensuellement, trimestriellement, tous les six mois ou annuellement.',
         'leases.due_day_help_label': 'À propos du jour d’échéance personnalisé',
         'leases.due_day_help_text': 'Laissez ce champ vide pour utiliser le jour de la date de début du bail comme jour d’échéance. Par exemple, un bail commençant le 15 sera normalement exigible le 15. Saisissez un autre jour pour remplacer cette règle.',
-        'leases.vat_rate_help_label': 'À propos du taux de TVA',
-        'leases.vat_rate_help_text': 'Patrimoine considère le loyer mensuel configuré comme TVA incluse. Le taux par défaut est de 18 %, mais ce bail peut utiliser un autre taux, y compris 0 % lorsque cela s’applique.',
+        'leases.vat_rate_help_label': 'À propos de la TVA sur les frais de gestion',
+        'leases.vat_rate_help_text': 'La TVA est calculée sur vos frais de gestion, jamais sur le loyer. Sur un loyer de 100 000 avec des frais de 10 % et un taux de 20 %, le propriétaire est débité de 10 000 de frais et de 2 000 de TVA, et perçoit 88 000. Indiquez 0 % lorsque la TVA ne s’applique pas.',
         'leases.proration_help_label': 'À propos du prorata personnalisé',
         'leases.proration_help_text': 'Laissez ce champ vide pour que Patrimoine calcule automatiquement le prorata d’une période de facturation partielle. Saisissez 0 pour ne facturer volontairement aucun prorata. Tout autre montant remplace le calcul automatique.',
         'leases.security_deposit_help_label': 'À propos du dépôt de garantie',

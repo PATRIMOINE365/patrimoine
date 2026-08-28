@@ -76,6 +76,9 @@ class AccountingEventMap
     public const EVENT_MANAGEMENT_FEE =
         'management_fee';
 
+    public const EVENT_MANAGEMENT_FEE_VAT =
+        'management_fee_vat';
+
     public const EVENT_AGENT_COMMISSION =
         'agent_commission';
 
@@ -163,6 +166,20 @@ class AccountingEventMap
 
                 'credit' =>
                     SystemChartOfAccounts::MANAGEMENT_FEE_INCOME,
+            ],
+
+            /*
+             * VAT charged on the management fee is billed to the Owner
+             * alongside the fee itself, but it is never the organisation's
+             * income: it is collected on behalf of the tax authority and
+             * therefore recognised as a liability, not as fee income.
+             */
+            self::EVENT_MANAGEMENT_FEE_VAT => [
+                'debit' =>
+                    SystemChartOfAccounts::OWNER_FUNDS_PAYABLE,
+
+                'credit' =>
+                    SystemChartOfAccounts::VAT_PAYABLE,
             ],
 
             /*

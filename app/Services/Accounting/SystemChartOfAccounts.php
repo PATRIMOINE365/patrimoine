@@ -34,6 +34,8 @@ class SystemChartOfAccounts
 
     public const AGENT_COMMISSION_PAYABLE = '2110';
 
+    public const VAT_PAYABLE = '2120';
+
     public const OPENING_BALANCE_CLEARING = '3000';
 
     public const ADJUSTMENT_CLEARING = '3010';
@@ -125,6 +127,13 @@ class SystemChartOfAccounts
                 AccountingAccount::TYPE_LIABILITY,
                 AccountingAccount::NORMAL_CREDIT,
                 'Agent commission amounts payable.'
+            ),
+            $this->definition(
+                self::VAT_PAYABLE,
+                'VAT Payable',
+                AccountingAccount::TYPE_LIABILITY,
+                AccountingAccount::NORMAL_CREDIT,
+                'VAT charged on management fees and owed to the tax authority.'
             ),
             $this->definition(
                 self::OPENING_BALANCE_CLEARING,

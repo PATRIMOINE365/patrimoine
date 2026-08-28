@@ -439,6 +439,39 @@
 
 
                 <a
+                    href="/accounting"
+                    class="
+                        {{
+                            request()->is('accounting')
+                                ? 'bg-white/10 text-white'
+                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                        }}
+                        flex items-center gap-3
+                        rounded-lg px-3 py-2.5
+                        text-sm font-medium
+                        transition
+                    "
+                >
+                    <svg
+                        class="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
+                        <rect x="4" y="3" width="16" height="18" rx="2"/>
+                        <path d="M8 7h8"/>
+                        <path d="M8 11h3"/>
+                        <path d="M8 15h3"/>
+                        <path d="M15 11v6"/>
+                        <path d="M13.5 13.5h3"/>
+                    </svg>
+
+                    <span data-i18n="navigation.accounting">{{ __('ui.navigation.accounting') }}</span>
+                </a>
+
+
+                <a
                     href="/reports"
                     class="
                         {{

@@ -588,6 +588,96 @@ final class OwnerFinancialJournalService
     }
 
     /**
+     * Post the VAT charged on a management fee.
+     *
+     * VAT is billed to the Owner alongside the fee, but it belongs to the
+     * tax authority rather than to the organisation, so it is posted as a
+     * separate entry crediting VAT Payable instead of fee income.
+     *
+     * @param array<int, OwnerTransaction> $transactions
+     */
+    public function postManagementFeeVat(
+        PaymentAllocation $allocation,
+        array $transactions
+    ): void {
+        if (
+            ! $this->runtime->enabled()
+            || $transactions === []
+        ) {
+            return;
+        }
+
+        $this->assertBatch(
+            transactions: $transactions,
+            category: 'management_fee_vat',
+            direction: 'debit',
+        );
+
+        $amount = $this->batchAmount(
+            $transactions
+        );
+
+        $mapping = $this->events->fixed(
+            AccountingEventMap::EVENT_MANAGEMENT_FEE_VAT
+        );
+
+        $sourceAllocationId =
+            $transactions[0]->payment_allocation_id
+            ?? $allocation->id;
+
+        $this->postFixed(
+            event:
+                AccountingEventMap::EVENT_MANAGEMENT_FEE_VAT,
+
+            journalDate:
+                $transactions[0]
+                    ->transaction_date
+                    ->toDateString(),
+
+            description:
+                __(
+                    'financial_journal.descriptions.management_fee_vat',
+                    ['reference' => $sourceAllocationId]
+                ),
+
+            sourceType:
+                PaymentAllocation::class,
+
+            sourceId:
+                (int) $sourceAllocationId,
+
+            idempotencyKey:
+                'management-fee-vat:'
+                .$sourceAllocationId,
+
+            amount:
+                $amount,
+
+            mapping:
+                $mapping,
+
+            snapshot: [
+                'payment_allocation_id' =>
+                    (int) $sourceAllocationId,
+
+                'invoice_id' =>
+                    $transactions[0]->invoice_id,
+
+                'lease_id' =>
+                    $transactions[0]->lease_id,
+
+                'amount' =>
+                    $amount,
+
+                'owner_transaction_ids' =>
+                    $this->transactionIds(
+                        $transactions
+                    ),
+            ],
+        );
+    }
+
+    /**
      * @param array<int, OwnerTransaction> $transactions
      */
     public function postAgentCommission(

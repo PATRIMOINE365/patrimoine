@@ -90,6 +90,10 @@ import {
 } from './financial-journal.js';
 
 import {
+    initializeAccounting,
+} from './accounting.js';
+
+import {
     initializeHelp,
 } from './help.js';
 
@@ -222,6 +226,8 @@ document.addEventListener(
         await initializeOwners();
 
         await initializeTenants();
+
+        await initializeAccounting();
 
         await initializeReports();
 

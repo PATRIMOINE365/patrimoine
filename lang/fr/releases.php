@@ -15,6 +15,17 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.23',
+            'date' => '2026-08-27',
+            'title' => 'La TVA passe sur vos frais de gestion',
+            'changes' => [
+                'La TVA est désormais calculée sur vos frais de gestion au lieu du loyer, et facturée au propriétaire. Sur un loyer de 100 000 avec des frais de 10 % et un taux de TVA de 20 %, le propriétaire est débité de 10 000 de frais et de 2 000 de TVA, et perçoit 88 000.',
+                'Les factures de loyer ne comportent plus de TVA. Les factures émises avant cette mise à jour conservent la TVA avec laquelle elles ont été émises.',
+                'Chaque bail définit son propre taux de TVA sur les frais de gestion, et peut utiliser 0 % lorsque la TVA ne s\'applique pas. Les baux créés avant cette mise à jour conservent le taux déjà enregistré, qui s\'applique désormais aux frais et non au loyer.',
+                'Une nouvelle page Comptabilité, sous Finance, présente vos produits d\'honoraires et la TVA que vous avez facturée dessus, sur la période de votre choix.',
+            ],
+        ],
+        [
             'version' => '1.0.22',
             'date' => '2026-08-27',
             'title' => 'Fermeture du panneau Transfert',

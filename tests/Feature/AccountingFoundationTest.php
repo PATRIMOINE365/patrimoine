@@ -17,8 +17,8 @@ class AccountingFoundationTest extends TestCase
 
         $accounts = $chart->install();
 
-        $this->assertCount(18, $accounts);
-        $this->assertDatabaseCount('accounting_accounts', 18);
+        $this->assertCount(19, $accounts);
+        $this->assertDatabaseCount('accounting_accounts', 19);
 
         $this->assertDatabaseHas('accounting_accounts', [
             'code' => SystemChartOfAccounts::CASH,
@@ -43,7 +43,7 @@ class AccountingFoundationTest extends TestCase
         $chart->install();
         $chart->install();
 
-        $this->assertDatabaseCount('accounting_accounts', 18);
+        $this->assertDatabaseCount('accounting_accounts', 19);
     }
 
     public function test_every_system_account_has_a_valid_type_and_normal_balance(): void
