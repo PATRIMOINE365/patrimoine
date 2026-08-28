@@ -26,6 +26,8 @@ return [
                 'Un nouvel assistant crée un bail de bout en bout sans quitter la page : le bien et le lot, les propriétaires, le locataire, l\'agent et sa commission, les dates, le préavis et les augmentations, le loyer et l\'avance, puis les honoraires. Il s\'ouvre depuis le bouton Assistant de la page Baux.',
                 'L\'assistant explique les termes qu\'il emploie, ignore la page des propriétaires lorsque le bien a déjà les siens, ne propose que les lots vacants, et remplit la date de fin à partir de la durée choisie — ou vous laisse la laisser ouverte, le bail courant alors jusqu\'à sa résiliation.',
                 'Rien n\'est enregistré avant la dernière page, où vous vérifiez l\'ensemble puis choisissez d\'enregistrer un brouillon ou de créer et activer. Quitter l\'assistant en cours de route ne coûte rien et ne laisse rien derrière.',
+                'Une revue complète de l\'application a corrigé les endroits qui s\'affichaient encore dans la mauvaise langue : le journal d\'activité, le filtre du journal financier, une partie du menu, et un champ qui affichait son nom interne au lieu d\'un libellé. Les dates et les montants des documents et des exports suivent désormais partout la langue de votre organisation.',
+                'La console d\'administration ne défile plus horizontalement sur un téléphone.',
             ],
         ],
         [

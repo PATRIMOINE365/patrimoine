@@ -30,6 +30,8 @@ return [
                 'A new guided assistant creates a lease from beginning to end without leaving the page: the property and unit, the owners, the tenant, the agent and their commission, the dates, the notice and rent increases, the rent and advance, then the fees. It starts from the Assistant button on the Leases page.',
                 'The assistant explains the words it uses, skips the owners page when the property already has its owners, offers only vacant units, and fills the end date from a duration you choose — or lets you leave it open, in which case the lease runs until it is terminated.',
                 'Nothing is saved until the last page, where you check everything and choose to save a draft or create and activate. Leaving the assistant halfway costs nothing and leaves nothing behind.',
+                'A pass over the whole application fixed places that were still reading in the wrong language: the Activity Log, the Financial Journal filter, parts of the sidebar, and one field that showed its own internal name instead of a label. Dates and amounts in documents and exports now follow your organisation language everywhere.',
+                'The administration console no longer scrolls sideways on a phone.',
             ],
         ],
         [
