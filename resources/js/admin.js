@@ -1284,7 +1284,7 @@ async function openOrganisation(id) {
                         ${user.is_active ? 'active' : 'inactive'}${user.email_verified ? '' : ' · unverified'}
                     </td>
                     <td>
-                        <span class="flex flex-wrap gap-3 text-sm font-medium">
+                        <span class="flex flex-nowrap gap-3 whitespace-nowrap text-sm font-medium">
                             ${user.email_verified ? '' : `<button type="button" class="text-[var(--pm-accent)]" data-admin-reverify="${user.id}">Resend verification</button>`}
                             <button type="button" class="text-[var(--pm-accent)]" data-admin-toggle="${user.id}" data-admin-toggle-to="${user.is_active ? '0' : '1'}">
                                 ${user.is_active ? 'Deactivate' : 'Reactivate'}

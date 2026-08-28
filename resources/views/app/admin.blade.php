@@ -377,7 +377,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="pm-admin-table min-w-[760px]">
+                <table class="pm-admin-table min-w-[880px]">
                     <thead>
                         <tr>
                             <th>Name</th>
