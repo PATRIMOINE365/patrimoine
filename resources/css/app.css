@@ -7839,6 +7839,33 @@ body.pm-admin {
     .pm-admin-sidebar-footer {
         padding: 0.75rem 1rem;
     }
+
+    /*
+     * The top bar was the second half of the same problem: search, theme
+     * and "Assign License" on one row need 508px, and a flex row does not
+     * shrink below its content, so the page still scrolled sideways after
+     * the rail was fixed. It wraps now, with the search taking its own
+     * line, and the padding comes in to match.
+     */
+    .pm-admin-topbar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .pm-admin-search {
+        flex: 1 1 100%;
+        min-width: 0;
+        max-width: none;
+    }
+
+    .pm-admin-main {
+        min-width: 0;
+    }
+
+    .pm-admin-content {
+        padding: 1.25rem 1rem 3rem;
+    }
 }
 
 .pm-admin-sidebar {
