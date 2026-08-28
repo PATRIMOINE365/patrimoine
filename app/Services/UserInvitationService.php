@@ -24,6 +24,30 @@ class UserInvitationService
     ) {}
 
     /**
+     * Invite a User only if they have never taken ownership of the account.
+     *
+     * An account is created dormant and invited when somebody activates
+     * it, so activation is where the invitation belongs. Someone who has
+     * already accepted an earlier invitation must not be sent a fresh
+     * link every time their account is switched off and on again -- that
+     * would invalidate the password they already set.
+     *
+     * @return UserInvitation|null the invitation, or null if none was due
+     */
+    public function sendIfNeverAccepted(User $user): ?UserInvitation
+    {
+        if (! $user->isActive()) {
+            return null;
+        }
+
+        if ($user->email_verified_at !== null) {
+            return null;
+        }
+
+        return $this->send($user);
+    }
+
+    /**
      * Issue a new 24-hour invitation and send it to the User.
      *
      * @return UserInvitation newly persisted invitation

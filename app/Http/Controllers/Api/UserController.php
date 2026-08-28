@@ -142,6 +142,18 @@ class UserController extends Controller
          * reading $validated['name'] unconditionally crashed every
          * creation made from the Users form, which never sends it.
          */
+        $isActive = (bool) ($validated['is_active'] ?? true);
+
+        /*
+         * Creating the account and inviting it are one action: a refused
+         * invitation must never leave a half-made user behind for the
+         * operator to trip over when they retry.
+         */
+        $user = \Illuminate\Support\Facades\DB::transaction(function () use (
+            $validated,
+            $isActive,
+            $invitations
+        ): User {
         $user = User::create([
             'given_names' => $validated['given_names'] ?? null,
             'surname' => $validated['surname'] ?? null,
@@ -154,7 +166,7 @@ class UserController extends Controller
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
             'role' => $validated['role'],
-            'is_active' => $validated['is_active'] ?? true,
+            'is_active' => $isActive,
 
             /*
              * Never create a predictable/default password.
@@ -171,11 +183,16 @@ class UserController extends Controller
             'email_verified_at' => null,
         ]);
 
-        /*
-         * Creating a User starts the secure first-password ownership flow.
-         * No Administrator-selected or default password is disclosed.
-         */
-        $invitations->send($user);
+            /*
+             * An inactive account cannot sign in, so there is nothing to
+             * invite it to yet. It is invited when somebody activates it.
+             */
+            if ($isActive) {
+                $invitations->send($user);
+            }
+
+            return $user;
+        });
 
         /*
          * Account creation and its initial invitation are one human action.

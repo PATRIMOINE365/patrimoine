@@ -925,6 +925,107 @@ async function submitLeaseCorrection() {
 
 /*
 |--------------------------------------------------------------------------
+| Add a user to a customer organisation
+|--------------------------------------------------------------------------
+|
+| Support regularly has to create the first account for a customer, or
+| replace one nobody can get into any more. The account is created inside
+| the customer's organisation and invited exactly as if they had done it
+| themselves, so the invitation and password flow are unchanged.
+|
+*/
+
+function openCustomerUserDrawer() {
+    if (! currentOrganisation) {
+        return;
+    }
+
+    document
+        .getElementById('admin-customer-user-error')
+        ?.classList.add('hidden');
+
+    const org = document.getElementById('admin-customer-user-org');
+
+    if (org) {
+        org.textContent = `This account will belong to ${currentOrganisation.name}.`;
+    }
+
+    for (const id of [
+        'admin-customer-user-given',
+        'admin-customer-user-surname',
+        'admin-customer-user-email',
+        'admin-customer-user-phone',
+    ]) {
+        const input = document.getElementById(id);
+
+        if (input) {
+            input.value = '';
+        }
+    }
+
+    const role = document.getElementById('admin-customer-user-role');
+
+    if (role) {
+        role.value = 'administrator';
+    }
+
+    const active = document.getElementById('admin-customer-user-active');
+
+    if (active) {
+        active.checked = true;
+    }
+
+    openDrawer('admin-customer-user-modal');
+}
+
+async function submitCustomerUser() {
+    const errorBox = document.getElementById('admin-customer-user-error');
+    const button = document.getElementById('admin-customer-user-submit');
+
+    errorBox?.classList.add('hidden');
+
+    if (! currentOrganisation) {
+        return;
+    }
+
+    if (button) {
+        button.disabled = true;
+    }
+
+    try {
+        await adminRequest(
+            `/api/admin/organisations/${currentOrganisation.id}/users`,
+            'POST',
+            {
+                given_names: document.getElementById('admin-customer-user-given').value.trim() || null,
+                surname: document.getElementById('admin-customer-user-surname').value.trim(),
+                email: document.getElementById('admin-customer-user-email').value.trim(),
+                phone: document.getElementById('admin-customer-user-phone').value.trim() || null,
+                role: document.getElementById('admin-customer-user-role').value,
+                is_active: document.getElementById('admin-customer-user-active').checked,
+            }
+        );
+
+        closeDrawer('admin-customer-user-modal');
+
+        await openOrganisation(currentOrganisation.id);
+    } catch (error) {
+        if (errorBox) {
+            errorBox.textContent = error instanceof Error
+                ? error.message
+                : 'The user could not be created.';
+
+            errorBox.classList.remove('hidden');
+        }
+    } finally {
+        if (button) {
+            button.disabled = false;
+        }
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
 | Activity
 |--------------------------------------------------------------------------
 */
@@ -946,6 +1047,8 @@ const ACTION_LABELS = {
     'user.updated': 'Staff user updated',
     'platform.email.sent': 'Support email sent',
     'platform.lease.corrected': 'Lease corrected for customer',
+    'platform.user_created': 'Customer user created',
+    'platform.user_role_changed': 'Customer user role changed',
 };
 
 async function loadActivity(page = 1) {
@@ -1143,6 +1246,15 @@ async function openOrganisation(id) {
                                 ${user.is_active ? 'Deactivate' : 'Reactivate'}
                             </button>
                             <button type="button" class="text-[var(--pm-accent)]" data-admin-pwreset="${user.id}">Password reset</button>
+                            <select
+                                class="pm-input h-8 w-auto py-0 text-sm"
+                                data-admin-role-for="${user.id}"
+                                aria-label="Role"
+                            >
+                                ${['administrator','property_manager','viewer'].map((role) => `
+                                    <option value="${role}"${String(user.role) === role ? ' selected' : ''}>${escapeHtml(role.replace('_',' '))}</option>
+                                `).join('')}
+                            </select>
                         </span>
                     </td>
                 </tr>
@@ -2265,6 +2377,61 @@ export async function initializeAdmin() {
             event.preventDefault();
             await submitLeaseCorrection();
         });
+
+    document
+        .getElementById('admin-add-customer-user')
+        ?.addEventListener('click', openCustomerUserDrawer);
+
+    /*
+     * Changing a customer user's role. The safeguard that keeps at least
+     * one administrator lives in the service, so a refusal comes back as
+     * a normal validation error.
+     */
+    document.addEventListener('change', async (event) => {
+        const select = event.target.closest('[data-admin-role-for]');
+
+        if (! select) {
+            return;
+        }
+
+        try {
+            await adminRequest(
+                `/api/admin/users/${select.dataset.adminRoleFor}/role`,
+                'PATCH',
+                { role: select.value }
+            );
+
+            if (currentOrganisation) {
+                await openOrganisation(currentOrganisation.id);
+            }
+        } catch (error) {
+            showError(error instanceof Error ? error.message : 'The role could not be changed.');
+
+            if (currentOrganisation) {
+                await openOrganisation(currentOrganisation.id);
+            }
+        }
+    });
+
+    document
+        .getElementById('admin-customer-user-form')
+        ?.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            await submitCustomerUser();
+        });
+
+    for (const id of [
+        'admin-customer-user-cancel',
+        'admin-customer-user-close',
+        'admin-customer-user-backdrop',
+    ]) {
+        document
+            .getElementById(id)
+            ?.addEventListener(
+                'click',
+                () => closeDrawer('admin-customer-user-modal')
+            );
+    }
 
     /*
      * Land on the hash-requested page, defaulting to the dashboard.

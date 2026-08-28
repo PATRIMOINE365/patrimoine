@@ -1321,6 +1321,16 @@ Route::middleware(['auth:sanctum', 'platform.admin'])
             [AdminSupportController::class, 'sendPasswordReset']
         );
 
+        Route::post(
+            'organisations/{organisation}/users',
+            [AdminSupportController::class, 'createUser']
+        );
+
+        Route::patch(
+            'users/{user}/role',
+            [AdminSupportController::class, 'changeRole']
+        );
+
         /*
         |------------------------------------------------------------------
         | Support mailbox

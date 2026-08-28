@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Services\UserInvitationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -123,6 +124,19 @@ class UserAdministrationService
 
                 $lockedTarget->is_active = $isActive;
                 $lockedTarget->save();
+
+                /*
+                 * An account created dormant has never been invited.
+                 * Activation is the moment it becomes usable, so that is
+                 * when the invitation goes out -- and only for someone
+                 * who has never taken ownership of the account.
+                 */
+                if ($isActive) {
+                    app(UserInvitationService::class)
+                        ->sendIfNeverAccepted(
+                            $lockedTarget->refresh()
+                        );
+                }
 
                 /*
                  * Disabling an account takes effect immediately for bearer

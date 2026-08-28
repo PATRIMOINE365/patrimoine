@@ -19,6 +19,16 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.28',
+            'date' => '2026-08-28',
+            'title' => 'User management, and a tidier Parties list',
+            'changes' => [
+                'A user created as inactive is now saved without being invited, instead of failing with an error. They are invited automatically the moment somebody activates the account. Someone who has already set their password is never re-invited when their account is switched back on.',
+                'Support can create users, activate or deactivate them, and change their role for a customer organisation from the administration console, using the same safeguards as your own Users page.',
+                'Your own organisation no longer appears in the Parties list. It was never a counterparty and only caused confusion; it is still edited in Settings as before.',
+            ],
+        ],
+        [
             'version' => '1.0.27',
             'date' => '2026-08-28',
             'title' => 'Fix: adding a user failed',

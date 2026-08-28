@@ -130,6 +130,93 @@ class UserManagementApiTest extends TestCase
      * sends a plain `name`, which is why creation could crash in
      * production while the suite stayed green.
      */
+    /**
+     * An account created dormant cannot sign in, so there is nothing to
+     * invite it to yet. Creating one used to answer 422 while leaving the
+     * user behind, so a retry then hit "email already in use".
+     */
+    public function test_creating_an_inactive_user_succeeds_without_inviting(): void
+    {
+        Sanctum::actingAs($this->administrator());
+
+        $this->postJson(
+            '/api/users',
+            [
+                'surname' => 'Dormant',
+                'email' => 'dormant.user@example.test',
+                'role' => UserRole::Viewer->value,
+                'is_active' => false,
+            ]
+        )
+            ->assertCreated()
+            ->assertJsonPath('is_active', false);
+
+        $user = User::where('email', 'dormant.user@example.test')->firstOrFail();
+
+        $this->assertDatabaseCount('user_invitations', 0);
+        $this->assertFalse((bool) $user->is_active);
+    }
+
+    /**
+     * Activation is the moment the account becomes usable, so that is when
+     * the invitation goes out.
+     */
+    public function test_activating_a_dormant_user_sends_the_invitation(): void
+    {
+        Sanctum::actingAs($this->administrator());
+
+        $this->postJson(
+            '/api/users',
+            [
+                'surname' => 'Waiting',
+                'email' => 'waiting.user@example.test',
+                'role' => UserRole::Viewer->value,
+                'is_active' => false,
+            ]
+        )->assertCreated();
+
+        $user = User::where('email', 'waiting.user@example.test')->firstOrFail();
+
+        $this->assertDatabaseCount('user_invitations', 0);
+
+        $this->patchJson(
+            "/api/users/{$user->id}",
+            ['is_active' => true]
+        )->assertOk();
+
+        $this->assertDatabaseHas('user_invitations', [
+            'user_id' => $user->id,
+        ]);
+    }
+
+    /**
+     * Somebody who already set their password must not be sent a fresh
+     * invitation every time their account is switched off and on again --
+     * that link would invalidate the password they already own.
+     */
+    public function test_reactivating_an_established_user_does_not_reinvite(): void
+    {
+        $administrator = $this->administrator();
+
+        $established = User::factory()->create([
+            'email' => 'established@example.test',
+            'role' => UserRole::Viewer->value,
+            'is_active' => false,
+            'email_verified_at' => now(),
+        ]);
+
+        Sanctum::actingAs($administrator);
+
+        $this->patchJson(
+            "/api/users/{$established->id}",
+            ['is_active' => true]
+        )->assertOk();
+
+        $this->assertDatabaseMissing('user_invitations', [
+            'user_id' => $established->id,
+        ]);
+    }
+
     public function test_administrator_can_create_user_with_structured_names(): void
     {
         Sanctum::actingAs($this->administrator());

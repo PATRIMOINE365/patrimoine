@@ -370,6 +370,10 @@
         <div class="pm-admin-card pm-admin-card-flush mt-6">
             <div class="pm-admin-card-header">
                 <span class="pm-admin-card-title">Users</span>
+
+                <button id="admin-add-customer-user" type="button" class="pm-button-secondary">
+                    Add user
+                </button>
             </div>
 
             <div class="overflow-x-auto">
@@ -909,6 +913,80 @@
         <x-drawer-footer>
             <button id="admin-lease-cancel" type="button" class="pm-button-secondary">Cancel</button>
             <button id="admin-lease-submit" type="submit" class="pm-button-primary">Save correction</button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+{{-- ================== Add a customer user =================== --}}
+<x-drawer
+    id="admin-customer-user-modal"
+    backdrop-id="admin-customer-user-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="admin-customer-user-close"
+        close-label="Close"
+    >
+        <x-slot:title>Add user</x-slot:title>
+        <x-slot:description>
+            Creates the account inside the customer organisation and emails
+            them a secure invitation to set their own password.
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form id="admin-customer-user-form" class="flex min-h-0 flex-1 flex-col">
+        <div class="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6">
+            <div id="admin-customer-user-error" class="hidden rounded-xl border border-[var(--pm-danger-border)] bg-[var(--pm-danger-background)] px-4 py-3 text-sm text-[var(--pm-danger-text)]"></div>
+
+            <div id="admin-customer-user-org" class="text-sm text-[var(--pm-text-muted)]"></div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-customer-user-given">Given names</label>
+                    <input id="admin-customer-user-given" type="text" class="pm-input">
+                </div>
+
+                <div>
+                    <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-customer-user-surname">Surname</label>
+                    <input id="admin-customer-user-surname" type="text" class="pm-input" required>
+                </div>
+            </div>
+
+            <div>
+                <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-customer-user-email">Email address</label>
+                <input id="admin-customer-user-email" type="email" class="pm-input" required>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-customer-user-phone">Phone</label>
+                    <input id="admin-customer-user-phone" type="text" class="pm-input">
+                </div>
+
+                <div>
+                    <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-customer-user-role">Role</label>
+                    <select id="admin-customer-user-role" class="pm-input" required>
+                        <option value="administrator">Administrator</option>
+                        <option value="property_manager">Property manager</option>
+                        <option value="viewer">Viewer</option>
+                    </select>
+                </div>
+            </div>
+
+            <label class="flex items-start gap-3 rounded-xl border border-[var(--pm-border)] px-4 py-3 text-sm">
+                <input id="admin-customer-user-active" type="checkbox" checked class="mt-0.5">
+                <span>
+                    <span class="block font-medium text-[var(--pm-text)]">Active account</span>
+                    <span class="block text-[var(--pm-text-muted)]">
+                        An inactive account cannot sign in and is not invited yet.
+                    </span>
+                </span>
+            </label>
+        </div>
+
+        <x-drawer-footer>
+            <button id="admin-customer-user-cancel" type="button" class="pm-button-secondary">Cancel</button>
+            <button id="admin-customer-user-submit" type="submit" class="pm-button-primary">Create and invite</button>
         </x-drawer-footer>
     </form>
 </x-drawer>

@@ -56,6 +56,67 @@ class AdminSupportController extends Controller
     }
 
     /**
+     * Change a customer user's role.
+     *
+     * Routed through UserAdministrationService like the customer's own
+     * Users page, so the Administrator-coverage safeguard applies here
+     * too: support cannot strip the last administrator from an
+     * organisation and lock everyone out.
+     */
+    public function changeRole(
+        int $userId,
+        Request $request,
+        \App\Services\UserAdministrationService $administration,
+        PlatformAuditService $audit
+    ): JsonResponse {
+        $validated = $request->validate([
+            'role' => [
+                'required',
+                \Illuminate\Validation\Rule::in(
+                    array_column(\App\Enums\UserRole::cases(), 'value')
+                ),
+            ],
+        ]);
+
+        [$user, $organisation] = $this->customerUser($userId);
+
+        $previous = $user->role instanceof \BackedEnum
+            ? $user->role->value
+            : (string) $user->role;
+
+        $updated = \App\Support\OrganisationContext::runAs(
+            (int) $organisation->id,
+            fn (): User => $administration->changeRole(
+                $request->user(),
+                $user,
+                \App\Enums\UserRole::from($validated['role'])
+            )
+        );
+
+        $audit->record(
+            action: 'platform.user_role_changed',
+            admin: $request->user(),
+            request: $request,
+            customerOrganisation: $organisation,
+            entityType: 'user',
+            entityId: $updated->id,
+            entityLabel: $updated->name,
+            metadata: [
+                'from' => $previous,
+                'to' => $validated['role'],
+            ],
+        );
+
+        return response()->json([
+            'id' => $updated->id,
+            'name' => $updated->name,
+            'role' => $updated->role instanceof \BackedEnum
+                ? $updated->role->value
+                : (string) $updated->role,
+        ]);
+    }
+
+    /**
      * Activate or deactivate a customer user.
      */
     public function setActive(
@@ -98,6 +159,18 @@ class AdminSupportController extends Controller
         $user->forceFill([
             'is_active' => $activating,
         ])->save();
+
+        /*
+         * Same lifecycle as the customer's own Users page: an account
+         * created dormant is invited the moment it is activated.
+         */
+        if ($activating) {
+            \App\Support\OrganisationContext::runAs(
+                (int) $organisation->id,
+                fn () => app(\App\Services\UserInvitationService::class)
+                    ->sendIfNeverAccepted($user->refresh())
+            );
+        }
 
         if (! $activating) {
             /*
@@ -158,6 +231,180 @@ class AdminSupportController extends Controller
      *
      * @return array{0: User, 1: Organisation}
      */
+    /**
+     * Create a user inside a customer organisation, on their behalf.
+     *
+     * Everything runs inside OrganisationContext::runAs() so the rules
+     * that depend on the tenant evaluate against the CUSTOMER, not the
+     * platform: the reserved-domain guard correctly refuses an
+     * @patrimoine365.com address here, and the plan's user limit is the
+     * customer's own.
+     */
+    public function createUser(
+        Request $request,
+        Organisation $organisation,
+        \App\Services\UserInvitationService $invitations,
+        \App\Services\ActivityLogService $activityLog,
+        PlatformAuditService $audit
+    ): JsonResponse {
+        /*
+         * Platform staff manage themselves through their own Users page.
+         */
+        if ($organisation->is_platform) {
+            throw ValidationException::withMessages([
+                'organisation' => 'Platform staff are managed from the Users page, not here.',
+            ]);
+        }
+
+        $actor = $request->user();
+
+        $created = \App\Support\OrganisationContext::runAs(
+            (int) $organisation->id,
+            function () use (
+                $request,
+                $organisation,
+                $invitations,
+                $activityLog,
+                $actor
+            ): User {
+                $validated = validator(
+                    $request->all(),
+                    [
+                        'given_names' => ['nullable', 'string', 'max:255'],
+                        'surname' => ['nullable', 'string', 'max:255', 'required_without:name'],
+                        'name' => ['nullable', 'string', 'max:255', 'required_without:surname'],
+
+                        'email' => [
+                            'required',
+                            'email',
+                            'max:255',
+                            \Illuminate\Validation\Rule::unique('users', 'email'),
+
+                            /*
+                             * The platform domain belongs to staff alone;
+                             * a customer organisation may never recruit one.
+                             */
+                            function (string $attribute, mixed $value, \Closure $fail): void {
+                                if (str_ends_with(
+                                    mb_strtolower(trim((string) $value)),
+                                    '@'.User::PLATFORM_EMAIL_DOMAIN
+                                )) {
+                                    $fail(__('api.user_management.platform_domain_reserved'));
+                                }
+                            },
+                        ],
+
+                        'phone' => ['nullable', 'string', 'max:50'],
+
+                        'role' => [
+                            'required',
+                            \Illuminate\Validation\Rule::in(
+                                array_column(\App\Enums\UserRole::cases(), 'value')
+                            ),
+                        ],
+
+                        'is_active' => ['nullable', 'boolean'],
+                    ]
+                )->validate();
+
+                $isActive = (bool) ($validated['is_active'] ?? true);
+
+                if ($isActive) {
+                    app(\App\Services\LicensingService::class)
+                        ->assertCanAddUser();
+                }
+
+                /*
+                 * Creating the account and inviting it are one action: a
+                 * refused invitation must not leave a half-made user
+                 * behind for the operator to trip over on the retry.
+                 */
+                return \Illuminate\Support\Facades\DB::transaction(
+                    function () use (
+                        $validated,
+                        $isActive,
+                        $invitations,
+                        $activityLog,
+                        $request,
+                        $organisation,
+                        $actor
+                    ): User {
+                        $user = User::create([
+                            'given_names' => $validated['given_names'] ?? null,
+                            'surname' => $validated['surname'] ?? null,
+                            'name' => $validated['name']
+                                ?? trim(
+                                    ($validated['given_names'] ?? '')
+                                    .' '
+                                    .($validated['surname'] ?? '')
+                                ),
+                            'email' => $validated['email'],
+                            'phone' => $validated['phone'] ?? null,
+                            'role' => $validated['role'],
+                            'is_active' => $isActive,
+                            'password' => \Illuminate\Support\Str::random(64),
+                            'email_verified_at' => null,
+                        ]);
+
+                        /*
+                         * An inactive account cannot sign in, so there is
+                         * nothing to invite it to yet. It is invited when
+                         * somebody activates it.
+                         */
+                        if ($isActive) {
+                            $invitations->send($user);
+                        }
+
+                        /*
+                         * The customer's own activity log records what was
+                         * done inside their organisation, and by whom.
+                         */
+                        $activityLog->record(
+                            action: 'user.created',
+                            actor: $actor,
+                            request: $request,
+                            entityType: 'user',
+                            entityId: $user->id,
+                            entityLabel: $user->name,
+                            metadata: [
+                                'performed_by_platform_staff' => true,
+                                'invitation_sent' => $isActive,
+                            ],
+                            organisationId: (int) $organisation->id,
+                        );
+
+                        return $user;
+                    }
+                );
+            }
+        );
+
+        $audit->record(
+            action: 'platform.user_created',
+            admin: $actor,
+            request: $request,
+            customerOrganisation: $organisation,
+            entityType: 'user',
+            entityId: $created->id,
+            entityLabel: $created->name,
+            metadata: [
+                'email' => $created->email,
+                'role' => $created->role instanceof \BackedEnum
+                    ? $created->role->value
+                    : (string) $created->role,
+                'is_active' => (bool) $created->is_active,
+            ],
+        );
+
+        return response()->json([
+            'id' => $created->id,
+            'name' => $created->name,
+            'email' => $created->email,
+            'is_active' => (bool) $created->is_active,
+            'invitation_sent' => (bool) $created->is_active,
+        ], 201);
+    }
+
     private function customerUser(int $userId): array
     {
         $user = User::withoutGlobalScopes()->findOrFail($userId);

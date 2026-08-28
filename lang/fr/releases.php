@@ -15,6 +15,16 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.28',
+            'date' => '2026-08-28',
+            'title' => 'Gestion des utilisateurs, et une liste des Parties plus claire',
+            'changes' => [
+                'Un utilisateur créé comme inactif est désormais enregistré sans invitation, au lieu d\'échouer avec une erreur. L\'invitation part automatiquement dès que quelqu\'un active le compte. Une personne ayant déjà défini son mot de passe n\'est jamais réinvitée lorsque son compte est réactivé.',
+                'Le support peut créer des utilisateurs, les activer ou les désactiver et modifier leur rôle pour une organisation cliente depuis la console d\'administration, avec les mêmes garde-fous que votre propre page Utilisateurs.',
+                'Votre propre organisation n\'apparaît plus dans la liste des Parties. Elle n\'a jamais été une contrepartie et ne créait que de la confusion ; elle se modifie toujours dans les Paramètres.',
+            ],
+        ],
+        [
             'version' => '1.0.27',
             'date' => '2026-08-28',
             'title' => 'Correctif : l\'ajout d\'un utilisateur échouait',

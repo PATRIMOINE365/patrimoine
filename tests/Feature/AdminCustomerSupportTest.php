@@ -356,6 +356,158 @@ class AdminCustomerSupportTest extends TestCase
             ->assertJsonPath('changed', []);
     }
 
+    public function test_staff_can_create_a_user_inside_a_customer_organisation(): void
+    {
+        $this->actAsPlatformAdmin();
+
+        $response = $this->postJson(
+            "/api/admin/organisations/{$this->customer->id}/users",
+            [
+                'given_names' => 'Kofi',
+                'surname' => 'Mensah',
+                'email' => 'kofi.mensah@example.test',
+                'role' => 'administrator',
+                'is_active' => true,
+            ]
+        );
+
+        $response->assertCreated();
+        $response->assertJsonPath('name', 'Kofi Mensah');
+        $response->assertJsonPath('invitation_sent', true);
+
+        /*
+         * The account must land inside the CUSTOMER organisation, not the
+         * platform one the staff member belongs to.
+         */
+        $user = User::withoutGlobalScopes()
+            ->where('email', 'kofi.mensah@example.test')
+            ->firstOrFail();
+
+        $this->assertSame(
+            (int) $this->customer->id,
+            (int) $user->organisation_id
+        );
+    }
+
+    /**
+     * The platform domain belongs to staff. A customer organisation must
+     * never be able to recruit one, even when staff do the typing.
+     */
+    public function test_a_customer_user_cannot_take_a_platform_address(): void
+    {
+        $this->actAsPlatformAdmin();
+
+        $this->postJson(
+            "/api/admin/organisations/{$this->customer->id}/users",
+            [
+                'surname' => 'Impostor',
+                'email' => 'impostor@patrimoine365.com',
+                'role' => 'administrator',
+            ]
+        )
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['email']);
+    }
+
+    /**
+     * An inactive account cannot sign in, so there is nothing to invite it
+     * to. It must still be created, and without a stray invitation.
+     */
+    public function test_an_inactive_user_is_created_without_an_invitation(): void
+    {
+        $this->actAsPlatformAdmin();
+
+        $this->postJson(
+            "/api/admin/organisations/{$this->customer->id}/users",
+            [
+                'surname' => 'Dormant',
+                'email' => 'dormant@example.test',
+                'role' => 'viewer',
+                'is_active' => false,
+            ]
+        )
+            ->assertCreated()
+            ->assertJsonPath('invitation_sent', false);
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'dormant@example.test',
+            'is_active' => false,
+        ]);
+    }
+
+    public function test_staff_can_change_a_customer_users_role(): void
+    {
+        $target = OrganisationContext::runAs(
+            (int) $this->customer->id,
+            fn (): User => User::factory()
+                ->forOrganisation($this->customer)
+                ->create([
+                    'email' => 'role.target@example.test',
+                    'role' => 'viewer',
+                ])
+        );
+
+        $this->actAsPlatformAdmin();
+
+        $this->patchJson(
+            "/api/admin/users/{$target->id}/role",
+            ['role' => 'property_manager']
+        )
+            ->assertOk()
+            ->assertJsonPath('role', 'property_manager');
+
+        $this->assertSame(
+            'property_manager',
+            User::withoutGlobalScopes()->find($target->id)->role->value
+        );
+    }
+
+    /**
+     * The console goes through the same service as the customer's own
+     * Users page, so the safeguard that keeps at least one administrator
+     * applies here too: support cannot lock a customer out.
+     */
+    public function test_staff_cannot_remove_a_customers_last_administrator(): void
+    {
+        $onlyAdmin = OrganisationContext::runAs(
+            (int) $this->customer->id,
+            fn (): User => User::factory()
+                ->forOrganisation($this->customer)
+                ->create([
+                    'email' => 'only.admin@example.test',
+                    'role' => 'administrator',
+                ])
+        );
+
+        $this->actAsPlatformAdmin();
+
+        $this->patchJson(
+            "/api/admin/users/{$onlyAdmin->id}/role",
+            ['role' => 'viewer']
+        )->assertUnprocessable();
+
+        $this->assertSame(
+            'administrator',
+            User::withoutGlobalScopes()->find($onlyAdmin->id)->role->value
+        );
+    }
+
+    public function test_customer_users_cannot_create_users_through_the_console(): void
+    {
+        Sanctum::actingAs(
+            User::factory()->create(['role' => 'administrator'])
+        );
+
+        $this->postJson(
+            "/api/admin/organisations/{$this->customer->id}/users",
+            [
+                'surname' => 'Nope',
+                'email' => 'nope@example.test',
+                'role' => 'viewer',
+            ]
+        )->assertForbidden();
+    }
+
     public function test_emails_endpoint_degrades_without_a_provider_key(): void
     {
         config(['services.resend.key' => null]);

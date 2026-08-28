@@ -49,6 +49,23 @@ class PartyController extends Controller
             );
         }
 
+        /*
+         * The Managing Organisation is the customer's own company. It is
+         * a Party so it can carry contact details and appear on documents,
+         * but it is not a counterparty anyone deals with, and listing it
+         * beside owners, tenants and agents only confuses people.
+         *
+         * It is edited in Settings through its own endpoint, so hiding it
+         * here costs nothing. An explicit ?role=managing_organisation
+         * still returns it, for anything that genuinely wants it.
+         */
+        if ($request->string('role')->toString() !== 'managing_organisation') {
+            $query->whereDoesntHave(
+                'roles',
+                fn ($query) => $query->where('role', 'managing_organisation')
+            );
+        }
+
         if ($request->filled('search')) {
             $search = trim(
                 $request->string('search')->toString()

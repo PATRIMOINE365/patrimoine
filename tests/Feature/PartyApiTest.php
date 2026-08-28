@@ -138,6 +138,75 @@ class PartyApiTest extends TestCase
     }
 
     /**
+     * The Managing Organisation is the customer's own company, not a
+     * counterparty. Listing it beside owners, tenants and agents confused
+     * people, so it is kept out of the Parties workspace. It is edited in
+     * Settings through its own endpoint, so nothing is lost.
+     */
+    public function test_the_managing_organisation_is_hidden_from_the_parties_list(): void
+    {
+        $owner = Party::create([
+            'type' => 'person',
+            'name' => 'Visible Owner',
+            'phone' => '0200000301',
+            'email' => 'visible-owner@example.test',
+        ]);
+
+        PartyRole::create([
+            'party_id' => $owner->id,
+            'role' => 'owner',
+        ]);
+
+        $managing = Party::create([
+            'type' => 'company',
+            'name' => 'Organisation Gestionnaire',
+            'legal_name' => 'Organisation Gestionnaire',
+            'phone' => '0200000302',
+            'email' => 'managing@example.test',
+        ]);
+
+        PartyRole::create([
+            'party_id' => $managing->id,
+            'role' => 'managing_organisation',
+        ]);
+
+        $names = array_column(
+            $this->getJson('/api/parties')
+                ->assertOk()
+                ->json('data'),
+            'name'
+        );
+
+        $this->assertContains('Visible Owner', $names);
+        $this->assertNotContains('Organisation Gestionnaire', $names);
+    }
+
+    /**
+     * Asking for it explicitly still returns it, so anything that
+     * genuinely needs the record is not cut off.
+     */
+    public function test_the_managing_organisation_is_returned_when_asked_for_by_role(): void
+    {
+        $managing = Party::create([
+            'type' => 'company',
+            'name' => 'Organisation Gestionnaire',
+            'legal_name' => 'Organisation Gestionnaire',
+            'phone' => '0200000303',
+            'email' => 'managing-explicit@example.test',
+        ]);
+
+        PartyRole::create([
+            'party_id' => $managing->id,
+            'role' => 'managing_organisation',
+        ]);
+
+        $this->getJson('/api/parties?role=managing_organisation')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.name', 'Organisation Gestionnaire');
+    }
+
+    /**
      * Party listing supports filtering by role.
      */
     public function test_parties_can_be_filtered_by_role(): void
