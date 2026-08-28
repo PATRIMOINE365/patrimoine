@@ -178,8 +178,14 @@ class RegistrationAndMfaTest extends TestCase
 
         $this->assertIsString($token);
 
+        /*
+         * Corrupt the token by APPENDING rather than by replacing its
+         * first character: a token that already began with 'x' was
+         * "corrupted" back into itself, and this assertion then failed
+         * roughly once every sixty runs.
+         */
         $this->postJson('/api/auth/verify-email', [
-            'token' => 'x'.substr($token, 1),
+            'token' => $token.'x',
         ])->assertStatus(422);
 
         $this->postJson('/api/auth/verify-email', [

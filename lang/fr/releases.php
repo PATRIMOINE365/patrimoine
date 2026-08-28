@@ -15,6 +15,20 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.29',
+            'date' => '2026-08-28',
+            'title' => 'Maîtrisez vos e-mails, et créez un bail pas à pas',
+            'changes' => [
+                'Les Paramètres comportent désormais un interrupteur pour tout ce que Patrimoine envoie à vos locataires, propriétaires et agents. Désactivez-le et plus rien ne part : ni facture, ni reçu, ni rappel, ni avis, ni bon. Toute tentative d\'envoi affiche la raison, au lieu de laisser un doute sur la remise.',
+                'Chaque partie dispose aussi de son propre réglage : suivre l\'organisation, toujours recevoir les e-mails, ou ne jamais en recevoir. Vous pouvez donc tout couper et laisser passer deux propriétaires, ou continuer d\'envoyer en excluant une seule partie.',
+                'Une partie à qui Patrimoine n\'écrit pas est signalée dans la liste des Parties, avant même toute tentative. Rien d\'autre ne change : la facture est toujours émise, le reçu toujours enregistré, chaque document toujours téléchargeable.',
+                'Les e-mails que vous recevez en tant qu\'utilisateur de Patrimoine — codes de connexion, invitations, réinitialisations de mot de passe — ne sont jamais concernés.',
+                'Un nouvel assistant crée un bail de bout en bout sans quitter la page : le bien et le lot, les propriétaires, le locataire, l\'agent et sa commission, les dates, le préavis et les augmentations, le loyer et l\'avance, puis les honoraires. Il s\'ouvre depuis le bouton Assistant de la page Baux.',
+                'L\'assistant explique les termes qu\'il emploie, ignore la page des propriétaires lorsque le bien a déjà les siens, ne propose que les lots vacants, et remplit la date de fin à partir de la durée choisie — ou vous laisse la laisser ouverte, le bail courant alors jusqu\'à sa résiliation.',
+                'Rien n\'est enregistré avant la dernière page, où vous vérifiez l\'ensemble puis choisissez d\'enregistrer un brouillon ou de créer et activer. Quitter l\'assistant en cours de route ne coûte rien et ne laisse rien derrière.',
+            ],
+        ],
+        [
             'version' => '1.0.28',
             'date' => '2026-08-28',
             'title' => 'Gestion des utilisateurs, et une liste des Parties plus claire',

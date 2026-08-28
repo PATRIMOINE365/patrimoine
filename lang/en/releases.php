@@ -19,6 +19,20 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.29',
+            'date' => '2026-08-28',
+            'title' => 'Control your emails, and a guided way to create a lease',
+            'changes' => [
+                'Settings now carries a switch for everything Patrimoine sends to your tenants, owners and agents. Turn it off and nothing leaves: no invoices, receipts, reminders, notices or vouchers. Anyone who tries to send one is told why, rather than being left wondering whether it arrived.',
+                'Each party also carries its own choice: follow the organisation, always receive emails, or never receive them. So you can go quiet everywhere and still let two owners through, or keep sending while excluding a single party.',
+                'A party Patrimoine will not email is marked in the Parties list, so you see it before you try. Nothing else changes: the invoice is still issued, the receipt still recorded, every document still downloadable.',
+                'Emails you receive as a user of Patrimoine — sign-in codes, invitations, password resets — are never affected by any of this.',
+                'A new guided assistant creates a lease from beginning to end without leaving the page: the property and unit, the owners, the tenant, the agent and their commission, the dates, the notice and rent increases, the rent and advance, then the fees. It starts from the Assistant button on the Leases page.',
+                'The assistant explains the words it uses, skips the owners page when the property already has its owners, offers only vacant units, and fills the end date from a duration you choose — or lets you leave it open, in which case the lease runs until it is terminated.',
+                'Nothing is saved until the last page, where you check everything and choose to save a draft or create and activate. Leaving the assistant halfway costs nothing and leaves nothing behind.',
+            ],
+        ],
+        [
             'version' => '1.0.28',
             'date' => '2026-08-28',
             'title' => 'User management, and a tidier Parties list',
