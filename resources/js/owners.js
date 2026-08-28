@@ -6720,6 +6720,9 @@ function ownerTransactionCategoryLabel(
         case 'management_fee':
             return translate('owners.management_fee');
 
+        case 'management_fee_vat':
+            return translate('owners.management_fee_vat');
+
         case 'agent_commission':
             return translate('owners.agent_commission');
 

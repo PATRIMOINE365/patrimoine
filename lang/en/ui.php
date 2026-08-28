@@ -1088,6 +1088,7 @@ return [
         'classification_notes_placeholder' => 'Optional classification notes',
     ],
     'owners' => [
+        'management_fee_vat' => 'VAT on management fee',
         'statement' => 'Statement',
         'statement_title' => 'Owner statement',
         'statement_description' => 'Rent collected, expenses, fees and VAT for a period, and what is left to pay out.',

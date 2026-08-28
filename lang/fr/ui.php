@@ -1239,6 +1239,7 @@ return [
         'classification_notes_placeholder' => 'Notes facultatives sur le classement',
     ],
     'owners' => [
+        'management_fee_vat' => 'TVA sur frais de gestion',
         'statement' => 'Relevé',
         'statement_title' => 'Relevé du propriétaire',
         'statement_description' => 'Loyers encaissés, dépenses, frais et TVA sur une période, et le solde à reverser.',
