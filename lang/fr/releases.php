@@ -15,6 +15,14 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.27',
+            'date' => '2026-08-28',
+            'title' => 'Correctif : l\'ajout d\'un utilisateur échouait',
+            'changes' => [
+                'L\'ajout d\'un utilisateur depuis la page Utilisateurs échouait avec une erreur serveur. La création et le renommage des utilisateurs fonctionnent de nouveau.',
+            ],
+        ],
+        [
             'version' => '1.0.26',
             'date' => '2026-08-28',
             'title' => 'Relevés des propriétaires',

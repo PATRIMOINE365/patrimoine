@@ -122,6 +122,74 @@ class UserManagementApiTest extends TestCase
             );
     }
 
+    /**
+     * What the Users form actually sends.
+     *
+     * The form has separate Prénoms and Nom de famille fields and posts
+     * given_names + surname with no `name` at all. Every other test here
+     * sends a plain `name`, which is why creation could crash in
+     * production while the suite stayed green.
+     */
+    public function test_administrator_can_create_user_with_structured_names(): void
+    {
+        Sanctum::actingAs($this->administrator());
+
+        $this->postJson(
+            '/api/users',
+            [
+                'given_names' => 'Kigordid',
+                'surname' => 'Virtual',
+                'email' => 'kigordid@example.test',
+                'phone' => '0241392599',
+                'role' => UserRole::Administrator->value,
+                'is_active' => true,
+            ]
+        )
+            ->assertCreated()
+            ->assertJsonPath('name', 'Kigordid Virtual');
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'kigordid@example.test',
+            'given_names' => 'Kigordid',
+            'surname' => 'Virtual',
+            'name' => 'Kigordid Virtual',
+        ]);
+    }
+
+    /**
+     * Renaming through the same form must actually take effect: the
+     * structured fields were being dropped, so an edit silently kept the
+     * previous display name.
+     */
+    public function test_updating_structured_names_changes_the_display_name(): void
+    {
+        $administrator = $this->administrator();
+
+        $target = User::factory()->create([
+            'name' => 'Before Name',
+            'role' => UserRole::Viewer->value,
+        ]);
+
+        Sanctum::actingAs($administrator);
+
+        $this->patchJson(
+            "/api/users/{$target->id}",
+            [
+                'given_names' => 'Ama',
+                'surname' => 'Mensah',
+            ]
+        )
+            ->assertOk()
+            ->assertJsonPath('name', 'Ama Mensah');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $target->id,
+            'given_names' => 'Ama',
+            'surname' => 'Mensah',
+            'name' => 'Ama Mensah',
+        ]);
+    }
+
     public function test_administrator_can_create_user_without_default_password(): void
     {
         $administrator = $this->administrator();

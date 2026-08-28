@@ -134,8 +134,23 @@ class UserController extends Controller
             $licensing->assertCanAddUser();
         }
 
+        /*
+         * V1.0.7 structured names: the form sends given_names + surname
+         * and the model recomposes the display name on save. A plain
+         * `name` is still accepted for callers that send one, so only
+         * whichever the request actually carried is passed through --
+         * reading $validated['name'] unconditionally crashed every
+         * creation made from the Users form, which never sends it.
+         */
         $user = User::create([
-            'name' => $validated['name'],
+            'given_names' => $validated['given_names'] ?? null,
+            'surname' => $validated['surname'] ?? null,
+            'name' => $validated['name']
+                ?? trim(
+                    ($validated['given_names'] ?? '')
+                    .' '
+                    .($validated['surname'] ?? '')
+                ),
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
             'role' => $validated['role'],
@@ -290,10 +305,17 @@ class UserController extends Controller
                 $actor,
                 $administration
             ): User {
+                /*
+                 * given_names and surname belong here too: the Users form
+                 * sends them instead of `name`, so omitting them meant an
+                 * edit silently kept the old name.
+                 */
                 $identity = array_intersect_key(
                     $validated,
                     array_flip([
                         'name',
+                        'given_names',
+                        'surname',
                         'email',
                         'phone',
                     ])

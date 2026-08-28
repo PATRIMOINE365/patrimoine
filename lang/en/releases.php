@@ -19,6 +19,14 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.27',
+            'date' => '2026-08-28',
+            'title' => 'Fix: adding a user failed',
+            'changes' => [
+                'Adding a user from the Users page failed with a server error. Creating and renaming users works again.',
+            ],
+        ],
+        [
             'version' => '1.0.26',
             'date' => '2026-08-28',
             'title' => 'Owner statements',
