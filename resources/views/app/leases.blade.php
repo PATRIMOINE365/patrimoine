@@ -47,6 +47,38 @@
             </p>
         </div>
 
+        <div class="flex flex-wrap items-center gap-3">
+
+        {{--
+            V1.0.29: the guided wizard sits beside the ordinary form for
+            anybody who would rather be walked through a whole letting.
+        --}}
+        <a
+            id="lease-wizard-button"
+            href="/leases/wizard"
+            class="pm-button-secondary gap-2"
+        >
+            <svg
+                class="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M5 3v4"/>
+                <path d="M3 5h4"/>
+                <path d="M6 17v4"/>
+                <path d="M4 19h4"/>
+                <path d="M13 3l2.5 6.5L22 12l-6.5 2.5L13 21l-2.5-6.5L4 12l6.5-2.5z"/>
+            </svg>
+
+            <span data-i18n="wizard.launch">
+                {{ __('ui.wizard.launch') }}
+            </span>
+        </a>
+
         <button
             id="add-lease-button"
             type="button"
@@ -67,6 +99,8 @@
                 {{ __('ui.leases.add_lease') }}
             </span>
         </button>
+
+        </div>
     </div>
 
     {{-- Page-level API Error --}}

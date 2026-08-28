@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\FinancialJournalExportController;
 use App\Http\Controllers\Api\FundsReportController;
 use App\Http\Controllers\Api\FundsReportExportController;
 use App\Http\Controllers\Api\LeaseController;
+use App\Http\Controllers\Api\LeaseWizardController;
 use App\Http\Controllers\Api\LeaseFinancialHistoryExportController;
 use App\Http\Controllers\Api\LicenseController;
 use App\Http\Controllers\Api\ManagingOrganisationController;
@@ -423,6 +424,17 @@ Route::middleware('auth:sanctum')->group(
                 Route::post(
                     'leases',
                     [LeaseController::class, 'store']
+                );
+
+                /*
+                 * V1.0.29 guided lease creation. One submission carries
+                 * the property, the owners, the tenant, the agent and
+                 * the lease, and they are created in one transaction or
+                 * not at all.
+                 */
+                Route::post(
+                    'lease-wizard',
+                    [LeaseWizardController::class, 'store']
                 );
 
                 Route::match(

@@ -263,6 +263,38 @@ class BrowserLocalisationTest extends TestCase
             );
     }
 
+    /**
+     * V1.0.29: the guided wizard is a page like any other and must be
+     * translatable end to end, French included.
+     */
+    public function test_lease_wizard_exposes_translation_hooks(): void
+    {
+        $user =
+            User::factory()
+                ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->get('/leases/wizard')
+            ->assertOk();
+
+        foreach (
+            [
+                'data-i18n-title="wizard.title"',
+                'data-i18n="wizard.heading"',
+                'data-i18n="wizard.step1_title"',
+                'data-i18n="wizard.step10_title"',
+                'data-i18n="wizard.glossary_lease_term"',
+                'data-i18n="wizard.duration_open"',
+                'data-i18n="wizard.advance_received"',
+                'data-i18n="wizard.fee_vat"',
+                'data-i18n="wizard.create_activate"',
+            ] as $hook
+        ) {
+            $response->assertSee($hook, false);
+        }
+    }
+
     public function test_owners_exposes_translation_hooks(): void
     {
         $response = $this->get('/owners');

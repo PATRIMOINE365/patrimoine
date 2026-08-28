@@ -110,6 +110,13 @@ class DashboardService
             'total_buildings' => Building::query()->count(),
             'total_units' => $totalUnits,
 
+            /*
+             * V1.0.29: an organisation with no lease at all has not
+             * started yet, and the dashboard offers it the guided wizard
+             * rather than an empty page.
+             */
+            'total_leases' => Lease::query()->count(),
+
             'occupied_units' => $occupiedUnits,
             'vacant_units' => $vacantUnits,
 

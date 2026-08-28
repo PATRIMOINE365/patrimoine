@@ -83,6 +83,384 @@ export const translations = {
         'dashboard.unable_to_load_section':
             'Unable to load this section.',
         /* ---- end V1.0.9 additions ---- */
+        'wizard.title':
+            'Guided lease',
+
+        'wizard.eyebrow':
+            'Leases',
+
+        'wizard.heading':
+            'Create a lease, step by step',
+
+        'wizard.subtitle':
+            'Everything a letting needs, in one go. Nothing is saved until the last page.',
+
+        'wizard.exit':
+            'Exit',
+
+        'wizard.launch':
+            'Guided lease',
+
+        'wizard.invite_title':
+            'Create your first lease',
+
+        'wizard.invite_text':
+            'The guided assistant sets up the property, the owner, the tenant and the lease in one sitting.',
+
+        'wizard.step_counter':
+            'Step :current of :total',
+
+        'wizard.back':
+            'Back',
+
+        'wizard.next':
+            'Next',
+
+        'wizard.save_draft':
+            'Save as draft',
+
+        'wizard.create_activate':
+            'Create and activate',
+
+        'wizard.saving':
+            'Saving…',
+
+        'wizard.load_failed':
+            'Your properties and parties could not be loaded.',
+
+        'wizard.save_failed':
+            'The lease could not be created. Nothing was saved.',
+
+        'wizard.step1_title':
+            'A few words first',
+
+        'wizard.step2_title':
+            'Property and unit',
+
+        'wizard.step3_title':
+            'Who owns it',
+
+        'wizard.step4_title':
+            'Who is renting',
+
+        'wizard.step5_title':
+            'Is an agent involved',
+
+        'wizard.step6_title':
+            'How long the lease runs',
+
+        'wizard.step7_title':
+            'Notice and rent increases',
+
+        'wizard.step8_title':
+            'Rent and advance payment',
+
+        'wizard.step9_title':
+            'Fees and commission',
+
+        'wizard.step10_title':
+            'Check and create',
+
+        'wizard.glossary_party_term':
+            'Party',
+
+        'wizard.glossary_party_text':
+            'Anyone you deal with: a person, a company or an association.',
+
+        'wizard.glossary_owner_term':
+            'Owner',
+
+        'wizard.glossary_owner_text':
+            'The party the property belongs to. You collect rent on their behalf.',
+
+        'wizard.glossary_tenant_term':
+            'Tenant',
+
+        'wizard.glossary_tenant_text':
+            'The party who occupies the unit and pays the rent.',
+
+        'wizard.glossary_agent_term':
+            'Agent',
+
+        'wizard.glossary_agent_text':
+            'A party who introduced the tenant and is paid a commission. Optional.',
+
+        'wizard.glossary_property_term':
+            'Property',
+
+        'wizard.glossary_property_text':
+            'A building or a plot. It holds one or more units.',
+
+        'wizard.glossary_unit_term':
+            'Unit',
+
+        'wizard.glossary_unit_text':
+            'What is actually let: a flat, a shop, an office.',
+
+        'wizard.glossary_lease_term':
+            'Lease',
+
+        'wizard.glossary_lease_text':
+            'The agreement between one tenant and one unit, with its rent and its dates.',
+
+        'wizard.step1_note':
+            'You can go back at any point. Nothing is saved until you finish.',
+
+        'wizard.property':
+            'Property',
+
+        'wizard.use_existing_property':
+            'Use a property I already have',
+
+        'wizard.add_new_property':
+            'Add a new property',
+
+        'wizard.choose_property':
+            'Choose the property',
+
+        'wizard.property_name':
+            'Property name',
+
+        'wizard.property_address':
+            'Address',
+
+        'wizard.unit':
+            'Unit',
+
+        'wizard.use_existing_unit':
+            'Use an existing unit',
+
+        'wizard.add_new_unit':
+            'Add a new unit',
+
+        'wizard.choose_unit':
+            'Choose the unit',
+
+        'wizard.vacant_units_only':
+            'Only vacant units are listed. A unit can carry one active lease at a time.',
+
+        'wizard.unit_name':
+            'Unit name or number',
+
+        'wizard.unit_commercial':
+            'This is a commercial unit',
+
+        'wizard.step3_note':
+            'Shares must add up to 100%. This page is skipped when the property already has its owners.',
+
+        'wizard.add_owner':
+            'Add another owner',
+
+        'wizard.owner':
+            'Owner',
+
+        'wizard.share':
+            'Share (%)',
+
+        'wizard.choose_owner':
+            'Choose the owner',
+
+        'wizard.owner_total':
+            'Total: :total%',
+
+        'wizard.remove':
+            'Remove',
+
+        'wizard.use_existing_party':
+            'Choose someone already recorded',
+
+        'wizard.add_new_party':
+            'Add someone new',
+
+        'wizard.party_type':
+            'Kind',
+
+        'wizard.person':
+            'Person',
+
+        'wizard.organisation':
+            'Organisation',
+
+        'wizard.given_names':
+            'Given names',
+
+        'wizard.surname':
+            'Surname',
+
+        'wizard.legal_name':
+            'Legal name',
+
+        'wizard.contact_name':
+            'Contact person',
+
+        'wizard.phone':
+            'Phone',
+
+        'wizard.email':
+            'Email',
+
+        'wizard.tenant':
+            'Tenant',
+
+        'wizard.choose_tenant':
+            'Choose the tenant',
+
+        'wizard.agent':
+            'Agent',
+
+        'wizard.no_agent':
+            'No agent',
+
+        'wizard.choose_agent':
+            'Choose the agent',
+
+        'wizard.agent_commission':
+            'Commission',
+
+        'wizard.agent_commission_help':
+            'Paid once, out of the owner’s money.',
+
+        'wizard.start_date':
+            'Start date',
+
+        'wizard.duration':
+            'Duration',
+
+        'wizard.duration_12':
+            '12 months',
+
+        'wizard.duration_6':
+            '6 months',
+
+        'wizard.duration_24':
+            '24 months',
+
+        'wizard.duration_custom':
+            'Choose the end date myself',
+
+        'wizard.duration_open':
+            'No end date',
+
+        'wizard.end_date':
+            'End date',
+
+        'wizard.end_date_help':
+            'An end date is not required. Without one, the lease runs until somebody terminates it.',
+
+        'wizard.notice_date':
+            'Notice date',
+
+        'wizard.notice_date_help':
+            'When notice must be given. Leave empty if there is no agreed date.',
+
+        'wizard.increment_type':
+            'Rent increase',
+
+        'wizard.increment_none':
+            'No planned increase',
+
+        'wizard.increment_percentage':
+            'A percentage',
+
+        'wizard.increment_fixed':
+            'A fixed amount',
+
+        'wizard.increment_value':
+            'Increase',
+
+        'wizard.increment_date':
+            'Next increase date',
+
+        'wizard.rent_amount':
+            'Rent',
+
+        'wizard.frequency':
+            'Paid every',
+
+        'wizard.frequency_monthly':
+            'Month',
+
+        'wizard.frequency_quarterly':
+            'Quarter',
+
+        'wizard.frequency_bi_yearly':
+            'Six months',
+
+        'wizard.frequency_yearly':
+            'Year',
+
+        'wizard.due_day':
+            'Due day',
+
+        'wizard.due_day_help':
+            'Leave empty to use the start date’s day.',
+
+        'wizard.proration':
+            'First period adjustment',
+
+        'wizard.proration_help':
+            'Leave empty and Patrimoine works it out.',
+
+        'wizard.security_deposit':
+            'Security deposit',
+
+        'wizard.rent_reserve':
+            'Rent reserve',
+
+        'wizard.advance_amount':
+            'Advance payment',
+
+        'wizard.advance_received':
+            'Already received',
+
+        'wizard.advance_date':
+            'Received on',
+
+        'wizard.advance_method':
+            'Received by',
+
+        'wizard.method_cash':
+            'Cash',
+
+        'wizard.method_bank_transfer':
+            'Bank transfer',
+
+        'wizard.method_cheque':
+            'Cheque',
+
+        'wizard.method_mobile_money':
+            'Mobile money',
+
+        'wizard.advance_reference':
+            'Reference',
+
+        'wizard.fee_type':
+            'Management fee',
+
+        'wizard.fee_percentage':
+            'Percentage of rent',
+
+        'wizard.fee_fixed':
+            'Fixed amount',
+
+        'wizard.fee_none':
+            'No fee',
+
+        'wizard.fee_value':
+            'Fee',
+
+        'wizard.fee_vat':
+            'VAT on the fee (%)',
+
+        'wizard.fee_vat_help':
+            'VAT is charged on your fee and billed to the owner, never on the rent.',
+
+        'wizard.commission_echo':
+            'Agent commission entered earlier:',
+
+        'wizard.step10_note':
+            'Creating the lease also creates everything above it. A draft can be activated later from the Leases page.',
+
         'parties.email_policy':
             'Email communications',
 
@@ -3454,6 +3832,384 @@ export const translations = {
         'dashboard.unable_to_load_section':
             'Impossible de charger cette section.',
         /* ---- end V1.0.9 additions ---- */
+        'wizard.title':
+            'Assistant de bail',
+
+        'wizard.eyebrow':
+            'Baux',
+
+        'wizard.heading':
+            'Créer un bail, étape par étape',
+
+        'wizard.subtitle':
+            'Tout ce qu’un bail exige, en une fois. Rien n’est enregistré avant la dernière page.',
+
+        'wizard.exit':
+            'Quitter',
+
+        'wizard.launch':
+            'Assistant de bail',
+
+        'wizard.invite_title':
+            'Créez votre premier bail',
+
+        'wizard.invite_text':
+            'L’assistant crée le bien, le propriétaire, le locataire et le bail en une seule fois.',
+
+        'wizard.step_counter':
+            'Étape :current sur :total',
+
+        'wizard.back':
+            'Retour',
+
+        'wizard.next':
+            'Suivant',
+
+        'wizard.save_draft':
+            'Enregistrer en brouillon',
+
+        'wizard.create_activate':
+            'Créer et activer',
+
+        'wizard.saving':
+            'Enregistrement…',
+
+        'wizard.load_failed':
+            'Impossible de charger vos biens et vos parties.',
+
+        'wizard.save_failed':
+            'Le bail n’a pas pu être créé. Rien n’a été enregistré.',
+
+        'wizard.step1_title':
+            'Quelques mots d’abord',
+
+        'wizard.step2_title':
+            'Bien et lot',
+
+        'wizard.step3_title':
+            'À qui appartient le bien',
+
+        'wizard.step4_title':
+            'Qui loue',
+
+        'wizard.step5_title':
+            'Un agent intervient-il',
+
+        'wizard.step6_title':
+            'Durée du bail',
+
+        'wizard.step7_title':
+            'Préavis et augmentations',
+
+        'wizard.step8_title':
+            'Loyer et avance',
+
+        'wizard.step9_title':
+            'Honoraires et commission',
+
+        'wizard.step10_title':
+            'Vérifier et créer',
+
+        'wizard.glossary_party_term':
+            'Partie',
+
+        'wizard.glossary_party_text':
+            'Toute personne avec qui vous traitez : un particulier, une société ou une association.',
+
+        'wizard.glossary_owner_term':
+            'Propriétaire',
+
+        'wizard.glossary_owner_text':
+            'La partie à qui appartient le bien. Vous encaissez le loyer pour son compte.',
+
+        'wizard.glossary_tenant_term':
+            'Locataire',
+
+        'wizard.glossary_tenant_text':
+            'La partie qui occupe le lot et paie le loyer.',
+
+        'wizard.glossary_agent_term':
+            'Agent',
+
+        'wizard.glossary_agent_text':
+            'Une partie qui a présenté le locataire et perçoit une commission. Facultatif.',
+
+        'wizard.glossary_property_term':
+            'Bien',
+
+        'wizard.glossary_property_text':
+            'Un immeuble ou un terrain. Il contient un ou plusieurs lots.',
+
+        'wizard.glossary_unit_term':
+            'Lot',
+
+        'wizard.glossary_unit_text':
+            'Ce qui est réellement loué : un appartement, un magasin, un bureau.',
+
+        'wizard.glossary_lease_term':
+            'Bail',
+
+        'wizard.glossary_lease_text':
+            'Le contrat entre un locataire et un lot, avec son loyer et ses dates.',
+
+        'wizard.step1_note':
+            'Vous pouvez revenir en arrière à tout moment. Rien n’est enregistré avant la fin.',
+
+        'wizard.property':
+            'Bien',
+
+        'wizard.use_existing_property':
+            'Utiliser un bien existant',
+
+        'wizard.add_new_property':
+            'Ajouter un nouveau bien',
+
+        'wizard.choose_property':
+            'Choisir le bien',
+
+        'wizard.property_name':
+            'Nom du bien',
+
+        'wizard.property_address':
+            'Adresse',
+
+        'wizard.unit':
+            'Lot',
+
+        'wizard.use_existing_unit':
+            'Utiliser un lot existant',
+
+        'wizard.add_new_unit':
+            'Ajouter un nouveau lot',
+
+        'wizard.choose_unit':
+            'Choisir le lot',
+
+        'wizard.vacant_units_only':
+            'Seuls les lots vacants sont proposés. Un lot ne peut porter qu’un bail actif à la fois.',
+
+        'wizard.unit_name':
+            'Nom ou numéro du lot',
+
+        'wizard.unit_commercial':
+            'Il s’agit d’un lot commercial',
+
+        'wizard.step3_note':
+            'La somme des parts doit atteindre 100 %. Cette page est ignorée si le bien a déjà ses propriétaires.',
+
+        'wizard.add_owner':
+            'Ajouter un autre propriétaire',
+
+        'wizard.owner':
+            'Propriétaire',
+
+        'wizard.share':
+            'Part (%)',
+
+        'wizard.choose_owner':
+            'Choisir le propriétaire',
+
+        'wizard.owner_total':
+            'Total : :total %',
+
+        'wizard.remove':
+            'Retirer',
+
+        'wizard.use_existing_party':
+            'Choisir une partie existante',
+
+        'wizard.add_new_party':
+            'Ajouter une nouvelle partie',
+
+        'wizard.party_type':
+            'Type',
+
+        'wizard.person':
+            'Particulier',
+
+        'wizard.organisation':
+            'Société',
+
+        'wizard.given_names':
+            'Prénoms',
+
+        'wizard.surname':
+            'Nom de famille',
+
+        'wizard.legal_name':
+            'Raison sociale',
+
+        'wizard.contact_name':
+            'Personne à contacter',
+
+        'wizard.phone':
+            'Téléphone',
+
+        'wizard.email':
+            'E-mail',
+
+        'wizard.tenant':
+            'Locataire',
+
+        'wizard.choose_tenant':
+            'Choisir le locataire',
+
+        'wizard.agent':
+            'Agent',
+
+        'wizard.no_agent':
+            'Aucun agent',
+
+        'wizard.choose_agent':
+            'Choisir l’agent',
+
+        'wizard.agent_commission':
+            'Commission',
+
+        'wizard.agent_commission_help':
+            'Payée une fois, sur les fonds du propriétaire.',
+
+        'wizard.start_date':
+            'Date de début',
+
+        'wizard.duration':
+            'Durée',
+
+        'wizard.duration_12':
+            '12 mois',
+
+        'wizard.duration_6':
+            '6 mois',
+
+        'wizard.duration_24':
+            '24 mois',
+
+        'wizard.duration_custom':
+            'Choisir moi-même la date de fin',
+
+        'wizard.duration_open':
+            'Sans date de fin',
+
+        'wizard.end_date':
+            'Date de fin',
+
+        'wizard.end_date_help':
+            'La date de fin n’est pas obligatoire. Sans elle, le bail court jusqu’à sa résiliation.',
+
+        'wizard.notice_date':
+            'Date de préavis',
+
+        'wizard.notice_date_help':
+            'Date à laquelle le préavis doit être donné. Laissez vide s’il n’y en a pas.',
+
+        'wizard.increment_type':
+            'Augmentation du loyer',
+
+        'wizard.increment_none':
+            'Aucune augmentation prévue',
+
+        'wizard.increment_percentage':
+            'Un pourcentage',
+
+        'wizard.increment_fixed':
+            'Un montant fixe',
+
+        'wizard.increment_value':
+            'Augmentation',
+
+        'wizard.increment_date':
+            'Date de la prochaine augmentation',
+
+        'wizard.rent_amount':
+            'Loyer',
+
+        'wizard.frequency':
+            'Payé tous les',
+
+        'wizard.frequency_monthly':
+            'Mois',
+
+        'wizard.frequency_quarterly':
+            'Trimestre',
+
+        'wizard.frequency_bi_yearly':
+            'Six mois',
+
+        'wizard.frequency_yearly':
+            'An',
+
+        'wizard.due_day':
+            'Jour d’échéance',
+
+        'wizard.due_day_help':
+            'Laissez vide pour utiliser le jour de la date de début.',
+
+        'wizard.proration':
+            'Ajustement de la première période',
+
+        'wizard.proration_help':
+            'Laissez vide : Patrimoine le calcule.',
+
+        'wizard.security_deposit':
+            'Dépôt de garantie',
+
+        'wizard.rent_reserve':
+            'Réserve de loyer',
+
+        'wizard.advance_amount':
+            'Avance',
+
+        'wizard.advance_received':
+            'Déjà reçue',
+
+        'wizard.advance_date':
+            'Reçue le',
+
+        'wizard.advance_method':
+            'Reçue par',
+
+        'wizard.method_cash':
+            'Espèces',
+
+        'wizard.method_bank_transfer':
+            'Virement bancaire',
+
+        'wizard.method_cheque':
+            'Chèque',
+
+        'wizard.method_mobile_money':
+            'Mobile money',
+
+        'wizard.advance_reference':
+            'Référence',
+
+        'wizard.fee_type':
+            'Honoraires de gestion',
+
+        'wizard.fee_percentage':
+            'Pourcentage du loyer',
+
+        'wizard.fee_fixed':
+            'Montant fixe',
+
+        'wizard.fee_none':
+            'Aucun honoraire',
+
+        'wizard.fee_value':
+            'Honoraires',
+
+        'wizard.fee_vat':
+            'TVA sur les honoraires (%)',
+
+        'wizard.fee_vat_help':
+            'La TVA porte sur vos honoraires et est facturée au propriétaire, jamais sur le loyer.',
+
+        'wizard.commission_echo':
+            'Commission de l’agent saisie précédemment :',
+
+        'wizard.step10_note':
+            'La création du bail crée aussi tout ce qui précède. Un brouillon peut être activé plus tard depuis la page Baux.',
+
         'parties.email_policy':
             'Communications par e-mail',
 

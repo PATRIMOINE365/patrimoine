@@ -70,6 +70,8 @@ const CAPABILITY_SELECTORS = {
         '[data-edit-party]',
 
         '#add-lease-button',
+        '#lease-wizard-button',
+        '#dashboard-wizard-card',
         '[data-extend-lease]',
         '[data-terminate-lease]',
         '[data-delete-lease]',

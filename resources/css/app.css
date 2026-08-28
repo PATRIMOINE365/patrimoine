@@ -3115,6 +3115,184 @@ select {
  * Party is individually excluded. Muted rather than alarming — it is a
  * deliberate setting, not a fault.
  */
+/*
+|--------------------------------------------------------------------------
+| Guided Lease Wizard (V1.0.29)
+|--------------------------------------------------------------------------
+|
+| One column, generous spacing, nothing competing for attention: the page
+| asks one thing at a time on purpose.
+|
+*/
+
+.pm-wizard-step-heading {
+    margin-bottom: 1.25rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.pm-wizard-fields {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.pm-wizard-subfields {
+    display: grid;
+    gap: 1rem;
+    border-left: 2px solid var(--pm-border-subtle);
+    padding-left: 1rem;
+}
+
+.pm-wizard-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .pm-wizard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.pm-wizard-divider {
+    height: 1px;
+    background: var(--pm-border-subtle);
+}
+
+.pm-wizard-help {
+    margin-top: 0.375rem;
+    font-size: 0.75rem;
+    color: var(--pm-text-muted);
+}
+
+.pm-wizard-note {
+    margin-top: 1.25rem;
+    border-radius: 0.75rem;
+    background: var(--pm-surface-subtle);
+    padding: 0.75rem 1rem;
+    font-size: 0.8125rem;
+    color: var(--pm-text-secondary);
+}
+
+.pm-wizard-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--pm-text-secondary);
+}
+
+.pm-wizard-checkbox input {
+    height: 1rem;
+    width: 1rem;
+    border-radius: 0.25rem;
+    border-color: var(--pm-border-strong);
+    accent-color: var(--pm-accent);
+}
+
+/* The plain-language glossary on page one. */
+.pm-wizard-glossary {
+    display: grid;
+    gap: 0.875rem;
+}
+
+.pm-wizard-glossary dt {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.pm-wizard-glossary dd {
+    margin-top: 0.125rem;
+    font-size: 0.875rem;
+    color: var(--pm-text-muted);
+}
+
+/* One owner and their share. */
+.pm-wizard-owner-row {
+    display: grid;
+    gap: 1rem;
+    border: 1px solid var(--pm-border-subtle);
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+
+.pm-wizard-remove {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--pm-danger-text);
+}
+
+.pm-wizard-remove:hover {
+    text-decoration: underline;
+}
+
+/* The review page. */
+.pm-wizard-summary {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.pm-wizard-summary > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    border-bottom: 1px solid var(--pm-border-subtle);
+    padding-bottom: 0.625rem;
+}
+
+.pm-wizard-summary > div:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.pm-wizard-summary dt {
+    font-size: 0.8125rem;
+    color: var(--pm-text-muted);
+}
+
+.pm-wizard-summary dd {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--pm-text);
+}
+
+/* The dashboard invitation shown before the first lease exists. */
+.pm-wizard-invite {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 1px solid var(--pm-border);
+    border-radius: 1rem;
+    background: var(--pm-surface);
+    padding: 1.25rem 1.5rem;
+}
+
+.pm-wizard-invite:hover {
+    border-color: var(--pm-accent);
+}
+
+.pm-wizard-invite-body {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.pm-wizard-invite-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.pm-wizard-invite-text {
+    font-size: 0.875rem;
+    color: var(--pm-text-muted);
+}
+
 .pm-party-no-email-badge {
     display: inline-flex;
     align-items: center;

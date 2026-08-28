@@ -74,6 +74,10 @@ return [
     'validation' => [
         'building_ownership_total' => 'La somme des pourcentages de propriété de l’immeuble doit être égale à 100 %.',
 
+        'wizard_owners_required' => 'Ce bien n’a encore aucun propriétaire enregistré ; l’assistant en demande au moins un.',
+
+        'wizard_unit_building' => 'Le lot sélectionné n’appartient pas au bien sélectionné.',
+
         'building_required_for_unit' => 'Un immeuble doit être sélectionné lorsqu’une unité est sélectionnée.',
 
         'unit_not_in_building' => 'L’unité sélectionnée n’appartient pas à l’immeuble sélectionné.',

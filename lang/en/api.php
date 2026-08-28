@@ -74,6 +74,10 @@ return [
     'validation' => [
         'building_ownership_total' => 'Building ownership percentages must total 100%.',
 
+        'wizard_owners_required' => 'This property has no recorded owner yet, so the wizard needs at least one.',
+
+        'wizard_unit_building' => 'The selected unit does not belong to the selected property.',
+
         'building_required_for_unit' => 'A Building is required when a Unit is selected.',
 
         'unit_not_in_building' => 'Selected Unit does not belong to the selected Building.',

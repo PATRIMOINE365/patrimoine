@@ -90,6 +90,15 @@ Route::view(
     'app.leases'
 )->name('leases');
 
+/*
+ * V1.0.29: the guided lease wizard is a page of its own rather than a
+ * drawer — ten steps do not belong in a panel.
+ */
+Route::view(
+    '/leases/wizard',
+    'app.lease-wizard'
+)->name('leases.wizard');
+
 Route::view(
     '/owners',
     'app.owners'

@@ -334,6 +334,19 @@ function renderDashboardSummary(
             ? summary.metrics
             : {};
 
+    /*
+     * V1.0.29: offer the guided wizard while there is nothing to show.
+     * The card carries the manage_operations capability marker, so a
+     * viewer never sees it even on an empty dashboard.
+     */
+    document
+        .getElementById('dashboard-wizard-card')
+        ?.classList
+        .toggle(
+            'hidden',
+            Number(metrics.total_leases ?? 0) > 0
+        );
+
     const occupied =
         Number(
             metrics.occupied_units

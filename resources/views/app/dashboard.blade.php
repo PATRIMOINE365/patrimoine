@@ -56,6 +56,30 @@
         "
     ></div>
 
+    {{--
+        V1.0.29: the guided wizard, offered to an organisation that has
+        not created its first lease yet. dashboard.js reveals it.
+    --}}
+    <a
+        id="dashboard-wizard-card"
+        href="/leases/wizard"
+        class="pm-wizard-invite mb-6 hidden"
+    >
+        <span class="pm-wizard-invite-body">
+            <span class="pm-wizard-invite-title">
+                <span data-i18n="wizard.invite_title">{{ __('ui.wizard.invite_title') }}</span>
+            </span>
+
+            <span class="pm-wizard-invite-text">
+                <span data-i18n="wizard.invite_text">{{ __('ui.wizard.invite_text') }}</span>
+            </span>
+        </span>
+
+        <span class="pm-button-primary shrink-0">
+            <span data-i18n="wizard.launch">{{ __('ui.wizard.launch') }}</span>
+        </span>
+    </a>
+
     {{-- Row 1 — occupancy hero band + money tiles --}}
     <div
         class="

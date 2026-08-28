@@ -62,6 +62,10 @@ import {
 } from './leases.js';
 
 import {
+    initializeLeaseWizard,
+} from './lease-wizard.js';
+
+import {
     initializeOwners,
 } from './owners.js';
 
@@ -222,6 +226,8 @@ document.addEventListener(
         await initializeParties();
 
         await initializeLeases();
+
+        await initializeLeaseWizard();
 
         await initializeOwners();
 
