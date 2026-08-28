@@ -1789,7 +1789,21 @@
 </span>
         </div>
 
-        <div class="mt-4 flex justify-end">
+        <div class="mt-4 flex flex-wrap justify-end gap-2">
+            {{--
+                The statement explains the balance shown above, so it
+                belongs beside it rather than buried in Reports.
+            --}}
+            <button
+                id="owner-statement-button"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="owners.statement">
+    {{ __('ui.owners.statement') }}
+</span>
+            </button>
+
             <button
                 id="owner-transfer-button"
                 type="button"
@@ -2740,6 +2754,93 @@
             </button>
         </x-drawer-footer>
     </form>
+</x-drawer>
+
+{{-- ===================== Owner statement ====================== --}}
+<x-drawer
+    id="owner-statement-modal"
+    backdrop-id="owner-statement-modal-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="owner-statement-modal-close"
+        close-label="Close"
+    >
+        <x-slot:title>
+            <span data-i18n="owners.statement_title">{{ __('ui.owners.statement_title') }}</span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="owners.statement_description">{{ __('ui.owners.statement_description') }}</span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <div class="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6">
+        <div
+            id="owner-statement-error"
+            class="
+                hidden rounded-xl
+                border border-[var(--pm-danger-border)]
+                bg-[var(--pm-danger-background)] px-4 py-3
+                text-sm text-[var(--pm-danger-text)]
+            "
+        ></div>
+
+        <p
+            id="owner-statement-hint"
+            class="text-sm text-[var(--pm-text-muted)]"
+        ></p>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label
+                    class="pm-field-label mb-2 block text-sm font-medium"
+                    for="owner-statement-from"
+                >
+                    <span data-i18n="owners.statement_from">{{ __('ui.owners.statement_from') }}</span>
+                </label>
+
+                <input
+                    id="owner-statement-from"
+                    data-pm-date-input
+                    inputmode="numeric"
+                    maxlength="10"
+                    type="text"
+                    class="pm-input"
+                    placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                >
+            </div>
+
+            <div>
+                <label
+                    class="pm-field-label mb-2 block text-sm font-medium"
+                    for="owner-statement-to"
+                >
+                    <span data-i18n="owners.statement_to">{{ __('ui.owners.statement_to') }}</span>
+                </label>
+
+                <input
+                    id="owner-statement-to"
+                    data-pm-date-input
+                    inputmode="numeric"
+                    maxlength="10"
+                    type="text"
+                    class="pm-input"
+                    placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                >
+            </div>
+        </div>
+    </div>
+
+    <x-drawer-footer>
+        <button id="owner-statement-cancel" type="button" class="pm-button-secondary">
+            <span data-i18n="owners.cancel">{{ __('ui.owners.cancel') }}</span>
+        </button>
+
+        <button id="owner-statement-generate" type="button" class="pm-button-primary">
+            <span data-i18n="owners.statement_generate">{{ __('ui.owners.statement_generate') }}</span>
+        </button>
+    </x-drawer-footer>
 </x-drawer>
 
 @endsection

@@ -15,6 +15,17 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.26',
+            'date' => '2026-08-28',
+            'title' => 'Relevés des propriétaires',
+            'changes' => [
+                'Un bouton Relevé sur le compte d\'un propriétaire génère le document remis lors de l\'encaissement : loyers perçus et périodes couvertes, dépenses, frais de gestion, TVA sur ces frais, et le solde à reverser. La période est préremplie à partir du lendemain du dernier reversement et reste modifiable.',
+                'Les loyers sont présentés selon la période qu\'ils règlent, et non le mois où l\'argent est arrivé : un loyer payé en retard apparaît donc bien sur les mois qu\'il couvre. Une période impayée n\'apparaît pas, puisque cette somme n\'est pas disponible.',
+                'Le détail du compte propriétaire et le rapport propriétaire affichent désormais la TVA sur les frais de gestion sur sa propre ligne.',
+                'Harmonisation de la page Comptabilité : son tableau suit maintenant la présentation du reste de l\'application.',
+            ],
+        ],
+        [
             'version' => '1.0.25',
             'date' => '2026-08-28',
             'title' => 'Des outils de support dans la console',

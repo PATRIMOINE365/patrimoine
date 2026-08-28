@@ -1678,6 +1678,29 @@ function initializeOwnerTransferControls() {
         );
 
     document
+        .getElementById('owner-statement-button')
+        ?.addEventListener('click', openOwnerStatement);
+
+    document
+        .getElementById('owner-statement-generate')
+        ?.addEventListener('click', () => {
+            void generateOwnerStatement();
+        });
+
+    for (const id of [
+        'owner-statement-cancel',
+        'owner-statement-modal-close',
+        'owner-statement-modal-backdrop',
+    ]) {
+        document
+            .getElementById(id)
+            ?.addEventListener(
+                'click',
+                () => closeDrawer('owner-statement-modal')
+            );
+    }
+
+    document
         .getElementById(
             'owner-transfer-form'
         )
@@ -1821,6 +1844,128 @@ async function submitOwnerTransfer() {
     } finally {
         if (submitButton) {
             submitButton.disabled = false;
+        }
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Owner statement
+|--------------------------------------------------------------------------
+|
+| The document an owner is handed when they come to collect. It explains
+| the balance shown on the Accounts drawer: what rent came in and for which
+| periods, what was spent, what the organisation kept in fees and VAT, and
+| what is left.
+|
+| The period is pre-filled from the day after the owner last took money,
+| because that is the question they are actually asking. It stays editable.
+|
+*/
+
+function openOwnerStatement() {
+    if (! selectedOwner) {
+        return;
+    }
+
+    document
+        .getElementById('owner-statement-error')
+        ?.classList.add('hidden');
+
+    const lastPayout = selectedOwner.last_payout_date
+        ? String(selectedOwner.last_payout_date).slice(0, 10)
+        : null;
+
+    /*
+     * Start the day AFTER the last payout: that payout is already
+     * settled and belongs to the statement it closed, not this one.
+     */
+    const from = lastPayout
+        ? new Date(
+            new Date(lastPayout + 'T00:00:00').getTime() + 86400000
+        )
+            .toISOString()
+            .slice(0, 10)
+        : null;
+
+    setOwnerDateValue(
+        'owner-statement-from',
+        from ?? ''
+    );
+
+    setOwnerDateValue(
+        'owner-statement-to',
+        localToday()
+    );
+
+    const hint = document.getElementById('owner-statement-hint');
+
+    if (hint) {
+        hint.textContent = lastPayout
+            ? translate('owners.statement_since_payout', {
+                date: dateForDisplay(lastPayout),
+            })
+            : translate('owners.statement_no_payout');
+    }
+
+    openDrawer('owner-statement-modal');
+}
+
+async function generateOwnerStatement() {
+    const button = document.getElementById('owner-statement-generate');
+    const errorBox = document.getElementById('owner-statement-error');
+
+    errorBox?.classList.add('hidden');
+
+    if (! selectedOwner?.party_id) {
+        return;
+    }
+
+    const parameters = new URLSearchParams();
+
+    const from = dateForApi(
+        fieldValue('owner-statement-from')
+    );
+
+    const to = dateForApi(
+        fieldValue('owner-statement-to')
+    );
+
+    if (from) {
+        parameters.set('from', from);
+    }
+
+    if (to) {
+        parameters.set('to', to);
+    }
+
+    if (button) {
+        button.disabled = true;
+    }
+
+    try {
+        const query = parameters.toString();
+
+        await openPdfInNewTab(
+            `/api/reports/owners/${encodeURIComponent(
+                selectedOwner.party_id
+            )}/pdf`
+            + (query ? `?${query}` : ''),
+            translate('owners.unable_to_open_statement')
+        );
+
+        closeDrawer('owner-statement-modal');
+    } catch (error) {
+        if (errorBox) {
+            errorBox.textContent = error instanceof Error
+                ? error.message
+                : translate('owners.unable_to_open_statement');
+
+            errorBox.classList.remove('hidden');
+        }
+    } finally {
+        if (button) {
+            button.disabled = false;
         }
     }
 }
@@ -4870,6 +5015,7 @@ function renderOwnerAccountsBreakdown(
         'rent_entitlement',
         'owner_deposit',
         'management_fee',
+        'management_fee_vat',
         'agent_commission',
         'expense',
         'payout',

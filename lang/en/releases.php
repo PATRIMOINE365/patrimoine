@@ -19,6 +19,17 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.26',
+            'date' => '2026-08-28',
+            'title' => 'Owner statements',
+            'changes' => [
+                'A Statement button on an owner account produces the document an owner is handed when they collect: rent received and the periods it covers, expenses, management fees, VAT on those fees, and the balance left to pay out. The period is pre-filled from the day after their last payout and can be changed.',
+                'Rent is listed by the period it settles, not the month the money arrived, so rent paid late still appears against the months it pays for. A period nobody has paid is simply absent, because that cash is not there to hand over.',
+                'The owner account breakdown and the owner report now show VAT on management fees on its own line.',
+                'Tidied the Accounting page so its table matches the rest of the application.',
+            ],
+        ],
+        [
             'version' => '1.0.25',
             'date' => '2026-08-28',
             'title' => 'Support tools in the admin console',

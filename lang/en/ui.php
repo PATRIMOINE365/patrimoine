@@ -1088,6 +1088,15 @@ return [
         'classification_notes_placeholder' => 'Optional classification notes',
     ],
     'owners' => [
+        'statement' => 'Statement',
+        'statement_title' => 'Owner statement',
+        'statement_description' => 'Rent collected, expenses, fees and VAT for a period, and what is left to pay out.',
+        'statement_from' => 'From',
+        'statement_to' => 'To',
+        'statement_generate' => 'Generate',
+        'statement_since_payout' => 'Pre-filled from the day after the last payout on :date. Change the dates if you need a different period.',
+        'statement_no_payout' => 'This owner has not been paid out yet, so the statement covers everything to date.',
+        'unable_to_open_statement' => 'The statement could not be generated.',
         /* ---- V1.0.7 additions ---- */
         'accounts' => 'Accounts',
         'owner_accounts_title' => 'Owner Accounts',

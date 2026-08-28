@@ -176,7 +176,10 @@ function renderTransactions(transactions) {
     if (transactions.length === 0) {
         body.innerHTML = `
             <tr>
-                <td colspan="6" class="py-6 text-center text-[var(--pm-text-muted)]">
+                <td
+                    colspan="6"
+                    class="px-4 py-8 text-center text-[var(--pm-text-muted)]"
+                >
                     ${escapeHtml(translate('accounting.empty'))}
                 </td>
             </tr>
@@ -184,6 +187,13 @@ function renderTransactions(transactions) {
 
         return;
     }
+
+    /*
+     * Cell classes follow the table convention used everywhere else in
+     * the application: padded cells, a subtle rule between rows, muted
+     * secondary text and right-aligned money.
+     */
+    const cell = 'px-4 py-2.5 text-[var(--pm-text-secondary)]';
 
     body.innerHTML = transactions
         .map((transaction) => {
@@ -195,13 +205,13 @@ function renderTransactions(transactions) {
                 .join(' — ');
 
             return `
-                <tr>
-                    <td>${escapeHtml(formatDate(transaction.transaction_date) || '—')}</td>
-                    <td>${escapeHtml(translate('accounting.' + transaction.category))}</td>
-                    <td>${escapeHtml(transaction.owner_name || '—')}</td>
-                    <td>${escapeHtml(property || '—')}</td>
-                    <td>${escapeHtml(transaction.reference || '—')}</td>
-                    <td class="text-right">${escapeHtml(formatCurrency(Number(transaction.amount ?? 0)))}</td>
+                <tr class="border-b border-[var(--pm-border-subtle)] last:border-b-0">
+                    <td class="${cell} whitespace-nowrap">${escapeHtml(formatDate(transaction.transaction_date) || '—')}</td>
+                    <td class="${cell}">${escapeHtml(translate('accounting.' + transaction.category))}</td>
+                    <td class="px-4 py-2.5 font-medium text-[var(--pm-text)]">${escapeHtml(transaction.owner_name || '—')}</td>
+                    <td class="${cell}">${escapeHtml(property || '—')}</td>
+                    <td class="${cell}">${escapeHtml(transaction.reference || '—')}</td>
+                    <td class="px-4 py-2.5 text-right font-medium whitespace-nowrap text-[var(--pm-text)]">${escapeHtml(formatCurrency(Number(transaction.amount ?? 0)))}</td>
                 </tr>
             `;
         })

@@ -364,6 +364,17 @@ class OwnerAccountController extends Controller
 
             'category_totals' => $ownerAccount->categoryTotals(),
 
+            /*
+             * When the owner last took money. The statement drawer opens
+             * with its period pre-filled from the day after this, because
+             * "since I last collected" is the period an owner asks about.
+             */
+            'last_payout_date' => \App\Models\OwnerTransaction::query()
+                ->where('owner_account_id', $ownerAccount->id)
+                ->where('category', 'payout')
+                ->where('direction', 'debit')
+                ->max('transaction_date'),
+
             'party' => $ownerAccount->party,
 
             'properties' => $properties,

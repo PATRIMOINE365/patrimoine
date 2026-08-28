@@ -1239,6 +1239,15 @@ return [
         'classification_notes_placeholder' => 'Notes facultatives sur le classement',
     ],
     'owners' => [
+        'statement' => 'Relevé',
+        'statement_title' => 'Relevé du propriétaire',
+        'statement_description' => 'Loyers encaissés, dépenses, frais et TVA sur une période, et le solde à reverser.',
+        'statement_from' => 'Du',
+        'statement_to' => 'Au',
+        'statement_generate' => 'Générer',
+        'statement_since_payout' => 'Prérempli à partir du lendemain du dernier reversement du :date. Modifiez les dates si vous souhaitez une autre période.',
+        'statement_no_payout' => 'Ce propriétaire n\'a encore reçu aucun reversement : le relevé couvre donc tout l\'historique.',
+        'unable_to_open_statement' => 'Le relevé n\'a pas pu être généré.',
         /* ---- V1.0.7 additions ---- */
         'accounts' => 'Comptes',
         'owner_accounts_title' => 'Comptes du propriétaire',

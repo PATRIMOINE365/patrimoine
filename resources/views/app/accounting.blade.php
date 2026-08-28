@@ -49,7 +49,7 @@
     <div
         class="
             mb-6 flex flex-wrap items-end gap-4
-            rounded-2xl border border-[var(--pm-border)]
+            rounded-xl border border-[var(--pm-border)]
             bg-[var(--pm-surface)] p-5
         "
     >
@@ -106,7 +106,7 @@
 
         <div
             class="
-                rounded-2xl border border-[var(--pm-border)]
+                rounded-xl border border-[var(--pm-border)]
                 bg-[var(--pm-surface)] p-5
             "
         >
@@ -126,7 +126,7 @@
 
         <div
             class="
-                rounded-2xl border border-[var(--pm-border)]
+                rounded-xl border border-[var(--pm-border)]
                 bg-[var(--pm-surface)] p-5
             "
         >
@@ -146,7 +146,7 @@
 
         <div
             class="
-                rounded-2xl border border-[var(--pm-border)]
+                rounded-xl border border-[var(--pm-border)]
                 bg-[var(--pm-surface)] p-5
             "
         >
@@ -175,7 +175,7 @@
 
     <div
         class="
-            overflow-hidden rounded-2xl
+            overflow-hidden rounded-xl
             border border-[var(--pm-border)]
             bg-[var(--pm-surface)]
         "
@@ -187,15 +187,40 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="pm-table w-full text-sm">
+            <table class="w-full text-sm">
                 <thead>
-                    <tr>
-                        <th data-i18n="accounting.date">{{ __('ui.accounting.date') }}</th>
-                        <th data-i18n="accounting.type">{{ __('ui.accounting.type') }}</th>
-                        <th data-i18n="accounting.owner">{{ __('ui.accounting.owner') }}</th>
-                        <th data-i18n="accounting.property">{{ __('ui.accounting.property') }}</th>
-                        <th data-i18n="accounting.reference">{{ __('ui.accounting.reference') }}</th>
-                        <th class="text-right" data-i18n="accounting.amount">{{ __('ui.accounting.amount') }}</th>
+                    <tr
+                        class="
+                            border-b border-[var(--pm-border-subtle)]
+                            bg-[var(--pm-surface-subtle)]
+                            text-left text-xs font-medium
+                            uppercase tracking-wide
+                            text-[var(--pm-text-muted)]
+                        "
+                    >
+                        <th class="px-4 py-2.5 font-medium">
+                            <span data-i18n="accounting.date">{{ __('ui.accounting.date') }}</span>
+                        </th>
+
+                        <th class="px-4 py-2.5 font-medium">
+                            <span data-i18n="accounting.type">{{ __('ui.accounting.type') }}</span>
+                        </th>
+
+                        <th class="px-4 py-2.5 font-medium">
+                            <span data-i18n="accounting.owner">{{ __('ui.accounting.owner') }}</span>
+                        </th>
+
+                        <th class="px-4 py-2.5 font-medium">
+                            <span data-i18n="accounting.property">{{ __('ui.accounting.property') }}</span>
+                        </th>
+
+                        <th class="px-4 py-2.5 font-medium">
+                            <span data-i18n="accounting.reference">{{ __('ui.accounting.reference') }}</span>
+                        </th>
+
+                        <th class="px-4 py-2.5 text-right font-medium">
+                            <span data-i18n="accounting.amount">{{ __('ui.accounting.amount') }}</span>
+                        </th>
                     </tr>
                 </thead>
 

@@ -444,6 +444,7 @@ class ReportExportService
                     'owner_deposits',
 
                     'management_fees',
+                    'management_fee_vat',
                     'agent_commissions',
 
                     'expenses',
@@ -455,6 +456,15 @@ class ReportExportService
 
                     'adjustments_credit',
                     'adjustments_debit',
+
+                    'reserve_transfers_credit',
+                    'reserve_transfers_debit',
+
+                    /*
+                     * Owner statement tenant rows.
+                     */
+                    'monthly_rent',
+                    'rent_collected',
 
                     'rent_invoiced',
                     'security_deposit_debt_invoiced',
