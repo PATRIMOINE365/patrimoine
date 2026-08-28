@@ -127,8 +127,17 @@ class PartyEmailPolicyService
         }
 
         if ($audit) {
+            /*
+             * Record WHO was refused the send, not merely that one was
+             * refused. Suppression is only audited on operator-driven
+             * sends -- scheduled sweeps pass $audit false -- so the
+             * current request always carries the operator, and the entry
+             * gets the same actor, address and browser as every other
+             * line in the activity log.
+             */
             $this->activityLog->record(
                 action: 'email.suppressed',
+                request: request(),
                 entityType: 'party',
                 entityId: $party->id,
                 entityLabel: $party->name

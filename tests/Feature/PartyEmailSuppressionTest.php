@@ -358,6 +358,38 @@ class PartyEmailSuppressionTest extends TestCase
     }
 
     /**
+     * The withheld-email entry names who tried to send it. An audit trail
+     * that records only that something was refused is half an answer.
+     */
+    public function test_withheld_send_records_who_tried(): void
+    {
+        Mail::fake();
+
+        $user = $this->authenticateApiUser('administrator');
+
+        $context = $this->createContext();
+
+        $this->silenceOrganisation(
+            $context['settings']
+        );
+
+        $this
+            ->postJson(
+                '/api/invoices/'.$context['invoice']->id.'/send-email'
+            )
+            ->assertStatus(422);
+
+        $this->assertDatabaseHas(
+            'activity_logs',
+            [
+                'action' => 'email.suppressed',
+                'user_id' => $user->id,
+                'actor_email' => $user->email,
+            ]
+        );
+    }
+
+    /**
      * An individually excluded Party gets its own explanation, so the
      * operator knows where to go and change it.
      */
