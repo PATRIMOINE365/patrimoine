@@ -7799,6 +7799,48 @@ body.pm-admin {
     min-height: 100vh;
 }
 
+/*
+ * The console is built for a desk, but a fixed 280px rail pushed the whole
+ * page sideways on a phone: the shell was 513px wide inside a 375px
+ * viewport, so every page scrolled horizontally before it was read.
+ *
+ * Below the tablet breakpoint the rail stops being a column and becomes a
+ * normal band at the top of the page, with the navigation scrolling
+ * horizontally inside it. Nothing about the desktop layout changes.
+ */
+@media (max-width: 767px) {
+    .pm-admin-shell {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pm-admin-sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--pm-border);
+    }
+
+    .pm-admin-nav {
+        display: flex;
+        gap: 0.25rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .pm-admin-nav-group {
+        display: none;
+    }
+
+    .pm-admin-nav-item {
+        white-space: nowrap;
+    }
+
+    .pm-admin-sidebar-footer {
+        padding: 0.75rem 1rem;
+    }
+}
+
 .pm-admin-sidebar {
     display: flex;
     flex-direction: column;

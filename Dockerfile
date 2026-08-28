@@ -22,7 +22,11 @@ RUN composer dump-autoload --optimize --no-scripts
 # ---------- Stage 3: runtime (php-fpm + nginx + scheduler under supervisord) ----------
 FROM php:8.4-fpm-alpine
 
-RUN apk add --no-cache nginx supervisor curl icu-libs libzip libpng libjpeg-turbo freetype \
+# icu-data-full is NOT optional. Alpine's icu-libs ships English only, so
+# every server-formatted date and number in a French organisation silently
+# comes out in English -- invoices, receipts, statements, exports. Without
+# it IntlDateFormatter('fr_FR') answers "28 August 2026".
+RUN apk add --no-cache nginx supervisor curl icu-libs icu-data-full libzip libpng libjpeg-turbo freetype \
     && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS icu-dev libzip-dev libpng-dev libjpeg-turbo-dev freetype-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" pdo_mysql bcmath intl zip gd opcache \

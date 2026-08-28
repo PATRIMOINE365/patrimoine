@@ -83,6 +83,216 @@ export const translations = {
         'dashboard.unable_to_load_section':
             'Unable to load this section.',
         /* ---- end V1.0.9 additions ---- */
+        'activity_metadata.format':
+            'Format',
+
+        'activity_metadata.report_type':
+            'Report Type',
+
+        'activity_metadata.document_type':
+            'Document Type',
+
+        'activity_metadata.delivery':
+            'Delivery',
+
+        'activity_metadata.reference':
+            'Reference',
+
+        'activity_metadata.invitation_sent':
+            'Invitation Sent',
+
+        'activity_metadata.source':
+            'Source',
+
+        'activity_actions.auth.login':
+            'Signed In',
+
+        'activity_actions.auth.login_failed':
+            'Sign-In Failed',
+
+        'activity_actions.auth.logout':
+            'Signed Out',
+
+        'activity_actions.user.created':
+            'User Created',
+
+        'activity_actions.user.updated':
+            'User Updated',
+
+        'activity_actions.user.deleted':
+            'User Deleted',
+
+        'activity_actions.user.invitation_resent':
+            'User Invitation Resent',
+
+        'activity_actions.user.password_reset_requested':
+            'User Password Reset Requested',
+
+        'activity_actions.user.invitation_accepted':
+            'User Invitation Accepted',
+
+        'activity_actions.user.password_reset':
+            'Password Reset Completed',
+
+        'activity_actions.user.password_changed':
+            'Password Changed',
+
+        'activity_actions.party.created':
+            'Party Created',
+
+        'activity_actions.party.updated':
+            'Party Updated',
+
+        'activity_actions.party.deleted':
+            'Party Deleted',
+
+        'activity_actions.building.created':
+            'Building Created',
+
+        'activity_actions.building.updated':
+            'Building Updated',
+
+        'activity_actions.building.deleted':
+            'Building Deleted',
+
+        'activity_actions.unit.created':
+            'Unit Created',
+
+        'activity_actions.unit.updated':
+            'Unit Updated',
+
+        'activity_actions.unit.deleted':
+            'Unit Deleted',
+
+        'activity_actions.lease.created':
+            'Lease Created',
+
+        'activity_actions.lease.updated':
+            'Lease Updated',
+
+        'activity_actions.lease.deleted':
+            'Lease Deleted',
+
+        'activity_actions.managing_organisation.created':
+            'Managing Organisation Configured',
+
+        'activity_actions.managing_organisation.updated':
+            'Managing Organisation Updated',
+
+        'activity_actions.payment.recorded':
+            'Payment Recorded',
+
+        'activity_actions.tenant_fund.classified':
+            'Tenant Funds Classified',
+
+        'activity_actions.rent_reserve.consumed':
+            'Rent Reserve Consumed',
+
+        'activity_actions.consumable_advance.consumed':
+            'Consumable Advance Consumed',
+
+        'activity_actions.security_deposit.deduction_recorded':
+            'Security Deposit Deduction Recorded',
+
+        'activity_actions.security_deposit.settled':
+            'Security Deposit Settled',
+
+        'activity_actions.owner_expense.recorded':
+            'Owner Expense Recorded',
+
+        'activity_actions.owner_deposit.recorded':
+            'Owner Deposit Recorded',
+
+        'activity_actions.owner_adjustment.recorded':
+            'Owner Adjustment Recorded',
+
+        'activity_actions.owner_payout.recorded':
+            'Owner Payout Recorded',
+
+        'activity_actions.invoice.downloaded':
+            'Invoice Downloaded',
+
+        'activity_actions.receipt.downloaded':
+            'Receipt Downloaded',
+
+        'activity_actions.owner_deposit_receipt.downloaded':
+            'Owner Deposit Receipt Downloaded',
+
+        'activity_actions.security_deposit_voucher.downloaded':
+            'Security Deposit Voucher Downloaded',
+
+        'activity_actions.invoice.resent':
+            'Invoice Resent',
+
+        'activity_actions.email.suppressed':
+            'Email Withheld',
+
+        'activity_actions.receipt.resent':
+            'Receipt Resent',
+
+        'activity_actions.report.exported':
+            'Report Exported',
+
+        'activity_actions.activity_log.exported':
+            'Activity Log Exported',
+
+        'activity_entities.user':
+            'User',
+
+        'activity_entities.party':
+            'Party',
+
+        'activity_entities.building':
+            'Building',
+
+        'activity_entities.unit':
+            'Unit',
+
+        'activity_entities.lease':
+            'Lease',
+
+        'activity_entities.payment':
+            'Payment',
+
+        'activity_entities.invoice':
+            'Invoice',
+
+        'activity_entities.receipt':
+            'Receipt',
+
+        'activity_entities.tenant_fund':
+            'Tenant Fund',
+
+        'activity_entities.rent_reserve':
+            'Rent Reserve',
+
+        'activity_entities.consumable_advance':
+            'Consumable Advance',
+
+        'activity_entities.security_deposit':
+            'Security Deposit',
+
+        'activity_entities.owner_expense':
+            'Owner Expense',
+
+        'activity_entities.owner_account':
+            'Owner Account',
+
+        'activity_entities.owner_transaction':
+            'Owner Transaction',
+
+        'activity_entities.owner_payout':
+            'Owner Payout',
+
+        'activity_entities.managing_organisation':
+            'Managing Organisation',
+
+        'activity_entities.report':
+            'Report',
+
+        'activity_entities.activity_log':
+            'Activity Log',
+
         'wizard.title':
             'Guided lease',
 
@@ -3832,6 +4042,216 @@ export const translations = {
         'dashboard.unable_to_load_section':
             'Impossible de charger cette section.',
         /* ---- end V1.0.9 additions ---- */
+        'activity_metadata.format':
+            'Format',
+
+        'activity_metadata.report_type':
+            'Type de rapport',
+
+        'activity_metadata.document_type':
+            'Type de document',
+
+        'activity_metadata.delivery':
+            'Mode d’envoi',
+
+        'activity_metadata.reference':
+            'Référence',
+
+        'activity_metadata.invitation_sent':
+            'Invitation envoyée',
+
+        'activity_metadata.source':
+            'Source',
+
+        'activity_actions.auth.login':
+            'Connexion',
+
+        'activity_actions.auth.login_failed':
+            'Échec de connexion',
+
+        'activity_actions.auth.logout':
+            'Déconnexion',
+
+        'activity_actions.user.created':
+            'Utilisateur créé',
+
+        'activity_actions.user.updated':
+            'Utilisateur modifié',
+
+        'activity_actions.user.deleted':
+            'Utilisateur supprimé',
+
+        'activity_actions.user.invitation_resent':
+            'Invitation utilisateur renvoyée',
+
+        'activity_actions.user.password_reset_requested':
+            'Réinitialisation du mot de passe demandée',
+
+        'activity_actions.user.invitation_accepted':
+            'Invitation utilisateur acceptée',
+
+        'activity_actions.user.password_reset':
+            'Réinitialisation du mot de passe effectuée',
+
+        'activity_actions.user.password_changed':
+            'Mot de passe modifié',
+
+        'activity_actions.party.created':
+            'Partie créée',
+
+        'activity_actions.party.updated':
+            'Partie modifiée',
+
+        'activity_actions.party.deleted':
+            'Partie supprimée',
+
+        'activity_actions.building.created':
+            'Immeuble créé',
+
+        'activity_actions.building.updated':
+            'Immeuble modifié',
+
+        'activity_actions.building.deleted':
+            'Immeuble supprimé',
+
+        'activity_actions.unit.created':
+            'Unité créée',
+
+        'activity_actions.unit.updated':
+            'Unité modifiée',
+
+        'activity_actions.unit.deleted':
+            'Unité supprimée',
+
+        'activity_actions.lease.created':
+            'Bail créé',
+
+        'activity_actions.lease.updated':
+            'Bail modifié',
+
+        'activity_actions.lease.deleted':
+            'Bail supprimé',
+
+        'activity_actions.managing_organisation.created':
+            'Organisation gestionnaire configurée',
+
+        'activity_actions.managing_organisation.updated':
+            'Organisation gestionnaire modifiée',
+
+        'activity_actions.payment.recorded':
+            'Paiement enregistré',
+
+        'activity_actions.tenant_fund.classified':
+            'Fonds du locataire classifiés',
+
+        'activity_actions.rent_reserve.consumed':
+            'Réserve de loyer consommée',
+
+        'activity_actions.consumable_advance.consumed':
+            'Avance consommable utilisée',
+
+        'activity_actions.security_deposit.deduction_recorded':
+            'Déduction du dépôt de garantie enregistrée',
+
+        'activity_actions.security_deposit.settled':
+            'Dépôt de garantie réglé',
+
+        'activity_actions.owner_expense.recorded':
+            'Dépense propriétaire enregistrée',
+
+        'activity_actions.owner_deposit.recorded':
+            'Dépôt propriétaire enregistré',
+
+        'activity_actions.owner_adjustment.recorded':
+            'Ajustement propriétaire enregistré',
+
+        'activity_actions.owner_payout.recorded':
+            'Versement au propriétaire enregistré',
+
+        'activity_actions.invoice.downloaded':
+            'Facture téléchargée',
+
+        'activity_actions.receipt.downloaded':
+            'Reçu téléchargé',
+
+        'activity_actions.owner_deposit_receipt.downloaded':
+            'Reçu de dépôt propriétaire téléchargé',
+
+        'activity_actions.security_deposit_voucher.downloaded':
+            'Bon de règlement du dépôt de garantie téléchargé',
+
+        'activity_actions.invoice.resent':
+            'Facture renvoyée',
+
+        'activity_actions.email.suppressed':
+            'E-mail non envoyé',
+
+        'activity_actions.receipt.resent':
+            'Reçu renvoyé',
+
+        'activity_actions.report.exported':
+            'Rapport exporté',
+
+        'activity_actions.activity_log.exported':
+            'Journal d’activité exporté',
+
+        'activity_entities.user':
+            'Utilisateur',
+
+        'activity_entities.party':
+            'Partie',
+
+        'activity_entities.building':
+            'Immeuble',
+
+        'activity_entities.unit':
+            'Unité',
+
+        'activity_entities.lease':
+            'Bail',
+
+        'activity_entities.payment':
+            'Paiement',
+
+        'activity_entities.invoice':
+            'Facture',
+
+        'activity_entities.receipt':
+            'Reçu',
+
+        'activity_entities.tenant_fund':
+            'Fonds du locataire',
+
+        'activity_entities.rent_reserve':
+            'Réserve de loyer',
+
+        'activity_entities.consumable_advance':
+            'Avance consommable',
+
+        'activity_entities.security_deposit':
+            'Dépôt de garantie',
+
+        'activity_entities.owner_expense':
+            'Dépense propriétaire',
+
+        'activity_entities.owner_account':
+            'Compte propriétaire',
+
+        'activity_entities.owner_transaction':
+            'Transaction propriétaire',
+
+        'activity_entities.owner_payout':
+            'Versement au propriétaire',
+
+        'activity_entities.managing_organisation':
+            'Organisation gestionnaire',
+
+        'activity_entities.report':
+            'Rapport',
+
+        'activity_entities.activity_log':
+            'Journal d’activité',
+
         'wizard.title':
             'Assistant de bail',
 

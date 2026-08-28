@@ -223,6 +223,24 @@ const helpTranslations = {
 
         /* Leases */
 
+        'help.topic_party_emails_title':
+            'Deciding who Patrimoine emails',
+
+        'help.topic_party_emails_body1':
+            'Settings › Preferences carries a switch for everything Patrimoine sends to your tenants, owners and agents. Turn it off and nothing leaves: no invoices, receipts, reminders, notices or vouchers. Anyone who tries to send one is told why rather than left wondering.',
+
+        'help.topic_party_emails_body2':
+            'Each party also has its own choice on its record: follow the organisation, always email this party, or never email it. So you can go quiet everywhere and still let one owner through, or keep sending while excluding a single tenant. A party nobody may email is marked in the Parties list. Emails you receive as a user of Patrimoine — sign-in codes, invitations, password resets — are never affected.',
+
+        'help.topic_lease_wizard_title':
+            'Creating a lease with the assistant',
+
+        'help.topic_lease_wizard_body1':
+            'The Assistant button on the Leases page walks you through a whole letting in one sitting: the property and unit, the owners, the tenant, the agent and their commission, the dates, the notice and rent increases, the rent and advance, then the fees. It explains each term as it asks for it.',
+
+        'help.topic_lease_wizard_body2':
+            'Nothing is saved until the last page, where you check everything and choose to save a draft or create and activate. Leaving halfway costs nothing and leaves nothing behind. The assistant skips the owners page when the property already has its owners, offers only vacant units, and fills the end date from the duration you pick — or lets you leave it open, in which case the lease runs until it is terminated.',
+
         'help.topic_creating_leases_title':
             'Creating a lease',
 
@@ -572,6 +590,24 @@ const helpTranslations = {
 
         /* Baux */
 
+        'help.topic_party_emails_title':
+            'Choisir à qui Patrimoine écrit',
+
+        'help.topic_party_emails_body1':
+            'Paramètres › Préférences comporte un interrupteur pour tout ce que Patrimoine envoie à vos locataires, propriétaires et agents. Désactivez-le et plus rien ne part : ni facture, ni reçu, ni rappel, ni avis, ni bon. Toute tentative d\'envoi en affiche la raison, au lieu de laisser un doute.',
+
+        'help.topic_party_emails_body2':
+            'Chaque partie dispose aussi de son propre réglage sur sa fiche : suivre l\'organisation, toujours lui écrire, ou ne jamais lui écrire. Vous pouvez donc tout couper et laisser passer un propriétaire, ou continuer d\'envoyer en excluant un seul locataire. Une partie à qui personne n\'écrit est signalée dans la liste des Parties. Les e-mails que vous recevez en tant qu\'utilisateur — codes de connexion, invitations, réinitialisations — ne sont jamais concernés.',
+
+        'help.topic_lease_wizard_title':
+            'Créer un bail avec l\'assistant',
+
+        'help.topic_lease_wizard_body1':
+            'Le bouton Assistant de la page Baux vous guide d\'un bout à l\'autre : le bien et le lot, les propriétaires, le locataire, l\'agent et sa commission, les dates, le préavis et les augmentations, le loyer et l\'avance, puis les honoraires. Chaque terme est expliqué au moment où il est demandé.',
+
+        'help.topic_lease_wizard_body2':
+            'Rien n\'est enregistré avant la dernière page, où vous vérifiez l\'ensemble puis choisissez d\'enregistrer un brouillon ou de créer et activer. Quitter en cours de route ne coûte rien et ne laisse rien derrière. L\'assistant ignore la page des propriétaires si le bien a déjà les siens, ne propose que les lots vacants, et remplit la date de fin selon la durée choisie — ou vous laisse la laisser ouverte, le bail courant alors jusqu\'à sa résiliation.',
+
         'help.topic_creating_leases_title':
             'Créer un bail',
 
@@ -882,6 +918,24 @@ const helpTopics = [
         bodyKeys: [
             'help.topic_party_deletion_body1',
             'help.topic_party_deletion_body2',
+        ],
+    },
+    {
+        id: 'party_emails',
+        category: 'parties',
+        titleKey: 'help.topic_party_emails_title',
+        bodyKeys: [
+            'help.topic_party_emails_body1',
+            'help.topic_party_emails_body2',
+        ],
+    },
+    {
+        id: 'lease_wizard',
+        category: 'leases',
+        titleKey: 'help.topic_lease_wizard_title',
+        bodyKeys: [
+            'help.topic_lease_wizard_body1',
+            'help.topic_lease_wizard_body2',
         ],
     },
     {

@@ -265,7 +265,7 @@ async function loadFinancialJournalFilterOptions() {
                             type;
 
                         option.textContent =
-                            humanizeIdentifier(
+                            transactionTypeLabel(
                                 type
                             );
 
@@ -759,7 +759,7 @@ function financialJournalRow(
                     >
                         ${escapeHtml(
                             entry.description
-                            || humanizeIdentifier(
+                            || transactionTypeLabel(
                                 entry.transaction_type
                             )
                         )}
@@ -1218,7 +1218,7 @@ function financialJournalDetailMarkup(
                         translate(
                             'financial_journal.transaction_type'
                         ),
-                        humanizeIdentifier(
+                        transactionTypeLabel(
                             entry.transaction_type
                         )
                     )}

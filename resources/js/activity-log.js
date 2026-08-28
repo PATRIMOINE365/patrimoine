@@ -791,7 +791,7 @@ function activityRow(event) {
                             "
                         >
                             ${escapeHtml(
-                                humanizeIdentifier(
+                                activityActionLabel(
                                     event.action
                                 )
                             )}
@@ -1198,7 +1198,7 @@ function activityDetailMarkup(
                         translate(
                             'activity_log.action'
                         ),
-                        humanizeIdentifier(
+                        activityActionLabel(
                             event.action
                         )
                     )}
@@ -1268,7 +1268,7 @@ function activityDetailMarkup(
                         translate(
                             'activity_log.entity_type'
                         ),
-                        humanizeIdentifier(
+                        activityEntityLabel(
                             event.entity_type
                         )
                     )}
@@ -1420,7 +1420,7 @@ function structuredRows(
         .map(
             ([key, value]) =>
                 detailStructuredRow(
-                    humanizeIdentifier(
+                    activityMetadataLabel(
                         key
                     ),
                     value
@@ -1638,6 +1638,65 @@ function roleLabel(
         : translated;
 }
 
+/**
+ * Human label for a recorded action.
+ *
+ * Actions are a closed set with translations in both languages, mirrored
+ * from lang/{en,fr}/activity_log.php into the browser catalogue. Anything
+ * unmapped falls back to the prettified identifier, so a newly recorded
+ * action still reads sensibly instead of disappearing.
+ */
+function activityActionLabel(action) {
+    if (! action) {
+        return '';
+    }
+
+    const key = 'activity_actions.' + action;
+
+    const label = translate(key);
+
+    return label === key
+        ? humanizeIdentifier(action)
+        : label;
+}
+
+/**
+ * Human label for a structured metadata key.
+ *
+ * Recorded events carry free-form context. The known keys are named in
+ * both languages; anything else is prettified rather than hidden.
+ */
+function activityMetadataLabel(key) {
+    if (! key) {
+        return '';
+    }
+
+    const catalogueKey = 'activity_metadata.' + key;
+
+    const label = translate(catalogueKey);
+
+    return label === catalogueKey
+        ? humanizeIdentifier(key)
+        : label;
+}
+
+/**
+ * Human label for the kind of record an action touched.
+ */
+function activityEntityLabel(type) {
+    if (! type) {
+        return '';
+    }
+
+    const key = 'activity_entities.' + type;
+
+    const label = translate(key);
+
+    return label === key
+        ? humanizeIdentifier(type)
+        : label;
+}
+
 function humanizeIdentifier(
     value
 ) {
@@ -1663,7 +1722,7 @@ function entityReference(
     }
 
     const type =
-        humanizeIdentifier(
+        activityEntityLabel(
             event.entity_type
         );
 
