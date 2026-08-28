@@ -167,6 +167,8 @@ return [
 
         'invoice.resent' => 'Facture renvoyée',
 
+        'email.suppressed' => 'E-mail non envoyé',
+
         'receipt.resent' => 'Reçu renvoyé',
 
         'report.exported' => 'Rapport exporté',

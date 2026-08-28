@@ -1013,6 +1013,57 @@
                         </div>
                     </section>
 
+                    {{-- ===================================================
+                         Email communications (V1.0.29)
+                    ==================================================== --}}
+
+                    <section
+                        class="
+                            mt-8 border-t
+                            border-[var(--pm-border-subtle)] pt-7
+                        "
+                    >
+                        <div class="mb-4">
+                            <h3
+                                class="
+                                    text-sm font-semibold
+                                    text-[var(--pm-text)]
+                                "
+                            >
+                                <span data-i18n="parties.email_policy">{{ __('ui.parties.email_policy') }}</span>
+                            </h3>
+
+                            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
+                                <span data-i18n="parties.email_policy_description">{{ __('ui.parties.email_policy_description') }}</span>
+                            </p>
+                        </div>
+
+                        <select
+                            id="party-email-policy"
+                            class="pm-input"
+                        >
+                            <option
+                                value="inherit"
+                                selected
+                                data-i18n="parties.email_policy_inherit"
+                            >{{ __('ui.parties.email_policy_inherit') }}</option>
+
+                            <option
+                                value="always"
+                                data-i18n="parties.email_policy_always"
+                            >{{ __('ui.parties.email_policy_always') }}</option>
+
+                            <option
+                                value="never"
+                                data-i18n="parties.email_policy_never"
+                            >{{ __('ui.parties.email_policy_never') }}</option>
+                        </select>
+
+                        <p class="mt-1.5 text-xs text-[var(--pm-text-muted)]">
+                            <span data-i18n="parties.email_policy_help">{{ __('ui.parties.email_policy_help') }}</span>
+                        </p>
+                    </section>
+
                     {{-- Notes --}}
                     <section
                         class="

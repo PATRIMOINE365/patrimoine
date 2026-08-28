@@ -1805,6 +1805,20 @@ function populateManagingOrganisationForm(
         ?? presentation.currency
     );
 
+    /*
+     * V1.0.29: absent means "sending", which is what every organisation
+     * did before the switch existed.
+     */
+    const partyEmails =
+        document.getElementById(
+            'organisation-party-emails-enabled'
+        );
+
+    if (partyEmails) {
+        partyEmails.checked =
+            organisation.party_emails_enabled ?? true;
+    }
+
     setFormValue(
         'organisation-bank-name',
         organisation.bank_name
@@ -2017,6 +2031,12 @@ async function submitManagingOrganisation(
             formValue(
                 'organisation-currency'
             ),
+
+        party_emails_enabled:
+            document.getElementById(
+                'organisation-party-emails-enabled'
+            )?.checked
+            ?? true,
 
         bank_name:
             nullableFormValue(

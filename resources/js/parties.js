@@ -36,6 +36,7 @@ import {
     closeDrawer,
     escapeHtml,
     formValue,
+    getPresentationConfiguration,
     nullableFormValue,
     openDrawer,
     parseJsonResponse,
@@ -816,6 +817,22 @@ function partyCard(party) {
                                 )
                             )}
                         </span>
+
+                        ${
+                            partyIsSilenced(
+                                party
+                            )
+                                ? `
+                                    <span class="pm-party-no-email-badge">
+                                        ${escapeHtml(
+                                            translate(
+                                                'parties.emails_off'
+                                            )
+                                        )}
+                                    </span>
+                                `
+                                : ''
+                        }
                     </div>
 
                     ${
@@ -1662,6 +1679,12 @@ function populatePartyForm(party) {
         party.notes
     );
 
+    setFormValue(
+        'party-email-policy',
+        party.email_policy
+        ?? 'inherit'
+    );
+
     const roles =
         partyRoles(
             party
@@ -1693,6 +1716,34 @@ function populatePartyForm(party) {
             'agent'
         )
     );
+}
+
+/**
+ * Would Patrimoine currently withhold every email to this Party?
+ *
+ * True when the Party is individually excluded, and also when the
+ * organisation switch is off and the Party has not been individually
+ * allowed. The badge exists so nobody discovers the setting only after
+ * clicking Send.
+ *
+ * @param {object} party
+ * @returns {boolean}
+ */
+function partyIsSilenced(party) {
+    const policy =
+        party.email_policy
+        ?? 'inherit';
+
+    if (policy === 'never') {
+        return true;
+    }
+
+    if (policy === 'always') {
+        return false;
+    }
+
+    return getPresentationConfiguration()
+        ?.party_emails_enabled === false;
 }
 
 /**
@@ -1948,6 +1999,12 @@ function buildPartyPayload() {
             nullableFormValue(
                 'party-notes'
             ),
+
+        email_policy:
+            formValue(
+                'party-email-policy'
+            )
+            || 'inherit',
 
         roles:
             collectPartyRoles(),

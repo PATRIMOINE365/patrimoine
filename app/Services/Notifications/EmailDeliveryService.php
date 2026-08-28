@@ -8,6 +8,7 @@ use App\Mail\RentIncrementNoticeMail;
 use App\Mail\RentReminderMail;
 use App\Mail\TenantFundTransferVoucherMail;
 use App\Models\Invoice;
+use App\Models\Party;
 use App\Models\Payment;
 use App\Models\RentIncrement;
 use App\Models\TenantFundTransaction;
@@ -50,8 +51,51 @@ class EmailDeliveryService
         private ApplicationIdentityService $identity,
         private ApplicationPresentationFormatter $formatter,
         private ApplicationLocaleService $locale,
-        private \App\Services\LicensingService $licensing
+        private \App\Services\LicensingService $licensing,
+        private PartyEmailPolicyService $emailPolicy
     ) {}
+
+    /**
+     * Resolve the address a document should be sent to, refusing the send
+     * when the organisation or the Party itself has emails switched off.
+     *
+     * The policy is consulted BEFORE the address is examined and before
+     * any PDF is rendered: a silenced Party produces no work and no mail.
+     *
+     * $audit is false for scheduled sweeps, which report their skipped
+     * count rather than writing one activity entry per invoice.
+     */
+    private function recipientFor(
+        ?Party $party,
+        string $missingEmailKey,
+        string $documentType,
+        bool $audit = true
+    ): string {
+        if ($party === null) {
+            throw new RuntimeException(
+                __($missingEmailKey)
+            );
+        }
+
+        $this->emailPolicy->ensureAllowed(
+            $party,
+            $documentType,
+            $audit
+        );
+
+        $email =
+            trim(
+                (string) $party->email
+            );
+
+        if ($email === '') {
+            throw new RuntimeException(
+                __($missingEmailKey)
+            );
+        }
+
+        return $email;
+    }
 
     /**
      * V1.0.8: send or resend a tenant fund Transfer voucher to the tenant.
@@ -139,20 +183,14 @@ class EmailDeliveryService
         ]);
 
         $email =
-            trim(
-                (string)
+            $this->recipientFor(
                 $transaction
                     ->account
                     ->lease
-                    ->tenant
-                    ->email
+                    ->tenant,
+                'business.email.tenant_email_missing',
+                'tenant_fund_expense_voucher'
             );
-
-        if ($email === '') {
-            throw new RuntimeException(
-                __('business.email.tenant_email_missing')
-            );
-        }
 
         $contents =
             $this->tenantExpenseDocuments
@@ -212,19 +250,13 @@ class EmailDeliveryService
         ]);
 
         $email =
-            trim(
-                (string)
+            $this->recipientFor(
                 $transaction
                     ->ownerAccount
-                    ->party
-                    ->email
+                    ->party,
+                'business.email.owner_email_missing',
+                'owner_reserve_transfer_voucher'
             );
-
-        if ($email === '') {
-            throw new RuntimeException(
-                __('business.email.owner_email_missing')
-            );
-        }
 
         $contents =
             $this->ownerReserveTransferDocuments
@@ -273,23 +305,14 @@ class EmailDeliveryService
     private function transferRecipient(
         TenantFundTransaction $debitTransaction
     ): string {
-        $email =
-            trim(
-                (string)
-                $debitTransaction
-                    ->account
-                    ->lease
-                    ->tenant
-                    ->email
-            );
-
-        if ($email === '') {
-            throw new RuntimeException(
-                __('business.email.tenant_email_missing')
-            );
-        }
-
-        return $email;
+        return $this->recipientFor(
+            $debitTransaction
+                ->account
+                ->lease
+                ->tenant,
+            'business.email.tenant_email_missing',
+            'tenant_fund_transfer_voucher'
+        );
     }
 
     /**
@@ -427,7 +450,9 @@ class EmailDeliveryService
 
         $email =
             $this->invoiceRecipient(
-                $invoice
+                $invoice,
+                'rent_reminder',
+                false
             );
 
         $contents =
@@ -530,24 +555,18 @@ class EmailDeliveryService
      * Resolve the recipient of an Invoice-related message.
      */
     private function invoiceRecipient(
-        Invoice $invoice
+        Invoice $invoice,
+        string $documentType = 'invoice',
+        bool $audit = true
     ): string {
-        $email =
-            trim(
-                (string)
-                $invoice
-                    ->lease
-                    ->tenant
-                    ->email
-            );
-
-        if ($email === '') {
-            throw new RuntimeException(
-                __('business.email.tenant_email_missing')
-            );
-        }
-
-        return $email;
+        return $this->recipientFor(
+            $invoice
+                ->lease
+                ->tenant,
+            'business.email.tenant_email_missing',
+            $documentType,
+            $audit
+        );
     }
 
     /**
@@ -556,22 +575,13 @@ class EmailDeliveryService
     private function paymentRecipient(
         Payment $payment
     ): string {
-        $email =
-            trim(
-                (string)
-                $payment
-                    ->lease
-                    ->tenant
-                    ->email
-            );
-
-        if ($email === '') {
-            throw new RuntimeException(
-                __('business.email.tenant_email_missing')
-            );
-        }
-
-        return $email;
+        return $this->recipientFor(
+            $payment
+                ->lease
+                ->tenant,
+            'business.email.tenant_email_missing',
+            'receipt'
+        );
     }
 
     /**
@@ -580,21 +590,17 @@ class EmailDeliveryService
     private function rentIncrementRecipient(
         RentIncrement $rentIncrement
     ): string {
-        $email =
-            trim(
-                (string)
-                $rentIncrement
-                    ->lease
-                    ->tenant
-                    ->email
-            );
-
-        if ($email === '') {
-            throw new RuntimeException(
-                __('business.email.tenant_email_missing')
-            );
-        }
-
-        return $email;
+        /*
+         * Increment notices are sent by the nightly command only, so a
+         * suppressed tenant is skipped without an activity entry.
+         */
+        return $this->recipientFor(
+            $rentIncrement
+                ->lease
+                ->tenant,
+            'business.email.tenant_email_missing',
+            'rent_increment_notice',
+            false
+        );
     }
 }

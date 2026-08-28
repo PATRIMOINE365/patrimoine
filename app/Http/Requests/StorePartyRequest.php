@@ -226,6 +226,24 @@ class StorePartyRequest extends FormRequest
             /*
              * A Party may receive several functional roles during creation.
              */
+
+            /*
+             * V1.0.29 per-Party exception to the organisation-wide email
+             * switch. 'inherit' follows Settings, 'always' keeps emailing
+             * this Party while the organisation is silent, and 'never'
+             * excludes it while the organisation is sending.
+             */
+            'email_policy' => [
+                'sometimes',
+                'nullable',
+                'string',
+                Rule::in([
+                    'inherit',
+                    'always',
+                    'never',
+                ]),
+            ],
+
             'roles' => [
                 'sometimes',
                 'array',

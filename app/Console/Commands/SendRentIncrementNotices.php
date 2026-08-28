@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\PartyEmailSuppressedException;
 use App\Models\RentIncrement;
 use App\Services\Notifications\EmailDeliveryService;
 use App\Services\RentIncrementService;
@@ -99,6 +100,7 @@ class SendRentIncrementNotices extends Command
         $processed = 0;
         $eligible = 0;
         $sent = 0;
+        $suppressed = 0;
         $failed = 0;
 
         /*
@@ -132,6 +134,7 @@ class SendRentIncrementNotices extends Command
                     &$processed,
                     &$eligible,
                     &$sent,
+                    &$suppressed,
                     &$failed
                 ): void {
                     foreach ($increments as $increment) {
@@ -185,6 +188,18 @@ class SendRentIncrementNotices extends Command
                                     $increment->lease_id
                                 )
                             );
+                        } catch (PartyEmailSuppressedException) {
+                            /*
+                             * V1.0.29: the tenant is excluded from
+                             * Patrimoine emails. This is a deliberate
+                             * configuration, not a failure, so the run
+                             * stays green and simply counts it.
+                             *
+                             * The increment is NOT marked as notified:
+                             * if emails are switched back on before the
+                             * effective date, the notice still goes out.
+                             */
+                            $suppressed++;
                         } catch (Throwable $exception) {
                             $failed++;
 
@@ -231,6 +246,10 @@ class SendRentIncrementNotices extends Command
                 [
                     'Notices sent',
                     $sent,
+                ],
+                [
+                    'Skipped (emails switched off)',
+                    $suppressed,
                 ],
                 [
                     'Failures',

@@ -14,6 +14,7 @@ use App\Services\ApplicationLocaleService;
 use App\Services\ApplicationPresentationFormatter;
 use App\Services\Documents\OwnerExpenseBillDocumentService;
 use App\Services\Documents\OwnerExpenseBillPaymentReceiptDocumentService;
+use App\Services\Notifications\PartyEmailPolicyService;
 use App\Services\OwnerExpenseBillingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -43,7 +44,8 @@ class OwnerExpenseBillController extends Controller
         private readonly OwnerExpenseBillDocumentService $documents,
         private readonly ApplicationIdentityService $identity,
         private readonly ApplicationPresentationFormatter $formatter,
-        private readonly ApplicationLocaleService $locale
+        private readonly ApplicationLocaleService $locale,
+        private readonly PartyEmailPolicyService $emailPolicy
     ) {
     }
 
@@ -90,7 +92,11 @@ class OwnerExpenseBillController extends Controller
                         ],
                     );
 
-                    $this->sendBillEmail($splitBill);
+                    try {
+                        $this->sendBillEmail($splitBill);
+                    } catch (Throwable $exception) {
+                        report($exception);
+                    }
                 }
 
                 return response()->json(
@@ -389,6 +395,16 @@ class OwnerExpenseBillController extends Controller
             'ownerAccount.party',
             'expenses',
         ]);
+
+        /*
+         * V1.0.29: an owner who is excluded from Patrimoine emails is
+         * never billed by email. The bill itself is unaffected and stays
+         * downloadable as a PDF.
+         */
+        $this->emailPolicy->ensureAllowed(
+            $bill->ownerAccount->party,
+            'owner_expense_bill'
+        );
 
         $email =
             trim(

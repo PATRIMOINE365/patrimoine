@@ -73,6 +73,8 @@ return [
     'email' => [
         'tenant_email_missing' => 'Tenant does not have an email address.',
         'owner_email_missing' => 'Owner does not have an email address.',
+        'suppressed_by_organisation' => 'Emails to parties are switched off in your organisation settings, so nothing was sent.',
+        'suppressed_for_party' => 'This party is excluded from Patrimoine emails, so nothing was sent.',
     ],
 
     'tenant' => [

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\PartyEmailSuppressedException;
 use App\Models\Invoice;
 use App\Services\Notifications\EmailDeliveryService;
 use Carbon\Carbon;
@@ -74,6 +75,7 @@ class SendRentReminders extends Command
 
         $processed = 0;
         $sent = 0;
+        $suppressed = 0;
         $failed = 0;
 
         Invoice::query()
@@ -95,6 +97,7 @@ class SendRentReminders extends Command
                     $licensing,
                     &$processed,
                     &$sent,
+                    &$suppressed,
                     &$failed
                 ): void {
                     foreach ($invoices as $invoice) {
@@ -128,6 +131,15 @@ class SendRentReminders extends Command
                                     $invoice->invoice_number
                                 )
                             );
+                        } catch (PartyEmailSuppressedException) {
+                            /*
+                             * V1.0.29: the tenant is excluded from
+                             * Patrimoine emails, by the organisation
+                             * switch or individually. Deliberate, so it
+                             * is counted rather than reported as a
+                             * failure.
+                             */
+                            $suppressed++;
                         } catch (Throwable $exception) {
                             $failed++;
 
@@ -167,6 +179,10 @@ class SendRentReminders extends Command
                 [
                     'Reminders sent',
                     $sent,
+                ],
+                [
+                    'Skipped (emails switched off)',
+                    $suppressed,
                 ],
                 [
                     'Failures',

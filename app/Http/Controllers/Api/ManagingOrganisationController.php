@@ -115,6 +115,16 @@ class ManagingOrganisationController extends Controller
                 $currency =
                     $validated['currency'];
 
+                $partyEmailsEnabled =
+                    array_key_exists(
+                        'party_emails_enabled',
+                        $validated
+                    )
+                        ? (bool) $validated['party_emails_enabled']
+                        : (bool) (
+                            $settings->party_emails_enabled ?? true
+                        );
+
                 unset(
                     $validated[
                         'default_vat_rate'
@@ -124,6 +134,9 @@ class ManagingOrganisationController extends Controller
                     ],
                     $validated[
                         'currency'
+                    ],
+                    $validated[
+                        'party_emails_enabled'
                     ]
                 );
 
@@ -177,6 +190,13 @@ class ManagingOrganisationController extends Controller
                     'language' => $language,
 
                     'currency' => $currency,
+
+                    /*
+                     * Switching party emails off silences every message
+                     * Patrimoine would send to a tenant, owner or agent.
+                     * It never affects mail addressed to users.
+                     */
+                    'party_emails_enabled' => $partyEmailsEnabled,
                 ]);
 
                 /*
@@ -280,6 +300,10 @@ class ManagingOrganisationController extends Controller
                         'patrimoine.defaults.currency',
                         'GHS'
                     ),
+
+                'party_emails_enabled' => (bool) (
+                    $settings->party_emails_enabled ?? true
+                ),
             ]
         );
     }

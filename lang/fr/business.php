@@ -73,6 +73,8 @@ return [
     'email' => [
         'tenant_email_missing' => 'Le locataire ne possède pas d’adresse e-mail.',
         'owner_email_missing' => 'Le propriétaire ne possède pas d’adresse e-mail.',
+        'suppressed_by_organisation' => 'Les e-mails aux parties sont désactivés dans les paramètres de votre organisation ; rien n’a été envoyé.',
+        'suppressed_for_party' => 'Cette partie est exclue des e-mails de Patrimoine ; rien n’a été envoyé.',
     ],
 
     'tenant' => [

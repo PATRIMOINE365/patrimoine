@@ -758,6 +758,63 @@
                         </div>
                     </section>
 
+                    {{-- Communications (V1.0.29) --}}
+                    <section class="pm-card p-5">
+                        <h3
+                            class="
+                                mb-1 text-sm font-semibold
+                                text-[var(--pm-text)]
+                            "
+                        >
+                            <span data-i18n="settings.communications">{{ __('ui.settings.communications') }}</span>
+                        </h3>
+
+                        <p class="mb-4 text-xs text-[var(--pm-text-muted)]">
+                            <span data-i18n="settings.communications_description">{{ __('ui.settings.communications_description') }}</span>
+                        </p>
+
+                        <label
+                            class="
+                                flex cursor-pointer
+                                items-start gap-3
+                                rounded-xl border
+                                border-[var(--pm-border)]
+                                px-4 py-3
+                            "
+                        >
+                            <input
+                                id="organisation-party-emails-enabled"
+                                type="checkbox"
+                                class="
+                                    mt-0.5 h-4 w-4 rounded
+                                    border-[var(--pm-border-strong)]
+                                    text-[var(--pm-accent)]
+                                    focus:ring-[var(--pm-accent)]
+                                "
+                            >
+
+                            <span class="min-w-0">
+                                <span
+                                    class="
+                                        block text-sm font-medium
+                                        text-[var(--pm-text-secondary)]
+                                    "
+                                >
+                                    <span data-i18n="settings.party_emails_enabled">{{ __('ui.settings.party_emails_enabled') }}</span>
+                                </span>
+
+                                <span
+                                    class="
+                                        mt-1 block text-xs
+                                        text-[var(--pm-text-muted)]
+                                    "
+                                >
+                                    <span data-i18n="settings.party_emails_help">{{ __('ui.settings.party_emails_help') }}</span>
+                                </span>
+                            </span>
+                        </label>
+                    </section>
+
                     {{-- Save --}}
                     <div class="flex justify-end">
                         <button

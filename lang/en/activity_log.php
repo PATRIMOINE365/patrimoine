@@ -170,6 +170,8 @@ return [
 
         'invoice.resent' => 'Invoice Resent',
 
+        'email.suppressed' => 'Email Withheld',
+
         'receipt.resent' => 'Receipt Resent',
 
         'report.exported' => 'Report Exported',

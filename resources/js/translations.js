@@ -83,6 +83,27 @@ export const translations = {
         'dashboard.unable_to_load_section':
             'Unable to load this section.',
         /* ---- end V1.0.9 additions ---- */
+        'parties.email_policy':
+            'Email communications',
+
+        'parties.email_policy_description':
+            'Whether Patrimoine may send documents and notices to this party.',
+
+        'parties.email_policy_inherit':
+            'Follow organisation setting',
+
+        'parties.email_policy_always':
+            'Always email this party',
+
+        'parties.email_policy_never':
+            'Never email this party',
+
+        'parties.email_policy_help':
+            'Invoices, receipts, reminders, notices and vouchers. Emails to Patrimoine users are never affected.',
+
+        'parties.emails_off':
+            'No emails',
+
         'parties.given_names':
             'Given names',
         'parties.surname':
@@ -1696,6 +1717,18 @@ export const translations = {
 
         'settings.vat_tin':
             'VAT / TIN',
+
+        'settings.communications':
+            'Communications',
+
+        'settings.communications_description':
+            'What Patrimoine sends to your tenants, owners and agents.',
+
+        'settings.party_emails_enabled':
+            'Send emails to parties',
+
+        'settings.party_emails_help':
+            'When this is off, Patrimoine sends nothing to tenants, owners or agents — no invoices, receipts, reminders, notices or vouchers — and anyone who tries to send one is told why. Individual parties can still be allowed from their own record. Emails to Patrimoine users, such as sign-in codes, invitations and password resets, are never affected.',
 
         'settings.language_currency':
             'Language & Currency',
@@ -3421,6 +3454,27 @@ export const translations = {
         'dashboard.unable_to_load_section':
             'Impossible de charger cette section.',
         /* ---- end V1.0.9 additions ---- */
+        'parties.email_policy':
+            'Communications par e-mail',
+
+        'parties.email_policy_description':
+            'Indique si Patrimoine peut envoyer des documents et des avis à cette partie.',
+
+        'parties.email_policy_inherit':
+            'Suivre le paramètre de l’organisation',
+
+        'parties.email_policy_always':
+            'Toujours envoyer à cette partie',
+
+        'parties.email_policy_never':
+            'Ne jamais envoyer à cette partie',
+
+        'parties.email_policy_help':
+            'Factures, reçus, rappels, avis et bons. Les e-mails destinés aux utilisateurs de Patrimoine ne sont jamais concernés.',
+
+        'parties.emails_off':
+            'E-mails désactivés',
+
         'parties.given_names':
             'Prénoms',
         'parties.surname':
@@ -5034,6 +5088,18 @@ export const translations = {
 
         'settings.vat_tin':
             'TVA / NIF',
+
+        'settings.communications':
+            'Communications',
+
+        'settings.communications_description':
+            'Ce que Patrimoine envoie à vos locataires, propriétaires et agents.',
+
+        'settings.party_emails_enabled':
+            'Envoyer des e-mails aux parties',
+
+        'settings.party_emails_help':
+            'Lorsque ce paramètre est désactivé, Patrimoine n’envoie rien aux locataires, propriétaires ni agents — ni facture, ni reçu, ni rappel, ni avis, ni bon — et toute tentative d’envoi affiche la raison. Une partie peut malgré tout être autorisée depuis sa propre fiche. Les e-mails destinés aux utilisateurs de Patrimoine (codes de connexion, invitations, réinitialisations de mot de passe) ne sont jamais concernés.',
 
         'settings.language_currency':
             'Langue et devise',

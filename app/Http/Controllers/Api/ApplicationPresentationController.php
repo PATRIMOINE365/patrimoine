@@ -86,6 +86,19 @@ class ApplicationPresentationController extends Controller
             );
 
         /*
+         * V1.0.29: whether the organisation emails its parties at all.
+         * Every workspace needs it to explain, before anybody clicks
+         * Send, that nothing will leave the building. Non-sensitive
+         * operational configuration, like the VAT default above.
+         */
+        $configuration[
+            'party_emails_enabled'
+        ] =
+            (bool) (
+                $settings?->party_emails_enabled ?? true
+            );
+
+        /*
          * V1.0.7: the running release is non-sensitive and lets Settings,
          * the Help page and the update log show the current version.
          */

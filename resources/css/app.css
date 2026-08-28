@@ -3109,6 +3109,23 @@ select {
     color: var(--pm-text-secondary);
 }
 
+/*
+ * V1.0.29: shown on a Party that Patrimoine will not email, either
+ * because the organisation switched party emails off or because this
+ * Party is individually excluded. Muted rather than alarming — it is a
+ * deliberate setting, not a fault.
+ */
+.pm-party-no-email-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    border: 1px solid var(--pm-border);
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--pm-text-muted);
+}
+
 .pm-party-contact {
     margin-top: 0.5rem;
     font-size: 0.8125rem;

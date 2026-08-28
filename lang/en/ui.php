@@ -402,6 +402,12 @@ return [
         'close' => 'Close',
     ],
     'settings' => [
+        /* ---- V1.0.29 communications ---- */
+        'communications' => 'Communications',
+        'communications_description' => 'What Patrimoine sends to your tenants, owners and agents.',
+        'party_emails_enabled' => 'Send emails to parties',
+        'party_emails_help' => 'When this is off, Patrimoine sends nothing to tenants, owners or agents — no invoices, receipts, reminders, notices or vouchers — and anyone who tries to send one is told why. Individual parties can still be allowed from their own record. Emails to Patrimoine users, such as sign-in codes, invitations and password resets, are never affected.',
+
         /* ---- V1.0.9 additions ---- */
         'tab_organisation' => 'Organisation',
         'tab_preferences' => 'Preferences',
@@ -506,6 +512,15 @@ return [
         'unable_to_save' => 'Unable to save Managing Organisation.',
     ],
     'parties' => [
+        /* ---- V1.0.29 email controls ---- */
+        'email_policy' => 'Email communications',
+        'email_policy_description' => 'Whether Patrimoine may send documents and notices to this party.',
+        'email_policy_inherit' => 'Follow organisation setting',
+        'email_policy_always' => 'Always email this party',
+        'email_policy_never' => 'Never email this party',
+        'email_policy_help' => 'Invoices, receipts, reminders, notices and vouchers. Emails to Patrimoine users are never affected.',
+        'emails_off' => 'No emails',
+
         /* ---- V1.0.7 additions ---- */
         'given_names' => 'Given names',
         'surname' => 'Surname',

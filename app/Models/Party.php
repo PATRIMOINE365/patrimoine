@@ -42,6 +42,7 @@ class Party extends Model
         'phone',
         'alternate_phone',
         'email',
+        'email_policy',
         'address',
         'contact_person_name',
         'contact_person_phone',

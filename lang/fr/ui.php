@@ -401,6 +401,12 @@ return [
         'close' => 'Fermer',
     ],
     'settings' => [
+        /* ---- V1.0.29 communications ---- */
+        'communications' => 'Communications',
+        'communications_description' => 'Ce que Patrimoine envoie à vos locataires, propriétaires et agents.',
+        'party_emails_enabled' => 'Envoyer des e-mails aux parties',
+        'party_emails_help' => 'Lorsque ce paramètre est désactivé, Patrimoine n’envoie rien aux locataires, propriétaires ni agents — ni facture, ni reçu, ni rappel, ni avis, ni bon — et toute tentative d’envoi affiche la raison. Une partie peut malgré tout être autorisée depuis sa propre fiche. Les e-mails destinés aux utilisateurs de Patrimoine (codes de connexion, invitations, réinitialisations de mot de passe) ne sont jamais concernés.',
+
         /* ---- V1.0.9 additions ---- */
         'tab_organisation' => 'Organisation',
         'tab_preferences' => 'Préférences',
@@ -657,6 +663,15 @@ return [
         'request_failed' => 'La requête n’a pas pu être traitée.',
     ],
     'parties' => [
+        /* ---- V1.0.29 email controls ---- */
+        'email_policy' => 'Communications par e-mail',
+        'email_policy_description' => 'Indique si Patrimoine peut envoyer des documents et des avis à cette partie.',
+        'email_policy_inherit' => 'Suivre le paramètre de l’organisation',
+        'email_policy_always' => 'Toujours envoyer à cette partie',
+        'email_policy_never' => 'Ne jamais envoyer à cette partie',
+        'email_policy_help' => 'Factures, reçus, rappels, avis et bons. Les e-mails destinés aux utilisateurs de Patrimoine ne sont jamais concernés.',
+        'emails_off' => 'E-mails désactivés',
+
         /* ---- V1.0.7 additions ---- */
         'given_names' => 'Prénoms',
         'surname' => 'Nom de famille',
