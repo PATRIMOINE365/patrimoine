@@ -335,6 +335,9 @@ export const translations = {
         'owners.collector_placeholder':
             'Automatically set to the logged-in User',
 
+        'financial_journal.transaction_types.management_fee_vat':
+            'Management fee VAT',
+
         'wizard.title':
             'Guided lease',
 
@@ -4335,6 +4338,9 @@ export const translations = {
 
         'owners.collector_placeholder':
             'Défini automatiquement selon l\'utilisateur connecté',
+
+        'financial_journal.transaction_types.management_fee_vat':
+            'TVA sur frais de gestion',
 
         'wizard.title':
             'Assistant de bail',

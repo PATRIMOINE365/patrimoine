@@ -134,6 +134,46 @@ class ActivityLogLocaleTest extends TestCase
     }
 
     /**
+     * The Financial Journal's transaction types are mirrored the same
+     * way, and drifted the same way: V1.0.23 added management_fee_vat to
+     * the PHP catalogue only, so the filter offered "Management Fee Vat"
+     * to a French organisation.
+     */
+    public function test_every_transaction_type_is_mirrored_to_the_browser(): void
+    {
+        $catalogue = file_get_contents(
+            resource_path('js/translations.js')
+        );
+
+        $english = require base_path('lang/en/financial_journal.php');
+        $french = require base_path('lang/fr/financial_journal.php');
+
+        $missing = [];
+
+        foreach (array_keys($english['transaction_types']) as $type) {
+            $occurrences = substr_count(
+                $catalogue,
+                "'financial_journal.transaction_types.{$type}':"
+            );
+
+            if ($occurrences < 2) {
+                $missing[] = "browser: {$type} (found {$occurrences} of 2)";
+            }
+
+            if (! array_key_exists($type, $french['transaction_types'])) {
+                $missing[] = "lang/fr: {$type}";
+            }
+        }
+
+        $this->assertSame(
+            [],
+            $missing,
+            "Transaction types missing a translation:\n"
+                .implode("\n", $missing)
+        );
+    }
+
+    /**
      * The Financial Journal had the same gap in its filter and detail
      * panel after V1.0.20 localised its rows.
      */
