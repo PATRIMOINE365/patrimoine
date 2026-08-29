@@ -255,12 +255,19 @@
                 // A browser refusing storage simply gets the default.
             }
 
+            /*
+             * Longest name first: ':to' is a prefix of ':total', and
+             * replacing in declaration order turned "of :total" into
+             * "of 25tal".
+             */
             function words(name, replacements) {
                 var text = control ? (control.dataset[name] || '') : '';
 
-                Object.keys(replacements || {}).forEach(function (key) {
-                    text = text.split(':' + key).join(replacements[key]);
-                });
+                Object.keys(replacements || {})
+                    .sort(function (a, b) { return b.length - a.length; })
+                    .forEach(function (key) {
+                        text = text.split(':' + key).join(replacements[key]);
+                    });
 
                 return text;
             }

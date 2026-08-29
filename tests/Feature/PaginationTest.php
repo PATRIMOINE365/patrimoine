@@ -367,6 +367,39 @@ class PaginationTest extends TestCase
         }
     }
 
+    public function test_a_placeholder_cannot_eat_the_one_it_prefixes(): void
+    {
+        /*
+         * ':to' is a prefix of ':total'. Replacing in the order the caller
+         * wrote them turned "Showing :from-:to of :total" into
+         * "Showing 1-25 of 25tal" on the live page. Both browser-side
+         * replacers must therefore take the longest name first, the way
+         * Laravel's own translator does.
+         */
+        $this->assertStringContainsString(
+            'second.length - first.length',
+            file_get_contents(resource_path('js/translations.js')),
+            'translationFor must replace the longest placeholder first.'
+        );
+
+        $this->assertStringContainsString(
+            'return b.length - a.length;',
+            file_get_contents(resource_path('views/errors-reference.blade.php')),
+            'The reference script must replace the longest placeholder first.'
+        );
+
+        /*
+         * The condition that makes the ordering matter, so this stays
+         * meaningful if the sentence is ever reworded.
+         */
+        foreach (['en', 'fr'] as $language) {
+            $summary = __('ui.pagination.summary', [], $language);
+
+            $this->assertStringContainsString(':to', $summary);
+            $this->assertStringContainsString(':total', $summary);
+        }
+    }
+
     public function test_the_public_error_reference_can_speak_without_the_bundle(): void
     {
         /*

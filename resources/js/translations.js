@@ -8383,10 +8383,24 @@ export function translationFor(
         ?? english[key]
         ?? key;
 
+    /*
+     * Longest name first.
+     *
+     * ':to' is a prefix of ':total', so replacing in the order the caller
+     * happened to write them turned "Showing :from–:to of :total" into
+     * "Showing 1–25 of 25tal". Laravel's own translator sorts for the
+     * same reason; this is that rule, on this side of the wire.
+     */
     return Object
         .entries(
             replacements
             || {}
+        )
+        .sort(
+            (
+                [first],
+                [second]
+            ) => second.length - first.length
         )
         .reduce(
             (
