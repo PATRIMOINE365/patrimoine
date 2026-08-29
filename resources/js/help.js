@@ -139,6 +139,15 @@ const helpTranslations = {
         'help.topic_appearance_title':
             'Light & dark mode',
 
+        'help.topic_drafts_title':
+            "Leaving the lease assistant and coming back",
+
+        'help.topic_drafts_body1':
+            "Save as draft keeps the assistant exactly as you left it, however little you have filled in — you do not need a property, a tenant or anything else first. It appears under Unfinished assistants at the top of the Leases page, named after whoever started it and the day they did.",
+
+        'help.topic_drafts_body2':
+            "Continue picks it up on the page you left. Discard throws it away, and asks first. Anyone in your organisation can continue one, which is how a colleague finishes a letting you began. On the last page of the assistant the button becomes Save and activate and creates the lease itself; go back one page if you would rather keep a draft.",
+
         'help.topic_photo_title':
             "Your photograph",
 
@@ -518,6 +527,15 @@ const helpTranslations = {
         'help.topic_appearance_title':
             'Mode clair et sombre',
 
+        'help.topic_drafts_title':
+            "Quitter l’assistant de bail et y revenir",
+
+        'help.topic_drafts_body1':
+            "Enregistrer en brouillon conserve l’assistant exactement tel que vous l’avez laissé, même si vous n’avez presque rien saisi : ni bien, ni locataire, rien n’est requis au préalable. Il apparaît sous Assistants inachevés en haut de la page Baux, au nom de la personne qui l’a commencé et du jour où elle l’a fait.",
+
+        'help.topic_drafts_body2':
+            "Reprendre le rouvre à la page quittée. Supprimer l’élimine, après confirmation. N’importe qui dans votre organisation peut en reprendre un : c’est ainsi qu’un collègue termine une location que vous avez commencée. À la dernière page, le bouton devient Enregistrer et activer et crée le bail lui-même ; revenez d’une page si vous préférez conserver un brouillon.",
+
         'help.topic_photo_title':
             "Votre photographie",
 
@@ -880,6 +898,15 @@ const helpTopics = [
             'help.topic_photo_body1',
             'help.topic_photo_body2',
             'help.topic_photo_body3',
+        ],
+    },
+    {
+        id: 'wizard_drafts',
+        category: 'leases',
+        titleKey: 'help.topic_drafts_title',
+        bodyKeys: [
+            'help.topic_drafts_body1',
+            'help.topic_drafts_body2',
         ],
     },
     {

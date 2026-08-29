@@ -15,6 +15,10 @@
 */
 
 export const ERROR_CODES_BY_MESSAGE = {
+    "celui-ci n’a pas pu être supprimé. réessayez.": 'PM-3092',
+    "this one could not be discarded. try again.": 'PM-3092',
+    "cet assistant n’existe plus. il a été terminé ou supprimé.": 'PM-3091',
+    "that assistant is no longer there. it may have been finished or discarded.": 'PM-3091',
     "cette image n'a pas pu être ouverte. si elle vient d'un iphone, enregistrez-la d'abord en jpeg.": 'PM-1016',
     "this picture could not be opened. if it came from an iphone, try saving it as jpeg first.": 'PM-1016',
     "a cancellation reason is required.": 'PM-4032',

@@ -401,6 +401,24 @@ export const translations = {
         'wizard.save_draft':
             'Save as draft',
 
+        'wizard.drafts_title':
+            "Unfinished assistants",
+
+        'wizard.drafts_note':
+            "Started but not finished. Continue where it was left, or throw it away.",
+
+        'wizard.drafts_continue':
+            "Continue",
+
+        'wizard.drafts_discard':
+            "Discard",
+
+        'wizard.drafts_discard_failed':
+            "This one could not be discarded. Try again.",
+
+        'wizard.draft_missing':
+            "That assistant is no longer there. It may have been finished or discarded.",
+
         'wizard.create_activate':
             'Save and activate',
 
@@ -4458,6 +4476,24 @@ export const translations = {
 
         'wizard.save_draft':
             'Enregistrer en brouillon',
+
+        'wizard.drafts_title':
+            "Assistants inachevés",
+
+        'wizard.drafts_note':
+            "Commencés sans être terminés. Reprenez là où vous en étiez, ou supprimez-les.",
+
+        'wizard.drafts_continue':
+            "Reprendre",
+
+        'wizard.drafts_discard':
+            "Supprimer",
+
+        'wizard.drafts_discard_failed':
+            "Celui-ci n’a pas pu être supprimé. Réessayez.",
+
+        'wizard.draft_missing':
+            "Cet assistant n’existe plus. Il a été terminé ou supprimé.",
 
         'wizard.create_activate':
             'Enregistrer et activer',

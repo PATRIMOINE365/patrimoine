@@ -70,6 +70,13 @@ let currentStep = 1;
 
 let ownerRowSequence = 0;
 
+/**
+ * The saved assistant this page is continuing, if it is continuing one.
+ *
+ * Saving again overwrites it rather than leaving a second copy behind.
+ */
+let draftId = null;
+
 /*
 |--------------------------------------------------------------------------
 | Entry Point
@@ -94,7 +101,15 @@ export async function initializeLeaseWizard() {
 
     await loadReferenceData();
 
-    restoreProgress();
+    /*
+     * Continuing a saved assistant wins over the progress this tab kept:
+     * somebody who followed a Continue link means that one.
+     */
+    const resumed = await resumeDraft();
+
+    if (! resumed) {
+        restoreProgress();
+    }
 
     addOwnerRow();
 
@@ -1215,6 +1230,22 @@ async function submitWizard(status, button) {
 
         clearProgress();
 
+        /*
+         * The letting exists now, so the assistant that made it has
+         * nothing left to say. A failure here is not worth reporting:
+         * the letting is created either way.
+         */
+        if (draftId !== null) {
+            try {
+                await apiRequest(
+                    `/api/lease-wizard/drafts/${draftId}`,
+                    { method: 'DELETE' }
+                );
+            } catch {
+                /* An orphaned assistant can be discarded by hand. */
+            }
+        }
+
         window.location.href = '/leases';
     } catch {
         showError(
@@ -1391,6 +1422,28 @@ function restoreProgress() {
         return;
     }
 
+    applyStoredState(stored);
+}
+
+/**
+ * Put a saved set of answers back on the page.
+ *
+ * Used by both the progress the browser keeps while the tab is open and
+ * the assistant saved on the server.
+ */
+function applyStoredState(stored) {
+    /*
+     * Owner rows are built as they are needed; the values below have
+     * nowhere to go until they exist.
+     */
+    const rows = Number(stored.owner_rows) || 0;
+
+    const container = document.getElementById('wizard-owner-rows');
+
+    while (container && container.children.length < rows) {
+        appendOwnerRow();
+    }
+
     Object.entries(stored.fields ?? {}).forEach(
         ([id, storedValue]) => {
             const element = document.getElementById(id);
@@ -1532,6 +1585,109 @@ function applyDuration() {
 
 /*
 |--------------------------------------------------------------------------
+| Saving an unfinished assistant
+|--------------------------------------------------------------------------
+|
+| A lease needs a unit and a tenant before it can exist at all, so there
+| is no such thing as a lease saved from page three. What is saved is the
+| assistant: its field values, however many of them are blank, resumable
+| from the Leases page.
+|
+| The last page is different. There the button offers the letting itself,
+| and anybody who would rather keep a draft steps back one page.
+|
+*/
+
+/**
+ * Everything needed to carry on later.
+ */
+function draftPayload() {
+    return {
+        step: currentStep,
+        fields: collectFieldValues(),
+
+        /*
+         * Owner rows are built as they are needed, so restoring has to
+         * know how many to build before the values can go back in.
+         */
+        owner_rows: document
+            .getElementById('wizard-owner-rows')
+            ?.children.length
+            ?? 0,
+    };
+}
+
+async function saveDraft(button) {
+    hideError();
+
+    setButtonBusy(button, 'wizard.saving');
+
+    try {
+        const response = await apiRequest(
+            '/api/lease-wizard/drafts',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: draftId,
+                    payload: draftPayload(),
+                }),
+            }
+        );
+
+        const payload = await parseJsonResponse(response);
+
+        draftId = payload?.draft?.id ?? draftId;
+
+        clearProgress();
+
+        window.location.href = '/leases?drafts=1';
+    } catch (error) {
+        showError(
+            error instanceof Error
+                ? error.message
+                : translate('wizard.save_failed')
+        );
+    } finally {
+        restoreButton(button);
+    }
+}
+
+/**
+ * Pick up a saved assistant, when the page was opened to continue one.
+ */
+async function resumeDraft() {
+    const requested = new URLSearchParams(window.location.search).get('draft');
+
+    if (! requested) {
+        return false;
+    }
+
+    try {
+        const payload = await parseJsonResponse(
+            await apiRequest(`/api/lease-wizard/drafts/${requested}`)
+        );
+
+        draftId = payload.id;
+
+        applyStoredState(payload.payload ?? {});
+
+        return true;
+    } catch (error) {
+        showError(
+            error instanceof Error
+                ? error.message
+                : translate('wizard.draft_missing')
+        );
+
+        return false;
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
 | A card that does not jump
 |--------------------------------------------------------------------------
 |
@@ -1648,10 +1804,7 @@ function wireControls() {
         .getElementById('wizard-draft')
         ?.addEventListener(
             'click',
-            (event) => submitWizard(
-                'draft',
-                event.currentTarget
-            )
+            (event) => saveDraft(event.currentTarget)
         );
 
     document

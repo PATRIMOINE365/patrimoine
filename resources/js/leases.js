@@ -125,6 +125,14 @@ export async function initializeLeases() {
 
     initializeLeaseFilters();
 
+    /*
+     * V1.0.31: assistants somebody started and did not finish, above the
+     * leases because that is where they are looked for.
+     */
+    initializeLeaseDrafts();
+
+    loadLeaseDrafts();
+
     initializeLeaseForm();
 
     initializeLeaseExtendDrawer();
@@ -9462,4 +9470,150 @@ async function openLeaseFinancialHistoryDocument(
                 )
         );
     }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Unfinished assistants
+|--------------------------------------------------------------------------
+|
+| A lease needs a unit and a tenant before it can exist, so an assistant
+| abandoned before both were chosen is not a draft lease — it is a saved
+| assistant. They are listed here, above the leases, because this is
+| where somebody looks for a letting they remember beginning.
+|
+*/
+
+/**
+ * Load and draw the unfinished assistants, if there are any.
+ */
+export async function loadLeaseDrafts() {
+    const panel = document.getElementById('lease-drafts');
+
+    if (! panel) {
+        return;
+    }
+
+    let drafts = [];
+
+    try {
+        const payload = await parseJsonResponse(
+            await apiRequest('/api/lease-wizard/drafts')
+        );
+
+        drafts = Array.isArray(payload?.data) ? payload.data : [];
+    } catch {
+        /*
+         * A panel that cannot load is not worth an error on a page whose
+         * actual subject is the leases below it.
+         */
+        panel.classList.add('hidden');
+
+        return;
+    }
+
+    if (drafts.length === 0) {
+        panel.classList.add('hidden');
+
+        panel.innerHTML = '';
+
+        return;
+    }
+
+    panel.classList.remove('hidden');
+
+    panel.innerHTML = `
+        <div class="pm-card p-5">
+            <h2 class="text-sm font-semibold text-[var(--pm-text)]">
+                ${escapeHtml(translate('wizard.drafts_title'))}
+            </h2>
+
+            <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
+                ${escapeHtml(translate('wizard.drafts_note'))}
+            </p>
+
+            <ul class="mt-4 divide-y divide-[var(--pm-border)]">
+                ${drafts.map(leaseDraftRow).join('')}
+            </ul>
+        </div>
+    `;
+}
+
+function leaseDraftRow(draft) {
+    return `
+        <li class="flex flex-wrap items-center justify-between gap-3 py-3">
+            <div class="min-w-0">
+                <div class="text-sm font-medium text-[var(--pm-text)]">
+                    ${escapeHtml(String(draft.author ?? ''))}
+                </div>
+
+                <div class="mt-0.5 text-xs text-[var(--pm-text-muted)]">
+                    ${escapeHtml(formatLongDate(draft.started_at))}
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+                <a
+                    href="/leases/wizard?draft=${encodeURIComponent(draft.id)}"
+                    class="pm-button-secondary"
+                >
+                    ${escapeHtml(translate('wizard.drafts_continue'))}
+                </a>
+
+                <button
+                    type="button"
+                    class="pm-button-danger-outline"
+                    data-discard-draft="${escapeHtml(String(draft.id))}"
+                    data-discard-draft-label="${escapeHtml(String(draft.author ?? ''))}"
+                >
+                    ${escapeHtml(translate('wizard.drafts_discard'))}
+                </button>
+            </div>
+        </li>
+    `;
+}
+
+/**
+ * Discarding one. Delegated, because the list is redrawn after each.
+ */
+export function initializeLeaseDrafts() {
+    document.addEventListener(
+        'click',
+        async (event) => {
+            const button = event.target.closest?.('[data-discard-draft]');
+
+            if (! button) {
+                return;
+            }
+
+            const confirmed = await requireDangerConfirmation({
+                entityLabel: button.dataset.discardDraftLabel ?? '',
+            });
+
+            if (! confirmed) {
+                return;
+            }
+
+            button.disabled = true;
+
+            try {
+                await parseJsonResponse(
+                    await apiRequest(
+                        `/api/lease-wizard/drafts/${button.dataset.discardDraft}`,
+                        { method: 'DELETE' }
+                    )
+                );
+
+                await loadLeaseDrafts();
+            } catch (error) {
+                showLeasePageError(
+                    error instanceof Error
+                        ? error.message
+                        : translate('wizard.drafts_discard_failed')
+                );
+            } finally {
+                button.disabled = false;
+            }
+        }
+    );
 }

@@ -71,6 +71,11 @@ return [
         'tenant_expense_voucher_sent' => 'L’e-mail du bon de dépense a été envoyé avec succès.',
     ],
 
+    'lease_wizard' => [
+        'draft_saved' => 'Votre progression est enregistrée. Reprenez-la depuis la page Baux.',
+        'draft_discarded' => 'Cet assistant inachevé a été supprimé.',
+    ],
+
     'validation' => [
         'building_ownership_total' => 'La somme des pourcentages de propriété de l’immeuble doit être égale à 100 %.',
 

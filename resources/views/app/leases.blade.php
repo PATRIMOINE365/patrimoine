@@ -103,6 +103,14 @@
         </div>
     </div>
 
+    {{--
+        V1.0.31: assistants somebody started and did not finish. A lease
+        cannot be saved half-made, so these are the assistants themselves;
+        they live here because this is where a person looks for a letting
+        they remember beginning. Hidden entirely when there are none.
+    --}}
+    <section id="lease-drafts" class="hidden mb-6"></section>
+
     {{-- Page-level API Error --}}
 
     <div

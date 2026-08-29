@@ -31,6 +31,7 @@ use App\Http\Controllers\Api\FundsReportController;
 use App\Http\Controllers\Api\FundsReportExportController;
 use App\Http\Controllers\Api\LeaseController;
 use App\Http\Controllers\Api\LeaseWizardController;
+use App\Http\Controllers\Api\LeaseWizardDraftController;
 use App\Http\Controllers\Api\LeaseFinancialHistoryExportController;
 use App\Http\Controllers\Api\LicenseController;
 use App\Http\Controllers\Api\ManagingOrganisationController;
@@ -457,6 +458,32 @@ Route::middleware('auth:sanctum')->group(
                 Route::post(
                     'lease-wizard',
                     [LeaseWizardController::class, 'store']
+                );
+
+                /*
+                 * V1.0.31: an assistant abandoned before it has a unit
+                 * and a tenant cannot be saved as a lease, because a
+                 * lease needs both. It is saved as itself instead, and
+                 * resumed -- or discarded -- from the Leases page.
+                 */
+                Route::get(
+                    'lease-wizard/drafts',
+                    [LeaseWizardDraftController::class, 'index']
+                );
+
+                Route::post(
+                    'lease-wizard/drafts',
+                    [LeaseWizardDraftController::class, 'store']
+                );
+
+                Route::get(
+                    'lease-wizard/drafts/{draft}',
+                    [LeaseWizardDraftController::class, 'show']
+                );
+
+                Route::delete(
+                    'lease-wizard/drafts/{draft}',
+                    [LeaseWizardDraftController::class, 'destroy']
                 );
 
                 Route::match(

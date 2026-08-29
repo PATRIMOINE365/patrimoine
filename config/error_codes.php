@@ -1056,6 +1056,16 @@ return [
             'severity' => 'try_again',
             'keys' => ['ui.wizard.save_failed', 'wizard.save_failed'],
         ],
+        'PM-3091' => [
+            'family' => 3,
+            'severity' => 'fix_yourself',
+            'keys' => ['ui.wizard.draft_missing', 'wizard.draft_missing'],
+        ],
+        'PM-3092' => [
+            'family' => 3,
+            'severity' => 'try_again',
+            'keys' => ['ui.wizard.drafts_discard_failed', 'wizard.drafts_discard_failed'],
+        ],
 
         /* ---- 4xxx money ---- */
 

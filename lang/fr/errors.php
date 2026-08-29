@@ -1253,6 +1253,18 @@ return [
         'fix' => 'Réessayez, et rechargez la page en cas de second échec. Si le problème persiste, dites-nous ce que vous faisiez.',
     ],
 
+    'PM-3091' => [
+        'title' => 'Cet assistant n’existe plus.',
+        'what' => 'L’assistant inachevé que vous repreniez a été terminé par quelqu’un ou supprimé depuis. Il n’en existait qu’un exemplaire.',
+        'fix' => 'Revenez aux Baux. Si la location a été finalisée, elle figure dans la liste ; si l’assistant a été supprimé, recommencez-en un.',
+    ],
+
+    'PM-3092' => [
+        'title' => 'Celui-ci n’a pas pu être supprimé.',
+        'what' => 'La demande de suppression de l’assistant inachevé n’a pas abouti. Rien n’a été modifié.',
+        'fix' => 'Réessayez. Si cela persiste, l’assistant ne gêne en rien là où il est : signalez-le-nous et poursuivez.',
+    ],
+
     /* ---- 4xxx ---- */
 
     'PM-4001' => [

@@ -1253,6 +1253,18 @@ return [
         'fix' => 'Try again, and reload the page if it fails a second time. If it keeps happening, tell us what you were doing.',
     ],
 
+    'PM-3091' => [
+        'title' => 'That assistant is no longer there.',
+        'what' => 'The unfinished assistant you were continuing has since been finished by somebody, or discarded. Only one copy of it ever existed, and it is gone.',
+        'fix' => 'Go back to Leases. If the letting was finished it is in the list; if it was discarded, start the assistant again.',
+    ],
+
+    'PM-3092' => [
+        'title' => 'This one could not be discarded.',
+        'what' => 'The request to throw away an unfinished assistant did not come back. Nothing was changed.',
+        'fix' => 'Try again. If it keeps happening, the assistant is doing no harm where it is — tell us and carry on.',
+    ],
+
     /* ---- 4xxx ---- */
 
     'PM-4001' => [

@@ -71,6 +71,11 @@ return [
         'tenant_expense_voucher_sent' => 'Tenant expense voucher email sent successfully.',
     ],
 
+    'lease_wizard' => [
+        'draft_saved' => 'Your progress is saved. Continue it from the Leases page.',
+        'draft_discarded' => 'That unfinished assistant has been discarded.',
+    ],
+
     'validation' => [
         'building_ownership_total' => 'Building ownership percentages must total 100%.',
 
