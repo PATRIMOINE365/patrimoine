@@ -23,7 +23,7 @@ return [
         [
             'through' => '1.0.35',
             'date' => '2026-08-29',
-            'summary' => 'Votre photographie apparaît désormais en haut de l’écran et à côté de votre nom sur la page Utilisateurs, ce qui rend les comptes faciles à distinguer. L’assistant de bail peut être quitté en cours de route et repris plus tard, ne change plus de hauteur au fil des pages, et emploie partout votre format de date.',
+            'summary' => 'Votre photographie apparaît désormais en haut de l’écran et à côté de votre nom sur la page Utilisateurs, ce qui rend les comptes faciles à distinguer. L’assistant de bail peut être quitté en cours de route et repris plus tard, et ne bouge plus au fil des pages. Les longues listes se lisent maintenant page par page, avec des numéros et un choix de 25, 50 ou 100 lignes ; Utilisateurs et Licence sont devenus des onglets des Paramètres, qui résument aussi votre compte et permettent, tout en bas, à un administrateur de le fermer définitivement.',
         ],
         [
             'through' => '1.0.30',

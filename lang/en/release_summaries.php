@@ -31,7 +31,7 @@ return [
         [
             'through' => '1.0.35',
             'date' => '2026-08-29',
-            'summary' => 'Your photograph now sits at the top of the screen and beside your name on the Users page, so accounts are easy to tell apart. The lease assistant can be left half-finished and picked up later, no longer changes height as you move through it, and uses your own date format throughout.',
+            'summary' => 'Your photograph now sits at the top of the screen and beside your name on the Users page, so accounts are easy to tell apart. The lease assistant can be left half-finished and picked up later, and no longer jumps about as you move through it. Long lists are now read a page at a time, with numbered pages and a choice of 25, 50 or 100 rows; Users and Licence became tabs of Settings, which also summarises your account and, at its foot, lets an administrator close it for good.',
         ],
         [
             'through' => '1.0.30',

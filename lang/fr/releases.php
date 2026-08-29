@@ -15,6 +15,20 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.32',
+            'date' => '2026-08-29',
+            'title' => 'Des pages où l’on saute, et des Paramètres qui contiennent tout le compte',
+            'changes' => [
+                'Toute liste de plus de 25 lignes se lit désormais page par page, avec des numéros sur lesquels on saute directement plutôt qu’un bouton Suivant pressé huit fois. La page que vous lisez est mise en couleur, et la ligne à côté indique combien de lignes sont affichées sur le total.',
+                'Lignes par page propose 25, 50 ou 100, et votre choix est retenu pour cette liste. Une recherche ou un filtre vous ramène à la première page, afin qu’un résultat plus loin ne se cache pas derrière un numéro de page.',
+                'Cela vaut aussi pour les listes qui n’avaient aucune pagination : la référence des codes d’erreur dans le Guide, la liste publique sur patrimoine365.com et la console d’administration.',
+                'Utilisateurs et Licence sont désormais des onglets des Paramètres plutôt que des entrées distinctes de la barre latérale. Les anciens liens et signets fonctionnent toujours et ouvrent simplement le bon onglet.',
+                'Les Paramètres affichent aussi un résumé de votre compte à côté du formulaire de l’organisation : votre formule, le nombre de personnes pouvant se connecter, le nombre de baux en cours, le nombre de parties enregistrées et la date d’ouverture du compte.',
+                'Un administrateur peut désormais fermer le compte depuis le bas des Paramètres. L’opération supprime définitivement l’organisation et tout ce qu’elle contient, et exige le nom de l’organisation resaisi ainsi que votre propre mot de passe. Elle est irréversible.',
+                'L’assistant de bail ne remonte plus en haut de la page lorsque vous passez d’une étape à l’autre, et son bouton Quitter devient Annuler, marqué en rouge comme toute action qui abandonne un travail en cours.',
+            ],
+        ],
+        [
             'version' => '1.0.31',
             'date' => '2026-08-29',
             'title' => 'Votre photographie, un journal plus court, et un assistant que l’on peut quitter',

@@ -19,6 +19,20 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.32',
+            'date' => '2026-08-29',
+            'title' => 'Pages you can jump to, and Settings that holds the whole account',
+            'changes' => [
+                'Every list longer than 25 rows is now read a page at a time, with numbered pages you can jump straight to rather than a Next button pressed eight times. The page you are reading is filled in, and the line beside it says how many rows are on screen out of how many exist.',
+                'Rows per page offers 25, 50 or 100, and your choice is remembered for that list. Searching or filtering returns you to the first page, so a match further in cannot hide behind a page number.',
+                'The same applies to lists that never had pages at all: the error code reference in the Guide, the public list at patrimoine365.com, and the platform console.',
+                'Users and Licence are now tabs of Settings rather than separate entries in the sidebar. Old links and bookmarks still work and simply open the right tab.',
+                'Settings also shows a summary of your account beside the organisation form: your plan, how many people can sign in, how many leases are running, how many parties are on the books, and when the account was opened.',
+                'An administrator can now close the account from the foot of Settings. It permanently deletes the organisation and everything in it, and it asks for the organisation name typed back and your own password before it will run. It cannot be undone.',
+                'The lease assistant no longer jumps back to the top of the page when you move between steps, and its Exit button is now Cancel, marked in red like every other action that discards work.',
+            ],
+        ],
+        [
             'version' => '1.0.31',
             'date' => '2026-08-29',
             'title' => 'Your photograph, a shorter update log, and an assistant you can leave',
