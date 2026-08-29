@@ -48,6 +48,90 @@ class ActivityLogLocaleTest extends TestCase
     }
 
     /**
+     * Every action the application WRITES is named in both languages.
+     *
+     * The mirroring test below is not enough on its own, and browsing
+     * proved it: it checks that every action already named in
+     * activity_log.php reaches the browser, so an action named in neither
+     * place has nothing to mirror and sails through. Forty-three of the
+     * ninety-four actions were in that state, and the fallback hides it —
+     * activity-log.js humanises an unknown action, turning
+     * 'registry.exported' into "Registry Exported", so a French
+     * organisation read confident English and nothing looked broken.
+     */
+    public function test_every_action_the_application_writes_is_named(): void
+    {
+        $actions = [];
+
+        $files = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator(app_path())
+        );
+
+        foreach ($files as $file) {
+            if (! $file->isFile() || $file->getExtension() !== 'php') {
+                continue;
+            }
+
+            preg_match_all(
+                "/action:\s*'([a-z_]+(?:\.[a-z_]+)+)'/",
+                (string) file_get_contents($file->getPathname()),
+                $matches
+            );
+
+            foreach ($matches[1] as $action) {
+                /*
+                 * Platform actions are written to the platform
+                 * organisation's own log, and that console is
+                 * deliberately English-only.
+                 */
+                if (str_starts_with($action, 'platform.')) {
+                    continue;
+                }
+
+                $actions[$action] = true;
+            }
+        }
+
+        $this->assertNotEmpty(
+            $actions,
+            'No activity actions were found at all — the scan is broken, not the application.'
+        );
+
+        $catalogue = $this->browserCatalogue();
+
+        /*
+         * These keys carry a dot inside the key itself
+         * ('registry.exported'), so __() would read them as nested groups
+         * and never find them. The application fetches the array and
+         * indexes it, and so does this.
+         */
+        $english = require base_path('lang/en/activity_log.php');
+        $french = require base_path('lang/fr/activity_log.php');
+
+        $unnamed = [];
+
+        foreach (array_keys($actions) as $action) {
+            if (! array_key_exists($action, $english['actions'])) {
+                $unnamed[] = "{$action} (en)";
+            }
+
+            if (! array_key_exists($action, $french['actions'])) {
+                $unnamed[] = "{$action} (fr)";
+            }
+
+            if (substr_count($catalogue, "'activity_actions.{$action}'") < 2) {
+                $unnamed[] = "{$action} (browser catalogue)";
+            }
+        }
+
+        $this->assertSame(
+            [],
+            $unnamed,
+            "Activity actions the log would humanise into English:\n".implode("\n", $unnamed)
+        );
+    }
+
+    /**
      * Every catalogued action, record type and metadata key reaches the
      * browser in both languages.
      */

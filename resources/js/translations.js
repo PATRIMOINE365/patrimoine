@@ -164,6 +164,93 @@ export const translations = {
         'activity_actions.unit.deleted':
             'Unit Deleted',
 
+        /* ---- V1.0.35: actions that were written but never named ---- */
+        'activity_actions.adjustment_voucher.downloaded':
+            'Adjustment Voucher Downloaded',
+        'activity_actions.auth.email_verified':
+            'E-mail Address Verified',
+        'activity_actions.auth.invitation_accepted':
+            'Invitation Accepted',
+        'activity_actions.auth.password_changed':
+            'Password Changed',
+        'activity_actions.auth.password_reset':
+            'Password Reset',
+        'activity_actions.expense_invoice.created':
+            'Tenant Expense Invoice Created',
+        'activity_actions.invoice_account_payment.cancelled':
+            'Invoice Payment From Account Cancelled',
+        'activity_actions.invoice_account_payment.recorded':
+            'Invoice Paid From Account',
+        'activity_actions.invoice_payment_receipt.downloaded':
+            'Invoice Payment Receipt Downloaded',
+        'activity_actions.lease.extended':
+            'Lease Extended',
+        'activity_actions.lease.rent_increment_cancelled':
+            'Rent Increase Cancelled',
+        'activity_actions.lease.rent_increment_scheduled':
+            'Rent Increase Scheduled',
+        'activity_actions.lease.termination_cancelled':
+            'Lease Termination Cancelled',
+        'activity_actions.lease.termination_completed':
+            'Lease Termination Completed',
+        'activity_actions.lease.termination_initiated':
+            'Lease Termination Started',
+        'activity_actions.lease.termination_notice_downloaded':
+            'Termination Notice Downloaded',
+        'activity_actions.organisation.closed_by_customer':
+            'Account Closed By Customer',
+        'activity_actions.organisation.data_exported':
+            'Organisation Data Exported',
+        'activity_actions.organisation.registered':
+            'Organisation Registered',
+        'activity_actions.owner_expense_bill.downloaded':
+            'Expense Bill Downloaded',
+        'activity_actions.owner_expense_bill.recorded':
+            'Expense Bill Recorded',
+        'activity_actions.owner_expense_bill.resent':
+            'Expense Bill Resent',
+        'activity_actions.owner_expense_bill_payment.cancelled':
+            'Expense Bill Payment Cancelled',
+        'activity_actions.owner_expense_bill_payment.recorded':
+            'Expense Bill Paid',
+        'activity_actions.owner_expense_bill_payment_receipt.downloaded':
+            'Expense Bill Payment Receipt Downloaded',
+        'activity_actions.owner_payout_receipt.downloaded':
+            'Owner Payout Receipt Downloaded',
+        'activity_actions.owner_reserve_transfer.recorded':
+            'Transfer Between Owner Accounts',
+        'activity_actions.owner_reserve_transfer_voucher.downloaded':
+            'Owner Transfer Voucher Downloaded',
+        'activity_actions.owner_reserve_transfer_voucher.resent':
+            'Owner Transfer Voucher Resent',
+        'activity_actions.party.data_exported':
+            'Party Data Exported',
+        'activity_actions.party.erased':
+            'Party Erased',
+        'activity_actions.registry.exported':
+            'Registry Exported',
+        'activity_actions.registry.imported':
+            'Registry Imported',
+        'activity_actions.security_deposit.deduction_added':
+            'Security Deposit Deduction Added',
+        'activity_actions.tenant_adjustment.recorded':
+            'Tenant Balance Adjusted',
+        'activity_actions.tenant_expense.recorded':
+            'Tenant Expense Recorded',
+        'activity_actions.tenant_expense_voucher.downloaded':
+            'Tenant Expense Voucher Downloaded',
+        'activity_actions.tenant_expense_voucher.resent':
+            'Tenant Expense Voucher Resent',
+        'activity_actions.tenant_fund.deposit':
+            'Tenant Fund Deposit',
+        'activity_actions.tenant_fund.transfer_recorded':
+            'Transfer Between Tenant Accounts',
+        'activity_actions.tenant_fund_transfer_voucher.downloaded':
+            'Tenant Transfer Voucher Downloaded',
+        'activity_actions.tenant_fund_transfer_voucher.resent':
+            'Tenant Transfer Voucher Resent',
+        'activity_actions.tenant_withdrawal.recorded':
+            'Tenant Withdrawal Recorded',
         'activity_actions.lease.created':
             'Lease Created',
 
@@ -4387,6 +4474,93 @@ export const translations = {
         'activity_actions.unit.deleted':
             'Unité supprimée',
 
+        /* ---- V1.0.35: actions that were written but never named ---- */
+        'activity_actions.adjustment_voucher.downloaded':
+            'Bon d’ajustement téléchargé',
+        'activity_actions.auth.email_verified':
+            'Adresse e-mail vérifiée',
+        'activity_actions.auth.invitation_accepted':
+            'Invitation acceptée',
+        'activity_actions.auth.password_changed':
+            'Mot de passe modifié',
+        'activity_actions.auth.password_reset':
+            'Mot de passe réinitialisé',
+        'activity_actions.expense_invoice.created':
+            'Facture de dépense locataire créée',
+        'activity_actions.invoice_account_payment.cancelled':
+            'Paiement de facture depuis un compte annulé',
+        'activity_actions.invoice_account_payment.recorded':
+            'Facture réglée depuis un compte',
+        'activity_actions.invoice_payment_receipt.downloaded':
+            'Reçu de paiement de facture téléchargé',
+        'activity_actions.lease.extended':
+            'Bail prolongé',
+        'activity_actions.lease.rent_increment_cancelled':
+            'Augmentation de loyer annulée',
+        'activity_actions.lease.rent_increment_scheduled':
+            'Augmentation de loyer programmée',
+        'activity_actions.lease.termination_cancelled':
+            'Résiliation de bail annulée',
+        'activity_actions.lease.termination_completed':
+            'Résiliation de bail finalisée',
+        'activity_actions.lease.termination_initiated':
+            'Résiliation de bail engagée',
+        'activity_actions.lease.termination_notice_downloaded':
+            'Préavis de résiliation téléchargé',
+        'activity_actions.organisation.closed_by_customer':
+            'Compte fermé par le client',
+        'activity_actions.organisation.data_exported':
+            'Données de l’organisation exportées',
+        'activity_actions.organisation.registered':
+            'Organisation inscrite',
+        'activity_actions.owner_expense_bill.downloaded':
+            'Facture de dépenses téléchargée',
+        'activity_actions.owner_expense_bill.recorded':
+            'Facture de dépenses enregistrée',
+        'activity_actions.owner_expense_bill.resent':
+            'Facture de dépenses renvoyée',
+        'activity_actions.owner_expense_bill_payment.cancelled':
+            'Paiement de facture de dépenses annulé',
+        'activity_actions.owner_expense_bill_payment.recorded':
+            'Facture de dépenses réglée',
+        'activity_actions.owner_expense_bill_payment_receipt.downloaded':
+            'Reçu de paiement de facture de dépenses téléchargé',
+        'activity_actions.owner_payout_receipt.downloaded':
+            'Reçu de paiement au propriétaire téléchargé',
+        'activity_actions.owner_reserve_transfer.recorded':
+            'Transfert entre comptes du propriétaire',
+        'activity_actions.owner_reserve_transfer_voucher.downloaded':
+            'Bon de transfert propriétaire téléchargé',
+        'activity_actions.owner_reserve_transfer_voucher.resent':
+            'Bon de transfert propriétaire renvoyé',
+        'activity_actions.party.data_exported':
+            'Données d’un tiers exportées',
+        'activity_actions.party.erased':
+            'Tiers effacé',
+        'activity_actions.registry.exported':
+            'Registre exporté',
+        'activity_actions.registry.imported':
+            'Registre importé',
+        'activity_actions.security_deposit.deduction_added':
+            'Retenue sur dépôt de garantie ajoutée',
+        'activity_actions.tenant_adjustment.recorded':
+            'Solde locataire ajusté',
+        'activity_actions.tenant_expense.recorded':
+            'Dépense locataire enregistrée',
+        'activity_actions.tenant_expense_voucher.downloaded':
+            'Bon de dépense locataire téléchargé',
+        'activity_actions.tenant_expense_voucher.resent':
+            'Bon de dépense locataire renvoyé',
+        'activity_actions.tenant_fund.deposit':
+            'Dépôt sur un fonds locataire',
+        'activity_actions.tenant_fund.transfer_recorded':
+            'Transfert entre comptes locataire',
+        'activity_actions.tenant_fund_transfer_voucher.downloaded':
+            'Bon de transfert locataire téléchargé',
+        'activity_actions.tenant_fund_transfer_voucher.resent':
+            'Bon de transfert locataire renvoyé',
+        'activity_actions.tenant_withdrawal.recorded':
+            'Retrait locataire enregistré',
         'activity_actions.lease.created':
             'Bail créé',
 
