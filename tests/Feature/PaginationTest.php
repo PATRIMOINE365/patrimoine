@@ -367,6 +367,38 @@ class PaginationTest extends TestCase
         }
     }
 
+    public function test_the_console_hands_over_everything_the_summary_needs(): void
+    {
+        /*
+         * The console builds its own meta rather than returning a Laravel
+         * paginator whole. It was missing from and to, so its activity list
+         * read "Showing 0-0 of 27" on the live page.
+         */
+        foreach ([
+            'Admin/AdminActivityController.php',
+            'Admin/AdminOrganisationController.php',
+        ] as $controller) {
+            $source = file_get_contents(
+                app_path('Http/Controllers/Api/'.$controller)
+            );
+
+            foreach ([
+                "'current_page'",
+                "'last_page'",
+                "'per_page'",
+                "'total'",
+                "'from' => \$page->firstItem()",
+                "'to' => \$page->lastItem()",
+            ] as $needle) {
+                $this->assertStringContainsString(
+                    $needle,
+                    $source,
+                    $controller.' must publish '.$needle.' for the control.'
+                );
+            }
+        }
+    }
+
     public function test_a_placeholder_cannot_eat_the_one_it_prefixes(): void
     {
         /*

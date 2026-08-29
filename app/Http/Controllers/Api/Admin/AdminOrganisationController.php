@@ -81,7 +81,14 @@ class AdminOrganisationController extends Controller
             'meta' => [
                 'current_page' => $page->currentPage(),
                 'last_page' => $page->lastPage(),
+                'per_page' => $page->perPage(),
                 'total' => $page->total(),
+                /*
+                 * The control's summary line is built from these. Without
+                 * them it read "Showing 0-0 of 27".
+                 */
+                'from' => $page->firstItem(),
+                'to' => $page->lastItem(),
             ],
         ]);
     }
