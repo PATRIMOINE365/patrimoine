@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Support\PhoneField;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -76,17 +77,13 @@ class UpdateManagingOrganisationRequest extends FormRequest
                 'string',
             ],
 
-            'phone' => [
-                'nullable',
-                'string',
-                'max:50',
-            ],
+            'phone' => PhoneField::number('phone'),
 
-            'alternate_phone' => [
-                'nullable',
-                'string',
-                'max:50',
-            ],
+            'phone_country' => PhoneField::country('phone'),
+
+            'alternate_phone' => PhoneField::number('alternate_phone'),
+
+            'alternate_phone_country' => PhoneField::country('alternate_phone'),
 
             'email' => [
                 'nullable',
@@ -100,11 +97,9 @@ class UpdateManagingOrganisationRequest extends FormRequest
                 'max:255',
             ],
 
-            'contact_person_phone' => [
-                'required',
-                'string',
-                'max:50',
-            ],
+            'contact_person_phone' => PhoneField::requiredNumber('contact_person_phone'),
+
+            'contact_person_phone_country' => PhoneField::country('contact_person_phone'),
 
             'contact_person_email' => [
                 'required',

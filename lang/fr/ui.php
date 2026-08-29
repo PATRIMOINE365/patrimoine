@@ -152,18 +152,24 @@ return [
         'accounting' => 'Comptabilité',
         'reports' => 'Rapports',
         'settings' => 'Paramètres',
-        'settings_description' => 'Préférences et configuration',
         'license' => 'Licence',
-        'license_description' => 'Forfait, utilisation et limites',
         'sign_out' => 'Se déconnecter',
         'sign_out_description' => 'Quitter Patrimoine',
         'activity_log' => 'Journal d’activité',
-        'activity_log_description' => 'Suivre et consulter les événements',
         'financial_journal' => 'Journal financier',
-        'financial_journal_description' => 'Registre comptable permanent',
         'users' => 'Utilisateurs',
-        'users_description' => 'Gérer les utilisateurs et leurs accès',
+        'platform_console' => 'Administration',
     ],
+    /*
+     * V1.0.30 telephone fields: the country picker beside every number.
+     */
+    'phone' => [
+        'country' => 'Pays',
+        'select' => 'Pays',
+        'search' => 'Pays ou indicatif',
+        'none' => 'Aucun pays ne correspond',
+    ],
+
     'shell' => [
         /* ---- V1.0.7 additions ---- */
         'help' => 'Aide',

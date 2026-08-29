@@ -703,10 +703,11 @@
                     </p>
                 </div>
 
-                <div>
-                    <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-profile-phone">Phone</label>
-                    <input id="admin-profile-phone" type="tel" class="pm-input">
-                </div>
+                <x-phone-field
+                    id="admin-profile-phone"
+                    label-text="Phone"
+                    label-class="mb-2 block text-sm font-medium"
+                />
 
                 <button id="admin-profile-save" type="submit" class="pm-button-primary">
                     Save details
@@ -958,10 +959,11 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-customer-user-phone">Phone</label>
-                    <input id="admin-customer-user-phone" type="text" class="pm-input">
-                </div>
+                <x-phone-field
+                    id="admin-customer-user-phone"
+                    label-text="Phone"
+                    label-class="mb-2 block text-sm font-medium"
+                />
 
                 <div>
                     <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-customer-user-role">Role</label>

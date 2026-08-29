@@ -94,7 +94,8 @@ class LeaseWizardTest extends TestCase
                             'type' => 'person',
                             'given_names' => 'Ama',
                             'surname' => 'Owner',
-                            'phone' => '0200003001',
+                            'phone' => '+233200003001',
+                            'phone_country' => 'GH',
                             'email' => 'ama.owner@example.test',
                         ],
                         'ownership_percentage' => 100,
@@ -106,7 +107,8 @@ class LeaseWizardTest extends TestCase
                         'type' => 'person',
                         'given_names' => 'Kofi',
                         'surname' => 'Tenant',
-                        'phone' => '0200003002',
+                        'phone' => '+233200003002',
+                        'phone_country' => 'GH',
                         'email' => 'kofi.tenant@example.test',
                     ],
                 ],
@@ -196,7 +198,8 @@ class LeaseWizardTest extends TestCase
                             'type' => 'person',
                             'given_names' => 'Yaw',
                             'surname' => 'Agent',
-                            'phone' => '0200003003',
+                            'phone' => '+233200003003',
+                            'phone_country' => 'GH',
                             'email' => 'yaw.agent@example.test',
                         ],
                     ],
@@ -258,7 +261,8 @@ class LeaseWizardTest extends TestCase
         $owner = Party::create([
             'type' => 'person',
             'name' => 'Existing Owner',
-            'phone' => '0200003010',
+            'phone' => '+233200003010',
+            'phone_country' => 'GH',
             'email' => 'existing.owner@example.test',
         ]);
 
@@ -281,7 +285,8 @@ class LeaseWizardTest extends TestCase
         $tenant = Party::create([
             'type' => 'person',
             'name' => 'Existing Tenant',
-            'phone' => '0200003011',
+            'phone' => '+233200003011',
+            'phone_country' => 'GH',
             'email' => 'existing.tenant@example.test',
         ]);
 
@@ -415,7 +420,8 @@ class LeaseWizardTest extends TestCase
         $owner = Party::create([
             'type' => 'person',
             'name' => 'Other Owner',
-            'phone' => '0200003020',
+            'phone' => '+233200003020',
+            'phone_country' => 'GH',
             'email' => 'other.owner@example.test',
         ]);
 
@@ -443,7 +449,8 @@ class LeaseWizardTest extends TestCase
         $tenant = Party::create([
             'type' => 'person',
             'name' => 'Wizard Tenant',
-            'phone' => '0200003021',
+            'phone' => '+233200003021',
+            'phone_country' => 'GH',
             'email' => 'wizard.tenant@example.test',
         ]);
 
@@ -482,7 +489,8 @@ class LeaseWizardTest extends TestCase
         $tenant = Party::create([
             'type' => 'person',
             'name' => 'Second Tenant',
-            'phone' => '0200003030',
+            'phone' => '+233200003030',
+            'phone_country' => 'GH',
             'email' => 'second.tenant@example.test',
         ]);
 
@@ -523,7 +531,8 @@ class LeaseWizardTest extends TestCase
         $tenant = Party::create([
             'type' => 'person',
             'name' => 'Third Tenant',
-            'phone' => '0200003040',
+            'phone' => '+233200003040',
+            'phone_country' => 'GH',
             'email' => 'third.tenant@example.test',
         ]);
 
@@ -540,7 +549,8 @@ class LeaseWizardTest extends TestCase
                                 'type' => 'person',
                                 'given_names' => 'New',
                                 'surname' => 'Owner',
-                                'phone' => '0200003041',
+                                'phone' => '+233200003041',
+                                'phone_country' => 'GH',
                                 'email' => 'new.owner@example.test',
                             ],
                             'ownership_percentage' => 100,

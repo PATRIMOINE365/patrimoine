@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Support\PhoneField;
 use App\Enums\UserRole;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -78,12 +79,11 @@ class UpdateUserRequest extends FormRequest
                     ->ignore($user),
             ],
 
-            'phone' => [
+            'phone' => PhoneField::number('phone', [
                 'sometimes',
-                'nullable',
-                'string',
-                'max:50',
-            ],
+            ]),
+
+            'phone_country' => PhoneField::country('phone'),
 
             'role' => [
                 'sometimes',

@@ -134,6 +134,7 @@ class AdminOrganisationDataController extends Controller
                 'legal_name' => $party->legal_name,
                 'email' => $party->email,
                 'phone' => $party->phone,
+                'phone_country' => $party->phone_country,
                 'roles' => $party->roles
                     ->pluck('role')
                     ->values()

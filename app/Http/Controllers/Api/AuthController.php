@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Support\PhoneField;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\ActivityLogService;
@@ -434,11 +435,9 @@ class AuthController extends Controller
                 },
             ],
 
-            'phone' => [
-                'nullable',
-                'string',
-                'max:50',
-            ],
+            'phone' => PhoneField::number('phone'),
+
+            'phone_country' => PhoneField::country('phone'),
 
             'current_password' => [
                 'nullable',
@@ -492,6 +491,9 @@ class AuthController extends Controller
 
             'phone' =>
                 $user->phone,
+
+            'phone_country' =>
+                $user->phone_country,
         ];
 
         DB::transaction(
@@ -526,6 +528,10 @@ class AuthController extends Controller
                     $validated['phone']
                     ?? null;
 
+                $user->phone_country =
+                    $validated['phone_country']
+                    ?? null;
+
                 if ($changingPassword) {
                     /*
                      * User model password casting performs the hash.
@@ -549,6 +555,9 @@ class AuthController extends Controller
 
             'phone' =>
                 $user->phone,
+
+            'phone_country' =>
+                $user->phone_country,
         ];
 
         $changedBefore = [];
@@ -770,6 +779,7 @@ class AuthController extends Controller
             'surname' => $user->surname,
             'email' => $user->email,
             'phone' => $user->phone,
+            'phone_country' => $user->phone_country,
 
             /*
              * V1.0.11: the profile photo travels as a data URI — no

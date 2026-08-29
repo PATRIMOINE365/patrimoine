@@ -262,37 +262,15 @@
                                 ></textarea>
                             </div>
 
-                            <div>
-                                <label
-                                    for="organisation-phone"
-                                    class="pm-field-label"
-                                >
-                                    <span data-i18n="settings.phone">{{ __('ui.settings.phone') }}</span>
-                                </label>
+                            <x-phone-field
+                                id="organisation-phone"
+                                label="settings.phone"
+                            />
 
-                                <input
-                                    id="organisation-phone"
-                                    type="text"
-                                    maxlength="50"
-                                    class="pm-input"
-                                >
-                            </div>
-
-                            <div>
-                                <label
-                                    for="organisation-alternate-phone"
-                                    class="pm-field-label"
-                                >
-                                    <span data-i18n="settings.alternate_phone">{{ __('ui.settings.alternate_phone') }}</span>
-                                </label>
-
-                                <input
-                                    id="organisation-alternate-phone"
-                                    type="text"
-                                    maxlength="50"
-                                    class="pm-input"
-                                >
-                            </div>
+                            <x-phone-field
+                                id="organisation-alternate-phone"
+                                label="settings.alternate_phone"
+                            />
 
                             <div class="md:col-span-2">
                                 <label
@@ -347,23 +325,11 @@
                                 >
                             </div>
 
-                            <div>
-                                <label
-                                    for="organisation-contact-phone"
-                                    class="pm-field-label"
-                                >
-                                    <span data-i18n="settings.contact_phone">{{ __('ui.settings.contact_phone') }}</span>
-                                    <span class="text-[var(--pm-danger-text)]">*</span>
-                                </label>
-
-                                <input
-                                    id="organisation-contact-phone"
-                                    type="text"
-                                    required
-                                    maxlength="50"
-                                    class="pm-input"
-                                >
-                            </div>
+                            <x-phone-field
+                                id="organisation-contact-phone"
+                                label="settings.contact_phone"
+                                :required="true"
+                            />
 
                             <div>
                                 <label

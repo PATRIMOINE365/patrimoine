@@ -225,7 +225,7 @@
 
                 @if($managingOrganisation->phone)
                     <div class="muted">
-                        {{ $managingOrganisation->phone }}
+                        {{ $managingOrganisation->phone_display }}
                     </div>
                 @endif
 
@@ -272,7 +272,7 @@
 
                 @if($invoice->lease->tenant->phone)
                     <br>
-                    {{ $invoice->lease->tenant->phone }}
+                    {{ $invoice->lease->tenant->phone_display }}
                 @endif
 
                 @if($invoice->lease->tenant->email)

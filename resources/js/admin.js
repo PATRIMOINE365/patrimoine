@@ -28,6 +28,11 @@ import {
 } from './core.js';
 
 import {
+    applyPhoneValue,
+    readPhoneValue,
+} from './phone-input.js';
+
+import {
     getThemePreference,
     setThemePreference,
 } from './theme.js';
@@ -953,11 +958,16 @@ function openCustomerUserDrawer() {
         org.textContent = `This account will belong to ${currentOrganisation.name}.`;
     }
 
+    applyPhoneValue(
+        'admin-customer-user-phone',
+        null,
+        null
+    );
+
     for (const id of [
         'admin-customer-user-given',
         'admin-customer-user-surname',
         'admin-customer-user-email',
-        'admin-customer-user-phone',
     ]) {
         const input = document.getElementById(id);
 
@@ -1044,7 +1054,8 @@ async function submitCustomerUser() {
                 given_names: document.getElementById('admin-customer-user-given').value.trim() || null,
                 surname: document.getElementById('admin-customer-user-surname').value.trim(),
                 email: document.getElementById('admin-customer-user-email').value.trim(),
-                phone: document.getElementById('admin-customer-user-phone').value.trim() || null,
+                phone: readPhoneValue('admin-customer-user-phone').number,
+                phone_country: readPhoneValue('admin-customer-user-phone').country,
                 role: document.getElementById('admin-customer-user-role').value,
                 is_active: document.getElementById('admin-customer-user-active').checked,
             }
@@ -1539,8 +1550,11 @@ function openProfileDrawer() {
     document.getElementById('admin-profile-email').value =
         currentUser.email ?? '';
 
-    document.getElementById('admin-profile-phone').value =
-        currentUser.phone ?? '';
+    applyPhoneValue(
+        'admin-profile-phone',
+        currentUser.phone,
+        currentUser.phone_country
+    );
 
     document.getElementById('admin-profile-photo-remove')
         ?.classList.toggle('hidden', ! currentUser.avatar);
@@ -1564,7 +1578,9 @@ async function submitProfile(event) {
             email:
                 document.getElementById('admin-profile-email').value.trim(),
             phone:
-                document.getElementById('admin-profile-phone').value.trim() || null,
+                readPhoneValue('admin-profile-phone').number,
+            phone_country:
+                readPhoneValue('admin-profile-phone').country,
         });
 
         currentUser = data;
@@ -1612,7 +1628,9 @@ async function submitPassword(event) {
                 document.getElementById('admin-profile-email').value.trim()
                 || currentUser.email,
             phone:
-                document.getElementById('admin-profile-phone').value.trim() || null,
+                readPhoneValue('admin-profile-phone').number,
+            phone_country:
+                readPhoneValue('admin-profile-phone').country,
             current_password:
                 document.getElementById('admin-password-current').value,
             password: newPassword,

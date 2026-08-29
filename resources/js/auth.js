@@ -35,6 +35,11 @@ import {
 
 } from './core.js';
 
+import {
+    applyPhoneValue,
+    readPhoneValue,
+} from './phone-input.js';
+
 import { initializeBrowserAuthorization } from './permissions.js';
 
 import {
@@ -837,6 +842,12 @@ function renderCurrentUser(user) {
                         || ''
                     ),
 
+                phone_country:
+                    String(
+                        user.phone_country
+                        || ''
+                    ),
+
                 role:
                     String(
                         user.role
@@ -1632,8 +1643,11 @@ function openProfileModal() {
     }
 
     if (phone) {
-        phone.value =
-            user.phone ?? '';
+        applyPhoneValue(
+            'profile-phone',
+            user.phone,
+            user.phone_country
+        );
     }
 
     if (role) {
@@ -1947,9 +1961,10 @@ async function submitProfileForm(
                     .trim(),
 
             phone:
-                phone.value
-                    .trim()
-                    || null,
+                readPhoneValue('profile-phone').number,
+
+            phone_country:
+                readPhoneValue('profile-phone').country,
         };
 
         if (changingPassword) {
@@ -2181,16 +2196,6 @@ function initializeShellControls() {
             'my-profile-open'
         );
 
-    const manageToggle =
-        document.getElementById(
-            'sidebar-manage-toggle'
-        );
-
-    const manageMenu =
-        document.getElementById(
-            'sidebar-manage-menu'
-        );
-
     const notificationToggle =
         document.getElementById(
             'notification-menu-toggle'
@@ -2207,17 +2212,6 @@ function initializeShellControls() {
         );
 
         userToggle?.setAttribute(
-            'aria-expanded',
-            'false'
-        );
-    };
-
-    const closeManageMenu = () => {
-        manageMenu?.classList.add(
-            'hidden'
-        );
-
-        manageToggle?.setAttribute(
             'aria-expanded',
             'false'
         );
@@ -2245,39 +2239,6 @@ function initializeShellControls() {
                 'hidden'
             );
     };
-
-    manageToggle?.addEventListener(
-        'click',
-        (event) => {
-            event.stopPropagation();
-
-            closeUserMenu();
-            closeNotificationMenu();
-
-            const opening =
-                manageMenu?.classList.contains(
-                    'hidden'
-                );
-
-            manageMenu?.classList.toggle(
-                'hidden'
-            );
-
-            manageToggle.setAttribute(
-                'aria-expanded',
-                opening
-                    ? 'true'
-                    : 'false'
-            );
-        }
-    );
-
-    manageMenu?.addEventListener(
-        'click',
-        (event) => {
-            event.stopPropagation();
-        }
-    );
 
     profileOpen?.addEventListener(
         'click',
@@ -2389,7 +2350,6 @@ function initializeShellControls() {
         () => {
             closeUserMenu();
             closeNotificationMenu();
-            closeManageMenu();
         }
     );
 
@@ -2399,7 +2359,6 @@ function initializeShellControls() {
             if (event.key === 'Escape') {
                 closeUserMenu();
                 closeNotificationMenu();
-                closeManageMenu();
             }
         }
     );

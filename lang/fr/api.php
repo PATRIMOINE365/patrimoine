@@ -113,6 +113,10 @@ return [
         'advance_received_positive' => 'L’avance doit être supérieure à zéro lorsque l’option indiquant qu’elle a déjà été reçue est sélectionnée.',
 
         'advance_received_before_lease' => 'La date de réception de l’avance ne peut pas être antérieure à la date de début du bail.',
+
+        'telephone_country_required' => 'Choisissez le pays auquel ce numéro de téléphone appartient.',
+
+        'telephone_number_invalid' => 'Ce numéro de téléphone semble incorrect. Vérifiez les chiffres et le pays.',
     ],
 
     'user_invitation' => [

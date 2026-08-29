@@ -25,7 +25,8 @@ class PartyActivityLogTest extends TestCase
             ->postJson('/api/parties', [
                 'type' => 'person',
                 'name' => 'Activity Tenant',
-                'phone' => '0200000001',
+                'phone' => '+233200000001',
+                'phone_country' => 'GH',
                 'email' => 'activity@example.test',
                 'roles' => [
                     'tenant',
@@ -62,7 +63,8 @@ class PartyActivityLogTest extends TestCase
         $party = Party::create([
             'type' => 'person',
             'name' => 'Before Party',
-            'phone' => '0200000002',
+            'phone' => '+233200000002',
+            'phone_country' => 'GH',
             'email' => 'before@example.test',
         ]);
 
@@ -78,7 +80,8 @@ class PartyActivityLogTest extends TestCase
                 [
                     'type' => 'person',
                     'name' => 'After Party',
-                    'phone' => '0200000002',
+                    'phone' => '+233200000002',
+                    'phone_country' => 'GH',
                     'email' => 'before@example.test',
                     'roles' => [
                         'tenant',
@@ -117,7 +120,8 @@ class PartyActivityLogTest extends TestCase
         $party = Party::create([
             'type' => 'person',
             'name' => 'Same Party',
-            'phone' => '0200000003',
+            'phone' => '+233200000003',
+            'phone_country' => 'GH',
             'email' => 'same@example.test',
         ]);
 
@@ -133,7 +137,8 @@ class PartyActivityLogTest extends TestCase
                 [
                     'type' => 'person',
                     'name' => 'Same Party',
-                    'phone' => '0200000003',
+                    'phone' => '+233200000003',
+                    'phone_country' => 'GH',
                     'email' => 'same@example.test',
                     'roles' => ['tenant'],
                 ]
@@ -151,7 +156,8 @@ class PartyActivityLogTest extends TestCase
         $party = Party::create([
             'type' => 'person',
             'name' => 'Delete Party',
-            'phone' => '0200000004',
+            'phone' => '+233200000004',
+            'phone_country' => 'GH',
             'email' => 'delete@example.test',
         ]);
 
@@ -188,7 +194,8 @@ class PartyActivityLogTest extends TestCase
         $tenant = Party::create([
             'type' => 'person',
             'name' => 'Referenced Tenant',
-            'phone' => '0200000005',
+            'phone' => '+233200000005',
+            'phone_country' => 'GH',
             'email' => 'referenced@example.test',
         ]);
 

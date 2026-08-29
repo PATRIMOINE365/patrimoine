@@ -32,7 +32,8 @@ class PartyApiTest extends TestCase
         $response = $this->postJson('/api/parties', [
             'type' => 'person',
             'name' => 'Ama Mensah',
-            'phone' => '0200000200',
+            'phone' => '+233200000200',
+            'phone_country' => 'GH',
             'email' => 'ama@example.test',
             'roles' => [
                 'owner',
@@ -113,7 +114,8 @@ class PartyApiTest extends TestCase
             'legal_name' => 'Patrimoine Test Limited',
             'address' => 'Accra',
             'contact_person_name' => 'Kwame Test',
-            'contact_person_phone' => '0200000201',
+            'contact_person_phone' => '+233200000201',
+            'contact_person_phone_country' => 'GH',
             'contact_person_email' => 'kwame@example.test',
             'registration_number' => 'CS123456',
             'roles' => [
@@ -148,7 +150,8 @@ class PartyApiTest extends TestCase
         $owner = Party::create([
             'type' => 'person',
             'name' => 'Visible Owner',
-            'phone' => '0200000301',
+            'phone' => '+233200000301',
+            'phone_country' => 'GH',
             'email' => 'visible-owner@example.test',
         ]);
 
@@ -161,7 +164,8 @@ class PartyApiTest extends TestCase
             'type' => 'company',
             'name' => 'Organisation Gestionnaire',
             'legal_name' => 'Organisation Gestionnaire',
-            'phone' => '0200000302',
+            'phone' => '+233200000302',
+            'phone_country' => 'GH',
             'email' => 'managing@example.test',
         ]);
 
@@ -191,7 +195,8 @@ class PartyApiTest extends TestCase
             'type' => 'company',
             'name' => 'Organisation Gestionnaire',
             'legal_name' => 'Organisation Gestionnaire',
-            'phone' => '0200000303',
+            'phone' => '+233200000303',
+            'phone_country' => 'GH',
             'email' => 'managing-explicit@example.test',
         ]);
 
@@ -214,7 +219,8 @@ class PartyApiTest extends TestCase
         $owner = Party::create([
             'type' => 'person',
             'name' => 'Owner Party',
-            'phone' => '0200000202',
+            'phone' => '+233200000202',
+            'phone_country' => 'GH',
             'email' => 'owner-api@example.test',
         ]);
 
@@ -226,7 +232,8 @@ class PartyApiTest extends TestCase
         $tenant = Party::create([
             'type' => 'person',
             'name' => 'Tenant Party',
-            'phone' => '0200000203',
+            'phone' => '+233200000203',
+            'phone_country' => 'GH',
             'email' => 'tenant-api@example.test',
         ]);
 
@@ -257,7 +264,8 @@ class PartyApiTest extends TestCase
         $party = Party::create([
             'type' => 'person',
             'name' => 'Role Test',
-            'phone' => '0200000204',
+            'phone' => '+233200000204',
+            'phone_country' => 'GH',
             'email' => 'role-test@example.test',
         ]);
 
@@ -271,7 +279,8 @@ class PartyApiTest extends TestCase
             [
                 'type' => 'person',
                 'name' => 'Role Test',
-                'phone' => '0200000204',
+                'phone' => '+233200000204',
+                'phone_country' => 'GH',
                 'email' => 'role-test@example.test',
                 'roles' => [
                     'owner',
@@ -307,7 +316,8 @@ class PartyApiTest extends TestCase
         $party = Party::create([
             'type' => 'person',
             'name' => 'Show Test',
-            'phone' => '0200000205',
+            'phone' => '+233200000205',
+            'phone_country' => 'GH',
             'email' => 'show-test@example.test',
         ]);
 
@@ -334,7 +344,8 @@ class PartyApiTest extends TestCase
         $party = Party::create([
             'type' => 'person',
             'name' => 'Delete Test',
-            'phone' => '0200000206',
+            'phone' => '+233200000206',
+            'phone_country' => 'GH',
             'email' => 'delete-test@example.test',
         ]);
 
@@ -362,7 +373,8 @@ class PartyApiTest extends TestCase
             'legal_name' => 'Organisation Gestionnaire',
             'address' => 'Accra',
             'contact_person_name' => 'Gestionnaire',
-            'contact_person_phone' => '0200000999',
+            'contact_person_phone' => '+233200000999',
+            'contact_person_phone_country' => 'GH',
             'contact_person_email' => 'gestion@example.test',
         ]);
 

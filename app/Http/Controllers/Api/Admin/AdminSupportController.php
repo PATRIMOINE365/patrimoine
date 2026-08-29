@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\PlatformAuditService;
 use App\Services\RegistrationService;
 use App\Services\UserPasswordService;
+use App\Support\PhoneField;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -294,7 +295,9 @@ class AdminSupportController extends Controller
                             },
                         ],
 
-                        'phone' => ['nullable', 'string', 'max:50'],
+                        'phone' => PhoneField::number('phone'),
+
+                        'phone_country' => PhoneField::country('phone'),
 
                         'role' => [
                             'required',
@@ -340,6 +343,7 @@ class AdminSupportController extends Controller
                                 ),
                             'email' => $validated['email'],
                             'phone' => $validated['phone'] ?? null,
+                            'phone_country' => $validated['phone_country'] ?? null,
                             'role' => $validated['role'],
                             'is_active' => $isActive,
                             'password' => \Illuminate\Support\Str::random(64),

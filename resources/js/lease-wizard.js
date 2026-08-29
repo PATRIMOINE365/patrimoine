@@ -28,6 +28,11 @@ import {
     translate,
 } from './core.js';
 
+import {
+    phoneFieldMarkup,
+    readPhoneValue,
+} from './phone-input.js';
+
 /*
 |--------------------------------------------------------------------------
 | Module State
@@ -441,12 +446,12 @@ function partyFieldsMarkup(prefix) {
 
             <div class="pm-wizard-grid">
                 <div>
-                    <label for="${prefix}-phone" class="pm-field-label">
+                    <label for="${prefix}-phone-number" class="pm-field-label">
                         ${escapeHtml(translate('wizard.phone'))}
                         <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
-                    <input id="${prefix}-phone" type="text" maxlength="50" class="pm-input">
+                    ${phoneFieldMarkup({ id: `${prefix}-phone`, required: true })}
                 </div>
 
                 <div>
@@ -529,9 +534,13 @@ function readPartyFields(container, prefix) {
         ?.value
         ?? 'person';
 
+    const telephone =
+        readPhoneValue(`${prefix}-phone`);
+
     const attributes = {
         type,
-        phone: value(`${prefix}-phone`),
+        phone: telephone.number,
+        phone_country: telephone.country,
         email: value(`${prefix}-email`),
     };
 
@@ -541,7 +550,8 @@ function readPartyFields(container, prefix) {
     } else {
         attributes.legal_name = value(`${prefix}-legal-name`);
         attributes.contact_person_name = value(`${prefix}-contact-name`);
-        attributes.contact_person_phone = value(`${prefix}-phone`);
+        attributes.contact_person_phone = telephone.number;
+        attributes.contact_person_phone_country = telephone.country;
         attributes.contact_person_email = value(`${prefix}-email`);
     }
 

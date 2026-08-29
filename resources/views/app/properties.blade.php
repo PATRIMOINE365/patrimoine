@@ -732,22 +732,11 @@
                         sm:grid-cols-2
                     "
                 >
-                    <div>
-                        <label
-                            for="owner-phone"
-                            class="pm-field-label"
-                        >
-                            <span data-i18n="properties.phone">{{ __('ui.properties.phone') }}</span>
-                            <span class="text-[var(--pm-danger-text)]">*</span>
-                        </label>
-
-                        <input
-                            id="owner-phone"
-                            type="text"
-                            maxlength="50"
-                            class="pm-input"
-                        >
-                    </div>
+                    <x-phone-field
+                        id="owner-phone"
+                        label="properties.phone"
+                        :required="true"
+                    />
 
                     <div>
                         <label
@@ -813,22 +802,11 @@
                         sm:grid-cols-2
                     "
                 >
-                    <div>
-                        <label
-                            for="owner-contact-phone"
-                            class="pm-field-label"
-                        >
-                            <span data-i18n="properties.contact_phone">{{ __('ui.properties.contact_phone') }}</span>
-                            <span class="text-[var(--pm-danger-text)]">*</span>
-                        </label>
-
-                        <input
-                            id="owner-contact-phone"
-                            type="text"
-                            maxlength="50"
-                            class="pm-input"
-                        >
-                    </div>
+                    <x-phone-field
+                        id="owner-contact-phone"
+                        label="properties.contact_phone"
+                        :required="true"
+                    />
 
                     <div>
                         <label

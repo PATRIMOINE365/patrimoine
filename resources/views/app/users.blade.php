@@ -288,21 +288,10 @@
                     >
                 </div>
 
-                <div>
-                    <label
-                        for="user-phone"
-                        class="pm-field-label"
-                    >
-                        <span data-i18n="users.phone">{{ __('ui.users.phone') }}</span>
-                    </label>
-
-                    <input
-                        id="user-phone"
-                        type="text"
-                        maxlength="50"
-                        class="pm-input"
-                    >
-                </div>
+                <x-phone-field
+                    id="user-phone"
+                    label="users.phone"
+                />
 
                 <div>
                     <label

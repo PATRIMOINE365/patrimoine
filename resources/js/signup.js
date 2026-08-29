@@ -19,6 +19,8 @@ import {
     translate,
 } from './core.js';
 
+import { readPhoneValue } from './phone-input.js';
+
 /**
  * POST a JSON payload without authentication.
  */
@@ -180,11 +182,10 @@ export function initializeSignup() {
                                     .trim(),
 
                             phone:
-                                document
-                                    .getElementById('signup-phone')
-                                    .value
-                                    .trim()
-                                || null,
+                                readPhoneValue('signup-phone').number,
+
+                            phone_country:
+                                readPhoneValue('signup-phone').country,
 
                             password:
                                 document

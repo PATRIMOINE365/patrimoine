@@ -37,6 +37,11 @@ import {
     wireDrawer,
 } from './core.js';
 
+import {
+    applyPhoneValue,
+    readPhoneValue,
+} from './phone-input.js';
+
 /*
 |--------------------------------------------------------------------------
 | Tab Registry
@@ -1747,14 +1752,16 @@ function populateManagingOrganisationForm(
         organisation.address
     );
 
-    setFormValue(
+    applyPhoneValue(
         'organisation-phone',
-        organisation.phone
+        organisation.phone,
+        organisation.phone_country
     );
 
-    setFormValue(
+    applyPhoneValue(
         'organisation-alternate-phone',
-        organisation.alternate_phone
+        organisation.alternate_phone,
+        organisation.alternate_phone_country
     );
 
     setFormValue(
@@ -1767,9 +1774,10 @@ function populateManagingOrganisationForm(
         organisation.contact_person_name
     );
 
-    setFormValue(
+    applyPhoneValue(
         'organisation-contact-phone',
-        organisation.contact_person_phone
+        organisation.contact_person_phone,
+        organisation.contact_person_phone_country
     );
 
     setFormValue(
@@ -1976,14 +1984,16 @@ async function submitManagingOrganisation(
             ),
 
         phone:
-            nullableFormValue(
-                'organisation-phone'
-            ),
+            readPhoneValue('organisation-phone').number,
+
+        phone_country:
+            readPhoneValue('organisation-phone').country,
 
         alternate_phone:
-            nullableFormValue(
-                'organisation-alternate-phone'
-            ),
+            readPhoneValue('organisation-alternate-phone').number,
+
+        alternate_phone_country:
+            readPhoneValue('organisation-alternate-phone').country,
 
         email:
             nullableFormValue(
@@ -1996,9 +2006,10 @@ async function submitManagingOrganisation(
             ),
 
         contact_person_phone:
-            formValue(
-                'organisation-contact-phone'
-            ),
+            readPhoneValue('organisation-contact-phone').number ?? '',
+
+        contact_person_phone_country:
+            readPhoneValue('organisation-contact-phone').country,
 
         contact_person_email:
             formValue(

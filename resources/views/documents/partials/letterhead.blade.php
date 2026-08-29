@@ -21,7 +21,7 @@
     $letterheadContact =
         collect([
             $letterheadOrganisation?->address,
-            $letterheadOrganisation?->phone,
+            $letterheadOrganisation?->phone_display,
             $letterheadOrganisation?->email,
         ])
             ->filter()

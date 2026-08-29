@@ -202,6 +202,7 @@ class ManagingOrganisationApiTest extends TestCase
                     'address' => $party->address,
                     'contact_person_name' => $party->contact_person_name,
                     'contact_person_phone' => $party->contact_person_phone,
+                    'contact_person_phone_country' => $party->contact_person_phone_country,
                     'contact_person_email' => $party->contact_person_email,
                     'roles' => [],
                 ]
@@ -335,13 +336,17 @@ class ManagingOrganisationApiTest extends TestCase
 
             'address' => 'Accra, Ghana',
 
-            'phone' => '0302000000',
+            'phone' => '+233302000000',
+
+            'phone_country' => 'GH',
 
             'email' => 'info@patrimoine.example',
 
             'contact_person_name' => 'Property Manager',
 
-            'contact_person_phone' => '0200000000',
+            'contact_person_phone' => '+233200000000',
+
+            'contact_person_phone_country' => 'GH',
 
             'contact_person_email' => 'manager@patrimoine.example',
 
@@ -353,7 +358,7 @@ class ManagingOrganisationApiTest extends TestCase
 
             'bank_account_name' => 'Patrimoine Management Limited',
 
-            'bank_account_number' => '0000000000',
+            'bank_account_number' => '+233000000000',
 
             'bank_branch' => 'Accra',
 

@@ -699,6 +699,18 @@ return [
         'fix' => 'Choose an account that belongs to the same lease as the invoice. If money really needs to move between leases, use a transfer, which is recorded as one.',
     ],
 
+    'PM-2072' => [
+        'title' => 'Choose the country this telephone number belongs to.',
+        'what' => 'A telephone number cannot be dialled without knowing which country it is in. The same digits mean different people in different countries.',
+        'fix' => 'Open the country list beside the number and choose the country. You can type the country name or its code to find it quickly.',
+    ],
+
+    'PM-2073' => [
+        'title' => 'This telephone number does not look right.',
+        'what' => 'The digits and the chosen country do not make a number that could be dialled. Usually one or two digits are missing, or the country is not the one the number belongs to.',
+        'fix' => 'Check the digits against the number as it is written down, and check the country beside them. Leave out the leading zero — it is only used inside the country.',
+    ],
+
     /* ---- 3xxx ---- */
 
     'PM-3001' => [

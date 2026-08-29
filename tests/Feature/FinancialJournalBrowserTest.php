@@ -250,7 +250,6 @@ class FinancialJournalBrowserTest extends TestCase
         foreach (
             [
                 "'navigation.financial_journal':",
-                "'navigation.financial_journal_description':",
                 "'financial_journal.title':",
                 "'financial_journal.search':",
                 "'financial_journal.entry_kind':",

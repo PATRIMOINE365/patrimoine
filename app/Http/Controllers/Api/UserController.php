@@ -165,6 +165,7 @@ class UserController extends Controller
                 ),
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
+            'phone_country' => $validated['phone_country'] ?? null,
             'role' => $validated['role'],
             'is_active' => $isActive,
 
@@ -335,6 +336,7 @@ class UserController extends Controller
                         'surname',
                         'email',
                         'phone',
+                        'phone_country',
                     ])
                 );
 
@@ -460,6 +462,7 @@ class UserController extends Controller
             'name' => $user->name,
             'email' => $user->email,
             'phone' => $user->phone,
+            'phone_country' => $user->phone_country,
             'role' => $user->role->value,
             'is_active' => $user->isActive(),
             'email_verified' => $user->email_verified_at !== null,

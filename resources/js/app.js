@@ -35,6 +35,11 @@ import {
 } from './theme.js';
 
 import {
+    initializePhoneInputs,
+    refreshPhoneInputs,
+} from './phone-input.js';
+
+import {
     initializePublicPresentationControls,
 } from './public-presentation.js';
 
@@ -170,6 +175,16 @@ document.addEventListener(
          * using the organisation currency's separator.
          */
         initializeMoneyInputs();
+
+        /*
+         * V1.0.30: the country picker beside every telephone number. The
+         * listeners are delegated, so drawers rendered later are covered
+         * without being told; the refresh only paints what is on screen
+         * already, such as the profile drawer in the shell.
+         */
+        initializePhoneInputs();
+
+        refreshPhoneInputs();
 
         /*
          * Login and authenticated application screens are mutually

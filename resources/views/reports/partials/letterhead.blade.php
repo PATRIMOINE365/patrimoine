@@ -55,7 +55,7 @@
 
         @if($managingOrganisation->phone || $managingOrganisation->email)
             <div class="pm-letterhead-subtitle">
-                {{ $managingOrganisation->phone }}
+                {{ $managingOrganisation->phone_display }}
 
                 @if(
                     $managingOrganisation->phone

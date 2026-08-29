@@ -46,6 +46,11 @@ import {
     requireDangerConfirmation,
 } from './core.js';
 
+import {
+    applyPhoneValue,
+    readPhoneValue,
+} from './phone-input.js';
+
 /*
 |--------------------------------------------------------------------------
 | Module State
@@ -1489,7 +1494,7 @@ function updatePartyTypeFields() {
     );
 
     setRequired(
-        'party-phone',
+        'party-phone-number',
         person
     );
 
@@ -1509,7 +1514,7 @@ function updatePartyTypeFields() {
     );
 
     setRequired(
-        'party-contact-phone',
+        'party-contact-phone-number',
         ! person
     );
 
@@ -1604,14 +1609,16 @@ function populatePartyForm(party) {
         party.legal_name
     );
 
-    setFormValue(
+    applyPhoneValue(
         'party-phone',
-        party.phone
+        party.phone,
+        party.phone_country
     );
 
-    setFormValue(
+    applyPhoneValue(
         'party-alternate-phone',
-        party.alternate_phone
+        party.alternate_phone,
+        party.alternate_phone_country
     );
 
     setFormValue(
@@ -1629,9 +1636,10 @@ function populatePartyForm(party) {
         party.contact_person_name
     );
 
-    setFormValue(
+    applyPhoneValue(
         'party-contact-phone',
-        party.contact_person_phone
+        party.contact_person_phone,
+        party.contact_person_phone_country
     );
 
     setFormValue(
@@ -1917,15 +1925,19 @@ function buildPartyPayload() {
 
         phone:
             type === 'person'
-                ? nullableFormValue(
-                    'party-phone'
-                )
+                ? readPhoneValue('party-phone').number
+                : null,
+
+        phone_country:
+            type === 'person'
+                ? readPhoneValue('party-phone').country
                 : null,
 
         alternate_phone:
-            nullableFormValue(
-                'party-alternate-phone'
-            ),
+            readPhoneValue('party-alternate-phone').number,
+
+        alternate_phone_country:
+            readPhoneValue('party-alternate-phone').country,
 
         email:
             type === 'person'
@@ -1949,9 +1961,12 @@ function buildPartyPayload() {
         contact_person_phone:
             type === 'person'
                 ? null
-                : nullableFormValue(
-                    'party-contact-phone'
-                ),
+                : readPhoneValue('party-contact-phone').number,
+
+        contact_person_phone_country:
+            type === 'person'
+                ? null
+                : readPhoneValue('party-contact-phone').country,
 
         contact_person_email:
             type === 'person'

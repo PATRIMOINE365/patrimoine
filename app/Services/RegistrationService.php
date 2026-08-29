@@ -64,6 +64,7 @@ class RegistrationService
      *     surname: string,
      *     email: string,
      *     phone?: string|null,
+     *     phone_country?: string|null,
      *     password: string,
      *     language: string,
      * }  $data
@@ -231,6 +232,7 @@ class RegistrationService
             'legal_name' => $organisation->name,
             'email' => $email,
             'phone' => $data['phone'] ?? null,
+            'phone_country' => $data['phone_country'] ?? null,
         ]);
 
         $party->roles()->create([
@@ -266,6 +268,7 @@ class RegistrationService
             'surname' => trim($data['surname']),
             'email' => $email,
             'phone' => $data['phone'] ?? null,
+            'phone_country' => $data['phone_country'] ?? null,
             'password' => $data['password'],
             'role' => UserRole::Administrator,
             'is_active' => true,

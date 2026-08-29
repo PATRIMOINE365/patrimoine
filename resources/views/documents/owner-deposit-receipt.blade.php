@@ -175,7 +175,7 @@
 
                 @if($managingOrganisation->phone)
                     <div class="muted">
-                        {{ $managingOrganisation->phone }}
+                        {{ $managingOrganisation->phone_display }}
                     </div>
                 @endif
 
@@ -216,7 +216,7 @@
 
                 @if($owner->phone)
                     <br>
-                    {{ $owner->phone }}
+                    {{ $owner->phone_display }}
                 @endif
 
                 @if($owner->email)

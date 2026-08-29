@@ -511,32 +511,46 @@
 
 
             </div>
-        </nav>
 
-        {{-- Administrator management menu --}}
-        <div
-            data-requires-capability="view_activity_log"
-            class="
-                rbac-hidden shell-admin-only
-                relative
-                border-t border-white/10
-                p-4
-            "
-        >
+            {{--
+                Manage group. Every capability behind these links is
+                Administrator-only, so the group carries the same gate the
+                bottom menu used to; each link still declares its own
+                capability, leaving permissions.js the single authority.
+            --}}
             <div
-                id="sidebar-manage-menu"
-                class="
-                    pm-sidebar-manage-menu
-                    hidden
-                "
+                data-requires-capability="view_activity_log"
+                class="rbac-hidden shell-admin-only"
             >
-                <a
-                    href="/activity-log"
-                    data-requires-capability="view_activity_log"
-                    class="pm-sidebar-manage-item"
+                <p
+                    class="
+                        mb-3 mt-8 px-3
+                        text-[10px] font-semibold uppercase
+                        tracking-[0.16em]
+                        text-patrimoine-400
+                    "
                 >
-                    <div class="pm-sidebar-manage-icon">
+                    <span data-i18n="navigation.manage">{{ __('ui.navigation.manage') }}</span>
+                </p>
+
+                <div class="space-y-1">
+
+                    <a
+                        href="/activity-log"
+                        data-requires-capability="view_activity_log"
+                        class="
+                            {{ request()->is('activity-log')
+                                ? 'bg-white/10 text-white'
+                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                            }}
+                            flex items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-sm font-medium
+                            transition
+                        "
+                    >
                         <svg
+                            class="h-5 w-5"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -549,37 +563,30 @@
                             <circle cx="5" cy="12" r="1"/>
                             <circle cx="5" cy="19" r="1"/>
                         </svg>
-                    </div>
 
-                    <div class="min-w-0">
-                        <div
-                            class="pm-sidebar-manage-title"
-                            data-i18n="navigation.activity_log"
-                        >
-                            {{ __('ui.navigation.activity_log') }}
-                        </div>
+                        <span data-i18n="navigation.activity_log">{{ __('ui.navigation.activity_log') }}</span>
+                    </a>
 
-                        <div
-                            class="pm-sidebar-manage-description"
-                            data-i18n="navigation.activity_log_description"
-                        >
-                            {{ __('ui.navigation.activity_log_description') }}
-                        </div>
-                    </div>
-                </a>
-
-                <a
-                    href="/financial-journal"
-                    data-requires-capability="view_financial_journal"
-                    class="pm-sidebar-manage-item"
-                >
-                    <div class="pm-sidebar-manage-icon">
+                    <a
+                        href="/financial-journal"
+                        data-requires-capability="view_financial_journal"
+                        class="
+                            {{ request()->is('financial-journal')
+                                ? 'bg-white/10 text-white'
+                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                            }}
+                            flex items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-sm font-medium
+                            transition
+                        "
+                    >
                         <svg
+                            class="h-5 w-5"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
                             stroke-width="1.8"
-                            aria-hidden="true"
                         >
                             <path d="M4 5h16"/>
                             <path d="M4 10h16"/>
@@ -588,69 +595,56 @@
                             <path d="M8 3v4"/>
                             <path d="M16 3v4"/>
                         </svg>
-                    </div>
 
-                    <div class="min-w-0">
-                        <div
-                            class="pm-sidebar-manage-title"
-                            data-i18n="navigation.financial_journal"
-                        >
-                            {{ __('ui.navigation.financial_journal') }}
-                        </div>
+                        <span data-i18n="navigation.financial_journal">{{ __('ui.navigation.financial_journal') }}</span>
+                    </a>
 
-                        <div
-                            class="pm-sidebar-manage-description"
-                            data-i18n="navigation.financial_journal_description"
-                        >
-                            {{ __('ui.navigation.financial_journal_description') }}
-                        </div>
-                    </div>
-                </a>
-
-                <a
-                    href="/users"
-                    data-requires-capability="manage_users"
-                    class="pm-sidebar-manage-item"
-                >
-                    <div class="pm-sidebar-manage-icon">
+                    <a
+                        href="/users"
+                        data-requires-capability="manage_users"
+                        class="
+                            {{ request()->is('users')
+                                ? 'bg-white/10 text-white'
+                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                            }}
+                            flex items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-sm font-medium
+                            transition
+                        "
+                    >
                         <svg
+                            class="h-5 w-5"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
                             stroke-width="1.8"
-                            aria-hidden="true"
                         >
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                             <circle cx="9" cy="7" r="4"/>
                             <path d="M19 8v6"/>
                             <path d="M16 11h6"/>
                         </svg>
-                    </div>
 
-                    <div class="min-w-0">
-                        <div
-                            class="pm-sidebar-manage-title"
-                            data-i18n="navigation.users"
-                        >
-                            {{ __('ui.navigation.users') }}
-                        </div>
+                        <span data-i18n="navigation.users">{{ __('ui.navigation.users') }}</span>
+                    </a>
 
-                        <div
-                            class="pm-sidebar-manage-description"
-                            data-i18n="navigation.users_description"
-                        >
-                            {{ __('ui.navigation.users_description') }}
-                        </div>
-                    </div>
-                </a>
-
-                <a
-                    href="/settings"
-                    data-requires-capability="manage_settings"
-                    class="pm-sidebar-manage-item"
-                >
-                    <div class="pm-sidebar-manage-icon">
+                    <a
+                        href="/settings"
+                        data-requires-capability="manage_settings"
+                        class="
+                            {{ request()->is('settings')
+                                ? 'bg-white/10 text-white'
+                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                            }}
+                            flex items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-sm font-medium
+                            transition
+                        "
+                    >
                         <svg
+                            class="h-5 w-5"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -659,32 +653,26 @@
                             <circle cx="12" cy="12" r="3"/>
                             <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.1A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.1A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.2.37.5.7.9.9.3.16.7.2 1.1.2h.1v4h-.1a1.7 1.7 0 0 0-2 .9Z"/>
                         </svg>
-                    </div>
 
-                    <div class="min-w-0">
-                        <div
-                            class="pm-sidebar-manage-title"
-                            data-i18n="navigation.settings"
-                        >
-                            {{ __('ui.navigation.settings') }}
-                        </div>
+                        <span data-i18n="navigation.settings">{{ __('ui.navigation.settings') }}</span>
+                    </a>
 
-                        <div
-                            class="pm-sidebar-manage-description"
-                            data-i18n="navigation.settings_description"
-                        >
-                            {{ __('ui.navigation.settings_description') }}
-                        </div>
-                    </div>
-                </a>
-
-                <a
-                    href="/license"
-                    data-requires-capability="manage_settings"
-                    class="pm-sidebar-manage-item"
-                >
-                    <div class="pm-sidebar-manage-icon">
+                    <a
+                        href="/license"
+                        data-requires-capability="manage_settings"
+                        class="
+                            {{ request()->is('license')
+                                ? 'bg-white/10 text-white'
+                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                            }}
+                            flex items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-sm font-medium
+                            transition
+                        "
+                    >
                         <svg
+                            class="h-5 w-5"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -695,37 +683,35 @@
                             <path d="M9 9h6"/>
                             <path d="M9 13h3"/>
                         </svg>
-                    </div>
 
-                    <div class="min-w-0">
-                        <div
-                            class="pm-sidebar-manage-title"
-                            data-i18n="navigation.license"
-                        >
-                            {{ __('ui.navigation.license') }}
-                        </div>
+                        <span data-i18n="navigation.license">{{ __('ui.navigation.license') }}</span>
+                    </a>
 
-                        <div
-                            class="pm-sidebar-manage-description"
-                            data-i18n="navigation.license_description"
-                        >
-                            {{ __('ui.navigation.license_description') }}
-                        </div>
-                    </div>
-                </a>
-
-                {{--
-                    V1.0.11: platform staff only; revealed by auth.js
-                    once /api/auth/me confirms is_platform_admin.
-                --}}
-                <a
-                    href="/admin"
-                    data-platform-admin-only
-                    hidden
-                    class="pm-sidebar-manage-item hidden"
-                >
-                    <div class="pm-sidebar-manage-icon">
+                    {{--
+                        V1.0.11: platform staff only; revealed by auth.js
+                        once /api/auth/me confirms is_platform_admin. Both the
+                        attribute and the class are needed: Tailwind's flex
+                        utility would otherwise defeat the attribute alone,
+                        and auth.js clears both.
+                    --}}
+                    <a
+                        href="/admin"
+                        data-platform-admin-only
+                        hidden
+                        class="
+                            hidden
+                            {{ request()->is('admin') || request()->is('admin/*')
+                                ? 'bg-white/10 text-white'
+                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                            }}
+                            flex items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-sm font-medium
+                            transition
+                        "
+                    >
                         <svg
+                            class="h-5 w-5"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -734,66 +720,12 @@
                             <path d="M12 3l8 4v5c0 4.4-3.2 8.4-8 9-4.8-.6-8-4.6-8-9V7l8-4z"/>
                             <path d="M9.5 12l2 2 3.5-4"/>
                         </svg>
-                    </div>
 
-                    <div class="min-w-0">
-                        <div class="pm-sidebar-manage-title">
-                            Administration
-                        </div>
-
-                        <div class="pm-sidebar-manage-description">
-                            Platform console
-                        </div>
-                    </div>
-                </a>
+                        <span data-i18n="navigation.platform_console">{{ __('ui.navigation.platform_console') }}</span>
+                    </a>
+                </div>
             </div>
-
-            <button
-                id="sidebar-manage-toggle"
-                type="button"
-                class="
-                    pm-sidebar-manage-toggle
-                    {{ request()->is('activity-log') || request()->is('financial-journal') || request()->is('settings')
-                        ? 'pm-sidebar-manage-toggle-active'
-                        : ''
-                    }}
-                "
-                aria-expanded="false"
-                aria-controls="sidebar-manage-menu"
-            >
-                <span class="pm-sidebar-manage-toggle-icon">
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
-                        <rect x="4" y="3" width="16" height="18" rx="2"/>
-                        <circle cx="12" cy="9" r="2.5"/>
-                        <path d="M8 17c.7-2 2-3 4-3s3.3 1 4 3"/>
-                    </svg>
-                </span>
-
-                <span
-                    class="flex-1 text-left"
-                    data-i18n="navigation.manage"
-                >
-                    {{ __('ui.navigation.manage') }}
-                </span>
-
-                <svg
-                    id="sidebar-manage-chevron"
-                    class="pm-sidebar-manage-chevron"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
-                    <path d="m6 15 6-6 6 6"/>
-                </svg>
-            </button>
-        </div>
-        </div>
+        </nav>
     </aside>
 
     {{-- Main application --}}
@@ -1512,22 +1444,11 @@
                     >
                 </div>
 
-                <div class="sm:col-span-2">
-                    <label
-                        for="profile-phone"
-                        class="pm-field-label"
-                        data-i18n="users.phone"
-                    >
-                        {{ __('ui.users.phone') }}
-                    </label>
-
-                    <input
-                        id="profile-phone"
-                        type="text"
-                        maxlength="50"
-                        class="pm-input"
-                    >
-                </div>
+                <x-phone-field
+                    id="profile-phone"
+                    label="users.phone"
+                    wrapper="sm:col-span-2"
+                />
 
                 <div>
                     <label

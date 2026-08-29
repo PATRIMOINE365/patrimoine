@@ -593,6 +593,16 @@ return [
             'severity' => 'fix_yourself',
             'keys' => ['api.validation.wizard_unit_building'],
         ],
+        'PM-2072' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.validation.telephone_country_required'],
+        ],
+        'PM-2073' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.validation.telephone_number_invalid'],
+        ],
 
         /* ---- 3xxx property ---- */
 

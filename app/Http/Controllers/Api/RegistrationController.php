@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Support\PhoneField;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\RegistrationService;
@@ -76,11 +77,9 @@ class RegistrationController extends Controller
                 },
             ],
 
-            'phone' => [
-                'nullable',
-                'string',
-                'max:50',
-            ],
+            'phone' => PhoneField::number('phone'),
+
+            'phone_country' => PhoneField::country('phone'),
 
             'password' => [
                 'required',

@@ -699,6 +699,18 @@ return [
         'fix' => 'Choisissez un compte rattaché au même bail que la facture. Si l’argent doit réellement passer d’un bail à l’autre, utilisez un transfert, qui est enregistré comme tel.',
     ],
 
+    'PM-2072' => [
+        'title' => 'Choisissez le pays auquel ce numéro de téléphone appartient.',
+        'what' => 'Un numéro de téléphone ne peut pas être composé sans savoir dans quel pays il se trouve. Les mêmes chiffres désignent des personnes différentes selon le pays.',
+        'fix' => 'Ouvrez la liste des pays à côté du numéro et choisissez le pays. Vous pouvez saisir le nom du pays ou son indicatif pour le trouver rapidement.',
+    ],
+
+    'PM-2073' => [
+        'title' => 'Ce numéro de téléphone semble incorrect.',
+        'what' => 'Les chiffres et le pays choisi ne forment pas un numéro que l’on pourrait composer. Il manque généralement un ou deux chiffres, ou le pays n’est pas celui auquel le numéro appartient.',
+        'fix' => 'Vérifiez les chiffres par rapport au numéro tel qu’il est écrit, ainsi que le pays indiqué à côté. N’indiquez pas le zéro initial : il ne sert qu’à l’intérieur du pays.',
+    ],
+
     /* ---- 3xxx ---- */
 
     'PM-3001' => [

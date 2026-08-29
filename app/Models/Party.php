@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToOrganisation;
+use App\Models\Concerns\HasTelephoneNumbers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -23,6 +24,18 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Party extends Model
 {
     use BelongsToOrganisation;
+    use HasTelephoneNumbers;
+
+    /**
+     * The telephone columns, each with a matching *_country beside it.
+     *
+     * @var array<int, string>
+     */
+    protected array $telephoneNumbers = [
+        'phone',
+        'alternate_phone',
+        'contact_person_phone',
+    ];
 
     /**
      * Attributes that may be mass assigned.
@@ -40,12 +53,15 @@ class Party extends Model
         'surname',
         'legal_name',
         'phone',
+        'phone_country',
         'alternate_phone',
+        'alternate_phone_country',
         'email',
         'email_policy',
         'address',
         'contact_person_name',
         'contact_person_phone',
+        'contact_person_phone_country',
         'contact_person_email',
         'id_number',
         'registration_number',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Support\PhoneField;
 use App\Enums\UserRole;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -97,11 +98,9 @@ class StoreUserRequest extends FormRequest
                 },
             ],
 
-            'phone' => [
-                'nullable',
-                'string',
-                'max:50',
-            ],
+            'phone' => PhoneField::number('phone'),
+
+            'phone_country' => PhoneField::country('phone'),
 
             'role' => [
                 'required',

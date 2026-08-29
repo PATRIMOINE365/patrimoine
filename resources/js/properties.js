@@ -36,6 +36,8 @@ import {
     requireDangerConfirmation,
 } from './core.js';
 
+import { readPhoneValue } from './phone-input.js';
+
 /*
 |--------------------------------------------------------------------------
 | Module State
@@ -4069,10 +4071,13 @@ function buildPersonOwnerPayload() {
             'owner-surname'
         );
 
-    const phone =
-        formValue(
+    const telephone =
+        readPhoneValue(
             'owner-phone'
         );
+
+    const phone =
+        telephone.number ?? '';
 
     const email =
         formValue(
@@ -4104,6 +4109,9 @@ function buildPersonOwnerPayload() {
         surname,
 
         phone,
+
+        phone_country:
+            telephone.country,
 
         email,
 
@@ -4137,10 +4145,13 @@ function buildOrganisationOwnerPayload(
             'owner-contact-name'
         );
 
-    const contactPhone =
-        formValue(
+    const contactTelephone =
+        readPhoneValue(
             'owner-contact-phone'
         );
+
+    const contactPhone =
+        contactTelephone.number ?? '';
 
     const contactEmail =
         formValue(
@@ -4178,6 +4189,9 @@ function buildOrganisationOwnerPayload(
 
         contact_person_phone:
             contactPhone,
+
+        contact_person_phone_country:
+            contactTelephone.country,
 
         contact_person_email:
             contactEmail,

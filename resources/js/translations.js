@@ -293,15 +293,6 @@ export const translations = {
         'activity_entities.activity_log':
             'Activity Log',
 
-        'navigation.activity_log_description':
-            'Track and review events',
-
-        'navigation.users_description':
-            'Manage users and their access',
-
-        'navigation.settings_description':
-            'Preferences and configuration',
-
         'shell.my_profile':
             'My Profile',
 
@@ -1447,9 +1438,6 @@ export const translations = {
         'navigation.license':
             'License',
 
-        'navigation.license_description':
-            'Plan, usage and limits',
-
         'license.title':
             'License & plan — Patrimoine 365',
 
@@ -1866,11 +1854,20 @@ export const translations = {
         'navigation.financial_journal':
             'Financial Journal',
 
-        'navigation.financial_journal_description':
-            'Permanent accounting record',
-
         'navigation.users':
             'Users',
+
+        'navigation.platform_console':
+            'Administration',
+
+        'phone.country':
+            'Country',
+        'phone.select':
+            'Country',
+        'phone.search':
+            'Country or code',
+        'phone.none':
+            'No country matches',
 
         'roles.administrator':
             'Administrator',
@@ -4333,15 +4330,6 @@ export const translations = {
         'activity_entities.activity_log':
             'Journal d’activité',
 
-        'navigation.activity_log_description':
-            'Suivre et consulter les événements',
-
-        'navigation.users_description':
-            'Gérer les utilisateurs et leurs accès',
-
-        'navigation.settings_description':
-            'Préférences et configuration',
-
         'shell.my_profile':
             'Mon profil',
 
@@ -5487,9 +5475,6 @@ export const translations = {
         'navigation.license':
             'Licence',
 
-        'navigation.license_description':
-            'Forfait, utilisation et limites',
-
         'license.title':
             'Licence et forfait — Patrimoine 365',
 
@@ -5906,11 +5891,20 @@ export const translations = {
         'navigation.financial_journal':
             'Journal financier',
 
-        'navigation.financial_journal_description':
-            'Registre comptable permanent',
-
         'navigation.users':
             'Utilisateurs',
+
+        'navigation.platform_console':
+            'Administration',
+
+        'phone.country':
+            'Pays',
+        'phone.select':
+            'Pays',
+        'phone.search':
+            'Pays ou indicatif',
+        'phone.none':
+            'Aucun pays ne correspond',
 
         'roles.administrator':
             'Administrateur',

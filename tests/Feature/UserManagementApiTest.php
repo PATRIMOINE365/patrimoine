@@ -86,7 +86,8 @@ class UserManagementApiTest extends TestCase
         User::factory()->create([
             'name' => 'Needle Viewer',
             'email' => 'needle@example.test',
-            'phone' => '0244000001',
+            'phone' => '+233244000001',
+            'phone_country' => 'GH',
             'role' => UserRole::Viewer,
             'is_active' => true,
         ]);
@@ -227,7 +228,8 @@ class UserManagementApiTest extends TestCase
                 'given_names' => 'Kigordid',
                 'surname' => 'Virtual',
                 'email' => 'kigordid@example.test',
-                'phone' => '0241392599',
+                'phone' => '+233241392599',
+                'phone_country' => 'GH',
                 'role' => UserRole::Administrator->value,
                 'is_active' => true,
             ]
@@ -289,7 +291,8 @@ class UserManagementApiTest extends TestCase
                 [
                     'name' => 'New Manager',
                     'email' => 'NEW.MANAGER@EXAMPLE.TEST',
-                    'phone' => '0244000002',
+                    'phone' => '+233244000002',
+                    'phone_country' => 'GH',
                     'role' => UserRole::PropertyManager->value,
                 ]
             )
@@ -388,6 +391,7 @@ class UserManagementApiTest extends TestCase
             'name' => 'Before Name',
             'email' => 'before@example.test',
             'phone' => null,
+            'phone_country' => null,
             'role' => UserRole::PropertyManager,
             'is_active' => true,
         ]);
@@ -410,7 +414,8 @@ class UserManagementApiTest extends TestCase
                 [
                     'name' => 'After Name',
                     'email' => 'AFTER@EXAMPLE.TEST',
-                    'phone' => '0244000003',
+                    'phone' => '+233244000003',
+                    'phone_country' => 'GH',
                     'role' => UserRole::Viewer->value,
                     'is_active' => false,
                 ]
@@ -426,7 +431,7 @@ class UserManagementApiTest extends TestCase
             )
             ->assertJsonPath(
                 'phone',
-                '0244000003'
+                '+233244000003'
             )
             ->assertJsonPath(
                 'role',

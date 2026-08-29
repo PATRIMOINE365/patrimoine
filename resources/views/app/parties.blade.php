@@ -546,22 +546,11 @@
                                 >
                             </div>
 
-                            <div>
-                                <label
-                                    for="party-phone"
-                                    class="pm-field-label"
-                                >
-                                    <span data-i18n="parties.phone">{{ __('ui.parties.phone') }}</span>
-                                    <span class="text-[var(--pm-danger-text)]">*</span>
-                                </label>
-
-                                <input
-                                    id="party-phone"
-                                    type="text"
-                                    maxlength="50"
-                                    class="pm-input"
-                                >
-                            </div>
+                            <x-phone-field
+                                id="party-phone"
+                                label="parties.phone"
+                                :required="true"
+                            />
 
                             <div>
                                 <label
@@ -645,22 +634,11 @@
                                 >
                             </div>
 
-                            <div>
-                                <label
-                                    for="party-contact-phone"
-                                    class="pm-field-label"
-                                >
-                                    <span data-i18n="parties.contact_phone">{{ __('ui.parties.contact_phone') }}</span>
-                                    <span class="text-[var(--pm-danger-text)]">*</span>
-                                </label>
-
-                                <input
-                                    id="party-contact-phone"
-                                    type="text"
-                                    maxlength="50"
-                                    class="pm-input"
-                                >
-                            </div>
+                            <x-phone-field
+                                id="party-contact-phone"
+                                label="parties.contact_phone"
+                                :required="true"
+                            />
 
                             <div>
                                 <label
@@ -712,21 +690,10 @@
                                 md:grid-cols-2
                             "
                         >
-                            <div>
-                                <label
-                                    for="party-alternate-phone"
-                                    class="pm-field-label"
-                                >
-                                    <span data-i18n="parties.alternate_phone">{{ __('ui.parties.alternate_phone') }}</span>
-                                </label>
-
-                                <input
-                                    id="party-alternate-phone"
-                                    type="text"
-                                    maxlength="50"
-                                    class="pm-input"
-                                >
-                            </div>
+                            <x-phone-field
+                                id="party-alternate-phone"
+                                label="parties.alternate_phone"
+                            />
 
                             <div>
                                 <label

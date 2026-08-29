@@ -153,18 +153,24 @@ return [
         'accounting' => 'Accounting',
         'reports' => 'Reports',
         'settings' => 'Settings',
-        'settings_description' => 'Preferences and configuration',
         'license' => 'License',
-        'license_description' => 'Plan, usage and limits',
         'sign_out' => 'Sign out',
         'sign_out_description' => 'Sign out of Patrimoine',
         'activity_log' => 'Activity Log',
-        'activity_log_description' => 'Track and review events',
         'financial_journal' => 'Financial Journal',
-        'financial_journal_description' => 'Permanent accounting record',
         'users' => 'Users',
-        'users_description' => 'Manage users and their access',
+        'platform_console' => 'Administration',
     ],
+    /*
+     * V1.0.30 telephone fields: the country picker beside every number.
+     */
+    'phone' => [
+        'country' => 'Country',
+        'select' => 'Country',
+        'search' => 'Country or code',
+        'none' => 'No country matches',
+    ],
+
     'shell' => [
         /* ---- V1.0.7 additions ---- */
         'help' => 'Help',

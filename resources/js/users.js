@@ -21,6 +21,11 @@ import {
     requireDangerConfirmation,
 } from './core.js';
 
+import {
+    applyPhoneValue,
+    readPhoneValue,
+} from './phone-input.js';
+
 let userSearchTimer =
     null;
 
@@ -994,11 +999,11 @@ function openEditUserModal(
         ).value =
         user.email ?? '';
 
-    document
-        .getElementById(
-            'user-phone'
-        ).value =
-        user.phone ?? '';
+    applyPhoneValue(
+        'user-phone',
+        user.phone,
+        user.phone_country
+    );
 
     document
         .getElementById(
@@ -1303,9 +1308,10 @@ async function submitUserForm(
             ),
 
         phone:
-            nullableFormValue(
-                'user-phone'
-            ),
+            readPhoneValue('user-phone').number,
+
+        phone_country:
+            readPhoneValue('user-phone').country,
     };
 
     /*

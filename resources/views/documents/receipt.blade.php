@@ -293,7 +293,7 @@ $allocatedAmount =
 
                 @if($managingOrganisation->phone)
                     <div class="muted">
-                        {{ $managingOrganisation->phone }}
+                        {{ $managingOrganisation->phone_display }}
                     </div>
                 @endif
 
@@ -335,7 +335,7 @@ $allocatedAmount =
 
                 @if($payment->lease->tenant->phone)
                     <br>
-                    {{ $payment->lease->tenant->phone }}
+                    {{ $payment->lease->tenant->phone_display }}
                 @endif
 
                 @if($payment->lease->tenant->email)

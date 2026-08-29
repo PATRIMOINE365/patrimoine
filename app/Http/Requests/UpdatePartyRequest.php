@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Support\PhoneField;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -77,20 +78,17 @@ class UpdatePartyRequest extends FormRequest
                 ),
             ],
 
-            'phone' => [
-                'nullable',
-                'string',
-                'max:50',
+            'phone' => PhoneField::number('phone', [
                 Rule::requiredIf(
                     fn (): bool => $this->input('type') === 'person'
                 ),
-            ],
+            ]),
 
-            'alternate_phone' => [
-                'nullable',
-                'string',
-                'max:50',
-            ],
+            'phone_country' => PhoneField::country('phone'),
+
+            'alternate_phone' => PhoneField::number('alternate_phone'),
+
+            'alternate_phone_country' => PhoneField::country('alternate_phone'),
 
             'email' => [
                 'nullable',
@@ -119,10 +117,7 @@ class UpdatePartyRequest extends FormRequest
                 ),
             ],
 
-            'contact_person_phone' => [
-                'nullable',
-                'string',
-                'max:50',
+            'contact_person_phone' => PhoneField::number('contact_person_phone', [
                 Rule::requiredIf(
                     fn (): bool => in_array(
                         $this->input('type'),
@@ -130,7 +125,9 @@ class UpdatePartyRequest extends FormRequest
                         true
                     )
                 ),
-            ],
+            ]),
+
+            'contact_person_phone_country' => PhoneField::country('contact_person_phone'),
 
             'contact_person_email' => [
                 'nullable',

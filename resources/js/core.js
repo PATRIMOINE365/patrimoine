@@ -1009,6 +1009,20 @@ export function applyTranslations() {
 
     document.documentElement.dataset.presentationLanguage =
         language;
+
+    /*
+     * Not everything on screen is a data-i18n hook. The telephone country
+     * list, for one, is sorted in the language it is read in, so it has to
+     * hear about the change rather than be repainted from a catalogue.
+     */
+    document.dispatchEvent(
+        new CustomEvent(
+            'patrimoine:language-changed',
+            {
+                detail: { language },
+            }
+        )
+    );
 }
 
 /*

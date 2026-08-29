@@ -113,6 +113,10 @@ return [
         'advance_received_positive' => 'Advance Payment must be greater than zero when Advance already received is selected.',
 
         'advance_received_before_lease' => 'Advance received date cannot be before the Lease start date.',
+
+        'telephone_country_required' => 'Choose the country this telephone number belongs to.',
+
+        'telephone_number_invalid' => 'This telephone number does not look right. Check the digits and the country.',
     ],
 
     'user_invitation' => [

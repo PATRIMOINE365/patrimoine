@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToOrganisation;
+use App\Models\Concerns\HasTelephoneNumbers;
 use App\Enums\UserCapability;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
@@ -27,6 +28,7 @@ use Laravel\Sanctum\HasApiTokens;
     'surname',
     'email',
     'phone',
+    'phone_country',
     'password',
     'role',
     'is_active',
@@ -42,6 +44,16 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     use BelongsToOrganisation;
+    use HasTelephoneNumbers;
+
+    /**
+     * The telephone columns, each with a matching *_country beside it.
+     *
+     * @var array<int, string>
+     */
+    protected array $telephoneNumbers = [
+        'phone',
+    ];
 
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;

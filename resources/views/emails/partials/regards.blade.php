@@ -15,7 +15,7 @@
         <br>
         <span style="color:#51615a; font-size:13px;">
             @if($managingOrganisation?->phone)
-                {{ $managingOrganisation->phone }}
+                {{ $managingOrganisation->phone_display }}
             @endif
             @if($managingOrganisation?->phone && $managingOrganisation?->email)
                 &nbsp;·&nbsp;

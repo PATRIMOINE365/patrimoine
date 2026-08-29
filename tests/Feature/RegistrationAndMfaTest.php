@@ -48,6 +48,7 @@ class RegistrationAndMfaTest extends TestCase
             'surname' => 'Mensah',
             'email' => 'ama@acme.test',
             'phone' => '+233200000000',
+            'phone_country' => 'GH',
             'password' => 'Sup3rSecret42',
             'password_confirmation' => 'Sup3rSecret42',
             'language' => 'en',

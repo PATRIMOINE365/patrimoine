@@ -126,24 +126,11 @@
                 >
             </div>
 
-            <div>
-                <label
-                    for="signup-phone"
-                    class="pm-field-label mb-2 block text-sm font-medium"
-                >
-                    <span data-i18n="signup.phone">
-                        {{ __('ui.signup.phone') }}
-                    </span>
-                </label>
-
-                <input
-                    id="signup-phone"
-                    name="phone"
-                    type="tel"
-                    autocomplete="tel"
-                    class="pm-input"
-                >
-            </div>
+            <x-phone-field
+                id="signup-phone"
+                label="signup.phone"
+                label-class="mb-2 block text-sm font-medium"
+            />
 
             <div>
                 <label
