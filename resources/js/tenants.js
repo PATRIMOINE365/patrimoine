@@ -14,6 +14,11 @@ import {
 } from './core.js';
 
 import {
+    pageSizeFor,
+    renderPagination,
+} from './pagination.js';
+
+import {
     browserCan,
 } from './permissions.js';
 
@@ -162,7 +167,7 @@ async function loadTenants(
 
         params.set(
             'per_page',
-            '50'
+            String(pageSizeFor('tenants'))
         );
 
         const search =
@@ -4507,154 +4512,23 @@ function formatLeasePeriod(
 /**
  * Render Tenant directory pagination.
  */
+/**
+ * Page through the tenant list.
+ *
+ * The control itself lives in resources/js/pagination.js.
+ */
 function renderTenantPagination(
-    pagination
+    payload
 ) {
-    const container =
-        document.getElementById(
-            'tenant-pagination'
-        );
-
-    if (! container) {
-        return;
-    }
-
-    const current =
-        Number(
-            pagination?.current_page
-            ?? 1
-        );
-
-    const last =
-        Number(
-            pagination?.last_page
-            ?? 1
-        );
-
-    const total =
-        Number(
-            pagination?.total
-            ?? 0
-        );
-
-    if (last <= 1) {
-        container.innerHTML = '';
-
-        container.classList.add(
-            'hidden'
-        );
-
-        return;
-    }
-
-    container.classList.remove(
-        'hidden'
+    renderPagination(
+        'tenant-pagination',
+        payload,
+        {
+            storageKey: 'tenants',
+            onPage: (page) => loadTenants(page),
+            onPageSize: () => loadTenants(1),
+        }
     );
-
-    container.innerHTML = `
-        <div
-            class="
-                flex items-center
-                justify-between gap-3
-            "
-        >
-            <div
-                class="
-                    text-xs text-[var(--pm-text-muted)]
-                "
-            >
-                ${escapeHtml(
-                    translate(
-                        total === 1
-                            ? 'tenants.pagination_tenant'
-                            : 'tenants.pagination_tenants',
-                        {
-                            total:
-                                formatNumber(
-                                    total
-                                ),
-                        }
-                    )
-                )}
-            </div>
-
-            <div class="flex gap-2">
-                <button
-                    id="tenant-list-previous"
-                    type="button"
-                    ${current <= 1 ? 'disabled' : ''}
-                    class="
-                        rounded-lg border
-                        border-[var(--pm-border)]
-                        bg-[var(--pm-surface)] px-2.5 py-1.5
-                        text-xs font-medium
-                        text-[var(--pm-text-secondary)]
-                        disabled:opacity-40
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'tenants.previous'
-                        )
-                    )}
-                </button>
-
-                <button
-                    id="tenant-list-next"
-                    type="button"
-                    ${current >= last ? 'disabled' : ''}
-                    class="
-                        rounded-lg border
-                        border-[var(--pm-border)]
-                        bg-[var(--pm-surface)] px-2.5 py-1.5
-                        text-xs font-medium
-                        text-[var(--pm-text-secondary)]
-                        disabled:opacity-40
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'tenants.next'
-                        )
-                    )}
-                </button>
-            </div>
-        </div>
-    `;
-
-    document
-        .getElementById(
-            'tenant-list-previous'
-        )
-        ?.addEventListener(
-            'click',
-            async () => {
-                if (current > 1) {
-                    selectedTenantId = null;
-
-                    await loadTenants(
-                        current - 1
-                    );
-                }
-            }
-        );
-
-    document
-        .getElementById(
-            'tenant-list-next'
-        )
-        ?.addEventListener(
-            'click',
-            async () => {
-                if (current < last) {
-                    selectedTenantId = null;
-
-                    await loadTenants(
-                        current + 1
-                    );
-                }
-            }
-        );
 }
 
 

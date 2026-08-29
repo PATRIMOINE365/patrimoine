@@ -883,8 +883,6 @@ function showStep(step) {
     if (step === TOTAL_STEPS) {
         renderSummary();
     }
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /**
@@ -1283,6 +1281,8 @@ function reportValidationErrors(payload) {
     if (steps.length > 0) {
         showStep(Math.min(...steps));
     }
+
+    revealError();
 }
 
 /**
@@ -1957,6 +1957,29 @@ function showError(message) {
 
         box.classList.remove('hidden');
     }
+}
+
+/**
+ * Bring the error box into view when it is off screen.
+ *
+ * Stepping deliberately leaves the page where it is, so a refusal raised
+ * from a page the operator cannot currently see would otherwise be
+ * invisible. Only scrolls when it has to.
+ */
+function revealError() {
+    const box = document.getElementById('wizard-error');
+
+    if (! box || box.classList.contains('hidden')) {
+        return;
+    }
+
+    const boxTop = box.getBoundingClientRect().top;
+
+    if (boxTop >= 0 && boxTop <= window.innerHeight) {
+        return;
+    }
+
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function hideError() {

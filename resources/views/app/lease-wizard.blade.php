@@ -55,9 +55,9 @@
 
         <a
             href="/leases"
-            class="pm-button-secondary self-start sm:self-auto"
+            class="pm-button-danger-outline self-start sm:self-auto"
         >
-            <span data-i18n="wizard.exit">{{ __('ui.wizard.exit') }}</span>
+            <span data-i18n="wizard.cancel">{{ __('ui.wizard.cancel') }}</span>
         </a>
     </div>
 

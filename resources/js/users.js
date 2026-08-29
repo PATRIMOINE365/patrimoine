@@ -22,6 +22,11 @@ import {
 } from './core.js';
 
 import {
+    pageSizeFor,
+    renderPagination,
+} from './pagination.js';
+
+import {
     applyPhoneValue,
     readPhoneValue,
 } from './phone-input.js';
@@ -228,7 +233,7 @@ function userQueryParameters(
 
     parameters.set(
         'per_page',
-        '25'
+        String(pageSizeFor('users'))
     );
 
     const search =
@@ -752,141 +757,23 @@ function attachUserActions(
 |--------------------------------------------------------------------------
 */
 
+/**
+ * Page through the people who can sign in.
+ *
+ * The control itself lives in resources/js/pagination.js.
+ */
 function renderUserPagination(
     payload
 ) {
-    const container =
-        document.getElementById(
-            'users-pagination'
-        );
-
-    if (! container) {
-        return;
-    }
-
-    const current =
-        Number(
-            payload?.current_page
-            ?? 1
-        );
-
-    const last =
-        Number(
-            payload?.last_page
-            ?? 1
-        );
-
-    if (last <= 1) {
-        container.innerHTML = '';
-        container.classList.add('hidden');
-
-        return;
-    }
-
-    container.classList.remove(
-        'hidden'
+    renderPagination(
+        'users-pagination',
+        payload,
+        {
+            storageKey: 'users',
+            onPage: (page) => loadUsers(page),
+            onPageSize: () => loadUsers(1),
+        }
     );
-
-    container.innerHTML = `
-        <div
-            class="
-                flex items-center
-                justify-between gap-4
-            "
-        >
-            <div
-                class="
-                    text-sm text-[var(--pm-text-muted)]
-                "
-            >
-                ${escapeHtml(
-                    translate(
-                        'users.page_of',
-                        {
-                            current,
-                            last,
-                        }
-                    )
-                )}
-            </div>
-
-            <div class="flex gap-2">
-                <button
-                    id="users-previous"
-                    type="button"
-                    ${current <= 1 ? 'disabled' : ''}
-                    class="
-                        rounded-lg border
-                        border-[var(--pm-border)]
-                        bg-[var(--pm-surface)]
-                        px-3 py-2
-                        text-sm text-[var(--pm-text)]
-                        transition
-                        hover:bg-[var(--pm-surface-subtle)]
-                        disabled:opacity-40
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'users.previous'
-                        )
-                    )}
-                </button>
-
-                <button
-                    id="users-next"
-                    type="button"
-                    ${current >= last ? 'disabled' : ''}
-                    class="
-                        rounded-lg border
-                        border-[var(--pm-border)]
-                        bg-[var(--pm-surface)]
-                        px-3 py-2
-                        text-sm text-[var(--pm-text)]
-                        transition
-                        hover:bg-[var(--pm-surface-subtle)]
-                        disabled:opacity-40
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'users.next'
-                        )
-                    )}
-                </button>
-            </div>
-        </div>
-    `;
-
-    document
-        .getElementById(
-            'users-previous'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                if (current > 1) {
-                    loadUsers(
-                        current - 1
-                    );
-                }
-            }
-        );
-
-    document
-        .getElementById(
-            'users-next'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                if (current < last) {
-                    loadUsers(
-                        current + 1
-                    );
-                }
-            }
-        );
 }
 
 /*

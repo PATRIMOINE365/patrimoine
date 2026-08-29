@@ -44,6 +44,11 @@ import {
 } from './core.js';
 
 import {
+    pageSizeFor,
+    renderPagination,
+} from './pagination.js';
+
+import {
     browserCan,
 } from './permissions.js';
 
@@ -2032,7 +2037,7 @@ function leaseQueryParameters(
 
     parameters.set(
         'per_page',
-        '25'
+        String(pageSizeFor('leases'))
     );
 
     parameters.set(
@@ -2863,136 +2868,23 @@ function attachLeaseActionListeners(
 |--------------------------------------------------------------------------
 */
 
+/**
+ * Page through the lease register.
+ *
+ * The control itself lives in resources/js/pagination.js.
+ */
 function renderLeasePagination(
     payload
 ) {
-    const container =
-        document.getElementById(
-            'leases-pagination'
-        );
-
-    if (! container) {
-        return;
-    }
-
-    const currentPage =
-        Number(
-            payload?.current_page
-            ?? 1
-        );
-
-    const lastPage =
-        Number(
-            payload?.last_page
-            ?? 1
-        );
-
-    if (lastPage <= 1) {
-        container.innerHTML = '';
-
-        container.classList.add(
-            'hidden'
-        );
-
-        return;
-    }
-
-    container.classList.remove(
-        'hidden'
+    renderPagination(
+        'leases-pagination',
+        payload,
+        {
+            storageKey: 'leases',
+            onPage: (page) => loadLeases(page),
+            onPageSize: () => loadLeases(1),
+        }
     );
-
-    container.innerHTML = `
-        <div
-            class="
-                flex items-center
-                justify-between gap-4
-            "
-        >
-            <div class="text-sm text-[var(--pm-text-muted)]">
-                ${escapeHtml(
-                    translate(
-                        'leases.page'
-                    )
-                )} ${currentPage}
-                ${escapeHtml(
-                    translate(
-                        'leases.of'
-                    )
-                )} ${lastPage}
-            </div>
-
-            <div class="flex gap-2">
-                <button
-                    id="leases-previous"
-                    type="button"
-                    ${
-                        currentPage <= 1
-                            ? 'disabled'
-                            : ''
-                    }
-                    class="pm-button-secondary disabled:opacity-40"
-                >
-                    ${escapeHtml(
-                        translate(
-                            'leases.previous'
-                        )
-                    )}
-                </button>
-
-                <button
-                    id="leases-next"
-                    type="button"
-                    ${
-                        currentPage >= lastPage
-                            ? 'disabled'
-                            : ''
-                    }
-                    class="pm-button-secondary disabled:opacity-40"
-                >
-                    ${escapeHtml(
-                        translate(
-                            'leases.next'
-                        )
-                    )}
-                </button>
-            </div>
-        </div>
-    `;
-
-    document
-        .getElementById(
-            'leases-previous'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                if (
-                    currentPage > 1
-                ) {
-                    loadLeases(
-                        currentPage - 1
-                    );
-                }
-            }
-        );
-
-    document
-        .getElementById(
-            'leases-next'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                if (
-                    currentPage
-                    < lastPage
-                ) {
-                    loadLeases(
-                        currentPage + 1
-                    );
-                }
-            }
-        );
 }
 /*
 |--------------------------------------------------------------------------

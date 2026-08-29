@@ -377,8 +377,8 @@ export const translations = {
         'wizard.subtitle':
             'Everything a letting needs, in one go. Nothing is saved until the last page.',
 
-        'wizard.exit':
-            'Exit',
+        'wizard.cancel':
+            'Cancel',
 
         'wizard.launch':
             'Guided lease',
@@ -4092,6 +4092,30 @@ export const translations = {
         'core.request_failed':
             'Patrimoine could not complete that.',
 
+        'pagination.summary':
+            'Showing :from–:to of :total',
+
+        'pagination.empty':
+            'Nothing to show',
+
+        'pagination.rows_per_page':
+            'Rows per page',
+
+        'pagination.navigation':
+            'Pagination',
+
+        'pagination.previous':
+            'Previous page',
+
+        'pagination.next':
+            'Next page',
+
+        'pagination.go_to_page':
+            'Go to page :page',
+
+        'pagination.current_page':
+            'Page :page, current page',
+
     },
 
     fr: {
@@ -4456,8 +4480,8 @@ export const translations = {
         'wizard.subtitle':
             'Tout ce qu’un bail exige, en une fois. Rien n’est enregistré avant la dernière page.',
 
-        'wizard.exit':
-            'Quitter',
+        'wizard.cancel':
+            'Annuler',
 
         'wizard.launch':
             'Assistant de bail',
@@ -6990,6 +7014,30 @@ export const translations = {
             'Votre session a expiré. Veuillez vous reconnecter.',
         'core.request_failed':
             'Patrimoine n’a pas pu terminer cette opération.',
+
+        'pagination.summary':
+            'Affichage de :from à :to sur :total',
+
+        'pagination.empty':
+            'Rien à afficher',
+
+        'pagination.rows_per_page':
+            'Lignes par page',
+
+        'pagination.navigation':
+            'Pagination',
+
+        'pagination.previous':
+            'Page précédente',
+
+        'pagination.next':
+            'Page suivante',
+
+        'pagination.go_to_page':
+            'Aller à la page :page',
+
+        'pagination.current_page':
+            'Page :page, page actuelle',
 
 'parties.loading': 'Chargement des parties…',
         'parties.unable_to_load': 'Impossible de charger les parties.',

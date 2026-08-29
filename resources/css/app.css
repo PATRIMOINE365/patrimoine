@@ -8654,3 +8654,144 @@ body.pm-admin .pm-icon-button:hover {
 }
 
 /* END V1.0.31 Profile photographs */
+
+
+/*
+|--------------------------------------------------------------------------
+| V1.0.32 Pagination
+|--------------------------------------------------------------------------
+|
+| One control, rendered by resources/js/pagination.js, sitting in the footer
+| of every list in the application and in the platform console.
+|
+| Three parts, and on a narrow screen they stack in the order they matter:
+| what is on screen, how many rows to show, and which page to read next.
+|
+| The current page is filled with the brand colour rather than merely
+| outlined. A reader scanning a row of numbers should not have to work out
+| which one they are standing on.
+|
+*/
+
+.pm-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.pm-pagination-summary {
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    color: var(--pm-text-muted);
+}
+
+.pm-pagination-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+}
+
+.pm-pagination-size {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    font-size: 0.8125rem;
+    color: var(--pm-text-muted);
+    white-space: nowrap;
+}
+
+.pm-pagination-size select.pm-input {
+    width: auto;
+    min-height: 2.25rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+
+    font-size: 0.8125rem;
+}
+
+.pm-pagination-pages {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.pm-pagination-page,
+.pm-pagination-step {
+    display: inline-flex;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    padding: 0 0.5rem;
+
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--pm-text);
+
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease,
+        color 150ms ease;
+}
+
+.pm-pagination-page:hover:not(.is-current),
+.pm-pagination-step:hover:not(:disabled) {
+    background: var(--pm-hover);
+}
+
+.pm-pagination-page:focus-visible,
+.pm-pagination-step:focus-visible {
+    outline: 2px solid var(--pm-primary);
+    outline-offset: 2px;
+}
+
+/*
+ * The page being read. Filled, not outlined — this is the one thing in the
+ * control a reader must never have to hunt for.
+ */
+.pm-pagination-page.is-current,
+.pm-pagination-page.is-current:hover {
+    border-color: var(--pm-primary);
+    background: var(--pm-primary);
+    color: var(--pm-primary-text);
+}
+
+.pm-pagination-step {
+    color: var(--pm-text-muted);
+}
+
+.pm-pagination-step svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.pm-pagination-step:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+.pm-pagination-gap {
+    padding: 0 0.25rem;
+
+    font-size: 0.8125rem;
+    color: var(--pm-text-muted);
+}
+
+@media (max-width: 640px) {
+    .pm-pagination,
+    .pm-pagination-controls {
+        align-items: stretch;
+        justify-content: flex-start;
+    }
+}
+
+/* END V1.0.32 Pagination */

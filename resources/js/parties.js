@@ -47,6 +47,11 @@ import {
 } from './core.js';
 
 import {
+    pageSizeFor,
+    renderPagination,
+} from './pagination.js';
+
+import {
     applyPhoneValue,
     readPhoneValue,
 } from './phone-input.js';
@@ -258,7 +263,7 @@ function partyQueryParameters(
 
     parameters.set(
         'per_page',
-        '25'
+        String(pageSizeFor('parties'))
     );
 
     parameters.set(
@@ -996,147 +1001,23 @@ function attachPartyActionListeners(
 /**
  * Render Laravel paginator navigation.
  */
+/**
+ * Page through the Party directory.
+ *
+ * The control itself lives in resources/js/pagination.js.
+ */
 function renderPartyPagination(
     payload
 ) {
-    const container =
-        document.getElementById(
-            'parties-pagination'
-        );
-
-    if (! container) {
-        return;
-    }
-
-    const currentPage =
-        Number(
-            payload?.current_page
-            ?? 1
-        );
-
-    const lastPage =
-        Number(
-            payload?.last_page
-            ?? 1
-        );
-
-    if (lastPage <= 1) {
-        container.innerHTML = '';
-
-        container.classList.add(
-            'hidden'
-        );
-
-        return;
-    }
-
-    container.classList.remove(
-        'hidden'
+    renderPagination(
+        'parties-pagination',
+        payload,
+        {
+            storageKey: 'parties',
+            onPage: (page) => loadParties(page),
+            onPageSize: () => loadParties(1),
+        }
     );
-
-    container.innerHTML = `
-        <div
-            class="
-                flex items-center
-                justify-between gap-4
-            "
-        >
-            <div
-                class="
-                    text-sm text-[var(--pm-text-muted)]
-                "
-            >
-                ${escapeHtml(
-                    translate(
-                        'parties.page'
-                    )
-                )} ${currentPage}
-                ${escapeHtml(
-                    translate(
-                        'parties.of'
-                    )
-                )} ${lastPage}
-            </div>
-
-            <div class="flex gap-2">
-
-                <button
-                    id="parties-previous"
-                    type="button"
-                    ${
-                        currentPage <= 1
-                            ? 'disabled'
-                            : ''
-                    }
-                    class="
-                        pm-button-secondary
-                        disabled:cursor-not-allowed
-                        disabled:opacity-40
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'parties.previous'
-                        )
-                    )}
-                </button>
-
-                <button
-                    id="parties-next"
-                    type="button"
-                    ${
-                        currentPage >= lastPage
-                            ? 'disabled'
-                            : ''
-                    }
-                    class="
-                        pm-button-secondary
-                        disabled:cursor-not-allowed
-                        disabled:opacity-40
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'parties.next'
-                        )
-                    )}
-                </button>
-
-            </div>
-        </div>
-    `;
-
-    document
-        .getElementById(
-            'parties-previous'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                if (currentPage > 1) {
-                    loadParties(
-                        currentPage - 1
-                    );
-                }
-            }
-        );
-
-    document
-        .getElementById(
-            'parties-next'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                if (
-                    currentPage < lastPage
-                ) {
-                    loadParties(
-                        currentPage + 1
-                    );
-                }
-            }
-        );
 }
 
 /*

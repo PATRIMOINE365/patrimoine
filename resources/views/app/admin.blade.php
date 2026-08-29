@@ -241,6 +241,8 @@
                     Staff accounts must use an @patrimoine365.com address; invitations arrive by email.
                 </span>
             </div>
+
+            <div id="admin-staff-pagination" class="pm-admin-card-footer hidden"></div>
         </div>
     </section>
 
@@ -294,6 +296,8 @@
         <p class="pm-admin-subtitle">Every release, in full. Customers see a shortened version in Help.</p>
 
         <div id="admin-releases" class="mt-6"></div>
+
+        <div id="admin-releases-pagination" class="pm-admin-card mt-4 hidden"></div>
     </section>
 
     {{-- ==================== Organisation detail ==================== --}}
@@ -435,6 +439,8 @@
             </div>
 
             <div id="admin-records-footer" class="pm-admin-card-footer"></div>
+
+            <div id="admin-records-pagination" class="pm-admin-card-footer hidden"></div>
         </div>
 
     </section>

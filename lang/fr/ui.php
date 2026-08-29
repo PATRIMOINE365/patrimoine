@@ -683,6 +683,21 @@ return [
         'session_expired' => 'Votre session a expiré. Veuillez vous reconnecter.',
         'request_failed' => 'Patrimoine n’a pas pu terminer cette opération.',
     ],
+
+    /*
+     * Le contrôle de pagination partagé des listes, rendu par
+     * resources/js/pagination.js au pied de chaque liste.
+     */
+    'pagination' => [
+        'summary' => 'Affichage de :from à :to sur :total',
+        'empty' => 'Rien à afficher',
+        'rows_per_page' => 'Lignes par page',
+        'navigation' => 'Pagination',
+        'previous' => 'Page précédente',
+        'next' => 'Page suivante',
+        'go_to_page' => 'Aller à la page :page',
+        'current_page' => 'Page :page, page actuelle',
+    ],
     /*
     |--------------------------------------------------------------------------
     | Guided Lease Wizard (V1.0.29)
@@ -736,7 +751,7 @@ return [
         'eyebrow' => 'Baux',
         'heading' => 'Créer un bail, étape par étape',
         'subtitle' => 'Tout ce qu’un bail exige, en une fois. Rien n’est enregistré avant la dernière page.',
-        'exit' => 'Quitter',
+        'cancel' => 'Annuler',
         'launch' => 'Assistant de bail',
         'invite_title' => 'Créez votre premier bail',
         'invite_text' => 'L’assistant crée le bien, le propriétaire, le locataire et le bail en une seule fois.',

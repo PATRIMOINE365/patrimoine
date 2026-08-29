@@ -27,6 +27,12 @@ import {
     translations,
 } from './translations.js';
 
+import {
+    clientPage,
+    pageSizeFor,
+    renderPagination,
+} from './pagination.js';
+
 /*
 |--------------------------------------------------------------------------
 | Translation Catalogue
@@ -73,6 +79,9 @@ const helpTranslations = {
 
         'help.no_results':
             'No topics match',
+
+        'help.errors_no_matches':
+            'Nothing matches what you typed. Try fewer words, or the code itself.',
 
         'help.no_results_description':
             'Try different words or clear the category filter.',
@@ -461,6 +470,9 @@ const helpTranslations = {
 
         'help.no_results':
             'Aucun sujet ne correspond',
+
+        'help.errors_no_matches':
+            'Rien ne correspond à votre saisie. Essayez moins de mots, ou le code lui-même.',
 
         'help.no_results_description':
             'Essayez d’autres termes ou effacez le filtre de catégorie.',
@@ -1295,6 +1307,14 @@ function selectHelpTab(
 let helpErrorsLoaded = false;
 let helpErrorCodes = [];
 
+/*
+ * What the reader is looking at right now: which page of the catalogue,
+ * and what they have typed into the search box.
+ */
+let helpErrorsPage = 1;
+let helpErrorsSearch = '';
+let helpErrorsPayload = null;
+
 async function loadHelpErrorCodes() {
     const container = document.getElementById('help-errors-content');
 
@@ -1308,7 +1328,9 @@ async function loadHelpErrorCodes() {
 
         helpErrorCodes = payload.codes ?? [];
 
-        renderHelpErrorCodes(payload);
+        helpErrorsPayload = payload;
+
+        renderHelpErrorCodes();
     } catch (error) {
         container.innerHTML = `
             <p class="px-5 py-12 text-center text-sm text-[var(--pm-text-muted)]">
@@ -1318,41 +1340,105 @@ async function loadHelpErrorCodes() {
     }
 }
 
-function renderHelpErrorCodes(payload) {
+/**
+ * Which codes the search currently admits.
+ *
+ * @returns {Array}
+ */
+function visibleHelpErrorCodes() {
+    const needle = helpErrorsSearch.trim().toLowerCase();
+
+    return helpErrorCodes.filter((entry) => {
+        if (entry.hidden) {
+            return false;
+        }
+
+        if (needle === '') {
+            return true;
+        }
+
+        const haystack = [
+            entry.code,
+            entry.title,
+            entry.what,
+            entry.fix,
+        ].join(' ').toLowerCase();
+
+        return haystack.includes(needle);
+    });
+}
+
+/**
+ * Draw one page of the catalogue.
+ *
+ * Only the families represented on this page get a heading, so a page of
+ * money codes is not preceded by eight empty section titles.
+ */
+function renderHelpErrorCodes() {
     const container = document.getElementById('help-errors-content');
 
-    if (! container) {
+    if (! container || ! helpErrorsPayload) {
         return;
     }
 
-    const contact = payload.contact ?? {};
+    const contact = helpErrorsPayload.contact ?? {};
 
-    const cards = (families) => families
-        .map((family) => {
-            const codes = helpErrorCodes.filter(
-                (entry) => entry.family === family.family && ! entry.hidden
-            );
+    const { rows, meta } = clientPage(
+        visibleHelpErrorCodes(),
+        helpErrorsPage,
+        pageSizeFor('help-error-codes')
+    );
 
-            if (codes.length === 0) {
-                return '';
-            }
+    if (rows.length === 0) {
+        container.innerHTML = `
+            <p class="px-5 py-12 text-center text-sm text-[var(--pm-text-muted)]">
+                ${escapeHtml(translate('help.errors_no_matches'))}
+            </p>
+        `;
+    } else {
+        container.innerHTML = (helpErrorsPayload.families ?? [])
+            .map((family) => {
+                const codes = rows.filter(
+                    (entry) => entry.family === family.family
+                );
 
-            return `
-                <section class="mt-8" data-help-error-family>
-                    <h3 class="border-b border-[var(--pm-border-subtle)] pb-2 text-base font-semibold">
-                        ${escapeHtml(family.name)}
-                        <span class="text-sm font-normal text-[var(--pm-text-muted)]">· ${family.family}xxx</span>
-                    </h3>
+                if (codes.length === 0) {
+                    return '';
+                }
 
-                    <div class="mt-4 grid gap-3">
-                        ${codes.map((entry) => errorCodeCard(entry, contact)).join('')}
-                    </div>
-                </section>
-            `;
-        })
-        .join('');
+                return `
+                    <section class="mt-8" data-help-error-family>
+                        <h3 class="border-b border-[var(--pm-border-subtle)] pb-2 text-base font-semibold">
+                            ${escapeHtml(family.name)}
+                            <span class="text-sm font-normal text-[var(--pm-text-muted)]">· ${family.family}xxx</span>
+                        </h3>
 
-    container.innerHTML = cards(payload.families ?? []);
+                        <div class="mt-4 grid gap-3">
+                            ${codes.map((entry) => errorCodeCard(entry, contact)).join('')}
+                        </div>
+                    </section>
+                `;
+            })
+            .join('');
+    }
+
+    renderPagination(
+        'help-errors-pagination',
+        meta,
+        {
+            storageKey: 'help-error-codes',
+            onPage: (page) => {
+                helpErrorsPage = page;
+
+                renderHelpErrorCodes();
+            },
+            onPageSize: () => {
+                helpErrorsPage = 1;
+
+                renderHelpErrorCodes();
+            },
+        }
+    );
 }
 
 function errorCodeCard(entry, contact) {
@@ -1387,25 +1473,21 @@ function errorCodeCard(entry, contact) {
     `;
 }
 
-/* Filtering the catalogue, the same way the public page does. */
+/*
+ * Filtering the catalogue, the same way the public page does: the search
+ * narrows the whole catalogue and the reader is returned to its first page,
+ * because a match three pages away announces itself to nobody.
+ */
 document.addEventListener('input', (event) => {
     if (event.target?.id !== 'help-error-search') {
         return;
     }
 
-    const needle = event.target.value.trim().toLowerCase();
+    helpErrorsSearch = event.target.value;
 
-    document.querySelectorAll('[data-help-error-code]').forEach((card) => {
-        const match = needle === ''
-            || (card.dataset.helpErrorHaystack || '').includes(needle);
+    helpErrorsPage = 1;
 
-        card.classList.toggle('hidden', ! match);
-    });
-
-    document.querySelectorAll('[data-help-error-family]').forEach((family) => {
-        const visible = family.querySelectorAll('[data-help-error-code]:not(.hidden)').length;
-        family.classList.toggle('hidden', visible === 0);
-    });
+    renderHelpErrorCodes();
 });
 
 /*

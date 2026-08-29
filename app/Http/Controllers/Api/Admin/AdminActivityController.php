@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\User;
+use App\Support\PageSize;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -29,7 +30,7 @@ class AdminActivityController extends Controller
         $page = ActivityLog::withoutGlobalScopes()
             ->where('organisation_id', $admin->organisation_id)
             ->orderByDesc('id')
-            ->paginate(25);
+            ->paginate(PageSize::fromRequest($request));
 
         return response()->json([
             'data' => collect($page->items())->map(

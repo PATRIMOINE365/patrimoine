@@ -36,6 +36,11 @@ import {
     requireDangerConfirmation,
 } from './core.js';
 
+import {
+    pageSizeFor,
+    renderPagination,
+} from './pagination.js';
+
 import { readPhoneValue } from './phone-input.js';
 
 /*
@@ -260,7 +265,7 @@ async function loadProperties(
 
         parameters.set(
             'per_page',
-            '25'
+            String(pageSizeFor('properties'))
         );
 
         parameters.set(
@@ -1618,154 +1623,24 @@ function togglePropertyUnits(button) {
  * @param {object} payload
  * @param {string} search
  */
+/**
+ * Page through the property register, keeping the active search.
+ *
+ * The control itself lives in resources/js/pagination.js.
+ */
 function renderPropertiesPagination(
     payload,
     search
 ) {
-    const container =
-        document.getElementById(
-            'properties-pagination'
-        );
-
-    if (! container) {
-        return;
-    }
-
-    const currentPage =
-        Number(
-            payload?.current_page
-            ?? 1
-        );
-
-    const lastPage =
-        Number(
-            payload?.last_page
-            ?? 1
-        );
-
-    if (lastPage <= 1) {
-        container.classList.add(
-            'hidden'
-        );
-
-        container.innerHTML =
-            '';
-
-        return;
-    }
-
-    container.classList.remove(
-        'hidden'
+    renderPagination(
+        'properties-pagination',
+        payload,
+        {
+            storageKey: 'properties',
+            onPage: (page) => loadProperties(search, page),
+            onPageSize: () => loadProperties(search, 1),
+        }
     );
-
-    container.innerHTML = `
-        <div
-            class="
-                flex items-center
-                justify-between gap-4
-            "
-        >
-            <div
-                class="
-                    text-sm text-[var(--pm-text-muted)]
-                "
-            >
-                ${escapeHtml(
-                    translate(
-                        'properties.page'
-                    )
-                )} ${currentPage}
-                ${escapeHtml(
-                    translate(
-                        'properties.of'
-                    )
-                )} ${lastPage}
-            </div>
-
-            <div
-                class="flex gap-2"
-            >
-                <button
-                    type="button"
-                    id="properties-previous"
-                    ${
-                        currentPage <= 1
-                            ? 'disabled'
-                            : ''
-                    }
-                    class="
-                        pm-button-secondary
-                        disabled:cursor-not-allowed
-                        disabled:opacity-40
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'properties.previous'
-                        )
-                    )}
-                </button>
-
-                <button
-                    type="button"
-                    id="properties-next"
-                    ${
-                        currentPage >= lastPage
-                            ? 'disabled'
-                            : ''
-                    }
-                    class="
-                        pm-button-secondary
-                        disabled:cursor-not-allowed
-                        disabled:opacity-40
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'properties.next'
-                        )
-                    )}
-                </button>
-            </div>
-        </div>
-    `;
-
-    document
-        .getElementById(
-            'properties-previous'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                if (
-                    currentPage > 1
-                ) {
-                    loadProperties(
-                        search,
-                        currentPage - 1
-                    );
-                }
-            }
-        );
-
-    document
-        .getElementById(
-            'properties-next'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                if (
-                    currentPage
-                    < lastPage
-                ) {
-                    loadProperties(
-                        search,
-                        currentPage + 1
-                    );
-                }
-            }
-        );
 }
 
 /*

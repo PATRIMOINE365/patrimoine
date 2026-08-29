@@ -585,7 +585,7 @@ return [
         'eyebrow' => 'Leases',
         'heading' => 'Create a lease, step by step',
         'subtitle' => 'Everything a letting needs, in one go. Nothing is saved until the last page.',
-        'exit' => 'Exit',
+        'cancel' => 'Cancel',
         'launch' => 'Guided lease',
         'invite_title' => 'Create your first lease',
         'invite_text' => 'The guided assistant sets up the property, the owner, the tenant and the lease in one sitting.',
@@ -2198,6 +2198,21 @@ return [
     'core' => [
         'session_expired' => 'Your session has expired. Please sign in again.',
         'request_failed' => 'Patrimoine could not complete that.',
+    ],
+
+    /*
+     * The shared list pagination control, rendered by
+     * resources/js/pagination.js in the footer of every list.
+     */
+    'pagination' => [
+        'summary' => 'Showing :from–:to of :total',
+        'empty' => 'Nothing to show',
+        'rows_per_page' => 'Rows per page',
+        'navigation' => 'Pagination',
+        'previous' => 'Previous page',
+        'next' => 'Next page',
+        'go_to_page' => 'Go to page :page',
+        'current_page' => 'Page :page, current page',
     ],
 
     'financial_journal' => [

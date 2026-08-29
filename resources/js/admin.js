@@ -37,7 +37,25 @@ import {
     setThemePreference,
 } from './theme.js';
 
+import {
+    clientPage,
+    pageSizeFor,
+    renderPagination,
+} from './pagination.js';
+
 let currentOrganisation = null;
+
+/*
+ * Lists the server hands over whole, held here so the browser can page
+ * through them without asking again.
+ */
+let staffMembers = [];
+
+let releaseEntries = [];
+
+let releaseVersion = '';
+
+let recordsPage = 1;
 
 let organisationOptions = [];
 
@@ -244,18 +262,51 @@ async function loadReleaseLog() {
 
     const data = await adminRequest('/api/admin/release-log', 'GET');
 
-    const entries = Array.isArray(data?.entries) ? data.entries : [];
+    releaseEntries = Array.isArray(data?.entries) ? data.entries : [];
+
+    releaseVersion = String(data?.current_version ?? '');
+
+    renderReleaseLog(1);
+}
+
+/**
+ * Draw one page of the release history.
+ *
+ * Every release ever shipped is listed here, so by v1.0.32 the page is
+ * already longer than anybody reads in one go.
+ *
+ * @param {number} page
+ */
+function renderReleaseLog(page) {
+    const container = document.getElementById('admin-releases');
+
+    if (! container) {
+        return;
+    }
+
+    const { rows, meta } = clientPage(
+        releaseEntries,
+        page,
+        pageSizeFor('admin-releases')
+    );
 
     container.innerHTML = `
         <div class="pm-admin-card">
             <h2 class="pm-admin-card-title">
-                Running ${escapeHtml(String(data?.current_version ?? ''))}
-                <span class="pm-admin-card-note">${entries.length} releases</span>
+                Running ${escapeHtml(releaseVersion)}
+                <span class="pm-admin-card-note">${releaseEntries.length} releases</span>
             </h2>
         </div>
 
-        ${entries.map(releaseCard).join('')}
+        ${rows.map(releaseCard).join('')}
     `;
+
+    renderAdminPagination(
+        'admin-releases-pagination',
+        meta,
+        'releases',
+        (next) => renderReleaseLog(next)
+    );
 }
 
 function releaseCard(entry) {
@@ -345,8 +396,11 @@ async function loadDashboard() {
 |--------------------------------------------------------------------------
 */
 
-async function fetchOrganisations(page, search, status) {
-    const params = new URLSearchParams({ page: String(page) });
+async function fetchOrganisations(page, search, status, key = 'organisations') {
+    const params = new URLSearchParams({
+        page: String(page),
+        per_page: String(pageSizeFor('admin-' + key)),
+    });
 
     if (search) {
         params.set('search', search);
@@ -403,27 +457,36 @@ async function loadOrganisations(page = 1) {
     document.getElementById('admin-orgs-count').textContent =
         `${formatNumber(data.meta.total)} ${data.meta.total === 1 ? 'organization' : 'organizations'}`;
 
-    renderPagination(
-        document.getElementById('admin-pagination'),
+    renderAdminPagination(
+        'admin-pagination',
         data.meta,
-        'data-admin-page'
+        'organisations',
+        (page) => loadOrganisations(page)
     );
 }
 
-function renderPagination(container, meta, attribute) {
-    if (! container) {
-        return;
-    }
-
-    const { current_page: current, last_page: last, total } = meta;
-
-    container.innerHTML = `
-        <span class="text-[var(--pm-text-muted)]">Showing page ${current} of ${last} · ${formatNumber(total)} total</span>
-        <span class="flex items-center gap-2">
-            <button type="button" class="pm-button-secondary ${current <= 1 ? 'invisible' : ''}" ${attribute}="${current - 1}">←</button>
-            <button type="button" class="pm-button-secondary ${current >= last ? 'invisible' : ''}" ${attribute}="${current + 1}">→</button>
-        </span>
-    `;
+/**
+ * The console's half of the shared pagination control.
+ *
+ * The console is deliberately monolingual, so it asks the control for
+ * English whoever is signed in.
+ *
+ * @param {string} id
+ * @param {object} meta
+ * @param {string} key
+ * @param {function(number): void} onPage
+ */
+function renderAdminPagination(id, meta, key, onPage) {
+    renderPagination(
+        document.getElementById(id),
+        meta,
+        {
+            storageKey: 'admin-' + key,
+            english: true,
+            onPage,
+            onPageSize: () => onPage(1),
+        }
+    );
 }
 
 /*
@@ -450,7 +513,7 @@ async function loadSubscriptions(page = 1) {
     const search =
         document.getElementById('admin-license-search')?.value.trim() ?? '';
 
-    const data = await fetchOrganisations(page, search, '');
+    const data = await fetchOrganisations(page, search, '', 'licenses');
 
     const body = document.getElementById('admin-licenses-body');
 
@@ -489,10 +552,11 @@ async function loadSubscriptions(page = 1) {
             ).join('');
     }
 
-    renderPagination(
-        document.getElementById('admin-licenses-pagination'),
+    renderAdminPagination(
+        'admin-licenses-pagination',
         data.meta,
-        'data-admin-licpage'
+        'licenses',
+        (page) => loadSubscriptions(page)
     );
 }
 
@@ -742,15 +806,32 @@ async function loadRecords() {
         .map((column) => `<th>${escapeHtml(column)}</th>`)
         .join('');
 
-    if (data.data.length === 0) {
+    const { rows, meta } = clientPage(
+        data.data,
+        recordsPage,
+        pageSizeFor('admin-records')
+    );
+
+    if (rows.length === 0) {
         body.innerHTML = `
             <tr><td colspan="7" class="py-6 text-center text-[var(--pm-text-muted)]">
                 Nothing recorded here.
             </td></tr>
         `;
     } else {
-        body.innerHTML = data.data.map(recordRow).join('');
+        body.innerHTML = rows.map(recordRow).join('');
     }
+
+    renderAdminPagination(
+        'admin-records-pagination',
+        meta,
+        'records',
+        (page) => {
+            recordsPage = page;
+
+            loadRecords();
+        }
+    );
 
     const footer = document.getElementById('admin-records-footer');
 
@@ -1171,7 +1252,8 @@ const ACTION_LABELS = {
 
 async function loadActivity(page = 1) {
     const data = await adminRequest(
-        '/api/admin/activity?page=' + page,
+        '/api/admin/activity?page=' + page
+        + '&per_page=' + pageSizeFor('admin-activity'),
         'GET'
     );
 
@@ -1193,10 +1275,11 @@ async function loadActivity(page = 1) {
             ).join('');
     }
 
-    renderPagination(
-        document.getElementById('admin-activity-pagination'),
+    renderAdminPagination(
+        'admin-activity-pagination',
         data.meta,
-        'data-admin-actpage'
+        'activity',
+        (page) => loadActivity(page)
     );
 }
 
@@ -1206,17 +1289,35 @@ async function loadActivity(page = 1) {
 |--------------------------------------------------------------------------
 */
 
-async function loadStaff() {
+async function loadStaff(page = 1) {
     const data = await adminRequest('/api/users', 'GET');
 
-    const staff = data.data ?? data;
+    staffMembers = data.data ?? data;
 
+    renderStaff(page);
+}
+
+/**
+ * Draw one page of platform staff.
+ *
+ * The whole list arrives in one response — there are never many — so the
+ * paging happens here rather than at the server.
+ *
+ * @param {number} page
+ */
+function renderStaff(page) {
     const count = document.getElementById('admin-staff-count');
 
     if (count) {
-        count.textContent =
-            `${staff.length} ${staff.length === 1 ? 'member' : 'members'}`;
+        count.textContent = `${staffMembers.length} `
+            + `${staffMembers.length === 1 ? 'member' : 'members'}`;
     }
+
+    const { rows: staff, meta } = clientPage(
+        staffMembers,
+        page,
+        pageSizeFor('admin-staff')
+    );
 
     const body = document.getElementById('admin-staff-body');
 
@@ -1232,6 +1333,13 @@ async function loadStaff() {
             `
         ).join('');
     }
+
+    renderAdminPagination(
+        'admin-staff-pagination',
+        meta,
+        'staff',
+        (next) => renderStaff(next)
+    );
 }
 
 async function submitStaffInvite(event) {
@@ -1264,6 +1372,8 @@ async function submitStaffInvite(event) {
 
 async function openOrganisation(id) {
     currentDataset = 'leases';
+
+    recordsPage = 1;
 
     clearError();
 
@@ -2308,8 +2418,7 @@ export async function initializeAdmin() {
      */
     workspace.addEventListener('click', async (event) => {
         const target = event.target.closest(
-            '[data-admin-open], [data-admin-page], [data-admin-licpage], '
-            + '[data-admin-actpage], [data-admin-revoke], [data-admin-assign-org], '
+            '[data-admin-open], [data-admin-revoke], [data-admin-assign-org], '
             + '[data-admin-assign], [data-admin-reverify], [data-admin-toggle], '
             + '[data-admin-pwreset]'
         );
@@ -2329,12 +2438,6 @@ export async function initializeAdmin() {
                 await openAssignDrawer();
             } else if (target.dataset.adminOpen) {
                 await openOrganisation(Number(target.dataset.adminOpen));
-            } else if (target.dataset.adminPage) {
-                await loadOrganisations(Number(target.dataset.adminPage));
-            } else if (target.dataset.adminLicpage) {
-                await loadSubscriptions(Number(target.dataset.adminLicpage));
-            } else if (target.dataset.adminActpage) {
-                await loadActivity(Number(target.dataset.adminActpage));
             } else if (target.dataset.adminRevoke) {
                 await adminRequest(
                     `/api/admin/licenses/${target.dataset.adminRevoke}/revoke`,
@@ -2453,6 +2556,8 @@ export async function initializeAdmin() {
 
             currentDataset = tab.dataset.adminDataset;
 
+            recordsPage = 1;
+
             try {
                 await loadRecords();
             } catch (error) {
@@ -2465,6 +2570,8 @@ export async function initializeAdmin() {
             window.clearTimeout(searchDebounce);
 
             searchDebounce = window.setTimeout(() => {
+                recordsPage = 1;
+
                 void loadRecords();
             }, 300);
         });

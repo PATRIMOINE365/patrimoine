@@ -136,6 +136,25 @@
             </section>
         @endforeach
 
+        {{--
+            The catalogue is long enough to page through. This page carries
+            no JavaScript bundle by design, so the control below is drawn by
+            the inline script at the foot of the document, using the same
+            classes as the rest of Patrimoine and the words handed to it
+            here.
+        --}}
+        <div
+            id="error-pagination"
+            class="mt-10 hidden"
+            data-summary="{{ __('ui.pagination.summary', ['from' => ':from', 'to' => ':to', 'total' => ':total']) }}"
+            data-rows-per-page="{{ __('ui.pagination.rows_per_page') }}"
+            data-navigation="{{ __('ui.pagination.navigation') }}"
+            data-previous="{{ __('ui.pagination.previous') }}"
+            data-next="{{ __('ui.pagination.next') }}"
+            data-go-to-page="{{ __('ui.pagination.go_to_page', ['page' => ':page']) }}"
+            data-current-page="{{ __('ui.pagination.current_page', ['page' => ':page']) }}"
+        ></div>
+
         {{-- Reaching a person --}}
         <section
             class="
@@ -202,36 +221,211 @@
 
     <script>
         /*
-         * Filtering happens here rather than on the server: the whole
-         * catalogue is already on the page, and somebody hunting a code
-         * should not wait for a round trip to find it.
+         * Filtering and paging both happen here rather than on the server:
+         * the whole catalogue is already on the page, and somebody hunting
+         * a code should not wait for a round trip to find it.
+         *
+         * A card is on screen when it matches the search AND falls inside
+         * the page being read. Searching returns to the first page, because
+         * the match a reader is looking for is otherwise three pages away
+         * with nothing to say so.
          */
         (function () {
             var input = document.getElementById('error-search');
             var empty = document.getElementById('error-search-empty');
+            var control = document.getElementById('error-pagination');
 
             if (! input) { return; }
 
-            input.addEventListener('input', function () {
+            var SIZES = [25, 50, 100];
+            var STORAGE = 'pm.rows.error-codes';
+
+            var cards = [].slice.call(
+                document.querySelectorAll('[data-error-code]')
+            );
+
+            var page = 1;
+            var perPage = SIZES[0];
+
+            try {
+                var stored = Number(window.localStorage.getItem(STORAGE));
+
+                if (SIZES.indexOf(stored) !== -1) { perPage = stored; }
+            } catch (error) {
+                // A browser refusing storage simply gets the default.
+            }
+
+            function words(name, replacements) {
+                var text = control ? (control.dataset[name] || '') : '';
+
+                Object.keys(replacements || {}).forEach(function (key) {
+                    text = text.split(':' + key).join(replacements[key]);
+                });
+
+                return text;
+            }
+
+            function draw() {
                 var needle = input.value.trim().toLowerCase();
-                var anyVisible = false;
 
-                document.querySelectorAll('[data-error-code]').forEach(function (card) {
+                var matching = cards.filter(function (card) {
                     var haystack = card.dataset.errorHaystack || '';
-                    var match = needle === '' || haystack.indexOf(needle) !== -1;
 
-                    card.classList.toggle('hidden', ! match);
+                    return needle === '' || haystack.indexOf(needle) !== -1;
+                });
 
-                    if (match) { anyVisible = true; }
+                var lastPage = Math.max(1, Math.ceil(matching.length / perPage));
+
+                if (page > lastPage) { page = lastPage; }
+
+                var start = (page - 1) * perPage;
+                var shown = matching.slice(start, start + perPage);
+
+                cards.forEach(function (card) {
+                    card.classList.toggle('hidden', shown.indexOf(card) === -1);
                 });
 
                 document.querySelectorAll('[data-error-family]').forEach(function (family) {
                     var visible = family.querySelectorAll('[data-error-code]:not(.hidden)').length;
+
                     family.classList.toggle('hidden', visible === 0);
                 });
 
-                empty.classList.toggle('hidden', anyVisible);
+                empty.classList.toggle('hidden', matching.length > 0);
+
+                drawControl(matching.length, lastPage, start, shown.length);
+            }
+
+            function pageNumbers(lastPage) {
+                var wanted = [];
+
+                [1, page - 1, page, page + 1, lastPage].forEach(function (number) {
+                    if (
+                        number >= 1
+                        && number <= lastPage
+                        && wanted.indexOf(number) === -1
+                    ) {
+                        wanted.push(number);
+                    }
+                });
+
+                wanted.sort(function (a, b) { return a - b; });
+
+                var drawn = [];
+
+                wanted.forEach(function (number, index) {
+                    if (index > 0 && number - wanted[index - 1] > 1) {
+                        drawn.push(null);
+                    }
+
+                    drawn.push(number);
+                });
+
+                return drawn;
+            }
+
+            function drawControl(total, lastPage, start, count) {
+                if (! control) { return; }
+
+                if (total <= SIZES[0] && lastPage <= 1) {
+                    control.innerHTML = '';
+                    control.classList.add('hidden');
+
+                    return;
+                }
+
+                control.classList.remove('hidden');
+
+                var sizes = SIZES.map(function (size) {
+                    return '<option value="' + size + '"'
+                        + (size === perPage ? ' selected' : '')
+                        + '>' + size + '</option>';
+                }).join('');
+
+                var numbers = lastPage <= 1 ? '' : pageNumbers(lastPage).map(function (number) {
+                    if (number === null) {
+                        return '<span class="pm-pagination-gap" aria-hidden="true">&hellip;</span>';
+                    }
+
+                    var current = number === page;
+
+                    return '<button type="button" data-page="' + number + '"'
+                        + ' aria-label="' + words(
+                            current ? 'currentPage' : 'goToPage',
+                            { page: number }
+                        ) + '"'
+                        + (current ? ' aria-current="page"' : '')
+                        + ' class="pm-pagination-page' + (current ? ' is-current' : '') + '">'
+                        + number + '</button>';
+                }).join('');
+
+                var steps = lastPage <= 1 ? '' : (
+                    '<button type="button" data-step="-1"'
+                    + (page <= 1 ? ' disabled' : '')
+                    + ' aria-label="' + words('previous', {}) + '"'
+                    + ' class="pm-pagination-step">&lsaquo;</button>'
+                    + numbers
+                    + '<button type="button" data-step="1"'
+                    + (page >= lastPage ? ' disabled' : '')
+                    + ' aria-label="' + words('next', {}) + '"'
+                    + ' class="pm-pagination-step">&rsaquo;</button>'
+                );
+
+                control.innerHTML =
+                    '<div class="pm-pagination">'
+                    + '<p class="pm-pagination-summary">'
+                    + words('summary', {
+                        from: total === 0 ? 0 : start + 1,
+                        to: start + count,
+                        total: total,
+                    })
+                    + '</p>'
+                    + '<div class="pm-pagination-controls">'
+                    + '<label class="pm-pagination-size"><span>'
+                    + words('rowsPerPage', {})
+                    + '</span><select class="pm-input" data-size>' + sizes + '</select></label>'
+                    + '<nav class="pm-pagination-pages" aria-label="'
+                    + words('navigation', {}) + '">' + steps + '</nav>'
+                    + '</div></div>';
+
+                control.querySelectorAll('[data-page]').forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        page = Number(button.dataset.page);
+
+                        draw();
+                    });
+                });
+
+                control.querySelectorAll('[data-step]').forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        page += Number(button.dataset.step);
+
+                        draw();
+                    });
+                });
+
+                control.querySelector('[data-size]')
+                    .addEventListener('change', function (event) {
+                        perPage = Number(event.target.value);
+                        page = 1;
+
+                        try {
+                            window.localStorage.setItem(STORAGE, String(perPage));
+                        } catch (error) {
+                            // Nothing to do; the choice simply is not kept.
+                        }
+
+                        draw();
+                    });
+            }
+
+            input.addEventListener('input', function () {
+                page = 1;
+
+                draw();
             });
+
+            draw();
         })();
     </script>
 

@@ -287,6 +287,8 @@
         </div>
 
         <div id="help-errors-content"></div>
+
+        <div id="help-errors-pagination" class="mt-6 hidden"></div>
     </section>
 
     {{-- Update log --}}

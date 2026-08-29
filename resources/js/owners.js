@@ -14,6 +14,11 @@ import {
 } from './core.js';
 
 import {
+    pageSizeFor,
+    renderPagination,
+} from './pagination.js';
+
+import {
     browserCan,
 } from './permissions.js';
 
@@ -157,7 +162,7 @@ async function loadOwnerDirectory(
 
         params.set(
             'per_page',
-            '10'
+            String(pageSizeFor('owners'))
         );
 
         const search =
@@ -445,150 +450,23 @@ function renderOwnerDirectoryRow(
  *
  * @param {object} pagination
  */
+/**
+ * Page through the owner directory.
+ *
+ * The control itself lives in resources/js/pagination.js.
+ */
 function renderOwnerDirectoryPagination(
-    pagination
+    payload
 ) {
-    const container =
-        document.getElementById(
-            'owners-list-pagination'
-        );
-
-    if (! container) {
-        return;
-    }
-
-    const current =
-        Number(
-            pagination?.current_page
-            ?? 1
-        );
-
-    const last =
-        Number(
-            pagination?.last_page
-            ?? 1
-        );
-
-    const total =
-        Number(
-            pagination?.total
-            ?? 0
-        );
-
-    if (last <= 1) {
-        container.innerHTML = '';
-
-        container.classList.add(
-            'hidden'
-        );
-
-        return;
-    }
-
-    container.classList.remove(
-        'hidden'
+    renderPagination(
+        'owners-list-pagination',
+        payload,
+        {
+            storageKey: 'owners',
+            onPage: (page) => loadOwnerDirectory(page),
+            onPageSize: () => loadOwnerDirectory(1),
+        }
     );
-
-    container.innerHTML = `
-        <div
-            class="
-                flex items-center
-                justify-between gap-3
-            "
-        >
-            <div
-                class="
-                    text-xs text-[var(--pm-text-muted)]
-                "
-            >
-                ${translate(
-                    total === 1
-                        ? 'owners.pagination_owner'
-                        : 'owners.pagination_owners',
-                    {
-                        total:
-                            formatNumber(
-                                total
-                            ),
-                    }
-                )}
-            </div>
-
-            <div class="flex gap-2">
-                <button
-                    id="owners-list-previous"
-                    type="button"
-                    ${current <= 1 ? 'disabled' : ''}
-                    class="
-                        rounded-lg border
-                        border-[var(--pm-border)]
-                        bg-[var(--pm-surface)] px-2.5 py-1.5
-                        text-xs font-medium
-                        text-[var(--pm-text-secondary)]
-                        transition
-                        hover:bg-[var(--pm-hover)]
-                        disabled:cursor-not-allowed
-                        disabled:opacity-40
-                    "
-                >
-                    ${translate(
-                        'owners.previous'
-                    )}
-                </button>
-
-                <button
-                    id="owners-list-next"
-                    type="button"
-                    ${current >= last ? 'disabled' : ''}
-                    class="
-                        rounded-lg border
-                        border-[var(--pm-border)]
-                        bg-[var(--pm-surface)] px-2.5 py-1.5
-                        text-xs font-medium
-                        text-[var(--pm-text-secondary)]
-                        transition
-                        hover:bg-[var(--pm-hover)]
-                        disabled:cursor-not-allowed
-                        disabled:opacity-40
-                    "
-                >
-                    ${translate(
-                        'owners.next'
-                    )}
-                </button>
-            </div>
-        </div>
-    `;
-
-    document
-        .getElementById(
-            'owners-list-previous'
-        )
-        ?.addEventListener(
-            'click',
-            async () => {
-                if (current > 1) {
-                    await loadOwnerDirectory(
-                        current - 1
-                    );
-                }
-            }
-        );
-
-    document
-        .getElementById(
-            'owners-list-next'
-        )
-        ?.addEventListener(
-            'click',
-            async () => {
-                if (current < last) {
-                    await loadOwnerDirectory(
-                        current + 1
-                    );
-                }
-            }
-        );
 }
 
 /*
@@ -665,7 +543,7 @@ async function selectOwnerAccount(
                     ),
 
                 transactions_per_page:
-                    '8',
+                    String(pageSizeFor('owner-ledger')),
             });
 
         const response =
@@ -1433,175 +1311,30 @@ function renderOwnerTransaction(
  *
  * @param {object} pagination
  */
+/**
+ * Page through the ledger of the owner on screen. Reloading the account
+ * is what reloads the ledger, so both handlers go back through it.
+ *
+ * The control itself lives in resources/js/pagination.js.
+ */
 function renderOwnerLedgerPagination(
-    pagination
+    payload
 ) {
-    const container =
-        document.getElementById(
-            'owner-ledger-pagination'
-        );
-
-    if (! container) {
-        return;
-    }
-
-    const current =
-        Number(
-            pagination?.current_page
-            ?? 1
-        );
-
-    const last =
-        Number(
-            pagination?.last_page
-            ?? 1
-        );
-
-    const total =
-        Number(
-            pagination?.total
-            ?? 0
-        );
-
-    if (last <= 1) {
-        container.innerHTML = '';
-
-        container.classList.add(
-            'hidden'
-        );
-
-        return;
-    }
-
-    container.classList.remove(
-        'hidden'
+    renderPagination(
+        'owner-ledger-pagination',
+        payload,
+        {
+            storageKey: 'owner-ledger',
+            onPage: (page) => selectOwnerAccount(
+                selectedOwnerAccountId,
+                page
+            ),
+            onPageSize: () => selectOwnerAccount(
+                selectedOwnerAccountId,
+                1
+            ),
+        }
     );
-
-    container.innerHTML = `
-        <div
-            class="
-                flex flex-col gap-3
-                sm:flex-row
-                sm:items-center
-                sm:justify-between
-            "
-        >
-            <div
-                class="
-                    text-xs text-[var(--pm-text-muted)]
-                "
-            >
-                ${translate(
-                    'owners.page_of',
-                    {
-                        current:
-                            formatNumber(
-                                current
-                            ),
-
-                        last:
-                            formatNumber(
-                                last
-                            ),
-                    }
-                )}
-                ·
-                ${translate(
-                    total === 1
-                        ? 'owners.pagination_transaction'
-                        : 'owners.pagination_transactions',
-                    {
-                        total:
-                            formatNumber(
-                                total
-                            ),
-                    }
-                )}
-            </div>
-
-            <div class="flex gap-2">
-                <button
-                    id="owner-ledger-previous"
-                    type="button"
-                    ${current <= 1 ? 'disabled' : ''}
-                    class="
-                        rounded-lg border
-                        border-[var(--pm-border)]
-                        bg-[var(--pm-surface)] px-3 py-2
-                        text-xs font-medium
-                        text-[var(--pm-text-secondary)]
-                        transition
-                        hover:bg-[var(--pm-hover)]
-                        disabled:cursor-not-allowed
-                        disabled:opacity-40
-                    "
-                >
-                    ${translate(
-                        'owners.previous'
-                    )}
-                </button>
-
-                <button
-                    id="owner-ledger-next"
-                    type="button"
-                    ${current >= last ? 'disabled' : ''}
-                    class="
-                        rounded-lg border
-                        border-[var(--pm-border)]
-                        bg-[var(--pm-surface)] px-3 py-2
-                        text-xs font-medium
-                        text-[var(--pm-text-secondary)]
-                        transition
-                        hover:bg-[var(--pm-hover)]
-                        disabled:cursor-not-allowed
-                        disabled:opacity-40
-                    "
-                >
-                    ${translate(
-                        'owners.next'
-                    )}
-                </button>
-            </div>
-        </div>
-    `;
-
-    document
-        .getElementById(
-            'owner-ledger-previous'
-        )
-        ?.addEventListener(
-            'click',
-            async () => {
-                if (
-                    current > 1
-                    && selectedOwnerAccountId
-                ) {
-                    await selectOwnerAccount(
-                        selectedOwnerAccountId,
-                        current - 1
-                    );
-                }
-            }
-        );
-
-    document
-        .getElementById(
-            'owner-ledger-next'
-        )
-        ?.addEventListener(
-            'click',
-            async () => {
-                if (
-                    current < last
-                    && selectedOwnerAccountId
-                ) {
-                    await selectOwnerAccount(
-                        selectedOwnerAccountId,
-                        current + 1
-                    );
-                }
-            }
-        );
 }
 
 /*

@@ -22,6 +22,11 @@ import {
 } from './core.js';
 
 import {
+    pageSizeFor,
+    renderPagination,
+} from './pagination.js';
+
+import {
     dateForApi,
     initializeDateInputs,
 } from './date-input.js';
@@ -194,7 +199,7 @@ function financialJournalQueryParameters(
 
     parameters.set(
         'per_page',
-        '25'
+        String(pageSizeFor('financial-journal'))
     );
 
     return parameters;
@@ -896,136 +901,23 @@ function financialJournalRow(
 |--------------------------------------------------------------------------
 */
 
+/**
+ * Page through the financial journal.
+ *
+ * The control itself lives in resources/js/pagination.js.
+ */
 function renderFinancialJournalPagination(
     payload
 ) {
-    const container =
-        document.getElementById(
-            'financial-journal-pagination'
-        );
-
-    if (! container) {
-        return;
-    }
-
-    const current =
-        Number(
-            payload?.current_page
-            ?? 1
-        );
-
-    const last =
-        Number(
-            payload?.last_page
-            ?? 1
-        );
-
-    if (last <= 1) {
-        container.innerHTML =
-            '';
-
-        container.classList.add(
-            'hidden'
-        );
-
-        return;
-    }
-
-    container.classList.remove(
-        'hidden'
+    renderPagination(
+        'financial-journal-pagination',
+        payload,
+        {
+            storageKey: 'financial-journal',
+            onPage: (page) => loadFinancialJournal(page),
+            onPageSize: () => loadFinancialJournal(1),
+        }
     );
-
-    container.innerHTML = `
-        <div
-            class="
-                flex items-center
-                justify-between gap-4
-            "
-        >
-            <div
-                class="
-                    text-sm
-                    text-[var(--pm-text-muted)]
-                "
-            >
-                ${escapeHtml(
-                    translate(
-                        'financial_journal.page_of',
-                        {
-                            current,
-                            last,
-                        }
-                    )
-                )}
-            </div>
-
-            <div class="flex gap-2">
-                <button
-                    id="financial-journal-previous"
-                    type="button"
-                    ${current <= 1 ? 'disabled' : ''}
-                    class="
-                        pm-button-secondary
-                        px-3 py-2
-                        disabled:opacity-40
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'financial_journal.previous'
-                        )
-                    )}
-                </button>
-
-                <button
-                    id="financial-journal-next"
-                    type="button"
-                    ${current >= last ? 'disabled' : ''}
-                    class="
-                        pm-button-secondary
-                        px-3 py-2
-                        disabled:opacity-40
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'financial_journal.next'
-                        )
-                    )}
-                </button>
-            </div>
-        </div>
-    `;
-
-    document
-        .getElementById(
-            'financial-journal-previous'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                if (current > 1) {
-                    loadFinancialJournal(
-                        current - 1
-                    );
-                }
-            }
-        );
-
-    document
-        .getElementById(
-            'financial-journal-next'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                if (current < last) {
-                    loadFinancialJournal(
-                        current + 1
-                    );
-                }
-            }
-        );
 }
 
 /*

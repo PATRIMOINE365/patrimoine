@@ -20,6 +20,11 @@ import {
 } from './core.js';
 
 import {
+    pageSizeFor,
+    renderPagination,
+} from './pagination.js';
+
+import {
     dateForApi,
     initializeDateInputs,
 } from './date-input.js';
@@ -230,7 +235,7 @@ function activityQueryParameters(
 
     parameters.set(
         'per_page',
-        '25'
+        String(pageSizeFor('activity-log'))
     );
 
     return parameters;
@@ -647,7 +652,7 @@ async function loadActivityLog(
             payload
         );
 
-        renderPagination(
+        renderActivityPagination(
             payload
         );
     } catch (error) {
@@ -928,133 +933,24 @@ function clientContextSummary(
 |--------------------------------------------------------------------------
 */
 
-function renderPagination(
+/**
+ * Page through the activity log. Renamed from renderPagination so it no
+ * longer collides with the shared control it delegates to.
+ *
+ * The control itself lives in resources/js/pagination.js.
+ */
+function renderActivityPagination(
     payload
 ) {
-    const container =
-        document.getElementById(
-            'activity-log-pagination'
-        );
-
-    if (! container) {
-        return;
-    }
-
-    const current =
-        Number(
-            payload?.current_page
-            ?? 1
-        );
-
-    const last =
-        Number(
-            payload?.last_page
-            ?? 1
-        );
-
-    if (last <= 1) {
-        container.innerHTML = '';
-        container.classList.add(
-            'hidden'
-        );
-
-        return;
-    }
-
-    container.classList.remove(
-        'hidden'
+    renderPagination(
+        'activity-log-pagination',
+        payload,
+        {
+            storageKey: 'activity-log',
+            onPage: (page) => loadActivityLog(page),
+            onPageSize: () => loadActivityLog(1),
+        }
     );
-
-    container.innerHTML = `
-        <div
-            class="
-                flex items-center
-                justify-between gap-4
-            "
-        >
-            <div
-                class="
-                    text-sm text-[var(--pm-text-muted)]
-                "
-            >
-                ${escapeHtml(
-                    translate(
-                        'activity_log.page_of',
-                        {
-                            current,
-                            last,
-                        }
-                    )
-                )}
-            </div>
-
-            <div class="flex gap-2">
-                <button
-                    id="activity-log-previous"
-                    type="button"
-                    ${current <= 1 ? 'disabled' : ''}
-                    class="
-                        pm-button-secondary
-                        px-3 py-2
-                        disabled:opacity-40
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'activity_log.previous'
-                        )
-                    )}
-                </button>
-
-                <button
-                    id="activity-log-next"
-                    type="button"
-                    ${current >= last ? 'disabled' : ''}
-                    class="
-                        pm-button-secondary
-                        px-3 py-2
-                        disabled:opacity-40
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'activity_log.next'
-                        )
-                    )}
-                </button>
-            </div>
-        </div>
-    `;
-
-    document
-        .getElementById(
-            'activity-log-previous'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                if (current > 1) {
-                    loadActivityLog(
-                        current - 1
-                    );
-                }
-            }
-        );
-
-    document
-        .getElementById(
-            'activity-log-next'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                if (current < last) {
-                    loadActivityLog(
-                        current + 1
-                    );
-                }
-            }
-        );
 }
 
 /*

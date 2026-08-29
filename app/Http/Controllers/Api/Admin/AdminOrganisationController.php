@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\License;
 use App\Models\Organisation;
 use App\Models\User;
+use App\Support\PageSize;
 use App\Services\LicensingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -45,7 +46,7 @@ class AdminOrganisationController extends Controller
             $query->where('status', $validated['status']);
         }
 
-        $page = $query->paginate(25);
+        $page = $query->paginate(PageSize::fromRequest($request));
 
         return response()->json([
             'data' => collect($page->items())->map(
