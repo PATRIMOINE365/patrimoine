@@ -1,5 +1,7 @@
 <?php
 
+
+use App\Http\Controllers\ErrorReferenceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,6 +42,51 @@ Route::view(
  * Public legal pages. Linked from signup, the application footer and
  * outbound email.
  */
+/*
+ * The Error codes reference runs without a session.
+ *
+ * Sessions live in the database, and this page exists for the moments
+ * the database is unreachable: PM-9904 and PM-9905 are precisely what
+ * somebody looks up during an outage. It reads nothing, writes nothing
+ * and needs no visitor identity, so the session, the CSRF token and the
+ * tenant context are all detached rather than left to fail.
+ */
+const ERROR_PAGE_EXCLUSIONS = [
+    \Illuminate\Session\Middleware\StartSession::class,
+    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+
+    /*
+     * The forgery guard reads the session, so it has to go with it. The
+     * class was renamed between Laravel versions and both names are
+     * listed: excluding a class that is not in the stack costs nothing,
+     * while missing the one that is leaves the page dead.
+     */
+    \Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class,
+    \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+
+    \App\Http\Middleware\SetOrganisationContext::class,
+];
+
+/*
+ * The Error codes reference.
+ *
+ * Public, and deliberately so: somebody who cannot sign in is exactly
+ * the person holding a code they need explained. /errors/PM-4045 opens
+ * the page at that code, which is where every error message links to.
+ */
+Route::get(
+    '/errors',
+    ErrorReferenceController::class
+)->name('errors')->withoutMiddleware(ERROR_PAGE_EXCLUSIONS);
+
+Route::get(
+    '/errors/{code}',
+    ErrorReferenceController::class
+)
+    ->name('errors.show')
+    ->where('code', '[A-Za-z]{2}-[0-9]{4}')
+    ->withoutMiddleware(ERROR_PAGE_EXCLUSIONS);
+
 Route::view(
     '/terms',
     'legal.terms'

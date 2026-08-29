@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Middleware\ApplyApplicationLocale;
+use App\Support\ErrorCodes;
+use Illuminate\Http\JsonResponse;
 use App\Http\Middleware\AuthenticateSignedDocumentAccess;
 use App\Http\Middleware\EnsureUserHasCapability;
 use App\Http\Middleware\EnsureLicenseFeature;
@@ -132,6 +134,47 @@ return Application::configure(basePath: dirname(__DIR__))
          */
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request): bool => $request->is('api/*'),
+        );
+
+        /*
+         * Every failure carries its code.
+         *
+         * By the time an exception is rendered the message key is gone and
+         * only the sentence remains, so the code is recovered from the
+         * catalogue by matching that sentence, or from the status where a
+         * request failed with no message of its own.
+         *
+         * The code is added to the body rather than replacing anything:
+         * clients keep reading 'message' and 'errors' exactly as before,
+         * and gain something to show the customer and quote to us.
+         */
+        $exceptions->respond(
+            function ($response, Throwable $exception, Request $request) {
+                if (! $response instanceof JsonResponse) {
+                    return $response;
+                }
+
+                $payload = $response->getData(true);
+
+                if (! is_array($payload) || isset($payload['code'])) {
+                    return $response;
+                }
+
+                $code = ErrorCodes::forResponse(
+                    $payload,
+                    $response->getStatusCode()
+                );
+
+                if ($code === null) {
+                    return $response;
+                }
+
+                $payload['code'] = $code;
+
+                $response->setData($payload);
+
+                return $response;
+            }
         );
     })
     ->create();

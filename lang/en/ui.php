@@ -517,6 +517,48 @@ return [
     |--------------------------------------------------------------------------
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Error codes page
+    |--------------------------------------------------------------------------
+    */
+
+    'errors' => [
+        'back_to_app' => 'Back to Patrimoine',
+        'explain_code' => 'What does this code mean?',
+        'title' => 'Error codes',
+        'heading' => 'Error codes',
+        'intro' => 'Every message Patrimoine shows when something does not work carries a code. Look it up here to see what happened, and what to do next.',
+        'search_placeholder' => 'Search a code, or words from the message',
+        'search_label' => 'Search',
+        'no_matches' => 'Nothing matches what you typed. Try fewer words, or the code itself.',
+        'unknown_code' => 'That is not one of our codes. Check the spelling — ours look like PM-4045 — or search below.',
+        'what_happened' => 'What happened',
+        'what_to_do' => 'What to do',
+        'count' => ':count codes',
+        'back_to_all' => 'All error codes',
+        'jump_to' => 'Jump to',
+        'family_access' => 'Signing in and access',
+        'family_input' => 'Something you typed',
+        'family_property' => 'Properties, parties and leases',
+        'family_money' => 'Money',
+        'family_documents' => 'Documents and exports',
+        'family_messaging' => 'E-mail',
+        'family_licence' => 'Plan and limits',
+        'family_console' => 'Administration console',
+        'family_system' => 'Patrimoine itself',
+        'severity_fix_yourself' => 'You can put this right',
+        'severity_try_again' => 'Worth trying again',
+        'severity_ask_admin' => 'An administrator can help',
+        'severity_contact_us' => 'This one is ours',
+        'contact_heading' => 'When you need a person',
+        'contact_intro' => 'Some things are not yours to fix. For those, or when the same code keeps coming back, reach us directly — telling us the code and what you were doing is usually enough for us to find it.',
+        'contact_phone' => 'Telephone',
+        'contact_whatsapp' => 'WhatsApp',
+        'contact_email' => 'E-mail',
+        'contact_hint' => 'Quote the code you saw. It tells us where to look before we ask you a single question.',
+    ],
+
     'wizard' => [
         'title' => 'Guided lease',
         'eyebrow' => 'Leases',

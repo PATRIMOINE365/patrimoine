@@ -58,124 +58,184 @@ return [
         'PM-1001' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['api.auth.mfa_challenge_expired'],
+            'keys' => ['api.auth.account_disabled', 'api.password.account_disabled'],
         ],
         'PM-1002' => [
             'family' => 1,
-            'severity' => 'ask_admin',
-            'keys' => ['api.auth.organisation_suspended'],
+            'severity' => 'fix_yourself',
+            'keys' => ['api.auth.forbidden'],
         ],
         'PM-1003' => [
             'family' => 1,
-            'severity' => 'contact_us',
-            'keys' => ['ui.login.missing_api_token'],
+            'severity' => 'fix_yourself',
+            'keys' => ['api.auth.invalid_credentials'],
         ],
         'PM-1004' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.login.unable_to_sign_in', 'login.unable_to_sign_in'],
+            'keys' => ['api.auth.mfa_challenge_expired'],
         ],
         'PM-1005' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.password.confirmation_mismatch', 'password.confirmation_mismatch'],
+            'keys' => ['api.auth.mfa_code_invalid'],
         ],
         'PM-1006' => [
             'family' => 1,
-            'severity' => 'fix_yourself',
-            'keys' => ['api.password.invalid_reset'],
+            'severity' => 'ask_admin',
+            'keys' => ['api.auth.organisation_suspended'],
         ],
         'PM-1007' => [
             'family' => 1,
-            'severity' => 'try_again',
-            'keys' => ['ui.password.request_failed', 'password.request_failed'],
+            'severity' => 'fix_yourself',
+            'keys' => ['api.auth.password_confirmation_failed'],
         ],
         'PM-1008' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['api.profile.photo_invalid'],
+            'keys' => ['api.auth.setup_required'],
         ],
         'PM-1009' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['api.registration.verification_invalid'],
+            'keys' => ['api.auth.unauthenticated'],
         ],
         'PM-1010' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.signup.description', 'signup.description'],
+            'keys' => ['api.auth.verification_required'],
         ],
         'PM-1011' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.signup.unable', 'signup.unable'],
+            'keys' => ['ui.login.unable_to_sign_in', 'login.unable_to_sign_in'],
         ],
         'PM-1012' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['api.user_invitation.inactive_user'],
+            'keys' => ['ui.password.confirmation_mismatch', 'password.confirmation_mismatch'],
         ],
         'PM-1013' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['api.user_invitation.invalid'],
+            'keys' => ['api.password.current_incorrect'],
         ],
         'PM-1014' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['api.user_management.cannot_change_own_role'],
+            'keys' => ['api.password.invalid_reset'],
         ],
         'PM-1015' => [
             'family' => 1,
-            'severity' => 'fix_yourself',
-            'keys' => ['api.user_management.cannot_delete_self'],
+            'severity' => 'try_again',
+            'keys' => ['ui.password.request_failed', 'password.request_failed'],
         ],
         'PM-1016' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['api.user_management.cannot_disable_self'],
+            'keys' => ['api.profile.photo_invalid'],
         ],
         'PM-1017' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['api.user_management.last_active_administrator'],
+            'keys' => ['api.profile.photo_removed'],
         ],
         'PM-1018' => [
             'family' => 1,
-            'severity' => 'fix_yourself',
-            'keys' => ['api.user_management.platform_domain_required'],
+            'severity' => 'ask_admin',
+            'keys' => ['api.registration.platform_domain_blocked'],
         ],
         'PM-1019' => [
             'family' => 1,
-            'severity' => 'try_again',
-            'keys' => ['ui.users.action_failed', 'users.action_failed'],
+            'severity' => 'fix_yourself',
+            'keys' => ['api.registration.verification_invalid'],
         ],
         'PM-1020' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.users.unable_create', 'users.unable_create'],
+            'keys' => ['ui.signup.description', 'signup.description'],
         ],
         'PM-1021' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.users.unable_delete', 'users.unable_delete'],
+            'keys' => ['ui.signup.unable', 'signup.unable'],
         ],
         'PM-1022' => [
             'family' => 1,
-            'severity' => 'try_again',
-            'keys' => ['ui.users.unable_load', 'users.unable_load'],
+            'severity' => 'fix_yourself',
+            'keys' => ['api.user_invitation.accepted'],
         ],
         'PM-1023' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.users.unable_update', 'users.unable_update'],
+            'keys' => ['api.user_invitation.inactive_user'],
         ],
         'PM-1024' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.verify_email.failed_heading', 'verify_email.failed_heading'],
+            'keys' => ['api.user_invitation.invalid'],
         ],
         'PM-1025' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.user_management.cannot_change_own_role'],
+        ],
+        'PM-1026' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.user_management.cannot_delete_self'],
+        ],
+        'PM-1027' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.user_management.cannot_disable_self'],
+        ],
+        'PM-1028' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.user_management.last_active_administrator'],
+        ],
+        'PM-1029' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.user_management.platform_domain_required'],
+        ],
+        'PM-1030' => [
+            'family' => 1,
+            'severity' => 'ask_admin',
+            'keys' => ['api.user_management.platform_domain_reserved'],
+        ],
+        'PM-1031' => [
+            'family' => 1,
+            'severity' => 'try_again',
+            'keys' => ['ui.users.action_failed', 'users.action_failed'],
+        ],
+        'PM-1032' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['ui.users.unable_create', 'users.unable_create'],
+        ],
+        'PM-1033' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['ui.users.unable_delete', 'users.unable_delete'],
+        ],
+        'PM-1034' => [
+            'family' => 1,
+            'severity' => 'try_again',
+            'keys' => ['ui.users.unable_load', 'users.unable_load'],
+        ],
+        'PM-1035' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['ui.users.unable_update', 'users.unable_update'],
+        ],
+        'PM-1036' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['ui.verify_email.failed_heading', 'verify_email.failed_heading'],
+        ],
+        'PM-1037' => [
             'family' => 1,
             'severity' => 'try_again',
             'keys' => ['ui.verify_email.resend_failed', 'verify_email.resend_failed'],
@@ -366,164 +426,174 @@ return [
         'PM-2037' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['validation.numeric'],
+            'keys' => ['validation.nullable'],
         ],
         'PM-2038' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['validation.regex'],
+            'keys' => ['validation.numeric'],
         ],
         'PM-2039' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['validation.required'],
+            'keys' => ['validation.regex'],
         ],
         'PM-2040' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['validation.required_if'],
+            'keys' => ['validation.required'],
         ],
         'PM-2041' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['validation.required_unless'],
+            'keys' => ['validation.required_if'],
         ],
         'PM-2042' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['validation.required_with'],
+            'keys' => ['validation.required_unless'],
         ],
         'PM-2043' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['validation.required_without'],
+            'keys' => ['validation.required_with'],
         ],
         'PM-2044' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['validation.same'],
+            'keys' => ['validation.required_without'],
         ],
         'PM-2045' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['validation.size.array'],
+            'keys' => ['validation.same'],
         ],
         'PM-2046' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['validation.size.file'],
+            'keys' => ['validation.size.array'],
         ],
         'PM-2047' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['validation.size.numeric'],
+            'keys' => ['validation.size.file'],
         ],
         'PM-2048' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['validation.size.string'],
+            'keys' => ['validation.size.numeric'],
         ],
         'PM-2049' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['validation.string'],
+            'keys' => ['validation.size.string'],
         ],
         'PM-2050' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['validation.unique'],
+            'keys' => ['validation.string'],
         ],
         'PM-2051' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.advance_received_before_lease'],
+            'keys' => ['validation.unique'],
         ],
         'PM-2052' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.advance_received_positive'],
+            'keys' => ['api.validation.advance_received_before_lease'],
         ],
         'PM-2053' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.agent_required_for_commission'],
+            'keys' => ['api.validation.advance_received_positive'],
         ],
         'PM-2054' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.agent_role_required'],
+            'keys' => ['api.validation.agent_required_for_commission'],
         ],
         'PM-2055' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.building_required_for_unit'],
+            'keys' => ['api.validation.agent_role_required'],
         ],
         'PM-2056' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.management_fee_none_zero'],
+            'keys' => ['api.validation.building_required_for_unit'],
         ],
         'PM-2057' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.management_fee_percentage_max'],
+            'keys' => ['api.validation.management_fee_none_zero'],
         ],
         'PM-2058' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.notice_date_required'],
+            'keys' => ['api.validation.management_fee_percentage_max'],
         ],
         'PM-2059' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.payment_draft_lease'],
+            'keys' => ['api.validation.notice_date_required'],
         ],
         'PM-2060' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.rent_increment_date_required'],
+            'keys' => ['api.validation.payment_draft_lease'],
         ],
         'PM-2061' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.rent_increment_none_date'],
+            'keys' => ['api.validation.rent_increment_date_required'],
         ],
         'PM-2062' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.rent_increment_none_zero'],
+            'keys' => ['api.validation.rent_increment_none_date'],
         ],
         'PM-2063' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.rent_increment_percentage_max'],
+            'keys' => ['api.validation.rent_increment_none_zero'],
         ],
         'PM-2064' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.rent_reserve_exceeds_advance'],
+            'keys' => ['api.validation.rent_increment_percentage_max'],
         ],
         'PM-2065' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.tenant_role_required'],
+            'keys' => ['api.validation.rent_increment_value_required'],
         ],
         'PM-2066' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.unit_active_lease'],
+            'keys' => ['api.validation.rent_reserve_exceeds_advance'],
         ],
         'PM-2067' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.unit_not_in_building'],
+            'keys' => ['api.validation.tenant_role_required'],
         ],
         'PM-2068' => [
             'family' => 2,
             'severity' => 'fix_yourself',
-            'keys' => ['api.validation.wizard_owners_required'],
+            'keys' => ['api.validation.unit_active_lease'],
         ],
         'PM-2069' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.validation.unit_not_in_building'],
+        ],
+        'PM-2070' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.validation.wizard_owners_required'],
+        ],
+        'PM-2071' => [
             'family' => 2,
             'severity' => 'fix_yourself',
             'keys' => ['api.validation.wizard_unit_building'],
@@ -549,437 +619,437 @@ return [
         'PM-3004' => [
             'family' => 3,
             'severity' => 'fix_yourself',
-            'keys' => ['api.deletion.lease_referenced'],
+            'keys' => ['api.deletion.lease_confirmation_invalid'],
         ],
         'PM-3005' => [
             'family' => 3,
             'severity' => 'fix_yourself',
-            'keys' => ['api.deletion.party_managing_organisation'],
+            'keys' => ['api.deletion.lease_not_draft'],
         ],
         'PM-3006' => [
             'family' => 3,
             'severity' => 'fix_yourself',
-            'keys' => ['api.deletion.party_referenced'],
+            'keys' => ['api.deletion.lease_referenced'],
         ],
         'PM-3007' => [
             'family' => 3,
             'severity' => 'fix_yourself',
-            'keys' => ['api.deletion.unit_referenced'],
+            'keys' => ['api.deletion.party_managing_organisation'],
         ],
         'PM-3008' => [
             'family' => 3,
-            'severity' => 'try_again',
-            'keys' => ['ui.leases.deduction_record_failed', 'leases.deduction_record_failed'],
+            'severity' => 'fix_yourself',
+            'keys' => ['api.deletion.party_referenced'],
         ],
         'PM-3009' => [
             'family' => 3,
             'severity' => 'fix_yourself',
-            'keys' => ['leases.delete_blocked'],
+            'keys' => ['api.deletion.unit_referenced'],
         ],
         'PM-3010' => [
             'family' => 3,
-            'severity' => 'fix_yourself',
-            'keys' => ['leases.delete_confirmation_invalid'],
+            'severity' => 'try_again',
+            'keys' => ['ui.leases.deduction_record_failed', 'leases.deduction_record_failed'],
         ],
         'PM-3011' => [
             'family' => 3,
-            'severity' => 'try_again',
-            'keys' => ['leases.delete_impact_failed'],
+            'severity' => 'fix_yourself',
+            'keys' => ['leases.delete_blocked'],
         ],
         'PM-3012' => [
             'family' => 3,
             'severity' => 'fix_yourself',
-            'keys' => ['leases.delete_password_required'],
+            'keys' => ['leases.delete_confirmation_invalid'],
         ],
         'PM-3013' => [
+            'family' => 3,
+            'severity' => 'try_again',
+            'keys' => ['leases.delete_impact_failed'],
+        ],
+        'PM-3014' => [
+            'family' => 3,
+            'severity' => 'fix_yourself',
+            'keys' => ['leases.delete_password_required'],
+        ],
+        'PM-3015' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['leases.delete_reason_required'],
         ],
-        'PM-3014' => [
+        'PM-3016' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.leases.financial_history_unable_load', 'leases.financial_history_unable_load'],
         ],
-        'PM-3015' => [
+        'PM-3017' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.leases.financial_history_unable_open_document', 'leases.financial_history_unable_open_document', 'ui.owners.unable_to_open_document', 'owners.unable_to_open_document', 'ui.tenants.unable_to_open_document', 'tenants.unable_to_open_document'],
         ],
-        'PM-3016' => [
+        'PM-3018' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.leases.increment_cancel_failed', 'leases.increment_cancel_failed'],
         ],
-        'PM-3017' => [
+        'PM-3019' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.leases.increment_schedule_failed', 'leases.increment_schedule_failed'],
         ],
-        'PM-3018' => [
+        'PM-3020' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.leases.increments_unable_load', 'leases.increments_unable_load'],
         ],
-        'PM-3019' => [
+        'PM-3021' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.leases.reserve_exceeds_advance', 'leases.reserve_exceeds_advance'],
         ],
-        'PM-3020' => [
+        'PM-3022' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['leases.termination_cancel_failed'],
         ],
-        'PM-3021' => [
+        'PM-3023' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['leases.termination_complete_failed'],
         ],
-        'PM-3022' => [
+        'PM-3024' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['leases.termination_failed'],
         ],
-        'PM-3023' => [
+        'PM-3025' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['leases.termination_notice_unable_open'],
         ],
-        'PM-3024' => [
+        'PM-3026' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['leases.termination_required_fields'],
         ],
-        'PM-3025' => [
+        'PM-3027' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['leases.termination_settlement_load_failed'],
         ],
-        'PM-3026' => [
+        'PM-3028' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['leases.termination_unresolved_items'],
         ],
-        'PM-3027' => [
+        'PM-3029' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.leases.unable_add_deduction', 'leases.unable_add_deduction'],
         ],
-        'PM-3028' => [
+        'PM-3030' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.leases.unable_apply_advance', 'leases.unable_apply_advance'],
         ],
-        'PM-3029' => [
+        'PM-3031' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.leases.unable_apply_reserve', 'leases.unable_apply_reserve'],
         ],
-        'PM-3030' => [
+        'PM-3032' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.leases.unable_create', 'leases.unable_create'],
         ],
-        'PM-3031' => [
+        'PM-3033' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.leases.unable_delete', 'leases.unable_delete'],
         ],
-        'PM-3032' => [
+        'PM-3034' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.leases.unable_finalize_security', 'leases.unable_finalize_security'],
         ],
-        'PM-3033' => [
+        'PM-3035' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.leases.unable_initialize', 'leases.unable_initialize'],
         ],
-        'PM-3034' => [
+        'PM-3036' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.leases.unable_load', 'leases.unable_load'],
         ],
-        'PM-3035' => [
+        'PM-3037' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.leases.unable_load_one', 'leases.unable_load_one'],
         ],
-        'PM-3036' => [
+        'PM-3038' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.leases.unable_load_security_deposit', 'leases.unable_load_security_deposit'],
         ],
-        'PM-3037' => [
+        'PM-3039' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.leases.unable_load_tenant_funds', 'leases.unable_load_tenant_funds'],
         ],
-        'PM-3038' => [
+        'PM-3040' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.leases.unable_open_voucher', 'leases.unable_open_voucher'],
         ],
-        'PM-3039' => [
+        'PM-3041' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.leases.unable_update', 'leases.unable_update'],
         ],
-        'PM-3040' => [
+        'PM-3042' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.leases.voucher_popup_blocked', 'leases.voucher_popup_blocked'],
         ],
-        'PM-3041' => [
+        'PM-3043' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.parties.delete_restriction', 'parties.delete_restriction'],
         ],
-        'PM-3042' => [
+        'PM-3044' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.parties.unable_to_create_party', 'parties.unable_to_create_party'],
         ],
-        'PM-3043' => [
+        'PM-3045' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.parties.unable_to_delete_party', 'parties.unable_to_delete_party'],
         ],
-        'PM-3044' => [
+        'PM-3046' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.parties.unable_to_load', 'parties.unable_to_load'],
         ],
-        'PM-3045' => [
+        'PM-3047' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.parties.unable_to_load_party', 'parties.unable_to_load_party'],
         ],
-        'PM-3046' => [
+        'PM-3048' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.parties.unable_to_update_party', 'parties.unable_to_update_party'],
         ],
-        'PM-3047' => [
+        'PM-3049' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.organisation_required_fields', 'properties.organisation_required_fields'],
         ],
-        'PM-3048' => [
+        'PM-3050' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.person_required_fields', 'properties.person_required_fields'],
         ],
-        'PM-3049' => [
+        'PM-3051' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.unable_to_add_unit', 'properties.unable_to_add_unit'],
         ],
-        'PM-3050' => [
+        'PM-3052' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.unable_to_create_owner', 'properties.unable_to_create_owner'],
         ],
-        'PM-3051' => [
+        'PM-3053' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.unable_to_create_property', 'properties.unable_to_create_property'],
         ],
-        'PM-3052' => [
+        'PM-3054' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.unable_to_delete_property', 'properties.unable_to_delete_property'],
         ],
-        'PM-3053' => [
+        'PM-3055' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.unable_to_delete_unit', 'properties.unable_to_delete_unit'],
         ],
-        'PM-3054' => [
+        'PM-3056' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.properties.unable_to_load', 'properties.unable_to_load'],
         ],
-        'PM-3055' => [
+        'PM-3057' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.properties.unable_to_load_property', 'properties.unable_to_load_property'],
         ],
-        'PM-3056' => [
+        'PM-3058' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.unable_to_locate_unit', 'properties.unable_to_locate_unit'],
         ],
-        'PM-3057' => [
+        'PM-3059' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.unable_to_update_property', 'properties.unable_to_update_property'],
         ],
-        'PM-3058' => [
+        'PM-3060' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.unable_to_update_unit', 'properties.unable_to_update_unit'],
         ],
-        'PM-3059' => [
+        'PM-3061' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.validation_duplicate_owner', 'properties.validation_duplicate_owner'],
         ],
-        'PM-3060' => [
+        'PM-3062' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.validation_every_unit_name', 'properties.validation_every_unit_name'],
         ],
-        'PM-3061' => [
+        'PM-3063' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.validation_owner_required', 'properties.validation_owner_required'],
         ],
-        'PM-3062' => [
+        'PM-3064' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.validation_ownership_total', 'properties.validation_ownership_total'],
         ],
-        'PM-3063' => [
+        'PM-3065' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.validation_unique_unit_names', 'properties.validation_unique_unit_names'],
         ],
-        'PM-3064' => [
+        'PM-3066' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.validation_unit_name_required', 'properties.validation_unit_name_required'],
         ],
-        'PM-3065' => [
+        'PM-3067' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.validation_unit_required', 'properties.validation_unit_required'],
         ],
-        'PM-3066' => [
+        'PM-3068' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.properties.validation_valid_property', 'properties.validation_valid_property'],
         ],
-        'PM-3067' => [
+        'PM-3069' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.tenants.adjustment_negative_balance', 'tenants.adjustment_negative_balance'],
         ],
-        'PM-3068' => [
+        'PM-3070' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.tenants.adjustment_no_change', 'tenants.adjustment_no_change'],
         ],
-        'PM-3069' => [
+        'PM-3071' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.tenants.expense_exceeds_balance', 'tenants.expense_exceeds_balance'],
         ],
-        'PM-3070' => [
+        'PM-3072' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.tenants.not_tenant', 'tenants.not_tenant'],
         ],
-        'PM-3071' => [
+        'PM-3073' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.tenants.pay_exceeds_balance', 'tenants.pay_exceeds_balance'],
         ],
-        'PM-3072' => [
+        'PM-3074' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.tenants.pay_fields_required', 'tenants.pay_fields_required'],
         ],
-        'PM-3073' => [
+        'PM-3075' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.tenants.security_application_exceeds_deposit', 'tenants.security_application_exceeds_deposit'],
         ],
-        'PM-3074' => [
+        'PM-3076' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.tenants.security_application_exceeds_receivable', 'tenants.security_application_exceeds_receivable'],
         ],
-        'PM-3075' => [
+        'PM-3077' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.tenants.transfer_exceeds_balance', 'tenants.transfer_exceeds_balance'],
         ],
-        'PM-3076' => [
+        'PM-3078' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.tenants.transfer_required_fields', 'tenants.transfer_required_fields'],
         ],
-        'PM-3077' => [
+        'PM-3079' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.tenants.transfer_same_account', 'tenants.transfer_same_account'],
         ],
-        'PM-3078' => [
+        'PM-3080' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.tenants.unable_to_load', 'tenants.unable_to_load'],
         ],
-        'PM-3079' => [
+        'PM-3081' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.tenants.unable_to_load_details', 'tenants.unable_to_load_details'],
         ],
-        'PM-3080' => [
+        'PM-3082' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.tenants.unable_to_load_tenant', 'tenants.unable_to_load_tenant'],
         ],
-        'PM-3081' => [
+        'PM-3083' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.tenants.unable_to_open_invoice', 'tenants.unable_to_open_invoice'],
         ],
-        'PM-3082' => [
+        'PM-3084' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.tenants.unable_to_open_voucher', 'tenants.unable_to_open_voucher'],
         ],
-        'PM-3083' => [
+        'PM-3085' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.tenants.unable_to_resend_invoice', 'tenants.unable_to_resend_invoice'],
         ],
-        'PM-3084' => [
+        'PM-3086' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.tenants.unable_to_resend_receipt', 'tenants.unable_to_resend_receipt'],
         ],
-        'PM-3085' => [
+        'PM-3087' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['ui.tenants.unable_to_resend_voucher', 'tenants.unable_to_resend_voucher'],
         ],
-        'PM-3086' => [
+        'PM-3088' => [
             'family' => 3,
             'severity' => 'fix_yourself',
             'keys' => ['tenants.withdrawal_exceeds_balance'],
         ],
-        'PM-3087' => [
-            'family' => 3,
-            'severity' => 'ask_admin',
-            'keys' => ['ui.wizard.increment_none'],
-        ],
-        'PM-3088' => [
+        'PM-3089' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.wizard.load_failed', 'wizard.load_failed'],
         ],
-        'PM-3089' => [
+        'PM-3090' => [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.wizard.save_failed', 'wizard.save_failed'],
-        ],
-        'PM-3090' => [
-            'family' => 3,
-            'severity' => 'fix_yourself',
-            'keys' => ['ui.wizard.vacant_units_only'],
         ],
 
         /* ---- 4xxx money ---- */
@@ -987,489 +1057,524 @@ return [
         'PM-4001' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.consumable_advance.amount_positive'],
+            'keys' => ['business.consumable_advance.account_closed'],
         ],
         'PM-4002' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.consumable_advance.draft_lease'],
+            'keys' => ['business.consumable_advance.amount_positive'],
         ],
         'PM-4003' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.consumable_advance.exceeds_invoice'],
+            'keys' => ['business.consumable_advance.draft_lease'],
         ],
         'PM-4004' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.consumable_advance.rent_only'],
+            'keys' => ['business.consumable_advance.exceeds_invoice'],
         ],
         'PM-4005' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.consumable_advance.wrong_invoice_lease'],
+            'keys' => ['business.consumable_advance.insufficient_balance'],
         ],
         'PM-4006' => [
+            'family' => 4,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.consumable_advance.rent_only'],
+        ],
+        'PM-4007' => [
+            'family' => 4,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.consumable_advance.wrong_account_type'],
+        ],
+        'PM-4008' => [
+            'family' => 4,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.consumable_advance.wrong_invoice_lease'],
+        ],
+        'PM-4009' => [
             'family' => 4,
             'severity' => 'try_again',
             'keys' => ['financial_journal.unable_export', 'activity_log.unable_export'],
         ],
-        'PM-4007' => [
+        'PM-4010' => [
             'family' => 4,
             'severity' => 'try_again',
             'keys' => ['financial_journal.unable_load', 'activity_log.unable_load'],
         ],
-        'PM-4008' => [
+        'PM-4011' => [
             'family' => 4,
             'severity' => 'try_again',
             'keys' => ['financial_journal.unable_load_detail', 'activity_log.unable_load_detail'],
         ],
-        'PM-4009' => [
+        'PM-4012' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.fund_accounts.not_consumable_advance'],
         ],
-        'PM-4010' => [
+        'PM-4013' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.fund_accounts.not_rent_reserve'],
         ],
-        'PM-4011' => [
+        'PM-4014' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.invoice_payment.account_cannot_pay_rent'],
         ],
-        'PM-4012' => [
+        'PM-4015' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.invoice_payment.account_closed'],
         ],
-        'PM-4013' => [
+        'PM-4016' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.invoice_payment.already_cancelled'],
         ],
-        'PM-4014' => [
+        'PM-4017' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.invoice_payment.amount_positive'],
         ],
-        'PM-4015' => [
+        'PM-4018' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.invoice_payment.exceeds_invoice', 'ui.tenants.pay_exceeds_invoice', 'tenants.pay_exceeds_invoice'],
         ],
-        'PM-4016' => [
+        'PM-4019' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.invoice_payment.historical_payment'],
         ],
-        'PM-4017' => [
+        'PM-4020' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.invoice_payment.insufficient_balance'],
         ],
-        'PM-4018' => [
+        'PM-4021' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.invoice_payment.not_a_payment'],
         ],
-        'PM-4019' => [
+        'PM-4022' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.invoice_payment.receipt_unpaid'],
         ],
-        'PM-4020' => [
+        'PM-4023' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.invoice_payment.unsupported_invoice'],
         ],
-        'PM-4021' => [
+        'PM-4024' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.invoice_payment.wrong_lease'],
         ],
-        'PM-4022' => [
+        'PM-4025' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.owner.adjustment_direction'],
         ],
-        'PM-4023' => [
+        'PM-4026' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.owner.adjustment_positive'],
         ],
-        'PM-4024' => [
+        'PM-4027' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.owner.adjustment_reason'],
         ],
-        'PM-4025' => [
+        'PM-4028' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.owner.bill_payment_already_cancelled'],
         ],
-        'PM-4026' => [
+        'PM-4029' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.owner.bill_payment_exceeds_bill'],
         ],
-        'PM-4027' => [
+        'PM-4030' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.owner.bill_payment_insufficient_payout'],
         ],
-        'PM-4028' => [
+        'PM-4031' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.owner.bill_payment_positive'],
         ],
-        'PM-4029' => [
+        'PM-4032' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.owner.bill_payment_reason_required', 'business.invoice_payment.reason_required', 'ui.owners.cancellation_reason_required', 'owners.cancellation_reason_required', 'ui.tenants.cancellation_reason_required', 'tenants.cancellation_reason_required'],
         ],
-        'PM-4030' => [
+        'PM-4033' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.owner.bill_payment_receipt_unpaid'],
         ],
-        'PM-4031' => [
+        'PM-4034' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.owner.bill_payment_source'],
         ],
-        'PM-4032' => [
+        'PM-4035' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.owner.cash_collector_required'],
         ],
-        'PM-4033' => [
+        'PM-4036' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.owner.deposit_payment_method'],
         ],
-        'PM-4034' => [
+        'PM-4037' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.owner.deposit_positive'],
         ],
-        'PM-4035' => [
+        'PM-4038' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.owner.deposit_purpose'],
         ],
-        'PM-4036' => [
-            'family' => 4,
-            'severity' => 'fix_yourself',
-            'keys' => ['business.owner.historical_bill_payment'],
-        ],
-        'PM-4037' => [
-            'family' => 4,
-            'severity' => 'fix_yourself',
-            'keys' => ['business.owner.not_a_bill_payment'],
-        ],
-        'PM-4038' => [
-            'family' => 4,
-            'severity' => 'fix_yourself',
-            'keys' => ['business.owner.payout_allocation_failed'],
-        ],
         'PM-4039' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.owner.payout_exceeds_balance'],
+            'keys' => ['business.owner.deposit_receipt_only'],
         ],
         'PM-4040' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.owner.payout_no_funds'],
+            'keys' => ['business.owner.historical_bill_payment'],
         ],
         'PM-4041' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.owner.payout_positive'],
+            'keys' => ['business.owner.not_a_bill_payment'],
         ],
         'PM-4042' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.owner.reserve_transfer_exceeds_source'],
+            'keys' => ['business.owner.payout_allocation_failed'],
         ],
         'PM-4043' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.owner.reserve_transfer_positive'],
+            'keys' => ['business.owner.payout_exceeds_balance'],
         ],
         'PM-4044' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.owner.reserve_transfer_reason_required'],
+            'keys' => ['business.owner.payout_no_funds'],
         ],
         'PM-4045' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.owners.adjustment_reason_required', 'owners.adjustment_reason_required'],
+            'keys' => ['business.owner.payout_positive'],
         ],
         'PM-4046' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.owners.collector_required', 'owners.collector_required'],
+            'keys' => ['business.owner.reserve_transfer_exceeds_source'],
         ],
         'PM-4047' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.owners.email_failed', 'owners.email_failed'],
+            'keys' => ['business.owner.reserve_transfer_positive'],
         ],
         'PM-4048' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.owners.expense_bill_line_invalid'],
+            'keys' => ['business.owner.reserve_transfer_reason_required'],
         ],
         'PM-4049' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.owners.expense_description_required', 'owners.expense_description_required'],
+            'keys' => ['ui.owners.adjustment_reason_required', 'owners.adjustment_reason_required'],
         ],
         'PM-4050' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.owners.pay_exceeds_bill', 'owners.pay_exceeds_bill'],
+            'keys' => ['ui.owners.collector_required', 'owners.collector_required'],
         ],
         'PM-4051' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.owners.pay_exceeds_payout', 'owners.pay_exceeds_payout'],
+            'keys' => ['ui.owners.email_failed', 'owners.email_failed'],
         ],
         'PM-4052' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.owners.pay_fields_required', 'owners.pay_fields_required'],
+            'keys' => ['ui.owners.expense_description_required', 'owners.expense_description_required'],
         ],
         'PM-4053' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.owners.payout_exceeds_balance', 'owners.payout_exceeds_balance'],
+            'keys' => ['ui.owners.pay_exceeds_bill', 'owners.pay_exceeds_bill'],
         ],
         'PM-4054' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.owners.unable_to_cancel_payment', 'owners.unable_to_cancel_payment'],
+            'keys' => ['ui.owners.pay_exceeds_payout', 'owners.pay_exceeds_payout'],
         ],
         'PM-4055' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.owners.unable_to_create_payout', 'owners.unable_to_create_payout'],
+            'keys' => ['ui.owners.pay_fields_required', 'owners.pay_fields_required'],
         ],
         'PM-4056' => [
             'family' => 4,
-            'severity' => 'try_again',
-            'keys' => ['ui.owners.unable_to_load', 'owners.unable_to_load', 'ui.properties.unable_to_load_owners', 'properties.unable_to_load_owners'],
+            'severity' => 'fix_yourself',
+            'keys' => ['ui.owners.payout_exceeds_balance', 'owners.payout_exceeds_balance'],
         ],
         'PM-4057' => [
             'family' => 4,
-            'severity' => 'try_again',
-            'keys' => ['ui.owners.unable_to_load_owner', 'owners.unable_to_load_owner'],
+            'severity' => 'fix_yourself',
+            'keys' => ['ui.owners.unable_to_cancel_payment', 'owners.unable_to_cancel_payment'],
         ],
         'PM-4058' => [
             'family' => 4,
-            'severity' => 'contact_us',
-            'keys' => ['ui.owners.unable_to_open_statement', 'owners.unable_to_open_statement'],
+            'severity' => 'fix_yourself',
+            'keys' => ['ui.owners.unable_to_create_payout', 'owners.unable_to_create_payout'],
         ],
         'PM-4059' => [
             'family' => 4,
             'severity' => 'try_again',
-            'keys' => ['ui.owners.unable_to_open_voucher', 'owners.unable_to_open_voucher'],
+            'keys' => ['ui.owners.unable_to_load', 'owners.unable_to_load', 'ui.properties.unable_to_load_owners', 'properties.unable_to_load_owners'],
         ],
         'PM-4060' => [
             'family' => 4,
             'severity' => 'try_again',
-            'keys' => ['ui.owners.unable_to_pay_bill', 'owners.unable_to_pay_bill'],
+            'keys' => ['ui.owners.unable_to_load_owner', 'owners.unable_to_load_owner'],
         ],
         'PM-4061' => [
             'family' => 4,
-            'severity' => 'try_again',
-            'keys' => ['ui.owners.unable_to_record_adjustment', 'owners.unable_to_record_adjustment'],
+            'severity' => 'contact_us',
+            'keys' => ['ui.owners.unable_to_open_statement', 'owners.unable_to_open_statement'],
         ],
         'PM-4062' => [
             'family' => 4,
             'severity' => 'try_again',
-            'keys' => ['ui.owners.unable_to_record_bill', 'owners.unable_to_record_bill'],
+            'keys' => ['ui.owners.unable_to_open_voucher', 'owners.unable_to_open_voucher'],
         ],
         'PM-4063' => [
             'family' => 4,
             'severity' => 'try_again',
-            'keys' => ['ui.owners.unable_to_record_deposit', 'owners.unable_to_record_deposit'],
+            'keys' => ['ui.owners.unable_to_pay_bill', 'owners.unable_to_pay_bill'],
         ],
         'PM-4064' => [
             'family' => 4,
             'severity' => 'try_again',
-            'keys' => ['ui.owners.unable_to_record_expense', 'owners.unable_to_record_expense'],
+            'keys' => ['ui.owners.unable_to_record_adjustment', 'owners.unable_to_record_adjustment'],
         ],
         'PM-4065' => [
             'family' => 4,
-            'severity' => 'fix_yourself',
-            'keys' => ['ui.owners.unable_to_resend_bill', 'owners.unable_to_resend_bill'],
+            'severity' => 'try_again',
+            'keys' => ['ui.owners.unable_to_record_bill', 'owners.unable_to_record_bill'],
         ],
         'PM-4066' => [
             'family' => 4,
-            'severity' => 'fix_yourself',
-            'keys' => ['ui.owners.unable_to_resend_voucher', 'owners.unable_to_resend_voucher'],
+            'severity' => 'try_again',
+            'keys' => ['ui.owners.unable_to_record_deposit', 'owners.unable_to_record_deposit'],
         ],
         'PM-4067' => [
             'family' => 4,
             'severity' => 'try_again',
-            'keys' => ['ui.owners.unable_to_transfer', 'owners.unable_to_transfer'],
+            'keys' => ['ui.owners.unable_to_record_expense', 'owners.unable_to_record_expense'],
         ],
         'PM-4068' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.payments.owner_receipt_unresolved', 'payments.owner_receipt_unresolved'],
+            'keys' => ['ui.owners.unable_to_resend_bill', 'owners.unable_to_resend_bill'],
         ],
         'PM-4069' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['ui.payments.payment_receipt_unresolved', 'payments.payment_receipt_unresolved'],
+            'keys' => ['ui.owners.unable_to_resend_voucher', 'owners.unable_to_resend_voucher'],
         ],
         'PM-4070' => [
+            'family' => 4,
+            'severity' => 'try_again',
+            'keys' => ['ui.owners.unable_to_transfer', 'owners.unable_to_transfer'],
+        ],
+        'PM-4071' => [
+            'family' => 4,
+            'severity' => 'fix_yourself',
+            'keys' => ['ui.payments.owner_receipt_unresolved', 'payments.owner_receipt_unresolved'],
+        ],
+        'PM-4072' => [
+            'family' => 4,
+            'severity' => 'fix_yourself',
+            'keys' => ['ui.payments.payment_receipt_unresolved', 'payments.payment_receipt_unresolved'],
+        ],
+        'PM-4073' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['ui.payments.unable_to_classify_funds', 'payments.unable_to_classify_funds'],
         ],
-        'PM-4071' => [
+        'PM-4074' => [
             'family' => 4,
             'severity' => 'try_again',
             'keys' => ['ui.payments.unable_to_load', 'payments.unable_to_load'],
         ],
-        'PM-4072' => [
+        'PM-4075' => [
             'family' => 4,
             'severity' => 'try_again',
             'keys' => ['ui.payments.unable_to_load_funds', 'payments.unable_to_load_funds'],
         ],
-        'PM-4073' => [
+        'PM-4076' => [
             'family' => 4,
             'severity' => 'try_again',
             'keys' => ['ui.payments.unable_to_load_leases', 'payments.unable_to_load_leases'],
         ],
-        'PM-4074' => [
+        'PM-4077' => [
             'family' => 4,
             'severity' => 'try_again',
             'keys' => ['ui.payments.unable_to_load_owner', 'payments.unable_to_load_owner', 'ui.owners.unable_to_load_details', 'owners.unable_to_load_details'],
         ],
-        'PM-4075' => [
+        'PM-4078' => [
             'family' => 4,
             'severity' => 'try_again',
             'keys' => ['ui.payments.unable_to_load_tenant_leases', 'payments.unable_to_load_tenant_leases'],
         ],
-        'PM-4076' => [
+        'PM-4079' => [
             'family' => 4,
             'severity' => 'try_again',
             'keys' => ['ui.payments.unable_to_open_receipt', 'payments.unable_to_open_receipt', 'ui.tenants.unable_to_open_receipt', 'tenants.unable_to_open_receipt'],
         ],
-        'PM-4077' => [
+        'PM-4080' => [
             'family' => 4,
             'severity' => 'try_again',
             'keys' => ['ui.payments.unable_to_record', 'payments.unable_to_record'],
         ],
-        'PM-4078' => [
+        'PM-4081' => [
             'family' => 4,
             'severity' => 'try_again',
             'keys' => ['ui.payments.unable_to_search_owners', 'payments.unable_to_search_owners'],
         ],
-        'PM-4079' => [
+        'PM-4082' => [
             'family' => 4,
             'severity' => 'try_again',
             'keys' => ['ui.payments.unable_to_search_tenants', 'payments.unable_to_search_tenants'],
         ],
-        'PM-4080' => [
+        'PM-4083' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['ui.payments.validation_collector', 'payments.validation_collector'],
         ],
-        'PM-4081' => [
+        'PM-4084' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['ui.payments.validation_date', 'payments.validation_date'],
         ],
-        'PM-4082' => [
-            'family' => 4,
-            'severity' => 'fix_yourself',
-            'keys' => ['business.rent_reserve.amount_positive'],
-        ],
-        'PM-4083' => [
-            'family' => 4,
-            'severity' => 'fix_yourself',
-            'keys' => ['business.rent_reserve.before_notice'],
-        ],
-        'PM-4084' => [
-            'family' => 4,
-            'severity' => 'fix_yourself',
-            'keys' => ['business.rent_reserve.exceeds_invoice'],
-        ],
         'PM-4085' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.rent_reserve.no_ownership', 'business.consumable_advance.no_ownership', 'business.owner.no_ownership'],
+            'keys' => ['business.rent_reserve.account_closed'],
         ],
         'PM-4086' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.rent_reserve.ownership_total', 'business.consumable_advance.ownership_total', 'business.owner.ownership_total', 'api.validation.building_ownership_total'],
+            'keys' => ['business.rent_reserve.amount_positive'],
         ],
         'PM-4087' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.rent_reserve.rent_only'],
+            'keys' => ['business.rent_reserve.before_notice'],
         ],
         'PM-4088' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.rent_reserve.wrong_invoice_lease'],
+            'keys' => ['business.rent_reserve.exceeds_invoice'],
         ],
         'PM-4089' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.security_deposit.account_missing'],
+            'keys' => ['business.rent_reserve.insufficient_balance'],
         ],
         'PM-4090' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.security_deposit.already_settled'],
+            'keys' => ['business.rent_reserve.no_ownership', 'business.consumable_advance.no_ownership', 'business.owner.no_ownership'],
         ],
         'PM-4091' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.security_deposit.deductions_after_settlement'],
+            'keys' => ['business.rent_reserve.ownership_total', 'business.consumable_advance.ownership_total', 'business.owner.ownership_total', 'api.validation.building_ownership_total'],
         ],
         'PM-4092' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.security_deposit.deductions_terminated_only'],
+            'keys' => ['business.rent_reserve.rent_only'],
         ],
         'PM-4093' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.security_deposit.negative_balance'],
+            'keys' => ['business.rent_reserve.wrong_account_type'],
         ],
         'PM-4094' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.tenant.expense_account_inactive'],
+            'keys' => ['business.rent_reserve.wrong_invoice_lease'],
         ],
         'PM-4095' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.tenant.expense_description_required'],
+            'keys' => ['business.security_deposit.account_missing'],
         ],
         'PM-4096' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.tenant.expense_draft_lease'],
+            'keys' => ['business.security_deposit.already_settled'],
         ],
         'PM-4097' => [
             'family' => 4,
             'severity' => 'fix_yourself',
-            'keys' => ['business.tenant.expense_exceeds_balance'],
+            'keys' => ['business.security_deposit.deductions_after_settlement'],
         ],
         'PM-4098' => [
+            'family' => 4,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.security_deposit.deductions_terminated_only'],
+        ],
+        'PM-4099' => [
+            'family' => 4,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.security_deposit.negative_balance'],
+        ],
+        'PM-4100' => [
+            'family' => 4,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.tenant.expense_account_inactive'],
+        ],
+        'PM-4101' => [
+            'family' => 4,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.tenant.expense_description_required'],
+        ],
+        'PM-4102' => [
+            'family' => 4,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.tenant.expense_draft_lease'],
+        ],
+        'PM-4103' => [
+            'family' => 4,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.tenant.expense_exceeds_balance'],
+        ],
+        'PM-4104' => [
+            'family' => 4,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.tenant.expense_lines_required'],
+        ],
+        'PM-4105' => [
             'family' => 4,
             'severity' => 'fix_yourself',
             'keys' => ['business.tenant.expense_positive'],
@@ -1568,9 +1673,19 @@ return [
         'PM-6002' => [
             'family' => 6,
             'severity' => 'fix_yourself',
-            'keys' => ['business.email.tenant_email_missing'],
+            'keys' => ['business.email.suppressed_by_organisation'],
         ],
         'PM-6003' => [
+            'family' => 6,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.email.suppressed_for_party'],
+        ],
+        'PM-6004' => [
+            'family' => 6,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.email.tenant_email_missing'],
+        ],
+        'PM-6005' => [
             'family' => 6,
             'severity' => 'try_again',
             'keys' => ['ui.notifications.unable_load', 'notifications.unable_load'],
@@ -1581,12 +1696,37 @@ return [
         'PM-7001' => [
             'family' => 7,
             'severity' => 'ask_admin',
-            'keys' => ['api.license.feature_unavailable'],
+            'keys' => ['api.license.email_cap_reached'],
         ],
         'PM-7002' => [
             'family' => 7,
             'severity' => 'ask_admin',
+            'keys' => ['api.license.feature_unavailable'],
+        ],
+        'PM-7003' => [
+            'family' => 7,
+            'severity' => 'ask_admin',
+            'keys' => ['ui.license.footnotes', 'license.footnotes'],
+        ],
+        'PM-7004' => [
+            'family' => 7,
+            'severity' => 'ask_admin',
+            'keys' => ['api.license.lease_limit_reached'],
+        ],
+        'PM-7005' => [
+            'family' => 7,
+            'severity' => 'ask_admin',
+            'keys' => ['api.license.party_limit_reached'],
+        ],
+        'PM-7006' => [
+            'family' => 7,
+            'severity' => 'ask_admin',
             'keys' => ['ui.license.unable', 'license.unable'],
+        ],
+        'PM-7007' => [
+            'family' => 7,
+            'severity' => 'ask_admin',
+            'keys' => ['api.license.user_limit_reached'],
         ],
 
         /* ---- 8xxx console ---- */
@@ -1600,6 +1740,11 @@ return [
             'family' => 8,
             'severity' => 'fix_yourself',
             'keys' => ['api.managing_organisation.cannot_remove_role'],
+        ],
+        'PM-8003' => [
+            'family' => 8,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.managing_organisation.not_configured'],
         ],
 
         /* ---- 9xxx system ---- */
@@ -1648,6 +1793,39 @@ return [
             'family' => 9,
             'severity' => 'fix_yourself',
             'keys' => ['ui.settings.unable_to_save', 'settings.unable_to_save'],
+        ],
+
+        /* ---- 99xx the system itself, which raises no message of its own ---- */
+
+        'PM-9901' => [
+            'family' => 9,
+            'severity' => 'fix_yourself',
+            'keys' => [],
+        ],
+        'PM-9902' => [
+            'family' => 9,
+            'severity' => 'fix_yourself',
+            'keys' => [],
+        ],
+        'PM-9903' => [
+            'family' => 9,
+            'severity' => 'fix_yourself',
+            'keys' => [],
+        ],
+        'PM-9904' => [
+            'family' => 9,
+            'severity' => 'contact_us',
+            'keys' => [],
+        ],
+        'PM-9905' => [
+            'family' => 9,
+            'severity' => 'contact_us',
+            'keys' => [],
+        ],
+        'PM-9906' => [
+            'family' => 9,
+            'severity' => 'try_again',
+            'keys' => [],
         ],
     ],
 ];

@@ -668,6 +668,48 @@ return [
     |--------------------------------------------------------------------------
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Error codes page
+    |--------------------------------------------------------------------------
+    */
+
+    'errors' => [
+        'back_to_app' => 'Retour à Patrimoine',
+        'explain_code' => 'Que signifie ce code ?',
+        'title' => 'Codes d’erreur',
+        'heading' => 'Codes d’erreur',
+        'intro' => 'Chaque message affiché par Patrimoine lorsqu’une action échoue porte un code. Recherchez-le ici pour comprendre ce qui s’est passé et savoir quoi faire.',
+        'search_placeholder' => 'Recherchez un code, ou des mots du message',
+        'search_label' => 'Rechercher',
+        'no_matches' => 'Aucun résultat pour cette recherche. Essayez moins de mots, ou le code lui-même.',
+        'unknown_code' => 'Ce code n’est pas l’un des nôtres. Vérifiez l’orthographe — les nôtres ressemblent à PM-4045 — ou effectuez une recherche ci-dessous.',
+        'what_happened' => 'Ce qui s’est passé',
+        'what_to_do' => 'Que faire',
+        'count' => ':count codes',
+        'back_to_all' => 'Tous les codes d’erreur',
+        'jump_to' => 'Aller à',
+        'family_access' => 'Connexion et accès',
+        'family_input' => 'Une saisie',
+        'family_property' => 'Biens, parties et baux',
+        'family_money' => 'Argent',
+        'family_documents' => 'Documents et exports',
+        'family_messaging' => 'E-mails',
+        'family_licence' => 'Forfait et limites',
+        'family_console' => 'Console d’administration',
+        'family_system' => 'Patrimoine lui-même',
+        'severity_fix_yourself' => 'Vous pouvez le corriger',
+        'severity_try_again' => 'À réessayer',
+        'severity_ask_admin' => 'Un administrateur peut vous aider',
+        'severity_contact_us' => 'Celle-ci vient de nous',
+        'contact_heading' => 'Quand il vous faut quelqu’un',
+        'contact_intro' => 'Certaines choses ne dépendent pas de vous. Dans ce cas, ou si le même code revient sans cesse, contactez-nous directement : nous indiquer le code et ce que vous faisiez suffit généralement à le retrouver.',
+        'contact_phone' => 'Téléphone',
+        'contact_whatsapp' => 'WhatsApp',
+        'contact_email' => 'E-mail',
+        'contact_hint' => 'Indiquez le code que vous avez vu. Il nous dit où chercher avant même de vous poser la moindre question.',
+    ],
+
     'wizard' => [
         'title' => 'Assistant de bail',
         'eyebrow' => 'Baux',

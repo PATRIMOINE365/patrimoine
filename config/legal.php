@@ -50,6 +50,23 @@ return [
         'no_reply' => 'no-reply@patrimoine365.com',
     ],
 
+    /*
+    |----------------------------------------------------------------------
+    | Reaching a person
+    |----------------------------------------------------------------------
+    |
+    | Shown on the Error codes pages for failures a customer cannot put
+    | right themselves, and on the branded system pages. One number,
+    | reachable by telephone and by WhatsApp.
+    |
+    */
+
+    'support' => [
+        'phone' => '+233544347118',
+        'whatsapp' => '+233544347118',
+        'phone_display' => '+233 54 434 7118',
+    ],
+
     'terms_version' => '2026-08-26',
 
     'privacy_version' => '2026-08-26',
