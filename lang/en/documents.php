@@ -152,7 +152,6 @@ return [
         'bill_date' => 'Bill Date',
         'expense_lines' => 'Expense Lines',
         'description' => 'Description',
-        'total' => 'Total',
         'amount' => 'Amount',
         'total' => 'Total',
         'notes' => 'Notes',

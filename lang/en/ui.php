@@ -102,7 +102,6 @@ return [
     ],
 
     'password' => [
-        'profile_current_required' => 'Enter your current password to set a new password.',
         'profile_password_help' => 'Leave these fields blank to keep your current password.',
         'forgot_link' => 'Forgot password?',
         'forgot_title' => 'Forgot password — Patrimoine',
@@ -1282,7 +1281,6 @@ return [
     ],
     'owners' => [
         'payment_method' => 'Payment Method',
-        'pay_bill_description' => 'Settle this bill from the owner account.',
         'management_fee_vat' => 'VAT on management fee',
         'statement' => 'Statement',
         'statement_title' => 'Owner statement',
@@ -1368,7 +1366,6 @@ return [
         'active' => 'Active',
         'unknown' => 'Unknown',
         'no_building_ownership' => 'No Building ownership records found.',
-        'building' => 'Building',
         'units' => 'Units',
         'unit' => 'Unit',
         'no_units_created' => 'No Units have been created yet.',
@@ -1386,7 +1383,6 @@ return [
         'no_payouts' => 'No payouts have been recorded for this Owner.',
         'select_owner_first' => 'Select a Property Owner first.',
         'no_specific_building' => 'No specific Building',
-        'select_building' => 'Select Building',
         'no_specific_unit' => 'No specific Unit',
         'select_building_first' => 'Select a Building first',
         'invalid_deposit_amount' => 'Enter a valid deposit amount greater than zero.',
@@ -1555,7 +1551,6 @@ return [
         'owner_funds' => 'Owner funds',
         'balance' => 'Balance',
         'account_count' => ':count accounts',
-        'unnamed_party' => '(unnamed)',
         /* ---- end V1.0.7 additions ---- */
         'lease' => 'Lease',
         'select_date' => 'Select date',
@@ -1697,7 +1692,6 @@ return [
             'debit' => 'Debit',
         ],
         'category' => [
-            'expense' => 'Expense',
             'rent_entitlement' => 'Rent Entitlement',
             'owner_deposit' => 'Owner Deposit',
             'management_fee' => 'Management Fee',
@@ -1769,11 +1763,9 @@ return [
         ],
     ],
     'tenants' => [
-        'pay_invoice_description' => 'Settle this invoice from one of the lease\'s fund accounts.',
         /* ---- V1.0.9 additions ---- */
         'deposit_title' => 'Record Tenant Deposit',
         'withdrawal_title' => 'Record Tenant Withdrawal',
-        'expense_title' => 'Record Tenant Expense',
         'adjustment_title' => 'Record Balance Adjustment',
         /* ---- end V1.0.9 additions ---- */
         /* ---- V1.0.7 additions ---- */
@@ -1951,7 +1943,6 @@ return [
         'payments_description' => 'Cash received and allocation history across this Tenant\'s leases.',
         'no_payments' => 'No payments have been recorded for this Tenant.',
         'method' => 'Method',
-        'reference' => 'Reference',
         'allocated' => 'Allocated',
         'unallocated' => 'Unallocated',
         'receipt' => 'Receipt',
@@ -2195,7 +2186,6 @@ return [
         'entry_kind' => 'Entry Kind',
         'detail_heading' => 'Journal Entry',
         'detail_description' => 'Immutable accounting transaction details.',
-        'description' => 'Review Patrimoine\'s permanent double-entry accounting record.',
         'close' => 'Close',
         'clear_filters' => 'Clear Filters',
         'all_transaction_types' => 'All Transaction Types',

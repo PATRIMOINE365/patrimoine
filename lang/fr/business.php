@@ -64,7 +64,6 @@ return [
     'security_deposit' => [
         'deductions_after_settlement' => 'Les retenues sur le dépôt de garantie ne peuvent plus être modifiées après le règlement final.',
         'deductions_terminated_only' => 'Les retenues sur le dépôt de garantie ne peuvent être enregistrées que pour un bail résilié.',
-        'account_missing' => 'Aucun compte de dépôt de garantie n’existe pour ce bail.',
         'already_settled' => 'Le dépôt de garantie a déjà fait l’objet d’un règlement pour ce bail.',
         'account_missing' => 'Aucun compte de dépôt de garantie n’existe pour ce bail.',
         'negative_balance' => 'Le compte de dépôt de garantie présente un solde négatif invalide.',

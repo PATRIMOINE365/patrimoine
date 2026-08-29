@@ -64,7 +64,6 @@ return [
     'security_deposit' => [
         'deductions_after_settlement' => 'Security deposit deductions cannot be changed after final settlement.',
         'deductions_terminated_only' => 'Security deposit deductions can only be recorded for a terminated Lease.',
-        'account_missing' => 'No security deposit account exists for this Lease.',
         'already_settled' => 'Security deposit has already been settled for this Lease.',
         'account_missing' => 'No security deposit account exists for this Lease.',
         'negative_balance' => 'Security deposit account has an invalid negative balance.',

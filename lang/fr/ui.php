@@ -101,7 +101,6 @@ return [
     ],
 
     'password' => [
-        'profile_current_required' => 'Saisissez votre mot de passe actuel pour définir un nouveau mot de passe.',
         'profile_password_help' => 'Laissez ces champs vides pour conserver votre mot de passe actuel.',
         'forgot_link' => 'Mot de passe oublié ?',
         'forgot_title' => 'Mot de passe oublié — Patrimoine',
@@ -1433,10 +1432,6 @@ return [
     ],
     'owners' => [
         'payment_method' => 'Mode de paiement',
-        'pay_bill_description' => 'Régler cette facture depuis le compte du propriétaire.',
-        'expense_bills_description' => 'Les factures de dépenses restent impayées jusqu’à leur règlement depuis un compte propriétaire via l’action Payer ; un paiement peut ensuite être annulé.',
-        'cancellation_reason' => 'Motif d’annulation',
-        'cancel_payment_description' => 'Annule le paiement le plus récent de cette facture. L’annulation est enregistrée au journal et au journal d’activité.',
         'management_fee_vat' => 'TVA sur frais de gestion',
         'statement' => 'Relevé',
         'statement_title' => 'Relevé du propriétaire',
@@ -1522,7 +1517,6 @@ return [
         'active' => 'Actif',
         'unknown' => 'Inconnu',
         'no_building_ownership' => 'Aucun immeuble détenu n’a été trouvé.',
-        'building' => 'Immeuble',
         'units' => 'Unités',
         'unit' => 'Unité',
         'no_units_created' => 'Aucune unité n’a encore été créée.',
@@ -1540,7 +1534,6 @@ return [
         'no_payouts' => 'Aucun versement n’a été enregistré pour ce propriétaire.',
         'select_owner_first' => 'Sélectionnez d’abord un propriétaire.',
         'no_specific_building' => 'Aucun immeuble spécifique',
-        'select_building' => 'Sélectionner un immeuble',
         'no_specific_unit' => 'Aucune unité spécifique',
         'select_building_first' => 'Sélectionnez d’abord un immeuble',
         'invalid_deposit_amount' => 'Saisissez un montant de dépôt valide supérieur à zéro.',
@@ -1709,7 +1702,6 @@ return [
         'owner_funds' => 'Fonds des propriétaires',
         'balance' => 'Solde',
         'account_count' => ':count comptes',
-        'unnamed_party' => '(sans nom)',
         /* ---- end V1.0.7 additions ---- */
         'lease' => 'Bail',
         'select_date' => 'Choisir une date',
@@ -1851,7 +1843,6 @@ return [
             'debit' => 'Débit',
         ],
         'category' => [
-            'expense' => 'Dépense',
             'rent_entitlement' => 'Droit au loyer',
             'owner_deposit' => 'Dépôt du propriétaire',
             'management_fee' => 'Frais de gestion',
@@ -1923,13 +1914,9 @@ return [
         ],
     ],
     'tenants' => [
-        'expense_invoice_help' => 'L’enregistrement crée une facture EXP impayée. L’argent ne quitte un compte de fonds que lorsque la facture est réglée via l’action Payer.',
-        'cancellation_reason' => 'Motif d’annulation',
-        'cancel_payment_description' => 'Annule le paiement le plus récent de cette facture. L’annulation est enregistrée au journal et au journal d’activité.',
         /* ---- V1.0.9 additions ---- */
         'deposit_title' => 'Enregistrer un dépôt du locataire',
         'withdrawal_title' => 'Enregistrer un retrait du locataire',
-        'expense_title' => 'Enregistrer une dépense du locataire',
         'adjustment_title' => 'Enregistrer un ajustement de solde',
         /* ---- end V1.0.9 additions ---- */
         /* ---- V1.0.7 additions ---- */
@@ -2107,7 +2094,6 @@ return [
         'payments_description' => 'Historique des encaissements et des affectations pour les baux de ce locataire.',
         'no_payments' => 'Aucun paiement n\'a été enregistré pour ce locataire.',
         'method' => 'Mode',
-        'reference' => 'Référence',
         'allocated' => 'Affecté',
         'unallocated' => 'Non affecté',
         'receipt' => 'Reçu',
