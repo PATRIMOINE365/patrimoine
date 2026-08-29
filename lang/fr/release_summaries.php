@@ -23,7 +23,7 @@ return [
         [
             'through' => '1.0.35',
             'date' => '2026-08-29',
-        'summary' => 'Votre photographie apparaît désormais en haut de l’écran et à côté de votre nom sur la page Utilisateurs, et l’assistant de bail peut être quitté en cours de route puis repris plus tard. Les longues listes se lisent page par page, avec des numéros et un choix de 25, 50 ou 100 lignes, et Utilisateurs et Licence sont devenus des onglets des Paramètres — qui résument aussi votre compte et permettent, tout en bas, à un administrateur de le fermer définitivement. Le Guide a été réécrit pour couvrir chaque tâche étape par étape avec les images des écrans, et il est désormais public sur patrimoine365.com.',
+        'summary' => 'Votre photographie apparaît en haut de l’écran, l’assistant de bail peut être quitté puis repris plus tard, et les longues listes se lisent page par page avec des numéros et un choix de 25, 50 ou 100 lignes. Utilisateurs et Licence sont devenus des onglets des Paramètres, qui résument aussi votre compte et permettent à un administrateur de le fermer définitivement, et le Guide a été réécrit pour couvrir chaque tâche étape par étape avec les images des écrans — il est désormais public sur patrimoine365.com. Chacun peut désormais télécharger tout ce qui est détenu sur lui, un administrateur peut produire ou effacer les données d’une personne, et la politique de confidentialité dit clairement ce qui est conservé et combien de temps.',
         ],
         [
             'through' => '1.0.30',

@@ -19,6 +19,19 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.34',
+            'date' => '2026-08-29',
+            'title' => 'Your data, on request — and a way to forget somebody',
+            'changes' => [
+                'Anybody with an account can now take a copy of everything Patrimoine holds about them. Open your profile and press Download my data; no permission is needed and no administrator is involved.',
+                'An administrator can produce everything held about one tenant, owner or agent, as a single file. That is what answers somebody who asks what you have on them — their data is yours to account for, not ours.',
+                'An administrator can also download the whole organisation at once, financial history included, from Settings › Data.',
+                'A person can now be erased. Their name, email address, telephone numbers, postal address, identity and registration numbers, bank details and notes are destroyed permanently — and the invoices, payments and journal entries stay, referring to them by a reference instead of a name. The law that requires those records kept is the same law that lets you refuse to destroy them.',
+                'Erasing asks for the name typed back and for your own password, like closing an account, and it cannot be undone.',
+                'The privacy policy has been rewritten to say plainly what is kept and for how long, who else touches your data and where it lives, and how to exercise every right — including that the activity log is kept indefinitely, because it is the record that shows what actually happened.',
+            ],
+        ],
+        [
             'version' => '1.0.33',
             'date' => '2026-08-29',
             'title' => 'A how-to guide that shows you the screens',

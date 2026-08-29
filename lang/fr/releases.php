@@ -15,6 +15,19 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.34',
+            'date' => '2026-08-29',
+            'title' => 'Vos données, sur demande — et le moyen d’oublier quelqu’un',
+            'changes' => [
+                'Toute personne disposant d’un compte peut désormais obtenir copie de tout ce que Patrimoine détient sur elle. Ouvrez votre profil et appuyez sur Télécharger mes données : aucune autorisation n’est requise et aucun administrateur n’intervient.',
+                'Un administrateur peut produire tout ce qui est détenu sur un locataire, un propriétaire ou un agent, en un seul fichier. C’est ce qui répond à qui demande ce que vous avez sur lui : ces données relèvent de vous, pas de nous.',
+                'Un administrateur peut aussi télécharger l’organisation entière d’un coup, historique financier compris, depuis Paramètres › Données.',
+                'Une personne peut désormais être effacée. Son nom, son adresse e-mail, ses numéros de téléphone, son adresse postale, ses numéros d’identité et d’immatriculation, ses coordonnées bancaires et les notes sont détruits définitivement — et les factures, paiements et écritures du journal demeurent, la désignant par une référence plutôt que par un nom. La loi qui impose de conserver ces pièces est celle-là même qui vous autorise à refuser de les détruire.',
+                'L’effacement demande le nom resaisi et votre propre mot de passe, comme la fermeture d’un compte, et il est irréversible.',
+                'La politique de confidentialité a été réécrite pour dire clairement ce qui est conservé et combien de temps, qui d’autre touche à vos données et où elles résident, et comment exercer chaque droit — y compris le fait que le journal d’activité est conservé indéfiniment, parce que c’est le registre qui montre ce qui s’est réellement passé.',
+            ],
+        ],
+        [
             'version' => '1.0.33',
             'date' => '2026-08-29',
             'title' => 'Un guide pratique qui montre les écrans',

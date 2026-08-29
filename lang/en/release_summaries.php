@@ -31,7 +31,7 @@ return [
         [
             'through' => '1.0.35',
             'date' => '2026-08-29',
-            'summary' => 'Your photograph now sits at the top of the screen and beside your name on the Users page, and the lease assistant can be left half-finished and picked up later. Long lists are read a page at a time, with numbered pages and a choice of 25, 50 or 100 rows, and Users and Licence became tabs of Settings — which also summarises your account and, at its foot, lets an administrator close it for good. The Guide was rewritten to cover every task step by step with pictures of the screens, and the same guide is now public on patrimoine365.com.',
+            'summary' => 'Your photograph now sits at the top of the screen, the lease assistant can be left half-finished and picked up later, and long lists are read a page at a time with numbered pages and a choice of 25, 50 or 100 rows. Users and Licence became tabs of Settings, which also summarises your account and lets an administrator close it for good, and the Guide was rewritten to cover every task step by step with pictures of the screens — the same guide is now public on patrimoine365.com. Anybody can now download everything held about them, an administrator can produce or erase one person\'s data, and the privacy policy says plainly what is kept and for how long.',
         ],
         [
             'through' => '1.0.30',
