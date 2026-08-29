@@ -76,6 +76,13 @@ return [
         'suppressed_for_party' => 'Cette partie est exclue des e-mails de Patrimoine ; rien n’a été envoyé.',
     ],
 
+    'tenant_fund_withdrawal' => [
+        'account_inactive' => 'Ce compte de fonds est clos ; aucun retrait n’est possible.',
+        'ineligible_fund' => 'Ce fonds ne peut pas faire l’objet d’un retrait direct. Un dépôt de garantie se libère en soldant le bail.',
+        'amount_positive' => 'Le montant du retrait doit être supérieur à zéro.',
+        'exceeds_balance' => 'Le retrait dépasse le solde disponible du fonds.',
+    ],
+
     'tenant' => [
         'expense_account_inactive' => 'Le compte de fonds du locataire n’est pas actif.',
         'expense_positive' => 'Le montant de la dépense doit être supérieur à zéro.',

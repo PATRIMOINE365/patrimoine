@@ -1295,6 +1295,24 @@ return [
         'fix' => 'Try again. If it keeps happening, the assistant is doing no harm where it is — tell us and carry on.',
     ],
 
+    'PM-3093' => [
+        'title' => 'This fund account is closed.',
+        'what' => 'Nothing can be withdrawn from a closed account. It stays visible because the money that passed through it is part of the record.',
+        'fix' => 'Open the tenant and check which of their accounts still holds a balance. If the account was closed by mistake, an administrator can tell us and we will look at it with you.',
+    ],
+
+    'PM-3094' => [
+        'title' => 'This fund cannot be withdrawn from directly.',
+        'what' => 'A security deposit is not paid back through the withdrawal screen. It is released when the lease is settled, so that the deductions and the refund are worked out together and land in the accounts as one settlement.',
+        'fix' => 'Terminate the lease and use the settlement, which produces the refund and its voucher. Rent reserve and consumable advance can be withdrawn here as usual.',
+    ],
+
+    'PM-3095' => [
+        'title' => 'The withdrawal amount must be greater than zero.',
+        'what' => 'A withdrawal of nothing would post a journal entry that says nothing happened, so Patrimoine does not record one.',
+        'fix' => 'Enter the amount actually being paid out. To correct an earlier withdrawal, use an adjustment rather than a zero.',
+    ],
+
     /* ---- 4xxx ---- */
 
     'PM-4001' => [

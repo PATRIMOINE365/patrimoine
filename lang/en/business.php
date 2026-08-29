@@ -76,6 +76,13 @@ return [
         'suppressed_for_party' => 'This party is excluded from Patrimoine emails, so nothing was sent.',
     ],
 
+    'tenant_fund_withdrawal' => [
+        'account_inactive' => 'This fund account is closed, so nothing can be withdrawn from it.',
+        'ineligible_fund' => 'This fund cannot be withdrawn from directly. A security deposit is released by settling the lease.',
+        'amount_positive' => 'The withdrawal amount must be greater than zero.',
+        'exceeds_balance' => 'The withdrawal exceeds the available fund balance.',
+    ],
+
     'tenant' => [
         'expense_account_inactive' => 'Tenant fund account is not active.',
         'expense_positive' => 'Tenant expense amount must be greater than zero.',

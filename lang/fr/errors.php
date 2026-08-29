@@ -1295,6 +1295,24 @@ return [
         'fix' => 'Réessayez. Si cela persiste, l’assistant ne gêne en rien là où il est : signalez-le-nous et poursuivez.',
     ],
 
+    'PM-3093' => [
+        'title' => 'Ce compte de fonds est clos.',
+        'what' => 'Aucun retrait n’est possible depuis un compte clos. Il reste visible parce que les sommes qui y ont transité font partie du registre.',
+        'fix' => 'Ouvrez le locataire et vérifiez lequel de ses comptes présente encore un solde. Si le compte a été clos par erreur, un administrateur peut nous le signaler et nous l’examinerons avec vous.',
+    ],
+
+    'PM-3094' => [
+        'title' => 'Ce fonds ne peut pas faire l’objet d’un retrait direct.',
+        'what' => 'Un dépôt de garantie ne se rembourse pas depuis l’écran de retrait. Il se libère au règlement du bail, afin que les retenues et le remboursement soient calculés ensemble et inscrits en comptabilité comme un seul règlement.',
+        'fix' => 'Résiliez le bail et utilisez le règlement, qui produit le remboursement et son bon. La réserve de loyer et l’avance consommable se retirent ici normalement.',
+    ],
+
+    'PM-3095' => [
+        'title' => 'Le montant du retrait doit être supérieur à zéro.',
+        'what' => 'Un retrait nul créerait une écriture indiquant qu’il ne s’est rien passé ; Patrimoine ne l’enregistre donc pas.',
+        'fix' => 'Saisissez le montant réellement versé. Pour corriger un retrait antérieur, utilisez un ajustement plutôt qu’un zéro.',
+    ],
+
     /* ---- 4xxx ---- */
 
     'PM-4001' => [

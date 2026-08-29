@@ -37,9 +37,18 @@ class TenantFundWithdrawalService
                         ->lockForUpdate()
                         ->firstOrFail();
 
+                /*
+                 * These four refusals are things a person does, not
+                 * programming faults, so they reach the customer as the
+                 * text of a 422. Written as English literals they arrived
+                 * in English whatever the organisation's language, and
+                 * ErrorCodes could not recognise a sentence belonging to
+                 * no catalogue — so no code was attached and support had
+                 * nothing to ask for. They are catalogued now.
+                 */
                 if ($account->status !== 'active') {
                     throw new RuntimeException(
-                        'Tenant fund account is not active.'
+                        __('business.tenant_fund_withdrawal.account_inactive')
                     );
                 }
 
@@ -62,13 +71,13 @@ class TenantFundWithdrawalService
                     )
                 ) {
                     throw new RuntimeException(
-                        'This Tenant fund is not eligible for the general Withdrawal workflow.'
+                        __('business.tenant_fund_withdrawal.ineligible_fund')
                     );
                 }
 
                 if ($amount <= 0) {
                     throw new RuntimeException(
-                        'Withdrawal amount must be greater than zero.'
+                        __('business.tenant_fund_withdrawal.amount_positive')
                     );
                 }
 
@@ -77,7 +86,7 @@ class TenantFundWithdrawalService
 
                 if ($amount > $balance) {
                     throw new RuntimeException(
-                        'Withdrawal amount exceeds the available Tenant fund balance.'
+                        __('business.tenant_fund_withdrawal.exceeds_balance')
                     );
                 }
 

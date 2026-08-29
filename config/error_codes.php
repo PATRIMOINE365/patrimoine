@@ -1078,7 +1078,16 @@ return [
         'PM-3088' => [
             'family' => 3,
             'severity' => 'fix_yourself',
-            'keys' => ['tenants.withdrawal_exceeds_balance'],
+            /*
+             * The browser stops this before the request is sent; the
+             * service stops it again under a lock, because the balance can
+             * move between the two. Both are the same refusal to the
+             * person reading it, so both carry this code.
+             */
+            'keys' => [
+                'tenants.withdrawal_exceeds_balance',
+                'business.tenant_fund_withdrawal.exceeds_balance',
+            ],
         ],
         'PM-3089' => [
             'family' => 3,
@@ -1099,6 +1108,32 @@ return [
             'family' => 3,
             'severity' => 'try_again',
             'keys' => ['ui.wizard.drafts_discard_failed', 'wizard.drafts_discard_failed'],
+        ],
+
+        /*
+         * V1.0.35: the withdrawal refusals. These were English literals
+         * thrown out of TenantFundWithdrawalService, so a French
+         * organisation read them in English and no code was attached to
+         * any of them — the over-withdrawal already had PM-3088 for the
+         * browser's copy of the same refusal, and the server's copy
+         * carried nothing.
+         */
+        'PM-3093' => [
+            'family' => 3,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.tenant_fund_withdrawal.account_inactive'],
+        ],
+
+        'PM-3094' => [
+            'family' => 3,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.tenant_fund_withdrawal.ineligible_fund'],
+        ],
+
+        'PM-3095' => [
+            'family' => 3,
+            'severity' => 'fix_yourself',
+            'keys' => ['business.tenant_fund_withdrawal.amount_positive'],
         ],
 
         /* ---- 4xxx money ---- */
