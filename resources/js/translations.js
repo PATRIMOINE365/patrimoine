@@ -338,6 +338,42 @@ export const translations = {
         'financial_journal.transaction_types.management_fee_vat':
             'Management fee VAT',
 
+        'errors.heading':
+            'Error codes',
+
+        'errors.intro':
+            'Every message Patrimoine shows when something does not work carries a code. Look it up here to see what happened, and what to do next.',
+
+        'errors.search_label':
+            'Search',
+
+        'errors.search_placeholder':
+            'Search a code, or words from the message',
+
+        'errors.what_happened':
+            'What happened',
+
+        'errors.what_to_do':
+            'What to do',
+
+        'errors.no_matches':
+            'Nothing matches what you typed. Try fewer words, or the code itself.',
+
+        'errors.severity_fix_yourself':
+            'You can put this right',
+
+        'errors.severity_try_again':
+            'Worth trying again',
+
+        'errors.severity_ask_admin':
+            'An administrator can help',
+
+        'errors.severity_contact_us':
+            'This one is ours',
+
+        'errors.explain_code':
+            'What does this mean?',
+
         'wizard.title':
             'Guided lease',
 
@@ -4341,6 +4377,42 @@ export const translations = {
 
         'financial_journal.transaction_types.management_fee_vat':
             'TVA sur frais de gestion',
+
+        'errors.heading':
+            'Codes d’erreur',
+
+        'errors.intro':
+            'Chaque message affiché par Patrimoine lorsqu’une action échoue porte un code. Recherchez-le ici pour comprendre ce qui s’est passé et savoir quoi faire.',
+
+        'errors.search_label':
+            'Rechercher',
+
+        'errors.search_placeholder':
+            'Recherchez un code, ou des mots du message',
+
+        'errors.what_happened':
+            'Ce qui s’est passé',
+
+        'errors.what_to_do':
+            'Que faire',
+
+        'errors.no_matches':
+            'Aucun résultat pour cette recherche. Essayez moins de mots, ou le code lui-même.',
+
+        'errors.severity_fix_yourself':
+            'Vous pouvez le corriger',
+
+        'errors.severity_try_again':
+            'À réessayer',
+
+        'errors.severity_ask_admin':
+            'Un administrateur peut vous aider',
+
+        'errors.severity_contact_us':
+            'Celle-ci vient de nous',
+
+        'errors.explain_code':
+            'Que signifie ce message ?',
 
         'wizard.title':
             'Assistant de bail',

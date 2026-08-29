@@ -1135,60 +1135,48 @@ export async function initializeHelp() {
 */
 
 function initializeHelpTabs() {
-    document
-        .getElementById(
-            'help-tab-guide'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                window.history.replaceState(
-                    null,
-                    '',
-                    window.location.pathname
-                    + window.location.search
-                );
+    /*
+     * Three tabs now, so the switch is driven by a table rather than by
+     * a boolean. Each carries the hash it puts in the address bar, so a
+     * link to #errors opens the Error codes tab directly.
+     */
+    HELP_TABS.forEach(({ tab, button, hash }) => {
+        document
+            .getElementById(button)
+            ?.addEventListener(
+                'click',
+                () => {
+                    window.history.replaceState(
+                        null,
+                        '',
+                        hash === ''
+                            ? window.location.pathname + window.location.search
+                            : hash
+                    );
 
-                selectHelpTab(
-                    'guide'
-                );
-            }
-        );
-
-    document
-        .getElementById(
-            'help-tab-updates'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                window.history.replaceState(
-                    null,
-                    '',
-                    '#updates'
-                );
-
-                selectHelpTab(
-                    'updates'
-                );
-            }
-        );
+                    selectHelpTab(tab);
+                }
+            );
+    });
 }
 
+const HELP_TABS = [
+    { tab: 'guide', button: 'help-tab-guide', panel: 'help-guide-panel', hash: '' },
+    { tab: 'errors', button: 'help-tab-errors', panel: 'help-errors-panel', hash: '#errors' },
+    { tab: 'updates', button: 'help-tab-updates', panel: 'help-updates-panel', hash: '#updates' },
+];
+
 function applyHelpLocationHash() {
-    selectHelpTab(
-        window.location.hash === '#updates'
-            ? 'updates'
-            : 'guide'
+    const match = HELP_TABS.find(
+        (entry) => entry.hash !== '' && entry.hash === window.location.hash
     );
+
+    selectHelpTab(match ? match.tab : 'guide');
 }
 
 function selectHelpTab(
     tab
 ) {
-    const showingUpdates =
-        tab === 'updates';
-
     const activeClasses = [
         'bg-[var(--pm-surface)]',
         'text-[var(--pm-text)]',
@@ -1200,84 +1188,164 @@ function selectHelpTab(
         'hover:text-[var(--pm-text)]',
     ];
 
-    const guideTab =
-        document.getElementById(
-            'help-tab-guide'
-        );
+    HELP_TABS.forEach((entry) => {
+        const active = entry.tab === tab;
 
-    const updatesTab =
-        document.getElementById(
-            'help-tab-updates'
-        );
+        const button = document.getElementById(entry.button);
 
-    [
-        [guideTab, ! showingUpdates],
-        [updatesTab, showingUpdates],
-    ].forEach(
-        ([button, active]) => {
-            if (! button) {
-                return;
-            }
-
-            button.setAttribute(
-                'aria-selected',
-                active
-                    ? 'true'
-                    : 'false'
-            );
-
-            button.classList.remove(
-                ...activeClasses,
-                ...inactiveClasses
-            );
-
-            button.classList.add(
-                ...(
-                    active
-                        ? activeClasses
-                        : inactiveClasses
-                )
-            );
+        if (button) {
+            button.setAttribute('aria-selected', active ? 'true' : 'false');
+            button.classList.remove(...activeClasses, ...inactiveClasses);
+            button.classList.add(...(active ? activeClasses : inactiveClasses));
         }
-    );
 
+        document
+            .getElementById(entry.panel)
+            ?.classList.toggle('hidden', ! active);
+    });
+
+    /* The guide's own filters belong to the guide alone. */
     document
-        .getElementById(
-            'help-guide-panel'
-        )
-        ?.classList.toggle(
-            'hidden',
-            showingUpdates
-        );
+        .getElementById('help-guide-filters')
+        ?.classList.toggle('hidden', tab !== 'guide');
 
-    document
-        .getElementById(
-            'help-updates-panel'
-        )
-        ?.classList.toggle(
-            'hidden',
-            ! showingUpdates
-        );
-
-    document
-        .getElementById(
-            'help-guide-filters'
-        )
-        ?.classList.toggle(
-            'hidden',
-            showingUpdates
-        );
-
-    if (
-        showingUpdates
-        && ! helpUpdatesLoaded
-    ) {
-        helpUpdatesLoaded =
-            true;
-
+    if (tab === 'updates' && ! helpUpdatesLoaded) {
+        helpUpdatesLoaded = true;
         loadHelpUpdates();
     }
+
+    if (tab === 'errors' && ! helpErrorsLoaded) {
+        helpErrorsLoaded = true;
+        loadHelpErrorCodes();
+    }
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| Error codes
+|--------------------------------------------------------------------------
+|
+| The same catalogue as the public page at /errors, read through the API
+| so it arrives in the organisation's language.
+|
+*/
+
+let helpErrorsLoaded = false;
+let helpErrorCodes = [];
+
+async function loadHelpErrorCodes() {
+    const container = document.getElementById('help-errors-content');
+
+    if (! container) {
+        return;
+    }
+
+    try {
+        const response = await apiRequest('/api/error-codes');
+        const payload = await parseJsonResponse(response);
+
+        helpErrorCodes = payload.codes ?? [];
+
+        renderHelpErrorCodes(payload);
+    } catch (error) {
+        container.innerHTML = `
+            <p class="px-5 py-12 text-center text-sm text-[var(--pm-text-muted)]">
+                ${escapeHtml(error.message)}
+            </p>
+        `;
+    }
+}
+
+function renderHelpErrorCodes(payload) {
+    const container = document.getElementById('help-errors-content');
+
+    if (! container) {
+        return;
+    }
+
+    const contact = payload.contact ?? {};
+
+    const cards = (families) => families
+        .map((family) => {
+            const codes = helpErrorCodes.filter(
+                (entry) => entry.family === family.family && ! entry.hidden
+            );
+
+            if (codes.length === 0) {
+                return '';
+            }
+
+            return `
+                <section class="mt-8" data-help-error-family>
+                    <h3 class="border-b border-[var(--pm-border-subtle)] pb-2 text-base font-semibold">
+                        ${escapeHtml(family.name)}
+                        <span class="text-sm font-normal text-[var(--pm-text-muted)]">· ${family.family}xxx</span>
+                    </h3>
+
+                    <div class="mt-4 grid gap-3">
+                        ${codes.map((entry) => errorCodeCard(entry, contact)).join('')}
+                    </div>
+                </section>
+            `;
+        })
+        .join('');
+
+    container.innerHTML = cards(payload.families ?? []);
+}
+
+function errorCodeCard(entry, contact) {
+    const support = entry.needs_support
+        ? `
+            <p class="mt-3 rounded-lg border border-[var(--pm-border-subtle)] bg-[var(--pm-surface-subtle)] px-3 py-2 text-xs">
+                <a class="underline" href="tel:${escapeHtml(contact.phone ?? '')}">${escapeHtml(contact.phone_display ?? '')}</a>
+                ·
+                <a class="underline" target="_blank" rel="noopener" href="https://wa.me/${escapeHtml((contact.whatsapp ?? '').replace('+', ''))}">WhatsApp</a>
+                ·
+                <a class="underline" href="mailto:${escapeHtml(contact.email ?? '')}">${escapeHtml(contact.email ?? '')}</a>
+            </p>
+        `
+        : '';
+
+    return `
+        <article
+            class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4"
+            data-help-error-code="${escapeHtml(entry.code)}"
+            data-help-error-haystack="${escapeHtml((entry.code + ' ' + entry.title + ' ' + entry.what + ' ' + entry.fix).toLowerCase())}"
+        >
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h4 class="text-sm font-semibold">${escapeHtml(entry.title)}</h4>
+                <span class="shrink-0 rounded-full border border-[var(--pm-border)] px-2 py-0.5 font-mono text-xs text-[var(--pm-text-secondary)]">${escapeHtml(entry.code)}</span>
+            </div>
+
+            <p class="mt-2 text-sm text-[var(--pm-text-muted)]">${escapeHtml(entry.what)}</p>
+            <p class="mt-1.5 text-sm text-[var(--pm-text-secondary)]">${escapeHtml(entry.fix)}</p>
+
+            ${support}
+        </article>
+    `;
+}
+
+/* Filtering the catalogue, the same way the public page does. */
+document.addEventListener('input', (event) => {
+    if (event.target?.id !== 'help-error-search') {
+        return;
+    }
+
+    const needle = event.target.value.trim().toLowerCase();
+
+    document.querySelectorAll('[data-help-error-code]').forEach((card) => {
+        const match = needle === ''
+            || (card.dataset.helpErrorHaystack || '').includes(needle);
+
+        card.classList.toggle('hidden', ! match);
+    });
+
+    document.querySelectorAll('[data-help-error-family]').forEach((family) => {
+        const visible = family.querySelectorAll('[data-help-error-code]:not(.hidden)').length;
+        family.classList.toggle('hidden', visible === 0);
+    });
+});
 
 /*
 |--------------------------------------------------------------------------

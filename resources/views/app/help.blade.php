@@ -102,6 +102,23 @@
                     </button>
 
                     <button
+                        id="help-tab-errors"
+                        type="button"
+                        role="tab"
+                        aria-selected="false"
+                        aria-controls="help-errors-panel"
+                        class="
+                            rounded-lg px-4 py-2
+                            text-sm font-medium
+                            transition
+                        "
+                    >
+                        <span data-i18n="errors.heading">
+                            Error codes
+                        </span>
+                    </button>
+
+                    <button
                         id="help-tab-updates"
                         type="button"
                         role="tab"
@@ -242,6 +259,35 @@
         class="mt-4"
     >
         <div id="help-guide-content"></div>
+    </section>
+
+    {{-- Error codes --}}
+    <section
+        id="help-errors-panel"
+        role="tabpanel"
+        aria-labelledby="help-tab-errors"
+        class="mt-4 hidden"
+    >
+        <p class="mb-4 text-sm text-[var(--pm-text-muted)]">
+            <span data-i18n="errors.intro">{{ __('ui.errors.intro') }}</span>
+        </p>
+
+        <div class="mb-5">
+            <label for="help-error-search" class="pm-field-label">
+                <span data-i18n="errors.search_label">{{ __('ui.errors.search_label') }}</span>
+            </label>
+
+            <input
+                id="help-error-search"
+                type="search"
+                autocomplete="off"
+                class="pm-input"
+                placeholder="{{ __('ui.errors.search_placeholder') }}"
+                data-i18n-placeholder="errors.search_placeholder"
+            >
+        </div>
+
+        <div id="help-errors-content"></div>
     </section>
 
     {{-- Update log --}}

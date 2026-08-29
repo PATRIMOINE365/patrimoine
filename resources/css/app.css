@@ -3293,6 +3293,17 @@ select {
     color: var(--pm-text-muted);
 }
 
+/*
+ * The link that follows an error code. Quiet: it sits inside a message
+ * somebody is already unhappy to be reading.
+ */
+.pm-error-code-link {
+    margin-left: 0.25rem;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
 .pm-party-no-email-badge {
     display: inline-flex;
     align-items: center;

@@ -51,7 +51,7 @@ Route::view(
  * and needs no visitor identity, so the session, the CSRF token and the
  * tenant context are all detached rather than left to fail.
  */
-const ERROR_PAGE_EXCLUSIONS = [
+$errorPageExclusions = [
     \Illuminate\Session\Middleware\StartSession::class,
     \Illuminate\View\Middleware\ShareErrorsFromSession::class,
 
@@ -77,7 +77,7 @@ const ERROR_PAGE_EXCLUSIONS = [
 Route::get(
     '/errors',
     ErrorReferenceController::class
-)->name('errors')->withoutMiddleware(ERROR_PAGE_EXCLUSIONS);
+)->name('errors')->withoutMiddleware($errorPageExclusions);
 
 Route::get(
     '/errors/{code}',
@@ -85,7 +85,7 @@ Route::get(
 )
     ->name('errors.show')
     ->where('code', '[A-Za-z]{2}-[0-9]{4}')
-    ->withoutMiddleware(ERROR_PAGE_EXCLUSIONS);
+    ->withoutMiddleware($errorPageExclusions);
 
 Route::view(
     '/terms',

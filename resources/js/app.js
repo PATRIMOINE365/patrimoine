@@ -43,6 +43,7 @@ import {
     applyTranslations,
     loadPresentationConfiguration,
     initializeMoneyInputs,
+    initializeErrorCodeLinks,
 } from './core.js';
 
 import {
@@ -219,6 +220,12 @@ document.addEventListener(
          *
          * This allows one Vite bundle to serve the entire application.
          */
+        /*
+         * Codes become links wherever an error is shown, so somebody
+         * reading one can go straight to what it means.
+         */
+        initializeErrorCodeLinks();
+
         await initializeDashboard();
 
         await initializeProperties();

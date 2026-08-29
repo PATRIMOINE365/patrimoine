@@ -2,6 +2,10 @@ import {
     translationFor,
 } from './translations.js';
 
+import {
+    errorCodeForMessage,
+} from './error-codes.js';
+
 /*
 |--------------------------------------------------------------------------
 | Patrimoine Core Utilities
@@ -225,10 +229,31 @@ export async function parseJsonResponse(
             || data.message
             || translationFor('core.request_failed');
 
+        /*
+         * The code goes into the sentence rather than beside it: every
+         * module already prints error.message somewhere, and none of
+         * them had to change for the code to appear.
+         */
+        const messageWithCode = messageWithErrorCode(
+            message,
+            typeof data.code === 'string' ? data.code : null
+        );
+
         const error =
             new Error(
-                message
+                messageWithCode
             );
+
+        /*
+         * V1.0.30: every refusal from the server carries its code. It is
+         * kept on the error so a caller can show it, and appended to the
+         * message so the code appears even where a caller only prints
+         * error.message — which is most of them.
+         */
+        error.errorCode =
+            typeof data.code === 'string'
+                ? data.code
+                : null;
 
         /*
          * V1.0.15: machine-readable error code, when the server provides
@@ -716,6 +741,128 @@ export function applyCachedPresentationLanguage() {
 export function getPresentationConfiguration() {
     return presentationConfiguration;
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| Error codes
+|--------------------------------------------------------------------------
+|
+| Every failure Patrimoine shows carries a code, and every code has an
+| entry on /errors explaining what happened and what to do. The server
+| sends the code with its refusals; messages the browser raises on its
+| own are matched by their own sentence.
+|
+| Rather than change forty places that print an error, the code is added
+| to the message itself and the observer below turns it into a link
+| wherever it is displayed.
+|
+*/
+
+const ERROR_CODE_PATTERN = /\bPM-\d{4}\b/;
+
+/**
+ * The message a person should read, with its code.
+ *
+ * @param {string} message
+ * @param {string|null} code
+ * @returns {string}
+ */
+export function messageWithErrorCode(message, code = null) {
+    const text = String(message ?? '').trim();
+
+    if (text === '') {
+        return text;
+    }
+
+    if (ERROR_CODE_PATTERN.test(text)) {
+        return text;
+    }
+
+    const resolved = code ?? errorCodeForMessage(text);
+
+    return resolved === null
+        ? text
+        : `${text} (${resolved})`;
+}
+
+/**
+ * Turn every code shown on the page into a link to its explanation.
+ *
+ * Error boxes are written by many different modules, so rather than
+ * asking each of them to build a link, this watches for codes appearing
+ * anywhere and links them where they land.
+ */
+export function initializeErrorCodeLinks() {
+    const linkify = (root) => {
+        if (! (root instanceof HTMLElement)) {
+            return;
+        }
+
+        const candidates = root.matches?.(ERROR_CONTAINERS)
+            ? [root]
+            : [...root.querySelectorAll(ERROR_CONTAINERS)];
+
+        candidates.forEach((element) => {
+            if (element.querySelector('[data-error-code-link]')) {
+                return;
+            }
+
+            const match = element.textContent?.match(ERROR_CODE_PATTERN);
+
+            if (! match) {
+                return;
+            }
+
+            const code = match[0];
+
+            const link = document.createElement('a');
+
+            link.href = `/errors/${code}`;
+            link.target = '_blank';
+            link.rel = 'noopener';
+            link.dataset.errorCodeLink = code;
+            link.className = 'pm-error-code-link';
+            link.textContent = translate('errors.explain_code');
+
+            element.appendChild(document.createTextNode(' '));
+            element.appendChild(link);
+        });
+    };
+
+    linkify(document.body);
+
+    new MutationObserver((records) => {
+        records.forEach((record) => {
+            if (record.type === 'childList') {
+                record.addedNodes.forEach((node) => linkify(node));
+
+                if (record.target instanceof HTMLElement) {
+                    linkify(record.target);
+                }
+            }
+
+            if (record.type === 'characterData' && record.target.parentElement) {
+                linkify(record.target.parentElement);
+            }
+        });
+    }).observe(document.body, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+    });
+}
+
+/*
+ * Where errors are shown. Anything outside this list is left alone: a
+ * code mentioned in ordinary prose should not sprout a link.
+ */
+const ERROR_CONTAINERS = [
+    '[id$="-error"]',
+    '[role="alert"]',
+    '.pm-form-error',
+    '.pm-error',
+].join(', ');
 
 /*
 |--------------------------------------------------------------------------

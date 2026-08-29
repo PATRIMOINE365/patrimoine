@@ -52,6 +52,7 @@ use App\Http\Controllers\Api\PaymentReportController;
 use App\Http\Controllers\Api\PaymentReportExportController;
 use App\Http\Controllers\Api\RegistrationController;
 use App\Http\Controllers\Api\RegistryPortabilityController;
+use App\Http\Controllers\Api\ErrorCodeController;
 use App\Http\Controllers\Api\ReleaseLogController;
 use App\Http\Controllers\Api\RentIncrementController;
 use App\Http\Controllers\Api\RentReserveController;
@@ -210,6 +211,17 @@ Route::middleware('auth:sanctum')->group(
         Route::get(
             'release-log',
             [ReleaseLogController::class, 'index']
+        );
+
+        /*
+         * V1.0.30: the error catalogue, for the Error codes tab in Help.
+         * The same words as the public page at /errors, in the
+         * organisation's language. Readable by every role — anybody can
+         * meet an error.
+         */
+        Route::get(
+            'error-codes',
+            ErrorCodeController::class
         );
 
         /*
