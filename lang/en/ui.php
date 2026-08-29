@@ -597,6 +597,7 @@ return [
         'drafts_note' => 'Started but not finished. Continue where it was left, or throw it away.',
         'drafts_continue' => 'Continue',
         'drafts_discard' => 'Discard',
+        'drafts_discard_confirm' => 'Discard?',
         'drafts_discard_failed' => 'This one could not be discarded. Try again.',
         'draft_missing' => 'That assistant is no longer there. It may have been finished or discarded.',
         'create_activate' => 'Save and activate',

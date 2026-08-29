@@ -9576,7 +9576,44 @@ function leaseDraftRow(draft) {
 /**
  * Discarding one. Delegated, because the list is redrawn after each.
  */
+let discardTimeout = null;
+
+/**
+ * Put every half-asked question away.
+ */
+function resetDraftDiscardButtons() {
+    clearTimeout(discardTimeout);
+
+    document
+        .querySelectorAll('[data-discard-draft][data-confirming="true"]')
+        .forEach(
+            (button) => {
+                button.dataset.confirming = 'false';
+
+                if (button.dataset.restoreLabel) {
+                    button.textContent = button.dataset.restoreLabel;
+                }
+
+                button.classList.remove('pm-button-danger');
+
+                button.classList.add('pm-button-danger-outline');
+            }
+        );
+}
+
 export function initializeLeaseDrafts() {
+    /*
+     * A click anywhere else means they thought better of it.
+     */
+    document.addEventListener(
+        'click',
+        (event) => {
+            if (! event.target.closest?.('[data-discard-draft]')) {
+                resetDraftDiscardButtons();
+            }
+        }
+    );
+
     document.addEventListener(
         'click',
         async (event) => {
@@ -9586,13 +9623,34 @@ export function initializeLeaseDrafts() {
                 return;
             }
 
-            const confirmed = await requireDangerConfirmation({
-                entityLabel: button.dataset.discardDraftLabel ?? '',
-            });
+            /*
+             * Deliberately NOT the irreversible-deletion dialog. That one
+             * speaks of a record and its history that cannot be recovered,
+             * which is true of a lease and nonsense about a form nobody
+             * finished. One click asks, the next does it, and anything
+             * else puts the question away.
+             */
+            if (button.dataset.confirming !== 'true') {
+                resetDraftDiscardButtons();
 
-            if (! confirmed) {
+                button.dataset.confirming = 'true';
+
+                button.dataset.restoreLabel = button.textContent.trim();
+
+                button.textContent = translate('wizard.drafts_discard_confirm');
+
+                button.classList.add('pm-button-danger');
+
+                button.classList.remove('pm-button-danger-outline');
+
+                clearTimeout(discardTimeout);
+
+                discardTimeout = setTimeout(resetDraftDiscardButtons, 5000);
+
                 return;
             }
+
+            clearTimeout(discardTimeout);
 
             button.disabled = true;
 

@@ -413,6 +413,9 @@ export const translations = {
         'wizard.drafts_discard':
             "Discard",
 
+        'wizard.drafts_discard_confirm':
+            "Discard?",
+
         'wizard.drafts_discard_failed':
             "This one could not be discarded. Try again.",
 
@@ -4488,6 +4491,9 @@ export const translations = {
 
         'wizard.drafts_discard':
             "Supprimer",
+
+        'wizard.drafts_discard_confirm':
+            "Supprimer ?",
 
         'wizard.drafts_discard_failed':
             "Celui-ci n’a pas pu être supprimé. Réessayez.",

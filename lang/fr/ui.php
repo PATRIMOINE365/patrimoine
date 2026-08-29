@@ -748,6 +748,7 @@ return [
         'drafts_note' => 'Commencés sans être terminés. Reprenez là où vous en étiez, ou supprimez-les.',
         'drafts_continue' => 'Reprendre',
         'drafts_discard' => 'Supprimer',
+        'drafts_discard_confirm' => 'Supprimer ?',
         'drafts_discard_failed' => 'Celui-ci n’a pas pu être supprimé. Réessayez.',
         'draft_missing' => 'Cet assistant n’existe plus. Il a été terminé ou supprimé.',
         'create_activate' => 'Enregistrer et activer',
