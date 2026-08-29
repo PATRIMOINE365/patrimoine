@@ -5206,7 +5206,7 @@ export const translations = {
         'owners.payout_account': 'Compte Retraits',
         'owners.transaction_date': 'Date',
         'owners.pay_fields_required': 'Le compte source, le montant et la date sont obligatoires.',
-        'owners.pay_exceeds_bill': 'Le paiement dépasse le montant restant dû de la facture.',
+        'owners.pay_exceeds_bill': 'Le paiement dépasse le montant restant dû de la facture de dépenses.',
         'owners.pay_exceeds_payout': 'Le paiement dépasse le solde disponible du compte Retraits.',
         'owners.pay_review_title': 'Vérifier le paiement',
         'owners.pay_review_description': "Confirmez le paiement exactement tel qu'il sera enregistré.",

@@ -1,0 +1,223 @@
+/*
+ * Generate resources/js/error-codes.js from the catalogue.
+ *
+ * The file has always SAID it was generated from config/error_codes.php.
+ * It never was — no generator existed, so it was edited by hand against an
+ * instruction not to, drifted fifteen codes behind the catalogue, and lost
+ * eighteen French sentences along the way. Those messages reached customers
+ * with no code attached, which leaves support nothing to ask for.
+ *
+ * What the browser needs and the server cannot supply: a message the
+ * browser raises on its own never reaches the server, so there is no
+ * response to carry a code and the sentence itself has to be matched. Only
+ * keys that exist in translations.js belong here; anything the server
+ * raises arrives with its code already attached.
+ *
+ * Two things this does that the hand-written file could not:
+ *
+ *   - it REFUSES to write when two different codes share a sentence,
+ *     rather than letting the second silently overwrite the first and
+ *     leaving one code unreachable for ever;
+ *   - it emits patterns for messages carrying a {placeholder}, which an
+ *     exact-match map can never recognise once the value is filled in.
+ *
+ *   node scripts/generate-error-codes.mjs [--check]
+ *
+ * --check writes nothing and exits non-zero if the file is out of date,
+ * which is what the guard test runs.
+ */
+import fs from "node:fs";
+import path from "node:path";
+import { pathToFileURL, fileURLToPath } from "node:url";
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(here, "..");
+const target = path.join(root, "resources", "js", "error-codes.js");
+const checkOnly = process.argv.includes("--check");
+
+/* ---- the catalogue ------------------------------------------------- */
+
+const source = fs.readFileSync(
+  path.join(root, "config", "error_codes.php"),
+  "utf8",
+);
+
+const codes = [];
+const entry = /'(PM-\d{4})'\s*=>\s*\[([\s\S]*?)\n        \]/g;
+
+let m;
+while ((m = entry.exec(source)) !== null) {
+  const [, code, body] = m;
+  const keysBlock = body.match(/'keys'\s*=>\s*\[([\s\S]*?)\]/);
+  const keys = keysBlock
+    ? [...keysBlock[1].matchAll(/'([^']+)'/g)].map((k) => k[1])
+    : [];
+  codes.push({ code, keys });
+}
+
+if (codes.length === 0) {
+  console.error("Parsed no codes out of config/error_codes.php — refusing to write.");
+  process.exit(1);
+}
+
+/* ---- the browser catalogue ----------------------------------------- */
+
+const { translations } = await import(
+  pathToFileURL(path.join(root, "resources", "js", "translations.js")).href
+);
+
+const LOCALES = ["en", "fr"];
+const norm = (s) => s.toLowerCase().replace(/\s+/g, " ").trim();
+const hasPlaceholder = (s) => /\{[a-zA-Z_][a-zA-Z0-9_]*\}|:[a-zA-Z_]+/.test(s);
+
+const exact = new Map(); // normalised text -> code
+const patterns = []; // { regex, code, specificity }
+const clashes = [];
+
+for (const { code, keys } of codes) {
+  for (const key of keys) {
+    for (const locale of LOCALES) {
+      const raw = translations[locale]?.[key];
+      if (typeof raw !== "string" || raw === "") continue;
+
+      const text = norm(raw);
+
+      if (hasPlaceholder(raw)) {
+        patterns.push({
+          regex: patternFor(text),
+          code,
+          // How much of the sentence is real words: the more specific
+          // template must be tried first, exactly as the server does it.
+          specificity: text.replace(/\{[a-zA-Z_][a-zA-Z0-9_]*\}|:[a-zA-Z_]+/g, "").length,
+        });
+        continue;
+      }
+
+      const owner = exact.get(text);
+      if (owner !== undefined && owner !== code) {
+        clashes.push({ text, codes: [owner, code], locale, key });
+        continue;
+      }
+      exact.set(text, code);
+    }
+  }
+}
+
+function patternFor(text) {
+  const quoted = text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  // The escaping above turned {balance} into \{balance\}; both that and a
+  // bare :placeholder become a wildcard.
+  return "^" + quoted.replace(/\\\{[a-zA-Z_][a-zA-Z0-9_]*\\\}|:[a-zA-Z_]+/g, ".+?") + "$";
+}
+
+if (clashes.length > 0) {
+  console.error(
+    "Two codes cannot share a sentence — one of them could never be shown:\n",
+  );
+  for (const c of clashes) {
+    console.error(`  ${c.codes.join(" and ")} [${c.locale}] via ${c.key}`);
+    console.error(`      "${c.text}"\n`);
+  }
+  console.error("Reword one of them, then run this again.");
+  process.exit(1);
+}
+
+patterns.sort((a, b) => b.specificity - a.specificity);
+
+/* ---- write it out --------------------------------------------------- */
+
+const sortedExact = [...exact.entries()].sort(([a], [b]) => (a < b ? -1 : 1));
+const distinctCodes = new Set([
+  ...exact.values(),
+  ...patterns.map((p) => p.code),
+]);
+
+const lines = [];
+lines.push(`/*`);
+lines.push(`|--------------------------------------------------------------------------`);
+lines.push(`| Error codes, as the browser knows them`);
+lines.push(`|--------------------------------------------------------------------------`);
+lines.push(`|`);
+lines.push(`| GENERATED by scripts/generate-error-codes.mjs. Do not edit by hand —`);
+lines.push(`| run the script instead, and commit what it writes.`);
+lines.push(`|`);
+lines.push(`| The server attaches a code to everything it refuses, and the browser`);
+lines.push(`| shows that code as it arrives. Messages the browser raises on its own`);
+lines.push(`| never reach the server at all, so they are matched here by the sentence`);
+lines.push(`| itself, in both languages.`);
+lines.push(`|`);
+lines.push(`| ${sortedExact.length} sentences and ${patterns.length} patterns, covering ${distinctCodes.size} codes.`);
+lines.push(`|`);
+lines.push(`*/`);
+lines.push(``);
+lines.push(`export const ERROR_CODES_BY_MESSAGE = {`);
+for (const [text, code] of sortedExact) {
+  lines.push(`    ${JSON.stringify(text)}: '${code}',`);
+}
+lines.push(`};`);
+lines.push(``);
+lines.push(`/**`);
+lines.push(` * Messages carrying a value — "…balance of {balance}" — cannot be looked`);
+lines.push(` * up once the value is filled in, so they are matched by pattern. Most`);
+lines.push(` * specific first: a broad template would otherwise swallow a narrower one.`);
+lines.push(` *`);
+lines.push(` * @type {ReadonlyArray<readonly [RegExp, string]>}`);
+lines.push(` */`);
+lines.push(`export const ERROR_CODE_PATTERNS = [`);
+for (const p of patterns) {
+  lines.push(`    [/${p.regex}/u, '${p.code}'],`);
+}
+lines.push(`];`);
+lines.push(``);
+lines.push(`/**`);
+lines.push(` * The code for a message the browser is about to show, or null when the`);
+lines.push(` * sentence belongs to no catalogued error.`);
+lines.push(` *`);
+lines.push(` * @param {string} message`);
+lines.push(` * @returns {string|null}`);
+lines.push(` */`);
+lines.push(`export function errorCodeForMessage(message) {`);
+lines.push(`    if (typeof message !== 'string' || message === '') {`);
+lines.push(`        return null;`);
+lines.push(`    }`);
+lines.push(``);
+lines.push(`    const text = message`);
+lines.push(`        .toLowerCase()`);
+lines.push(`        .replace(/\\s+/g, ' ')`);
+lines.push(`        .trim();`);
+lines.push(``);
+lines.push(`    const exact = ERROR_CODES_BY_MESSAGE[text];`);
+lines.push(``);
+lines.push(`    if (exact !== undefined) {`);
+lines.push(`        return exact;`);
+lines.push(`    }`);
+lines.push(``);
+lines.push(`    for (const [pattern, code] of ERROR_CODE_PATTERNS) {`);
+lines.push(`        if (pattern.test(text)) {`);
+lines.push(`            return code;`);
+lines.push(`        }`);
+lines.push(`    }`);
+lines.push(``);
+lines.push(`    return null;`);
+lines.push(`}`);
+lines.push(``);
+
+const output = lines.join("\n");
+
+if (checkOnly) {
+  const current = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : "";
+  if (current !== output) {
+    console.error(
+      "resources/js/error-codes.js is out of date.\n" +
+        "Run: node scripts/generate-error-codes.mjs",
+    );
+    process.exit(1);
+  }
+  console.log("error-codes.js is up to date.");
+  process.exit(0);
+}
+
+fs.writeFileSync(target, output);
+console.log(
+  `error-codes.js written: ${sortedExact.length} sentences, ${patterns.length} patterns, ${distinctCodes.size} codes.`,
+);

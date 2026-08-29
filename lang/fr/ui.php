@@ -1563,7 +1563,7 @@ return [
         'payout_account' => 'Compte Retraits',
         'transaction_date' => 'Date',
         'pay_fields_required' => 'Le compte source, le montant et la date sont obligatoires.',
-        'pay_exceeds_bill' => 'Le paiement dépasse le montant restant dû de la facture.',
+        'pay_exceeds_bill' => 'Le paiement dépasse le montant restant dû de la facture de dépenses.',
         'pay_exceeds_payout' => 'Le paiement dépasse le solde disponible du compte Retraits.',
         'pay_review_title' => 'Vérifier le paiement',
         'pay_review_description' => "Confirmez le paiement exactement tel qu'il sera enregistré.",

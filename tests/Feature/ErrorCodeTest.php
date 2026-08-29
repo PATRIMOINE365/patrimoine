@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Support\ErrorCodes;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\File;
 use Tests\Concerns\AuthenticatesApiUser;
 use Tests\TestCase;
 
@@ -91,27 +92,34 @@ class ErrorCodeTest extends TestCase
      */
     public function test_catalogued_keys_still_resolve_to_a_message(): void
     {
+        /*
+         * A catalogue key has to resolve SOMEWHERE — either as a server
+         * translation or in the browser catalogue, because a code can be
+         * raised from either side.
+         *
+         * This used to allow only four groups through, named by hand:
+         * business, api, validation and ui. Three more real language files
+         * have been added since (financial_journal, activity_log, reports)
+         * and the list was never extended, so thirteen keys pointing at
+         * messages that do not exist sat here undetected. Asking "does it
+         * resolve anywhere" needs no list to keep up to date.
+         */
+        $browser = File::get(resource_path('js/translations.js'));
+
         $dangling = [];
 
         foreach (ErrorCodes::all() as $code => $entry) {
             foreach ($entry['keys'] ?? [] as $key) {
-                /*
-                 * Browser-only keys live in translations.js and are
-                 * matched in the browser; the server cannot resolve them.
-                 */
-                if (! str_contains($key, '.')) {
+                if (__($key) !== $key) {
                     continue;
                 }
 
-                [$file] = explode('.', $key, 2);
-
-                if (! in_array($file, ['business', 'api', 'validation', 'ui'], true)) {
+                // Present in both locale halves of the browser catalogue.
+                if (substr_count($browser, "'{$key}':") >= 2) {
                     continue;
                 }
 
-                if (__($key) === $key) {
-                    $dangling[] = "{$code} → {$key}";
-                }
+                $dangling[] = "{$code} → {$key}";
             }
         }
 
@@ -119,6 +127,145 @@ class ErrorCodeTest extends TestCase
             [],
             $dangling,
             "Catalogued message keys that no longer exist:\n".implode("\n", $dangling)
+        );
+    }
+
+    /**
+     * The browser half of the catalogue must agree with the catalogue.
+     *
+     * error-codes.js said it was generated from config/error_codes.php for
+     * a long time while no generator existed. It fell fifteen codes behind,
+     * and three French sentences were written into it as literal "’"
+     * escape sequences, so they could never match anything a customer
+     * actually read: those messages reached people with no code attached
+     * and support had nothing to ask for.
+     *
+     * scripts/generate-error-codes.mjs writes that file now. This checks the
+     * outcome rather than the bytes — every browser message the catalogue
+     * claims must be recognisable — so it fails whether somebody edits the
+     * generated file by hand or forgets to re-run the generator.
+     */
+    public function test_every_browser_message_is_recognisable(): void
+    {
+        $browser = File::get(resource_path('js/translations.js'));
+        $generated = File::get(resource_path('js/error-codes.js'));
+
+        $unrecognised = [];
+
+        foreach (ErrorCodes::all() as $code => $entry) {
+            foreach ($entry['keys'] ?? [] as $key) {
+                foreach ($this->browserMessagesFor($browser, $key) as $message) {
+                    /*
+                     * A message carrying a value cannot be looked up once
+                     * the value is filled in; the generator emits those as
+                     * patterns instead, which are checked below.
+                     */
+                    if (preg_match('/\{[a-zA-Z_][a-zA-Z0-9_]*\}/', $message) === 1) {
+                        continue;
+                    }
+
+                    $needle = json_encode(
+                        $this->flatten($message),
+                        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                    );
+
+                    if (! str_contains($generated, $needle.": '{$code}'")) {
+                        $unrecognised[] = "{$code} → {$key}: {$message}";
+                    }
+                }
+            }
+        }
+
+        $this->assertSame(
+            [],
+            $unrecognised,
+            "Browser messages the browser could not attach a code to.\n"
+            ."Run: node scripts/generate-error-codes.mjs\n\n"
+            .implode("\n", $unrecognised)
+        );
+    }
+
+    /**
+     * No two codes may share a sentence.
+     *
+     * The browser matches on the sentence alone, so two codes wording a
+     * refusal identically leave one of them unreachable for ever — and in
+     * a flat map the loser is decided by write order, silently. This once
+     * happened in French only: PM-4053 and PM-4018 both read "Le paiement
+     * dépasse le montant restant dû de la facture."
+     */
+    public function test_no_two_codes_share_a_sentence(): void
+    {
+        $browser = File::get(resource_path('js/translations.js'));
+
+        $owners = [];
+        $shared = [];
+
+        foreach (ErrorCodes::all() as $code => $entry) {
+            foreach ($entry['keys'] ?? [] as $key) {
+                foreach ($this->browserMessagesFor($browser, $key) as $message) {
+                    $text = $this->flatten($message);
+
+                    if (isset($owners[$text]) && $owners[$text] !== $code) {
+                        $shared[] = "{$owners[$text]} and {$code}: \"{$message}\"";
+
+                        continue;
+                    }
+
+                    $owners[$text] = $code;
+                }
+            }
+        }
+
+        $this->assertSame(
+            [],
+            array_unique($shared),
+            "Two codes cannot word a refusal identically — one could never be shown:\n"
+            .implode("\n", array_unique($shared))
+        );
+    }
+
+    /**
+     * Every value translations.js holds for one key, in either language.
+     *
+     * @return array<int, string>
+     */
+    private function browserMessagesFor(string $catalogue, string $key): array
+    {
+        // The value may sit on the same line as the key or the next one.
+        preg_match_all(
+            "/'".preg_quote($key, '/')."':\s*'((?:[^'\\\\]|\\\\.)*)'/",
+            $catalogue,
+            $matches
+        );
+
+        return array_map(
+            static function (string $raw): string {
+                $value = str_replace(["\\'", '\\\\'], ["'", '\\'], $raw);
+
+                /*
+                 * Parts of translations.js write accented French as \uXXXX
+                 * escapes. JavaScript decodes those when the module loads,
+                 * so the sentence a customer reads is the decoded one —
+                 * compare against that, not against the source bytes.
+                 */
+                return (string) preg_replace_callback(
+                    '/\\\\u([0-9a-fA-F]{4})/',
+                    static fn (array $m): string => mb_chr((int) hexdec($m[1]), 'UTF-8'),
+                    $value
+                );
+            },
+            $matches[1]
+        );
+    }
+
+    /**
+     * The same normalisation errorCodeForMessage() applies before looking up.
+     */
+    private function flatten(string $message): string
+    {
+        return mb_strtolower(
+            trim((string) preg_replace('/\s+/u', ' ', $message))
         );
     }
 

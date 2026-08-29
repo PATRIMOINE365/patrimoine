@@ -133,7 +133,16 @@ return [
         'PM-1016' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['api.profile.photo_invalid'],
+            /*
+             * The browser refuses a picture it cannot decode before the
+             * server ever sees it — an HEIC outside Safari, most often —
+             * so the same failure has to be recognisable from either side.
+             */
+            'keys' => [
+                'api.profile.photo_invalid',
+                'ui.profile.photo_unreadable',
+                'profile.photo_unreadable',
+            ],
         ],
         'PM-1017' => [
             'family' => 1,

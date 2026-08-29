@@ -248,6 +248,7 @@ class ErrorCodes
                     self::$patterns[$locale][] = [
                         self::patternFor($line),
                         $code,
+                        self::specificity($line),
                     ];
 
                     continue;
@@ -256,6 +257,39 @@ class ErrorCodes
                 self::$exact[$locale][self::normalise($line)] ??= $code;
             }
         }
+
+        /*
+         * Most specific first.
+         *
+         * A placeholder becomes ".+?", so a broad template can swallow a
+         * narrower one: "The :attribute field must be :size." matches
+         * "The name field must be a string." perfectly well, because the
+         * wildcard is happy to eat "a string". With first-match-wins that
+         * made whichever entry came earlier in the catalogue the answer to
+         * both, and the narrower code could never be produced at all.
+         *
+         * Ordering by how much literal text a template carries settles it:
+         * "...must not be greater than :max characters." is tried before
+         * "...must not be greater than :max.", and only falls through to it
+         * when the sentence genuinely has no "characters" in it.
+         */
+        usort(
+            self::$patterns[$locale],
+            static fn (array $a, array $b): int => $b[2] <=> $a[2]
+        );
+    }
+
+    /**
+     * How much of a message is real words rather than placeholders.
+     *
+     * This is the tie-break above: the template that says more about the
+     * failure is the one that should claim a sentence matching both.
+     */
+    private static function specificity(string $line): int
+    {
+        return mb_strlen(
+            (string) preg_replace('/:[a-zA-Z_]+/', '', $line)
+        );
     }
 
     /**

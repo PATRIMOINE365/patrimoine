@@ -331,11 +331,11 @@ class AuthApiTest extends TestCase
             ->assertUnprocessable()
             ->assertJsonPath(
                 'errors.email.0',
-                'Le champ email est obligatoire.'
+                'Le champ adresse e-mail est obligatoire.'
             )
             ->assertJsonPath(
                 'errors.password.0',
-                'Le champ password est obligatoire.'
+                'Le champ mot de passe est obligatoire.'
             );
 
         $token = $user

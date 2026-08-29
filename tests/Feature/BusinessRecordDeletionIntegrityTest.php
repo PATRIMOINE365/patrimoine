@@ -405,7 +405,7 @@ class BusinessRecordDeletionIntegrityTest extends TestCase
             ->assertStatus(422)
             ->assertJsonPath(
                 'errors.reason.0',
-                'Le champ reason est obligatoire.'
+                'Le champ motif est obligatoire.'
             );
 
         $this->assertDatabaseHas(
