@@ -15,6 +15,22 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.31',
+            'date' => '2026-08-29',
+            'title' => 'Votre photographie, un journal plus court, et un assistant que l’on peut quitter',
+            'changes' => [
+                'Votre photographie apparaît désormais en haut à droite de chaque écran et à côté de votre nom sur la page Utilisateurs : un administrateur distingue les comptes d’un coup d’œil. Ouvrez votre profil et choisissez une image : faites-la glisser dans la fenêtre ronde et zoomez avec le curseur ou la molette jusqu’au cadrage voulu.',
+                'Tant que vous n’en avez pas ajouté, vos initiales s’affichent sur une couleur qui vous est propre, de sorte qu’une liste de collègues reste lisible.',
+                'Les formats JPG, PNG, WEBP et GIF conviennent, et une photo HEIC d’iPhone fonctionne dans Safari. Recadrer rouvre l’image exactement là où vous l’aviez laissée : vous pouvez donc changer le cadrage plus tard sans retrouver le fichier.',
+                'Ce journal des mises à jour est plus court. Patrimoine est un service unique et continu : un historique version par version ne faisait guère que consigner ce qui est désormais acquis. Il est écrit par blocs de cinq versions, en deux phrases chacun.',
+                'Enregistrer en brouillon, dans l’assistant de bail, n’exige plus un bien ni un locataire au préalable. L’assistant est conservé tel que vous l’avez laissé, même presque vide, et apparaît sous Assistants inachevés en haut de la page Baux, au nom de la personne qui l’a commencé et du jour où elle l’a fait. Reprendre le rouvre à la page quittée ; Supprimer l’élimine.',
+                'L’assistant ne change plus de hauteur au fil des pages : les boutons restent où vous les aviez laissés. Ses dates se saisissent et s’affichent au format de votre organisation, avec le calendrier Patrimoine, comme partout ailleurs.',
+                'L’assistant cesse également de proposer les champs d’un bien, d’un lot ou d’une partie que vous ne créez pas. Ce défaut dépassait l’assistant : tout élément que l’application masquait pouvait réapparaître, y compris des panneaux censés rester fermés.',
+                'La liste des pays, à côté d’un numéro de téléphone, s’ouvre correctement dans un panneau latéral, où elle restait auparavant cachée derrière.',
+                'Le menu Gestion suit l’ordre Paramètres, Utilisateurs, Licence, Journal d’activité, Journal financier, et la déconnexion est signalée en rouge pour ne pas être actionnée par inadvertance.',
+            ],
+        ],
+        [
             'version' => '1.0.30',
             'date' => '2026-08-29',
             'title' => 'Un code sur chaque erreur, et des numéros de téléphone composables',

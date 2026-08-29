@@ -23,7 +23,7 @@ return [
         [
             'through' => '1.0.35',
             'date' => '2026-08-29',
-            'summary' => 'Votre photo apparaît désormais en haut de l\'écran et à côté de votre nom sur la page Utilisateurs, ce qui permet de reconnaître un compte d\'un coup d\'œil. L\'assistant de bail ne propose plus les champs d\'un bien que vous ne créez pas, et le journal que vous lisez a été ramené à l\'essentiel.',
+            'summary' => 'Votre photographie apparaît désormais en haut de l’écran et à côté de votre nom sur la page Utilisateurs, ce qui rend les comptes faciles à distinguer. L’assistant de bail peut être quitté en cours de route et repris plus tard, ne change plus de hauteur au fil des pages, et emploie partout votre format de date.',
         ],
         [
             'through' => '1.0.30',

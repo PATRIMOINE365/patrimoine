@@ -19,6 +19,22 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.31',
+            'date' => '2026-08-29',
+            'title' => 'Your photograph, a shorter update log, and an assistant you can leave',
+            'changes' => [
+                'Your photograph now sits at the top right of every screen and beside your name on the Users page, so an administrator can tell accounts apart at a glance. Open your profile and choose a picture: drag it inside the round window and zoom with the slider or your scroll wheel until it is framed the way you want.',
+                'Until you add one, your initials appear on a colour of your own, so a list of colleagues is still quick to read.',
+                'JPG, PNG, WEBP and GIF all work, and a HEIC photograph from an iPhone works in Safari. Reframe reopens the picture exactly where you left it, so you can change the framing later without finding the file again.',
+                'This update log is shorter. Patrimoine is one running service, so a release-by-release history was mostly a record of things that are simply true now; it is written in blocks of five releases instead, a couple of sentences each.',
+                'Save as draft in the lease assistant no longer needs a property or a tenant first. It keeps the assistant exactly as you left it, however little you have filled in, and it appears under Unfinished assistants at the top of the Leases page, named after whoever started it and the day they did. Continue picks it up on the page you left; Discard throws it away.',
+                'The assistant no longer changes height as you move through it, so the buttons stay where you left them, and its dates are typed and shown in your organisation format with the Patrimoine calendar, like every other date in the application.',
+                'The assistant also stops offering you fields for a property, unit or party you are not creating. This turned out to affect more than the assistant: anything the application hid could reappear, including panels that should have stayed closed.',
+                'The country list beside a telephone number now opens correctly inside a drawer, where it was previously hidden behind it.',
+                'Manage in the sidebar is ordered Settings, Users, Licence, Activity Log, Financial Journal, and signing out is marked in red so it cannot be pressed by accident.',
+            ],
+        ],
+        [
             'version' => '1.0.30',
             'date' => '2026-08-29',
             'title' => 'A code on every error, and telephone numbers that can be dialled',

@@ -31,7 +31,7 @@ return [
         [
             'through' => '1.0.35',
             'date' => '2026-08-29',
-            'summary' => 'Your photograph now sits at the top of the screen and beside your name on the Users page, so you can tell at a glance whose account you are looking at. The lease assistant no longer offers you fields for a property you are not creating, and the update log you are reading has been shortened to the things worth knowing.',
+            'summary' => 'Your photograph now sits at the top of the screen and beside your name on the Users page, so accounts are easy to tell apart. The lease assistant can be left half-finished and picked up later, no longer changes height as you move through it, and uses your own date format throughout.',
         ],
         [
             'through' => '1.0.30',
