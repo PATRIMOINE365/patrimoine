@@ -45,6 +45,7 @@ import {
 import {
     AvatarCropper,
     decodeImage,
+    loadImage,
     paintAvatar,
 } from './avatar.js';
 
@@ -2926,11 +2927,8 @@ export function initializeProfilePhoto() {
                         return;
                     }
 
-                    const image = new Image();
-
-                    image.src = payload.source;
-
-                    await image.decode();
+                    const image =
+                        await loadImage(payload.source);
 
                     let framing = null;
 
@@ -3049,6 +3047,18 @@ function applyNewAvatar(avatar) {
     const name =
         document.getElementById('user-menu-name')?.textContent
         ?? '';
+
+    /*
+     * The drawer reads the shell's copy of the signed-in user when it
+     * opens. Without this the photograph would be right on screen and
+     * gone again the next time the drawer was opened, until a reload.
+     */
+    if (authenticatedShellUser) {
+        authenticatedShellUser = {
+            ...authenticatedShellUser,
+            avatar,
+        };
+    }
 
     for (const id of ['profile-avatar', 'topbar-avatar', 'sidebar-avatar', 'user-menu-toggle']) {
         paintAvatar(

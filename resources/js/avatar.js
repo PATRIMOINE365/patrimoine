@@ -205,6 +205,41 @@ export async function decodeImage(file) {
 }
 
 /**
+ * Read a picture already in hand, such as one the server sent back.
+ *
+ * Deliberately the load event rather than decode(): decode() can sit
+ * unresolved in a tab that is not painting, which would leave the cropper
+ * waiting for a picture that has in fact arrived.
+ */
+export function loadImage(source) {
+    return new Promise((resolve, reject) => {
+        const image = new Image();
+
+        image.addEventListener(
+            'load',
+            () => {
+                if (image.naturalWidth && image.naturalHeight) {
+                    resolve(image);
+
+                    return;
+                }
+
+                reject(new Error('undecodable'));
+            },
+            { once: true }
+        );
+
+        image.addEventListener(
+            'error',
+            () => reject(new Error('undecodable')),
+            { once: true }
+        );
+
+        image.src = source;
+    });
+}
+
+/**
  * A round cropper over one picture.
  *
  * The element passed in is the stage: a square box the picture is drawn
