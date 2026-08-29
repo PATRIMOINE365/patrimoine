@@ -728,7 +728,7 @@ return [
         'back' => 'Retour',
         'next' => 'Suivant',
         'save_draft' => 'Enregistrer en brouillon',
-        'create_activate' => 'Créer et activer',
+        'create_activate' => 'Enregistrer et activer',
         'saving' => 'Enregistrement…',
         'load_failed' => 'Impossible de charger vos biens et vos parties.',
         'save_failed' => 'Le bail n’a pas pu être créé. Rien n’a été enregistré.',

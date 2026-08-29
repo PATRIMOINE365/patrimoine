@@ -536,6 +536,94 @@
                 <div class="space-y-1">
 
                     <a
+                        href="/settings"
+                        data-requires-capability="manage_settings"
+                        class="
+                            {{ request()->is('settings')
+                                ? 'bg-white/10 text-white'
+                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                            }}
+                            flex items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-sm font-medium
+                            transition
+                        "
+                    >
+                        <svg
+                            class="h-5 w-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.1A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.1A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.2.37.5.7.9.9.3.16.7.2 1.1.2h.1v4h-.1a1.7 1.7 0 0 0-2 .9Z"/>
+                        </svg>
+
+                        <span data-i18n="navigation.settings">{{ __('ui.navigation.settings') }}</span>
+                    </a>
+
+                    <a
+                        href="/users"
+                        data-requires-capability="manage_users"
+                        class="
+                            {{ request()->is('users')
+                                ? 'bg-white/10 text-white'
+                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                            }}
+                            flex items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-sm font-medium
+                            transition
+                        "
+                    >
+                        <svg
+                            class="h-5 w-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M19 8v6"/>
+                            <path d="M16 11h6"/>
+                        </svg>
+
+                        <span data-i18n="navigation.users">{{ __('ui.navigation.users') }}</span>
+                    </a>
+
+                    <a
+                        href="/license"
+                        data-requires-capability="manage_settings"
+                        class="
+                            {{ request()->is('license')
+                                ? 'bg-white/10 text-white'
+                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
+                            }}
+                            flex items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-sm font-medium
+                            transition
+                        "
+                    >
+                        <svg
+                            class="h-5 w-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <rect x="3" y="4" width="18" height="14" rx="2"/>
+                            <path d="M7 20h10"/>
+                            <path d="M9 9h6"/>
+                            <path d="M9 13h3"/>
+                        </svg>
+
+                        <span data-i18n="navigation.license">{{ __('ui.navigation.license') }}</span>
+                    </a>
+
+                    <a
                         href="/activity-log"
                         data-requires-capability="view_activity_log"
                         class="
@@ -597,94 +685,6 @@
                         </svg>
 
                         <span data-i18n="navigation.financial_journal">{{ __('ui.navigation.financial_journal') }}</span>
-                    </a>
-
-                    <a
-                        href="/users"
-                        data-requires-capability="manage_users"
-                        class="
-                            {{ request()->is('users')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                            }}
-                            flex items-center gap-3
-                            rounded-lg px-3 py-2.5
-                            text-sm font-medium
-                            transition
-                        "
-                    >
-                        <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M19 8v6"/>
-                            <path d="M16 11h6"/>
-                        </svg>
-
-                        <span data-i18n="navigation.users">{{ __('ui.navigation.users') }}</span>
-                    </a>
-
-                    <a
-                        href="/settings"
-                        data-requires-capability="manage_settings"
-                        class="
-                            {{ request()->is('settings')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                            }}
-                            flex items-center gap-3
-                            rounded-lg px-3 py-2.5
-                            text-sm font-medium
-                            transition
-                        "
-                    >
-                        <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <circle cx="12" cy="12" r="3"/>
-                            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.1A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.1A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.2.37.5.7.9.9.3.16.7.2 1.1.2h.1v4h-.1a1.7 1.7 0 0 0-2 .9Z"/>
-                        </svg>
-
-                        <span data-i18n="navigation.settings">{{ __('ui.navigation.settings') }}</span>
-                    </a>
-
-                    <a
-                        href="/license"
-                        data-requires-capability="manage_settings"
-                        class="
-                            {{ request()->is('license')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                            }}
-                            flex items-center gap-3
-                            rounded-lg px-3 py-2.5
-                            text-sm font-medium
-                            transition
-                        "
-                    >
-                        <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <rect x="3" y="4" width="18" height="14" rx="2"/>
-                            <path d="M7 20h10"/>
-                            <path d="M9 9h6"/>
-                            <path d="M9 13h3"/>
-                        </svg>
-
-                        <span data-i18n="navigation.license">{{ __('ui.navigation.license') }}</span>
                     </a>
 
                     {{--
@@ -1288,7 +1288,7 @@
                             <button
                                 id="logout-button"
                                 type="button"
-                                class="shell-menu-item"
+                                class="shell-menu-item shell-menu-item-danger"
                             >
                                 <svg
                                     class="h-4 w-4"
@@ -1306,8 +1306,8 @@
                                 <span class="min-w-0">
                                     <span
                                         class="
+                                            shell-menu-item-title
                                             block text-sm font-medium
-                                            text-[var(--pm-text)]
                                         "
                                         data-i18n="navigation.sign_out"
                                     >
@@ -1316,9 +1316,9 @@
 
                                     <span
                                         class="
+                                            shell-menu-item-note
                                             mt-0.5 block text-xs
-                                            font-normal
-                                            text-[var(--pm-text-muted)]
+                                            font-normal opacity-80
                                         "
                                         data-i18n="navigation.sign_out_description"
                                     >

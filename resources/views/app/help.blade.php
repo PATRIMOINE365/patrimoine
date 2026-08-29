@@ -143,15 +143,17 @@
                         sm:grid-cols-3
                     "
                 >
+                    {{--
+                        No labels above these two: the placeholder says
+                        what the box is for, and the guide reads cleaner
+                        without a word sitting over every control.
+                    --}}
                     <div class="sm:col-span-2">
                         <label
                             for="help-search"
-                            class="pm-field-label"
-                        >
-                            <span data-i18n="help.search">
-                                Search
-                            </span>
-                        </label>
+                            class="sr-only"
+                            data-i18n="help.search"
+                        >Search</label>
 
                         <input
                             id="help-search"
@@ -167,12 +169,9 @@
                     <div>
                         <label
                             for="help-category"
-                            class="pm-field-label"
-                        >
-                            <span data-i18n="help.category">
-                                Category
-                            </span>
-                        </label>
+                            class="sr-only"
+                            data-i18n="help.category"
+                        >Category</label>
 
                         <select
                             id="help-category"

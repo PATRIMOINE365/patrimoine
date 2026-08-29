@@ -402,7 +402,7 @@ export const translations = {
             'Save as draft',
 
         'wizard.create_activate':
-            'Create and activate',
+            'Save and activate',
 
         'wizard.saving':
             'Saving…',
@@ -4439,7 +4439,7 @@ export const translations = {
             'Enregistrer en brouillon',
 
         'wizard.create_activate':
-            'Créer et activer',
+            'Enregistrer et activer',
 
         'wizard.saving':
             'Enregistrement…',

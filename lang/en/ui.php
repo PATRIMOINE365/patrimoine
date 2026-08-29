@@ -577,7 +577,7 @@ return [
         'back' => 'Back',
         'next' => 'Next',
         'save_draft' => 'Save as draft',
-        'create_activate' => 'Create and activate',
+        'create_activate' => 'Save and activate',
         'saving' => 'Saving…',
         'load_failed' => 'Your properties and parties could not be loaded.',
         'save_failed' => 'The lease could not be created. Nothing was saved.',

@@ -21,7 +21,11 @@ class FinancialJournalBrowserTest extends TestCase
             );
     }
 
-    public function test_manage_places_financial_journal_after_activity_log(): void
+    /**
+     * V1.0.31 reordered the Manage group at Komla's request: the things an
+     * administrator sets up come first, the things they read come last.
+     */
+    public function test_manage_lists_its_links_in_the_settled_order(): void
     {
         $view =
             file_get_contents(
@@ -30,42 +34,38 @@ class FinancialJournalBrowserTest extends TestCase
                 )
             );
 
-        $activity =
-            strpos(
+        $order = [
+            '/settings',
+            '/users',
+            '/license',
+            '/activity-log',
+            '/financial-journal',
+        ];
+
+        $positions = [];
+
+        foreach ($order as $href) {
+            $at = strpos(
                 $view,
-                'href="/activity-log"'
+                'href="'.$href.'"'
             );
 
-        $journal =
-            strpos(
-                $view,
-                'href="/financial-journal"'
+            $this->assertNotFalse(
+                $at,
+                $href.' is missing from the sidebar.'
             );
 
-        $users =
-            strpos(
-                $view,
-                'href="/users"'
-            );
+            $positions[$href] = $at;
+        }
 
-        $this->assertNotFalse(
-            $activity
-        );
+        $sorted = $positions;
 
-        $this->assertNotFalse(
-            $journal
-        );
+        asort($sorted);
 
-        $this->assertNotFalse(
-            $users
-        );
-
-        $this->assertTrue(
-            $activity < $journal
-        );
-
-        $this->assertTrue(
-            $journal < $users
+        $this->assertSame(
+            $order,
+            array_keys($sorted),
+            'The Manage links are not in the order they were asked for.'
         );
 
         $this->assertStringContainsString(

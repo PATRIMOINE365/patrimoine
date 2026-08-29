@@ -1,3 +1,4 @@
+@import './hidden-guards.css';
 @import './flags.css';
 @import 'tailwindcss';
 
@@ -227,6 +228,33 @@ html[data-shell-role="administrator"]
 .shell-menu-item:hover {
     background: var(--pm-hover);
     color: var(--pm-text);
+}
+
+/*
+ * V1.0.30: sign out reads in the same red as the delete buttons, so it is
+ * unmistakable in a menu of ordinary rows — but stays a row. The colour is
+ * carried by the icon and the words; the background only answers the
+ * pointer, which is what keeps a block of red out of the menu.
+ */
+.shell-menu-item-danger,
+.shell-menu-item-danger .shell-menu-item-title,
+.shell-menu-item-danger .shell-menu-item-note {
+    color: var(--pm-danger-text);
+}
+
+.shell-menu-item-danger:hover {
+    background: var(--pm-danger-background);
+    color: var(--pm-danger-text);
+}
+
+.shell-menu-item-danger:hover .shell-menu-item-title,
+.shell-menu-item-danger:hover .shell-menu-item-note {
+    color: var(--pm-danger-text);
+}
+
+.shell-menu-item-danger:focus-visible {
+    outline: 2px solid var(--pm-danger-solid);
+    outline-offset: -2px;
 }
 
 .theme-option {

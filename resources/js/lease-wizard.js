@@ -845,7 +845,12 @@ function showStep(step) {
 
     toggle('wizard-submit', step === TOTAL_STEPS);
 
-    toggle('wizard-draft', step === TOTAL_STEPS);
+    /*
+     * The last page offers the letting, not a draft. Everywhere before it
+     * the draft is the one thing worth writing, so it is the button the
+     * eye lands on.
+     */
+    toggle('wizard-draft', step < TOTAL_STEPS);
 
     if (step === 9) {
         setText(

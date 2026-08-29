@@ -628,7 +628,13 @@
          Footer
     ============================================================ --}}
 
-    <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
+    {{--
+        Back and Next travel together, and the button that actually writes
+        something sits last. On the review page that slot stops offering a
+        draft and offers the letting itself; anybody who wants a draft
+        instead steps back one page and takes it there.
+    --}}
+    <div class="mt-6 flex flex-wrap items-center justify-end gap-3">
         <button
             id="wizard-back"
             type="button"
@@ -637,31 +643,29 @@
             <span data-i18n="wizard.back">{{ __('ui.wizard.back') }}</span>
         </button>
 
-        <div class="flex flex-wrap items-center gap-3">
-            <button
-                id="wizard-draft"
-                type="button"
-                class="pm-button-secondary hidden"
-            >
-                <span data-i18n="wizard.save_draft">{{ __('ui.wizard.save_draft') }}</span>
-            </button>
+        <button
+            id="wizard-next"
+            type="button"
+            class="pm-button-secondary"
+        >
+            <span data-i18n="wizard.next">{{ __('ui.wizard.next') }}</span>
+        </button>
 
-            <button
-                id="wizard-next"
-                type="button"
-                class="pm-button-primary"
-            >
-                <span data-i18n="wizard.next">{{ __('ui.wizard.next') }}</span>
-            </button>
+        <button
+            id="wizard-draft"
+            type="button"
+            class="pm-button-primary"
+        >
+            <span data-i18n="wizard.save_draft">{{ __('ui.wizard.save_draft') }}</span>
+        </button>
 
-            <button
-                id="wizard-submit"
-                type="button"
-                class="pm-button-primary hidden"
-            >
-                <span data-i18n="wizard.create_activate">{{ __('ui.wizard.create_activate') }}</span>
-            </button>
-        </div>
+        <button
+            id="wizard-submit"
+            type="button"
+            class="pm-button-primary hidden"
+        >
+            <span data-i18n="wizard.create_activate">{{ __('ui.wizard.create_activate') }}</span>
+        </button>
     </div>
 
 </div>
