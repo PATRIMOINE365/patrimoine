@@ -15,6 +15,18 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.33',
+            'date' => '2026-08-29',
+            'title' => 'Un guide pratique qui montre les écrans',
+            'changes' => [
+                'Le Guide, dans l\'Aide, a été réécrit. Il couvre désormais chaque tâche de Patrimoine — cinquante-quatre, en dix groupes — sous forme d\'étapes numérotées, avec l\'image de l\'écran concerné à côté de l\'étape qui l\'utilise.',
+                'Les images sont celles de l\'application réelle, dans votre langue : ce que vous lisez correspond à ce que vous avez sous les yeux.',
+                'Cherchez dans le guide par ce que vous essayez de faire plutôt que par le nom de l\'écran : les mots de chaque étape sont pris en compte, pas seulement les titres.',
+                'Le même guide est désormais public sur patrimoine365.com : vous pouvez envoyer à quelqu\'un le lien d\'une seule tâche sans lui demander de se connecter.',
+                'Le site a aussi reçu une liste de questions-réponses plus complète, et un menu Documentation qui rassemble les guides, les questions et les codes d\'erreur au même endroit.',
+            ],
+        ],
+        [
             'version' => '1.0.32',
             'date' => '2026-08-29',
             'title' => 'Des pages où l’on saute, et des Paramètres qui contiennent tout le compte',

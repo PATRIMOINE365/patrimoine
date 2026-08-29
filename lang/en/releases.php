@@ -19,6 +19,18 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.33',
+            'date' => '2026-08-29',
+            'title' => 'A how-to guide that shows you the screens',
+            'changes' => [
+                'The Guide under Help has been rewritten. It now covers every task in Patrimoine — fifty-four of them, in ten groups — as numbered steps, with a picture of the screen you will be looking at beside the step that uses it.',
+                'The pictures are of the real application, in your own language, so what you read matches what is in front of you.',
+                'Search the guide by what you are trying to do rather than by what the screen is called: the words of every step are searched, not just the titles.',
+                'The same guide is now public at patrimoine365.com, so you can send somebody a link to a single task without asking them to sign in first.',
+                'The website also gained a fuller list of questions and answers, and a Documentation menu that gathers the guides, the questions and the error codes in one place.',
+            ],
+        ],
+        [
             'version' => '1.0.32',
             'date' => '2026-08-29',
             'title' => 'Pages you can jump to, and Settings that holds the whole account',
