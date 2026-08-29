@@ -88,7 +88,16 @@ return [
         'PM-1007' => [
             'family' => 1,
             'severity' => 'fix_yourself',
-            'keys' => ['api.auth.password_confirmation_failed'],
+            /*
+             * Raised two ways: the controller checks the password
+             * itself before a destructive action, and the validator
+             * checks it through the current_password rule. Same
+             * refusal to the person reading it, so one code.
+             */
+            'keys' => [
+                'api.auth.password_confirmation_failed',
+                'validation.current_password',
+            ],
         ],
         'PM-1008' => [
             'family' => 1,
@@ -638,6 +647,81 @@ return [
             'keys' => ['api.validation.telephone_number_invalid'],
         ],
 
+
+        /*
+         * V1.0.35: eight validation rules the application uses were in
+         * no language file, so they fell back to the framework's own
+         * English AND belonged to no code — which is worse than having
+         * none, because forMessage() then matched them against whatever
+         * broader pattern happened to fit. A zero amount answered
+         * PM-2048, the code for a SIZE rule, and read "The montant field
+         * must be greater than 0." to a French organisation.
+         */
+        'PM-2074' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['validation.gt.numeric'],
+        ],
+
+        'PM-2078' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['validation.lte.numeric'],
+        ],
+
+        'PM-2083' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['validation.distinct'],
+        ],
+
+        'PM-2084' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['validation.file'],
+        ],
+
+        'PM-2085' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['validation.mimes'],
+        ],
+
+        'PM-2086' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['validation.ip'],
+        ],
+
+        'PM-2087' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['validation.password.letters'],
+        ],
+
+        'PM-2088' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['validation.password.mixed'],
+        ],
+
+        'PM-2089' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['validation.password.numbers'],
+        ],
+
+        'PM-2090' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['validation.password.symbols'],
+        ],
+
+        'PM-2091' => [
+            'family' => 2,
+            'severity' => 'fix_yourself',
+            'keys' => ['validation.password.uncompromised'],
+        ],
         /* ---- 3xxx property ---- */
 
         'PM-3001' => [

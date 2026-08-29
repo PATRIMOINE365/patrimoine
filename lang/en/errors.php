@@ -741,6 +741,71 @@ return [
         'fix' => 'Check the digits against the number as it is written down, and check the country beside them. Leave out the leading zero — it is only used inside the country.',
     ],
 
+    'PM-2074' => [
+        'title' => 'This must be more than that.',
+        'what' => 'A figure was entered that is not above the minimum this field allows — most often an amount of zero, where something has to actually be paid, withdrawn or charged.',
+        'fix' => 'Enter the amount that is really changing hands. To correct an earlier entry, record an adjustment rather than a zero.',
+    ],
+
+    'PM-2078' => [
+        'title' => 'This is more than the maximum.',
+        'what' => 'A figure was entered above the highest value this field allows — an ownership share over 100%, for instance.',
+        'fix' => 'Lower the figure to the maximum shown beside the field.',
+    ],
+
+    'PM-2083' => [
+        'title' => 'The same one has been chosen twice.',
+        'what' => 'This list may not name the same thing more than once — two owners of a property must be two different people.',
+        'fix' => 'Remove the repeat, or change one of them.',
+    ],
+
+    'PM-2084' => [
+        'title' => 'This is not a file.',
+        'what' => 'Nothing arrived where a file was expected. Usually the upload was interrupted before it finished.',
+        'fix' => 'Choose the file again and wait for it to finish uploading.',
+    ],
+
+    'PM-2085' => [
+        'title' => 'This kind of file is not accepted here.',
+        'what' => 'The file is of a type this field does not take. The accepted types are listed beside it.',
+        'fix' => 'Save or export the document as one of the accepted types and upload that.',
+    ],
+
+    'PM-2086' => [
+        'title' => 'That is not a valid address.',
+        'what' => 'A network address was expected and what was entered is not one.',
+        'fix' => 'Check the address and try again.',
+    ],
+
+    'PM-2087' => [
+        'title' => 'The password needs a letter.',
+        'what' => 'Passwords must contain at least one letter, so that they cannot be a run of digits.',
+        'fix' => 'Add a letter and try again.',
+    ],
+
+    'PM-2088' => [
+        'title' => 'The password needs upper and lower case.',
+        'what' => 'Passwords must contain at least one capital and one small letter.',
+        'fix' => 'Change one letter to a capital and try again.',
+    ],
+
+    'PM-2089' => [
+        'title' => 'The password needs a number.',
+        'what' => 'Passwords must contain at least one digit.',
+        'fix' => 'Add a digit and try again.',
+    ],
+
+    'PM-2090' => [
+        'title' => 'The password needs a symbol.',
+        'what' => 'Passwords must contain at least one symbol, such as ! or ?.',
+        'fix' => 'Add a symbol and try again.',
+    ],
+
+    'PM-2091' => [
+        'title' => 'This password has appeared in a data leak.',
+        'what' => 'The password chosen is known to have been exposed in a breach somewhere on the internet. It is not that anything here has been broken into — it is that this password is already on lists attackers try.',
+        'fix' => 'Choose a different password, one you do not use anywhere else.',
+    ],
     /* ---- 3xxx ---- */
 
     'PM-3001' => [

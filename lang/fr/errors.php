@@ -741,6 +741,71 @@ return [
         'fix' => 'Vérifiez les chiffres par rapport au numéro tel qu’il est écrit, ainsi que le pays indiqué à côté. N’indiquez pas le zéro initial : il ne sert qu’à l’intérieur du pays.',
     ],
 
+    'PM-2074' => [
+        'title' => 'Cette valeur doit être plus élevée.',
+        'what' => 'Une valeur a été saisie en dessous du minimum autorisé pour ce champ — le plus souvent un montant nul, là où une somme doit réellement être versée, retirée ou facturée.',
+        'fix' => 'Saisissez le montant réellement en jeu. Pour corriger une écriture antérieure, enregistrez un ajustement plutôt qu’un zéro.',
+    ],
+
+    'PM-2078' => [
+        'title' => 'Cette valeur dépasse le maximum.',
+        'what' => 'Une valeur supérieure au plafond autorisé a été saisie — une quote-part supérieure à 100 %, par exemple.',
+        'fix' => 'Ramenez la valeur au maximum indiqué en regard du champ.',
+    ],
+
+    'PM-2083' => [
+        'title' => 'Le même élément a été choisi deux fois.',
+        'what' => 'Cette liste ne peut pas désigner deux fois la même chose — deux propriétaires d’un immeuble doivent être deux personnes différentes.',
+        'fix' => 'Supprimez le doublon, ou modifiez l’un des deux.',
+    ],
+
+    'PM-2084' => [
+        'title' => 'Ceci n’est pas un fichier.',
+        'what' => 'Rien n’est arrivé là où un fichier était attendu. L’envoi a généralement été interrompu avant la fin.',
+        'fix' => 'Sélectionnez le fichier à nouveau et attendez la fin de l’envoi.',
+    ],
+
+    'PM-2085' => [
+        'title' => 'Ce type de fichier n’est pas accepté ici.',
+        'what' => 'Le fichier est d’un type que ce champ n’accepte pas. Les types admis sont indiqués à côté.',
+        'fix' => 'Enregistrez ou exportez le document dans l’un des types admis, puis envoyez-le.',
+    ],
+
+    'PM-2086' => [
+        'title' => 'Ce n’est pas une adresse valide.',
+        'what' => 'Une adresse réseau était attendue et la valeur saisie n’en est pas une.',
+        'fix' => 'Vérifiez l’adresse et réessayez.',
+    ],
+
+    'PM-2087' => [
+        'title' => 'Le mot de passe doit contenir une lettre.',
+        'what' => 'Un mot de passe doit comporter au moins une lettre, afin de ne pas se réduire à une suite de chiffres.',
+        'fix' => 'Ajoutez une lettre et réessayez.',
+    ],
+
+    'PM-2088' => [
+        'title' => 'Le mot de passe doit mêler majuscules et minuscules.',
+        'what' => 'Un mot de passe doit comporter au moins une majuscule et une minuscule.',
+        'fix' => 'Mettez une lettre en majuscule et réessayez.',
+    ],
+
+    'PM-2089' => [
+        'title' => 'Le mot de passe doit contenir un chiffre.',
+        'what' => 'Un mot de passe doit comporter au moins un chiffre.',
+        'fix' => 'Ajoutez un chiffre et réessayez.',
+    ],
+
+    'PM-2090' => [
+        'title' => 'Le mot de passe doit contenir un symbole.',
+        'what' => 'Un mot de passe doit comporter au moins un symbole, tel que ! ou ?.',
+        'fix' => 'Ajoutez un symbole et réessayez.',
+    ],
+
+    'PM-2091' => [
+        'title' => 'Ce mot de passe est apparu dans une fuite de données.',
+        'what' => 'Le mot de passe choisi figure parmi ceux exposés lors d’une fuite quelque part sur Internet. Rien ici n’a été compromis : ce mot de passe se trouve simplement déjà sur les listes qu’essaient les attaquants.',
+        'fix' => 'Choisissez un autre mot de passe, que vous n’utilisez nulle part ailleurs.',
+    ],
     /* ---- 3xxx ---- */
 
     'PM-3001' => [
