@@ -19,6 +19,20 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.30',
+            'date' => '2026-08-29',
+            'title' => 'A code on every error, and telephone numbers that can be dialled',
+            'changes' => [
+                'Every message Patrimoine can show you when something will not go through now carries a code, like PM-4045, and a link explaining it. The page tells you what happened, whether it is something you can put right yourself, and how to reach us when it is not. There is a full list under Help, and the same list on patrimoine365.com for anyone who cannot sign in.',
+                'The messages themselves were rewritten. Where one used to name a database field, blame the reader, or say nothing about what to do next, it now names the thing on your screen and says what to try.',
+                'Pages you land on when something goes wrong — not found, session expired, too many attempts, under maintenance — now look like the rest of Patrimoine and carry their code too. The list of codes keeps working even while Patrimoine itself is unavailable, which is exactly when you are most likely to need it.',
+                'Every telephone number is now recorded with the country it belongs to. Choose the country from the flag beside the field and type the rest of the number as you would say it; the leading zero is not needed. You can find a country by typing its name or its dialling code.',
+                'Numbers already saved are untouched and still shown as you typed them. The next time you edit a record, choose the country and the number is stored in full.',
+                'Storing numbers this way is what will let Patrimoine reach your tenants and owners by WhatsApp and text message.',
+                'The Manage menu is gone. Activity Log, Financial Journal, Users, Settings, Licence and the administration console are now ordinary links in the sidebar, in a group of their own under Finance. Who can see them has not changed.',
+            ],
+        ],
+        [
             'version' => '1.0.29',
             'date' => '2026-08-28',
             'title' => 'Control your emails, and a guided way to create a lease',

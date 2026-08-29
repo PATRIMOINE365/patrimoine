@@ -15,6 +15,20 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.30',
+            'date' => '2026-08-29',
+            'title' => 'Un code sur chaque erreur, et des numéros de téléphone composables',
+            'changes' => [
+                'Chaque message affiché par Patrimoine lorsqu\'une opération n\'aboutit pas porte désormais un code, par exemple PM-4045, et un lien qui l\'explique. La page indique ce qui s\'est passé, si vous pouvez y remédier vous-même, et comment nous joindre dans le cas contraire. La liste complète figure dans l\'Aide, ainsi que sur patrimoine365.com pour qui ne parvient pas à se connecter.',
+                'Les messages eux-mêmes ont été réécrits. Là où l\'un citait un champ technique, mettait la faute sur le lecteur ou ne disait rien de la suite, il nomme désormais ce que vous avez sous les yeux et indique quoi essayer.',
+                'Les pages affichées en cas de problème — introuvable, session expirée, trop de tentatives, maintenance — ressemblent maintenant au reste de Patrimoine et portent elles aussi leur code. La liste des codes reste consultable même lorsque Patrimoine est indisponible, c\'est-à-dire au moment où vous en avez le plus besoin.',
+                'Chaque numéro de téléphone est désormais enregistré avec le pays auquel il appartient. Choisissez le pays sur le drapeau à côté du champ et saisissez le reste du numéro comme vous le diriez ; le zéro initial est inutile. Vous pouvez retrouver un pays en tapant son nom ou son indicatif.',
+                'Les numéros déjà enregistrés ne sont pas modifiés et s\'affichent tels que vous les aviez saisis. À la prochaine modification de la fiche, choisissez le pays et le numéro sera enregistré en entier.',
+                'C\'est cet enregistrement qui permettra à Patrimoine de joindre vos locataires et propriétaires par WhatsApp et par SMS.',
+                'Le menu Gestion a disparu. Le journal d\'activité, le journal financier, les utilisateurs, les paramètres, la licence et la console d\'administration sont désormais de simples liens du menu latéral, dans un groupe qui leur est propre sous Finance. Les droits d\'accès sont inchangés.',
+            ],
+        ],
+        [
             'version' => '1.0.29',
             'date' => '2026-08-28',
             'title' => 'Maîtrisez vos e-mails, et créez un bail pas à pas',
