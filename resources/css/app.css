@@ -8531,6 +8531,9 @@ body.pm-admin .pm-icon-button:hover {
 }
 
 .pm-avatar-initials {
+    /* Until the name is known, a plain Patrimoine circle rather than a hole. */
+    background: var(--color-patrimoine-700);
+
     font-weight: 600;
     line-height: 1;
     color: #ffffff;

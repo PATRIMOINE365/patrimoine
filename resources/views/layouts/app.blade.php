@@ -1850,9 +1850,16 @@
                 }
             );
 
+            /*
+                V1.0.31: the top bar button is the avatar. Painting the
+                cached initials here means it is never an empty circle
+                while /api/auth/me is in flight; auth.js replaces them
+                with the photograph the moment it answers.
+            */
             [
                 'sidebar-avatar',
                 'topbar-avatar',
+                'user-menu-toggle',
             ].forEach(
                 id => {
                     const element =
