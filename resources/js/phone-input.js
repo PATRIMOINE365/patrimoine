@@ -338,6 +338,48 @@ function renderList(field, term = '') {
             : rows.join('');
 }
 
+/**
+ * Put the open menu beside its button, in viewport coordinates.
+ *
+ * Most of these fields sit inside a drawer that scrolls, and a menu
+ * positioned inside that scrolling box would be cut off at its edge. The
+ * menu is therefore taken out of the flow entirely and placed against the
+ * button, above it when there is not enough room below.
+ */
+function placeMenu(field) {
+    const parts_ = parts(field);
+
+    if (! parts_?.menu || parts_.menu.hidden) {
+        return;
+    }
+
+    const anchor =
+        parts_.field.getBoundingClientRect();
+
+    const height =
+        parts_.menu.offsetHeight;
+
+    const below =
+        window.innerHeight - anchor.bottom;
+
+    const above =
+        anchor.top;
+
+    const flip =
+        below < height + 8 && above > below;
+
+    parts_.menu.style.width =
+        `${Math.max(anchor.width, 288)}px`;
+
+    parts_.menu.style.left =
+        `${Math.max(8, Math.min(anchor.left, window.innerWidth - parts_.menu.offsetWidth - 8))}px`;
+
+    parts_.menu.style.top =
+        flip
+            ? `${Math.max(8, anchor.top - height - 4)}px`
+            : `${anchor.bottom + 4}px`;
+}
+
 function closeMenu(field) {
     const parts_ = parts(field);
 
@@ -380,6 +422,8 @@ function openMenu(field) {
     renderList(field);
 
     parts_.menu.hidden = false;
+
+    placeMenu(field);
 
     parts_.toggle?.setAttribute(
         'aria-expanded',
@@ -629,6 +673,22 @@ export function initializePhoneInputs() {
             }
         }
     );
+
+    /*
+     * The menu is positioned against the viewport, so anything that moves
+     * the button underneath it has to move the menu too.
+     */
+    const reposition = () => {
+        document
+            .querySelectorAll('[data-phone-menu]:not([hidden])')
+            .forEach(
+                (menu) => placeMenu(menu)
+            );
+    };
+
+    document.addEventListener('scroll', reposition, true);
+
+    window.addEventListener('resize', reposition);
 
     /*
      * The country names, their order and the search placeholder all follow

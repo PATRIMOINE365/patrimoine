@@ -8362,14 +8362,18 @@ body.pm-admin .pm-icon-button:hover {
     outline: none;
 }
 
+/*
+ * Positioned against the viewport rather than the field, because most of
+ * these fields live inside a drawer that scrolls and would cut the menu
+ * off at its edge. phone-input.js places it and follows the button.
+ */
 .pm-phone-menu {
-    position: absolute;
-    z-index: 40;
-    top: calc(100% + 0.25rem);
+    position: fixed;
+    z-index: 60;
+    top: 0;
     left: 0;
 
-    width: min(22rem, 100%);
-    max-width: 100%;
+    max-width: calc(100vw - 1rem);
 
     border: 1px solid var(--pm-border);
     border-radius: 0.75rem;
