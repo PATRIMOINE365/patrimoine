@@ -34,8 +34,8 @@ return [
 
     'owner' => [
         'deposit_positive' => 'Le montant du dépôt du propriétaire doit être supérieur à zéro.',
-        'deposit_payment_method' => 'Le mode de paiement du dépôt du propriétaire n’est pas pris en charge.',
-        'deposit_purpose' => 'L’objet du dépôt du propriétaire n’est pas pris en charge.',
+        'deposit_payment_method' => 'Un dépôt de propriétaire ne peut pas être enregistré avec ce mode de paiement.',
+        'deposit_purpose' => 'Un dépôt de propriétaire ne peut pas être enregistré pour cet objet.',
         'cash_collector_required' => 'Le réceptionnaire des espèces n’a pas pu être déterminé pour ce dépôt de propriétaire.',
         'adjustment_direction' => 'Le sens de l’ajustement du propriétaire doit être crédit ou débit.',
         'adjustment_positive' => 'Le montant de l’ajustement du propriétaire doit être supérieur à zéro.',
@@ -50,7 +50,7 @@ return [
         'payout_exceeds_balance' => 'Le paiement au propriétaire dépasse le solde disponible.',
         'payout_allocation_failed' => 'Le paiement au propriétaire ne peut pas être entièrement affecté aux crédits nets disponibles.',
         'deposit_receipt_only' => 'Seuls les dépôts de propriétaire peuvent générer un reçu de dépôt de propriétaire.',
-        'bill_payment_source' => 'Le compte source du paiement de la facture de dépenses n’est pas pris en charge.',
+        'bill_payment_source' => 'Ce compte ne peut pas régler une facture de dépenses.',
         'bill_payment_positive' => 'Le montant du paiement de la facture de dépenses doit être supérieur à zéro.',
         'bill_payment_exceeds_bill' => 'Le paiement dépasse le montant restant dû de la facture de dépenses.',
         'bill_payment_insufficient_payout' => 'Le paiement dépasse le solde disponible du compte Retraits.',

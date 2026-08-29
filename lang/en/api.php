@@ -48,9 +48,9 @@ return [
     'user_management' => [
         'platform_domain_required' => 'Platform staff accounts must use an @patrimoine365.com email address.',
         'platform_domain_reserved' => 'This email domain is reserved for platform staff.',
-        'cannot_change_own_role' => 'You cannot change your own Administrator role.',
-        'cannot_disable_self' => 'You cannot disable your own account.',
-        'cannot_delete_self' => 'You cannot delete your own account.',
+        'cannot_change_own_role' => 'An administrator’s own role has to be changed by another administrator.',
+        'cannot_disable_self' => 'An account cannot switch itself off. Another administrator can do it.',
+        'cannot_delete_self' => 'An account cannot delete itself. Another administrator can do it.',
         'last_active_administrator' => 'This action cannot be completed because Patrimoine must retain at least one active Administrator.',
         'created' => 'User created successfully.',
         'updated' => 'User updated successfully.',
@@ -59,7 +59,7 @@ return [
 
     'managing_organisation' => [
         'not_configured' => 'Managing organisation has not been configured.',
-        'cannot_remove_role' => 'The configured managing organisation cannot lose the managing_organisation role.',
+        'cannot_remove_role' => 'Your own company has to stay the managing organisation. Name another party as the managing organisation first.',
         'cannot_delete' => 'The configured managing organisation cannot be deleted.',
     ],
 
@@ -134,13 +134,13 @@ return [
 
     'deletion' => [
         'lease_confirmation_invalid' => 'Type DELETE exactly to confirm Lease deletion.',
-        'lease_cannot_delete' => 'Lease :id cannot be deleted safely.',
+        'lease_cannot_delete' => 'This lease cannot be deleted safely.',
         'party_managing_organisation' => 'The configured Managing Organisation cannot be deleted. Change the Managing Organisation configuration instead.',
         'party_referenced' => 'This Party cannot be deleted because it is referenced by Lease, ownership, agency or financial history. Keep the Party so historical records remain understandable.',
         'building_has_units' => 'This Building cannot be deleted while it still contains Units. Delete only unreferenced Units first; Units with Lease or financial history must be retained.',
         'building_referenced' => 'This Building cannot be deleted because financial or historical records reference it. Keep the Building for historical accountability.',
         'unit_referenced' => 'This Unit cannot be deleted because Lease or financial history references it. Keep the Unit and terminate the Lease instead where applicable.',
-        'lease_not_draft' => 'Only an unused draft Lease can be deleted. Use the termination workflow for an active or notice Lease; terminated Leases are retained as history.',
+        'lease_not_draft' => 'Only an unused draft lease can be deleted. An active lease, or one under notice, is ended by terminating it — and a terminated lease is kept as history.',
         'lease_referenced' => 'This draft Lease cannot be deleted because contractual or financial history references it. Keep the Lease record.',
     ],
 

@@ -57,14 +57,14 @@ return [
 
     'PM-1001' => [
         'title' => 'This account has been disabled.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'This account has been switched off by an administrator in your organisation. It still exists, with all its history — it simply cannot sign in.',
+        'fix' => 'Ask an administrator to activate it again on the Users page. If nobody remembers switching it off, the activity log records who did and when.',
     ],
 
     'PM-1002' => [
         'title' => 'You are not authorized to perform this action.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'Your role does not include this action. Patrimoine has three roles, and each sees a different amount: an administrator manages everything, a manager runs the day-to-day, and a viewer reads without changing.',
+        'fix' => 'Ask an administrator in your organisation to change your role on the Users page, or to carry out this particular action for you.',
     ],
 
     'PM-1003' => [
@@ -93,8 +93,8 @@ return [
 
     'PM-1007' => [
         'title' => 'The password is incorrect.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The password typed to confirm this action does not match the one you sign in with.',
+        'fix' => 'Type your sign-in password again. If you have forgotten it, sign out and use "Forgotten password" to set a new one, then come back to this.',
     ],
 
     'PM-1008' => [
@@ -105,8 +105,8 @@ return [
 
     'PM-1009' => [
         'title' => 'Unauthenticated.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'Patrimoine did not recognise the session behind this request. Usually it had simply ended while the page stayed open.',
+        'fix' => 'Sign in again. If you were part-way through a form, copy anything you had typed before you do — an ended session cannot be resumed.',
     ],
 
     'PM-1010' => [
@@ -140,9 +140,9 @@ return [
     ],
 
     'PM-1015' => [
-        'title' => 'Unable to complete the password request.',
-        'what' => 'The request reached Patrimoine but did not finish, so nothing was saved. Whatever you were recording is unchanged.',
-        'fix' => 'Check the form for a field marked in red, then try again. If there is nothing marked and it keeps failing, tell us what you were recording.',
+        'title' => 'That password request did not go through.',
+        'what' => 'A request did not come back. Usually the connection dropped or the session ended while the page was open.',
+        'fix' => 'Try again, and reload the page if it fails a second time. If it keeps happening, tell us what you were doing.',
     ],
 
     'PM-1016' => [
@@ -200,19 +200,19 @@ return [
     ],
 
     'PM-1025' => [
-        'title' => 'You cannot change your own Administrator role.',
+        'title' => 'An administrator’s own role has to be changed by another administrator.',
         'what' => 'An administrator cannot lower their own role, because doing so could leave the organisation with nobody able to restore it.',
         'fix' => 'Ask another administrator to change your role for you.',
     ],
 
     'PM-1026' => [
-        'title' => 'You cannot delete your own account.',
+        'title' => 'An account cannot delete itself. Another administrator can do it.',
         'what' => 'You cannot delete the account you are signed in with.',
         'fix' => 'Ask another administrator to delete it once you have signed in as somebody else.',
     ],
 
     'PM-1027' => [
-        'title' => 'You cannot disable your own account.',
+        'title' => 'An account cannot switch itself off. Another administrator can do it.',
         'what' => 'You are signed in as this user, and switching off your own account would lock you out mid-action.',
         'fix' => 'Ask another administrator to do it, or sign in as a different administrator first.',
     ],
@@ -236,9 +236,9 @@ return [
     ],
 
     'PM-1031' => [
-        'title' => 'Unable to complete this user action.',
-        'what' => 'The request reached Patrimoine but did not finish, so nothing was saved. Whatever you were recording is unchanged.',
-        'fix' => 'Check the form for a field marked in red, then try again. If there is nothing marked and it keeps failing, tell us what you were recording.',
+        'title' => 'That change to the user was not saved.',
+        'what' => 'A request did not come back. Usually the connection dropped or the session ended while the page was open.',
+        'fix' => 'Try again, and reload the page if it fails a second time. If it keeps happening, tell us what you were doing.',
     ],
 
     'PM-1032' => [
@@ -431,8 +431,8 @@ return [
 
     'PM-2026' => [
         'title' => 'The this field field must end with one of the following: :values.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The form expects a particular number, or a particular shape, and what was entered does not fit it.',
+        'fix' => 'The message names the limit. Add, remove or correct entries until it is met — the field will accept the change as soon as it is.',
     ],
 
     'PM-2027' => [
@@ -449,8 +449,8 @@ return [
 
     'PM-2029' => [
         'title' => 'The this field field must not have more than :max items.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The form expects a particular number, or a particular shape, and what was entered does not fit it.',
+        'fix' => 'The message names the limit. Add, remove or correct entries until it is met — the field will accept the change as soon as it is.',
     ],
 
     'PM-2030' => [
@@ -473,8 +473,8 @@ return [
 
     'PM-2033' => [
         'title' => 'The this field field must have at least :min items.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The form expects a particular number, or a particular shape, and what was entered does not fit it.',
+        'fix' => 'The message names the limit. Add, remove or correct entries until it is met — the field will accept the change as soon as it is.',
     ],
 
     'PM-2034' => [
@@ -493,12 +493,6 @@ return [
         'title' => 'The this field field must be at least :min characters.',
         'what' => 'What was entered is too long or too short for this field.',
         'fix' => 'The message gives the limit. Shorten or lengthen the entry to fit. For long explanations, use the notes field, which has room.',
-    ],
-
-    'PM-2037' => [
-        'title' => 'The this field field may be null.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
     ],
 
     'PM-2038' => [
@@ -545,14 +539,14 @@ return [
 
     'PM-2045' => [
         'title' => 'The this field field must match :other.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The form expects a particular number, or a particular shape, and what was entered does not fit it.',
+        'fix' => 'The message names the limit. Add, remove or correct entries until it is met — the field will accept the change as soon as it is.',
     ],
 
     'PM-2046' => [
         'title' => 'The this field field must contain :size items.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The form expects a particular number, or a particular shape, and what was entered does not fit it.',
+        'fix' => 'The message names the limit. Add, remove or correct entries until it is met — the field will accept the change as soon as it is.',
     ],
 
     'PM-2047' => [
@@ -587,8 +581,8 @@ return [
 
     'PM-2052' => [
         'title' => 'Advance received date cannot be before the Lease start date.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The value falls outside the range this field allows — a percentage over the whole, or a date before the lease itself begins.',
+        'fix' => 'Bring the figure inside the range named in the message. A date can never sit before the lease starts, and a percentage of something cannot be more than all of it.',
     ],
 
     'PM-2053' => [
@@ -623,8 +617,8 @@ return [
 
     'PM-2058' => [
         'title' => 'Percentage management fee cannot exceed 100%.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The amount entered is larger than what is available, and Patrimoine will not record money that is not there.',
+        'fix' => 'Check the balance shown beside the field and enter that or less. If the balance looks wrong, open the account history to see what has already come out of it.',
     ],
 
     'PM-2059' => [
@@ -659,8 +653,8 @@ return [
 
     'PM-2064' => [
         'title' => 'Percentage rent increment cannot exceed 100%.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The amount entered is larger than what is available, and Patrimoine will not record money that is not there.',
+        'fix' => 'Check the balance shown beside the field and enter that or less. If the balance looks wrong, open the account history to see what has already come out of it.',
     ],
 
     'PM-2065' => [
@@ -671,8 +665,8 @@ return [
 
     'PM-2066' => [
         'title' => 'Rent Reserve cannot exceed the total Advance Payment.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The amount entered is larger than what is available, and Patrimoine will not record money that is not there.',
+        'fix' => 'Check the balance shown beside the field and enter that or less. If the balance looks wrong, open the account history to see what has already come out of it.',
     ],
 
     'PM-2067' => [
@@ -720,7 +714,7 @@ return [
     ],
 
     'PM-3003' => [
-        'title' => 'Lease cannot be deleted safely.',
+        'title' => 'This lease cannot be deleted safely.',
         'what' => 'Other records depend on this one. Deleting it would break the history that explains where money came from and went.',
         'fix' => 'Open the record to see what refers to it and deal with those first. Often the right answer is to keep it: history stays readable and nothing is charged for records you no longer use.',
     ],
@@ -732,7 +726,7 @@ return [
     ],
 
     'PM-3005' => [
-        'title' => 'Only an unused draft Lease can be deleted. Use the termination workflow for an active or notice Lease; terminated Leases are retained as history.',
+        'title' => 'Only an unused draft lease can be deleted. An active lease, or one under notice, is ended by terminating it — and a terminated lease is kept as history.',
         'what' => 'The lease is still a draft. A draft records the agreement but has no financial life yet, so money cannot move through it.',
         'fix' => 'Activate the lease from the Leases page. Activation generates the invoices due so far and opens its fund accounts.',
     ],
@@ -829,8 +823,8 @@ return [
 
     'PM-3021' => [
         'title' => 'Rent Reserve cannot exceed Total Advance Payment.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The amount entered is larger than what is available, and Patrimoine will not record money that is not there.',
+        'fix' => 'Check the balance shown beside the field and enter that or less. If the balance looks wrong, open the account history to see what has already come out of it.',
     ],
 
     'PM-3022' => [
@@ -907,14 +901,14 @@ return [
 
     'PM-3034' => [
         'title' => 'Unable to finalize Security Deposit.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The step did not finish, so nothing was changed by it.',
+        'fix' => 'Reload the page and look at the record before trying again — that shows whether any part of it went through. If it fails a second time, tell us what you were doing.',
     ],
 
     'PM-3035' => [
         'title' => 'Unable to initialize Leases.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The step did not finish, so nothing was changed by it.',
+        'fix' => 'Reload the page and look at the record before trying again — that shows whether any part of it went through. If it fails a second time, tell us what you were doing.',
     ],
 
     'PM-3036' => [
@@ -955,8 +949,8 @@ return [
 
     'PM-3042' => [
         'title' => 'The voucher could not be opened because the browser blocked the new tab.',
-        'what' => 'A request did not come back. Usually the connection dropped or the session ended while the page was open.',
-        'fix' => 'Try again, and reload the page if it fails a second time. If it keeps happening, tell us what you were doing.',
+        'what' => 'The document opens in a new tab, and this browser blocked it. Browsers block tabs a page opens by itself unless they are told otherwise.',
+        'fix' => 'Look for a blocked-popup notice in the address bar and allow it for Patrimoine. The document itself was created and can also be downloaded from the record it belongs to.',
     ],
 
     'PM-3043' => [
@@ -1051,8 +1045,8 @@ return [
 
     'PM-3058' => [
         'title' => 'Unable to locate this unit.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The step did not finish, so nothing was changed by it.',
+        'fix' => 'Reload the page and look at the record before trying again — that shows whether any part of it went through. If it fails a second time, tell us what you were doing.',
     ],
 
     'PM-3059' => [
@@ -1069,20 +1063,20 @@ return [
 
     'PM-3061' => [
         'title' => 'The same owner cannot be added more than once.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The same party is listed twice among the owners of this property.',
+        'fix' => 'Remove the duplicate and give the single entry the full share. Two people who share a name are two parties — check you did not pick the same one twice.',
     ],
 
     'PM-3062' => [
         'title' => 'Every unit must have a name or number.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The form expects a particular number, or a particular shape, and what was entered does not fit it.',
+        'fix' => 'The message names the limit. Add, remove or correct entries until it is met — the field will accept the change as soon as it is.',
     ],
 
     'PM-3063' => [
         'title' => 'A property must have at least one owner.',
-        'what' => 'Something the form needs was left empty.',
-        'fix' => 'Fill in the field named in the message and save again. Fields marked with a red asterisk are the ones Patrimoine cannot do without.',
+        'what' => 'The form expects a particular number, or a particular shape, and what was entered does not fit it.',
+        'fix' => 'The message names the limit. Add, remove or correct entries until it is met — the field will accept the change as soon as it is.',
     ],
 
     'PM-3064' => [
@@ -1105,8 +1099,8 @@ return [
 
     'PM-3067' => [
         'title' => 'A property must have at least one unit.',
-        'what' => 'Something the form needs was left empty.',
-        'fix' => 'Fill in the field named in the message and save again. Fields marked with a red asterisk are the ones Patrimoine cannot do without.',
+        'what' => 'The form expects a particular number, or a particular shape, and what was entered does not fit it.',
+        'fix' => 'The message names the limit. Add, remove or correct entries until it is met — the field will accept the change as soon as it is.',
     ],
 
     'PM-3068' => [
@@ -1117,14 +1111,14 @@ return [
 
     'PM-3069' => [
         'title' => 'Tenant fund balances cannot be adjusted below zero.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'An adjustment cannot take a tenant fund below zero. A negative fund would mean holding money that was never received.',
+        'fix' => 'Adjust to zero or above. If money genuinely left the account, record it as a withdrawal or an expense instead — both leave a trace of where it went.',
     ],
 
     'PM-3070' => [
         'title' => 'The corrected balance is already the current balance.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The corrected balance you entered is the balance already recorded, so there is nothing to adjust.',
+        'fix' => 'Check the figure again. If the balance is genuinely wrong, enter what it should be rather than what it is.',
     ],
 
     'PM-3071' => [
@@ -1135,8 +1129,8 @@ return [
 
     'PM-3072' => [
         'title' => 'The selected Party is not a Tenant.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The record chosen is not of the kind this action works on.',
+        'fix' => 'Go back and pick from the list offered for this action rather than searching for the record yourself — the list only contains records the action can accept.',
     ],
 
     'PM-3073' => [
@@ -1153,20 +1147,20 @@ return [
 
     'PM-3075' => [
         'title' => 'The amount cannot exceed the available Security Deposit balance.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The amount entered is larger than what is available, and Patrimoine will not record money that is not there.',
+        'fix' => 'Check the balance shown beside the field and enter that or less. If the balance looks wrong, open the account history to see what has already come out of it.',
     ],
 
     'PM-3076' => [
         'title' => 'The amount cannot exceed the selected receivable outstanding balance.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The amount entered is larger than what is available, and Patrimoine will not record money that is not there.',
+        'fix' => 'Check the balance shown beside the field and enter that or less. If the balance looks wrong, open the account history to see what has already come out of it.',
     ],
 
     'PM-3077' => [
         'title' => 'The amount cannot exceed the source account balance.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The amount entered is larger than what is available, and Patrimoine will not record money that is not there.',
+        'fix' => 'Check the balance shown beside the field and enter that or less. If the balance looks wrong, open the account history to see what has already come out of it.',
     ],
 
     'PM-3078' => [
@@ -1231,8 +1225,8 @@ return [
 
     'PM-3088' => [
         'title' => 'Withdrawal cannot exceed the available balance.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The amount entered is larger than what is available, and Patrimoine will not record money that is not there.',
+        'fix' => 'Check the balance shown beside the field and enter that or less. If the balance looks wrong, open the account history to see what has already come out of it.',
     ],
 
     'PM-3089' => [
@@ -1352,7 +1346,7 @@ return [
     ],
 
     'PM-4018' => [
-        'title' => 'Payment exceeds the outstanding Invoice amount.',
+        'title' => 'Payment exceeds the outstanding invoice amount.',
         'what' => 'The amount is more than is still owed. Paying more than the outstanding balance would leave the invoice overpaid.',
         'fix' => 'Enter the outstanding amount or less. If the tenant genuinely paid more, record the excess separately — as a fund deposit, not against this invoice.',
     ],
@@ -1371,8 +1365,8 @@ return [
 
     'PM-4021' => [
         'title' => 'This transaction is not an Invoice account payment.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The record chosen is not of the kind this action works on.',
+        'fix' => 'Go back and pick from the list offered for this action rather than searching for the record yourself — the list only contains records the action can accept.',
     ],
 
     'PM-4022' => [
@@ -1448,9 +1442,9 @@ return [
     ],
 
     'PM-4034' => [
-        'title' => 'Unsupported expense bill payment source account.',
-        'what' => 'The option submitted is not one Patrimoine recognises for this kind of record.',
-        'fix' => 'Choose one of the options offered in the list rather than typing a value. If you reached this from a saved link or an older browser tab, reload the page and try again.',
+        'title' => 'That account cannot pay an expense bill.',
+        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
+        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
     ],
 
     'PM-4035' => [
@@ -1460,9 +1454,9 @@ return [
     ],
 
     'PM-4036' => [
-        'title' => 'Unsupported owner deposit payment method.',
-        'what' => 'The option submitted is not one Patrimoine recognises for this kind of record.',
-        'fix' => 'Choose one of the options offered in the list rather than typing a value. If you reached this from a saved link or an older browser tab, reload the page and try again.',
+        'title' => 'An owner deposit cannot be recorded with that payment method.',
+        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
+        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
     ],
 
     'PM-4037' => [
@@ -1472,15 +1466,15 @@ return [
     ],
 
     'PM-4038' => [
-        'title' => 'Unsupported owner deposit purpose.',
-        'what' => 'The option submitted is not one Patrimoine recognises for this kind of record.',
-        'fix' => 'Choose one of the options offered in the list rather than typing a value. If you reached this from a saved link or an older browser tab, reload the page and try again.',
+        'title' => 'An owner deposit cannot be recorded for that purpose.',
+        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
+        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
     ],
 
     'PM-4039' => [
         'title' => 'Only Owner deposits may generate an Owner deposit receipt.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The record chosen is not of the kind this action works on.',
+        'fix' => 'Go back and pick from the list offered for this action rather than searching for the record yourself — the list only contains records the action can accept.',
     ],
 
     'PM-4040' => [
@@ -1491,8 +1485,8 @@ return [
 
     'PM-4041' => [
         'title' => 'This transaction is not an expense bill payment.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The record chosen is not of the kind this action works on.',
+        'fix' => 'Go back and pick from the list offered for this action rather than searching for the record yourself — the list only contains records the action can accept.',
     ],
 
     'PM-4042' => [
@@ -1581,8 +1575,8 @@ return [
 
     'PM-4056' => [
         'title' => 'Withdrawal cannot exceed the available Payout account balance of {balance}.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The amount entered is larger than what is available, and Patrimoine will not record money that is not there.',
+        'fix' => 'Check the balance shown beside the field and enter that or less. If the balance looks wrong, open the account history to see what has already come out of it.',
     ],
 
     'PM-4057' => [
@@ -1598,7 +1592,7 @@ return [
     ],
 
     'PM-4059' => [
-        'title' => 'Unable to load Property Owners.',
+        'title' => 'Unable to load property owners.',
         'what' => 'Patrimoine asked the server for this information and no answer came back. Usually the connection dropped, or the session ended while the page was open.',
         'fix' => 'Try again. If it happens twice, reload the page — that also renews an expired session. If it keeps happening, your connection or our service is at fault, so tell us.',
     ],
@@ -1671,8 +1665,8 @@ return [
 
     'PM-4071' => [
         'title' => 'Owner deposit was recorded but its receipt could not be resolved.',
-        'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
-        'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
+        'what' => 'The deposit itself was recorded — the money is in the account — but Patrimoine could not produce its receipt just now.',
+        'fix' => 'Open the owner account and print the receipt from the deposit line. If it still will not open, tell us: the money is safe either way, and this is ours to fix.',
     ],
 
     'PM-4072' => [
@@ -1888,9 +1882,9 @@ return [
     ],
 
     'PM-5002' => [
-        'title' => 'Unable to complete the transaction.',
-        'what' => 'The request reached Patrimoine but did not finish, so nothing was saved. Whatever you were recording is unchanged.',
-        'fix' => 'Check the form for a field marked in red, then try again. If there is nothing marked and it keeps failing, tell us what you were recording.',
+        'title' => 'The transaction was not recorded.',
+        'what' => 'A request did not come back. Usually the connection dropped or the session ended while the page was open.',
+        'fix' => 'Try again, and reload the page if it fails a second time. If it keeps happening, tell us what you were doing.',
     ],
 
     'PM-5003' => [
@@ -2013,8 +2007,8 @@ return [
 
     'PM-7001' => [
         'title' => 'Your plan\'s monthly email allowance has been used up.',
-        'what' => 'This action needs a level of access, or a plan, that the account does not currently have.',
-        'fix' => 'Ask an administrator in your organisation. They can change roles on the Users page and see the plan and its limits on the Licence page.',
+        'what' => 'Your plan includes a fixed number of these, and that number has been used. Nothing already recorded is affected — only adding more is paused.',
+        'fix' => 'An administrator can see the usage against each limit on the Licence page and change plan there. Removing records you no longer need also frees room.',
     ],
 
     'PM-7002' => [
@@ -2023,22 +2017,16 @@ return [
         'fix' => 'An administrator can see what each plan includes on the Licence page and change plan there. Nothing you have already recorded is affected by the plan you are on.',
     ],
 
-    'PM-7003' => [
-        'title' => 'Going over a limit only pauses creating new records — your existing data is never touched. Financial integrity and transactional document email are identical on every plan, and sign-in email is never blocked.',
-        'what' => 'This action needs a level of access, or a plan, that the account does not currently have.',
-        'fix' => 'Ask an administrator in your organisation. They can change roles on the Users page and see the plan and its limits on the Licence page.',
-    ],
-
     'PM-7004' => [
         'title' => 'Your plan\'s active lease limit has been reached. Upgrade your plan to add more active leases.',
-        'what' => 'This action needs a level of access, or a plan, that the account does not currently have.',
-        'fix' => 'Ask an administrator in your organisation. They can change roles on the Users page and see the plan and its limits on the Licence page.',
+        'what' => 'Your plan includes a fixed number of these, and that number has been used. Nothing already recorded is affected — only adding more is paused.',
+        'fix' => 'An administrator can see the usage against each limit on the Licence page and change plan there. Removing records you no longer need also frees room.',
     ],
 
     'PM-7005' => [
         'title' => 'Your plan\'s party limit has been reached. Upgrade your plan to add more parties.',
-        'what' => 'This action needs a level of access, or a plan, that the account does not currently have.',
-        'fix' => 'Ask an administrator in your organisation. They can change roles on the Users page and see the plan and its limits on the Licence page.',
+        'what' => 'Your plan includes a fixed number of these, and that number has been used. Nothing already recorded is affected — only adding more is paused.',
+        'fix' => 'An administrator can see the usage against each limit on the Licence page and change plan there. Removing records you no longer need also frees room.',
     ],
 
     'PM-7006' => [
@@ -2049,8 +2037,8 @@ return [
 
     'PM-7007' => [
         'title' => 'Your plan\'s user limit has been reached. Upgrade your plan to add more users.',
-        'what' => 'This action needs a level of access, or a plan, that the account does not currently have.',
-        'fix' => 'Ask an administrator in your organisation. They can change roles on the Users page and see the plan and its limits on the Licence page.',
+        'what' => 'Your plan includes a fixed number of these, and that number has been used. Nothing already recorded is affected — only adding more is paused.',
+        'fix' => 'An administrator can see the usage against each limit on the Licence page and change plan there. Removing records you no longer need also frees room.',
     ],
 
     /* ---- 8xxx ---- */
@@ -2062,7 +2050,7 @@ return [
     ],
 
     'PM-8002' => [
-        'title' => 'The configured managing organisation cannot lose the managing_organisation role.',
+        'title' => 'Your own company has to stay the managing organisation. Name another party as the managing organisation first.',
         'what' => 'Patrimoine stopped the action because a rule of the application was not met. Nothing was saved.',
         'fix' => 'Read the message on screen: it names what is wrong. Correct it and try again.',
     ],
@@ -2076,7 +2064,7 @@ return [
     /* ---- 9xxx ---- */
 
     'PM-9001' => [
-        'title' => 'The request could not be completed.',
+        'title' => 'Patrimoine could not complete that.',
         'what' => 'The request did not complete. Patrimoine cannot tell from here whether it was the network, the session, or the service itself.',
         'fix' => 'Try again. If it fails a second time, reload the page — that renews the session too. If it still fails, tell us what you were doing and we will look at our side.',
     ],

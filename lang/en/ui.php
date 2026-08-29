@@ -132,7 +132,7 @@ return [
         'change_description' => 'Update the password for your account.',
         'changing' => 'Changing…',
         'confirmation_mismatch' => 'The password confirmation does not match.',
-        'request_failed' => 'Unable to complete the password request.',
+        'request_failed' => 'That password request did not go through.',
         'section' => 'Password',
         'show_password' => 'Show or hide password',
         'profile_new_help' => 'Leave blank to keep your current password.',
@@ -305,7 +305,7 @@ return [
         'adjustment_required_fields' => 'Select an account, enter the correct balance, and provide a reason.',
         'withdrawal_exceeds_balance' => 'Withdrawal cannot exceed the available balance.',
         'invalid_account' => 'The selected account is not valid for this transaction.',
-        'transaction_failed' => 'Unable to complete the transaction.',
+        'transaction_failed' => 'The transaction was not recorded.',
         'rent_payment_recorded' => 'Rent payment recorded successfully.',
         'deposit_recorded' => 'Deposit recorded successfully.',
         'withdrawal_recorded' => 'Withdrawal recorded successfully.',
@@ -387,7 +387,7 @@ return [
         'unable_create' => 'Unable to create user.',
         'unable_update' => 'Unable to update user.',
         'unable_delete' => 'Unable to delete user.',
-        'action_failed' => 'Unable to complete this user action.',
+        'action_failed' => 'That change to the user was not saved.',
         'page_of' => 'Page :current of :last',
         'previous' => 'Previous',
         'next' => 'Next',
@@ -2177,7 +2177,7 @@ return [
     ],
     'core' => [
         'session_expired' => 'Your session has expired. Please sign in again.',
-        'request_failed' => 'The request could not be completed.',
+        'request_failed' => 'Patrimoine could not complete that.',
     ],
 
     'financial_journal' => [

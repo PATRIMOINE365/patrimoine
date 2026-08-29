@@ -34,8 +34,8 @@ return [
 
     'owner' => [
         'deposit_positive' => 'Owner deposit amount must be greater than zero.',
-        'deposit_payment_method' => 'Unsupported owner deposit payment method.',
-        'deposit_purpose' => 'Unsupported owner deposit purpose.',
+        'deposit_payment_method' => 'An owner deposit cannot be recorded with that payment method.',
+        'deposit_purpose' => 'An owner deposit cannot be recorded for that purpose.',
         'cash_collector_required' => 'Cash Receiver could not be determined for this cash owner deposit.',
         'adjustment_direction' => 'Owner adjustment direction must be credit or debit.',
         'adjustment_positive' => 'Owner adjustment amount must be greater than zero.',
@@ -50,7 +50,7 @@ return [
         'payout_exceeds_balance' => 'Owner payout exceeds available balance.',
         'payout_allocation_failed' => 'Unable to fully allocate owner payout to net available credits.',
         'deposit_receipt_only' => 'Only Owner deposits may generate an Owner deposit receipt.',
-        'bill_payment_source' => 'Unsupported expense bill payment source account.',
+        'bill_payment_source' => 'That account cannot pay an expense bill.',
         'bill_payment_positive' => 'Expense bill payment amount must be greater than zero.',
         'bill_payment_exceeds_bill' => 'Expense bill payment exceeds the outstanding bill amount.',
         'bill_payment_insufficient_payout' => 'Expense bill payment exceeds the available Payout account balance.',

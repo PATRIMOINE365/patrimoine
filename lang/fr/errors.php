@@ -57,14 +57,14 @@ return [
 
     'PM-1001' => [
         'title' => 'Ce compte a été désactivé.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Ce compte a été désactivé par un administrateur de votre organisation. Il existe toujours, avec tout son historique — il ne peut simplement plus se connecter.',
+        'fix' => 'Demandez à un administrateur de le réactiver depuis la page Utilisateurs. Si personne ne se souvient de l’avoir désactivé, le journal d’activité indique qui l’a fait et quand.',
     ],
 
     'PM-1002' => [
         'title' => 'Vous n’êtes pas autorisé à effectuer cette action.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Votre rôle ne comprend pas cette action. Patrimoine a trois rôles, chacun avec sa portée : l’administrateur gère tout, le gestionnaire assure le quotidien, et le lecteur consulte sans modifier.',
+        'fix' => 'Demandez à un administrateur de votre organisation de modifier votre rôle depuis la page Utilisateurs, ou d’effectuer cette action à votre place.',
     ],
 
     'PM-1003' => [
@@ -93,8 +93,8 @@ return [
 
     'PM-1007' => [
         'title' => 'Le mot de passe est incorrect.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le mot de passe saisi pour confirmer cette action ne correspond pas à celui de votre connexion.',
+        'fix' => 'Ressaisissez votre mot de passe de connexion. Si vous l’avez oublié, déconnectez-vous, utilisez « Mot de passe oublié », puis revenez à cette action.',
     ],
 
     'PM-1008' => [
@@ -105,8 +105,8 @@ return [
 
     'PM-1009' => [
         'title' => 'Vous devez être authentifié pour effectuer cette action.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Patrimoine n’a pas reconnu la session à l’origine de cette demande. En général, elle s’était simplement terminée pendant que la page restait ouverte.',
+        'fix' => 'Reconnectez-vous. Si vous étiez au milieu d’un formulaire, copiez ce que vous aviez saisi avant de le faire : une session terminée ne se reprend pas.',
     ],
 
     'PM-1010' => [
@@ -140,9 +140,9 @@ return [
     ],
 
     'PM-1015' => [
-        'title' => 'Impossible d’effectuer la demande de mot de passe.',
-        'what' => 'La demande est parvenue à Patrimoine sans aboutir : rien n’a été enregistré. Ce que vous saisissiez reste inchangé.',
-        'fix' => 'Vérifiez si un champ est signalé en rouge, puis réessayez. Si rien n’est signalé et que l’échec persiste, dites-nous ce que vous tentiez d’enregistrer.',
+        'title' => 'Cette demande de mot de passe n’a pas abouti.',
+        'what' => 'Une requête n’a pas abouti. En général, la connexion a été interrompue ou la session a expiré pendant que la page était ouverte.',
+        'fix' => 'Réessayez, et rechargez la page en cas de second échec. Si le problème persiste, dites-nous ce que vous faisiez.',
     ],
 
     'PM-1016' => [
@@ -200,19 +200,19 @@ return [
     ],
 
     'PM-1025' => [
-        'title' => 'Vous ne pouvez pas modifier votre propre rôle d’administrateur.',
+        'title' => 'Le rôle d’un administrateur doit être modifié par un autre administrateur.',
         'what' => 'Un administrateur ne peut pas réduire son propre rôle : l’organisation risquerait de n’avoir plus personne pour le rétablir.',
         'fix' => 'Demandez à un autre administrateur de modifier votre rôle.',
     ],
 
     'PM-1026' => [
-        'title' => 'Vous ne pouvez pas supprimer votre propre compte.',
+        'title' => 'Un compte ne peut pas se supprimer lui-même. Un autre administrateur peut le faire.',
         'what' => 'Vous ne pouvez pas supprimer le compte avec lequel vous êtes connecté.',
         'fix' => 'Demandez à un autre administrateur de le supprimer une fois que vous serez connecté autrement.',
     ],
 
     'PM-1027' => [
-        'title' => 'Vous ne pouvez pas désactiver votre propre compte.',
+        'title' => 'Un compte ne peut pas se désactiver lui-même. Un autre administrateur peut le faire.',
         'what' => 'Vous êtes connecté avec ce compte : le désactiver vous déconnecterait en pleine action.',
         'fix' => 'Demandez à un autre administrateur de le faire, ou connectez-vous d’abord avec un autre compte administrateur.',
     ],
@@ -236,9 +236,9 @@ return [
     ],
 
     'PM-1031' => [
-        'title' => 'Impossible d’effectuer cette action sur l’utilisateur.',
-        'what' => 'La demande est parvenue à Patrimoine sans aboutir : rien n’a été enregistré. Ce que vous saisissiez reste inchangé.',
-        'fix' => 'Vérifiez si un champ est signalé en rouge, puis réessayez. Si rien n’est signalé et que l’échec persiste, dites-nous ce que vous tentiez d’enregistrer.',
+        'title' => 'Cette modification de l’utilisateur n’a pas été enregistrée.',
+        'what' => 'Une requête n’a pas abouti. En général, la connexion a été interrompue ou la session a expiré pendant que la page était ouverte.',
+        'fix' => 'Réessayez, et rechargez la page en cas de second échec. Si le problème persiste, dites-nous ce que vous faisiez.',
     ],
 
     'PM-1032' => [
@@ -431,8 +431,8 @@ return [
 
     'PM-2026' => [
         'title' => 'Le champ ce champ doit se terminer par l’une des valeurs suivantes : :values.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le formulaire attend un nombre précis, ou une forme précise, et la saisie n’y correspond pas.',
+        'fix' => 'Le message indique la contrainte. Ajoutez, retirez ou corrigez les éléments jusqu’à la respecter : le champ acceptera la saisie dès ce moment.',
     ],
 
     'PM-2027' => [
@@ -449,8 +449,8 @@ return [
 
     'PM-2029' => [
         'title' => 'Le champ ce champ ne doit pas contenir plus de :max éléments.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le formulaire attend un nombre précis, ou une forme précise, et la saisie n’y correspond pas.',
+        'fix' => 'Le message indique la contrainte. Ajoutez, retirez ou corrigez les éléments jusqu’à la respecter : le champ acceptera la saisie dès ce moment.',
     ],
 
     'PM-2030' => [
@@ -473,8 +473,8 @@ return [
 
     'PM-2033' => [
         'title' => 'Le champ ce champ doit contenir au moins :min éléments.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le formulaire attend un nombre précis, ou une forme précise, et la saisie n’y correspond pas.',
+        'fix' => 'Le message indique la contrainte. Ajoutez, retirez ou corrigez les éléments jusqu’à la respecter : le champ acceptera la saisie dès ce moment.',
     ],
 
     'PM-2034' => [
@@ -493,12 +493,6 @@ return [
         'title' => 'Le champ ce champ doit contenir au moins :min caractères.',
         'what' => 'La saisie est trop longue ou trop courte pour ce champ.',
         'fix' => 'Le message indique la limite. Raccourcissez ou complétez la saisie en conséquence. Pour une explication longue, utilisez le champ Remarques, prévu pour cela.',
-    ],
-
-    'PM-2037' => [
-        'title' => 'Le champ ce champ peut être nul.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
     ],
 
     'PM-2038' => [
@@ -545,14 +539,14 @@ return [
 
     'PM-2045' => [
         'title' => 'Le champ ce champ doit correspondre à :other.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le formulaire attend un nombre précis, ou une forme précise, et la saisie n’y correspond pas.',
+        'fix' => 'Le message indique la contrainte. Ajoutez, retirez ou corrigez les éléments jusqu’à la respecter : le champ acceptera la saisie dès ce moment.',
     ],
 
     'PM-2046' => [
         'title' => 'Le champ ce champ doit contenir :size éléments.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le formulaire attend un nombre précis, ou une forme précise, et la saisie n’y correspond pas.',
+        'fix' => 'Le message indique la contrainte. Ajoutez, retirez ou corrigez les éléments jusqu’à la respecter : le champ acceptera la saisie dès ce moment.',
     ],
 
     'PM-2047' => [
@@ -587,8 +581,8 @@ return [
 
     'PM-2052' => [
         'title' => 'La date de réception de l’avance ne peut pas être antérieure à la date de début du bail.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'La valeur sort de la plage autorisée pour ce champ — un pourcentage supérieur au total, ou une date antérieure au début du bail.',
+        'fix' => 'Ramenez la valeur dans la plage indiquée par le message. Une date ne peut pas précéder le début du bail, et un pourcentage ne peut pas dépasser la totalité.',
     ],
 
     'PM-2053' => [
@@ -623,8 +617,8 @@ return [
 
     'PM-2058' => [
         'title' => 'Le pourcentage des frais de gestion ne peut pas dépasser 100 %.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le montant saisi dépasse le disponible, et Patrimoine n’enregistre pas d’argent qui n’existe pas.',
+        'fix' => 'Vérifiez le solde affiché à côté du champ et saisissez ce montant ou moins. Si le solde semble erroné, ouvrez l’historique du compte pour voir ce qui en est déjà sorti.',
     ],
 
     'PM-2059' => [
@@ -659,8 +653,8 @@ return [
 
     'PM-2064' => [
         'title' => 'Le pourcentage d’augmentation du loyer ne peut pas dépasser 100 %.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le montant saisi dépasse le disponible, et Patrimoine n’enregistre pas d’argent qui n’existe pas.',
+        'fix' => 'Vérifiez le solde affiché à côté du champ et saisissez ce montant ou moins. Si le solde semble erroné, ouvrez l’historique du compte pour voir ce qui en est déjà sorti.',
     ],
 
     'PM-2065' => [
@@ -671,8 +665,8 @@ return [
 
     'PM-2066' => [
         'title' => 'La réserve de loyer ne peut pas dépasser le montant total de l’avance.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le montant saisi dépasse le disponible, et Patrimoine n’enregistre pas d’argent qui n’existe pas.',
+        'fix' => 'Vérifiez le solde affiché à côté du champ et saisissez ce montant ou moins. Si le solde semble erroné, ouvrez l’historique du compte pour voir ce qui en est déjà sorti.',
     ],
 
     'PM-2067' => [
@@ -720,7 +714,7 @@ return [
     ],
 
     'PM-3003' => [
-        'title' => 'Le bail ne peut pas être supprimé en toute sécurité.',
+        'title' => 'Ce bail ne peut pas être supprimé en toute sécurité.',
         'what' => 'D’autres enregistrements dépendent de celui-ci. Le supprimer romprait l’historique qui explique d’où vient l’argent et où il est allé.',
         'fix' => 'Ouvrez l’enregistrement pour voir ce qui s’y rattache et traitez-le d’abord. Souvent, mieux vaut le conserver : l’historique reste lisible et rien n’est facturé pour des enregistrements inutilisés.',
     ],
@@ -732,7 +726,7 @@ return [
     ],
 
     'PM-3005' => [
-        'title' => 'Seul un bail brouillon inutilisé peut être supprimé. Utilisez la procédure de résiliation pour un bail actif ou en préavis ; les baux résiliés sont conservés comme historique.',
+        'title' => 'Seul un bail en brouillon et inutilisé peut être supprimé. Un bail actif, ou en préavis, prend fin par sa résiliation — et un bail résilié est conservé comme historique.',
         'what' => 'Le bail est encore un brouillon. Un brouillon consigne l’accord mais n’a pas encore de vie financière : aucun mouvement d’argent n’y est possible.',
         'fix' => 'Activez le bail depuis la page Baux. L’activation génère les factures échues et ouvre ses comptes de fonds.',
     ],
@@ -804,7 +798,7 @@ return [
     ],
 
     'PM-3017' => [
-        'title' => 'Impossible d’ouvrir le document.',
+        'title' => 'Impossible d\'ouvrir le document.',
         'what' => 'Le document n’a pas pu être produit ou transmis. Les données sous-jacentes ne risquent rien : il s’agit de la fabrication du fichier, pas de son contenu.',
         'fix' => 'Réessayez, et rechargez la page en cas de second échec. Si un document précis échoue systématiquement alors que les autres fonctionnent, dites-nous lequel : cela désigne un problème précis que nous pouvons corriger.',
     ],
@@ -829,8 +823,8 @@ return [
 
     'PM-3021' => [
         'title' => 'La réserve de loyer ne peut pas dépasser le paiement anticipé total.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le montant saisi dépasse le disponible, et Patrimoine n’enregistre pas d’argent qui n’existe pas.',
+        'fix' => 'Vérifiez le solde affiché à côté du champ et saisissez ce montant ou moins. Si le solde semble erroné, ouvrez l’historique du compte pour voir ce qui en est déjà sorti.',
     ],
 
     'PM-3022' => [
@@ -907,14 +901,14 @@ return [
 
     'PM-3034' => [
         'title' => 'Impossible de finaliser le dépôt de garantie.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'L’étape ne s’est pas terminée : elle n’a donc rien modifié.',
+        'fix' => 'Rechargez la page et regardez l’enregistrement avant de recommencer : vous verrez si une partie a malgré tout abouti. En cas de second échec, dites-nous ce que vous faisiez.',
     ],
 
     'PM-3035' => [
         'title' => 'Impossible d’initialiser les baux.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'L’étape ne s’est pas terminée : elle n’a donc rien modifié.',
+        'fix' => 'Rechargez la page et regardez l’enregistrement avant de recommencer : vous verrez si une partie a malgré tout abouti. En cas de second échec, dites-nous ce que vous faisiez.',
     ],
 
     'PM-3036' => [
@@ -955,8 +949,8 @@ return [
 
     'PM-3042' => [
         'title' => 'Le bon n’a pas pu être ouvert car le navigateur a bloqué le nouvel onglet.',
-        'what' => 'Une requête n’a pas abouti. En général, la connexion a été interrompue ou la session a expiré pendant que la page était ouverte.',
-        'fix' => 'Réessayez, et rechargez la page en cas de second échec. Si le problème persiste, dites-nous ce que vous faisiez.',
+        'what' => 'Le document s’ouvre dans un nouvel onglet, et ce navigateur l’a bloqué. Les navigateurs bloquent les onglets qu’une page ouvre d’elle-même, sauf autorisation.',
+        'fix' => 'Cherchez l’avertissement de fenêtre bloquée dans la barre d’adresse et autorisez-la pour Patrimoine. Le document a bien été créé et reste téléchargeable depuis l’enregistrement concerné.',
     ],
 
     'PM-3043' => [
@@ -1051,8 +1045,8 @@ return [
 
     'PM-3058' => [
         'title' => 'Impossible de trouver cette unité.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'L’étape ne s’est pas terminée : elle n’a donc rien modifié.',
+        'fix' => 'Rechargez la page et regardez l’enregistrement avant de recommencer : vous verrez si une partie a malgré tout abouti. En cas de second échec, dites-nous ce que vous faisiez.',
     ],
 
     'PM-3059' => [
@@ -1069,20 +1063,20 @@ return [
 
     'PM-3061' => [
         'title' => 'Le même propriétaire ne peut pas être ajouté plusieurs fois.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'La même partie figure deux fois parmi les propriétaires de ce bien.',
+        'fix' => 'Supprimez le doublon et attribuez la part totale à l’entrée unique. Deux personnes portant le même nom sont deux parties : vérifiez que vous n’avez pas choisi deux fois la même.',
     ],
 
     'PM-3062' => [
         'title' => 'Chaque unité doit avoir un nom ou un numéro.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le formulaire attend un nombre précis, ou une forme précise, et la saisie n’y correspond pas.',
+        'fix' => 'Le message indique la contrainte. Ajoutez, retirez ou corrigez les éléments jusqu’à la respecter : le champ acceptera la saisie dès ce moment.',
     ],
 
     'PM-3063' => [
         'title' => 'Une propriété doit avoir au moins un propriétaire.',
-        'what' => 'Un élément nécessaire au formulaire est resté vide.',
-        'fix' => 'Renseignez le champ indiqué dans le message et enregistrez de nouveau. Les champs marqués d’un astérisque rouge sont ceux dont Patrimoine ne peut pas se passer.',
+        'what' => 'Le formulaire attend un nombre précis, ou une forme précise, et la saisie n’y correspond pas.',
+        'fix' => 'Le message indique la contrainte. Ajoutez, retirez ou corrigez les éléments jusqu’à la respecter : le champ acceptera la saisie dès ce moment.',
     ],
 
     'PM-3064' => [
@@ -1105,8 +1099,8 @@ return [
 
     'PM-3067' => [
         'title' => 'Une propriété doit avoir au moins une unité.',
-        'what' => 'Un élément nécessaire au formulaire est resté vide.',
-        'fix' => 'Renseignez le champ indiqué dans le message et enregistrez de nouveau. Les champs marqués d’un astérisque rouge sont ceux dont Patrimoine ne peut pas se passer.',
+        'what' => 'Le formulaire attend un nombre précis, ou une forme précise, et la saisie n’y correspond pas.',
+        'fix' => 'Le message indique la contrainte. Ajoutez, retirez ou corrigez les éléments jusqu’à la respecter : le champ acceptera la saisie dès ce moment.',
     ],
 
     'PM-3068' => [
@@ -1117,14 +1111,14 @@ return [
 
     'PM-3069' => [
         'title' => 'Les soldes de fonds locataire ne peuvent pas être ajustés en dessous de zéro.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Un ajustement ne peut pas rendre un fonds locataire négatif : cela reviendrait à détenir de l’argent jamais encaissé.',
+        'fix' => 'Ajustez à zéro ou au-dessus. Si de l’argent est réellement sorti du compte, enregistrez plutôt un retrait ou une dépense : l’un et l’autre laissent une trace de sa destination.',
     ],
 
     'PM-3070' => [
         'title' => 'Le solde corrigé est déjà identique au solde actuel.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le solde corrigé que vous avez saisi est déjà le solde enregistré : il n’y a rien à ajuster.',
+        'fix' => 'Vérifiez le montant. Si le solde est réellement erroné, saisissez ce qu’il devrait être plutôt que ce qu’il est.',
     ],
 
     'PM-3071' => [
@@ -1135,8 +1129,8 @@ return [
 
     'PM-3072' => [
         'title' => 'La partie sélectionnée n\'est pas un locataire.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'L’enregistrement choisi n’est pas du type sur lequel cette action s’applique.',
+        'fix' => 'Revenez en arrière et choisissez dans la liste proposée pour cette action plutôt que de chercher l’enregistrement vous-même : cette liste ne contient que ce que l’action accepte.',
     ],
 
     'PM-3073' => [
@@ -1153,20 +1147,20 @@ return [
 
     'PM-3075' => [
         'title' => 'Le montant ne peut pas dépasser le solde disponible du dépôt de garantie.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le montant saisi dépasse le disponible, et Patrimoine n’enregistre pas d’argent qui n’existe pas.',
+        'fix' => 'Vérifiez le solde affiché à côté du champ et saisissez ce montant ou moins. Si le solde semble erroné, ouvrez l’historique du compte pour voir ce qui en est déjà sorti.',
     ],
 
     'PM-3076' => [
         'title' => 'Le montant ne peut pas dépasser le solde impayé de la créance sélectionnée.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le montant saisi dépasse le disponible, et Patrimoine n’enregistre pas d’argent qui n’existe pas.',
+        'fix' => 'Vérifiez le solde affiché à côté du champ et saisissez ce montant ou moins. Si le solde semble erroné, ouvrez l’historique du compte pour voir ce qui en est déjà sorti.',
     ],
 
     'PM-3077' => [
         'title' => 'Le montant ne peut pas dépasser le solde du compte source.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le montant saisi dépasse le disponible, et Patrimoine n’enregistre pas d’argent qui n’existe pas.',
+        'fix' => 'Vérifiez le solde affiché à côté du champ et saisissez ce montant ou moins. Si le solde semble erroné, ouvrez l’historique du compte pour voir ce qui en est déjà sorti.',
     ],
 
     'PM-3078' => [
@@ -1231,8 +1225,8 @@ return [
 
     'PM-3088' => [
         'title' => 'Le retrait ne peut pas dépasser le solde disponible.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le montant saisi dépasse le disponible, et Patrimoine n’enregistre pas d’argent qui n’existe pas.',
+        'fix' => 'Vérifiez le solde affiché à côté du champ et saisissez ce montant ou moins. Si le solde semble erroné, ouvrez l’historique du compte pour voir ce qui en est déjà sorti.',
     ],
 
     'PM-3089' => [
@@ -1371,8 +1365,8 @@ return [
 
     'PM-4021' => [
         'title' => 'Cette transaction n’est pas un paiement de facture depuis un compte.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'L’enregistrement choisi n’est pas du type sur lequel cette action s’applique.',
+        'fix' => 'Revenez en arrière et choisissez dans la liste proposée pour cette action plutôt que de chercher l’enregistrement vous-même : cette liste ne contient que ce que l’action accepte.',
     ],
 
     'PM-4022' => [
@@ -1436,7 +1430,7 @@ return [
     ],
 
     'PM-4032' => [
-        'title' => 'Un motif d’annulation est obligatoire.',
+        'title' => 'Un motif d\'annulation est obligatoire.',
         'what' => 'Annuler ou corriger une opération déjà enregistrée exige un motif : c’est lui qui rend l’écriture compréhensible pour qui relira les comptes plus tard.',
         'fix' => 'Indiquez brièvement la raison — « payé deux fois par le locataire », « mauvais compte choisi » — puis enregistrez de nouveau.',
     ],
@@ -1448,9 +1442,9 @@ return [
     ],
 
     'PM-4034' => [
-        'title' => 'Le compte source du paiement de la facture de dépenses n’est pas pris en charge.',
-        'what' => 'L’option transmise ne fait pas partie de celles que Patrimoine reconnaît pour ce type d’enregistrement.',
-        'fix' => 'Choisissez une des options proposées dans la liste plutôt que de saisir une valeur. Si vous arrivez d’un lien enregistré ou d’un onglet ancien, rechargez la page et réessayez.',
+        'title' => 'Ce compte ne peut pas régler une facture de dépenses.',
+        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
+        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
     ],
 
     'PM-4035' => [
@@ -1460,9 +1454,9 @@ return [
     ],
 
     'PM-4036' => [
-        'title' => 'Le mode de paiement du dépôt du propriétaire n’est pas pris en charge.',
-        'what' => 'L’option transmise ne fait pas partie de celles que Patrimoine reconnaît pour ce type d’enregistrement.',
-        'fix' => 'Choisissez une des options proposées dans la liste plutôt que de saisir une valeur. Si vous arrivez d’un lien enregistré ou d’un onglet ancien, rechargez la page et réessayez.',
+        'title' => 'Un dépôt de propriétaire ne peut pas être enregistré avec ce mode de paiement.',
+        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
+        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
     ],
 
     'PM-4037' => [
@@ -1472,15 +1466,15 @@ return [
     ],
 
     'PM-4038' => [
-        'title' => 'L’objet du dépôt du propriétaire n’est pas pris en charge.',
-        'what' => 'L’option transmise ne fait pas partie de celles que Patrimoine reconnaît pour ce type d’enregistrement.',
-        'fix' => 'Choisissez une des options proposées dans la liste plutôt que de saisir une valeur. Si vous arrivez d’un lien enregistré ou d’un onglet ancien, rechargez la page et réessayez.',
+        'title' => 'Un dépôt de propriétaire ne peut pas être enregistré pour cet objet.',
+        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
+        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
     ],
 
     'PM-4039' => [
         'title' => 'Seuls les dépôts de propriétaire peuvent générer un reçu de dépôt de propriétaire.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'L’enregistrement choisi n’est pas du type sur lequel cette action s’applique.',
+        'fix' => 'Revenez en arrière et choisissez dans la liste proposée pour cette action plutôt que de chercher l’enregistrement vous-même : cette liste ne contient que ce que l’action accepte.',
     ],
 
     'PM-4040' => [
@@ -1491,8 +1485,8 @@ return [
 
     'PM-4041' => [
         'title' => 'Cette transaction n’est pas un paiement de facture de dépenses.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'L’enregistrement choisi n’est pas du type sur lequel cette action s’applique.',
+        'fix' => 'Revenez en arrière et choisissez dans la liste proposée pour cette action plutôt que de chercher l’enregistrement vous-même : cette liste ne contient que ce que l’action accepte.',
     ],
 
     'PM-4042' => [
@@ -1581,12 +1575,12 @@ return [
 
     'PM-4056' => [
         'title' => 'Le retrait ne peut pas dépasser le solde disponible du compte de retrait de {balance}.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le montant saisi dépasse le disponible, et Patrimoine n’enregistre pas d’argent qui n’existe pas.',
+        'fix' => 'Vérifiez le solde affiché à côté du champ et saisissez ce montant ou moins. Si le solde semble erroné, ouvrez l’historique du compte pour voir ce qui en est déjà sorti.',
     ],
 
     'PM-4057' => [
-        'title' => 'Unable to cancel the bill payment.',
+        'title' => 'Impossible d\'annuler le paiement de la facture.',
         'what' => 'La demande est parvenue à Patrimoine sans aboutir : rien n’a été modifié.',
         'fix' => 'Rechargez la page et vérifiez si l’opération a malgré tout abouti avant de recommencer. En cas de nouvel échec, dites-nous ce que vous faisiez.',
     ],
@@ -1622,7 +1616,7 @@ return [
     ],
 
     'PM-4063' => [
-        'title' => 'Unable to record the bill payment.',
+        'title' => 'Impossible d\'enregistrer le paiement de la facture.',
         'what' => 'La demande est parvenue à Patrimoine sans aboutir : rien n’a été enregistré. Ce que vous saisissiez reste inchangé.',
         'fix' => 'Vérifiez si un champ est signalé en rouge, puis réessayez. Si rien n’est signalé et que l’échec persiste, dites-nous ce que vous tentiez d’enregistrer.',
     ],
@@ -1652,7 +1646,7 @@ return [
     ],
 
     'PM-4068' => [
-        'title' => 'Unable to resend the expense bill.',
+        'title' => 'Impossible de renvoyer la facture de dépenses.',
         'what' => 'La demande est parvenue à Patrimoine sans aboutir : rien n’a été modifié.',
         'fix' => 'Rechargez la page et vérifiez si l’opération a malgré tout abouti avant de recommencer. En cas de nouvel échec, dites-nous ce que vous faisiez.',
     ],
@@ -1671,8 +1665,8 @@ return [
 
     'PM-4071' => [
         'title' => 'Le dépôt du propriétaire a été enregistré mais son reçu n’a pas pu être identifié.',
-        'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
-        'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
+        'what' => 'Le dépôt a bien été enregistré — l’argent est sur le compte — mais Patrimoine n’a pas pu produire son reçu à cet instant.',
+        'fix' => 'Ouvrez le compte du propriétaire et imprimez le reçu depuis la ligne du dépôt. Si l’ouverture échoue encore, dites-le-nous : l’argent est en sécurité dans tous les cas, et la correction nous revient.',
     ],
 
     'PM-4072' => [
@@ -1706,7 +1700,7 @@ return [
     ],
 
     'PM-4077' => [
-        'title' => 'Impossible de charger les informations du propriétaire.',
+        'title' => 'Impossible de charger les détails du propriétaire.',
         'what' => 'Patrimoine a demandé ces informations au serveur et n’a reçu aucune réponse. En général, la connexion a été interrompue ou la session a expiré pendant que la page était ouverte.',
         'fix' => 'Réessayez. Si cela se reproduit, rechargez la page — cela renouvelle aussi une session expirée. Si le problème persiste, la faute revient à votre connexion ou à notre service : signalez-le-nous.',
     ],
@@ -1718,7 +1712,7 @@ return [
     ],
 
     'PM-4079' => [
-        'title' => 'Impossible d’ouvrir le reçu.',
+        'title' => 'Impossible d\'ouvrir le reçu.',
         'what' => 'Le document n’a pas pu être produit ou transmis. Les données sous-jacentes ne risquent rien : il s’agit de la fabrication du fichier, pas de son contenu.',
         'fix' => 'Réessayez, et rechargez la page en cas de second échec. Si un document précis échoue systématiquement alors que les autres fonctionnent, dites-nous lequel : cela désigne un problème précis que nous pouvons corriger.',
     ],
@@ -1888,9 +1882,9 @@ return [
     ],
 
     'PM-5002' => [
-        'title' => 'Impossible d’effectuer la transaction.',
-        'what' => 'La demande est parvenue à Patrimoine sans aboutir : rien n’a été enregistré. Ce que vous saisissiez reste inchangé.',
-        'fix' => 'Vérifiez si un champ est signalé en rouge, puis réessayez. Si rien n’est signalé et que l’échec persiste, dites-nous ce que vous tentiez d’enregistrer.',
+        'title' => 'L’opération n’a pas été enregistrée.',
+        'what' => 'Une requête n’a pas abouti. En général, la connexion a été interrompue ou la session a expiré pendant que la page était ouverte.',
+        'fix' => 'Réessayez, et rechargez la page en cas de second échec. Si le problème persiste, dites-nous ce que vous faisiez.',
     ],
 
     'PM-5003' => [
@@ -2013,8 +2007,8 @@ return [
 
     'PM-7001' => [
         'title' => 'Le quota mensuel d’e-mails de votre forfait est épuisé.',
-        'what' => 'Cette action requiert un niveau d’accès, ou un forfait, dont le compte ne dispose pas actuellement.',
-        'fix' => 'Adressez-vous à un administrateur de votre organisation. Il peut modifier les rôles depuis la page Utilisateurs et consulter le forfait et ses limites sur la page Licence.',
+        'what' => 'Votre forfait en comprend un nombre déterminé, et ce nombre est atteint. Rien de ce qui est déjà enregistré n’est affecté : seul l’ajout est suspendu.',
+        'fix' => 'Un administrateur peut consulter l’utilisation de chaque limite sur la page Licence et y changer de forfait. Supprimer des enregistrements devenus inutiles libère également de la place.',
     ],
 
     'PM-7002' => [
@@ -2023,22 +2017,16 @@ return [
         'fix' => 'Un administrateur peut consulter le contenu de chaque forfait sur la page Licence et en changer depuis cet endroit. Ce que vous avez déjà enregistré n’est pas affecté par le forfait en cours.',
     ],
 
-    'PM-7003' => [
-        'title' => 'Dépasser une limite met seulement en pause la création de nouveaux enregistrements — vos données existantes ne sont jamais touchées. L\'intégrité financière et les e-mails de documents transactionnels sont identiques sur tous les forfaits, et les e-mails de connexion ne sont jamais bloqués.',
-        'what' => 'Cette action requiert un niveau d’accès, ou un forfait, dont le compte ne dispose pas actuellement.',
-        'fix' => 'Adressez-vous à un administrateur de votre organisation. Il peut modifier les rôles depuis la page Utilisateurs et consulter le forfait et ses limites sur la page Licence.',
-    ],
-
     'PM-7004' => [
         'title' => 'La limite de baux actifs de votre forfait est atteinte. Passez à un forfait supérieur pour ajouter des baux actifs.',
-        'what' => 'Cette action requiert un niveau d’accès, ou un forfait, dont le compte ne dispose pas actuellement.',
-        'fix' => 'Adressez-vous à un administrateur de votre organisation. Il peut modifier les rôles depuis la page Utilisateurs et consulter le forfait et ses limites sur la page Licence.',
+        'what' => 'Votre forfait en comprend un nombre déterminé, et ce nombre est atteint. Rien de ce qui est déjà enregistré n’est affecté : seul l’ajout est suspendu.',
+        'fix' => 'Un administrateur peut consulter l’utilisation de chaque limite sur la page Licence et y changer de forfait. Supprimer des enregistrements devenus inutiles libère également de la place.',
     ],
 
     'PM-7005' => [
         'title' => 'La limite de tiers de votre forfait est atteinte. Passez à un forfait supérieur pour ajouter des tiers.',
-        'what' => 'Cette action requiert un niveau d’accès, ou un forfait, dont le compte ne dispose pas actuellement.',
-        'fix' => 'Adressez-vous à un administrateur de votre organisation. Il peut modifier les rôles depuis la page Utilisateurs et consulter le forfait et ses limites sur la page Licence.',
+        'what' => 'Votre forfait en comprend un nombre déterminé, et ce nombre est atteint. Rien de ce qui est déjà enregistré n’est affecté : seul l’ajout est suspendu.',
+        'fix' => 'Un administrateur peut consulter l’utilisation de chaque limite sur la page Licence et y changer de forfait. Supprimer des enregistrements devenus inutiles libère également de la place.',
     ],
 
     'PM-7006' => [
@@ -2049,8 +2037,8 @@ return [
 
     'PM-7007' => [
         'title' => 'La limite d’utilisateurs de votre forfait est atteinte. Passez à un forfait supérieur pour ajouter des utilisateurs.',
-        'what' => 'Cette action requiert un niveau d’accès, ou un forfait, dont le compte ne dispose pas actuellement.',
-        'fix' => 'Adressez-vous à un administrateur de votre organisation. Il peut modifier les rôles depuis la page Utilisateurs et consulter le forfait et ses limites sur la page Licence.',
+        'what' => 'Votre forfait en comprend un nombre déterminé, et ce nombre est atteint. Rien de ce qui est déjà enregistré n’est affecté : seul l’ajout est suspendu.',
+        'fix' => 'Un administrateur peut consulter l’utilisation de chaque limite sur la page Licence et y changer de forfait. Supprimer des enregistrements devenus inutiles libère également de la place.',
     ],
 
     /* ---- 8xxx ---- */
@@ -2062,7 +2050,7 @@ return [
     ],
 
     'PM-8002' => [
-        'title' => 'Le rôle managing_organisation ne peut pas être retiré à l’organisation gestionnaire configurée.',
+        'title' => 'Votre propre société doit rester l’organisation gestionnaire. Désignez d’abord une autre partie comme organisation gestionnaire.',
         'what' => 'Patrimoine a interrompu l’action parce qu’une règle de l’application n’était pas respectée. Rien n’a été enregistré.',
         'fix' => 'Lisez le message affiché : il indique ce qui ne va pas. Corrigez, puis réessayez.',
     ],
@@ -2076,7 +2064,7 @@ return [
     /* ---- 9xxx ---- */
 
     'PM-9001' => [
-        'title' => 'La requête n’a pas pu être traitée.',
+        'title' => 'Patrimoine n’a pas pu terminer cette opération.',
         'what' => 'La requête n’a pas abouti. À ce stade, Patrimoine ne peut dire si la cause est le réseau, la session ou le service lui-même.',
         'fix' => 'Réessayez. En cas de second échec, rechargez la page — cela renouvelle aussi la session. Si l’échec persiste, dites-nous ce que vous faisiez : nous examinerons notre côté.',
     ],

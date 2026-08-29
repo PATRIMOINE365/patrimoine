@@ -479,7 +479,7 @@ class UserManagementApiTest extends TestCase
             ->assertUnprocessable()
             ->assertJsonPath(
                 'errors.role.0',
-                'You cannot change your own Administrator role.'
+                'An administrator’s own role has to be changed by another administrator.'
             );
     }
 
@@ -499,7 +499,7 @@ class UserManagementApiTest extends TestCase
             ->assertUnprocessable()
             ->assertJsonPath(
                 'errors.is_active.0',
-                'You cannot disable your own account.'
+                'An account cannot switch itself off. Another administrator can do it.'
             );
     }
 
@@ -516,7 +516,7 @@ class UserManagementApiTest extends TestCase
             ->assertUnprocessable()
             ->assertJsonPath(
                 'errors.user.0',
-                'You cannot delete your own account.'
+                'An account cannot delete itself. Another administrator can do it.'
             );
     }
 
@@ -629,7 +629,7 @@ class UserManagementApiTest extends TestCase
             ->assertUnprocessable()
             ->assertJsonPath(
                 'errors.is_active.0',
-                'Vous ne pouvez pas désactiver votre propre compte.'
+                'Un compte ne peut pas se désactiver lui-même. Un autre administrateur peut le faire.'
             );
     }
 

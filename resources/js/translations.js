@@ -1437,7 +1437,7 @@ export const translations = {
         'password.confirmation_mismatch':
             'The password confirmation does not match.',
         'password.request_failed':
-            'Unable to complete the password request.',
+            'That password request did not go through.',
         'login.missing_api_token':
             'Authentication succeeded but no API token was returned.',
 
@@ -2316,7 +2316,7 @@ export const translations = {
         'users.unable_delete':
             'Unable to delete user.',
         'users.action_failed':
-            'Unable to complete this user action.',
+            'That change to the user was not saved.',
         'users.page_of':
             'Page :current of :last',
         'users.previous':
@@ -2738,7 +2738,7 @@ export const translations = {
         'leases.delete_reason_prompt': 'Reason for deleting this Lease:',
         'leases.delete_reason_required': 'A deletion reason is required.',
         'leases.delete_confirmation_prompt': 'Type DELETE exactly to confirm:',
-        'leases.delete_confirmation_invalid': 'You must type DELETE exactly.',
+        'leases.delete_confirmation_invalid': 'The confirmation has to read DELETE, exactly.',
         'leases.delete_password_prompt': 'Enter your current password:',
         'leases.delete_password_required': 'Your current password is required.',
         'leases.delete_final_confirmation': 'Permanently delete this Lease? This action cannot be undone.',
@@ -2768,7 +2768,7 @@ export const translations = {
         'leases.cancel_termination': 'Cancel Termination',
         'leases.confirm_complete_termination': 'Complete this Lease termination? The Lease will become inactive and Unit occupancy will be recalculated.',
         'leases.confirm_cancel_termination': 'Cancel this Lease termination and restore its previous operational state?',
-        'leases.termination_complete_failed': 'Unable to complete termination.',
+        'leases.termination_complete_failed': 'The termination was not completed.',
         'leases.termination_cancel_failed': 'Unable to cancel termination.',
         'leases.no_deductions': 'No deductions recorded.',
         'leases.date': 'Date',
@@ -4051,7 +4051,7 @@ export const translations = {
         'core.session_expired':
             'Your session has expired. Please sign in again.',
         'core.request_failed':
-            'The request could not be completed.',
+            'Patrimoine could not complete that.',
 
     },
 
@@ -5477,7 +5477,7 @@ export const translations = {
         'password.confirmation_mismatch':
             'La confirmation du mot de passe ne correspond pas.',
         'password.request_failed':
-            'Impossible d’effectuer la demande de mot de passe.',
+            'Cette demande de mot de passe n’a pas abouti.',
         'login.missing_api_token':
             'La connexion a réussi, mais aucun jeton API n’a été retourné.',
 
@@ -6356,7 +6356,7 @@ export const translations = {
         'users.unable_delete':
             'Impossible de supprimer l’utilisateur.',
         'users.action_failed':
-            'Impossible d’effectuer cette action sur l’utilisateur.',
+            'Cette modification de l’utilisateur n’a pas été enregistrée.',
         'users.page_of':
             'Page :current sur :last',
         'users.previous':
@@ -6911,7 +6911,7 @@ export const translations = {
         'core.session_expired':
             'Votre session a expiré. Veuillez vous reconnecter.',
         'core.request_failed':
-            'La requête n’a pas pu être traitée.',
+            'Patrimoine n’a pas pu terminer cette opération.',
 
 'parties.loading': 'Chargement des parties…',
         'parties.unable_to_load': 'Impossible de charger les parties.',
@@ -7115,7 +7115,7 @@ export const translations = {
         'leases.delete_reason_prompt': 'Motif de la suppression de ce bail :',
         'leases.delete_reason_required': 'Un motif de suppression est obligatoire.',
         'leases.delete_confirmation_prompt': 'Saisissez exactement DELETE pour confirmer :',
-        'leases.delete_confirmation_invalid': 'Vous devez saisir exactement DELETE.',
+        'leases.delete_confirmation_invalid': 'La confirmation doit indiquer exactement DELETE.',
         'leases.delete_password_prompt': 'Saisissez votre mot de passe actuel :',
         'leases.delete_password_required': 'Votre mot de passe actuel est obligatoire.',
         'leases.delete_final_confirmation': 'Supprimer définitivement ce bail ? Cette action est irréversible.',
@@ -7145,7 +7145,7 @@ export const translations = {
         'leases.cancel_termination': 'Annuler la résiliation',
         'leases.confirm_complete_termination': 'Terminer cette résiliation de bail ? Le bail deviendra inactif et l’occupation de l’unité sera recalculée.',
         'leases.confirm_cancel_termination': 'Annuler cette résiliation et restaurer l’état opérationnel précédent du bail ?',
-        'leases.termination_complete_failed': 'Impossible de terminer la résiliation.',
+        'leases.termination_complete_failed': 'La résiliation n’a pas été finalisée.',
         'leases.termination_cancel_failed': 'Impossible d’annuler la résiliation.',
         'leases.no_deductions': 'Aucune déduction enregistrée.',
         'leases.date': 'Date',

@@ -205,7 +205,7 @@ class V103LocalisationCompletionTest extends TestCase
             )
             ->assertUnprocessable()
             ->assertJson([
-                'message' => 'Vous ne pouvez pas modifier votre propre rôle d’administrateur.',
+                'message' => 'Le rôle d’un administrateur doit être modifié par un autre administrateur.',
             ]);
     }
 

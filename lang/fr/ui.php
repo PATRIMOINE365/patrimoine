@@ -131,7 +131,7 @@ return [
         'change_description' => 'Modifiez le mot de passe de votre compte.',
         'changing' => 'Modification…',
         'confirmation_mismatch' => 'La confirmation du mot de passe ne correspond pas.',
-        'request_failed' => 'Impossible d’effectuer la demande de mot de passe.',
+        'request_failed' => 'Cette demande de mot de passe n’a pas abouti.',
         'section' => 'Mot de passe',
         'show_password' => 'Afficher ou masquer le mot de passe',
         'profile_new_help' => 'Laissez vide pour conserver votre mot de passe actuel.',
@@ -304,7 +304,7 @@ return [
         'adjustment_required_fields' => 'Sélectionnez un compte, saisissez le solde correct et indiquez un motif.',
         'withdrawal_exceeds_balance' => 'Le retrait ne peut pas dépasser le solde disponible.',
         'invalid_account' => 'Le compte sélectionné n’est pas valide pour cette transaction.',
-        'transaction_failed' => 'Impossible d’effectuer la transaction.',
+        'transaction_failed' => 'L’opération n’a pas été enregistrée.',
         'rent_payment_recorded' => 'Paiement du loyer enregistré avec succès.',
         'deposit_recorded' => 'Dépôt enregistré avec succès.',
         'withdrawal_recorded' => 'Retrait enregistré avec succès.',
@@ -386,7 +386,7 @@ return [
         'unable_create' => 'Impossible de créer l’utilisateur.',
         'unable_update' => 'Impossible de mettre à jour l’utilisateur.',
         'unable_delete' => 'Impossible de supprimer l’utilisateur.',
-        'action_failed' => 'Impossible d’effectuer cette action sur l’utilisateur.',
+        'action_failed' => 'Cette modification de l’utilisateur n’a pas été enregistrée.',
         'page_of' => 'Page :current sur :last',
         'previous' => 'Précédent',
         'next' => 'Suivant',
@@ -660,7 +660,7 @@ return [
     ],
     'core' => [
         'session_expired' => 'Votre session a expiré. Veuillez vous reconnecter.',
-        'request_failed' => 'La requête n’a pas pu être traitée.',
+        'request_failed' => 'Patrimoine n’a pas pu terminer cette opération.',
     ],
     /*
     |--------------------------------------------------------------------------

@@ -48,9 +48,9 @@ return [
     'user_management' => [
         'platform_domain_required' => 'Les comptes du personnel de la plateforme doivent utiliser une adresse @patrimoine365.com.',
         'platform_domain_reserved' => 'Ce domaine e-mail est réservé au personnel de la plateforme.',
-        'cannot_change_own_role' => 'Vous ne pouvez pas modifier votre propre rôle d’administrateur.',
-        'cannot_disable_self' => 'Vous ne pouvez pas désactiver votre propre compte.',
-        'cannot_delete_self' => 'Vous ne pouvez pas supprimer votre propre compte.',
+        'cannot_change_own_role' => 'Le rôle d’un administrateur doit être modifié par un autre administrateur.',
+        'cannot_disable_self' => 'Un compte ne peut pas se désactiver lui-même. Un autre administrateur peut le faire.',
+        'cannot_delete_self' => 'Un compte ne peut pas se supprimer lui-même. Un autre administrateur peut le faire.',
         'last_active_administrator' => 'Cette action ne peut pas être effectuée, car Patrimoine doit conserver au moins un administrateur actif.',
         'created' => 'Utilisateur créé avec succès.',
         'updated' => 'Utilisateur mis à jour avec succès.',
@@ -59,7 +59,7 @@ return [
 
     'managing_organisation' => [
         'not_configured' => 'L’organisation gestionnaire n’a pas encore été configurée.',
-        'cannot_remove_role' => 'Le rôle managing_organisation ne peut pas être retiré à l’organisation gestionnaire configurée.',
+        'cannot_remove_role' => 'Votre propre société doit rester l’organisation gestionnaire. Désignez d’abord une autre partie comme organisation gestionnaire.',
         'cannot_delete' => 'L’organisation gestionnaire configurée ne peut pas être supprimée.',
     ],
 
@@ -134,13 +134,13 @@ return [
 
     'deletion' => [
         'lease_confirmation_invalid' => 'Saisissez exactement DELETE pour confirmer la suppression du bail.',
-        'lease_cannot_delete' => 'Le bail :id ne peut pas être supprimé en toute sécurité.',
+        'lease_cannot_delete' => 'Ce bail ne peut pas être supprimé en toute sécurité.',
         'party_managing_organisation' => 'L’organisation gestionnaire configurée ne peut pas être supprimée. Modifiez plutôt la configuration de l’organisation gestionnaire.',
         'party_referenced' => 'Cette partie ne peut pas être supprimée car elle est référencée par un bail, une propriété, un mandat d’agence ou un historique financier. Conservez-la afin que les données historiques restent compréhensibles.',
         'building_has_units' => 'Cet immeuble ne peut pas être supprimé tant qu’il contient des unités. Supprimez d’abord uniquement les unités sans référence ; les unités ayant un bail ou un historique financier doivent être conservées.',
         'building_referenced' => 'Cet immeuble ne peut pas être supprimé car des données financières ou historiques y font référence. Conservez-le pour préserver la traçabilité.',
         'unit_referenced' => 'Cette unité ne peut pas être supprimée car un bail ou un historique financier y fait référence. Conservez l’unité et résiliez plutôt le bail lorsque cela s’applique.',
-        'lease_not_draft' => 'Seul un bail brouillon inutilisé peut être supprimé. Utilisez la procédure de résiliation pour un bail actif ou en préavis ; les baux résiliés sont conservés comme historique.',
+        'lease_not_draft' => 'Seul un bail en brouillon et inutilisé peut être supprimé. Un bail actif, ou en préavis, prend fin par sa résiliation — et un bail résilié est conservé comme historique.',
         'lease_referenced' => 'Ce bail brouillon ne peut pas être supprimé car des données contractuelles ou financières y font référence. Conservez le bail.',
     ],
 

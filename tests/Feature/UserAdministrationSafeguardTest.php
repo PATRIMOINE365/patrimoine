@@ -35,7 +35,7 @@ class UserAdministrationSafeguardTest extends TestCase
 
         $this->expectValidationMessage(
             'role',
-            'You cannot change your own Administrator role.',
+            'An administrator’s own role has to be changed by another administrator.',
             fn () => $this->service->changeRole(
                 $administrator,
                 $administrator,
@@ -55,7 +55,7 @@ class UserAdministrationSafeguardTest extends TestCase
 
         $this->expectValidationMessage(
             'is_active',
-            'You cannot disable your own account.',
+            'An account cannot switch itself off. Another administrator can do it.',
             fn () => $this->service->changeActiveStatus(
                 $administrator,
                 $administrator,
@@ -75,7 +75,7 @@ class UserAdministrationSafeguardTest extends TestCase
 
         $this->expectValidationMessage(
             'user',
-            'You cannot delete your own account.',
+            'An account cannot delete itself. Another administrator can do it.',
             fn () => $this->service->delete(
                 $administrator,
                 $administrator
@@ -322,7 +322,7 @@ class UserAdministrationSafeguardTest extends TestCase
 
         $this->expectValidationMessage(
             'is_active',
-            'Vous ne pouvez pas désactiver votre propre compte.',
+            'Un compte ne peut pas se désactiver lui-même. Un autre administrateur peut le faire.',
             fn () => $this->service->changeActiveStatus(
                 $administrator,
                 $administrator,

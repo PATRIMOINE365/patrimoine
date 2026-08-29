@@ -423,11 +423,6 @@ return [
             'severity' => 'fix_yourself',
             'keys' => ['validation.min.string'],
         ],
-        'PM-2037' => [
-            'family' => 2,
-            'severity' => 'fix_yourself',
-            'keys' => ['validation.nullable'],
-        ],
         'PM-2038' => [
             'family' => 2,
             'severity' => 'fix_yourself',
@@ -1702,11 +1697,6 @@ return [
             'family' => 7,
             'severity' => 'ask_admin',
             'keys' => ['api.license.feature_unavailable'],
-        ],
-        'PM-7003' => [
-            'family' => 7,
-            'severity' => 'ask_admin',
-            'keys' => ['ui.license.footnotes', 'license.footnotes'],
         ],
         'PM-7004' => [
             'family' => 7,
