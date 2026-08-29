@@ -348,9 +348,20 @@ async function loadDashboard() {
 
     if (metrics) {
         metrics.innerHTML = [
-            metricCard('Organizations', data.totals.organisations, `${data.totals.suspended} suspended`),
+            /*
+             * The plan split counts EVERY organisation, trials included,
+             * so it belongs under the total rather than under Licensed —
+             * where it read "3 licensed, 0 Standard · 4 Pro" and looked
+             * like an arithmetic fault. Licensed now says what it counts,
+             * in the same words the Licenses page already uses.
+             */
+            metricCard(
+                'Organizations',
+                data.totals.organisations,
+                `${data.totals.suspended} suspended · ${data.totals.plans.standard} Standard · ${data.totals.plans.professional} Pro`
+            ),
             metricCard('On trial', data.totals.on_trial, 'Professional trial running'),
-            metricCard('Licensed', data.totals.licensed, `${data.totals.plans.standard} Standard · ${data.totals.plans.professional} Pro`),
+            metricCard('Licensed', data.totals.licensed, 'Covered by an assigned license'),
             metricCard('Signups this month', data.signups_this_month, ''),
         ].join('');
     }

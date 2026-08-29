@@ -6,6 +6,8 @@ return [
         'link_invalid' => 'This document link is invalid or has expired. Please open the document again.',
     ],
 
+    'not_found' => 'That record could not be found. It may have been deleted, or it may belong to another organisation.',
+
     'auth' => [
         'password_confirmation_failed' => 'The password is incorrect.',
         'account_disabled' => 'This account has been disabled.',

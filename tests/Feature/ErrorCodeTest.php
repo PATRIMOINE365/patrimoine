@@ -353,6 +353,36 @@ class ErrorCodeTest extends TestCase
         $response->assertJsonPath('code', 'PM-9901');
     }
 
+    /**
+     * A record that cannot be found does not name the class behind it.
+     *
+     * Laravel renders a missing model with the ORM's own sentence — "No
+     * query results for model [App\Models\Building] 1" — which told
+     * whoever asked what our internal classes are called, said it in
+     * English whatever language the organisation reads in, and belonged to
+     * no catalogue entry.
+     *
+     * This is also the answer somebody gets reaching for another
+     * organisation's record. That answer is deliberately 404 rather than
+     * 403, because 403 would confirm the record exists — and it must not
+     * then leak what kind of record it was.
+     */
+    public function test_a_missing_record_does_not_name_the_model(): void
+    {
+        $this->authenticateApiUser();
+
+        $response = $this->getJson('/api/buildings/999999');
+
+        $response->assertStatus(404);
+        $response->assertJsonPath('code', 'PM-9901');
+
+        $message = (string) $response->json('message');
+
+        $this->assertStringNotContainsString('App\\Models', $message);
+        $this->assertStringNotContainsString('No query results', $message);
+        $this->assertSame(__('api.not_found'), $message);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | The pages

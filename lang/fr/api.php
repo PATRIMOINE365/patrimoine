@@ -6,6 +6,8 @@ return [
         'link_invalid' => 'Ce lien de document est invalide ou a expiré. Veuillez ouvrir le document à nouveau.',
     ],
 
+    'not_found' => 'Cet enregistrement est introuvable. Il a peut-être été supprimé, ou il appartient à une autre organisation.',
+
     'auth' => [
         'password_confirmation_failed' => 'Le mot de passe est incorrect.',
         'account_disabled' => 'Ce compte a été désactivé.',

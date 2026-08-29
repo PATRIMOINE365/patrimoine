@@ -1963,7 +1963,12 @@ return [
         'PM-9901' => [
             'family' => 9,
             'severity' => 'fix_yourself',
-            'keys' => [],
+            /*
+             * Reached two ways: an address that does not exist, which has
+             * only its status, and a record that cannot be found, which
+             * now says so in a sentence of ours rather than the ORM's.
+             */
+            'keys' => ['api.not_found'],
         ],
         'PM-9902' => [
             'family' => 9,

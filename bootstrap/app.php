@@ -156,7 +156,36 @@ return Application::configure(basePath: dirname(__DIR__))
 
                 $payload = $response->getData(true);
 
-                if (! is_array($payload) || isset($payload['code'])) {
+                if (! is_array($payload)) {
+                    return $response;
+                }
+
+                /*
+                 * A record that cannot be found is rendered by Laravel with
+                 * the ORM's own sentence — "No query results for model
+                 * [App\Models\Building] 1". Three things wrong with sending
+                 * that to anybody: it names an internal class to whoever
+                 * asked, it is English whatever language the organisation
+                 * reads in, and it belongs to no catalogue entry, so the
+                 * code beside it could only ever come from the status.
+                 *
+                 * It is also the answer a customer gets when they reach for
+                 * another organisation's record, which is the right answer —
+                 * 404 rather than 403, because 403 would confirm the record
+                 * exists — and it should not then leak what kind of record
+                 * it was.
+                 */
+                if (
+                    $response->getStatusCode() === 404
+                    && is_string($payload['message'] ?? null)
+                    && str_contains($payload['message'], 'No query results for model')
+                ) {
+                    $payload['message'] = __('api.not_found');
+
+                    $response->setData($payload);
+                }
+
+                if (isset($payload['code'])) {
                     return $response;
                 }
 
