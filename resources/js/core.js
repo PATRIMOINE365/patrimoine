@@ -793,6 +793,101 @@ export function messageWithErrorCode(message, code = null) {
  * asking each of them to build a link, this watches for codes appearing
  * anywhere and links them where they land.
  */
+/**
+ * Say the browser's own validation messages in the reader's language.
+ *
+ * Around a hundred fields across the application carry `required`, and
+ * when one is left empty the browser raises the message ITSELF — "Please
+ * fill out this field." — in the language the browser is set to, not the
+ * language of the organisation. A French organisation on an
+ * English-language browser therefore reads English, which is common
+ * enough in West Africa to matter, and none of it goes through the
+ * catalogue that makes every other message translatable.
+ *
+ * Overriding the text is additive: setCustomValidity leaves the browser
+ * enforcing the rule exactly as before and only changes what it says. The
+ * message is cleared as soon as the field is touched, because a stale
+ * custom message would keep a corrected field invalid.
+ */
+export function initializeNativeValidationMessages() {
+    const messageFor = (input) => {
+        const v = input.validity;
+
+        if (v.valueMissing) {
+            return translate('validation_native.value_missing');
+        }
+
+        if (v.typeMismatch) {
+            return input.type === 'email'
+                ? translate('validation_native.type_email')
+                : translate('validation_native.type_mismatch');
+        }
+
+        if (v.rangeUnderflow) {
+            return translate('validation_native.range_underflow', { min: input.min });
+        }
+
+        if (v.rangeOverflow) {
+            return translate('validation_native.range_overflow', { max: input.max });
+        }
+
+        if (v.tooShort) {
+            return translate('validation_native.too_short', { min: input.minLength });
+        }
+
+        if (v.tooLong) {
+            return translate('validation_native.too_long', { max: input.maxLength });
+        }
+
+        if (v.stepMismatch) {
+            return translate('validation_native.step_mismatch');
+        }
+
+        if (v.patternMismatch || v.badInput) {
+            return translate('validation_native.pattern_mismatch');
+        }
+
+        return '';
+    };
+
+    /*
+     * `invalid` does not bubble, so it is caught on the way down.
+     */
+    document.addEventListener(
+        'invalid',
+        (event) => {
+            const input = event.target;
+
+            if (! (input instanceof HTMLElement) || typeof input.setCustomValidity !== 'function') {
+                return;
+            }
+
+            // Clear first: a message left over from last time would make
+            // customError true and hide the real reason.
+            input.setCustomValidity('');
+
+            if (input.checkValidity()) {
+                return;
+            }
+
+            const message = messageFor(input);
+
+            if (message) {
+                input.setCustomValidity(message);
+            }
+        },
+        true
+    );
+
+    document.addEventListener('input', (event) => {
+        const input = event.target;
+
+        if (input instanceof HTMLElement && typeof input.setCustomValidity === 'function') {
+            input.setCustomValidity('');
+        }
+    });
+}
+
 export function initializeErrorCodeLinks() {
     const linkify = (root) => {
         if (! (root instanceof HTMLElement)) {

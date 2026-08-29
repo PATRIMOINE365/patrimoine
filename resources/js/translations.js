@@ -251,6 +251,25 @@ export const translations = {
             'Tenant Transfer Voucher Resent',
         'activity_actions.tenant_withdrawal.recorded':
             'Tenant Withdrawal Recorded',
+        /* ---- V1.0.35: the browser's own validation messages ---- */
+        'validation_native.value_missing':
+            'Please fill in this field.',
+        'validation_native.type_email':
+            'Please enter an e-mail address.',
+        'validation_native.type_mismatch':
+            'This is not in the expected form.',
+        'validation_native.range_underflow':
+            'Enter {min} or more.',
+        'validation_native.range_overflow':
+            'Enter {max} or less.',
+        'validation_native.too_short':
+            'Enter at least {min} characters.',
+        'validation_native.too_long':
+            'Enter no more than {max} characters.',
+        'validation_native.step_mismatch':
+            'This value is not one of the steps allowed here.',
+        'validation_native.pattern_mismatch':
+            'This does not match the form this field expects.',
         'activity_actions.lease.created':
             'Lease Created',
 
@@ -4561,6 +4580,25 @@ export const translations = {
             'Bon de transfert locataire renvoyé',
         'activity_actions.tenant_withdrawal.recorded':
             'Retrait locataire enregistré',
+        /* ---- V1.0.35: the browser's own validation messages ---- */
+        'validation_native.value_missing':
+            'Veuillez renseigner ce champ.',
+        'validation_native.type_email':
+            'Veuillez saisir une adresse e-mail.',
+        'validation_native.type_mismatch':
+            'Cette valeur n’a pas la forme attendue.',
+        'validation_native.range_underflow':
+            'Saisissez {min} ou plus.',
+        'validation_native.range_overflow':
+            'Saisissez {max} ou moins.',
+        'validation_native.too_short':
+            'Saisissez au moins {min} caractères.',
+        'validation_native.too_long':
+            'Saisissez au plus {max} caractères.',
+        'validation_native.step_mismatch':
+            'Cette valeur ne fait pas partie des pas autorisés ici.',
+        'validation_native.pattern_mismatch':
+            'Cette valeur ne correspond pas au format attendu.',
         'activity_actions.lease.created':
             'Bail créé',
 

@@ -50,6 +50,7 @@ import {
     loadPresentationConfiguration,
     initializeMoneyInputs,
     initializeErrorCodeLinks,
+    initializeNativeValidationMessages,
 } from './core.js';
 
 import {
@@ -247,6 +248,7 @@ document.addEventListener(
          * reading one can go straight to what it means.
          */
         initializeErrorCodeLinks();
+        initializeNativeValidationMessages();
 
         await initializeDashboard();
 
