@@ -56,6 +56,7 @@ use App\Http\Controllers\Api\PaymentReportExportController;
 use App\Http\Controllers\Api\RegistrationController;
 use App\Http\Controllers\Api\RegistryPortabilityController;
 use App\Http\Controllers\Api\ErrorCodeController;
+use App\Http\Controllers\Api\GuideController;
 use App\Http\Controllers\Api\ReleaseLogController;
 use App\Http\Controllers\Api\RentIncrementController;
 use App\Http\Controllers\Api\RentReserveController;
@@ -234,6 +235,17 @@ Route::middleware('auth:sanctum')->group(
         Route::get(
             'error-codes',
             ErrorCodeController::class
+        );
+
+        /*
+         * V1.0.33: the how-to guide. Reference material like the error
+         * catalogue beside it, and open to every role for the same reason:
+         * somebody who may not perform a task still needs to read how it
+         * is performed.
+         */
+        Route::get(
+            'guide',
+            GuideController::class
         );
 
         /*

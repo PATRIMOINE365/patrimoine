@@ -1,0 +1,815 @@
+[
+  {
+    "id": "login",
+    "path": "/login",
+    "anonymous": true,
+    "wait": "input[type=\"email\"]",
+    "settle": 500
+  },
+  {
+    "id": "mfa",
+    "path": "/login",
+    "anonymous": true,
+    "wait": "input[type=\"email\"]",
+    "settle": 400,
+    "do": [
+      {
+        "fill": {
+          "selector": "input[type=\"email\"]",
+          "value": "ama.mensah@akwaba.example"
+        }
+      },
+      {
+        "fill": {
+          "selector": "input[type=\"password\"]",
+          "value": "GUIDE_DEMO_PASSWORD"
+        }
+      },
+      {
+        "click": "button[type=\"submit\"]",
+        "pause": 2500
+      }
+    ]
+  },
+  {
+    "id": "dashboard",
+    "path": "/dashboard",
+    "wait": "main",
+    "settle": 900
+  },
+  {
+    "id": "sidebar",
+    "path": "/dashboard",
+    "wait": "aside",
+    "clip": "aside",
+    "settle": 700
+  },
+  {
+    "id": "topbar",
+    "path": "/dashboard",
+    "wait": "header",
+    "clip": "header",
+    "settle": 700
+  },
+  {
+    "id": "notifications",
+    "path": "/dashboard",
+    "wait": "main",
+    "settle": 800,
+    "do": [
+      {
+        "click": "#notification-bell, [data-notification-toggle], button[aria-label*=\"otification\"]",
+        "pause": 900
+      }
+    ]
+  },
+  {
+    "id": "profile-drawer",
+    "path": "/dashboard",
+    "wait": "main",
+    "settle": 600,
+    "do": [
+      {
+        "click": "#user-menu-toggle",
+        "pause": 900
+      }
+    ]
+  },
+  {
+    "id": "profile-photo",
+    "path": "/dashboard",
+    "wait": "main",
+    "settle": 600,
+    "do": [
+      {
+        "click": "#user-menu-toggle",
+        "pause": 700
+      },
+      {
+        "click": "#my-profile-open",
+        "wait": "#profile-modal.pm-drawer-active",
+        "pause": 900
+      }
+    ],
+    "clip": "#profile-modal .pm-drawer-panel"
+  },
+  {
+    "id": "properties-list",
+    "path": "/properties",
+    "wait": "#properties-list",
+    "settle": 600
+  },
+  {
+    "id": "property-drawer",
+    "path": "/properties",
+    "wait": "#properties-list",
+    "settle": 400,
+    "do": [
+      {
+        "click": "#add-property-button",
+        "wait": "#property-modal.pm-drawer-active",
+        "pause": 800
+      }
+    ],
+    "clip": "#property-modal .pm-drawer-panel"
+  },
+  {
+    "id": "property-owners",
+    "path": "/properties",
+    "wait": "#properties-list",
+    "settle": 400,
+    "do": [
+      {
+        "click": "#add-property-button",
+        "wait": "#property-modal.pm-drawer-active",
+        "pause": 800
+      },
+      {
+        "click": "#add-owner-button",
+        "pause": 700
+      }
+    ],
+    "clip": "#property-modal .pm-drawer-panel"
+  },
+  {
+    "id": "unit-drawer",
+    "path": "/properties",
+    "wait": "#properties-list",
+    "settle": 500,
+    "do": [
+      {
+        "click": "[data-add-existing-unit]",
+        "wait": "#existing-unit-modal.pm-drawer-active",
+        "pause": 900
+      }
+    ],
+    "clip": "#existing-unit-modal .pm-drawer-panel"
+  },
+  {
+    "id": "property-delete",
+    "path": "/properties",
+    "wait": "#properties-list",
+    "settle": 400,
+    "do": [
+      {
+        "click": "[data-delete-building]",
+        "wait": "#delete-property-modal.pm-drawer-active",
+        "pause": 900
+      }
+    ],
+    "clip": "#delete-property-modal .pm-drawer-panel"
+  },
+  {
+    "id": "parties-list",
+    "path": "/parties",
+    "wait": "#parties-list",
+    "settle": 600
+  },
+  {
+    "id": "party-drawer",
+    "path": "/parties",
+    "wait": "#parties-list",
+    "settle": 400,
+    "do": [
+      {
+        "click": "#add-party-button",
+        "wait": "#party-modal.pm-drawer-active",
+        "pause": 800
+      }
+    ],
+    "clip": "#party-modal .pm-drawer-panel"
+  },
+  {
+    "id": "party-email-control",
+    "path": "/parties",
+    "wait": "#parties-list",
+    "settle": 400,
+    "do": [
+      {
+        "click": "[data-edit-party]",
+        "wait": "#party-modal.pm-drawer-active",
+        "pause": 900
+      }
+    ],
+    "clip": "#party-modal .pm-drawer-panel"
+  },
+  {
+    "id": "leases-list",
+    "path": "/leases",
+    "wait": "#leases-list",
+    "settle": 700
+  },
+  {
+    "id": "lease-drafts",
+    "path": "/leases",
+    "wait": "#leases-list",
+    "settle": 700
+  },
+  {
+    "id": "lease-drawer",
+    "path": "/leases",
+    "wait": "#leases-list",
+    "settle": 400,
+    "do": [
+      {
+        "click": "#add-lease-button",
+        "wait": "#lease-modal.pm-drawer-active",
+        "pause": 900
+      }
+    ],
+    "clip": "#lease-modal .pm-drawer-panel"
+  },
+  {
+    "id": "lease-extend",
+    "path": "/leases",
+    "wait": "#leases-list",
+    "settle": 400,
+    "do": [
+      {
+        "click": "[data-extend-lease]",
+        "wait": "#lease-extend-modal.pm-drawer-active",
+        "pause": 900
+      }
+    ],
+    "clip": "#lease-extend-modal .pm-drawer-panel"
+  },
+  {
+    "id": "lease-terminate",
+    "path": "/leases",
+    "wait": "#leases-list",
+    "settle": 600,
+    "do": [
+      {
+        "click": "[data-terminate-lease]",
+        "wait": "#lease-termination-modal.pm-drawer-active",
+        "pause": 900
+      }
+    ],
+    "clip": "#lease-termination-modal .pm-drawer-panel"
+  },
+  {
+    "id": "lease-history",
+    "path": "/leases",
+    "wait": "#leases-list",
+    "settle": 600,
+    "do": [
+      {
+        "click": "[data-financial-history]",
+        "wait": "#lease-financial-history-modal.pm-drawer-active",
+        "pause": 1300
+      }
+    ],
+    "clip": "#lease-financial-history-modal .pm-drawer-panel"
+  },
+  {
+    "id": "lease-delete",
+    "path": "/leases",
+    "wait": "#leases-list",
+    "settle": 400,
+    "do": [
+      {
+        "click": "[data-delete-lease]",
+        "wait": "#lease-delete-modal.pm-drawer-active",
+        "pause": 900
+      }
+    ],
+    "clip": "#lease-delete-modal .pm-drawer-panel"
+  },
+  {
+    "id": "rent-increment",
+    "path": "/leases",
+    "wait": "#leases-list",
+    "settle": 400,
+    "do": [
+      {
+        "click": "[data-rent-increments]",
+        "pause": 1100
+      }
+    ]
+  },
+  {
+    "id": null,
+    "name": "wizard",
+    "comment": "Walks the lease assistant page by page and photographs each one. Page 1 is a glossary, page 2 holds the property AND the unit, and the ownership page only appears for a property that has none — so a NEW property is entered. Nothing is ever submitted.",
+    "path": "/leases/wizard",
+    "wait": "#wizard-step-counter",
+    "settle": 900,
+    "do": [
+      {
+        "capture": "wizard-intro",
+        "settle": 300
+      },
+      {
+        "click": "#wizard-next",
+        "pause": 900
+      },
+      {
+        "capture": "wizard-property",
+        "settle": 400
+      },
+      {
+        "waitAttached": "#wizard-building-mode option[value=\"new\"]",
+        "pause": 200
+      },
+      {
+        "select": {
+          "selector": "#wizard-building-mode",
+          "value": "new"
+        },
+        "pause": 600
+      },
+      {
+        "fill": {
+          "selector": "#wizard-building-name",
+          "value": "Frangipani Court"
+        }
+      },
+      {
+        "fill": {
+          "selector": "#wizard-building-address",
+          "value": "12 Independence Avenue, Accra"
+        },
+        "pause": 400
+      },
+      {
+        "click": "#wizard-next",
+        "pause": 900
+      },
+      {
+        "capture": "wizard-owners",
+        "settle": 400
+      },
+      {
+        "click": "#wizard-next",
+        "pause": 900
+      },
+      {
+        "capture": "wizard-tenant",
+        "settle": 400
+      },
+      {
+        "click": "#wizard-next",
+        "pause": 900
+      },
+      {
+        "click": "#wizard-next",
+        "pause": 900
+      },
+      {
+        "capture": "wizard-dates",
+        "settle": 400
+      },
+      {
+        "click": "#wizard-next",
+        "pause": 900
+      },
+      {
+        "click": "#wizard-next",
+        "pause": 900
+      },
+      {
+        "capture": "wizard-rent",
+        "settle": 400
+      },
+      {
+        "click": "#wizard-next",
+        "pause": 900
+      },
+      {
+        "click": "#wizard-next",
+        "pause": 900
+      },
+      {
+        "capture": "wizard-review",
+        "settle": 500
+      }
+    ]
+  },
+  {
+    "id": "tenants-list",
+    "path": "/tenants",
+    "wait": "#tenant-list",
+    "settle": 900
+  },
+  {
+    "id": "tenant-accounts",
+    "path": "/tenants?tenant_id=134",
+    "wait": "#tenant-list",
+    "settle": 1200,
+    "do": [
+      {
+        "click": "[data-tenant-transaction-action=\"accounts\"]",
+        "wait": "#tenant-accounts-drawer.pm-drawer-active",
+        "pause": 1300
+      }
+    ],
+    "clip": "#tenant-accounts-drawer .pm-drawer-panel"
+  },
+  {
+    "id": "tenant-deposit",
+    "path": "/tenants?tenant_id=134",
+    "wait": "#tenant-list",
+    "settle": 1200,
+    "do": [
+      {
+        "click": "[data-tenant-transaction-action=\"deposit\"]",
+        "wait": "#tenant-deposit-drawer.pm-drawer-active",
+        "pause": 1100
+      }
+    ],
+    "clip": "#tenant-deposit-drawer .pm-drawer-panel"
+  },
+  {
+    "id": "tenant-withdrawal",
+    "path": "/tenants?tenant_id=134",
+    "wait": "#tenant-list",
+    "settle": 1200,
+    "do": [
+      {
+        "click": "[data-tenant-transaction-action=\"withdrawal\"]",
+        "wait": "#tenant-withdrawal-drawer.pm-drawer-active",
+        "pause": 1100
+      }
+    ],
+    "clip": "#tenant-withdrawal-drawer .pm-drawer-panel"
+  },
+  {
+    "id": "tenant-expense",
+    "path": "/tenants?tenant_id=134",
+    "wait": "#tenant-list",
+    "settle": 1200,
+    "do": [
+      {
+        "click": "[data-tenant-transaction-action=\"expense\"]",
+        "wait": "#tenant-expense-drawer.pm-drawer-active",
+        "pause": 1100
+      }
+    ],
+    "clip": "#tenant-expense-drawer .pm-drawer-panel"
+  },
+  {
+    "id": "tenant-transfer",
+    "path": "/tenants?tenant_id=134",
+    "wait": "#tenant-list",
+    "settle": 1200,
+    "do": [
+      {
+        "click": "[data-tenant-transaction-action=\"accounts\"]",
+        "wait": "#tenant-accounts-drawer.pm-drawer-active",
+        "pause": 1200
+      },
+      {
+        "click": "#tenant-accounts-transfer",
+        "wait": "#tenant-transfer-drawer.pm-drawer-active",
+        "pause": 1100
+      }
+    ],
+    "clip": "#tenant-transfer-drawer .pm-drawer-panel"
+  },
+  {
+    "id": "tenant-adjustment",
+    "path": "/tenants?tenant_id=134",
+    "wait": "#tenant-list",
+    "settle": 1200,
+    "do": [
+      {
+        "click": "[data-tenant-transaction-action=\"adjustment\"]",
+        "wait": "#tenant-adjustment-drawer.pm-drawer-active",
+        "pause": 1100
+      }
+    ],
+    "clip": "#tenant-adjustment-drawer .pm-drawer-panel"
+  },
+  {
+    "id": "payment-allocation",
+    "path": "/tenants?tenant_id=135",
+    "wait": "#tenant-list",
+    "settle": 1400
+  },
+  {
+    "id": "owners-list",
+    "path": "/owners",
+    "wait": "#owners-list",
+    "settle": 800
+  },
+  {
+    "id": "owner-account",
+    "path": "/owners",
+    "wait": "#owners-list",
+    "settle": 900,
+    "do": [
+      {
+        "click": "[data-owner-account-id]",
+        "pause": 1400
+      }
+    ]
+  },
+  {
+    "id": "owner-deposit",
+    "path": "/owners",
+    "wait": "#owners-list",
+    "settle": 900,
+    "do": [
+      {
+        "click": "[data-owner-account-id]",
+        "pause": 1400
+      },
+      {
+        "click": "#owner-record-deposit-button",
+        "wait": "#owner-deposit-modal.pm-drawer-active",
+        "pause": 1000
+      }
+    ],
+    "clip": "#owner-deposit-modal .pm-drawer-panel"
+  },
+  {
+    "id": "owner-expense",
+    "path": "/owners",
+    "wait": "#owners-list",
+    "settle": 900,
+    "do": [
+      {
+        "click": "[data-owner-account-id]",
+        "pause": 1400
+      },
+      {
+        "click": "#owner-record-expense-button",
+        "wait": "#owner-expense-bill-modal.pm-drawer-active",
+        "pause": 1000
+      }
+    ],
+    "clip": "#owner-expense-bill-modal .pm-drawer-panel"
+  },
+  {
+    "id": "owner-payout",
+    "path": "/owners",
+    "wait": "#owners-list",
+    "settle": 900,
+    "do": [
+      {
+        "click": "[data-owner-account-id]",
+        "pause": 1400
+      },
+      {
+        "click": "#owner-record-payout-button",
+        "wait": "#owner-payout-modal.pm-drawer-active",
+        "pause": 1000
+      }
+    ],
+    "clip": "#owner-payout-modal .pm-drawer-panel"
+  },
+  {
+    "id": "owner-adjustment",
+    "path": "/owners",
+    "wait": "#owners-list",
+    "settle": 900,
+    "do": [
+      {
+        "click": "[data-owner-account-id]",
+        "pause": 1400
+      },
+      {
+        "click": "#owner-record-adjustment-button",
+        "wait": "#owner-adjustment-modal.pm-drawer-active",
+        "pause": 1000
+      }
+    ],
+    "clip": "#owner-adjustment-modal .pm-drawer-panel"
+  },
+  {
+    "id": "owner-statement",
+    "path": "/owners",
+    "wait": "#owners-list",
+    "settle": 900,
+    "do": [
+      {
+        "click": "[data-owner-account-id]",
+        "pause": 1500
+      },
+      {
+        "click": "#owner-view-accounts-button",
+        "wait": "#owner-accounts-modal.pm-drawer-active",
+        "pause": 1200
+      },
+      {
+        "click": "#owner-statement-button",
+        "wait": "#owner-statement-modal.pm-drawer-active",
+        "pause": 1100
+      }
+    ],
+    "clip": "#owner-statement-modal .pm-drawer-panel"
+  },
+  {
+    "id": "owner-bill",
+    "path": "/owners",
+    "wait": "#owners-list",
+    "settle": 900,
+    "do": [
+      {
+        "click": "[data-owner-account-id]",
+        "pause": 1400
+      },
+      {
+        "click": "#owner-record-expense-button",
+        "wait": "#owner-expense-bill-modal.pm-drawer-active",
+        "pause": 1000
+      }
+    ],
+    "clip": "#owner-expense-bill-modal .pm-drawer-panel"
+  },
+  {
+    "id": "invoices-list",
+    "path": "/tenants?tenant_id=135",
+    "wait": "#tenant-list",
+    "settle": 1400
+  },
+  {
+    "id": "invoice-pay",
+    "path": "/tenants?tenant_id=135",
+    "wait": "#tenant-list",
+    "settle": 1600,
+    "do": [
+      {
+        "click": "[data-pay-invoice]",
+        "wait": "#invoice-pay-drawer.pm-drawer-active",
+        "pause": 1100
+      }
+    ],
+    "clip": "#invoice-pay-drawer .pm-drawer-panel"
+  },
+  {
+    "id": "reports-list",
+    "path": "/reports",
+    "wait": "main",
+    "settle": 800
+  },
+  {
+    "id": "report-filters",
+    "path": "/reports",
+    "wait": "main",
+    "settle": 500,
+    "do": [
+      {
+        "click": ".report-type-button",
+        "pause": 900
+      }
+    ]
+  },
+  {
+    "id": "report-result",
+    "path": "/reports",
+    "wait": "main",
+    "settle": 500,
+    "do": [
+      {
+        "click": ".report-type-button",
+        "pause": 700
+      },
+      {
+        "click": "#run-report-button",
+        "pause": 2200
+      }
+    ]
+  },
+  {
+    "id": "report-export",
+    "path": "/reports",
+    "wait": "main",
+    "settle": 500,
+    "do": [
+      {
+        "click": ".report-type-button",
+        "pause": 700
+      },
+      {
+        "click": "#run-report-button",
+        "pause": 2200
+      }
+    ],
+    "clip": "#report-pdf-button, #run-report-button"
+  },
+  {
+    "id": "journal-list",
+    "path": "/financial-journal",
+    "wait": "#financial-journal-list",
+    "settle": 900
+  },
+  {
+    "id": "journal-entry",
+    "path": "/financial-journal",
+    "wait": "#financial-journal-list",
+    "settle": 700,
+    "do": [
+      {
+        "click": "#financial-journal-list [data-journal-entry], #financial-journal-list button, #financial-journal-list tr",
+        "wait": "#financial-journal-modal.pm-drawer-active",
+        "pause": 1100
+      }
+    ],
+    "clip": "#financial-journal-modal .pm-drawer-panel"
+  },
+  {
+    "id": "activity-list",
+    "path": "/activity-log",
+    "wait": "#activity-log-list",
+    "settle": 900
+  },
+  {
+    "id": "activity-entry",
+    "path": "/activity-log",
+    "wait": "#activity-log-list",
+    "settle": 700,
+    "do": [
+      {
+        "click": "#activity-log-list [data-activity-id], #activity-log-list button, #activity-log-list tr",
+        "wait": "#activity-log-modal.pm-drawer-active",
+        "pause": 1100
+      }
+    ],
+    "clip": "#activity-log-modal .pm-drawer-panel"
+  },
+  {
+    "id": "settings-account",
+    "path": "/settings",
+    "wait": "#settings-summary",
+    "settle": 900
+  },
+  {
+    "id": "settings-organisation",
+    "path": "/settings",
+    "wait": "#settings-summary",
+    "settle": 900
+  },
+  {
+    "id": "settings-preferences",
+    "path": "/settings#preferences",
+    "wait": "#settings-preferences-panel",
+    "settle": 900
+  },
+  {
+    "id": "settings-licence",
+    "path": "/settings#license",
+    "wait": "#license-workspace",
+    "settle": 1300
+  },
+  {
+    "id": "settings-data",
+    "path": "/settings#data",
+    "wait": "#settings-data-panel",
+    "settle": 900
+  },
+  {
+    "id": "settings-restore",
+    "path": "/settings#data",
+    "wait": "#settings-data-panel",
+    "settle": 900
+  },
+  {
+    "id": "users-list",
+    "path": "/settings#users",
+    "wait": "#users-list",
+    "settle": 1000
+  },
+  {
+    "id": "user-drawer",
+    "path": "/settings#users",
+    "wait": "#users-list",
+    "settle": 700,
+    "do": [
+      {
+        "click": "#add-user-button",
+        "wait": "#user-modal.pm-drawer-active",
+        "pause": 1000
+      }
+    ],
+    "clip": "#user-modal .pm-drawer-panel"
+  },
+  {
+    "id": "settings-danger",
+    "path": "/settings",
+    "wait": "#settings-close-account",
+    "settle": 800,
+    "clip": "#settings-close-account"
+  },
+  {
+    "id": "close-account-drawer",
+    "path": "/settings",
+    "wait": "#settings-close-account",
+    "settle": 700,
+    "do": [
+      {
+        "click": "#settings-close-account",
+        "wait": "#settings-close-drawer.pm-drawer-active",
+        "pause": 1000
+      }
+    ],
+    "clip": "#settings-close-drawer .pm-drawer-panel"
+  },
+  {
+    "id": "pagination",
+    "path": "/financial-journal",
+    "wait": "#financial-journal-pagination .pm-pagination",
+    "settle": 900,
+    "clip": "#financial-journal-pagination"
+  }
+]
