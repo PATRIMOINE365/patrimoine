@@ -93,27 +93,64 @@ function matches(country, term) {
 */
 
 /**
+ * Menus currently lifted out of their field, by the field's stored id.
+ *
+ * An open menu is moved to the end of the document. It has to be: the
+ * drawer these fields sit in carries a transform, and a transformed
+ * ancestor becomes the containing block for anything positioned against
+ * the viewport, which would put the list some hundreds of pixels off the
+ * side of the screen.
+ */
+const lifted = new Map();
+
+/**
+ * The field an element belongs to, whether or not its menu has been
+ * lifted out of it.
+ */
+function fieldFor(element) {
+    const menu =
+        element?.closest?.('[data-phone-menu]');
+
+    if (menu?.dataset.phoneMenuFor) {
+        return document
+            .getElementById(menu.dataset.phoneMenuFor)
+            ?.closest('[data-phone-field]')
+            ?? null;
+    }
+
+    return element?.closest?.('[data-phone-field]')
+        ?? null;
+}
+
+/**
  * The three inputs of one field, given any element inside it.
  */
 function parts(element) {
     const field =
-        element?.closest('[data-phone-field]');
+        fieldFor(element);
 
     if (! field) {
         return null;
     }
 
+    const value =
+        field.querySelector('[data-phone-value]');
+
+    const menu =
+        lifted.get(value?.id)
+        ?? field.querySelector('[data-phone-menu]');
+
     return {
         field,
         national: field.querySelector('[data-phone-national]'),
-        value: field.querySelector('[data-phone-value]'),
+        value,
         country: field.querySelector('[data-phone-country]'),
         toggle: field.querySelector('[data-phone-toggle]'),
         flag: field.querySelector('[data-phone-flag]'),
         code: field.querySelector('[data-phone-code]'),
-        menu: field.querySelector('[data-phone-menu]'),
-        search: field.querySelector('[data-phone-search]'),
-        list: field.querySelector('[data-phone-list]'),
+        menu,
+        search: menu?.querySelector('[data-phone-search]'),
+        list: menu?.querySelector('[data-phone-list]'),
     };
 }
 
@@ -389,6 +426,16 @@ function closeMenu(field) {
 
     parts_.menu.hidden = true;
 
+    /*
+     * Put it back where the markup says it lives, so the field stays one
+     * self-contained thing when it is not in use.
+     */
+    if (lifted.get(parts_.value?.id) === parts_.menu) {
+        lifted.delete(parts_.value.id);
+
+        parts_.field.appendChild(parts_.menu);
+    }
+
     parts_.toggle?.setAttribute(
         'aria-expanded',
         'false'
@@ -411,6 +458,20 @@ function openMenu(field) {
     }
 
     closeEveryMenu();
+
+    /*
+     * Lift it out of the drawer before measuring anything, so what is
+     * measured is where it will actually be drawn.
+     */
+    parts_.menu.dataset.phoneMenuFor =
+        parts_.value.id;
+
+    lifted.set(
+        parts_.value.id,
+        parts_.menu
+    );
+
+    document.body.appendChild(parts_.menu);
 
     if (parts_.search) {
         parts_.search.value = '';
@@ -631,6 +692,15 @@ export function initializePhoneInputs() {
                 event.target.closest?.('[data-phone-search]');
 
             if (! search) {
+                /*
+                 * Escape closes the drawer these fields live in. An open
+                 * menu has been lifted out of it and would be left behind
+                 * on the page.
+                 */
+                if (event.key === 'Escape') {
+                    closeEveryMenu();
+                }
+
                 return;
             }
 
