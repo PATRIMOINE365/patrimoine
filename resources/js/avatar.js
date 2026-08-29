@@ -127,19 +127,29 @@ export function paintAvatar(element, { name = '', avatar = null } = {}) {
 
     element.classList.add('pm-avatar');
 
+    /*
+     * Longhand, not the background shorthand: the shorthand resets
+     * position, size and repeat, which the class sets, and the result is
+     * harder to reason about than four explicit properties.
+     */
     if (avatar) {
         element.classList.remove('pm-avatar-initials');
 
         element.textContent = '';
 
-        element.style.background = `center / cover no-repeat url("${avatar}")`;
+        element.style.backgroundColor = 'transparent';
+        element.style.backgroundImage = `url("${avatar}")`;
+        element.style.backgroundSize = 'cover';
+        element.style.backgroundPosition = 'center';
+        element.style.backgroundRepeat = 'no-repeat';
 
         return;
     }
 
     element.classList.add('pm-avatar-initials');
 
-    element.style.background = placeholderColour(label);
+    element.style.backgroundImage = 'none';
+    element.style.backgroundColor = placeholderColour(label);
 
     element.textContent = initials(label);
 }
