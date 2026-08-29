@@ -315,6 +315,17 @@ class LicensingService
         $organisation = $this->organisation();
 
         return [
+            /*
+             * V1.0.32: the Settings summary panel reads its account facts
+             * from here rather than from an endpoint of its own — the
+             * licence picture is already the page's answer to "what is
+             * this account".
+             */
+            'organisation' => [
+                'id' => $organisation?->id,
+                'name' => $organisation?->name,
+                'created_on' => $organisation?->created_at?->toIso8601String(),
+            ],
             'plan' => $this->plan(),
             'plan_label' => (string) ($this->planDefinition()['label'] ?? ''),
             'on_trial' => $this->onTrial(),

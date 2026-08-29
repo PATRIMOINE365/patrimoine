@@ -211,7 +211,7 @@ class PaginationTest extends TestCase
             'app/tenants.blade.php' => 'tenant-pagination',
             'app/leases.blade.php' => 'leases-pagination',
             'app/owners.blade.php' => 'owners-list-pagination',
-            'app/users.blade.php' => 'users-pagination',
+            'app/panels/users.blade.php' => 'users-pagination',
             'app/activity-log.blade.php' => 'activity-log-pagination',
             'app/financial-journal.blade.php' => 'financial-journal-pagination',
             'app/help.blade.php' => 'help-errors-pagination',

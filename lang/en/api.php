@@ -57,6 +57,12 @@ return [
         'deleted' => 'User deleted successfully.',
     ],
 
+    'organisation' => [
+        'closed' => 'Your organisation and everything in it has been permanently deleted.',
+        'name_confirmation_mismatch' => 'That is not the name of your organisation. Type it exactly as it is shown.',
+        'platform_cannot_close' => 'The organisation that operates Patrimoine cannot be closed from here.',
+    ],
+
     'managing_organisation' => [
         'not_configured' => 'Managing organisation has not been configured.',
         'cannot_remove_role' => 'Your own company has to stay the managing organisation. Name another party as the managing organisation first.',

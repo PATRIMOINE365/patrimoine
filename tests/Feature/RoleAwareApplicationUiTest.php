@@ -218,7 +218,13 @@ class RoleAwareApplicationUiTest extends TestCase
                 )
             );
 
-        $this->assertStringContainsString(
+        /*
+         * V1.0.32: Users is a tab of Settings rather than a sidebar link,
+         * so the layout no longer names manage_users. The gate did not
+         * move — the Settings link that now leads there carries
+         * manage_settings, and both capabilities are Administrator-only.
+         */
+        $this->assertStringNotContainsString(
             'data-requires-capability="manage_users"',
             $layout
         );
@@ -277,7 +283,7 @@ class RoleAwareApplicationUiTest extends TestCase
     public function test_administrator_users_workspace_is_not_permanently_hidden(): void
     {
         $view = file_get_contents(
-            resource_path('views/app/users.blade.php')
+            resource_path('views/app/panels/users.blade.php')
         );
 
         $this->assertIsString($view);

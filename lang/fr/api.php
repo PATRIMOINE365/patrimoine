@@ -57,6 +57,12 @@ return [
         'deleted' => 'Utilisateur supprimé avec succès.',
     ],
 
+    'organisation' => [
+        'closed' => 'Votre organisation et tout ce qu’elle contenait ont été définitivement supprimés.',
+        'name_confirmation_mismatch' => 'Ce n’est pas le nom de votre organisation. Saisissez-le exactement tel qu’il est affiché.',
+        'platform_cannot_close' => 'L’organisation qui exploite Patrimoine ne peut pas être fermée depuis cet écran.',
+    ],
+
     'managing_organisation' => [
         'not_configured' => 'L’organisation gestionnaire n’a pas encore été configurée.',
         'cannot_remove_role' => 'Votre propre société doit rester l’organisation gestionnaire. Désignez d’abord une autre partie comme organisation gestionnaire.',

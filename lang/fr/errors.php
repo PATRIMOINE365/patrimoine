@@ -277,6 +277,18 @@ return [
         'fix' => 'Vérifiez que la partie a une adresse e-mail valide, puis renvoyez. Si l’adresse est correcte et que l’échec persiste, téléchargez le document et envoyez-le vous-même le temps que nous examinions la cause.',
     ],
 
+    'PM-1038' => [
+        'title' => "Le nom saisi n'est pas celui de votre organisation.",
+        'what' => 'Fermer un compte détruit tout ce qu’il contient : le nom doit donc être resaisi à l’identique avant que l’opération ne s’exécute. Ce qui a été saisi ne correspond pas.',
+        'fix' => 'Recopiez le nom exactement tel que les Paramètres l’affichent, majuscules, espaces et ponctuation comprises. Si vous ne vouliez pas fermer le compte, fermez plutôt ce panneau.',
+    ],
+
+    'PM-1039' => [
+        'title' => 'Ce compte ne peut pas être fermé depuis cet écran.',
+        'what' => 'Vous êtes connecté à l’organisation qui exploite Patrimoine. La fermer emporterait la plateforme avec elle : l’écran refuse donc.',
+        'fix' => "Rien à corriger. Si un compte doit réellement être fermé, faites-le depuis la console d'administration, sur l'organisation cliente concernée.",
+    ],
+
     /* ---- 2xxx ---- */
 
     'PM-2001' => [

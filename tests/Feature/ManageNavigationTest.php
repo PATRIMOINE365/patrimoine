@@ -13,6 +13,12 @@ use Tests\TestCase;
  * These assertions freeze both halves of that move: the flyout is gone for
  * good, and every link it used to hold is still gated by exactly the
  * capability it was gated by before.
+ *
+ * V1.0.32 took Users and Licence out of the group. They are tabs of
+ * Settings now, and Settings is gated by manage_settings exactly as it
+ * always was, so the group shrank without any gate changing hands. The
+ * paths still work: /users and /license redirect to the tabs that hold
+ * them, which is asserted below rather than left to a browser to find out.
  */
 class ManageNavigationTest extends TestCase
 {
@@ -26,9 +32,7 @@ class ManageNavigationTest extends TestCase
         return [
             '/activity-log' => 'view_activity_log',
             '/financial-journal' => 'view_financial_journal',
-            '/users' => 'manage_users',
             '/settings' => 'manage_settings',
-            '/license' => 'manage_settings',
         ];
     }
 
@@ -163,6 +167,57 @@ class ManageNavigationTest extends TestCase
                 )
             );
         }
+    }
+
+    public function test_users_and_licence_left_the_sidebar_for_settings(): void
+    {
+        $navigation =
+            $this->sidebarNavigation(
+                $this->layout()
+            );
+
+        $this->assertStringNotContainsString(
+            'href="/users"',
+            $navigation,
+            'Users is a tab of Settings now, not a sidebar link.'
+        );
+
+        $this->assertStringNotContainsString(
+            'href="/license"',
+            $navigation,
+            'Licence is a tab of Settings now, not a sidebar link.'
+        );
+
+        $settings = file_get_contents(
+            resource_path('views/app/settings.blade.php')
+        );
+
+        foreach (['users', 'license'] as $tab) {
+            $this->assertStringContainsString(
+                'id="settings-tab-'.$tab.'"',
+                $settings,
+                'Settings should carry the '.$tab.' pill.'
+            );
+
+            $this->assertStringContainsString(
+                'id="settings-'.$tab.'-panel"',
+                $settings,
+                'Settings should carry the '.$tab.' panel.'
+            );
+        }
+    }
+
+    public function test_the_old_paths_still_reach_the_tabs_that_hold_them(): void
+    {
+        /*
+         * Redirects rather than removals: links printed on documents, in
+         * old e-mails and in anybody's bookmarks predate the move.
+         */
+        $this->get('/users')
+            ->assertRedirect('/settings#users');
+
+        $this->get('/license')
+            ->assertRedirect('/settings#license');
     }
 
     public function test_the_flyout_menu_is_gone_from_every_layer(): void

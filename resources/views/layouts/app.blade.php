@@ -564,66 +564,6 @@
                     </a>
 
                     <a
-                        href="/users"
-                        data-requires-capability="manage_users"
-                        class="
-                            {{ request()->is('users')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                            }}
-                            flex items-center gap-3
-                            rounded-lg px-3 py-2.5
-                            text-sm font-medium
-                            transition
-                        "
-                    >
-                        <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M19 8v6"/>
-                            <path d="M16 11h6"/>
-                        </svg>
-
-                        <span data-i18n="navigation.users">{{ __('ui.navigation.users') }}</span>
-                    </a>
-
-                    <a
-                        href="/license"
-                        data-requires-capability="manage_settings"
-                        class="
-                            {{ request()->is('license')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                            }}
-                            flex items-center gap-3
-                            rounded-lg px-3 py-2.5
-                            text-sm font-medium
-                            transition
-                        "
-                    >
-                        <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <rect x="3" y="4" width="18" height="14" rx="2"/>
-                            <path d="M7 20h10"/>
-                            <path d="M9 9h6"/>
-                            <path d="M9 13h3"/>
-                        </svg>
-
-                        <span data-i18n="navigation.license">{{ __('ui.navigation.license') }}</span>
-                    </a>
-
-                    <a
                         href="/activity-log"
                         data-requires-capability="view_activity_log"
                         class="

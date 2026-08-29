@@ -4116,6 +4116,75 @@ export const translations = {
         'pagination.current_page':
             'Page :page, current page',
 
+        'settings.summary':
+            'Account summary',
+
+        'settings.summary_description':
+            'What this account is, at a glance.',
+
+        'settings.summary_account':
+            'Account',
+
+        'settings.summary_plan':
+            'Plan',
+
+        'settings.summary_users':
+            'Users',
+
+        'settings.summary_leases':
+            'Active leases',
+
+        'settings.summary_parties':
+            'Parties',
+
+        'settings.summary_created':
+            'Opened on',
+
+        'settings.summary_trial':
+            'Trial ends',
+
+        'settings.need_help':
+            'Need help?',
+
+        'settings.need_help_description':
+            'Every screen in Patrimoine is explained in the guide, and every refusal carries a code you can look up there.',
+
+        'settings.open_guide':
+            'Open the guide',
+
+        'settings.close_account':
+            'Close this account',
+
+        'settings.close_account_description':
+            'Permanently delete this organisation and everything it holds. This cannot be undone.',
+
+        'settings.close_account_action':
+            'Close account',
+
+        'settings.close_account_drawer':
+            'Read what goes, then type the name and your password.',
+
+        'settings.close_account_warning':
+            'Everything below is destroyed permanently, along with the properties, leases, invoices, payments and the financial journal behind them. Nobody — not you, not us — can bring it back.',
+
+        'settings.close_account_name_label':
+            'Type the organisation name',
+
+        'settings.close_account_name_hint':
+            'Type :name exactly as it is written.',
+
+        'settings.close_account_password_label':
+            'Your password',
+
+        'settings.close_account_confirm':
+            'Delete everything',
+
+        'settings.close_account_closing':
+            'Closing the account…',
+
+        'settings.close_account_done':
+            'The account is closed. Everything it held has been deleted.',
+
     },
 
     fr: {
@@ -7038,6 +7107,75 @@ export const translations = {
 
         'pagination.current_page':
             'Page :page, page actuelle',
+
+        'settings.summary':
+            'Résumé du compte',
+
+        'settings.summary_description':
+            'Ce compte en un coup d’œil.',
+
+        'settings.summary_account':
+            'Compte',
+
+        'settings.summary_plan':
+            'Formule',
+
+        'settings.summary_users':
+            'Utilisateurs',
+
+        'settings.summary_leases':
+            'Baux actifs',
+
+        'settings.summary_parties':
+            'Parties',
+
+        'settings.summary_created':
+            'Ouvert le',
+
+        'settings.summary_trial':
+            'Fin de l’essai',
+
+        'settings.need_help':
+            'Besoin d’aide ?',
+
+        'settings.need_help_description':
+            'Chaque écran de Patrimoine est expliqué dans le guide, et chaque refus porte un code que vous pouvez y rechercher.',
+
+        'settings.open_guide':
+            'Ouvrir le guide',
+
+        'settings.close_account':
+            'Fermer ce compte',
+
+        'settings.close_account_description':
+            'Supprimer définitivement cette organisation et tout ce qu’elle contient. Cette action est irréversible.',
+
+        'settings.close_account_action':
+            'Fermer le compte',
+
+        'settings.close_account_drawer':
+            'Lisez ce qui disparaît, puis saisissez le nom et votre mot de passe.',
+
+        'settings.close_account_warning':
+            'Tout ce qui suit est détruit définitivement, avec les biens, les baux, les factures, les paiements et le journal financier qui les accompagnent. Personne — ni vous, ni nous — ne pourra les rétablir.',
+
+        'settings.close_account_name_label':
+            'Saisissez le nom de l’organisation',
+
+        'settings.close_account_name_hint':
+            'Saisissez :name exactement tel qu’il est écrit.',
+
+        'settings.close_account_password_label':
+            'Votre mot de passe',
+
+        'settings.close_account_confirm':
+            'Tout supprimer',
+
+        'settings.close_account_closing':
+            'Fermeture du compte…',
+
+        'settings.close_account_done':
+            'Le compte est fermé. Tout ce qu’il contenait a été supprimé.',
 
 'parties.loading': 'Chargement des parties…',
         'parties.unable_to_load': 'Impossible de charger les parties.',

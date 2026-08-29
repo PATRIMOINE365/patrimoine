@@ -176,9 +176,14 @@ Route::view(
     'app.financial-journal'
 )->name('financial-journal');
 
-Route::view(
+/*
+ * V1.0.32: Users and Licence now live inside Settings. Both paths are kept
+ * so links, bookmarks and anything printed before the move still land in
+ * the right place.
+ */
+Route::redirect(
     '/users',
-    'app.users'
+    '/settings#users'
 )->name('users');
 
 Route::view(
@@ -196,11 +201,12 @@ Route::view(
 )->name('help');
 
 /*
- * V1.0.10: licence & plan page for the authenticated organisation.
+ * V1.0.10: licence & plan for the authenticated organisation. A tab of
+ * Settings since V1.0.32.
  */
-Route::view(
+Route::redirect(
     '/license',
-    'app.license'
+    '/settings#license'
 )->name('license');
 
 /*

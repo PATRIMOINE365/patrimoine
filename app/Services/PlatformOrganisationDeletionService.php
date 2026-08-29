@@ -51,6 +51,7 @@ class PlatformOrganisationDeletionService
         'owner_expense_bills',
         'owner_accounts',
         'rent_increments',
+        'lease_wizard_drafts',
         'lease_term_versions',
         'leases',
         'units',

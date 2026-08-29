@@ -538,7 +538,7 @@ class TelephoneNumberTest extends TestCase
             'app/parties.blade.php',
             'app/properties.blade.php',
             'app/settings.blade.php',
-            'app/users.blade.php',
+            'app/panels/users.blade.php',
             'app/admin.blade.php',
             'auth/signup.blade.php',
             'layouts/app.blade.php',

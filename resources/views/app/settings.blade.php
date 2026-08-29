@@ -95,6 +95,38 @@
                 </button>
 
                 <button
+                    id="settings-tab-users"
+                    type="button"
+                    role="tab"
+                    data-requires-capability="manage_users"
+                    aria-selected="false"
+                    aria-controls="settings-users-panel"
+                    class="
+                        rounded-lg px-4 py-2
+                        text-sm font-medium
+                        transition
+                    "
+                >
+                    <span data-i18n="navigation.users">{{ __('ui.navigation.users') }}</span>
+                </button>
+
+                <button
+                    id="settings-tab-license"
+                    type="button"
+                    role="tab"
+                    data-requires-capability="manage_settings"
+                    aria-selected="false"
+                    aria-controls="settings-license-panel"
+                    class="
+                        rounded-lg px-4 py-2
+                        text-sm font-medium
+                        transition
+                    "
+                >
+                    <span data-i18n="navigation.license">{{ __('ui.navigation.license') }}</span>
+                </button>
+
+                <button
                     id="settings-tab-preferences"
                     type="button"
                     role="tab"
@@ -152,6 +184,12 @@
         aria-labelledby="settings-tab-organisation"
         class="mt-4"
     >
+        <div
+            class="
+                grid items-start gap-6
+                xl:grid-cols-[minmax(0,1fr)_20rem]
+            "
+        >
         <div class="max-w-[880px]">
 
             {{-- Inline tab feedback --}}
@@ -519,7 +557,110 @@
                 </fieldset>
 
             </form>
+
+            {{--
+                Closing the account. Last on the page, and the only control
+                in Patrimoine that destroys an organisation. The drawer at
+                the foot of this file is what actually asks for it.
+            --}}
+            <section
+                class="
+                    mt-8 overflow-hidden rounded-xl border
+                    border-[var(--pm-danger-border)]
+                    bg-[var(--pm-danger-background)]
+                "
+            >
+                <div
+                    class="
+                        flex flex-col gap-4 p-5
+                        sm:flex-row sm:items-center
+                        sm:justify-between
+                    "
+                >
+                    <div>
+                        <h3
+                            class="
+                                text-sm font-semibold
+                                text-[var(--pm-danger-text)]
+                            "
+                        >
+                            <span data-i18n="settings.close_account">{{ __('ui.settings.close_account') }}</span>
+                        </h3>
+
+                        <p
+                            class="
+                                mt-1 max-w-xl text-sm leading-6
+                                text-[var(--pm-danger-text)]
+                            "
+                        >
+                            <span data-i18n="settings.close_account_description">{{ __('ui.settings.close_account_description') }}</span>
+                        </p>
+                    </div>
+
+                    <button
+                        id="settings-close-account"
+                        type="button"
+                        class="pm-button-danger shrink-0"
+                    >
+                        <span data-i18n="settings.close_account_action">{{ __('ui.settings.close_account_action') }}</span>
+                    </button>
+                </div>
+            </section>
         </div>
+
+        {{--
+            What this account is, in five lines. Filled by settings.js from
+            GET /api/license, which already knows the plan, the usage and
+            the organisation behind them.
+        --}}
+        <aside class="grid gap-4">
+            <div class="pm-card p-5">
+                <h3 class="text-sm font-semibold text-[var(--pm-text)]">
+                    <span data-i18n="settings.summary">{{ __('ui.settings.summary') }}</span>
+                </h3>
+
+                <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
+                    <span data-i18n="settings.summary_description">{{ __('ui.settings.summary_description') }}</span>
+                </p>
+
+                <dl id="settings-summary" class="mt-4 grid gap-3 text-sm"></dl>
+            </div>
+
+            <div class="pm-card p-5">
+                <h3 class="text-sm font-semibold text-[var(--pm-text)]">
+                    <span data-i18n="settings.need_help">{{ __('ui.settings.need_help') }}</span>
+                </h3>
+
+                <p class="mt-2 text-sm leading-6 text-[var(--pm-text-muted)]">
+                    <span data-i18n="settings.need_help_description">{{ __('ui.settings.need_help_description') }}</span>
+                </p>
+
+                <a href="/help" class="pm-button-secondary mt-4 w-full">
+                    <span data-i18n="settings.open_guide">{{ __('ui.settings.open_guide') }}</span>
+                </a>
+            </div>
+        </aside>
+        </div>
+    </section>
+
+    {{-- Users tab: the people who can sign in to this organisation. --}}
+    <section
+        id="settings-users-panel"
+        role="tabpanel"
+        aria-labelledby="settings-tab-users"
+        class="mt-4 hidden"
+    >
+        @include('app.panels.users')
+    </section>
+
+    {{-- Licence tab: the plan, what it allows, and what is being used. --}}
+    <section
+        id="settings-license-panel"
+        role="tabpanel"
+        aria-labelledby="settings-tab-license"
+        class="mt-4 hidden"
+    >
+        @include('app.panels.license')
     </section>
 
     {{--
@@ -1220,6 +1361,123 @@
             class="pm-button-danger"
         >
             <span data-i18n="settings.confirm_restore_apply">{{ __('ui.settings.confirm_restore_apply') }}</span>
+        </button>
+    </x-drawer-footer>
+</x-drawer>
+
+{{--
+    Closing the account.
+
+    Two things are asked for, and both are asked for deliberately: the
+    organisation's name typed back, and the administrator's own password.
+    Neither is a formality — between them they are the difference between
+    a decision and a mis-click on the most destructive control in the
+    application.
+--}}
+<x-drawer
+    id="settings-close-drawer"
+    backdrop-id="settings-close-drawer-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        title-id="settings-close-drawer-title"
+        description-id="settings-close-drawer-description"
+        close-id="settings-close-drawer-dismiss"
+        close-label="Close"
+        close-label-key="actions.close"
+    >
+        <x-slot:title>
+            <span data-i18n="settings.close_account">{{ __('ui.settings.close_account') }}</span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="settings.close_account_drawer">{{ __('ui.settings.close_account_drawer') }}</span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <div
+        class="
+            min-h-0 flex-1
+            overflow-y-auto
+            px-6 py-6
+        "
+    >
+        <div
+            class="
+                rounded-lg border
+                border-[var(--pm-danger-border)]
+                bg-[var(--pm-danger-background)]
+                px-4 py-3 text-sm
+                text-[var(--pm-danger-text)]
+            "
+        >
+            <span data-i18n="settings.close_account_warning">{{ __('ui.settings.close_account_warning') }}</span>
+        </div>
+
+        {{-- What is about to be destroyed, counted by settings.js. --}}
+        <ul
+            id="settings-close-inventory"
+            class="mt-4 grid gap-2 text-sm text-[var(--pm-text-muted)]"
+        ></ul>
+
+        <div
+            id="settings-close-error"
+            class="
+                mt-4 hidden rounded-xl border px-4 py-3 text-sm
+                border-[var(--pm-danger-border)]
+                bg-[var(--pm-danger-background)]
+                text-[var(--pm-danger-text)]
+            "
+            role="alert"
+        ></div>
+
+        <div class="mt-5">
+            <label for="settings-close-name" class="pm-field-label">
+                <span data-i18n="settings.close_account_name_label">{{ __('ui.settings.close_account_name_label') }}</span>
+            </label>
+
+            <p
+                id="settings-close-name-hint"
+                class="mb-2 text-xs text-[var(--pm-text-muted)]"
+            ></p>
+
+            <input
+                id="settings-close-name"
+                type="text"
+                autocomplete="off"
+                class="pm-input"
+            >
+        </div>
+
+        <div class="mt-4">
+            <label for="settings-close-password" class="pm-field-label">
+                <span data-i18n="settings.close_account_password_label">{{ __('ui.settings.close_account_password_label') }}</span>
+            </label>
+
+            <input
+                id="settings-close-password"
+                type="password"
+                autocomplete="current-password"
+                class="pm-input"
+            >
+        </div>
+    </div>
+
+    <x-drawer-footer>
+        <button
+            id="settings-close-cancel"
+            type="button"
+            class="pm-button-secondary"
+        >
+            <span data-i18n="actions.cancel">{{ __('ui.actions.cancel') }}</span>
+        </button>
+
+        <button
+            id="settings-close-confirm"
+            type="button"
+            class="pm-button-danger"
+        >
+            <span data-i18n="settings.close_account_confirm">{{ __('ui.settings.close_account_confirm') }}</span>
         </button>
     </x-drawer-footer>
 </x-drawer>

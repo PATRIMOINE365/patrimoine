@@ -5,8 +5,13 @@
 |
 | Browser-side functionality for application-wide Patrimoine settings.
 |
-| V1.0.9 layout: four hash-deep-linked tabs (Organisation, Preferences,
-| Data, About) following the Help page tablist pattern.
+| V1.0.9 layout: hash-deep-linked tabs following the Help page tablist
+| pattern. V1.0.32 brought Users and Licence in from pages of their own, so
+| there are six: Organisation, Users, Licence, Preferences, Data, About.
+|
+| The two newcomers are only markup here. resources/js/users.js and
+| resources/js/license.js still drive them, still find them by their own
+| workspace ids, and neither knows it moved.
 |
 | Patrimoine 1.0 currently supports one Managing Organisation. The
 | backend represents that organisation as a Party and stores its Party
@@ -24,6 +29,7 @@ import {
     apiRequest,
     closeDrawer,
     escapeHtml,
+    formatDate,
     formValue,
     getPresentationConfiguration,
     loadPresentationConfiguration,
@@ -56,6 +62,8 @@ import {
 
 const SETTINGS_TABS = [
     'organisation',
+    'users',
+    'license',
     'preferences',
     'data',
     'about',
@@ -89,6 +97,7 @@ export async function initializeSettings() {
     initializeAboutSection();
     initializeRegistryPortability();
     initializeOrganisationForms();
+    initializeAccountClosure();
 
     applySettingsLocationHash();
 
@@ -98,6 +107,362 @@ export async function initializeSettings() {
     );
 
     await loadManagingOrganisationSettings();
+
+    await loadAccountSummary();
+}
+
+/*
+|--------------------------------------------------------------------------
+| Account summary
+|--------------------------------------------------------------------------
+|
+| Five lines beside the organisation form saying what this account is. The
+| facts come from GET /api/license, which already knows the plan, what is
+| being used against it, and the organisation behind both.
+|
+| A failure here is silent. The summary is a convenience next to the form
+| that matters; an error box for it would be louder than the thing itself.
+|
+*/
+
+let accountSummary = null;
+
+async function loadAccountSummary() {
+    const container =
+        document.getElementById(
+            'settings-summary'
+        );
+
+    if (! container) {
+        return;
+    }
+
+    try {
+        const response =
+            await apiRequest(
+                '/api/license'
+            );
+
+        accountSummary =
+            await parseJsonResponse(
+                response
+            );
+
+        renderAccountSummary();
+    } catch (error) {
+        container.innerHTML = '';
+    }
+}
+
+/**
+ * One term and its value.
+ *
+ * @param {string} key
+ * @param {string} value
+ * @returns {string}
+ */
+function summaryRow(key, value) {
+    return `
+        <div
+            class="
+                flex items-baseline justify-between gap-4
+                border-b border-[var(--pm-border-subtle)] pb-3
+                last:border-0 last:pb-0
+            "
+        >
+            <dt class="text-[var(--pm-text-muted)]">
+                ${escapeHtml(translate(`settings.${key}`))}
+            </dt>
+
+            <dd class="text-right font-medium text-[var(--pm-text)]">
+                ${escapeHtml(value)}
+            </dd>
+        </div>
+    `;
+}
+
+function renderAccountSummary() {
+    const container =
+        document.getElementById(
+            'settings-summary'
+        );
+
+    if (! container || accountSummary === null) {
+        return;
+    }
+
+    const organisation =
+        accountSummary.organisation ?? {};
+
+    const usage =
+        accountSummary.usage ?? {};
+
+    const rows = [
+        summaryRow(
+            'summary_account',
+            organisation.name ?? '—'
+        ),
+
+        summaryRow(
+            'summary_plan',
+            accountSummary.plan_label
+                || accountSummary.plan
+                || '—'
+        ),
+
+        summaryRow(
+            'summary_users',
+            String(usage.users ?? 0)
+        ),
+
+        summaryRow(
+            'summary_leases',
+            String(usage.active_leases ?? 0)
+        ),
+
+        summaryRow(
+            'summary_parties',
+            String(usage.parties ?? 0)
+        ),
+    ];
+
+    if (organisation.created_on) {
+        rows.push(
+            summaryRow(
+                'summary_created',
+                formatDate(
+                    organisation.created_on
+                )
+            )
+        );
+    }
+
+    /*
+     * The trial line only exists while there is a trial to end.
+     */
+    if (
+        accountSummary.on_trial
+        && accountSummary.trial_ends_on
+    ) {
+        rows.push(
+            summaryRow(
+                'summary_trial',
+                formatDate(
+                    accountSummary.trial_ends_on
+                )
+            )
+        );
+    }
+
+    container.innerHTML = rows.join('');
+}
+
+/*
+|--------------------------------------------------------------------------
+| Closing the account
+|--------------------------------------------------------------------------
+|
+| The only control in Patrimoine that destroys an organisation. It asks for
+| the organisation's name typed back and the administrator's own password,
+| and it says what will go before it asks for either.
+|
+| On success there is nothing left to return to — the session, the user and
+| the organisation are all gone — so the browser is sent to the sign-in
+| screen rather than trying to re-render a page whose data no longer
+| exists.
+|
+*/
+
+function initializeAccountClosure() {
+    const drawer =
+        document.getElementById(
+            'settings-close-drawer'
+        );
+
+    if (! drawer) {
+        return;
+    }
+
+    wireDrawer(
+        drawer,
+        {
+            closers: [
+                'settings-close-drawer-dismiss',
+                'settings-close-cancel',
+            ],
+        }
+    );
+
+    document
+        .getElementById(
+            'settings-close-account'
+        )
+        ?.addEventListener(
+            'click',
+            openAccountClosure
+        );
+
+    document
+        .getElementById(
+            'settings-close-confirm'
+        )
+        ?.addEventListener(
+            'click',
+            submitAccountClosure
+        );
+}
+
+function openAccountClosure() {
+    hideAccountClosureError();
+
+    const organisation =
+        accountSummary?.organisation ?? {};
+
+    const usage =
+        accountSummary?.usage ?? {};
+
+    /*
+     * The name is shown rather than merely asked for. Somebody who has to
+     * hunt for it in another tab is somebody who will paste it without
+     * reading it.
+     */
+    const hint =
+        document.getElementById(
+            'settings-close-name-hint'
+        );
+
+    if (hint) {
+        hint.textContent =
+            translate(
+                'settings.close_account_name_hint',
+                {
+                    name: organisation.name ?? '',
+                }
+            );
+    }
+
+    const inventory =
+        document.getElementById(
+            'settings-close-inventory'
+        );
+
+    if (inventory) {
+        inventory.innerHTML = [
+            ['summary_users', usage.users ?? 0],
+            ['summary_leases', usage.active_leases ?? 0],
+            ['summary_parties', usage.parties ?? 0],
+        ]
+            .map(
+                ([key, count]) => `
+                    <li class="flex items-baseline justify-between gap-4">
+                        <span>${escapeHtml(translate(`settings.${key}`))}</span>
+                        <span class="font-semibold text-[var(--pm-text)]">${escapeHtml(String(count))}</span>
+                    </li>
+                `
+            )
+            .join('');
+    }
+
+    const name =
+        document.getElementById(
+            'settings-close-name'
+        );
+
+    const password =
+        document.getElementById(
+            'settings-close-password'
+        );
+
+    if (name) {
+        name.value = '';
+    }
+
+    if (password) {
+        password.value = '';
+    }
+
+    openDrawer(
+        document.getElementById(
+            'settings-close-drawer'
+        )
+    );
+}
+
+async function submitAccountClosure() {
+    const button =
+        document.getElementById(
+            'settings-close-confirm'
+        );
+
+    hideAccountClosureError();
+
+    setButtonBusy(
+        button,
+        translate(
+            'settings.close_account_closing'
+        )
+    );
+
+    try {
+        const response =
+            await apiRequest(
+                '/api/organisation',
+                {
+                    method: 'DELETE',
+                    body: JSON.stringify({
+                        name_confirmation: formValue(
+                            'settings-close-name'
+                        ),
+                        password: formValue(
+                            'settings-close-password'
+                        ),
+                    }),
+                }
+            );
+
+        await parseJsonResponse(
+            response
+        );
+
+        /*
+         * Everything this page could show has just been deleted, including
+         * the session that fetched it. A full navigation is the only
+         * honest next screen.
+         */
+        window.location.href = '/login';
+    } catch (error) {
+        restoreButton(
+            button
+        );
+
+        showAccountClosureError(
+            error instanceof Error
+                ? error.message
+                : translate('core.request_failed')
+        );
+    }
+}
+
+function showAccountClosureError(message) {
+    const box =
+        document.getElementById(
+            'settings-close-error'
+        );
+
+    if (box) {
+        box.textContent = message;
+
+        box.classList.remove('hidden');
+    }
+}
+
+function hideAccountClosureError() {
+    document
+        .getElementById(
+            'settings-close-error'
+        )
+        ?.classList
+        .add('hidden');
 }
 
 /*

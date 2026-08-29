@@ -240,6 +240,16 @@ return [
             'severity' => 'try_again',
             'keys' => ['ui.verify_email.resend_failed', 'verify_email.resend_failed'],
         ],
+        'PM-1038' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.organisation.name_confirmation_mismatch'],
+        ],
+        'PM-1039' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.organisation.platform_cannot_close'],
+        ],
 
         /* ---- 2xxx input ---- */
 

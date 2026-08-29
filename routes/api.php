@@ -35,6 +35,7 @@ use App\Http\Controllers\Api\LeaseWizardDraftController;
 use App\Http\Controllers\Api\LeaseFinancialHistoryExportController;
 use App\Http\Controllers\Api\LicenseController;
 use App\Http\Controllers\Api\ManagingOrganisationController;
+use App\Http\Controllers\Api\OrganisationDeletionController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\OccupancyReportController;
 use App\Http\Controllers\Api\OccupancyReportExportController;
@@ -1265,6 +1266,17 @@ Route::middleware('auth:sanctum')->group(
                 Route::put(
                     'managing-organisation',
                     [ManagingOrganisationController::class, 'update']
+                );
+
+                /*
+                 * V1.0.32: closing your own account. The most destructive
+                 * thing a customer can do, and the only route in the
+                 * application that removes an organisation. Guarded in the
+                 * controller by the typed name and the caller's password.
+                 */
+                Route::delete(
+                    'organisation',
+                    [OrganisationDeletionController::class, 'destroy']
                 );
 
                 /*

@@ -34,10 +34,12 @@ class FinancialJournalBrowserTest extends TestCase
                 )
             );
 
+        /*
+         * V1.0.32 took Users and Licence out of the group and into Settings
+         * itself, so three links remain in the order they were settled in.
+         */
         $order = [
             '/settings',
-            '/users',
-            '/license',
             '/activity-log',
             '/financial-journal',
         ];

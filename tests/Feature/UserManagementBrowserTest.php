@@ -14,8 +14,15 @@ class UserManagementBrowserTest extends TestCase
 {
     public function test_user_management_page_is_available(): void
     {
+        /*
+         * V1.0.32: /users is a redirect into the Settings tab that now
+         * holds it. The markup itself did not change with the move.
+         */
+        $this->get('/users')
+            ->assertRedirect('/settings#users');
+
         $this
-            ->get('/users')
+            ->get('/settings')
             ->assertOk()
             ->assertSee(
                 'id="users-workspace"',
@@ -39,28 +46,32 @@ class UserManagementBrowserTest extends TestCase
             );
     }
 
-    public function test_layout_contains_hidden_administrator_user_navigation(): void
+    public function test_user_navigation_is_a_gated_settings_tab(): void
     {
-        $view =
+        /*
+         * V1.0.32: the way to Users is the Settings tab rather than a
+         * sidebar link, and the pill carries the gate the link used to.
+         */
+        $settings =
             file_get_contents(
                 resource_path(
-                    'views/layouts/app.blade.php'
+                    'views/app/settings.blade.php'
                 )
             );
 
         $this->assertStringContainsString(
-            'href="/users"',
-            $view
+            'id="settings-tab-users"',
+            $settings
         );
 
         $this->assertStringContainsString(
             'data-requires-capability="manage_users"',
-            $view
+            $settings
         );
 
         $this->assertStringContainsString(
             'data-i18n="navigation.users"',
-            $view
+            $settings
         );
     }
 

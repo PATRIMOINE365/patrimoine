@@ -1,10 +1,10 @@
-@extends('layouts.app')
+{{--
+    The Licence tab of Settings.
 
-@section('title', 'License & plan — Patrimoine 365')
-@section('title-i18n', 'license.title')
-
-@section('content')
-
+    Lifted wholesale from the standalone /license page in V1.0.32, which
+    now redirects here. resources/js/license.js still fills it from
+    GET /api/license and still finds it by #license-workspace.
+--}}
 {{--
     V1.0.10 licence & plan page.
 
@@ -14,29 +14,18 @@
 --}}
 <div
     id="license-workspace"
-    class="mx-auto max-w-[1040px]"
+    class="max-w-[1040px]"
 >
     <div>
-        <div
+        <h2
             class="
-                text-xs font-semibold uppercase
-                tracking-[0.14em]
-                text-[var(--pm-accent)]
-            "
-            data-i18n="license.eyebrow"
-        >
-            Subscription
-        </div>
-
-        <h1
-            class="
-                mt-2 text-2xl font-semibold
+                text-xl font-semibold
                 tracking-tight text-[var(--pm-text)]
             "
             data-i18n="license.heading"
         >
             License &amp; plan
-        </h1>
+        </h2>
 
         <p
             class="
@@ -132,5 +121,3 @@
         never blocked.
     </p>
 </div>
-
-@endsection

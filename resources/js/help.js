@@ -83,6 +83,36 @@ const helpTranslations = {
         'help.errors_no_matches':
             'Nothing matches what you typed. Try fewer words, or the code itself.',
 
+        'help.topic_paging_title':
+            'Reading a long list',
+
+        'help.topic_paging_body1':
+            'Any list longer than 25 rows is shown a page at a time. The control at the foot of the list says how many rows are on screen out of how many exist, and the numbers beside it take you straight to any page — the page you are reading is the filled one.',
+
+        'help.topic_paging_body2':
+            'Rows per page offers 25, 50 or 100. Your choice is remembered for that list on that browser, so a list you always read in hundreds stays that way. Searching or filtering a list returns you to its first page, because a match further in would otherwise announce itself to nobody.',
+
+        'help.topic_settings_home_title':
+            'Where Users and Licence live',
+
+        'help.topic_settings_home_body1':
+            'Users and Licence are tabs of Settings. Open Settings from the Manage group in the sidebar and choose the tab you want; the older addresses still work and simply take you to the right tab.',
+
+        'help.topic_settings_home_body2':
+            'The Organisation tab also carries a summary of the account — the plan, how many people can sign in, how many leases are running and how many parties are on the books — so the answer to "what is this account" is on one screen.',
+
+        'help.topic_closing_title':
+            'Closing the account',
+
+        'help.topic_closing_body1':
+            'An administrator can permanently delete the organisation and everything in it from the foot of Settings › Organisation. This is the whole of it: the properties, the parties, the leases, the invoices, the payments, the financial journal and every user account.',
+
+        'help.topic_closing_body2':
+            'Two things are asked for before it runs — the organisation\'s name typed back exactly as shown, and your own password. Neither is a formality. Between them they are the difference between a decision and a mis-click.',
+
+        'help.topic_closing_body3':
+            'It cannot be undone, by you or by us. There is no recycle bin and no copy kept. If what you want is to stop paying, or to stop using Patrimoine for a while, write to support instead — that is a conversation, and this is not.',
+
         'help.no_results_description':
             'Try different words or clear the category filter.',
 
@@ -473,6 +503,36 @@ const helpTranslations = {
 
         'help.errors_no_matches':
             'Rien ne correspond à votre saisie. Essayez moins de mots, ou le code lui-même.',
+
+        'help.topic_paging_title':
+            'Lire une longue liste',
+
+        'help.topic_paging_body1':
+            'Toute liste de plus de 25 lignes s’affiche page par page. Le contrôle au pied de la liste indique combien de lignes sont affichées sur le total, et les numéros à côté mènent directement à n’importe quelle page — celle que vous lisez est celle qui est remplie.',
+
+        'help.topic_paging_body2':
+            'Lignes par page propose 25, 50 ou 100. Votre choix est retenu pour cette liste sur ce navigateur. Une recherche ou un filtre vous ramène à la première page, car un résultat situé plus loin ne se signalerait autrement à personne.',
+
+        'help.topic_settings_home_title':
+            'Où se trouvent Utilisateurs et Licence',
+
+        'help.topic_settings_home_body1':
+            'Utilisateurs et Licence sont des onglets des Paramètres. Ouvrez les Paramètres depuis le groupe Gestion de la barre latérale et choisissez l’onglet voulu ; les anciennes adresses fonctionnent toujours et vous conduisent simplement au bon onglet.',
+
+        'help.topic_settings_home_body2':
+            'L’onglet Organisation présente aussi un résumé du compte — la formule, le nombre de personnes pouvant se connecter, le nombre de baux en cours et le nombre de parties enregistrées — de sorte que la réponse à « qu’est-ce que ce compte » tient sur un seul écran.',
+
+        'help.topic_closing_title':
+            'Fermer le compte',
+
+        'help.topic_closing_body1':
+            'Un administrateur peut supprimer définitivement l’organisation et tout ce qu’elle contient, depuis le bas de Paramètres › Organisation. Cela concerne l’ensemble : les biens, les parties, les baux, les factures, les paiements, le journal financier et chaque compte utilisateur.',
+
+        'help.topic_closing_body2':
+            'Deux choses sont demandées avant l’exécution — le nom de l’organisation resaisi exactement tel qu’il est affiché, et votre propre mot de passe. Ni l’un ni l’autre n’est une formalité : ensemble, ils font la différence entre une décision et une fausse manœuvre.',
+
+        'help.topic_closing_body3':
+            'L’opération est irréversible, pour vous comme pour nous. Il n’y a ni corbeille ni copie conservée. Si vous souhaitez seulement cesser de payer, ou mettre Patrimoine de côté quelque temps, écrivez plutôt à l’assistance : cela se discute, ceci non.',
 
         'help.no_results_description':
             'Essayez d’autres termes ou effacez le filtre de catégorie.',
@@ -919,6 +979,34 @@ const helpTopics = [
         bodyKeys: [
             'help.topic_drafts_body1',
             'help.topic_drafts_body2',
+        ],
+    },
+    {
+        id: 'paging_lists',
+        category: 'getting_started',
+        titleKey: 'help.topic_paging_title',
+        bodyKeys: [
+            'help.topic_paging_body1',
+            'help.topic_paging_body2',
+        ],
+    },
+    {
+        id: 'settings_home',
+        category: 'admin',
+        titleKey: 'help.topic_settings_home_title',
+        bodyKeys: [
+            'help.topic_settings_home_body1',
+            'help.topic_settings_home_body2',
+        ],
+    },
+    {
+        id: 'closing_account',
+        category: 'admin',
+        titleKey: 'help.topic_closing_title',
+        bodyKeys: [
+            'help.topic_closing_body1',
+            'help.topic_closing_body2',
+            'help.topic_closing_body3',
         ],
     },
     {

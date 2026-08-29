@@ -277,6 +277,18 @@ return [
         'fix' => 'Check that the party has a valid email address, then send again. If the address is right and it still fails, download the document and send it yourself while we look into it.',
     ],
 
+    'PM-1038' => [
+        'title' => "The name you typed is not your organisation's name.",
+        'what' => 'Closing an account destroys everything in it, so the name has to be typed back exactly before it will run. What was typed does not match.',
+        'fix' => 'Copy the name exactly as Settings shows it, including capital letters, spaces and punctuation. If you did not mean to close the account, close this panel instead.',
+    ],
+
+    'PM-1039' => [
+        'title' => 'This account cannot be closed from here.',
+        'what' => 'You are signed in to the organisation that operates Patrimoine itself. Closing it would take the platform down with it, so the screen refuses.',
+        'fix' => 'Nothing to put right. If an account really does need closing, do it from the administration console against the customer organisation concerned.',
+    ],
+
     /* ---- 2xxx ---- */
 
     'PM-2001' => [

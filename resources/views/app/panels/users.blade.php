@@ -1,10 +1,11 @@
-@extends('layouts.app')
+{{--
+    The Users tab of Settings.
 
-@section('title', __('ui.users.title'))
-@section('title-i18n', 'users.title')
-
-@section('content')
-
+    Lifted wholesale from the standalone /users page in V1.0.32, which
+    now redirects here. resources/js/users.js still drives it and still
+    finds it by #users-workspace, so nothing about how it behaves
+    changed with the move.
+--}}
 <div
     id="users-workspace"
     data-requires-role="administrator"
@@ -18,24 +19,14 @@
         "
     >
         <div>
-            <div
+            <h2
                 class="
-                    text-xs font-semibold uppercase
-                    tracking-[0.14em]
-                    text-[var(--pm-accent)]
-                "
-            >
-                <span data-i18n="users.administration">{{ __('ui.users.administration') }}</span>
-            </div>
-
-            <h1
-                class="
-                    mt-2 text-2xl font-semibold
+                    text-xl font-semibold
                     tracking-tight text-[var(--pm-text)]
                 "
             >
                 <span data-i18n="users.heading">{{ __('ui.users.heading') }}</span>
-            </h1>
+            </h2>
 
             <p
                 class="
@@ -382,5 +373,3 @@
         </x-drawer-footer>
     </form>
 </x-drawer>
-
-@endsection
