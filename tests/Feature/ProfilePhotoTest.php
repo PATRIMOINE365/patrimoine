@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Services\ProfilePhotoService;
 use App\Models\Organisation;
 use App\Models\User;
 use App\Support\OrganisationContext;
@@ -74,9 +75,9 @@ class ProfilePhotoTest extends TestCase
 
         $decoded = imagecreatefromstring($user->profile_photo);
 
-        $this->assertSame(256, imagesx($decoded));
+        $this->assertSame(ProfilePhotoService::SIZE, imagesx($decoded));
 
-        $this->assertSame(256, imagesy($decoded));
+        $this->assertSame(ProfilePhotoService::SIZE, imagesy($decoded));
 
         /*
          * The photo travels inside /auth/me as a data URI and the

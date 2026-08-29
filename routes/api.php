@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Admin\AdminLicenseController;
 use App\Http\Controllers\Api\Admin\AdminOrganisationController;
 use App\Http\Controllers\Api\Admin\AdminOrganisationDeletionController;
 use App\Http\Controllers\Api\Admin\AdminOrganisationStatusController;
+use App\Http\Controllers\Api\Admin\AdminReleaseLogController;
 use App\Http\Controllers\Api\Admin\AdminSupportController;
 use App\Http\Controllers\Api\ActivityLogExportController;
 use App\Http\Controllers\Api\ApplicationPresentationController;
@@ -190,6 +191,15 @@ Route::middleware('auth:sanctum')->group(
         Route::post(
             'auth/me/avatar',
             [ProfilePhotoController::class, 'store']
+        );
+
+        /*
+         * V1.0.31: the picture behind the photo, so its owner can reframe
+         * it. Only ever their own — there is no identifier to change.
+         */
+        Route::get(
+            'auth/me/avatar/source',
+            [ProfilePhotoController::class, 'source']
         );
 
         Route::delete(
@@ -1293,6 +1303,15 @@ Route::middleware(['auth:sanctum', 'platform.admin'])
         Route::get(
             'activity',
             [AdminActivityController::class, 'index']
+        );
+
+        /*
+         * V1.0.31: the release-by-release history. Customers read a
+         * shortened log in Help; support reads this one.
+         */
+        Route::get(
+            'release-log',
+            AdminReleaseLogController::class
         );
 
         Route::get(

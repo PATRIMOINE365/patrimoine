@@ -109,6 +109,25 @@ class UserController extends Controller
                 )
             );
 
+        /*
+         * V1.0.31: each row carries its photograph, so an administrator
+         * scanning the list recognises a colleague before reading the
+         * name. It is the small square — a few kilobytes — and the
+         * columns behind it stay hidden.
+         */
+        $users->through(
+            static function (User $user): array {
+                $row = $user->toArray();
+
+                $row['avatar'] = $user->profile_photo === null
+                    ? null
+                    : 'data:'.$user->profile_photo_mime
+                        .';base64,'.base64_encode($user->profile_photo);
+
+                return $row;
+            }
+        );
+
         return response()->json($users);
     }
 

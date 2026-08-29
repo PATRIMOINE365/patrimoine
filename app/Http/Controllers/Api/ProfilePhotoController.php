@@ -12,10 +12,15 @@ use Illuminate\Http\Request;
 /**
  * The authenticated user's profile photo.
  *
- * Uploaded images are re-encoded server-side into a small square JPEG
- * (see ProfilePhotoService) and stored in the users row itself; the
- * photo travels to clients as a data URI inside the /auth/me payload,
- * so no file is ever written to disk and no URL can be probed.
+ * Two pictures are stored from one upload. The small square is what every
+ * screen shows and travels inside /auth/me as a data URI, so no file is
+ * written to disk and no URL can be probed. The optimised whole picture is
+ * kept beside it, with where the frame sat, so its owner can reframe it
+ * later without going to find the file again — that one is only ever sent
+ * back to the person it belongs to, when they reopen the cropper.
+ *
+ * Both are re-encoded server-side (see ProfilePhotoService); the uploaded
+ * bytes are never stored.
  */
 class ProfilePhotoController extends Controller
 {
@@ -28,10 +33,30 @@ class ProfilePhotoController extends Controller
         ActivityLogService $activityLog
     ): JsonResponse {
         $request->validate([
+            /*
+             * The square the browser cut out.
+             */
             'photo' => [
                 'required',
                 'file',
                 'max:5120',
+            ],
+
+            /*
+             * The whole picture behind it. Optional: an older client, or
+             * a direct API call, may send only the square — the photo
+             * still works, it simply cannot be reframed later.
+             */
+            'source' => [
+                'nullable',
+                'file',
+                'max:15360',
+            ],
+
+            'crop' => [
+                'nullable',
+                'string',
+                'max:128',
             ],
         ]);
 
@@ -42,10 +67,22 @@ class ProfilePhotoController extends Controller
             (string) $request->file('photo')->get()
         );
 
-        $user->forceFill([
+        $attributes = [
             'profile_photo' => $bytes,
             'profile_photo_mime' => $mime,
-        ])->save();
+        ];
+
+        if ($request->hasFile('source')) {
+            [$sourceBytes, $sourceMime] = $photos->processSource(
+                (string) $request->file('source')->get()
+            );
+
+            $attributes['profile_photo_source'] = $sourceBytes;
+            $attributes['profile_photo_source_mime'] = $sourceMime;
+            $attributes['profile_photo_crop'] = $request->input('crop');
+        }
+
+        $user->forceFill($attributes)->save();
 
         $activityLog->record(
             action: 'user.updated',
@@ -66,6 +103,33 @@ class ProfilePhotoController extends Controller
     }
 
     /**
+     * The picture behind the current photo, for reframing it.
+     *
+     * Only ever the caller's own: there is no identifier to change.
+     */
+    public function source(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        if ($user->profile_photo_source === null) {
+            return response()->json([
+                'source' => null,
+                'crop' => null,
+            ]);
+        }
+
+        return response()->json([
+            'source' => 'data:'
+                .$user->profile_photo_source_mime
+                .';base64,'
+                .base64_encode($user->profile_photo_source),
+
+            'crop' => $user->profile_photo_crop,
+        ]);
+    }
+
+    /**
      * Remove the profile photo.
      */
     public function destroy(
@@ -78,6 +142,9 @@ class ProfilePhotoController extends Controller
         $user->forceFill([
             'profile_photo' => null,
             'profile_photo_mime' => null,
+            'profile_photo_source' => null,
+            'profile_photo_source_mime' => null,
+            'profile_photo_crop' => null,
         ])->save();
 
         $activityLog->record(

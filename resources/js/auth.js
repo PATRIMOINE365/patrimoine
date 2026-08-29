@@ -29,7 +29,9 @@ import {
     initials,
     openDrawer,
     parseJsonResponse,
+    restoreButton,
     saveToken,
+    setButtonBusy,
     token,
     translate,
 
@@ -39,6 +41,12 @@ import {
     applyPhoneValue,
     readPhoneValue,
 } from './phone-input.js';
+
+import {
+    AvatarCropper,
+    decodeImage,
+    paintAvatar,
+} from './avatar.js';
 
 import { initializeBrowserAuthorization } from './permissions.js';
 
@@ -953,11 +961,27 @@ function renderCurrentUser(user) {
         );
 
     if (topbarAvatar) {
-        topbarAvatar.textContent =
-            initials(
-                displayName
-            );
+        paintAvatar(
+            topbarAvatar,
+            {
+                name: displayName,
+                avatar: user.avatar ?? null,
+            }
+        );
     }
+
+    /*
+     * The button in the top bar IS the avatar: a face is quicker to find
+     * than a generic outline, and the initials on their own colour say
+     * whose account this is when there is no face yet.
+     */
+    paintAvatar(
+        document.getElementById('user-menu-toggle'),
+        {
+            name: displayName,
+            avatar: user.avatar ?? null,
+        }
+    );
 
     if (topbarName) {
         topbarName.textContent =
@@ -1694,6 +1718,20 @@ function openProfileModal() {
     }
 
     hideProfileMessage();
+
+    resetPhotoEditor();
+
+    paintAvatar(
+        document.getElementById('profile-avatar'),
+        {
+            name: user.name,
+            avatar: user.avatar ?? null,
+        }
+    );
+
+    showPhotoActions(
+        Boolean(user.avatar)
+    );
 
     openDrawer(
         modal
@@ -2740,3 +2778,306 @@ document.addEventListener(
         );
     }
 );
+
+/*
+|--------------------------------------------------------------------------
+| Profile photograph
+|--------------------------------------------------------------------------
+|
+| Choosing one is two steps and one upload: frame the picture in the round
+| window, then send both the square under it and the whole picture behind
+| it. Keeping the second is what lets Reframe reopen this later without
+| the original file.
+|
+*/
+
+let cropper = null;
+
+/**
+ * Which buttons make sense right now.
+ */
+function showPhotoActions(hasPhoto) {
+    document
+        .getElementById('profile-photo-reframe')
+        ?.classList.toggle('hidden', ! hasPhoto);
+
+    document
+        .getElementById('profile-photo-remove')
+        ?.classList.toggle('hidden', ! hasPhoto);
+}
+
+function resetPhotoEditor() {
+    document
+        .getElementById('profile-photo-editor')
+        ?.classList.add('hidden');
+
+    const file = document.getElementById('profile-photo-file');
+
+    if (file) {
+        file.value = '';
+    }
+}
+
+/**
+ * Open the cropper on a picture.
+ */
+function openPhotoEditor(image, framing = null) {
+    const stage = document.getElementById('profile-photo-stage');
+
+    const editor = document.getElementById('profile-photo-editor');
+
+    if (! stage || ! editor) {
+        return;
+    }
+
+    editor.classList.remove('hidden');
+
+    cropper ??= new AvatarCropper(stage);
+
+    cropper.load(image, framing);
+
+    const zoom = document.getElementById('profile-photo-zoom');
+
+    if (zoom) {
+        zoom.value = String(
+            Math.round((framing?.zoom ?? 1) * 100)
+        );
+    }
+
+    /*
+     * The stage has no width until it is on screen, so the first draw has
+     * to wait for layout.
+     */
+    requestAnimationFrame(() => cropper.draw());
+
+    setTimeout(() => cropper.draw(), 120);
+}
+
+/**
+ * Wire the photograph controls. Called once, with the rest of the shell.
+ */
+export function initializeProfilePhoto() {
+    const file = document.getElementById('profile-photo-file');
+
+    document
+        .getElementById('profile-photo-choose')
+        ?.addEventListener('click', () => file?.click());
+
+    file?.addEventListener(
+        'change',
+        async () => {
+            const chosen = file.files?.[0];
+
+            if (! chosen) {
+                return;
+            }
+
+            try {
+                openPhotoEditor(
+                    await decodeImage(chosen)
+                );
+            } catch {
+                showProfileMessage(
+                    translate('profile.photo_unreadable'),
+                    false
+                );
+
+                file.value = '';
+            }
+        }
+    );
+
+    document
+        .getElementById('profile-photo-zoom')
+        ?.addEventListener(
+            'input',
+            (event) => cropper?.setZoom(Number(event.target.value) / 100)
+        );
+
+    document
+        .getElementById('profile-photo-cancel')
+        ?.addEventListener('click', resetPhotoEditor);
+
+    /*
+     * Reframing asks the server for the picture behind the current photo.
+     * Nobody else can ask for it: the endpoint has no identifier.
+     */
+    document
+        .getElementById('profile-photo-reframe')
+        ?.addEventListener(
+            'click',
+            async (event) => {
+                const button = event.currentTarget;
+
+                setButtonBusy(button, 'profile.photo_reframe');
+
+                try {
+                    const payload =
+                        await parseJsonResponse(
+                            await apiRequest('/api/auth/me/avatar/source')
+                        );
+
+                    if (! payload.source) {
+                        showProfileMessage(
+                            translate('profile.photo_unreadable'),
+                            false
+                        );
+
+                        return;
+                    }
+
+                    const image = new Image();
+
+                    image.src = payload.source;
+
+                    await image.decode();
+
+                    let framing = null;
+
+                    try {
+                        framing = payload.crop
+                            ? JSON.parse(payload.crop)
+                            : null;
+                    } catch {
+                        /* A framing we cannot read simply starts centred. */
+                    }
+
+                    openPhotoEditor(image, framing);
+                } catch (error) {
+                    showProfileMessage(
+                        error instanceof Error
+                            ? error.message
+                            : translate('profile.photo_unreadable'),
+                        false
+                    );
+                } finally {
+                    restoreButton(button);
+                }
+            }
+        );
+
+    document
+        .getElementById('profile-photo-save')
+        ?.addEventListener(
+            'click',
+            async (event) => {
+                if (! cropper?.image) {
+                    return;
+                }
+
+                const button = event.currentTarget;
+
+                setButtonBusy(button, 'profile.photo_save');
+
+                try {
+                    const body = new FormData();
+
+                    body.append('photo', await cropper.crop());
+                    body.append('source', await cropper.source());
+                    body.append('crop', JSON.stringify(cropper.framing()));
+
+                    const payload =
+                        await parseJsonResponse(
+                            await apiRequest(
+                                '/api/auth/me/avatar',
+                                {
+                                    method: 'POST',
+                                    body,
+                                }
+                            )
+                        );
+
+                    applyNewAvatar(payload.avatar ?? null);
+
+                    resetPhotoEditor();
+
+                    showProfileMessage(payload.message, true);
+                } catch (error) {
+                    showProfileMessage(
+                        error instanceof Error
+                            ? error.message
+                            : translate('profile.photo_unreadable'),
+                        false
+                    );
+                } finally {
+                    restoreButton(button);
+                }
+            }
+        );
+
+    document
+        .getElementById('profile-photo-remove')
+        ?.addEventListener(
+            'click',
+            async (event) => {
+                const button = event.currentTarget;
+
+                setButtonBusy(button, 'profile.photo_remove');
+
+                try {
+                    const payload =
+                        await parseJsonResponse(
+                            await apiRequest(
+                                '/api/auth/me/avatar',
+                                { method: 'DELETE' }
+                            )
+                        );
+
+                    applyNewAvatar(null);
+
+                    resetPhotoEditor();
+
+                    showProfileMessage(payload.message, true);
+                } catch (error) {
+                    showProfileMessage(
+                        error instanceof Error
+                            ? error.message
+                            : translate('profile.photo_unreadable'),
+                        false
+                    );
+                } finally {
+                    restoreButton(button);
+                }
+            }
+        );
+}
+
+/**
+ * Put a new photograph everywhere it shows, without a page reload.
+ */
+function applyNewAvatar(avatar) {
+    const name =
+        document.getElementById('user-menu-name')?.textContent
+        ?? '';
+
+    for (const id of ['profile-avatar', 'topbar-avatar', 'sidebar-avatar', 'user-menu-toggle']) {
+        paintAvatar(
+            document.getElementById(id),
+            { name, avatar }
+        );
+    }
+
+    showPhotoActions(Boolean(avatar));
+
+    /*
+     * The cached identity feeds the next page's first paint.
+     */
+    try {
+        const cached =
+            JSON.parse(
+                sessionStorage.getItem('patrimoine.current_user')
+                || 'null'
+            );
+
+        if (cached && typeof cached === 'object') {
+            cached.avatar = avatar;
+
+            sessionStorage.setItem(
+                'patrimoine.current_user',
+                JSON.stringify(cached)
+            );
+        }
+    } catch {
+        /* Storage restrictions must never break the upload. */
+    }
+}

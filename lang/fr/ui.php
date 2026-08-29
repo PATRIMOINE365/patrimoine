@@ -170,6 +170,22 @@ return [
         'none' => 'Aucun pays ne correspond',
     ],
 
+    /*
+     * V1.0.31 profile photographs.
+     */
+    'profile' => [
+        'photo' => 'Photographie',
+        'photo_hint' => 'Affichée en haut de l’écran et à côté de votre nom partout où votre compte apparaît.',
+        'photo_choose' => 'Choisir une image',
+        'photo_reframe' => 'Recadrer',
+        'photo_remove' => 'Retirer',
+        'photo_zoom' => 'Zoom',
+        'photo_save' => 'Utiliser ce cadrage',
+        'photo_cancel' => 'Annuler',
+        'photo_drag' => 'Faites glisser pour déplacer, molette ou curseur pour zoomer.',
+        'photo_unreadable' => 'Cette image n’a pas pu être ouverte. Si elle vient d’un iPhone, enregistrez-la d’abord en JPEG.',
+    ],
+
     'shell' => [
         /* ---- V1.0.7 additions ---- */
         'help' => 'Aide',

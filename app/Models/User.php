@@ -40,6 +40,9 @@ use Laravel\Sanctum\HasApiTokens;
     'email_verification_token_hash',
     'profile_photo',
     'profile_photo_mime',
+    'profile_photo_source',
+    'profile_photo_source_mime',
+    'profile_photo_crop',
 ])]
 class User extends Authenticatable
 {

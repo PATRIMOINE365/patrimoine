@@ -68,6 +68,7 @@ const SECTIONS = [
     'licenses',
     'emails',
     'activity',
+    'releases',
     'settings',
     'organisation',
 ];
@@ -215,10 +216,72 @@ async function navigate(name) {
             await loadStaff();
         } else if (name === 'emails') {
             await loadEmails();
+        } else if (name === 'releases') {
+            await loadReleaseLog();
         }
     } catch (error) {
         showError(error instanceof Error ? error.message : 'Unable to load this page.');
     }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Release log
+|--------------------------------------------------------------------------
+|
+| The release-by-release history. Customers read a shortened log in Help,
+| written in fives, because nobody is on an old version and a thirty-entry
+| archive buries what they need; support reads the whole thing here.
+|
+*/
+
+async function loadReleaseLog() {
+    const container = document.getElementById('admin-releases');
+
+    if (! container) {
+        return;
+    }
+
+    const data = await adminRequest('/api/admin/release-log', 'GET');
+
+    const entries = Array.isArray(data?.entries) ? data.entries : [];
+
+    container.innerHTML = `
+        <div class="pm-admin-card">
+            <h2 class="pm-admin-card-title">
+                Running ${escapeHtml(String(data?.current_version ?? ''))}
+                <span class="pm-admin-card-note">${entries.length} releases</span>
+            </h2>
+        </div>
+
+        ${entries.map(releaseCard).join('')}
+    `;
+}
+
+function releaseCard(entry) {
+    const changes = Array.isArray(entry?.changes) ? entry.changes : [];
+
+    return `
+        <div class="pm-admin-card mt-4">
+            <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span class="font-mono text-sm font-semibold text-[var(--pm-accent)]">
+                    v${escapeHtml(String(entry?.version ?? ''))}
+                </span>
+
+                <span class="text-xs text-[var(--pm-text-muted)]">
+                    ${escapeHtml(String(entry?.date ?? ''))}
+                </span>
+            </div>
+
+            <h3 class="mt-2 text-base font-semibold text-[var(--pm-text)]">
+                ${escapeHtml(String(entry?.title ?? ''))}
+            </h3>
+
+            <ul class="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-6 text-[var(--pm-text-secondary)]">
+                ${changes.map((change) => `<li>${escapeHtml(String(change))}</li>`).join('')}
+            </ul>
+        </div>
+    `;
 }
 
 /*

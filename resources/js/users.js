@@ -26,6 +26,8 @@ import {
     readPhoneValue,
 } from './phone-input.js';
 
+import { avatarMarkup } from './avatar.js';
+
 let userSearchTimer =
     null;
 
@@ -440,6 +442,14 @@ function userRow(user) {
                     xl:justify-between
                 "
             >
+                <div class="flex min-w-0 flex-1 items-start gap-3">
+                    ${avatarMarkup({
+                        name: user.name,
+                        avatar: user.avatar,
+                        size: 36,
+                        className: 'mt-0.5',
+                    })}
+
                 <div class="min-w-0 flex-1">
                     <div
                         class="
@@ -555,6 +565,7 @@ function userRow(user) {
                                 : ''
                         }
                     </div>
+                </div>
                 </div>
 
                 <div

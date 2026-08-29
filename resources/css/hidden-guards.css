@@ -9,7 +9,7 @@
 | not, so without a rule of their own they would win and an element told to
 | be hidden would stay on screen. Two class selectors beat one.
 |
-| 69 components.
+| 72 components.
 |
 */
 
@@ -35,6 +35,9 @@
 .pm-admin-user-name.hidden,
 .pm-admin-user-open.hidden,
 .pm-admin-user-role.hidden,
+.pm-avatar.hidden,
+.pm-avatar-crop-canvas.hidden,
+.pm-avatar-zoom.hidden,
 .pm-button-danger.hidden,
 .pm-button-danger-outline.hidden,
 .pm-button-primary.hidden,

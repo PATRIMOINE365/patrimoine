@@ -171,6 +171,22 @@ return [
         'none' => 'No country matches',
     ],
 
+    /*
+     * V1.0.31 profile photographs.
+     */
+    'profile' => [
+        'photo' => 'Photograph',
+        'photo_hint' => 'Shown at the top of the screen and beside your name wherever your account appears.',
+        'photo_choose' => 'Choose a picture',
+        'photo_reframe' => 'Reframe',
+        'photo_remove' => 'Remove',
+        'photo_zoom' => 'Zoom',
+        'photo_save' => 'Use this framing',
+        'photo_cancel' => 'Cancel',
+        'photo_drag' => 'Drag to move, scroll or use the slider to zoom.',
+        'photo_unreadable' => 'This picture could not be opened. If it came from an iPhone, try saving it as JPEG first.',
+    ],
+
     'shell' => [
         /* ---- V1.0.7 additions ---- */
         'help' => 'Help',

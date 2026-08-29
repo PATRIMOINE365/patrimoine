@@ -992,34 +992,26 @@
 
                 {{-- Current user --}}
                 <div class="relative">
+                    {{--
+                        The button is the avatar itself, so the photograph
+                        fills what you click. auth.js paints it once
+                        /api/auth/me answers; until then it carries the
+                        initials the cached identity already gave us.
+                    --}}
                     <button
                         id="user-menu-toggle"
                         type="button"
                         class="
-                            inline-flex h-10 w-10
-                            items-center justify-center
-                            rounded-lg
-                            text-[var(--pm-text-muted)]
-                            transition
-                            hover:bg-[var(--pm-hover)]
-                            hover:text-[var(--pm-text)]
+                            pm-avatar pm-avatar-initials
+                            h-10 w-10
+                            text-sm transition
                         "
+                        style="width:2.5rem;height:2.5rem;font-size:0.8125rem"
                         aria-expanded="false"
                         aria-label="{{ __('ui.shell.my_profile') }}"
+                        data-i18n-aria-label="shell.my_profile"
                         title="{{ __('ui.shell.my_profile') }}"
-                    >
-                        <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                            aria-hidden="true"
-                        >
-                            <circle cx="12" cy="8" r="4"/>
-                            <path d="M4 21a8 8 0 0 1 16 0"/>
-                        </svg>
-                    </button>
+                    ></button>
 
                     <div
                         id="user-menu"
@@ -1382,6 +1374,108 @@
                 "
                 role="alert"
             ></div>
+
+            {{--
+                V1.0.31: the photograph. The round window is the result, so
+                what is framed is what appears everywhere else. The whole
+                picture is kept behind it, which is what lets Reframe reopen
+                this exactly where it was left.
+            --}}
+            <div class="mb-6 flex items-start gap-4">
+                <span
+                    id="profile-avatar"
+                    class="pm-avatar pm-avatar-initials"
+                    style="width:4rem;height:4rem;font-size:1.25rem"
+                    aria-hidden="true"
+                ></span>
+
+                <div class="min-w-0 flex-1">
+                    <div
+                        class="text-sm font-medium text-[var(--pm-text)]"
+                        data-i18n="profile.photo"
+                    >{{ __('ui.profile.photo') }}</div>
+
+                    <p
+                        class="pm-avatar-hint"
+                        data-i18n="profile.photo_hint"
+                    >{{ __('ui.profile.photo_hint') }}</p>
+
+                    <div class="mt-2.5 flex flex-wrap items-center gap-2">
+                        <button
+                            id="profile-photo-choose"
+                            type="button"
+                            class="pm-button-secondary"
+                        >
+                            <span data-i18n="profile.photo_choose">{{ __('ui.profile.photo_choose') }}</span>
+                        </button>
+
+                        <button
+                            id="profile-photo-reframe"
+                            type="button"
+                            class="pm-button-secondary hidden"
+                        >
+                            <span data-i18n="profile.photo_reframe">{{ __('ui.profile.photo_reframe') }}</span>
+                        </button>
+
+                        <button
+                            id="profile-photo-remove"
+                            type="button"
+                            class="pm-button-danger-outline hidden"
+                        >
+                            <span data-i18n="profile.photo_remove">{{ __('ui.profile.photo_remove') }}</span>
+                        </button>
+                    </div>
+
+                    <input
+                        id="profile-photo-file"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif"
+                        class="hidden"
+                    >
+                </div>
+            </div>
+
+            {{-- The cropper, shown only while a picture is being framed. --}}
+            <div id="profile-photo-editor" class="mb-6 hidden">
+                <div id="profile-photo-stage" class="pm-avatar-crop">
+                    <div class="pm-avatar-crop-window"></div>
+                </div>
+
+                <div class="pm-avatar-zoom">
+                    <span
+                        class="text-xs text-[var(--pm-text-muted)]"
+                        data-i18n="profile.photo_zoom"
+                    >{{ __('ui.profile.photo_zoom') }}</span>
+
+                    <input
+                        id="profile-photo-zoom"
+                        type="range"
+                        min="100"
+                        max="400"
+                        value="100"
+                        aria-label="{{ __('ui.profile.photo_zoom') }}"
+                        data-i18n-aria-label="profile.photo_zoom"
+                    >
+                </div>
+
+                <div class="mt-3 flex flex-wrap items-center gap-2">
+                    <button
+                        id="profile-photo-save"
+                        type="button"
+                        class="pm-button-primary"
+                    >
+                        <span data-i18n="profile.photo_save">{{ __('ui.profile.photo_save') }}</span>
+                    </button>
+
+                    <button
+                        id="profile-photo-cancel"
+                        type="button"
+                        class="pm-button-secondary"
+                    >
+                        <span data-i18n="profile.photo_cancel">{{ __('ui.profile.photo_cancel') }}</span>
+                    </button>
+                </div>
+            </div>
 
             <div class="grid gap-5 sm:grid-cols-2">
                 {{--

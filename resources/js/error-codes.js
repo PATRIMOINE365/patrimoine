@@ -15,6 +15,8 @@
 */
 
 export const ERROR_CODES_BY_MESSAGE = {
+    "cette image n'a pas pu être ouverte. si elle vient d'un iphone, enregistrez-la d'abord en jpeg.": 'PM-1016',
+    "this picture could not be opened. if it came from an iphone, try saving it as jpeg first.": 'PM-1016',
     "a cancellation reason is required.": 'PM-4032',
     "a deletion reason is required.": 'PM-3015',
     "a property must have at least one owner.": 'PM-3063',

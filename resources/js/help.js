@@ -139,6 +139,18 @@ const helpTranslations = {
         'help.topic_appearance_title':
             'Light & dark mode',
 
+        'help.topic_photo_title':
+            "Your photograph",
+
+        'help.topic_photo_body1':
+            "Open your profile from the circle at the top right of the screen and choose a picture. Drag it inside the round window and zoom with the slider or your scroll wheel until it is framed the way you want; what you see in the circle is what everybody else sees.",
+
+        'help.topic_photo_body2':
+            "JPG, PNG, WEBP and GIF all work. A HEIC photograph straight from an iPhone works in Safari; on other browsers, export it as JPG first. The picture is optimised before it is stored and never leaves your organisation.",
+
+        'help.topic_photo_body3':
+            "Reframe reopens the picture exactly where you left it, so you can change the framing later without finding the file again. Your photograph appears at the top of the screen and beside your name on the Users page, which is how an administrator tells accounts apart at a glance.",
+
         'help.topic_appearance_body1':
             'Patrimoine has a light and a dark theme. Use the appearance control in the top bar to choose Light, Dark, or System — System follows your device preference.',
 
@@ -506,6 +518,18 @@ const helpTranslations = {
         'help.topic_appearance_title':
             'Mode clair et sombre',
 
+        'help.topic_photo_title':
+            "Votre photographie",
+
+        'help.topic_photo_body1':
+            "Ouvrez votre profil depuis le cercle en haut à droite de l'écran et choisissez une image. Faites-la glisser dans la fenêtre ronde et zoomez avec le curseur ou la molette jusqu'au cadrage voulu : ce que vous voyez dans le cercle est ce que voient les autres.",
+
+        'help.topic_photo_body2':
+            "Les formats JPG, PNG, WEBP et GIF conviennent. Une photo HEIC prise sur iPhone fonctionne dans Safari ; sur les autres navigateurs, exportez-la d'abord en JPG. L'image est optimisée avant d'être enregistrée et ne quitte jamais votre organisation.",
+
+        'help.topic_photo_body3':
+            "Recadrer rouvre l'image exactement là où vous l'aviez laissée : vous pouvez donc changer le cadrage plus tard sans retrouver le fichier. Votre photographie apparaît en haut de l'écran et à côté de votre nom sur la page Utilisateurs, ce qui permet à un administrateur de distinguer les comptes d'un coup d'œil.",
+
         'help.topic_appearance_body1':
             'Patrimoine propose un thème clair et un thème sombre. Utilisez le réglage d’apparence dans la barre supérieure pour choisir Clair, Sombre ou Système — Système suit la préférence de votre appareil.',
 
@@ -846,6 +870,16 @@ const helpTopics = [
         bodyKeys: [
             'help.topic_appearance_body1',
             'help.topic_appearance_body2',
+        ],
+    },
+    {
+        id: 'profile_photo',
+        category: 'getting_started',
+        titleKey: 'help.topic_photo_title',
+        bodyKeys: [
+            'help.topic_photo_body1',
+            'help.topic_photo_body2',
+            'help.topic_photo_body3',
         ],
     },
     {
@@ -1744,16 +1778,16 @@ function helpUpdatesMarkup(
     `;
 }
 
+/**
+ * One entry of the update log.
+ *
+ * An entry covers the releases up to and including its own version, in a
+ * couple of sentences. The release-by-release detail lives in the
+ * administration console.
+ */
 function helpReleaseCard(
     entry
 ) {
-    const changes =
-        Array.isArray(
-            entry?.changes
-        )
-            ? entry.changes
-            : [];
-
     return `
         <article class="relative">
             <span
@@ -1803,39 +1837,17 @@ function helpReleaseCard(
                     </span>
                 </div>
 
-                <h3
+                <p
                     class="
-                        mt-2 text-base
-                        font-semibold
-                        text-[var(--pm-text)]
-                    "
-                >
-                    ${escapeHtml(
-                        entry?.title
-                        || ''
-                    )}
-                </h3>
-
-                <ul
-                    class="
-                        mt-3 list-disc
-                        space-y-1.5 pl-5
-                        text-sm leading-6
+                        mt-3 text-sm leading-6
                         text-[var(--pm-text-secondary)]
                     "
                 >
-                    ${changes
-                        .map(
-                            (change) => `
-                                <li>
-                                    ${escapeHtml(
-                                        change
-                                    )}
-                                </li>
-                            `
-                        )
-                        .join('')}
-                </ul>
+                    ${escapeHtml(
+                        entry?.summary
+                        || ''
+                    )}
+                </p>
             </div>
         </article>
     `;

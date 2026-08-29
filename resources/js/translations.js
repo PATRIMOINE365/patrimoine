@@ -1860,6 +1860,27 @@ export const translations = {
         'navigation.platform_console':
             'Administration',
 
+        'profile.photo':
+            "Photograph",
+        'profile.photo_hint':
+            "Shown at the top of the screen and beside your name wherever your account appears.",
+        'profile.photo_choose':
+            "Choose a picture",
+        'profile.photo_reframe':
+            "Reframe",
+        'profile.photo_remove':
+            "Remove",
+        'profile.photo_zoom':
+            "Zoom",
+        'profile.photo_save':
+            "Use this framing",
+        'profile.photo_cancel':
+            "Cancel",
+        'profile.photo_drag':
+            "Drag to move, scroll or use the slider to zoom.",
+        'profile.photo_unreadable':
+            "This picture could not be opened. If it came from an iPhone, try saving it as JPEG first.",
+
         'phone.country':
             'Country',
         'phone.select':
@@ -5896,6 +5917,27 @@ export const translations = {
 
         'navigation.platform_console':
             'Administration',
+
+        'profile.photo':
+            "Photographie",
+        'profile.photo_hint':
+            "Affichée en haut de l'écran et à côté de votre nom partout où votre compte apparaît.",
+        'profile.photo_choose':
+            "Choisir une image",
+        'profile.photo_reframe':
+            "Recadrer",
+        'profile.photo_remove':
+            "Retirer",
+        'profile.photo_zoom':
+            "Zoom",
+        'profile.photo_save':
+            "Utiliser ce cadrage",
+        'profile.photo_cancel':
+            "Annuler",
+        'profile.photo_drag':
+            "Faites glisser pour déplacer, molette ou curseur pour zoomer.",
+        'profile.photo_unreadable':
+            "Cette image n'a pas pu être ouverte. Si elle vient d'un iPhone, enregistrez-la d'abord en JPEG.",
 
         'phone.country':
             'Pays',

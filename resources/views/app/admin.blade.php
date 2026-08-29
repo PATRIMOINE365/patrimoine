@@ -282,6 +282,20 @@
         </div>
     </section>
 
+    {{-- ==================== Release log ==================== --}}
+    {{--
+        The release-by-release history. Customers read a shortened log in
+        Help, written in fives, because nobody is on an old version and a
+        thirty-entry archive buries what they need. Support reads this one.
+    --}}
+    <section id="admin-section-releases" data-admin-section hidden>
+        <div class="pm-admin-eyebrow">Operations</div>
+        <h1 class="pm-admin-title">Release log</h1>
+        <p class="pm-admin-subtitle">Every release, in full. Customers see a shortened version in Help.</p>
+
+        <div id="admin-releases" class="mt-6"></div>
+    </section>
+
     {{-- ==================== Organisation detail ==================== --}}
     <section id="admin-section-organisation" data-admin-section hidden>
 

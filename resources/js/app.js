@@ -23,6 +23,7 @@
 import {
     initializeAuthenticatedShell,
     initializeLogin,
+    initializeProfilePhoto,
 } from './auth.js';
 
 import {
@@ -183,6 +184,12 @@ document.addEventListener(
          * already, such as the profile drawer in the shell.
          */
         initializePhoneInputs();
+
+        /*
+         * V1.0.31: choosing a profile photograph. The controls live in the
+         * shell drawer, which is on every authenticated page.
+         */
+        initializeProfilePhoto();
 
         refreshPhoneInputs();
 
