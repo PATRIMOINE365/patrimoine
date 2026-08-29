@@ -1988,6 +1988,58 @@ export function initials(name) {
  * @param {*} value
  * @returns {string}
  */
+/**
+ * Download an authenticated file.
+ *
+ * Every export in Patrimoine sits behind a bearer token, so a plain link
+ * cannot fetch one: the file has to be pulled as a blob and handed to the
+ * browser afterwards.
+ *
+ * The filename comes from the server when it sends one, because the server
+ * is the thing that knows what it just produced.
+ *
+ * @param {string} endpoint
+ * @param {string} fallbackFilename
+ */
+export async function downloadFile(endpoint, fallbackFilename) {
+    const response = await apiRequest(endpoint);
+
+    if (! response.ok) {
+        /*
+         * Let the ordinary error path read the body: it carries the message
+         * and the code, which is what the reader needs to see.
+         */
+        await parseJsonResponse(response);
+
+        return;
+    }
+
+    const disposition = response.headers.get('Content-Disposition') || '';
+
+    const named = /filename="?([^"';]+)"?/i.exec(disposition);
+
+    const blob = await response.blob();
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = named ? named[1] : fallbackFilename;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    /*
+     * Revoked on the next tick rather than immediately: Safari has not
+     * always finished with the URL by the time click() returns.
+     */
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
 export function escapeHtml(
     value
 ) {

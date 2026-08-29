@@ -46,6 +46,17 @@ class Party extends Model
      *
      * @var list<string>
      */
+    /**
+     * V1.0.34: when this person was erased on request, if they were.
+     *
+     * Not fillable. Erasure runs through App\Support\PersonalData::erase(),
+     * which force-fills it — a mass-assignable "this person is forgotten"
+     * flag is not something a form should be able to set.
+     */
+    protected $casts = [
+        'erased_at' => 'datetime',
+    ];
+
     protected $fillable = [
         'type',
         'name',

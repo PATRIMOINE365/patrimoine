@@ -69,5 +69,5 @@ return [
 
     'terms_version' => '2026-08-26',
 
-    'privacy_version' => '2026-08-26',
+    'privacy_version' => '2026-08-29',
 ];

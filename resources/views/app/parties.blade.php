@@ -1175,4 +1175,112 @@
     </x-drawer-footer>
 </x-drawer>
 
+{{--
+    Erasing a person.
+
+    Guarded like the account closure and for the same reason: it destroys
+    somebody's identity for good, and the accounts they appear in go on
+    referring to them by a number afterwards. The name is typed back and
+    the administrator's password re-entered before anything runs.
+--}}
+<x-drawer
+    id="party-erase-modal"
+    backdrop-id="party-erase-modal-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        title-id="party-erase-modal-title"
+        description-id="party-erase-modal-description"
+        close-id="party-erase-modal-close"
+        close-label="Close"
+        close-label-key="actions.close"
+    >
+        <x-slot:title>
+            <span data-i18n="parties.erase_title">{{ __('ui.parties.erase_title') }}</span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="parties.erase_description">{{ __('ui.parties.erase_description') }}</span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        <div
+            class="
+                rounded-lg border
+                border-[var(--pm-danger-border)]
+                bg-[var(--pm-danger-background)]
+                px-4 py-3 text-sm
+                text-[var(--pm-danger-text)]
+            "
+        >
+            <span data-i18n="parties.erase_warning">{{ __('ui.parties.erase_warning') }}</span>
+        </div>
+
+        <p class="mt-4 text-sm text-[var(--pm-text-muted)]">
+            <span data-i18n="parties.erase_kept">{{ __('ui.parties.erase_kept') }}</span>
+        </p>
+
+        <div
+            id="party-erase-error"
+            class="
+                mt-4 hidden rounded-xl border px-4 py-3 text-sm
+                border-[var(--pm-danger-border)]
+                bg-[var(--pm-danger-background)]
+                text-[var(--pm-danger-text)]
+            "
+            role="alert"
+        ></div>
+
+        <div class="mt-5">
+            <label for="party-erase-name" class="pm-field-label">
+                <span data-i18n="parties.erase_name_label">{{ __('ui.parties.erase_name_label') }}</span>
+            </label>
+
+            <p
+                id="party-erase-name-hint"
+                class="mb-2 text-xs text-[var(--pm-text-muted)]"
+            ></p>
+
+            <input
+                id="party-erase-name"
+                type="text"
+                autocomplete="off"
+                class="pm-input"
+            >
+        </div>
+
+        <div class="mt-4">
+            <label for="party-erase-password" class="pm-field-label">
+                <span data-i18n="parties.erase_password_label">{{ __('ui.parties.erase_password_label') }}</span>
+            </label>
+
+            <input
+                id="party-erase-password"
+                type="password"
+                autocomplete="current-password"
+                class="pm-input"
+            >
+        </div>
+    </div>
+
+    <x-drawer-footer>
+        <button
+            id="party-erase-cancel"
+            type="button"
+            class="pm-button-secondary"
+        >
+            <span data-i18n="actions.cancel">{{ __('ui.actions.cancel') }}</span>
+        </button>
+
+        <button
+            id="party-erase-confirm"
+            type="button"
+            class="pm-button-danger"
+        >
+            <span data-i18n="parties.erase_confirm">{{ __('ui.parties.erase_confirm') }}</span>
+        </button>
+    </x-drawer-footer>
+</x-drawer>
+
 @endsection

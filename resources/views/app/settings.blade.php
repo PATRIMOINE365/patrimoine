@@ -1089,6 +1089,37 @@
                             @endforeach
                         </div>
 
+                        {{--
+                            V1.0.34: the whole organisation, for a person who
+                            asks for it. Wider than the registry export above
+                            — that one is the portable registry, this one is
+                            everything held, financial history included.
+                        --}}
+                        <div
+                            id="settings-everything"
+                            class="
+                                mt-6 rounded-xl border
+                                border-[var(--pm-border)]
+                                bg-[var(--pm-surface-subtle)] p-5
+                            "
+                        >
+                            <h3 class="text-sm font-semibold text-[var(--pm-text)]">
+                                <span data-i18n="settings.everything_title">{{ __('ui.settings.everything_title') }}</span>
+                            </h3>
+
+                            <p class="mt-1 max-w-2xl text-sm text-[var(--pm-text-muted)]">
+                                <span data-i18n="settings.everything_description">{{ __('ui.settings.everything_description') }}</span>
+                            </p>
+
+                            <button
+                                id="settings-export-everything"
+                                type="button"
+                                class="pm-button-secondary mt-4"
+                            >
+                                <span data-i18n="settings.everything_action">{{ __('ui.settings.everything_action') }}</span>
+                            </button>
+                        </div>
+
                         <div class="mt-4 flex justify-end">
                             <button
                                 id="settings-export-full"

@@ -4116,6 +4116,57 @@ export const translations = {
         'pagination.current_page':
             'Page :page, current page',
 
+        'profile.download_data':
+            'Download my data',
+
+        'profile.downloading':
+            'Preparing…',
+
+        'settings.everything_title':
+            'Download everything',
+
+        'settings.everything_description':
+            'A complete copy of everything Patrimoine holds for this organisation, financial history included, as one JSON file. The registry export above is the portable half; this is the whole of it, for answering somebody who asks what you hold.',
+
+        'settings.everything_action':
+            'Download everything',
+
+        'parties.export_data':
+            'Data',
+
+        'parties.exporting':
+            'Preparing…',
+
+        'parties.erase':
+            'Erase',
+
+        'parties.erasing':
+            'Erasing…',
+
+        'parties.erase_title':
+            'Erase this person',
+
+        'parties.erase_description':
+            'Read what goes and what stays, then type the name and your password.',
+
+        'parties.erase_warning':
+            'Their name, e-mail address, telephone numbers, postal address, identity and registration numbers, bank details and notes are destroyed permanently. Nobody — not you, not us — can bring them back.',
+
+        'parties.erase_kept':
+            'The invoices, payments and journal entries stay, because the law that requires them kept is the same law that lets us refuse to destroy them. They will refer to this person by a reference instead of a name, so the accounts still balance and still explain themselves.',
+
+        'parties.erase_name_label':
+            'Type the name on the record',
+
+        'parties.erase_name_hint':
+            'Type :name exactly as it is written.',
+
+        'parties.erase_password_label':
+            'Your password',
+
+        'parties.erase_confirm':
+            'Erase this person',
+
         'settings.summary':
             'Account summary',
 
@@ -7107,6 +7158,57 @@ export const translations = {
 
         'pagination.current_page':
             'Page :page, page actuelle',
+
+        'profile.download_data':
+            'Télécharger mes données',
+
+        'profile.downloading':
+            'Préparation…',
+
+        'settings.everything_title':
+            'Tout télécharger',
+
+        'settings.everything_description':
+            'Une copie complète de tout ce que Patrimoine détient pour cette organisation, historique financier compris, en un seul fichier JSON. L\'export du registre ci-dessus en est la moitié portable ; ceci en est la totalité, pour répondre à qui demande ce que vous détenez.',
+
+        'settings.everything_action':
+            'Tout télécharger',
+
+        'parties.export_data':
+            'Données',
+
+        'parties.exporting':
+            'Préparation…',
+
+        'parties.erase':
+            'Effacer',
+
+        'parties.erasing':
+            'Effacement…',
+
+        'parties.erase_title':
+            'Effacer cette personne',
+
+        'parties.erase_description':
+            'Lisez ce qui disparaît et ce qui reste, puis saisissez le nom et votre mot de passe.',
+
+        'parties.erase_warning':
+            'Son nom, son adresse e-mail, ses numéros de téléphone, son adresse postale, ses numéros d\'identité et d\'immatriculation, ses coordonnées bancaires et les notes sont détruits définitivement. Personne — ni vous, ni nous — ne pourra les rétablir.',
+
+        'parties.erase_kept':
+            'Les factures, les paiements et les écritures du journal demeurent, car la loi qui impose de les conserver est celle-là même qui nous autorise à refuser de les détruire. Ils désigneront cette personne par une référence plutôt que par un nom : les comptes s\'équilibrent toujours et s\'expliquent toujours.',
+
+        'parties.erase_name_label':
+            'Saisissez le nom figurant sur la fiche',
+
+        'parties.erase_name_hint':
+            'Saisissez :name exactement tel qu\'il est écrit.',
+
+        'parties.erase_password_label':
+            'Votre mot de passe',
+
+        'parties.erase_confirm':
+            'Effacer cette personne',
 
         'settings.summary':
             'Résumé du compte',

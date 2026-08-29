@@ -175,6 +175,9 @@ return [
      * V1.0.31 profile photographs.
      */
     'profile' => [
+        /* ---- V1.0.34 data protection ---- */
+        'download_data' => 'Download my data',
+        'downloading' => 'Preparing…',
         'photo' => 'Photograph',
         'photo_hint' => 'Shown at the top of the screen and beside your name wherever your account appears.',
         'photo_choose' => 'Choose a picture',
@@ -423,6 +426,10 @@ return [
         'close' => 'Close',
     ],
     'settings' => [
+        /* ---- V1.0.34 data protection ---- */
+        'everything_title' => 'Download everything',
+        'everything_description' => 'A complete copy of everything Patrimoine holds for this organisation, financial history included, as one JSON file. The registry export above is the portable half; this is the whole of it, for answering somebody who asks what you hold.',
+        'everything_action' => 'Download everything',
         /* ---- V1.0.32 account summary, help and closure ---- */
         'summary' => 'Account summary',
         'summary_description' => 'What this account is, at a glance.',
@@ -741,6 +748,19 @@ return [
     ],
 
     'parties' => [
+        /* ---- V1.0.34 data protection ---- */
+        'export_data' => 'Data',
+        'exporting' => 'Preparing…',
+        'erase' => 'Erase',
+        'erasing' => 'Erasing…',
+        'erase_title' => 'Erase this person',
+        'erase_description' => 'Read what goes and what stays, then type the name and your password.',
+        'erase_warning' => 'Their name, e-mail address, telephone numbers, postal address, identity and registration numbers, bank details and notes are destroyed permanently. Nobody — not you, not us — can bring them back.',
+        'erase_kept' => 'The invoices, payments and journal entries stay, because the law that requires them kept is the same law that lets us refuse to destroy them. They will refer to this person by a reference instead of a name, so the accounts still balance and still explain themselves.',
+        'erase_name_label' => 'Type the name on the record',
+        'erase_name_hint' => 'Type :name exactly as it is written.',
+        'erase_password_label' => 'Your password',
+        'erase_confirm' => 'Erase this person',
         /* ---- V1.0.29 email controls ---- */
         'email_policy' => 'Email communications',
         'email_policy_description' => 'Whether Patrimoine may send documents and notices to this party.',

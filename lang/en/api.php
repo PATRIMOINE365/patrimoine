@@ -57,6 +57,13 @@ return [
         'deleted' => 'User deleted successfully.',
     ],
 
+    'personal_data' => [
+        'erased' => 'That person has been erased. The records they appear in now read :reference.',
+        'already_erased' => 'That person has already been erased.',
+        'cannot_erase_managing' => 'Your own organisation cannot be erased. It is the company every document names as the producer.',
+        'name_confirmation_mismatch' => 'That is not the name on the record. Type it exactly as it is shown.',
+    ],
+
     'organisation' => [
         'closed' => 'Your organisation and everything in it has been permanently deleted.',
         'name_confirmation_mismatch' => 'That is not the name of your organisation. Type it exactly as it is shown.',

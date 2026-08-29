@@ -289,6 +289,24 @@ return [
         'fix' => 'Nothing to put right. If an account really does need closing, do it from the administration console against the customer organisation concerned.',
     ],
 
+    'PM-1040' => [
+        'title' => 'That person has already been erased.',
+        'what' => 'Erasure runs once. The record you are looking at carries a reference rather than a name because somebody has already asked for it, and there is nothing identifying left to remove.',
+        'fix' => 'Nothing to do. If you expected to see a name here, you are looking at a record that was erased on request — the activity log will say when, and who authorised it.',
+    ],
+
+    'PM-1041' => [
+        'title' => 'Your own organisation cannot be erased.',
+        'what' => 'The party you chose is the managing organisation — your own company. Every invoice, receipt and statement names it as the producer, so erasing it would leave those documents unable to say who issued them.',
+        'fix' => 'If your company details have changed, edit them instead. If you are closing the business, close the account from the foot of Settings rather than erasing the party.',
+    ],
+
+    'PM-1042' => [
+        'title' => 'The name you typed is not the name on the record.',
+        'what' => 'Erasing a person destroys their name, contact details and everything else identifying them, permanently, so the name has to be typed back exactly before it will run.',
+        'fix' => 'Copy the name exactly as the record shows it, including capital letters, spaces and punctuation. If you did not mean to erase anybody, close this panel instead.',
+    ],
+
     /* ---- 2xxx ---- */
 
     'PM-2001' => [

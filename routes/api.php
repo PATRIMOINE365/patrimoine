@@ -50,6 +50,7 @@ use App\Http\Controllers\Api\PartyController;
 use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\ProfilePhotoController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\PersonalDataController;
 use App\Http\Controllers\Api\PaymentRegisterController;
 use App\Http\Controllers\Api\PaymentReportController;
 use App\Http\Controllers\Api\PaymentReportExportController;
@@ -246,6 +247,19 @@ Route::middleware('auth:sanctum')->group(
         Route::get(
             'guide',
             GuideController::class
+        );
+
+        /*
+         * V1.0.34: your own data, on request, by you.
+         *
+         * No capability gate. Asking what is held about you is not an
+         * administrative act, and making somebody ask their administrator
+         * for their own account data would be the wrong answer to the
+         * question this route exists to answer.
+         */
+        Route::get(
+            'auth/me/data',
+            [PersonalDataController::class, 'me']
         );
 
         /*
@@ -1289,6 +1303,28 @@ Route::middleware('auth:sanctum')->group(
                 Route::delete(
                     'organisation',
                     [OrganisationDeletionController::class, 'destroy']
+                );
+
+                /*
+                 * V1.0.34: answering a subject access request.
+                 *
+                 * The organisation is the controller for its tenants and
+                 * owners, so producing one person's data — and erasing
+                 * them — belongs to its administrator, not to us.
+                 */
+                Route::get(
+                    'organisation/data',
+                    [PersonalDataController::class, 'organisation']
+                );
+
+                Route::get(
+                    'parties/{party}/data',
+                    [PersonalDataController::class, 'party']
+                );
+
+                Route::post(
+                    'parties/{party}/erase',
+                    [PersonalDataController::class, 'erase']
                 );
 
                 /*

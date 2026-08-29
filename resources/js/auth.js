@@ -21,6 +21,7 @@ import {
     apiRequest,
     clearToken,
     closeDrawer,
+    downloadFile,
     escapeHtml,
     formatCurrency,
     formatLongDate,
@@ -34,7 +35,6 @@ import {
     setButtonBusy,
     token,
     translate,
-
 } from './core.js';
 
 import {
@@ -2858,6 +2858,8 @@ function openPhotoEditor(image, framing = null) {
  * Wire the photograph controls. Called once, with the rest of the shell.
  */
 export function initializeProfilePhoto() {
+    initializeOwnDataDownload();
+
     const file = document.getElementById('profile-photo-file');
 
     document
@@ -3090,4 +3092,42 @@ function applyNewAvatar(avatar) {
     } catch {
         /* Storage restrictions must never break the upload. */
     }
+}
+
+/**
+ * Hand somebody their own data.
+ *
+ * No permission is checked because none is needed: asking what is held
+ * about you is not an administrative act, and routing it through an
+ * administrator would be the wrong answer to the question.
+ */
+function initializeOwnDataDownload() {
+    const button = document.getElementById('profile-download-data');
+
+    if (! button) {
+        return;
+    }
+
+    button.addEventListener('click', async () => {
+        setButtonBusy(button, 'profile.downloading');
+
+        try {
+            await downloadFile(
+                '/api/auth/me/data',
+                'patrimoine-my-data.json'
+            );
+        } catch (error) {
+            const box = document.getElementById('profile-form-message');
+
+            if (box) {
+                box.textContent = error instanceof Error
+                    ? error.message
+                    : translate('core.request_failed');
+
+                box.classList.remove('hidden');
+            }
+        } finally {
+            restoreButton(button);
+        }
+    });
 }

@@ -174,6 +174,9 @@ return [
      * V1.0.31 profile photographs.
      */
     'profile' => [
+        /* ---- V1.0.34 data protection ---- */
+        'download_data' => 'Télécharger mes données',
+        'downloading' => 'Préparation…',
         'photo' => 'Photographie',
         'photo_hint' => 'Affichée en haut de l’écran et à côté de votre nom partout où votre compte apparaît.',
         'photo_choose' => 'Choisir une image',
@@ -422,6 +425,10 @@ return [
         'close' => 'Fermer',
     ],
     'settings' => [
+        /* ---- V1.0.34 data protection ---- */
+        'everything_title' => 'Tout télécharger',
+        'everything_description' => 'Une copie complète de tout ce que Patrimoine détient pour cette organisation, historique financier compris, en un seul fichier JSON. L\'export du registre ci-dessus en est la moitié portable ; ceci en est la totalité, pour répondre à qui demande ce que vous détenez.',
+        'everything_action' => 'Tout télécharger',
         /* ---- V1.0.32 account summary, help and closure ---- */
         'summary' => 'Résumé du compte',
         'summary_description' => 'Ce compte en un coup d’œil.',
@@ -907,6 +914,19 @@ return [
     ],
 
     'parties' => [
+        /* ---- V1.0.34 data protection ---- */
+        'export_data' => 'Données',
+        'exporting' => 'Préparation…',
+        'erase' => 'Effacer',
+        'erasing' => 'Effacement…',
+        'erase_title' => 'Effacer cette personne',
+        'erase_description' => 'Lisez ce qui disparaît et ce qui reste, puis saisissez le nom et votre mot de passe.',
+        'erase_warning' => 'Son nom, son adresse e-mail, ses numéros de téléphone, son adresse postale, ses numéros d\'identité et d\'immatriculation, ses coordonnées bancaires et les notes sont détruits définitivement. Personne — ni vous, ni nous — ne pourra les rétablir.',
+        'erase_kept' => 'Les factures, les paiements et les écritures du journal demeurent, car la loi qui impose de les conserver est celle-là même qui nous autorise à refuser de les détruire. Ils désigneront cette personne par une référence plutôt que par un nom : les comptes s\'équilibrent toujours et s\'expliquent toujours.',
+        'erase_name_label' => 'Saisissez le nom figurant sur la fiche',
+        'erase_name_hint' => 'Saisissez :name exactement tel qu\'il est écrit.',
+        'erase_password_label' => 'Votre mot de passe',
+        'erase_confirm' => 'Effacer cette personne',
         /* ---- V1.0.29 email controls ---- */
         'email_policy' => 'Communications par e-mail',
         'email_policy_description' => 'Indique si Patrimoine peut envoyer des documents et des avis à cette partie.',

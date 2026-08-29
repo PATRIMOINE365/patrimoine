@@ -194,6 +194,52 @@
     "clip": "#party-modal .pm-drawer-panel"
   },
   {
+    "id": "my-data",
+    "path": "/dashboard",
+    "wait": "main",
+    "settle": 600,
+    "do": [
+      {
+        "click": "#user-menu-toggle",
+        "pause": 700
+      },
+      {
+        "click": "#my-profile-open",
+        "wait": "#profile-modal.pm-drawer-active",
+        "pause": 900
+      }
+    ],
+    "clip": "#profile-modal .pm-drawer-panel"
+  },
+  {
+    "id": "organisation-data",
+    "path": "/settings#data",
+    "wait": "#settings-everything",
+    "settle": 900,
+    "clip": "#settings-everything"
+  },
+  {
+    "id": "party-data",
+    "path": "/parties",
+    "wait": "#parties-list",
+    "settle": 700,
+    "clip": "#parties-list article"
+  },
+  {
+    "id": "party-erase",
+    "path": "/parties",
+    "wait": "#parties-list",
+    "settle": 500,
+    "do": [
+      {
+        "click": "[data-erase-party]",
+        "wait": "#party-erase-modal.pm-drawer-active",
+        "pause": 900
+      }
+    ],
+    "clip": "#party-erase-modal .pm-drawer-panel"
+  },
+  {
     "id": "leases-list",
     "path": "/leases",
     "wait": "#leases-list",

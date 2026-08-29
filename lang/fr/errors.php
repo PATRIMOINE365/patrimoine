@@ -289,6 +289,24 @@ return [
         'fix' => "Rien à corriger. Si un compte doit réellement être fermé, faites-le depuis la console d'administration, sur l'organisation cliente concernée.",
     ],
 
+    'PM-1040' => [
+        'title' => 'Cette personne a déjà été effacée.',
+        'what' => "L'effacement ne s'exécute qu'une fois. La fiche que vous consultez porte une référence et non un nom parce que quelqu'un l'a déjà demandé, et il ne reste plus rien d'identifiant à retirer.",
+        'fix' => "Rien à faire. Si vous vous attendiez à voir un nom, vous consultez une fiche effacée sur demande : le journal d'activité indique quand, et qui l'a autorisé.",
+    ],
+
+    'PM-1041' => [
+        'title' => 'Votre propre organisation ne peut pas être effacée.',
+        'what' => "La partie choisie est l'organisation gestionnaire — votre propre société. Chaque facture, reçu et relevé la désigne comme émettrice : l'effacer empêcherait ces documents de dire qui les a produits.",
+        'fix' => "Si les coordonnées de votre société ont changé, modifiez-les. Si vous cessez l'activité, fermez le compte depuis le bas des Paramètres plutôt que d'effacer la partie.",
+    ],
+
+    'PM-1042' => [
+        'title' => 'Le nom saisi ne correspond pas à celui de la fiche.',
+        'what' => "Effacer une personne détruit définitivement son nom, ses coordonnées et tout ce qui l'identifie : le nom doit donc être resaisi à l'identique avant exécution.",
+        'fix' => "Recopiez le nom exactement tel que la fiche l'affiche, majuscules, espaces et ponctuation comprises. Si vous ne vouliez effacer personne, fermez plutôt ce panneau.",
+    ],
+
     /* ---- 2xxx ---- */
 
     'PM-2001' => [

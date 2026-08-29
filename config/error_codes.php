@@ -250,6 +250,21 @@ return [
             'severity' => 'fix_yourself',
             'keys' => ['api.organisation.platform_cannot_close'],
         ],
+        'PM-1040' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.personal_data.already_erased'],
+        ],
+        'PM-1041' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.personal_data.cannot_erase_managing'],
+        ],
+        'PM-1042' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.personal_data.name_confirmation_mismatch'],
+        ],
 
         /* ---- 2xxx input ---- */
 

@@ -1655,6 +1655,14 @@
 
         <x-drawer-footer>
             <button
+                id="profile-download-data"
+                type="button"
+                class="pm-button-secondary mr-auto"
+            >
+                <span data-i18n="profile.download_data">{{ __('ui.profile.download_data') }}</span>
+            </button>
+
+            <button
                 id="profile-cancel-button"
                 type="button"
                 class="pm-button-secondary"

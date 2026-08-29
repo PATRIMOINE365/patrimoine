@@ -237,6 +237,33 @@ return [
                     ],
                 ],
 
+                'party_data' => [
+                    'title' => 'Produce everything held about a party',
+                    'intro' => 'A tenant or an owner may ask what you hold about them, and you are the one who has to answer: their data is yours to control, not ours. This produces the whole of it as one file.',
+                    'who' => 'Administrators',
+                    'steps' => [
+                        ['text' => 'Open Parties and find the person.'],
+                        ['text' => 'Press Data on their row. The file downloads immediately.', 'shot' => 'party-data'],
+                        ['text' => 'It holds their record, their roles, their leases, their invoices and payments, what is held for them, and every entry in the activity log about them.'],
+                        ['text' => 'The file is JSON, which is the format a request for portable data expects. Send it as it is, or open it in a spreadsheet if the person would rather read a table.'],
+                    ],
+                    'after' => 'Producing it is itself recorded in the activity log, so you can show when a request was answered.',
+                ],
+
+                'party_erasure' => [
+                    'title' => 'Erase a person who asks to be forgotten',
+                    'intro' => 'Erasure destroys the person, not the accounts. Everything identifying goes for good; the invoices and journal entries stay and refer to them by a reference instead of a name.',
+                    'who' => 'Administrators',
+                    'steps' => [
+                        ['text' => 'Open Parties, find the person, and press Erase.', 'shot' => 'party-erase'],
+                        ['text' => 'Read what goes: name, email address, telephone numbers, postal address, identity and registration numbers, bank details and notes. All of it, permanently.'],
+                        ['text' => 'Read what stays: the invoices, payments and journal entries. The law that requires those kept is the same law that lets you refuse to destroy them, so they remain \u2014 naming the person only as "Erased party #248".'],
+                        ['text' => 'Type the name exactly as the record shows it, and enter your own password.'],
+                        ['text' => 'Press Erase this person. It cannot be undone, and Patrimoine will never email them again.'],
+                    ],
+                    'after' => 'Consider producing their data first, if they asked for a copy as well as an erasure. Afterwards there is nothing left to produce.',
+                ],
+
                 'delete_party' => [
                     'title' => 'Delete a party',
                     'intro' => 'A party with no history can be deleted outright. One with history cannot, for the same reason a property cannot.',
@@ -811,6 +838,29 @@ return [
                         ['text' => 'To restore, choose the file and press Review restore. Nothing is written yet.'],
                         ['text' => 'Read the dry run: it says exactly what would be created and what would be matched to records you already have.', 'shot' => 'settings-restore'],
                         ['text' => 'Press Apply this restore only if the dry run says what you expect. Records are matched rather than duplicated, so restoring twice does not double your registry.'],
+                    ],
+                ],
+
+                'my_data' => [
+                    'title' => 'Download your own data',
+                    'intro' => 'Anybody with an account can take a copy of everything Patrimoine holds about them, without asking anybody. No role is needed and no administrator is involved.',
+                    'steps' => [
+                        ['text' => 'Press your photograph at the top right, then Edit profile.'],
+                        ['text' => 'Press Download my data.', 'shot' => 'my-data'],
+                        ['text' => 'The file holds your account details, the tokens your account can be used with, and every action you have taken \u2014 including the address, browser and device each came from.'],
+                        ['text' => 'Your password is never in it. It is stored only as a hash and cannot be turned back into anything.'],
+                    ],
+                ],
+
+                'organisation_data' => [
+                    'title' => 'Download everything the organisation holds',
+                    'intro' => 'A complete copy of the whole organisation, financial history included, as one structured file. Wider than the registry export beside it: that one is the portable registry, this is everything.',
+                    'who' => 'Administrators',
+                    'steps' => [
+                        ['text' => 'Open Settings and choose the Data tab.'],
+                        ['text' => 'Press Download everything.', 'shot' => 'organisation-data'],
+                        ['text' => 'Password hashes are stripped before the file is written. Everything else is there.'],
+                        ['text' => 'Use it to answer somebody who asks what you hold, or to keep a copy of your own outside Patrimoine.'],
                     ],
                 ],
 

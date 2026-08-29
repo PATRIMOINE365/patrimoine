@@ -57,6 +57,13 @@ return [
         'deleted' => 'Utilisateur supprimé avec succès.',
     ],
 
+    'personal_data' => [
+        'erased' => 'Cette personne a été effacée. Les enregistrements où elle apparaît portent désormais la mention :reference.',
+        'already_erased' => 'Cette personne a déjà été effacée.',
+        'cannot_erase_managing' => 'Votre propre organisation ne peut pas être effacée. C’est la société que chaque document désigne comme émettrice.',
+        'name_confirmation_mismatch' => 'Ce n’est pas le nom figurant sur la fiche. Saisissez-le exactement tel qu’il est affiché.',
+    ],
+
     'organisation' => [
         'closed' => 'Votre organisation et tout ce qu’elle contenait ont été définitivement supprimés.',
         'name_confirmation_mismatch' => 'Ce n’est pas le nom de votre organisation. Saisissez-le exactement tel qu’il est affiché.',

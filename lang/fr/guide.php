@@ -233,6 +233,33 @@ return [
                     ],
                 ],
 
+                'party_data' => [
+                    'title' => 'Produire tout ce qui est détenu sur une partie',
+                    'intro' => 'Un locataire ou un propriétaire peut demander ce que vous détenez sur lui, et c’est à vous d’y répondre : ses données relèvent de vous, pas de nous. Ceci en produit la totalité en un seul fichier.',
+                    'who' => 'Administrateurs',
+                    'steps' => [
+                        ['text' => 'Ouvrez Parties et trouvez la personne.'],
+                        ['text' => 'Appuyez sur Données sur sa ligne. Le fichier se télécharge immédiatement.', 'shot' => 'party-data'],
+                        ['text' => 'Il contient sa fiche, ses rôles, ses baux, ses factures et paiements, ce qui est détenu pour elle, et chaque entrée du journal d’activité la concernant.'],
+                        ['text' => 'Le fichier est au format JSON, celui qu’attend une demande de portabilité. Envoyez-le tel quel, ou ouvrez-le dans un tableur si la personne préfère un tableau.'],
+                    ],
+                    'after' => 'La production est elle-même inscrite au journal d’activité : vous pouvez montrer quand une demande a reçu réponse.',
+                ],
+
+                'party_erasure' => [
+                    'title' => 'Effacer une personne qui demande l’oubli',
+                    'intro' => 'L’effacement détruit la personne, pas les comptes. Tout ce qui identifie disparaît définitivement ; les factures et les écritures demeurent et la désignent par une référence plutôt que par un nom.',
+                    'who' => 'Administrateurs',
+                    'steps' => [
+                        ['text' => 'Ouvrez Parties, trouvez la personne et appuyez sur Effacer.', 'shot' => 'party-erase'],
+                        ['text' => 'Lisez ce qui disparaît : nom, adresse e-mail, numéros de téléphone, adresse postale, numéros d’identité et d’immatriculation, coordonnées bancaires et notes. Tout cela, définitivement.'],
+                        ['text' => 'Lisez ce qui reste : les factures, les paiements et les écritures du journal. La loi qui impose de les conserver est celle-là même qui vous autorise à refuser de les détruire : ils demeurent, ne désignant la personne que par « Erased party #248 ».'],
+                        ['text' => 'Saisissez le nom exactement tel que la fiche l’affiche, puis votre propre mot de passe.'],
+                        ['text' => 'Appuyez sur Effacer cette personne. L’opération est irréversible, et Patrimoine ne lui écrira plus jamais.'],
+                    ],
+                    'after' => 'Pensez à produire ses données d’abord si elle a demandé une copie en plus de l’effacement. Ensuite, il n’y aura plus rien à produire.',
+                ],
+
                 'delete_party' => [
                     'title' => 'Supprimer une partie',
                     'intro' => 'Une partie sans historique peut être supprimée purement et simplement. Une partie qui en a ne le peut pas, pour la même raison qu\'un bien.',
@@ -807,6 +834,29 @@ return [
                         ['text' => 'Pour restaurer, choisissez le fichier et appuyez sur Examiner la restauration. Rien n\'est encore écrit.'],
                         ['text' => 'Lisez la simulation : elle indique exactement ce qui serait créé et ce qui serait rapproché d\'enregistrements existants.', 'shot' => 'settings-restore'],
                         ['text' => 'N\'appuyez sur Appliquer cette restauration que si la simulation dit ce que vous attendez. Les enregistrements sont rapprochés plutôt que dupliqués : restaurer deux fois ne double pas votre registre.'],
+                    ],
+                ],
+
+                'my_data' => [
+                    'title' => 'Télécharger vos propres données',
+                    'intro' => 'Toute personne disposant d’un compte peut obtenir copie de tout ce que Patrimoine détient sur elle, sans rien demander à personne. Aucun rôle n’est requis et aucun administrateur n’intervient.',
+                    'steps' => [
+                        ['text' => 'Appuyez sur votre photographie en haut à droite, puis sur Modifier le profil.'],
+                        ['text' => 'Appuyez sur Télécharger mes données.', 'shot' => 'my-data'],
+                        ['text' => 'Le fichier contient les détails de votre compte, les jetons avec lesquels il peut être utilisé, et chacune de vos actions — y compris l’adresse, le navigateur et l’appareil d’où elle est partie.'],
+                        ['text' => 'Votre mot de passe n’y figure jamais. Il n’est stocké que sous forme de hachage et ne peut être reconverti en quoi que ce soit.'],
+                    ],
+                ],
+
+                'organisation_data' => [
+                    'title' => 'Télécharger tout ce que détient l’organisation',
+                    'intro' => 'Une copie complète de toute l’organisation, historique financier compris, en un seul fichier structuré. Plus large que l’export du registre voisin : celui-là est le registre portable, celui-ci est la totalité.',
+                    'who' => 'Administrateurs',
+                    'steps' => [
+                        ['text' => 'Ouvrez Paramètres et choisissez l’onglet Données.'],
+                        ['text' => 'Appuyez sur Tout télécharger.', 'shot' => 'organisation-data'],
+                        ['text' => 'Les empreintes de mots de passe sont retirées avant l’écriture du fichier. Tout le reste s’y trouve.'],
+                        ['text' => 'Servez-vous-en pour répondre à qui demande ce que vous détenez, ou pour conserver votre propre copie hors de Patrimoine.'],
                     ],
                 ],
 

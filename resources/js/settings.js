@@ -28,9 +28,10 @@
 import {
     apiRequest,
     closeDrawer,
+    downloadFile,
     escapeHtml,
-    formatDate,
     formValue,
+    formatDate,
     getPresentationConfiguration,
     loadPresentationConfiguration,
     nullableFormValue,
@@ -820,6 +821,42 @@ function initializeRegistryPortability() {
                             `registry-${entity}.${format}`
                         )
                 );
+            }
+        );
+
+    document
+        .getElementById(
+            'settings-export-everything'
+        )
+        ?.addEventListener(
+            'click',
+            async (event) => {
+                const button = event.currentTarget;
+
+                clearTabFeedback('data');
+
+                setButtonBusy(button, 'settings.exporting');
+
+                try {
+                    await downloadFile(
+                        '/api/organisation/data',
+                        'patrimoine-organisation.json'
+                    );
+
+                    showTabSuccess(
+                        'data',
+                        translate('settings.export_success')
+                    );
+                } catch (error) {
+                    showTabError(
+                        'data',
+                        error instanceof Error
+                            ? error.message
+                            : translate('core.request_failed')
+                    );
+                } finally {
+                    restoreButton(button);
+                }
             }
         );
 

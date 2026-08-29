@@ -34,16 +34,19 @@
 import {
     apiRequest,
     closeDrawer,
+    downloadFile,
     escapeHtml,
     formValue,
     getPresentationConfiguration,
     nullableFormValue,
     openDrawer,
     parseJsonResponse,
+    requireDangerConfirmation,
+    restoreButton,
+    setButtonBusy,
     setText,
     translate,
     wireDrawer,
-    requireDangerConfirmation,
 } from './core.js';
 
 import {
@@ -148,6 +151,8 @@ export async function initializeParties() {
     initializeDeletePartyDrawer();
 
     await loadParties();
+
+    initializePartyErasure();
 }
 
 /*
@@ -925,6 +930,45 @@ function partyCard(party) {
 
                     <button
                         type="button"
+                        data-export-party
+                        data-party-id="${escapeHtml(
+                            party.id
+                        )}"
+                        class="pm-button-secondary pm-party-action max-sm:flex-1"
+                    >
+                        ${escapeHtml(
+                            translate(
+                                'parties.export_data'
+                            )
+                        )}
+                    </button>
+
+                    ${
+                        party.erased_at
+                            ? ''
+                            : `
+                                <button
+                                    type="button"
+                                    data-erase-party
+                                    data-party-id="${escapeHtml(
+                                        party.id
+                                    )}"
+                                    data-party-name="${escapeHtml(
+                                        displayName
+                                    )}"
+                                    class="pm-button-danger-outline pm-party-action max-sm:flex-1"
+                                >
+                                    ${escapeHtml(
+                                        translate(
+                                            'parties.erase'
+                                        )
+                                    )}
+                                </button>
+                            `
+                    }
+
+                    <button
+                        type="button"
                         data-delete-party
                         data-party-id="${escapeHtml(
                             party.id
@@ -966,6 +1010,32 @@ function attachPartyActionListeners(
                                 .partyId
                         );
                     }
+                );
+            }
+        );
+
+    container
+        .querySelectorAll(
+            '[data-export-party]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => downloadPartyData(button)
+                );
+            }
+        );
+
+    container
+        .querySelectorAll(
+            '[data-erase-party]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => openPartyErasure(button)
                 );
             }
         );
@@ -1018,6 +1088,151 @@ function renderPartyPagination(
             onPageSize: () => loadParties(1),
         }
     );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Answering a person about their own data
+|--------------------------------------------------------------------------
+|
+| The organisation is the controller for its tenants, owners and agents, so
+| producing one person's data — and erasing them — is its administrator's
+| act, not ours. Both live here beside the directory those people appear in.
+|
+*/
+
+let erasingPartyId = null;
+
+async function downloadPartyData(button) {
+    const id = button.dataset.partyId;
+
+    setButtonBusy(button, 'parties.exporting');
+
+    try {
+        await downloadFile(
+            `/api/parties/${encodeURIComponent(id)}/data`,
+            `patrimoine-party-${id}.json`
+        );
+    } catch (error) {
+        showPartyPageError(
+            error instanceof Error
+                ? error.message
+                : translate('core.request_failed')
+        );
+    } finally {
+        restoreButton(button);
+    }
+}
+
+function openPartyErasure(button) {
+    erasingPartyId = button.dataset.partyId;
+
+    const name = button.dataset.partyName || '';
+
+    hidePartyErasureError();
+
+    const hint = document.getElementById('party-erase-name-hint');
+
+    if (hint) {
+        hint.textContent = translate(
+            'parties.erase_name_hint',
+            { name }
+        );
+    }
+
+    const nameField = document.getElementById('party-erase-name');
+    const passwordField = document.getElementById('party-erase-password');
+
+    if (nameField) {
+        nameField.value = '';
+    }
+
+    if (passwordField) {
+        passwordField.value = '';
+    }
+
+    openDrawer(document.getElementById('party-erase-modal'));
+}
+
+async function submitPartyErasure() {
+    const button = document.getElementById('party-erase-confirm');
+
+    hidePartyErasureError();
+
+    setButtonBusy(button, 'parties.erasing');
+
+    try {
+        const response = await apiRequest(
+            `/api/parties/${encodeURIComponent(erasingPartyId)}/erase`,
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    name_confirmation: formValue('party-erase-name'),
+                    password: formValue('party-erase-password'),
+                }),
+            }
+        );
+
+        await parseJsonResponse(response);
+
+        closeDrawer(document.getElementById('party-erase-modal'));
+
+        await loadParties(1);
+    } catch (error) {
+        showPartyErasureError(
+            error instanceof Error
+                ? error.message
+                : translate('core.request_failed')
+        );
+    } finally {
+        restoreButton(button);
+    }
+}
+
+/**
+ * An error about the directory itself rather than about one drawer.
+ */
+function showPartyPageError(message) {
+    const box = document.getElementById('parties-error');
+
+    if (box) {
+        box.textContent = message;
+
+        box.classList.remove('hidden');
+    }
+}
+
+function showPartyErasureError(message) {
+    const box = document.getElementById('party-erase-error');
+
+    if (box) {
+        box.textContent = message;
+
+        box.classList.remove('hidden');
+    }
+}
+
+function hidePartyErasureError() {
+    document
+        .getElementById('party-erase-error')
+        ?.classList
+        .add('hidden');
+}
+
+function initializePartyErasure() {
+    const drawer = document.getElementById('party-erase-modal');
+
+    if (! drawer) {
+        return;
+    }
+
+    wireDrawer(drawer, {
+        closers: ['party-erase-modal-close', 'party-erase-cancel'],
+    });
+
+    document
+        .getElementById('party-erase-confirm')
+        ?.addEventListener('click', submitPartyErasure);
 }
 
 /*
