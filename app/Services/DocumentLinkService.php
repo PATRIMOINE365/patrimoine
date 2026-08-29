@@ -70,7 +70,6 @@ class DocumentLinkService
         '#^/api/reports/(owners|tenants|buildings|units)/\d+/pdf$#',
         '#^/api/reports/managing-organisation/pdf$#',
         '#^/api/financial-journal/pdf$#',
-        '#^/api/activity-log/pdf$#',
         '#^/api/registry/export/pdf$#',
     ];
 

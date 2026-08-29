@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\ActivityLog;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
 use Illuminate\Support\Collection;
@@ -336,49 +335,6 @@ class ActivityLogExportService
                 );
             }
         }
-    }
-
-    /**
-     * Render the complete matching Activity Log result as PDF.
-     *
-     * The filters are accepted as part of the export contract because the
-     * controller exports the complete currently filtered result set. They
-     * remain presentation metadata and do not alter the already-resolved
-     * event collection.
-     *
-     * @param  Collection<int, ActivityLog>  $events
-     * @param  array<string, mixed>  $filters
-     */
-    public function pdf(
-        Collection $events,
-        array $filters = []
-    ): string {
-        return Pdf::loadView(
-            'activity-log.export',
-            [
-                'columns' => $this->columns(),
-
-                'rows' => $this->rows(
-                    $events
-                ),
-
-                'filters' => $filters,
-
-                'generatedAt' => $this->timestamp(
-                    now()
-                ),
-            ]
-        )
-            /*
-             * Activity Log contains fourteen stable columns. Landscape A4
-             * gives the immutable historical fields materially more room
-             * without changing or truncating their contents.
-             */
-            ->setPaper(
-                'a4',
-                'landscape'
-            )
-            ->output();
     }
 
     /**

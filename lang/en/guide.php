@@ -747,7 +747,7 @@ return [
                         ['text' => 'Each event records the person, the action, the record it touched, and the time.'],
                         ['text' => 'It also records the address, browser and device the action came from.'],
                         ['text' => 'Filter by person, by action or by date, then press an event for the whole of it.', 'shot' => 'activity-entry'],
-                        ['text' => 'The log can be exported like a report, for an auditor who wants it outside Patrimoine.'],
+                        ['text' => 'Export the log as XLSX or CSV, for an auditor who wants it outside Patrimoine. There is no PDF: a log that is kept for ever grows past what a page can hold.'],
                     ],
                 ],
 

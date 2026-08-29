@@ -2290,8 +2290,6 @@ export const translations = {
             'e.g. payment',
         'activity_log.clear_filters':
             'Clear Filters',
-        'activity_log.export_pdf':
-            'PDF',
         'activity_log.export_csv':
             'CSV',
         'activity_log.exporting':
@@ -6619,8 +6617,6 @@ export const translations = {
             'ex. payment',
         'activity_log.clear_filters':
             'Effacer les filtres',
-        'activity_log.export_pdf':
-            'PDF',
         'activity_log.export_csv':
             'CSV',
         'activity_log.exporting':

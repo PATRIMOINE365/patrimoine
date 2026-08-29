@@ -303,7 +303,6 @@ return [
         'entity_type' => 'Record Type',
         'entity_type_placeholder' => 'e.g. payment',
         'clear_filters' => 'Clear Filters',
-        'export_pdf' => 'PDF',
         'export_csv' => 'CSV',
         'exporting' => 'Exporting...',
         'unable_export' => 'Unable to export Activity Log.',

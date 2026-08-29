@@ -143,7 +143,6 @@ class V103LocalisationCompletionTest extends TestCase
             'activity_log.after_values',
             'activity_log.snapshot',
             'activity_log.metadata',
-            'activity_log.export_pdf',
             'activity_log.export_csv',
             'activity_log.unable_export',
         ] as $key) {

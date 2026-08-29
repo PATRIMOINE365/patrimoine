@@ -1199,10 +1199,14 @@ Route::middleware('auth:sanctum')->group(
                     [ActivityLogController::class, 'index']
                 );
 
-                Route::get(
-                    'activity-log/pdf',
-                    [ActivityLogExportController::class, 'pdf']
-                )->middleware('document.signed');
+                /*
+                 * V1.0.35: no PDF here. dompdf holds the whole document in
+                 * memory and the Activity Log is kept indefinitely, so the
+                 * export grew until it exhausted the memory limit and
+                 * answered 500 — measured at 32 rows using 102 MB of the
+                 * 128 MB available on the live box. CSV and XLSX stream and
+                 * carry exactly the same columns.
+                 */
 
                 Route::get(
                     'activity-log/csv',

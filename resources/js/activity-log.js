@@ -282,17 +282,6 @@ function clearFilters() {
 function initializeExportActions() {
     document
         .getElementById(
-            'activity-log-export-pdf'
-        )
-        ?.addEventListener(
-            'click',
-            () => exportActivityLog(
-                'pdf'
-            )
-        );
-
-    document
-        .getElementById(
             'activity-log-export-xlsx'
         )
         ?.addEventListener(
@@ -316,17 +305,6 @@ function initializeExportActions() {
 
 /** Export button, MIME type and label key per supported format. */
 const ACTIVITY_EXPORT_FORMATS = {
-    pdf: {
-        buttonId:
-            'activity-log-export-pdf',
-
-        accept:
-            'application/pdf',
-
-        labelKey:
-            'activity_log.export_pdf',
-    },
-
     csv: {
         buttonId:
             'activity-log-export-csv',

@@ -56,17 +56,9 @@
             "
         >
             <button
-                id="activity-log-export-pdf"
-                type="button"
-                class="pm-button-secondary max-sm:flex-1"
-            >
-                <span data-i18n="activity_log.export_pdf">{{ __('ui.activity_log.export_pdf') }}</span>
-            </button>
-
-            <button
                 id="activity-log-export-xlsx"
                 type="button"
-                class="pm-button-secondary"
+                class="pm-button-secondary max-sm:flex-1"
             >
                 <span data-i18n="activity_log.export_xlsx">{{ __('ui.activity_log.export_xlsx') }}</span>
             </button>

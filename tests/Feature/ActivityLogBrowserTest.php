@@ -202,7 +202,13 @@ class ActivityLogBrowserTest extends TestCase
                 )
             );
 
-        $this->assertStringContainsString(
+        /*
+         * V1.0.35: no PDF button here. The export rendered every matching
+         * row through dompdf, which holds the whole document in memory,
+         * and the Activity Log is kept indefinitely — so it was a button
+         * that would start answering 500 for every organisation in turn.
+         */
+        $this->assertStringNotContainsString(
             'id="activity-log-export-pdf"',
             $view
         );
@@ -326,7 +332,6 @@ class ActivityLogBrowserTest extends TestCase
                 "'activity_log.before_values':",
                 "'activity_log.after_values':",
                 "'activity_log.metadata':",
-                "'activity_log.export_pdf':",
                 "'activity_log.export_csv':",
                 "'activity_log.exporting':",
                 "'activity_log.unable_export':",

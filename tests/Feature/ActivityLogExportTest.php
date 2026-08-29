@@ -30,7 +30,7 @@ class ActivityLogExportTest extends TestCase
             ->assertUnauthorized();
 
         $this
-            ->get('/api/activity-log/pdf')
+            ->get('/api/activity-log/xlsx')
             ->assertUnauthorized();
     }
 
@@ -53,7 +53,7 @@ class ActivityLogExportTest extends TestCase
                 ->assertForbidden();
 
             $this
-                ->get('/api/activity-log/pdf')
+                ->get('/api/activity-log/xlsx')
                 ->assertForbidden();
         }
     }
@@ -341,91 +341,25 @@ class ActivityLogExportTest extends TestCase
         );
     }
 
-    public function test_pdf_export_downloads_valid_pdf_and_records_export(): void
+    /**
+     * The Activity Log has no PDF export, and must not answer as if it had.
+     *
+     * dompdf builds a Frame per cell and holds the whole document in
+     * memory, and this route rendered EVERY matching row. Because the log
+     * is retained indefinitely the cost only rose: measured on the live box
+     * at 32 rows using 102 MB of the 128 MB available, and pre-production
+     * failed outright at 214. Withdrawn in V1.0.35 rather than capped,
+     * because CSV and XLSX carry the same columns and stream.
+     */
+    public function test_the_activity_log_offers_no_pdf_export(): void
     {
-        $this->event([
-            'actor_name' => 'Historical Administrator',
-
-            'actor_email' => 'historical@example.test',
-
-            'actor_role' => 'administrator',
-
-            'action' => 'party.updated',
-
-            'entity_type' => 'party',
-
-            'entity_id' => '88',
-
-            'entity_label' => 'Historical Party',
-
-            'before' => [
-                'name' => 'Before Name',
-            ],
-
-            'after' => [
-                'name' => 'After Name',
-            ],
-
-            'created_at' => '2026-08-10 12:00:00',
-        ]);
-
         Sanctum::actingAs(
             $this->administrator()
         );
 
-        $response =
-            $this
-                ->get(
-                    '/api/activity-log/pdf'
-                )
-                ->assertOk();
-
-        $content =
-            $response->getContent();
-
-        $this->assertIsString(
-            $content
-        );
-
-        $this->assertStringStartsWith(
-            '%PDF',
-            $content
-        );
-
-        $this->assertStringContainsString(
-            'application/pdf',
-            (string) $response
-                ->headers
-                ->get(
-                    'content-type'
-                )
-        );
-
-        $this->assertDatabaseCount(
-            'activity_logs',
-            2
-        );
-
-        $exportEvent =
-            ActivityLog::query()
-                ->where(
-                    'action',
-                    'activity_log.exported'
-                )
-                ->latest('id')
-                ->firstOrFail();
-
-        $this->assertSame(
-            'pdf',
-            $exportEvent
-                ->metadata['format']
-        );
-
-        $this->assertSame(
-            1,
-            $exportEvent
-                ->metadata['record_count']
-        );
+        $this
+            ->getJson('/api/activity-log/pdf')
+            ->assertNotFound();
     }
 
     public function test_export_filter_validation_matches_activity_log_api(): void
@@ -437,7 +371,7 @@ class ActivityLogExportTest extends TestCase
         foreach (
             [
                 '/api/activity-log/csv',
-                '/api/activity-log/pdf',
+                '/api/activity-log/xlsx',
             ] as $endpoint
         ) {
             $this
@@ -511,7 +445,7 @@ class ActivityLogExportTest extends TestCase
 
         $this
             ->get(
-                '/api/activity-log/pdf'
+                '/api/activity-log/xlsx'
             )
             ->assertOk();
 

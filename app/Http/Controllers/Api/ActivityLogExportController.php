@@ -24,67 +24,20 @@ class ActivityLogExportController extends Controller
     /**
      * Export every Activity Log event matching the active filters as PDF.
      */
-    public function pdf(
-        Request $request,
-        ActivityLogQueryService $activityLogQuery,
-        ActivityLogExportService $export,
-        ActivityLogService $activityLog
-    ): Response {
-        $validated =
-            $activityLogQuery
-                ->validatedFilters(
-                    $request,
-                    includePagination: false
-                );
-
-        $filters =
-            $activityLogQuery
-                ->exportFilterSnapshot(
-                    $validated
-                );
-
-        /*
-         * Resolve the matching historical rows before recording the export.
-         *
-         * This preserves one meaningful event for the export while ensuring
-         * that event does not appear recursively inside the file being
-         * generated.
-         */
-        $events =
-            $activityLogQuery
-                ->query(
-                    $validated
-                )
-                ->get();
-
-        $contents =
-            $export->pdf(
-                $events,
-                $filters
-            );
-
-        $activityLog->record(
-            action: 'activity_log.exported',
-            request: $request,
-            entityType: 'activity_log',
-            entityLabel: 'Activity Log',
-            metadata: [
-                'format' => 'pdf',
-                'filters' => $filters,
-                'record_count' => $events->count(),
-            ],
-        );
-
-        return response(
-            $contents,
-            200,
-            [
-                'Content-Type' => 'application/pdf',
-
-                'Content-Disposition' => 'attachment; filename="activity-log.pdf"',
-            ]
-        );
-    }
+    /*
+     * There is deliberately no pdf() here.
+     *
+     * dompdf builds a Frame per cell and holds the whole document in
+     * memory, and this export rendered EVERY matching row. Because the
+     * Activity Log is retained indefinitely, the cost only ever rose:
+     * measured on the live box at 32 rows using 102 MB of the 128 MB
+     * available, roughly 2.9 MB a row, and pre-production already failed
+     * outright at 214. It was a button that was going to start answering
+     * 500 for every organisation in turn.
+     *
+     * CSV and XLSX stream, carry the same columns, and are what a log of
+     * this size is for.
+     */
 
     /**
      * Export every Activity Log event matching the active filters as CSV.

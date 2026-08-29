@@ -743,7 +743,7 @@ return [
                         ['text' => 'Chaque événement enregistre la personne, l\'action, l\'enregistrement touché et l\'heure.'],
                         ['text' => 'Il enregistre aussi l\'adresse, le navigateur et l\'appareil d\'où l\'action est partie.'],
                         ['text' => 'Filtrez par personne, par action ou par date, puis appuyez sur un événement pour le voir en entier.', 'shot' => 'activity-entry'],
-                        ['text' => 'Le journal s\'exporte comme un rapport, pour un auditeur qui le veut hors de Patrimoine.'],
+                        ['text' => 'Exportez le journal en XLSX ou en CSV, pour un auditeur qui le veut hors de Patrimoine. Il n’y a pas de PDF : un journal conservé indéfiniment dépasse vite ce qu’une page peut contenir.'],
                     ],
                 ],
 

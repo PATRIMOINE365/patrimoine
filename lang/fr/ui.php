@@ -302,7 +302,6 @@ return [
         'entity_type' => 'Type d’enregistrement',
         'entity_type_placeholder' => 'ex. payment',
         'clear_filters' => 'Effacer les filtres',
-        'export_pdf' => 'PDF',
         'export_csv' => 'CSV',
         'exporting' => 'Export en cours...',
         'unable_export' => 'Impossible d’exporter le journal d’activité.',
