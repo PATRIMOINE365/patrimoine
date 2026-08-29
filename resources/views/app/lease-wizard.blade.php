@@ -107,7 +107,12 @@
          Steps
     ============================================================ --}}
 
-    <div class="pm-card p-6">
+    {{--
+        The card is held at the height of the tallest page, measured once
+        the wizard is wired, so Back and Next stay where the eye left them
+        instead of jumping up and down between pages.
+    --}}
+    <div id="wizard-steps" class="pm-card p-6">
 
         {{-- 1. What these words mean --}}
         <section data-wizard-step="1">
@@ -356,7 +361,15 @@
                         <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
-                    <input id="wizard-start-date" type="date" class="pm-input">
+                    <input
+                        id="wizard-start-date"
+                        type="text"
+                        data-pm-date-input
+                        inputmode="numeric"
+                        maxlength="10"
+                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                        class="pm-input"
+                    >
                 </div>
 
                 <div>
@@ -378,7 +391,15 @@
                         <span data-i18n="wizard.end_date">{{ __('ui.wizard.end_date') }}</span>
                     </label>
 
-                    <input id="wizard-end-date" type="date" class="pm-input">
+                    <input
+                        id="wizard-end-date"
+                        type="text"
+                        data-pm-date-input
+                        inputmode="numeric"
+                        maxlength="10"
+                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                        class="pm-input"
+                    >
                 </div>
 
                 <p class="pm-wizard-help">
@@ -399,7 +420,15 @@
                         <span data-i18n="wizard.notice_date">{{ __('ui.wizard.notice_date') }}</span>
                     </label>
 
-                    <input id="wizard-notice-date" type="date" class="pm-input">
+                    <input
+                        id="wizard-notice-date"
+                        type="text"
+                        data-pm-date-input
+                        inputmode="numeric"
+                        maxlength="10"
+                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                        class="pm-input"
+                    >
 
                     <p class="pm-wizard-help">
                         <span data-i18n="wizard.notice_date_help">{{ __('ui.wizard.notice_date_help') }}</span>
@@ -434,7 +463,15 @@
                             <span data-i18n="wizard.increment_date">{{ __('ui.wizard.increment_date') }}</span>
                         </label>
 
-                        <input id="wizard-increment-date" type="date" class="pm-input">
+                        <input
+                        id="wizard-increment-date"
+                        type="text"
+                        data-pm-date-input
+                        inputmode="numeric"
+                        maxlength="10"
+                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                        class="pm-input"
+                    >
                     </div>
                 </div>
             </div>
@@ -532,7 +569,15 @@
                             <span data-i18n="wizard.advance_date">{{ __('ui.wizard.advance_date') }}</span>
                         </label>
 
-                        <input id="wizard-advance-date" type="date" class="pm-input">
+                        <input
+                        id="wizard-advance-date"
+                        type="text"
+                        data-pm-date-input
+                        inputmode="numeric"
+                        maxlength="10"
+                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                        class="pm-input"
+                    >
                     </div>
 
                     <div>

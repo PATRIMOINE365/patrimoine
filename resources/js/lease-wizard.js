@@ -33,6 +33,12 @@ import {
     readPhoneValue,
 } from './phone-input.js';
 
+import {
+    dateForApi,
+    dateForDisplay,
+    initializeDateInputs,
+} from './date-input.js';
+
 /*
 |--------------------------------------------------------------------------
 | Module State
@@ -966,12 +972,12 @@ function readLeaseTerms(status) {
 
     const terms = {
         status,
-        start_date: value('wizard-start-date'),
+        start_date: dateValue('wizard-start-date'),
         end_date: value('wizard-duration') === 'open'
             ? null
-            : (value('wizard-end-date') || null),
+            : (dateValue('wizard-end-date') || null),
 
-        termination_notice_date: value('wizard-notice-date') || null,
+        termination_notice_date: dateValue('wizard-notice-date') || null,
 
         rent_amount: integer('wizard-rent-amount'),
         payment_frequency: value('wizard-frequency'),
@@ -994,7 +1000,7 @@ function readLeaseTerms(status) {
             : decimal('wizard-increment-value'),
         next_rent_increment_date: value('wizard-increment-type') === 'none'
             ? null
-            : (value('wizard-increment-date') || null),
+            : (dateValue('wizard-increment-date') || null),
 
         vat_rate: decimal('wizard-vat-rate'),
         management_fee_type: value('wizard-fee-type'),
@@ -1008,7 +1014,7 @@ function readLeaseTerms(status) {
     };
 
     if (advanceReceived) {
-        terms.advance_received_date = value('wizard-advance-date') || null;
+        terms.advance_received_date = dateValue('wizard-advance-date') || null;
         terms.advance_received_method = value('wizard-advance-method');
 
         const reference = value('wizard-advance-reference');
@@ -1496,7 +1502,7 @@ function applyDuration() {
         return;
     }
 
-    const start = value('wizard-start-date');
+    const start = dateValue('wizard-start-date');
 
     if (! start) {
         return;
@@ -1518,10 +1524,82 @@ function applyDuration() {
      */
     date.setDate(date.getDate() - 1);
 
-    setValue(
+    setDateValue(
         'wizard-end-date',
         date.toISOString().slice(0, 10)
     );
+}
+
+/*
+|--------------------------------------------------------------------------
+| A card that does not jump
+|--------------------------------------------------------------------------
+|
+| Ten pages of different lengths inside one card meant the buttons moved
+| every time somebody pressed Next. The card is held at the height of its
+| tallest page instead, measured by showing each one in turn where it
+| cannot be seen.
+|
+| A minimum, not a fixed height: the review page grows with what was
+| filled in, and a page that outgrows the measurement should be readable
+| rather than clipped.
+|
+*/
+
+function holdCardHeight() {
+    const card = document.getElementById('wizard-steps');
+
+    if (! card) {
+        return;
+    }
+
+    const steps = [...document.querySelectorAll('[data-wizard-step]')];
+
+    if (steps.length === 0) {
+        return;
+    }
+
+    const shown = steps.filter(
+        (step) => ! step.classList.contains('hidden')
+    );
+
+    card.style.minHeight = '';
+
+    let tallest = 0;
+
+    for (const step of steps) {
+        const hidden = step.classList.contains('hidden');
+
+        if (hidden) {
+            /*
+             * Laid out, so it has a height, but not painted and not in
+             * the flow, so nothing on screen moves while it is measured.
+             */
+            step.classList.remove('hidden');
+
+            step.style.position = 'absolute';
+            step.style.visibility = 'hidden';
+            step.style.width = `${card.clientWidth - 48}px`;
+        }
+
+        tallest = Math.max(tallest, step.offsetHeight);
+
+        if (hidden) {
+            step.style.position = '';
+            step.style.visibility = '';
+            step.style.width = '';
+
+            step.classList.add('hidden');
+        }
+    }
+
+    for (const step of shown) {
+        step.classList.remove('hidden');
+    }
+
+    if (tallest > 0) {
+        card.style.minHeight = `${tallest}px`;
+    }
 }
 
 /*
@@ -1600,6 +1678,32 @@ function wireControls() {
 
     on('wizard-duration', 'change', applyDuration);
 
+    /*
+     * Business dates are typed in the organisation's format and get the
+     * shared Patrimoine calendar, like every other date in the
+     * application. A native picker would show the browser's format.
+     */
+    initializeDateInputs();
+
+    /*
+     * After the first render, so every page is measured with its real
+     * content, and again whenever the column width changes.
+     */
+    requestAnimationFrame(holdCardHeight);
+
+    setTimeout(holdCardHeight, 200);
+
+    let remeasure = null;
+
+    window.addEventListener(
+        'resize',
+        () => {
+            clearTimeout(remeasure);
+
+            remeasure = setTimeout(holdCardHeight, 150);
+        }
+    );
+
     on('wizard-start-date', 'change', applyDuration);
 
     document
@@ -1621,6 +1725,28 @@ function on(id, event, handler) {
 
 function value(id) {
     return document.getElementById(id)?.value ?? '';
+}
+
+/**
+ * A date field, as the API wants it.
+ *
+ * Business dates are typed and shown in the organisation's format —
+ * DD-MM-YYYY in French, DD/MM/YYYY in English — and travel as ISO.
+ */
+function dateValue(id) {
+    return dateForApi(
+        value(id)
+    );
+}
+
+/**
+ * Put an ISO date into a date field, in the format on screen.
+ */
+function setDateValue(id, iso) {
+    setValue(
+        id,
+        dateForDisplay(iso)
+    );
 }
 
 function selectedText(id) {

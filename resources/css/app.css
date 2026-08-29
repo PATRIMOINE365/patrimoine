@@ -8397,7 +8397,13 @@ body.pm-admin .pm-icon-button:hover {
  */
 .pm-phone-menu {
     position: fixed;
-    z-index: 60;
+
+    /*
+     * Above the drawers (z-70). The menu is moved to the end of the
+     * document while it is open, so without this it opens behind the
+     * drawer it belongs to and the country button looks dead.
+     */
+    z-index: 80;
     top: 0;
     left: 0;
 
