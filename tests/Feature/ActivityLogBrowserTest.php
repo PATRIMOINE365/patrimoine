@@ -13,10 +13,21 @@ use Tests\TestCase;
  */
 class ActivityLogBrowserTest extends TestCase
 {
+    /**
+     * V1.0.38: the activity monitor is a tab of /audit, and /activity-log
+     * redirects to it — links printed on documents and sitting in
+     * bookmarks predate the move.
+     */
+    public function test_the_old_path_still_reaches_the_tab_that_holds_it(): void
+    {
+        $this->get('/activity-log')
+            ->assertRedirect('/audit#activity');
+    }
+
     public function test_activity_log_page_is_available(): void
     {
         $this
-            ->get('/activity-log')
+            ->get('/audit')
             ->assertOk()
             ->assertSee(
                 'id="activity-log-workspace"',
@@ -49,8 +60,14 @@ class ActivityLogBrowserTest extends TestCase
                 )
             );
 
+        /*
+         * V1.0.38: one Audit link replaces the two. It is gated by
+         * view_activity_log because that is the tab it opens on; the
+         * journal tab carries its own capability inside the page, and the
+         * server enforces both per route.
+         */
         $this->assertStringContainsString(
-            'href="/activity-log"',
+            'href="/audit"',
             $view
         );
 
@@ -60,8 +77,14 @@ class ActivityLogBrowserTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            'label="navigation.activity_log"',
+            'label="navigation.audit"',
             $view
+        );
+
+        $this->assertStringNotContainsString(
+            'href="/activity-log"',
+            $view,
+            'The activity log is a tab of Audit; it has no sidebar entry of its own.'
         );
 
         $this->assertStringContainsString(
@@ -122,7 +145,7 @@ class ActivityLogBrowserTest extends TestCase
         $view =
             file_get_contents(
                 resource_path(
-                    'views/app/activity-log.blade.php'
+                    'views/app/audit/activity.blade.php'
                 )
             );
 
@@ -149,7 +172,7 @@ class ActivityLogBrowserTest extends TestCase
         $view =
             file_get_contents(
                 resource_path(
-                    'views/app/activity-log.blade.php'
+                    'views/app/audit/activity.blade.php'
                 )
             );
 
@@ -191,7 +214,7 @@ class ActivityLogBrowserTest extends TestCase
         $view =
             file_get_contents(
                 resource_path(
-                    'views/app/activity-log.blade.php'
+                    'views/app/audit/activity.blade.php'
                 )
             );
 

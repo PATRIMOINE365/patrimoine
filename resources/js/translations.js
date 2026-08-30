@@ -1990,6 +1990,27 @@ export const translations = {
         'navigation.financial_journal':
             'Financial Journal',
 
+        'navigation.audit':
+            'Audit',
+
+        'audit.title':
+            'Audit',
+
+        'audit.eyebrow':
+            'Administration',
+
+        'audit.heading':
+            'Audit',
+
+        'audit.description':
+            'Everything that has happened in this organisation: who did what, and where the money went.',
+
+        'audit.tab_activity':
+            'Activity monitor',
+
+        'audit.tab_journal':
+            'Financial journal',
+
         'navigation.users':
             'Users',
 
@@ -6322,6 +6343,27 @@ export const translations = {
             'Journal d’activité',
 
         'navigation.financial_journal':
+            'Journal financier',
+
+        'navigation.audit':
+            'Audit',
+
+        'audit.title':
+            'Audit',
+
+        'audit.eyebrow':
+            'Administration',
+
+        'audit.heading':
+            'Audit',
+
+        'audit.description':
+            'Tout ce qui s’est passé dans cette organisation : qui a fait quoi, et où est allé l’argent.',
+
+        'audit.tab_activity':
+            'Moniteur d’activité',
+
+        'audit.tab_journal':
             'Journal financier',
 
         'navigation.users':

@@ -651,10 +651,10 @@ async function loadEmails() {
 
     body.innerHTML = data.data.map((email) => `
         <tr class="cursor-pointer" data-admin-email="${escapeHtml(String(email.id))}">
-            <td>${escapeHtml(emailTimestamp(email.created_at))}</td>
-            <td>${escapeHtml(email.from ?? '—')}</td>
-            <td>${escapeHtml((email.to ?? []).join(', ') || '—')}</td>
-            <td>${escapeHtml(email.subject ?? '(no subject)')}</td>
+            <td class="pm-admin-cell-when">${escapeHtml(emailTimestamp(email.created_at))}</td>
+            <td class="pm-admin-cell-truncate" title="${escapeHtml(email.from ?? '')}">${escapeHtml(email.from ?? '—')}</td>
+            <td class="pm-admin-cell-truncate" title="${escapeHtml((email.to ?? []).join(', '))}">${escapeHtml((email.to ?? []).join(', ') || '—')}</td>
+            <td class="pm-admin-cell-truncate" title="${escapeHtml(email.subject ?? '')}">${escapeHtml(email.subject ?? '(no subject)')}</td>
             <td>${deliveryBadge(email.status)}</td>
         </tr>
     `).join('');

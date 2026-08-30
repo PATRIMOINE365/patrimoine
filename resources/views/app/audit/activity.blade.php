@@ -1,52 +1,29 @@
-@extends('layouts.app')
+{{--
+    The activity log, as the Activity tab of Audit.
 
-@section('title', __('ui.activity_log.title'))
-@section('title-i18n', 'activity_log.title')
-
-@section('content')
+    Lifted unchanged from app/activity-log.blade.php when the two logs
+    became one page; activity-log.js still finds it by
+    #activity-log-workspace and neither module knows it moved.
+--}}
 
 <div
     id="activity-log-workspace"
     data-requires-capability="view_activity_log"
     class="rbac-hidden"
 >
+    {{--
+        The heading moved to the page; what is left in this row is the
+        tab's own toolbar, so it sits to the right rather than filling
+        the space the title used to hold.
+    --}}
     <div
         class="
             flex flex-col gap-5
             sm:flex-row
             sm:items-start
-            sm:justify-between
+            sm:justify-end
         "
     >
-        <div>
-            <div
-                class="
-                    text-xs font-semibold uppercase
-                    tracking-[0.14em]
-                    text-[var(--pm-accent)]
-                "
-            >
-                <span data-i18n="activity_log.administration">{{ __('ui.activity_log.administration') }}</span>
-            </div>
-
-            <h1
-                class="
-                    mt-2 text-2xl font-semibold
-                    tracking-tight text-[var(--pm-text)]
-                "
-            >
-                <span data-i18n="activity_log.heading">{{ __('ui.activity_log.heading') }}</span>
-            </h1>
-
-            <p
-                class="
-                    mt-2 max-w-3xl
-                    text-sm leading-6 text-[var(--pm-text-muted)]
-                "
-            >
-                <span data-i18n="activity_log.description">{{ __('ui.activity_log.description') }}</span>
-            </p>
-        </div>
 
         <div
             class="
@@ -291,5 +268,3 @@
         "
     ></div>
 </x-drawer>
-
-@endsection

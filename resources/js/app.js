@@ -13,6 +13,7 @@
 | - parties.js     Party management
 | - leases.js      Lease management
 | - settings.js    Application-wide settings
+| - audit.js       The tab strip over the activity log and the journal
 | - core.js        Shared browser/API helpers
 |
 | Future application areas such as Payments and Reports will be imported
@@ -100,6 +101,10 @@ import {
 import {
     initializeFinancialJournal,
 } from './financial-journal.js';
+
+import {
+    initializeAudit,
+} from './audit.js';
 
 import {
     initializeAccounting,
@@ -275,6 +280,8 @@ document.addEventListener(
         await initializeActivityLog();
 
         await initializeFinancialJournal();
+
+        await initializeAudit();
 
         await initializeHelp();
 

@@ -158,6 +158,7 @@ return [
         'activity_log' => 'Journal d’activité',
         'financial_journal' => 'Journal financier',
         'users' => 'Utilisateurs',
+        'audit' => 'Audit',
         'platform_console' => 'Administration',
     ],
     /*
@@ -280,6 +281,21 @@ return [
         'property_manager' => 'Gestionnaire immobilier',
         'viewer' => 'Consultation',
     ],
+    /*
+     * V1.0.38: Audit — le moniteur d'activité et le journal financier, qui
+     * avaient chacun leur entrée dans le menu. L'un est le registre des
+     * ACTIONS et l'autre celui de L'ARGENT, et qui consulte l'un fait le
+     * même travail que qui consulte l'autre.
+     */
+    'audit' => [
+        'title' => 'Audit',
+        'eyebrow' => 'Administration',
+        'heading' => 'Audit',
+        'description' => 'Tout ce qui s’est passé dans cette organisation : qui a fait quoi, et où est allé l’argent.',
+        'tab_activity' => 'Moniteur d’activité',
+        'tab_journal' => 'Journal financier',
+    ],
+
     'activity_log' => [
         /* ---- V1.0.7 additions ---- */
         'export_xlsx' => 'XLSX',

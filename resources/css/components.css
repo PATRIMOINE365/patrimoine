@@ -611,14 +611,22 @@ select.pm-input {
      * because a background-image URL cannot read a CSS variable.
      */
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%237e8c87' stroke-width='1.667' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5 10 12.5 15 7.5'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
     padding-right: 2.5rem;
+
+    /*
+     * ONE shorthand, carrying colour, image, repeat AND position.
+     *
+     * This was `background-image` plus separate repeat and position
+     * longhands — and `.pm-input` above sets the `background` SHORTHAND for
+     * its colour, which resets repeat to `repeat` and position to `0% 0%`.
+     * The chevron TILED across the whole control: eight across, three down.
+     * Keeping it in one declaration means nothing can half-reset it.
+     */
+    background: var(--pm-input-background) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%237e8c87' stroke-width='1.667' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5 10 12.5 15 7.5'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
 }
 
 html[data-theme='dark'] select.pm-input {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%238b9994' stroke-width='1.667' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5 10 12.5 15 7.5'/%3E%3C/svg%3E");
+    background: var(--pm-input-background) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%238b9994' stroke-width='1.667' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5 10 12.5 15 7.5'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
 }
 
 /*

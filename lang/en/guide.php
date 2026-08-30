@@ -60,7 +60,7 @@ return [
                     'steps' => [
                         ['text' => 'Workspace holds the day-to-day: Dashboard, Properties, Parties and Leases.', 'shot' => 'sidebar'],
                         ['text' => 'Finance holds the money: Tenants, Owners, Accounting and Reports.'],
-                        ['text' => 'Administration holds the rest: Settings, Activity Log and Financial Journal. It is visible to administrators only.'],
+                        ['text' => 'Administration holds the rest: Settings and Audit. It is visible to administrators only.'],
                         ['text' => 'The top bar shows the organisation you are signed in to, today\'s date, the notification bell, and your own photograph. Press the photograph for your profile and to sign out.', 'shot' => 'topbar'],
                     ],
                 ],
@@ -127,7 +127,7 @@ return [
                     'title' => 'Understand who can do what',
                     'intro' => 'Patrimoine has three roles. They are fixed: what each one may do is the same in every organisation.',
                     'steps' => [
-                        ['text' => 'An Administrator can do everything, including Settings, Users, the Licence, the Activity Log and the Financial Journal.'],
+                        ['text' => 'An Administrator can do everything, including Settings, Users, the Licence and both tabs of Audit.'],
                         ['text' => 'A Property Manager does all the day-to-day work — properties, parties, leases, payments, owners and reports — and may delete records, but cannot reach the Administration group.'],
                         ['text' => 'A Viewer can read and can export reports, and can change nothing.'],
                         ['text' => 'Controls a role may not use are not merely disabled, they are not shown. The server enforces the same rule, so a hidden control cannot be reached another way.'],
@@ -724,8 +724,8 @@ return [
         */
 
         'journal' => [
-            'title' => 'The journal and the log',
-            'summary' => 'The two records Patrimoine keeps of itself: what the money did, and what people did.',
+            'title' => 'Audit',
+            'summary' => 'The two records Patrimoine keeps of itself: what the money did, and what people did. Both live under Audit, one tab each.',
 
             'tasks' => [
 
@@ -734,7 +734,7 @@ return [
                     'intro' => 'Every movement of money in Patrimoine is double-entry bookkeeping underneath. The journal is that bookkeeping, readable, with the document that caused each entry one press away.',
                     'who' => 'Administrators',
                     'steps' => [
-                        ['text' => 'Open Financial Journal from the Administration group.', 'shot' => 'journal-list'],
+                        ['text' => 'Open Audit from the Administration group and press the Financial journal tab.', 'shot' => 'journal-list'],
                         ['text' => 'Entries run newest first, each with its own number, its date and its total.'],
                         ['text' => 'Filter by date, by type of transaction, or by account.'],
                         ['text' => 'Press an entry to see its lines — what was debited, what was credited, and what document produced it.', 'shot' => 'journal-entry'],
@@ -758,7 +758,7 @@ return [
                     'intro' => 'Who did what, when, and from where. The log is append-only: nothing in it can be edited or removed, by anybody, including us.',
                     'who' => 'Administrators',
                     'steps' => [
-                        ['text' => 'Open Activity Log from the Administration group.', 'shot' => 'activity-list'],
+                        ['text' => 'Open Audit from the Administration group. It opens on Activity monitor.', 'shot' => 'activity-list'],
                         ['text' => 'Each event records the person, the action, the record it touched, and the time.'],
                         ['text' => 'It also records the address, browser and device the action came from.'],
                         ['text' => 'Filter by person, by action or by date, then press an event for the whole of it.', 'shot' => 'activity-entry'],

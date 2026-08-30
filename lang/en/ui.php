@@ -159,6 +159,7 @@ return [
         'activity_log' => 'Activity Log',
         'financial_journal' => 'Financial Journal',
         'users' => 'Users',
+        'audit' => 'Audit',
         'platform_console' => 'Administration',
     ],
     /*
@@ -281,6 +282,21 @@ return [
         'property_manager' => 'Property Manager',
         'viewer' => 'Viewer',
     ],
+    /*
+     * V1.0.38: Audit — the activity monitor and the financial journal, which
+     * had a sidebar entry each. One is the record of ACTIONS and the other
+     * the record of MONEY, and somebody checking either is doing the same
+     * job.
+     */
+    'audit' => [
+        'title' => 'Audit',
+        'eyebrow' => 'Administration',
+        'heading' => 'Audit',
+        'description' => 'Everything that has happened in this organisation: who did what, and where the money went.',
+        'tab_activity' => 'Activity monitor',
+        'tab_journal' => 'Financial journal',
+    ],
+
     'activity_log' => [
         /* ---- V1.0.7 additions ---- */
         'export_xlsx' => 'XLSX',

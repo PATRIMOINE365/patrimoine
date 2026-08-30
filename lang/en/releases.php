@@ -19,6 +19,18 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.38',
+            'date' => '2026-08-30',
+            'title' => 'Audit, and four things that were not sitting right',
+            'changes' => [
+                'The Activity Log and the Financial Journal have become one entry in the Administration group: Audit. It opens on two tabs — Activity monitor and Financial journal — the same tabs Settings uses. Both records are unchanged, and the addresses you may have bookmarked still work: they take you to the tab that now holds them.',
+                'Every dropdown had its arrow drawn over and over across the width of the field. It is one arrow again.',
+                'On the administration console, the record of an e-mail no longer breaks its date across two lines, and the columns are sized so that a screenful of messages is a screenful rather than a third of one.',
+                'Settings no longer leaves a band of empty space down the right of every tab.',
+                'The Support entry in your own menu has a clearer icon.',
+            ],
+        ],
+        [
             'version' => '1.0.37',
             'date' => '2026-08-30',
             'title' => 'One look, everywhere',

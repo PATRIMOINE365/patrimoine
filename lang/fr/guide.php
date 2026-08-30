@@ -56,7 +56,7 @@ return [
                     'steps' => [
                         ['text' => 'Espace de travail contient le quotidien : Tableau de bord, Biens, Parties et Baux.', 'shot' => 'sidebar'],
                         ['text' => 'Finance contient l\'argent : Locataires, Propriétaires, Comptabilité et Rapports.'],
-                        ['text' => 'Administration contient le reste : Paramètres, Journal d\'activité et Journal financier. Ce groupe n\'est visible que des administrateurs.'],
+                        ['text' => 'Administration contient le reste : Paramètres et Audit. Ce groupe n\'est visible que des administrateurs.'],
                         ['text' => 'La barre supérieure affiche l\'organisation à laquelle vous êtes connecté, la date du jour, la cloche de notifications et votre photographie. Appuyez sur la photographie pour votre profil et pour vous déconnecter.', 'shot' => 'topbar'],
                     ],
                 ],
@@ -123,7 +123,7 @@ return [
                     'title' => 'Comprendre qui peut faire quoi',
                     'intro' => 'Patrimoine compte trois rôles. Ils sont fixes : ce que chacun peut faire est identique dans toutes les organisations.',
                     'steps' => [
-                        ['text' => 'Un Administrateur peut tout faire, y compris les Paramètres, les Utilisateurs, la Licence, le Journal d\'activité et le Journal financier.'],
+                        ['text' => 'Un Administrateur peut tout faire, y compris les Paramètres, les Utilisateurs, la Licence et les deux onglets d\'Audit.'],
                         ['text' => 'Un Gestionnaire immobilier fait tout le travail quotidien — biens, parties, baux, paiements, propriétaires et rapports — et peut supprimer des enregistrements, mais n\'atteint pas le groupe Administration.'],
                         ['text' => 'Un Lecteur peut consulter et exporter des rapports, et ne peut rien modifier.'],
                         ['text' => 'Les commandes qu\'un rôle ne peut pas utiliser ne sont pas seulement désactivées : elles ne sont pas affichées. Le serveur applique la même règle, si bien qu\'une commande masquée ne peut pas être atteinte autrement.'],
@@ -715,13 +715,13 @@ return [
 
         /*
         |----------------------------------------------------------------------
-        | Les journaux
+        | Audit
         |----------------------------------------------------------------------
         */
 
         'journal' => [
-            'title' => 'Les journaux',
-            'summary' => 'Les deux registres que Patrimoine tient de lui-même : ce qu\'a fait l\'argent, et ce qu\'ont fait les personnes.',
+            'title' => 'Audit',
+            'summary' => 'Les deux registres que Patrimoine tient de lui-même : ce qu\'a fait l\'argent, et ce qu\'ont fait les personnes. Les deux vivent sous Audit, un onglet chacun.',
 
             'tasks' => [
 
@@ -730,7 +730,7 @@ return [
                     'intro' => 'Chaque mouvement d\'argent dans Patrimoine repose sur une comptabilité en partie double. Le journal, c\'est cette comptabilité, lisible, avec le document à l\'origine de chaque écriture à un clic.',
                     'who' => 'Administrateurs',
                     'steps' => [
-                        ['text' => 'Ouvrez Journal financier depuis le groupe Administration.', 'shot' => 'journal-list'],
+                        ['text' => 'Ouvrez Audit depuis le groupe Administration, puis appuyez sur l\'onglet Journal financier.', 'shot' => 'journal-list'],
                         ['text' => 'Les écritures vont de la plus récente à la plus ancienne, chacune avec son numéro, sa date et son total.'],
                         ['text' => 'Filtrez par date, par type d\'opération ou par compte.'],
                         ['text' => 'Appuyez sur une écriture pour voir ses lignes — ce qui a été débité, ce qui a été crédité, et quel document l\'a produite.', 'shot' => 'journal-entry'],
@@ -754,7 +754,7 @@ return [
                     'intro' => 'Qui a fait quoi, quand, et depuis où. Le journal ne fait que s\'ajouter : rien n\'y peut être modifié ni supprimé, par personne, nous compris.',
                     'who' => 'Administrateurs',
                     'steps' => [
-                        ['text' => 'Ouvrez Journal d\'activité depuis le groupe Administration.', 'shot' => 'activity-list'],
+                        ['text' => 'Ouvrez Audit depuis le groupe Administration. Il s\'ouvre sur Moniteur d\'activité.', 'shot' => 'activity-list'],
                         ['text' => 'Chaque événement enregistre la personne, l\'action, l\'enregistrement touché et l\'heure.'],
                         ['text' => 'Il enregistre aussi l\'adresse, le navigateur et l\'appareil d\'où l\'action est partie.'],
                         ['text' => 'Filtrez par personne, par action ou par date, puis appuyez sur un événement pour le voir en entier.', 'shot' => 'activity-entry'],

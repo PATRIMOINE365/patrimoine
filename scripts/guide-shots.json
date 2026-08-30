@@ -736,13 +736,13 @@
   },
   {
     "id": "journal-list",
-    "path": "/financial-journal",
+    "path": "/audit#journal",
     "wait": "#financial-journal-list",
     "settle": 900
   },
   {
     "id": "journal-entry",
-    "path": "/financial-journal",
+    "path": "/audit#journal",
     "wait": "#financial-journal-list",
     "settle": 700,
     "do": [
@@ -756,13 +756,13 @@
   },
   {
     "id": "activity-list",
-    "path": "/activity-log",
+    "path": "/audit#activity",
     "wait": "#activity-log-list",
     "settle": 900
   },
   {
     "id": "activity-entry",
-    "path": "/activity-log",
+    "path": "/audit#activity",
     "wait": "#activity-log-list",
     "settle": 700,
     "do": [
@@ -853,7 +853,7 @@
   },
   {
     "id": "pagination",
-    "path": "/financial-journal",
+    "path": "/audit#journal",
     "wait": "#financial-journal-pagination .pm-pagination",
     "settle": 900,
     "clip": "#financial-journal-pagination"

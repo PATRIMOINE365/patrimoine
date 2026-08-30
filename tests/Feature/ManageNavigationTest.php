@@ -32,8 +32,14 @@ class ManageNavigationTest extends TestCase
     private function manageLinks(): array
     {
         return [
-            '/activity-log' => 'view_activity_log',
-            '/financial-journal' => 'view_financial_journal',
+            /*
+             * V1.0.38: the activity monitor and the financial journal became
+             * the two tabs of Audit, so the group holds two links rather
+             * than three. Audit is gated by view_activity_log — the tab it
+             * opens on; the journal tab declares view_financial_journal
+             * inside the page and the server enforces both per route.
+             */
+            '/audit' => 'view_activity_log',
             '/settings' => 'manage_settings',
         ];
     }
@@ -146,14 +152,14 @@ class ManageNavigationTest extends TestCase
     {
         $html = Blade::render(
             '<x-nav-item'
-            .' href="/activity-log"'
+            .' href="/audit"'
             .' icon="clock-rewind"'
             .' label="navigation.activity_log"'
             .' capability="view_activity_log" />'
         );
 
         $this->assertStringContainsString(
-            'href="/activity-log"',
+            'href="/audit"',
             $html
         );
 

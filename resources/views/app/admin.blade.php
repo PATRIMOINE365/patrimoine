@@ -160,8 +160,25 @@
                 </button>
             </div>
 
+            {{--
+                A mailbox is scanned, not read, so the rows are compact and
+                nothing in them is allowed to wrap: the timestamp keeps its
+                own line and the three text columns truncate with the full
+                value on hover. The subject in full is one click away.
+
+                The columns are proportioned rather than left to the browser,
+                which otherwise gives the widest subject the most room and
+                squeezes the timestamp into three lines.
+            --}}
             <div class="overflow-x-auto">
-                <table class="pm-admin-table min-w-[900px]">
+                <table class="pm-admin-table pm-admin-table-compact min-w-[900px]">
+                    <colgroup>
+                        <col style="width: 8.5rem">
+                        <col style="width: 22%">
+                        <col style="width: 22%">
+                        <col>
+                        <col style="width: 7rem">
+                    </colgroup>
                     <thead>
                         <tr>
                             <th>When</th>

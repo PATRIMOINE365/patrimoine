@@ -282,18 +282,20 @@
                         capability="manage_settings"
                     />
 
+                    {{--
+                        V1.0.38: the activity log and the financial journal
+                        are the two tabs of Audit. The link is gated by
+                        view_activity_log because that is the tab it opens
+                        on; each tab carries its own capability and the
+                        server enforces both per route, so an administrator
+                        who could see only one would still see only one.
+                    --}}
                     <x-nav-item
-                        href="/activity-log"
+                        href="/audit"
                         icon="clock-rewind"
-                        label="navigation.activity_log"
+                        label="navigation.audit"
                         capability="view_activity_log"
-                    />
-
-                    <x-nav-item
-                        href="/financial-journal"
-                        icon="book-open"
-                        label="navigation.financial_journal"
-                        capability="view_financial_journal"
+                        :active="['audit', 'activity-log', 'financial-journal']"
                     />
 
                     {{--
@@ -762,7 +764,7 @@
                                 href="/help"
                                 class="shell-menu-item"
                             >
-                                <x-icon name="message-question" :size="16" />
+                                <x-icon name="help-circle" :size="16" />
 
                                 <span
                                     class="

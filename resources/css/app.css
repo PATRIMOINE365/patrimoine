@@ -2788,6 +2788,49 @@ body.pm-admin {
     border-bottom: 0;
 }
 
+/*
+|--------------------------------------------------------------------------
+| A table you can read a lot of at once
+|--------------------------------------------------------------------------
+|
+| The mailbox is a list somebody SCANS: they are looking for one message
+| among the last hundred. At 1rem of vertical padding with a subject free to
+| wrap onto three lines, four messages filled a screen — and the timestamp
+| broke across three lines of its own, because "2026-08-30 15:06" has two
+| hyphens and a space and a narrow column will use every one of them.
+|
+| So: a compact row, a timestamp that cannot break, and long text that
+| truncates rather than growing the row. The full subject is one click away
+| in the reader.
+|
+*/
+
+.pm-admin-table-compact td {
+    padding: 0.5rem 0.75rem;
+}
+
+.pm-admin-table-compact th {
+    padding: 0.5rem 0.75rem;
+}
+
+/* One line, never broken, and figures that line up down the column. */
+.pm-admin-cell-when {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    color: var(--pm-text-subtle);
+}
+
+/*
+ * Truncation needs a width the cell is allowed to be smaller than, which in
+ * a table means max-width on the cell itself.
+ */
+.pm-admin-cell-truncate {
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .pm-admin-row-click {
     cursor: pointer;
 }

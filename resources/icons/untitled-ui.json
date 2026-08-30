@@ -90,6 +90,7 @@
     "scale-balanced": "<path d='M12 3v18M7 21h10M12 6l7 2M12 6 5 8'/><path d='M5 8 2 15a3 3 0 0 0 6 0L5 8ZM19 8l-3 7a3 3 0 0 0 6 0l-3-7Z'/>",
     "wallet": "<path d='M20 12V8.5A2.5 2.5 0 0 0 17.5 6H5a2 2 0 0 1 0-4h12'/><path d='M3 4v14a3 3 0 0 0 3 3h13a2 2 0 0 0 2-2v-3'/><path d='M22 12v3h-4a1.5 1.5 0 0 1 0-3h4Z'/>",
     "zap": "<path d='M13 2 4 14h7l-1 8 9-12h-7l1-8Z'/>",
-    "smartphone": "<rect x='6' y='2' width='12' height='20' rx='2.5'/><path d='M11 18.5h2'/>"
+    "smartphone": "<rect x='6' y='2' width='12' height='20' rx='2.5'/><path d='M11 18.5h2'/>",
+    "help-circle": "<circle cx='12' cy='12' r='10'/><path d='M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01'/>"
   }
 }

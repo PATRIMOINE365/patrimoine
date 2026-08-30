@@ -166,14 +166,29 @@ Route::view(
     'app.reports'
 )->name('reports');
 
+/*
+ * V1.0.38: the activity log and the financial journal became the two tabs
+ * of Audit. One is the record of ACTIONS and the other the record of MONEY,
+ * and somebody checking either is doing the same job — they did not need a
+ * sidebar entry each.
+ *
+ * Both old paths are kept, exactly as /users and /license were when they
+ * moved into Settings: links printed on documents, sent in old e-mails and
+ * sitting in anybody's bookmarks still land on the right tab.
+ */
 Route::view(
+    '/audit',
+    'app.audit'
+)->name('audit');
+
+Route::redirect(
     '/activity-log',
-    'app.activity-log'
+    '/audit#activity'
 )->name('activity-log');
 
-Route::view(
+Route::redirect(
     '/financial-journal',
-    'app.financial-journal'
+    '/audit#journal'
 )->name('financial-journal');
 
 /*

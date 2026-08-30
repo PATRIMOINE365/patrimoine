@@ -1,56 +1,29 @@
-@extends('layouts.app')
+{{--
+    The financial journal, as the Journal tab of Audit.
 
-@section('title', __('ui.financial_journal.title'))
-@section('title-i18n', 'financial_journal.title')
-
-@section('content')
+    Lifted unchanged from app/financial-journal.blade.php when the two logs
+    became one page; financial-journal.js still finds it by
+    #financial-journal-workspace and neither module knows it moved.
+--}}
 
 <div
     id="financial-journal-workspace"
     data-requires-capability="view_financial_journal"
     class="rbac-hidden"
 >
+    {{--
+        The heading moved to the page; what is left in this row is the
+        tab's own toolbar, so it sits to the right rather than filling
+        the space the title used to hold.
+    --}}
     <div
         class="
             flex flex-col gap-5
             sm:flex-row
             sm:items-start
-            sm:justify-between
+            sm:justify-end
         "
     >
-        <div>
-            <div
-                class="
-                    text-xs font-semibold uppercase
-                    tracking-[0.14em]
-                    text-[var(--pm-accent)]
-                "
-                data-i18n="financial_journal.administration"
-            >
-                {{ __('ui.financial_journal.administration') }}
-            </div>
-
-            <h1
-                class="
-                    mt-2 text-2xl font-semibold
-                    tracking-tight text-[var(--pm-text)]
-                "
-                data-i18n="financial_journal.heading"
-            >
-                {{ __('ui.financial_journal.heading') }}
-            </h1>
-
-            <p
-                class="
-                    mt-2 max-w-3xl
-                    text-sm leading-6
-                    text-[var(--pm-text-muted)]
-                "
-                data-i18n="financial_journal.description"
-            >
-                {{ __('ui.financial_journal.description') }}
-            </p>
-        </div>
 
         <div class="flex shrink-0 flex-wrap gap-2 max-sm:w-full">
             <button
@@ -302,5 +275,3 @@
         "
     ></div>
 </x-drawer>
-
-@endsection

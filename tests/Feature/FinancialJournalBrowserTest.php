@@ -6,10 +6,20 @@ use Tests\TestCase;
 
 class FinancialJournalBrowserTest extends TestCase
 {
+    /**
+     * V1.0.38: the journal is a tab of /audit, and /financial-journal
+     * redirects to it.
+     */
+    public function test_the_old_path_still_reaches_the_tab_that_holds_it(): void
+    {
+        $this->get('/financial-journal')
+            ->assertRedirect('/audit#journal');
+    }
+
     public function test_financial_journal_page_is_available(): void
     {
         $this
-            ->get('/financial-journal')
+            ->get('/audit')
             ->assertOk()
             ->assertSee(
                 'id="financial-journal-workspace"',
@@ -35,13 +45,15 @@ class FinancialJournalBrowserTest extends TestCase
             );
 
         /*
-         * V1.0.32 took Users and Licence out of the group and into Settings
-         * itself, so three links remain in the order they were settled in.
+         * V1.0.32 took Users and Licence out of the group and into Settings.
+         * V1.0.38 did the same to the activity monitor and the journal, which
+         * became the two tabs of Audit — so two links remain, in the order
+         * they were settled in: the thing an administrator SETS UP, then the
+         * thing they READ.
          */
         $order = [
             '/settings',
-            '/activity-log',
-            '/financial-journal',
+            '/audit',
         ];
 
         $positions = [];
@@ -70,14 +82,28 @@ class FinancialJournalBrowserTest extends TestCase
             'The Manage links are not in the order they were asked for.'
         );
 
+        /*
+         * The journal's own capability moved INTO the page: it gates the
+         * tab, not a sidebar link, so this is where it has to be found now.
+         */
         $this->assertStringContainsString(
-            'capability="view_financial_journal"',
-            $view
+            'data-requires-capability="view_financial_journal"',
+            file_get_contents(
+                resource_path('views/app/audit.blade.php')
+            )
         );
 
         $this->assertStringContainsString(
-            'label="navigation.financial_journal"',
-            $view
+            'audit.tab_journal',
+            file_get_contents(
+                resource_path('views/app/audit.blade.php')
+            )
+        );
+
+        $this->assertStringNotContainsString(
+            'href="/financial-journal"',
+            $view,
+            'The journal is a tab of Audit; it has no sidebar entry of its own.'
         );
     }
 
@@ -123,7 +149,7 @@ class FinancialJournalBrowserTest extends TestCase
         $view =
             file_get_contents(
                 resource_path(
-                    'views/app/financial-journal.blade.php'
+                    'views/app/audit/journal.blade.php'
                 )
             );
 
@@ -154,7 +180,7 @@ class FinancialJournalBrowserTest extends TestCase
         $view =
             file_get_contents(
                 resource_path(
-                    'views/app/financial-journal.blade.php'
+                    'views/app/audit/journal.blade.php'
                 )
             );
 
@@ -277,7 +303,7 @@ class FinancialJournalBrowserTest extends TestCase
         $view =
             file_get_contents(
                 resource_path(
-                    'views/app/financial-journal.blade.php'
+                    'views/app/audit/journal.blade.php'
                 )
             );
 
@@ -382,7 +408,7 @@ class FinancialJournalBrowserTest extends TestCase
     {
         $view = file_get_contents(
             resource_path(
-                'views/app/financial-journal.blade.php'
+                'views/app/audit/journal.blade.php'
             )
         );
 
@@ -405,7 +431,7 @@ class FinancialJournalBrowserTest extends TestCase
     {
         $journal = file_get_contents(
             resource_path(
-                'views/app/financial-journal.blade.php'
+                'views/app/audit/journal.blade.php'
             )
         );
 

@@ -193,7 +193,7 @@
                 xl:grid-cols-[minmax(0,1fr)_20rem]
             "
         >
-        <div class="max-w-[880px]">
+        <div class="min-w-0">
 
             {{-- Inline tab feedback --}}
             <div
@@ -677,7 +677,7 @@
         aria-labelledby="settings-tab-preferences"
         class="mt-4 hidden"
     >
-        <div class="max-w-[880px]">
+        <div class="min-w-0">
 
             {{-- Inline tab feedback --}}
             <div
@@ -955,7 +955,7 @@
     >
         <div
             id="settings-backup-section"
-            class="max-w-[880px]"
+            class="min-w-0"
         >
 
             {{-- Inline tab feedback --}}
@@ -1282,7 +1282,7 @@
         aria-labelledby="settings-tab-about"
         class="mt-4 hidden"
     >
-        <div class="max-w-[880px]">
+        <div class="min-w-0">
             <section class="pm-card p-5">
                 <div
                     class="
