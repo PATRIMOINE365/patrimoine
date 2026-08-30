@@ -64,6 +64,7 @@ use App\Http\Controllers\Api\RentReserveController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReportExportController;
 use App\Http\Controllers\Api\SecurityDepositController;
+use App\Http\Controllers\Api\SupportMessageController;
 use App\Http\Controllers\Api\TenantExpenseInvoiceController;
 use App\Http\Controllers\Api\TenantFundController;
 use App\Http\Controllers\Api\TenantFundDepositController;
@@ -248,6 +249,18 @@ Route::middleware('auth:sanctum')->group(
             'guide',
             GuideController::class
         );
+
+        /*
+         * V1.0.36: writing to support. Open to every role — being unable
+         * to do your work is exactly what a Viewer needs to report.
+         *
+         * Throttled at five an hour per signed-in user: enough for a bad
+         * morning, not enough to turn the support mailbox into a target.
+         */
+        Route::post(
+            'support-messages',
+            [SupportMessageController::class, 'store']
+        )->middleware('throttle:5,60');
 
         /*
          * V1.0.34: your own data, on request, by you.

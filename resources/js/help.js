@@ -20,6 +20,8 @@ import {
     apiRequest,
     escapeHtml,
     parseJsonResponse,
+    restoreButton,
+    setButtonBusy,
     translate,
 } from './core.js';
 
@@ -57,7 +59,7 @@ const helpTranslations = {
             'Help & documentation',
 
         'help.description':
-            'How Patrimoine works, organised by topic, plus the history of application updates.',
+            'Ask us a question, read how a task is done, or look up a code.',
 
         'help.tab_guide':
             'Guide',
@@ -84,7 +86,57 @@ const helpTranslations = {
             'Nothing matches what you typed. Try fewer words, or the code itself.',
 
         'help.no_results_description':
-            'Try different words or clear the category filter.',
+            'Try fewer words, or the name of the screen.',
+
+        /* ---- V1.0.36 ---- */
+
+        'help.tab_support':
+            'Contact support',
+
+        'help.support_intro':
+            'Tell us what you were trying to do and what happened instead. Your name, your organisation and the address we should answer are taken from your account, so there is nothing else to fill in.',
+
+        'help.support_subject':
+            'Subject',
+
+        'help.support_body':
+            'Your message',
+
+        'help.support_body_help':
+            'If a message carried a code beginning PM-, include it.',
+
+        'help.support_send':
+            'Send to support',
+
+        'help.support_sent':
+            'Your message has been sent.',
+
+        'help.support_sending':
+            'Sending…',
+
+        'help.support_incomplete':
+            'Write a subject and a message before sending.',
+
+        'help.guide_intro':
+            'Every task in Patrimoine, step by step, with pictures of the screens you will be looking at. Choose the part of the work you are doing.',
+
+        'help.guide_back':
+            'All guides',
+
+        'help.guide_task_count':
+            '{count} tasks',
+
+        'help.guide_task_count_one':
+            '1 task',
+
+        'help.guide_on_this_page':
+            'On this page',
+
+        'help.guide_who':
+            'Who can do this',
+
+        'help.guide_then':
+            'Then',
 
         'help.updates_loading':
             'Loading update log…',
@@ -128,7 +180,7 @@ const helpTranslations = {
             'Aide et documentation',
 
         'help.description':
-            'Le fonctionnement de Patrimoine, organisé par thème, ainsi que l’historique des mises à jour de l’application.',
+            'Posez-nous une question, lisez comment une tâche se fait, ou recherchez un code.',
 
         'help.tab_guide':
             'Guide',
@@ -155,7 +207,57 @@ const helpTranslations = {
             'Rien ne correspond à votre saisie. Essayez moins de mots, ou le code lui-même.',
 
         'help.no_results_description':
-            'Essayez d’autres termes ou effacez le filtre de catégorie.',
+            'Essayez moins de mots, ou le nom de l’écran.',
+
+        /* ---- V1.0.36 ---- */
+
+        'help.tab_support':
+            'Contacter le support',
+
+        'help.support_intro':
+            'Dites-nous ce que vous tentiez de faire et ce qui s’est produit à la place. Votre nom, votre organisation et l’adresse à laquelle répondre proviennent de votre compte : il n’y a rien d’autre à remplir.',
+
+        'help.support_subject':
+            'Objet',
+
+        'help.support_body':
+            'Votre message',
+
+        'help.support_body_help':
+            'Si un message portait un code commençant par PM-, indiquez-le.',
+
+        'help.support_send':
+            'Envoyer au support',
+
+        'help.support_sent':
+            'Votre message a été envoyé.',
+
+        'help.support_sending':
+            'Envoi…',
+
+        'help.support_incomplete':
+            'Saisissez un objet et un message avant d’envoyer.',
+
+        'help.guide_intro':
+            'Chaque tâche de Patrimoine, étape par étape, avec les images des écrans que vous aurez sous les yeux. Choisissez la partie du travail qui vous occupe.',
+
+        'help.guide_back':
+            'Tous les guides',
+
+        'help.guide_task_count':
+            '{count} tâches',
+
+        'help.guide_task_count_one':
+            '1 tâche',
+
+        'help.guide_on_this_page':
+            'Sur cette page',
+
+        'help.guide_who':
+            'Qui peut le faire',
+
+        'help.guide_then':
+            'Ensuite',
 
         'help.updates_loading':
             'Chargement du journal des mises à jour…',
@@ -260,6 +362,7 @@ export async function initializeHelp() {
 
     initializeHelpTabs();
     initializeHelpFilters();
+    initializeSupportForm();
 
     applyHelpLocationHash();
 
@@ -304,7 +407,8 @@ function initializeHelpTabs() {
 }
 
 const HELP_TABS = [
-    { tab: 'guide', button: 'help-tab-guide', panel: 'help-guide-panel', hash: '' },
+    { tab: 'support', button: 'help-tab-support', panel: 'help-support-panel', hash: '' },
+    { tab: 'guide', button: 'help-tab-guide', panel: 'help-guide-panel', hash: '#guide' },
     { tab: 'errors', button: 'help-tab-errors', panel: 'help-errors-panel', hash: '#errors' },
     { tab: 'updates', button: 'help-tab-updates', panel: 'help-updates-panel', hash: '#updates' },
 ];
@@ -314,7 +418,7 @@ function applyHelpLocationHash() {
         (entry) => entry.hash !== '' && entry.hash === window.location.hash
     );
 
-    selectHelpTab(match ? match.tab : 'guide');
+    selectHelpTab(match ? match.tab : 'support');
 }
 
 function selectHelpTab(
@@ -346,11 +450,6 @@ function selectHelpTab(
             .getElementById(entry.panel)
             ?.classList.toggle('hidden', ! active);
     });
-
-    /* The guide's own filters belong to the guide alone. */
-    document
-        .getElementById('help-guide-filters')
-        ?.classList.toggle('hidden', tab !== 'guide');
 
     if (tab === 'updates' && ! helpUpdatesLoaded) {
         helpUpdatesLoaded = true;
@@ -586,14 +685,6 @@ function initializeHelpFilters() {
             }
         );
 
-    document
-        .getElementById(
-            'help-category'
-        )
-        ?.addEventListener(
-            'change',
-            renderHelpGuide
-        );
 }
 
 /**
@@ -629,14 +720,12 @@ async function loadGuide() {
 
         guide = await parseJsonResponse(response);
 
-        populateGuideCategories();
-
-        renderHelpGuide();
+        renderGuideIndex();
     } catch (error) {
         guide = null;
 
         const container =
-            document.getElementById('help-guide-content');
+            document.getElementById('help-guide-index-content');
 
         if (container) {
             container.innerHTML = `
@@ -646,34 +735,6 @@ async function loadGuide() {
             `;
         }
     }
-}
-
-/**
- * Fill the category filter from the manual itself.
- *
- * The list used to be hardcoded in two places and could disagree with the
- * content. Now there is one source and the filter simply reads it.
- */
-function populateGuideCategories() {
-    const select = document.getElementById('help-category');
-
-    if (! select || guide === null) {
-        return;
-    }
-
-    const all = translate('help.all_categories');
-
-    select.innerHTML = [`<option value="">${escapeHtml(all)}</option>`]
-        .concat(
-            guide.categories.map(
-                (category) => `
-                    <option value="${escapeHtml(category.id)}">
-                        ${escapeHtml(category.title)}
-                    </option>
-                `
-            )
-        )
-        .join('');
 }
 
 /**
@@ -707,15 +768,30 @@ function guideTaskMatches(task, query) {
         .every((word) => haystack.includes(word));
 }
 
+/*
+|--------------------------------------------------------------------------
+| The guide: an index, and one guide at a time
+|--------------------------------------------------------------------------
+|
+| V1.0.36. Every category used to be rendered into the page at once, so
+| reading one task meant loading seventy of them and their screenshots.
+| The index now lists the categories; choosing one opens it on its own,
+| exactly as the public documentation at patrimoine365.com does.
+|
+| Searching still reaches every word of every task — it simply lists the
+| tasks that match instead of filtering a page that was already there.
+|
+*/
+
 function renderHelpGuide() {
+    renderGuideIndex();
+}
+
+function renderGuideIndex() {
     const container =
-        document.getElementById('help-guide-content');
+        document.getElementById('help-guide-index-content');
 
-    if (! container) {
-        return;
-    }
-
-    if (guide === null) {
+    if (! container || guide === null) {
         return;
     }
 
@@ -723,21 +799,70 @@ function renderHelpGuide() {
         document.getElementById('help-search')?.value || ''
     ).trim();
 
-    const category =
-        document.getElementById('help-category')?.value || '';
+    container.innerHTML = query === ''
+        ? guideCategoryCards()
+        : guideSearchResults(query);
 
-    const sections = guide.categories
-        .filter((entry) => category === '' || entry.id === category)
-        .map((entry) => ({
-            ...entry,
-            tasks: entry.tasks.filter(
-                (task) => guideTaskMatches(task, query)
-            ),
+    container
+        .querySelectorAll('[data-guide-open]')
+        .forEach((element) => {
+            element.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                openGuideCategory(
+                    element.dataset.guideOpen,
+                    element.dataset.guideTask || null
+                );
+            });
+        });
+}
+
+function guideCategoryCards() {
+    return `
+        <div class="grid gap-4 sm:grid-cols-2">
+            ${guide.categories.map(guideCategoryCard).join('')}
+        </div>
+    `;
+}
+
+function guideCategoryCard(category) {
+    const count = category.tasks.length;
+
+    const label = count === 1
+        ? translate('help.guide_task_count_one')
+        : translate('help.guide_task_count').replace('{count}', String(count));
+
+    return `
+        <button
+            type="button"
+            data-guide-open="${escapeHtml(category.id)}"
+            class="pm-card p-5 text-left transition hover:border-[var(--pm-accent)]"
+        >
+            <span class="block text-base font-semibold text-[var(--pm-text)]">
+                ${escapeHtml(category.title)}
+            </span>
+
+            <span class="mt-2 block text-sm leading-6 text-[var(--pm-text-muted)]">
+                ${escapeHtml(category.summary)}
+            </span>
+
+            <span class="mt-4 block text-xs font-semibold uppercase tracking-wide text-[var(--pm-text-subtle)]">
+                ${escapeHtml(label)}
+            </span>
+        </button>
+    `;
+}
+
+function guideSearchResults(query) {
+    const matches = guide.categories
+        .map((category) => ({
+            ...category,
+            tasks: category.tasks.filter((task) => guideTaskMatches(task, query)),
         }))
-        .filter((entry) => entry.tasks.length > 0);
+        .filter((category) => category.tasks.length > 0);
 
-    if (sections.length === 0) {
-        container.innerHTML = `
+    if (matches.length === 0) {
+        return `
             <div class="pm-card px-6 py-14 text-center">
                 <p class="text-sm font-semibold text-[var(--pm-text)]">
                     ${escapeHtml(translate('help.no_results'))}
@@ -748,28 +873,122 @@ function renderHelpGuide() {
                 </p>
             </div>
         `;
+    }
 
+    return `
+        <div class="grid gap-8">
+            ${matches.map((category) => `
+                <section>
+                    <h2 class="border-b border-[var(--pm-border)] pb-2 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--pm-text-muted)]">
+                        ${escapeHtml(category.title)}
+                    </h2>
+
+                    <ul class="mt-4 grid gap-3">
+                        ${category.tasks.map((task) => `
+                            <li>
+                                <button
+                                    type="button"
+                                    data-guide-open="${escapeHtml(category.id)}"
+                                    data-guide-task="${escapeHtml(task.id)}"
+                                    class="text-left text-sm font-medium text-[var(--pm-accent)] hover:underline"
+                                >${escapeHtml(task.title)}</button>
+
+                                <span class="ml-2 text-sm text-[var(--pm-text-muted)]">
+                                    ${escapeHtml(task.intro)}
+                                </span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </section>
+            `).join('')}
+        </div>
+    `;
+}
+
+/**
+ * Open one guide on its own.
+ */
+function openGuideCategory(categoryId, taskId) {
+    const category = guide?.categories.find((entry) => entry.id === categoryId);
+
+    const index = document.getElementById('help-guide-index');
+    const detail = document.getElementById('help-guide-detail');
+
+    if (! category || ! index || ! detail) {
         return;
     }
 
-    container.innerHTML = sections.map(guideCategorySection).join('');
+    detail.innerHTML = guideDetailMarkup(category);
+
+    index.classList.add('hidden');
+    detail.classList.remove('hidden');
+
+    detail
+        .querySelector('[data-guide-back]')
+        ?.addEventListener('click', (event) => {
+            event.preventDefault();
+            closeGuideCategory();
+        });
+
+    sizeGuideShots(detail);
+
+    const target = taskId
+        ? detail.querySelector('#guide-task-' + CSS.escape(taskId))
+        : null;
+
+    (target ?? detail).scrollIntoView({ block: 'start' });
 }
 
-function guideCategorySection(category) {
-    return `
-        <section class="mt-10 first:mt-2" id="guide-${escapeHtml(category.id)}">
-            <h2 class="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--pm-text-muted)]">
-                ${escapeHtml(category.title)}
-            </h2>
+function closeGuideCategory() {
+    const index = document.getElementById('help-guide-index');
+    const detail = document.getElementById('help-guide-detail');
 
-            <p class="mt-2 max-w-2xl text-sm text-[var(--pm-text-muted)]">
-                ${escapeHtml(category.summary)}
+    if (! index || ! detail) {
+        return;
+    }
+
+    detail.classList.add('hidden');
+    detail.innerHTML = '';
+    index.classList.remove('hidden');
+    index.scrollIntoView({ block: 'start' });
+}
+
+function guideDetailMarkup(category) {
+    return `
+        <button
+            type="button"
+            data-guide-back
+            class="text-sm font-semibold text-[var(--pm-accent)] hover:underline"
+        >&larr; ${escapeHtml(translate('help.guide_back'))}</button>
+
+        <h2 class="mt-3 text-xl font-semibold tracking-tight text-[var(--pm-text)]">
+            ${escapeHtml(category.title)}
+        </h2>
+
+        <p class="mt-2 max-w-2xl text-sm leading-6 text-[var(--pm-text-muted)]">
+            ${escapeHtml(category.summary)}
+        </p>
+
+        <nav class="mt-5 rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface-subtle)] p-4">
+            <p class="text-xs font-semibold uppercase tracking-wide text-[var(--pm-text-subtle)]">
+                ${escapeHtml(translate('help.guide_on_this_page'))}
             </p>
 
-            <div class="mt-4 grid grid-cols-1 gap-4">
-                ${category.tasks.map(guideTaskCard).join('')}
-            </div>
-        </section>
+            <ul class="mt-2 grid gap-1.5">
+                ${category.tasks.map((task) => `
+                    <li>
+                        <a
+                            href="#guide-task-${escapeHtml(task.id)}"
+                            class="text-sm text-[var(--pm-text-muted)] hover:text-[var(--pm-accent)]"
+                        >${escapeHtml(task.title)}</a>
+                    </li>
+                `).join('')}
+            </ul>
+        </nav>
+
+        <div class="mt-6 grid grid-cols-1 gap-4">
+            ${category.tasks.map(guideTaskCard).join('')}
+        </div>
     `;
 }
 
@@ -795,7 +1014,7 @@ function guideTaskCard(task) {
 
     return `
         <article
-            class="pm-card p-5"
+            class="pm-card scroll-mt-32 p-5"
             id="guide-task-${escapeHtml(task.id)}"
             data-guide-task="${escapeHtml(task.id)}"
         >
@@ -823,19 +1042,19 @@ function guideTaskCard(task) {
 /**
  * One numbered step, with its screenshot underneath when it has one.
  *
- * The picture is lazy: a category can carry a dozen of them and nobody
+ * The picture is lazy: a guide can carry a dozen of them and nobody
  * scrolls through all of it at once.
  */
 function guideStep(step) {
     const shot = step.shot
         ? `
-            <figure class="mt-3 overflow-hidden rounded-xl border border-[var(--pm-border)]">
+            <figure class="pm-guide-figure mt-3 overflow-hidden rounded-xl border border-[var(--pm-border)]">
                 <img
                     src="${escapeHtml(guide.shots)}/${escapeHtml(step.shot)}.webp"
                     alt="${escapeHtml(step.text)}"
                     loading="lazy"
                     decoding="async"
-                    class="block w-full"
+                    class="pm-guide-shot block w-full"
                 >
             </figure>
         `
@@ -871,6 +1090,129 @@ function guideStep(step) {
         </li>
     `;
 }
+
+/**
+ * A screenshot of a drawer is 896 by 1800; one of a whole page is 1440
+ * by 900. Given the same width both render at their own proportions, so
+ * the drawer arrives three times taller than the page beside it and
+ * dwarfs the words it illustrates.
+ *
+ * A picture taller than it is wide is therefore boxed at the proportions
+ * of a full-page shot and fitted by height, which makes every screenshot
+ * in the guide about the same height whatever shape it is. The
+ * measurement is taken from the file rather than guessed, so a shot
+ * recaptured at some other size still lands in the right box.
+ */
+function sizeGuideShots(root) {
+    root.querySelectorAll('img.pm-guide-shot').forEach((image) => {
+        const measure = () => {
+            if (image.naturalHeight > image.naturalWidth) {
+                image
+                    .closest('figure')
+                    ?.classList.add('pm-guide-figure-tall');
+            }
+        };
+
+        if (image.complete && image.naturalWidth > 0) {
+            measure();
+
+            return;
+        }
+
+        image.addEventListener('load', measure, { once: true });
+    });
+}
+
+/*
+|--------------------------------------------------------------------------
+| Writing to support
+|--------------------------------------------------------------------------
+|
+| V1.0.36. Only a subject and a message: who is writing, which
+| organisation they belong to and where the answer should go are read
+| from the session, because an address typed into a form is one anybody
+| could put somebody else's name against.
+|
+*/
+
+function initializeSupportForm() {
+    const form = document.getElementById('help-support-form');
+
+    if (! form) {
+        return;
+    }
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const subject = document.getElementById('help-support-subject');
+        const body = document.getElementById('help-support-body');
+        const button = document.getElementById('help-support-submit');
+
+        const subjectValue = (subject?.value ?? '').trim();
+        const bodyValue = (body?.value ?? '').trim();
+
+        if (subjectValue === '' || bodyValue === '') {
+            showSupportMessage(translate('help.support_incomplete'), false);
+
+            return;
+        }
+
+        setButtonBusy(button, 'help.support_sending');
+
+        try {
+            const response = await apiRequest(
+                '/api/support-messages',
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        subject: subjectValue,
+                        message: bodyValue,
+                    }),
+                }
+            );
+
+            const payload = await parseJsonResponse(response);
+
+            showSupportMessage(
+                payload.message ?? translate('help.support_sent'),
+                true
+            );
+
+            if (subject) {
+                subject.value = '';
+            }
+
+            if (body) {
+                body.value = '';
+            }
+        } catch (error) {
+            showSupportMessage(
+                error instanceof Error
+                    ? error.message
+                    : translate('core.request_failed'),
+                false
+            );
+        } finally {
+            restoreButton(button);
+        }
+    });
+}
+
+function showSupportMessage(text, success) {
+    const box = document.getElementById('help-support-message');
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent = text;
+
+    box.className = success
+        ? 'rounded-lg border px-4 py-3 text-sm border-[var(--pm-success-border)] bg-[var(--pm-success-background)] text-[var(--pm-success-text)]'
+        : 'rounded-lg border px-4 py-3 text-sm border-[var(--pm-danger-border)] bg-[var(--pm-danger-background)] text-[var(--pm-danger-text)]';
+}
+
 async function loadHelpUpdates() {
     const container =
         document.getElementById(

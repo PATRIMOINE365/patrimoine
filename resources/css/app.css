@@ -3173,6 +3173,16 @@ select {
     padding-left: 1rem;
 }
 
+.pm-wizard-subfields-row {
+    gap: 0.875rem;
+}
+
+@media (min-width: 640px) {
+    .pm-wizard-subfields-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
 .pm-wizard-grid {
     display: grid;
     gap: 1rem;
@@ -8795,3 +8805,32 @@ body.pm-admin .pm-icon-button:hover {
 }
 
 /* END V1.0.32 Pagination */
+
+/* V1.0.36 Guide screenshots
+|
+| A drawer is captured at 896 by 1800 and a whole page at 1440 by 900.
+| Rendered at the same width the drawer arrives three times taller than
+| the page beside it, which turns an illustration into the page.
+|
+| A picture taller than it is wide is therefore boxed at the proportions
+| of a full-page shot and fitted by height, so every screenshot in the
+| guide stands about the same height whatever shape it was captured in.
+| help.js adds the class after reading the file's own dimensions.
+*/
+
+.pm-guide-figure-tall {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    aspect-ratio: 1440 / 900;
+    background: var(--pm-surface-subtle);
+}
+
+.pm-guide-figure-tall img {
+    width: auto;
+    max-width: 100%;
+    height: 100%;
+}
+
+/* END V1.0.36 Guide screenshots */

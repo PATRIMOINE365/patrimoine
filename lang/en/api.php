@@ -39,6 +39,12 @@ return [
         'photo_removed' => 'Profile photo removed.',
     ],
 
+    /* ---- V1.0.36 writing to support ---- */
+    'support' => [
+        'sent' => 'Your message has been sent. We answer by e-mail, to the address on your account.',
+        'send_failed' => 'Your message could not be sent. Try again in a moment.',
+    ],
+
     'license' => [
         'user_limit_reached' => 'Your plan\'s user limit has been reached. Upgrade your plan to add more users.',
         'lease_limit_reached' => 'Your plan\'s active lease limit has been reached. Upgrade your plan to add more active leases.',

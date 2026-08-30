@@ -60,7 +60,7 @@ return [
                     'steps' => [
                         ['text' => 'Workspace holds the day-to-day: Dashboard, Properties, Parties and Leases.', 'shot' => 'sidebar'],
                         ['text' => 'Finance holds the money: Tenants, Owners, Accounting and Reports.'],
-                        ['text' => 'Manage holds the administration: Settings, Activity Log and Financial Journal. It is visible to administrators only.'],
+                        ['text' => 'Administration holds the rest: Settings, Activity Log and Financial Journal. It is visible to administrators only.'],
                         ['text' => 'The top bar shows the organisation you are signed in to, today\'s date, the notification bell, and your own photograph. Press the photograph for your profile and to sign out.', 'shot' => 'topbar'],
                     ],
                 ],
@@ -70,7 +70,7 @@ return [
                     'intro' => 'Both are set for the whole organisation, not per person, so that a document produced by one colleague reads the same as one produced by another.',
                     'who' => 'Administrators',
                     'steps' => [
-                        ['text' => 'Open Settings from the Manage group in the sidebar.'],
+                        ['text' => 'Open Settings from the Administration group in the sidebar.'],
                         ['text' => 'Choose the Preferences tab.', 'shot' => 'settings-preferences'],
                         ['text' => 'Pick the language. English and French are both complete: every screen, every document and every email follows it.'],
                         ['text' => 'Pick the currency and the default VAT rate. The currency decides how every amount is written, including the thousands separator.'],
@@ -110,12 +110,25 @@ return [
                     ],
                 ],
 
+                'ask_for_help' => [
+                    'title' => 'Ask us for help',
+                    'intro' => 'Support, the guide you are reading, the error codes and the update log are all on one page, reached from your own photograph at the top right.',
+                    'steps' => [
+                        ['text' => 'Press your photograph at the top right and choose Support.'],
+                        ['text' => 'The page opens on Contact support. Write what you were trying to do and what happened instead, then press Send to support.'],
+                        ['text' => 'If a message carried a code beginning PM-, put it in. It tells us exactly which refusal you met without a description of the screen.'],
+                        ['text' => 'Your name, your organisation and the address we answer are taken from your account, so there is nothing else to fill in. We reply by email.'],
+                        ['text' => 'The other tabs on the same page are the guide, the full list of error codes, and what changed in each release.'],
+                    ],
+                    'after' => 'Anybody may write to us — a Viewer who cannot do their work needs to say so as much as an administrator does.',
+                ],
+
                 'roles' => [
                     'title' => 'Understand who can do what',
                     'intro' => 'Patrimoine has three roles. They are fixed: what each one may do is the same in every organisation.',
                     'steps' => [
                         ['text' => 'An Administrator can do everything, including Settings, Users, the Licence, the Activity Log and the Financial Journal.'],
-                        ['text' => 'A Property Manager does all the day-to-day work — properties, parties, leases, payments, owners and reports — and may delete records, but cannot reach the Manage group.'],
+                        ['text' => 'A Property Manager does all the day-to-day work — properties, parties, leases, payments, owners and reports — and may delete records, but cannot reach the Administration group.'],
                         ['text' => 'A Viewer can read and can export reports, and can change nothing.'],
                         ['text' => 'Controls a role may not use are not merely disabled, they are not shown. The server enforces the same rule, so a hidden control cannot be reached another way.'],
                     ],
@@ -721,7 +734,7 @@ return [
                     'intro' => 'Every movement of money in Patrimoine is double-entry bookkeeping underneath. The journal is that bookkeeping, readable, with the document that caused each entry one press away.',
                     'who' => 'Administrators',
                     'steps' => [
-                        ['text' => 'Open Financial Journal from the Manage group.', 'shot' => 'journal-list'],
+                        ['text' => 'Open Financial Journal from the Administration group.', 'shot' => 'journal-list'],
                         ['text' => 'Entries run newest first, each with its own number, its date and its total.'],
                         ['text' => 'Filter by date, by type of transaction, or by account.'],
                         ['text' => 'Press an entry to see its lines — what was debited, what was credited, and what document produced it.', 'shot' => 'journal-entry'],
@@ -745,7 +758,7 @@ return [
                     'intro' => 'Who did what, when, and from where. The log is append-only: nothing in it can be edited or removed, by anybody, including us.',
                     'who' => 'Administrators',
                     'steps' => [
-                        ['text' => 'Open Activity Log from the Manage group.', 'shot' => 'activity-list'],
+                        ['text' => 'Open Activity Log from the Administration group.', 'shot' => 'activity-list'],
                         ['text' => 'Each event records the person, the action, the record it touched, and the time.'],
                         ['text' => 'It also records the address, browser and device the action came from.'],
                         ['text' => 'Filter by person, by action or by date, then press an event for the whole of it.', 'shot' => 'activity-entry'],
@@ -773,7 +786,7 @@ return [
                     'intro' => 'Settings holds the whole of the account: the organisation itself, the people who can sign in, and your plan.',
                     'who' => 'Administrators',
                     'steps' => [
-                        ['text' => 'Open Settings from the Manage group in the sidebar.', 'shot' => 'settings-account'],
+                        ['text' => 'Open Settings from the Administration group in the sidebar.', 'shot' => 'settings-account'],
                         ['text' => 'Organisation holds your own details, which appear on every document you produce.'],
                         ['text' => 'Users, Licence, Preferences, Data and About are the other tabs. The older /users and /license addresses still work and open the right tab.'],
                         ['text' => 'The panel beside the form summarises the account: your plan, the people, the leases, the parties, and when the account was opened.'],

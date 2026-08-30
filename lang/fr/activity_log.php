@@ -194,6 +194,9 @@ return [
 
         'security_deposit.settled' => 'Dépôt de garantie réglé',
 
+        /* ---- V1.0.36 ---- */
+        'support.message_sent' => 'Message envoyé au support',
+
         'owner_expense.recorded' => 'Dépense propriétaire enregistrée',
 
         'owner_deposit.recorded' => 'Dépôt propriétaire enregistré',

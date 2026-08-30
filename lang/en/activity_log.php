@@ -197,6 +197,9 @@ return [
 
         'security_deposit.settled' => 'Security Deposit Settled',
 
+        /* ---- V1.0.36 ---- */
+        'support.message_sent' => 'Message Sent To Support',
+
         'owner_expense.recorded' => 'Owner Expense Recorded',
 
         'owner_deposit.recorded' => 'Owner Deposit Recorded',

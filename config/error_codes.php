@@ -1859,6 +1859,13 @@ return [
             'keys' => ['ui.notifications.unable_load', 'notifications.unable_load'],
         ],
 
+        /* ---- V1.0.36: writing to support from inside the application ---- */
+        'PM-6006' => [
+            'family' => 6,
+            'severity' => 'try_again',
+            'keys' => ['api.support.send_failed'],
+        ],
+
         /* ---- 7xxx licence ---- */
 
         'PM-7001' => [

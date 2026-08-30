@@ -2140,6 +2140,12 @@ return [
         'fix' => 'Réessayez. Si cela se reproduit, rechargez la page — cela renouvelle aussi une session expirée. Si le problème persiste, la faute revient à votre connexion ou à notre service : signalez-le-nous.',
     ],
 
+    'PM-6006' => [
+        'title' => 'Votre message n’a pas pu être envoyé.',
+        'what' => 'Patrimoine a tenté de porter votre message à la boîte du support et la tentative n’est pas revenue. Rien n’a été envoyé, donc personne ne l’a lu — vos mots sont toujours dans le champ où vous les avez écrits.',
+        'fix' => 'Réessayez dans un instant. Si cela échoue une seconde fois, écrivez directement à support@patrimoine365.com depuis votre propre messagerie ; cela atteint les mêmes personnes.',
+    ],
+
     /* ---- 7xxx ---- */
 
     'PM-7001' => [

@@ -39,6 +39,12 @@ return [
         'photo_removed' => 'Photo de profil supprimée.',
     ],
 
+    /* ---- V1.0.36 écrire au support ---- */
+    'support' => [
+        'sent' => 'Votre message a été envoyé. Nous répondons par e-mail, à l’adresse de votre compte.',
+        'send_failed' => 'Votre message n’a pas pu être envoyé. Réessayez dans un instant.',
+    ],
+
     'license' => [
         'user_limit_reached' => 'La limite d’utilisateurs de votre forfait est atteinte. Passez à un forfait supérieur pour ajouter des utilisateurs.',
         'lease_limit_reached' => 'La limite de baux actifs de votre forfait est atteinte. Passez à un forfait supérieur pour ajouter des baux actifs.',
