@@ -2,8 +2,7 @@
 
 namespace App\Services\Accounting;
 
-use App\Models\JournalSequence;
-use Illuminate\Support\Facades\DB;
+use App\Services\Documents\DocumentNumberService;
 
 /**
  * Allocates permanent annual Financial Journal references.
@@ -14,48 +13,26 @@ use Illuminate\Support\Facades\DB;
  *
  * The sequence restarts each calendar year.
  *
- * Allocation must occur inside the same database transaction that creates the
- * Journal entry so a failed posting cannot consume a Journal number.
+ * Allocation must occur inside the same database transaction that creates
+ * the Journal entry so a failed posting cannot consume a Journal number.
+ *
+ * V1.0.36: this service invented the per-organisation, per-year counter
+ * that the other nine series lacked, and it was the only one that got
+ * numbering right. That counter has been generalised into
+ * DocumentNumberService and every series now shares it, so the journal
+ * delegates rather than keeping a second copy of the mechanism it
+ * originally proved. The numbers it produces are unchanged, and the
+ * migration carried journal_sequences across before anything read the
+ * new table.
  */
 class JournalNumberService
 {
+    public function __construct(
+        private readonly DocumentNumberService $numbers
+    ) {}
+
     public function next(int $year): string
     {
-        /*
-         * insertOrIgnore handles the first posting of a new year without
-         * requiring application-level existence checks.
-         *
-         * V1.0.10 multi-tenancy: each organisation runs its own annual
-         * sequence — the raw insert stamps the bound organisation and
-         * the JournalSequence read below is organisation-scoped.
-         */
-        DB::table('journal_sequences')->insertOrIgnore([
-            'organisation_id' => \App\Support\OrganisationContext::id(),
-            'year' => $year,
-            'next_number' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        /*
-         * Lock the annual sequence row until the surrounding posting
-         * transaction commits.
-         */
-        $sequence = JournalSequence::query()
-            ->where('year', $year)
-            ->lockForUpdate()
-            ->firstOrFail();
-
-        $number = $sequence->next_number;
-
-        $sequence->next_number = $number + 1;
-
-        $sequence->save();
-
-        return sprintf(
-            'JRN-%04d-%06d',
-            $year,
-            $number
-        );
+        return $this->numbers->next('JRN', $year);
     }
 }

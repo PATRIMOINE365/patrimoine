@@ -2,57 +2,22 @@
 
 namespace App\Services;
 
-use App\Models\OwnerExpenseBill;
-use Illuminate\Support\Facades\DB;
+use App\Services\Documents\DocumentNumberService;
 
 /**
- * Issues sequential owner expense bill numbers.
+ * OEB-YYYY-NNNNNN.
  *
- * Format: OEB-000001
- *
- * Modeled on WithdrawalReceiptNumberService: the highest existing number
- * is read under a row lock inside a transaction so concurrent billing
- * requests can never issue the same bill number.
+ * V1.0.36: from the shared counter, and the year is now part of the
+ * number.
  */
 class OwnerExpenseBillNumberService
 {
+    public function __construct(
+        private readonly DocumentNumberService $numbers
+    ) {}
+
     public function next(): string
     {
-        return DB::transaction(
-            function (): string {
-                $prefix =
-                    'OEB-';
-
-                $last =
-                    OwnerExpenseBill::query()
-                        ->where(
-                            'bill_number',
-                            'like',
-                            $prefix.'%'
-                        )
-                        ->lockForUpdate()
-                        ->orderByDesc(
-                            'bill_number'
-                        )
-                        ->value(
-                            'bill_number'
-                        );
-
-                $sequence =
-                    $last === null
-                        ? 1
-                        : (
-                            (int) substr(
-                                $last,
-                                -6
-                            )
-                        ) + 1;
-
-                return sprintf(
-                    'OEB-%06d',
-                    $sequence
-                );
-            }
-        );
+        return $this->numbers->next('OEB');
     }
 }

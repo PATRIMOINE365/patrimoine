@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\TenantFundAccount;
+use App\Services\Documents\DocumentNumberService;
 use App\Models\TenantFundTransaction;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,10 @@ use RuntimeException;
  */
 class TenantFundExpenseService
 {
+    public function __construct(
+        private readonly DocumentNumberService $numbers
+    ) {}
+
     /**
      * @param  array<int, array{description: mixed, amount: mixed}>  $lines
      * @return Collection<int, TenantFundTransaction>
@@ -119,28 +124,14 @@ class TenantFundExpenseService
     }
 
     /**
-     * Sequential TEX- number; the row lock during generation prevents
-     * duplicates under concurrency.
+     * TEX-YYYY-NNNNNN.
+     *
+     * V1.0.36: from the shared counter, and the year is now part of the
+     * number. Reading the highest TEX- reference already written meant
+     * that deleting the newest expense handed its number to the next.
      */
     private function nextNumber(): string
     {
-        $prefix = 'TEX-';
-
-        $last = TenantFundTransaction::query()
-            ->where('category', 'expense')
-            ->where('reference', 'like', $prefix.'%')
-            ->lockForUpdate()
-            ->orderByDesc('id')
-            ->value('reference');
-
-        $next = 1;
-
-        if (is_string($last)
-            && preg_match('/^TEX-(\d+)$/', $last, $matches)
-        ) {
-            $next = ((int) $matches[1]) + 1;
-        }
-
-        return sprintf('%s%06d', $prefix, $next);
+        return $this->numbers->next('TEX');
     }
 }

@@ -395,8 +395,9 @@ class SecurityDepositApiTest extends TestCase
             ->assertJsonPath(
                 'refund_voucher_number',
                 sprintf(
-                    'SDV-%06d',
-                    $response->json('id')
+                    'SDV-%04d-%06d',
+                    now()->year,
+                    1
                 )
             );
 
@@ -465,8 +466,9 @@ class SecurityDepositApiTest extends TestCase
             ->assertJsonPath(
                 'settlement.refund_voucher_number',
                 sprintf(
-                    'SDV-%06d',
-                    $settlementResponse->json('id')
+                    'SDV-%04d-%06d',
+                    now()->year,
+                    1
                 )
             )
             /*

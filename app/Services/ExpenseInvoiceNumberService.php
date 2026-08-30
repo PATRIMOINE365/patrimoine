@@ -2,59 +2,22 @@
 
 namespace App\Services;
 
-use App\Models\Invoice;
-use Illuminate\Support\Facades\DB;
+use App\Services\Documents\DocumentNumberService;
 
 /**
- * Issues sequential expense Invoice numbers.
+ * EXP-YYYY-NNNNNN.
  *
- * Format: EXP-000001
- *
- * Expense invoices deliberately number in their own series, separate
- * from rent invoices. Modeled on OwnerExpenseBillNumberService: the
- * highest existing number is read under a row lock inside a
- * transaction so concurrent recordings can never issue the same
+ * V1.0.36: from the shared counter, and the year is now part of the
  * number.
  */
 class ExpenseInvoiceNumberService
 {
+    public function __construct(
+        private readonly DocumentNumberService $numbers
+    ) {}
+
     public function next(): string
     {
-        return DB::transaction(
-            function (): string {
-                $prefix =
-                    'EXP-';
-
-                $last =
-                    Invoice::query()
-                        ->where(
-                            'invoice_number',
-                            'like',
-                            $prefix.'%'
-                        )
-                        ->lockForUpdate()
-                        ->orderByDesc(
-                            'invoice_number'
-                        )
-                        ->value(
-                            'invoice_number'
-                        );
-
-                $sequence =
-                    $last === null
-                        ? 1
-                        : (
-                            (int) substr(
-                                $last,
-                                -6
-                            )
-                        ) + 1;
-
-                return sprintf(
-                    'EXP-%06d',
-                    $sequence
-                );
-            }
-        );
+        return $this->numbers->next('EXP');
     }
 }

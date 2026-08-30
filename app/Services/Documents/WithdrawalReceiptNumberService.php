@@ -2,55 +2,22 @@
 
 namespace App\Services\Documents;
 
-use App\Models\WithdrawalReceipt;
-use Illuminate\Support\Facades\DB;
-
+/**
+ * WDR-YYYY-NNNNNN.
+ *
+ * V1.0.36: from the shared counter. The shape a customer reads is
+ * unchanged — it already carried its year — but the number no longer
+ * comes from a text sort of the receipts already issued, which was only
+ * ever right while every one of them was exactly six digits wide.
+ */
 class WithdrawalReceiptNumberService
 {
+    public function __construct(
+        private readonly DocumentNumberService $numbers
+    ) {}
+
     public function next(): string
     {
-        return DB::transaction(
-            function (): string {
-                $year =
-                    now()->year;
-
-                $prefix =
-                    sprintf(
-                        'WDR-%d-',
-                        $year
-                    );
-
-                $last =
-                    WithdrawalReceipt::query()
-                        ->where(
-                            'receipt_number',
-                            'like',
-                            $prefix.'%'
-                        )
-                        ->lockForUpdate()
-                        ->orderByDesc(
-                            'receipt_number'
-                        )
-                        ->value(
-                            'receipt_number'
-                        );
-
-                $sequence =
-                    $last === null
-                        ? 1
-                        : (
-                            (int) substr(
-                                $last,
-                                -6
-                            )
-                        ) + 1;
-
-                return sprintf(
-                    'WDR-%d-%06d',
-                    $year,
-                    $sequence
-                );
-            }
-        );
+        return $this->numbers->next('WDR');
     }
 }

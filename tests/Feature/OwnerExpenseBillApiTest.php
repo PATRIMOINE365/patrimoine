@@ -122,7 +122,7 @@ class OwnerExpenseBillApiTest extends TestCase
             ->assertCreated()
             ->assertJsonPath(
                 'expense_bill.bill_number',
-                'OEB-000001'
+                sprintf('OEB-%04d-000001', now()->year)
             )
             ->assertJsonPath(
                 'expense_bill.total_amount',
@@ -135,7 +135,7 @@ class OwnerExpenseBillApiTest extends TestCase
 
         $this->assertDatabaseHas('owner_expense_bills', [
             'owner_account_id' => $context['account']->id,
-            'bill_number' => 'OEB-000001',
+            'bill_number' => sprintf('OEB-%04d-000001', now()->year),
             'total_amount' => 4500,
             'notes' => 'August direct billing batch.',
         ]);
@@ -155,7 +155,7 @@ class OwnerExpenseBillApiTest extends TestCase
                 'unit_id' => null,
                 'description' => $description,
                 'amount' => $amount,
-                'reference' => 'OEB-000001',
+                'reference' => sprintf('OEB-%04d-000001', now()->year),
             ]);
         }
 

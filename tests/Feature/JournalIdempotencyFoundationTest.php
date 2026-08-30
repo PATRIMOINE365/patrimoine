@@ -78,8 +78,12 @@ class JournalIdempotencyFoundationTest extends TestCase
             2
         );
 
+        /*
+         * V1.0.36: the journal's counter is the shared one now. Its
+         * numbers are unchanged; the row lives in document_sequences.
+         */
         $this->assertDatabaseCount(
-            'journal_sequences',
+            'document_sequences',
             1
         );
     }

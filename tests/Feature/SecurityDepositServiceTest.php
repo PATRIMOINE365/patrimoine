@@ -125,8 +125,9 @@ class SecurityDepositServiceTest extends TestCase
 
         $this->assertSame(
             sprintf(
-                'SDV-%06d',
-                $settlement->id
+                'SDV-%04d-%06d',
+                now()->year,
+                1
             ),
             $settlement->refund_voucher_number
         );
@@ -241,16 +242,18 @@ class SecurityDepositServiceTest extends TestCase
 
         $this->assertSame(
             sprintf(
-                'SDD-%06d',
-                $settlement->id
+                'SDD-%04d-%06d',
+                now()->year,
+                1
             ),
             $debtInvoice->invoice_number
         );
 
         $this->assertSame(
             sprintf(
-                'SDV-%06d',
-                $settlement->id
+                'SDV-%04d-%06d',
+                now()->year,
+                1
             ),
             $settlement->refund_voucher_number
         );
@@ -302,8 +305,9 @@ class SecurityDepositServiceTest extends TestCase
 
         $this->assertSame(
             sprintf(
-                'SDV-%06d',
-                $settlement->id
+                'SDV-%04d-%06d',
+                now()->year,
+                1
             ),
             $settlement->refund_voucher_number
         );
@@ -359,8 +363,9 @@ class SecurityDepositServiceTest extends TestCase
 
         $this->assertSame(
             sprintf(
-                'SDV-%06d',
-                $settlement->id
+                'SDV-%04d-%06d',
+                now()->year,
+                1
             ),
             $settlement->refund_voucher_number
         );

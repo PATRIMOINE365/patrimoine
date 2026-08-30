@@ -174,7 +174,10 @@ class TenantFundExpenseApiTest extends TestCase
 
         $response
             ->assertCreated()
-            ->assertJsonPath('invoice.invoice_number', 'EXP-000001')
+            ->assertJsonPath(
+                'invoice.invoice_number',
+                sprintf('EXP-%04d-000001', now()->year)
+            )
             ->assertJsonPath('invoice.total_amount', 4000)
             ->assertJsonPath('invoice.line_count', 2)
             ->assertJsonPath('email_sent', true);

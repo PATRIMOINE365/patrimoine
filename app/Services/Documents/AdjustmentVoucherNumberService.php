@@ -2,37 +2,22 @@
 
 namespace App\Services\Documents;
 
-use App\Models\AdjustmentVoucher;
-
+/**
+ * ADV-YYYY-NNNNNN.
+ *
+ * V1.0.36: the number comes from the shared counter rather than from the
+ * highest voucher already written, so deleting the newest one can no
+ * longer hand its number to the next. The shape a customer reads is
+ * unchanged.
+ */
 class AdjustmentVoucherNumberService
 {
+    public function __construct(
+        private readonly DocumentNumberService $numbers
+    ) {}
+
     public function next(): string
     {
-        /*
-         * Adjustment Voucher numbering intentionally remains separate
-         * from Journal numbering and from every other financial
-         * document numbering scheme.
-         *
-         * Lock the relevant voucher rows during generation so two
-         * concurrent adjustments cannot receive the same number.
-         */
-        $year = now()->year;
-        $prefix = 'ADV-'.$year.'-';
-
-        $last = AdjustmentVoucher::query()
-            ->where('voucher_number', 'like', $prefix.'%')
-            ->lockForUpdate()
-            ->orderByDesc('id')
-            ->value('voucher_number');
-
-        $next = 1;
-
-        if (is_string($last)
-            && preg_match('/^ADV-\d{4}-(\d+)$/', $last, $matches)
-        ) {
-            $next = ((int) $matches[1]) + 1;
-        }
-
-        return sprintf('%s%06d', $prefix, $next);
+        return $this->numbers->next('ADV');
     }
 }

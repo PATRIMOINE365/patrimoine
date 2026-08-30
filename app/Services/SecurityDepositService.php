@@ -9,6 +9,7 @@ use App\Models\TenantFundAccount;
 use App\Models\TenantFundTransaction;
 use App\Services\Accounting\AccountingRuntimeGate;
 use App\Services\Accounting\SecurityDepositSettlementJournalService;
+use App\Services\Documents\DocumentNumberService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -29,7 +30,8 @@ class SecurityDepositService
 {
     public function __construct(
         private readonly AccountingRuntimeGate $runtimeGate,
-        private readonly SecurityDepositSettlementJournalService $settlementJournal
+        private readonly SecurityDepositSettlementJournalService $settlementJournal,
+        private readonly DocumentNumberService $numbers
     ) {
     }
 
@@ -203,11 +205,15 @@ class SecurityDepositService
                         'notes' => $notes,
                     ]);
 
+                /*
+                 * V1.0.36: from the shared counter rather than from the
+                 * settlement's database id. An id is allocated across
+                 * every organisation on the installation, so a customer
+                 * reading SDV-000412 on their fourth settlement was being
+                 * told how many other people use Patrimoine.
+                 */
                 $voucherNumber =
-                    sprintf(
-                        'SDV-%06d',
-                        $settlement->id
-                    );
+                    $this->numbers->next('SDV');
 
                 $settlement->update([
                     'refund_voucher_number' => $voucherNumber,
@@ -229,10 +235,8 @@ class SecurityDepositService
                         Invoice::create([
                             'lease_id' => $lease->id,
 
-                            'invoice_number' => sprintf(
-                                'SDD-%06d',
-                                $settlement->id
-                            ),
+                            'invoice_number' =>
+                                $this->numbers->next('SDD'),
 
                             'type' => 'security_deposit_debt',
 

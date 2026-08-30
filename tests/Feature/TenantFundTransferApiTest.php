@@ -91,7 +91,7 @@ class TenantFundTransferApiTest extends TestCase
             );
 
         $this->assertMatchesRegularExpression(
-            '/^TRF-\d{6}$/',
+            '/^TRF-\d{4}-\d{6}$/',
             $reference
         );
 

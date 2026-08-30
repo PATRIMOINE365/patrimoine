@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Invoice;
 use App\Models\Lease;
 use App\Services\Accounting\RentInvoiceJournalService;
+use App\Services\Documents\DocumentNumberService;
 use App\Services\LeaseTerms\LeaseBillingTermsResolver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +27,8 @@ class InvoiceGenerationService
 {
     public function __construct(
         private readonly RentInvoiceJournalService $rentInvoiceJournal,
-        private readonly LeaseBillingTermsResolver $billingTerms
+        private readonly LeaseBillingTermsResolver $billingTerms,
+        private readonly DocumentNumberService $numbers
     ) {}
 
     /**
@@ -527,28 +529,18 @@ class InvoiceGenerationService
      * The database ID remains the true unique identifier. This number is
      * designed for customer-facing documents.
      *
-     * V1.0.10 multi-tenancy: numbering is per organisation. The highest
-     * existing INV- number within the (organisation-scoped) invoices
-     * table is read rather than max(id), so every organisation runs its
-     * own gap-free INV-000001... series and the composite unique key
-     * (organisation_id, invoice_number) can never collide.
+     * V1.0.10 multi-tenancy: numbering is per organisation.
+     *
+     * V1.0.36: and it comes from a counter rather than from the invoices.
+     * Reading the highest existing INV- number had three faults — two
+     * generations could read the same one, "highest" was a text sort that
+     * held only while every number was six digits wide, and deleting the
+     * newest invoice handed its number to the next one written. The
+     * counter cannot be affected by anything that happens to an invoice
+     * afterwards. INV-2026-000001.
      */
     private function nextInvoiceNumber(): string
     {
-        $prefix = 'INV-';
-
-        $last = Invoice::query()
-            ->where('invoice_number', 'like', $prefix.'%')
-            ->orderByDesc('invoice_number')
-            ->value('invoice_number');
-
-        $sequence = $last === null
-            ? 1
-            : ((int) substr($last, -6)) + 1;
-
-        return sprintf(
-            'INV-%06d',
-            $sequence
-        );
+        return $this->numbers->next('INV');
     }
 }

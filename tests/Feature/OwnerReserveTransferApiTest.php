@@ -120,7 +120,7 @@ class OwnerReserveTransferApiTest extends TestCase
             $response->json('transfer.reference');
 
         $this->assertMatchesRegularExpression(
-            '/^OTR-\d{6}$/',
+            '/^OTR-\d{4}-\d{6}$/',
             $reference
         );
 
