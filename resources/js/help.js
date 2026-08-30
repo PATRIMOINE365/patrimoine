@@ -936,7 +936,18 @@ function openGuideCategory(categoryId, taskId) {
         ? detail.querySelector('#guide-task-' + CSS.escape(taskId))
         : null;
 
-    (target ?? detail).scrollIntoView({ block: 'start' });
+    /*
+     * The tab strip is sticky, so scrolling the panel to the top of the
+     * viewport would tuck the back link underneath it. Going to the
+     * strip's own resting place puts the whole guide below it.
+     */
+    if (target) {
+        target.scrollIntoView({ block: 'start' });
+    } else {
+        document
+            .getElementById('help-toolbar')
+            ?.scrollIntoView({ block: 'start' });
+    }
 }
 
 function closeGuideCategory() {
@@ -950,7 +961,10 @@ function closeGuideCategory() {
     detail.classList.add('hidden');
     detail.innerHTML = '';
     index.classList.remove('hidden');
-    index.scrollIntoView({ block: 'start' });
+
+    document
+        .getElementById('help-toolbar')
+        ?.scrollIntoView({ block: 'start' });
 }
 
 function guideDetailMarkup(category) {

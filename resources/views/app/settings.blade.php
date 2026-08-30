@@ -638,7 +638,7 @@
                     <span data-i18n="settings.need_help_description">{{ __('ui.settings.need_help_description') }}</span>
                 </p>
 
-                <a href="/help" class="pm-button-secondary mt-4 w-full">
+                <a href="/help#guide" class="pm-button-secondary mt-4 w-full">
                     <span data-i18n="settings.open_guide">{{ __('ui.settings.open_guide') }}</span>
                 </a>
             </div>
