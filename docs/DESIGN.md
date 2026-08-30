@@ -46,13 +46,17 @@ Green is the dominant — the sidebar, the primary button, headings.
 
 ```
 resources/css/
-  fonts.css        Inter, self-hosted, two files for every weight
-  scale.css        the ramps, the type scale, radii, shadows, panel variants
-  tokens.css       the semantic --pm-* tokens, light and dark
-  components.css   Untitled UI component anatomy
-  app.css          page structure only — grids, shells, calendar, cropper
+  fonts.css          47   Inter, self-hosted, two files for every weight
+  scale.css         209   the ramps, the type scale, radii, shadows, variants
+  tokens.css        270   the semantic --pm-* tokens, light and dark
+  components.css  1,776   Untitled UI component anatomy
+  app.css         3,744   page structure — grids, shells, calendar, cropper
   hidden-guards.css / flags.css   generated
 ```
+
+app.css alone was **8,836 lines** before v1.0.37. The whole system is 6,046
+now, and two thirds of what went is not missing — it is the same thing said
+once instead of twelve times.
 
 Changing how the product looks means editing **tokens.css**. Changing what a
 button *is* means editing **components.css**. `app.css` lays pages out and

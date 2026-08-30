@@ -91,6 +91,29 @@ async function settle(page, extra = 0) {
     await page.evaluate(() => document.fonts?.ready).catch(() => {});
 
     await page.waitForTimeout(450 + extra);
+
+    /*
+     * Refuse to photograph an unstyled page.
+     *
+     * Pre-production runs two containers side by side for a minute or two
+     * after a deploy. The HTML can come from the new one, naming a bundle
+     * the OLD one has never heard of, and the stylesheet then 404s — which
+     * produces a perfectly valid screenshot of the application with no CSS
+     * at all: blue underlined links down the left where the sidebar should
+     * be. It happened, and it would have shipped into the guide.
+     *
+     * The application sets Inter on the body. If the computed font is
+     * anything else, the stylesheet did not arrive.
+     */
+    const styled = await page.evaluate(
+        () => getComputedStyle(document.body).fontFamily.includes('Inter')
+    );
+
+    if (! styled) {
+        throw new Error(
+            'stylesheet did not load - refusing to photograph an unstyled page'
+        );
+    }
 }
 
 async function run() {
