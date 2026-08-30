@@ -46,56 +46,85 @@
          Period filter
     ============================================================ --}}
 
+    {{--
+        V1.0.36: two things were wrong here.
+
+        The dates were <input type="date">, which is the BROWSER's
+        control in the BROWSER's language and format — so a French
+        organisation on an English browser was shown mm/dd/yyyy while
+        every other date field in Patrimoine reads jj-mm-aaaa. They are
+        now ordinary text fields carrying data-pm-date-input, the same
+        control the financial journal and the activity log use, which
+        follows the organisation's language and opens Patrimoine's own
+        calendar.
+
+        And the two fields carried a small word each, From and To,
+        stacked above narrow boxes. One label over the pair says the
+        same thing once: this is a period, and it runs from the left
+        box to the right one.
+    --}}
     <div
         class="
-            mb-6 flex flex-wrap items-end gap-4
+            mb-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-4
             rounded-xl border border-[var(--pm-border)]
             bg-[var(--pm-surface)] p-5
         "
     >
         <div>
-            <label
-                class="pm-field-label mb-2 block text-sm font-medium"
-                for="accounting-from"
+            <span
+                class="pm-field-label mb-2 block"
+                id="accounting-period-label"
             >
-                <span data-i18n="accounting.from">{{ __('ui.accounting.from') }}</span>
-            </label>
+                <span data-i18n="accounting.period">{{ __('ui.accounting.period') }}</span>
+            </span>
 
-            <input
-                id="accounting-from"
-                type="date"
-                class="pm-input"
-            >
+            <div class="flex items-center gap-3">
+                <input
+                    id="accounting-from"
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="10"
+                    autocomplete="off"
+                    data-pm-date-input
+                    class="pm-input w-40"
+                    aria-label="{{ __('ui.accounting.from') }}"
+                    data-i18n-aria-label="accounting.from"
+                >
+
+                <span
+                    class="text-sm text-[var(--pm-text-muted)]"
+                    aria-hidden="true"
+                >&ndash;</span>
+
+                <input
+                    id="accounting-to"
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="10"
+                    autocomplete="off"
+                    data-pm-date-input
+                    class="pm-input w-40"
+                    aria-label="{{ __('ui.accounting.to') }}"
+                    data-i18n-aria-label="accounting.to"
+                >
+            </div>
         </div>
 
-        <div>
-            <label
-                class="pm-field-label mb-2 block text-sm font-medium"
-                for="accounting-to"
-            >
-                <span data-i18n="accounting.to">{{ __('ui.accounting.to') }}</span>
-            </label>
+        <div class="flex items-center gap-3">
+            <button
+                id="accounting-apply"
+                type="button"
+                class="pm-button-primary"
+                data-i18n="accounting.apply"
+            >{{ __('ui.accounting.apply') }}</button>
 
-            <input
-                id="accounting-to"
-                type="date"
-                class="pm-input"
-            >
+            <button
+                id="accounting-reset"
+                type="button"
+                class="pm-button-secondary"
+                data-i18n="accounting.reset"
+            >{{ __('ui.accounting.reset') }}</button>
         </div>
-
-        <button
-            id="accounting-apply"
-            type="button"
-            class="pm-button-primary"
-            data-i18n="accounting.apply"
-        >{{ __('ui.accounting.apply') }}</button>
-
-        <button
-            id="accounting-reset"
-            type="button"
-            class="pm-button-secondary"
-            data-i18n="accounting.reset"
-        >{{ __('ui.accounting.reset') }}</button>
     </div>
 
     {{-- ============================================================

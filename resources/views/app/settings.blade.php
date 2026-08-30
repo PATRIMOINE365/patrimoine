@@ -68,109 +68,112 @@
             bg-[var(--pm-page)]
         "
     >
-        <div class="pm-card p-4">
-            <div
-                role="tablist"
+        {{--
+            V1.0.36: the tab strip is its own container. Sitting it in a
+            card drew a box around a box and made the page read as a
+            dialog inside a dialog.
+        --}}
+        <div
+            role="tablist"
+            class="
+                inline-flex max-w-full
+                overflow-x-auto rounded-xl
+                border border-[var(--pm-border)]
+                bg-[var(--pm-surface-subtle)]
+                p-1
+            "
+        >
+            <button
+                id="settings-tab-organisation"
+                type="button"
+                role="tab"
+                aria-selected="true"
+                aria-controls="settings-organisation-panel"
                 class="
-                    inline-flex max-w-full
-                    overflow-x-auto rounded-xl
-                    border border-[var(--pm-border)]
-                    bg-[var(--pm-surface-subtle)]
-                    p-1
+                    rounded-lg px-4 py-2
+                    text-sm font-medium
+                    transition
                 "
             >
-                <button
-                    id="settings-tab-organisation"
-                    type="button"
-                    role="tab"
-                    aria-selected="true"
-                    aria-controls="settings-organisation-panel"
-                    class="
-                        rounded-lg px-4 py-2
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <span data-i18n="settings.tab_organisation">{{ __('ui.settings.tab_organisation') }}</span>
-                </button>
+                <span data-i18n="settings.tab_organisation">{{ __('ui.settings.tab_organisation') }}</span>
+            </button>
 
-                <button
-                    id="settings-tab-users"
-                    type="button"
-                    role="tab"
-                    data-requires-capability="manage_users"
-                    aria-selected="false"
-                    aria-controls="settings-users-panel"
-                    class="
-                        rounded-lg px-4 py-2
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <span data-i18n="navigation.users">{{ __('ui.navigation.users') }}</span>
-                </button>
+            <button
+                id="settings-tab-users"
+                type="button"
+                role="tab"
+                data-requires-capability="manage_users"
+                aria-selected="false"
+                aria-controls="settings-users-panel"
+                class="
+                    rounded-lg px-4 py-2
+                    text-sm font-medium
+                    transition
+                "
+            >
+                <span data-i18n="navigation.users">{{ __('ui.navigation.users') }}</span>
+            </button>
 
-                <button
-                    id="settings-tab-license"
-                    type="button"
-                    role="tab"
-                    data-requires-capability="manage_settings"
-                    aria-selected="false"
-                    aria-controls="settings-license-panel"
-                    class="
-                        rounded-lg px-4 py-2
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <span data-i18n="navigation.license">{{ __('ui.navigation.license') }}</span>
-                </button>
+            <button
+                id="settings-tab-license"
+                type="button"
+                role="tab"
+                data-requires-capability="manage_settings"
+                aria-selected="false"
+                aria-controls="settings-license-panel"
+                class="
+                    rounded-lg px-4 py-2
+                    text-sm font-medium
+                    transition
+                "
+            >
+                <span data-i18n="navigation.license">{{ __('ui.navigation.license') }}</span>
+            </button>
 
-                <button
-                    id="settings-tab-preferences"
-                    type="button"
-                    role="tab"
-                    aria-selected="false"
-                    aria-controls="settings-preferences-panel"
-                    class="
-                        rounded-lg px-4 py-2
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <span data-i18n="settings.tab_preferences">{{ __('ui.settings.tab_preferences') }}</span>
-                </button>
+            <button
+                id="settings-tab-preferences"
+                type="button"
+                role="tab"
+                aria-selected="false"
+                aria-controls="settings-preferences-panel"
+                class="
+                    rounded-lg px-4 py-2
+                    text-sm font-medium
+                    transition
+                "
+            >
+                <span data-i18n="settings.tab_preferences">{{ __('ui.settings.tab_preferences') }}</span>
+            </button>
 
-                <button
-                    id="settings-tab-data"
-                    type="button"
-                    role="tab"
-                    aria-selected="false"
-                    aria-controls="settings-data-panel"
-                    class="
-                        rounded-lg px-4 py-2
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <span data-i18n="settings.tab_data">{{ __('ui.settings.tab_data') }}</span>
-                </button>
+            <button
+                id="settings-tab-data"
+                type="button"
+                role="tab"
+                aria-selected="false"
+                aria-controls="settings-data-panel"
+                class="
+                    rounded-lg px-4 py-2
+                    text-sm font-medium
+                    transition
+                "
+            >
+                <span data-i18n="settings.tab_data">{{ __('ui.settings.tab_data') }}</span>
+            </button>
 
-                <button
-                    id="settings-tab-about"
-                    type="button"
-                    role="tab"
-                    aria-selected="false"
-                    aria-controls="settings-about-panel"
-                    class="
-                        rounded-lg px-4 py-2
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <span data-i18n="settings.about">{{ __('ui.settings.about') }}</span>
-                </button>
-            </div>
+            <button
+                id="settings-tab-about"
+                type="button"
+                role="tab"
+                aria-selected="false"
+                aria-controls="settings-about-panel"
+                class="
+                    rounded-lg px-4 py-2
+                    text-sm font-medium
+                    transition
+                "
+            >
+                <span data-i18n="settings.about">{{ __('ui.settings.about') }}</span>
+            </button>
         </div>
     </div>
 

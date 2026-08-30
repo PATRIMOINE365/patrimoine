@@ -563,7 +563,14 @@
                     <span data-i18n="wizard.advance_received">{{ __('ui.wizard.advance_received') }}</span>
                 </label>
 
-                <div id="wizard-advance-details" class="pm-wizard-subfields">
+                {{--
+                    V1.0.36: three stacked fields under the tick made
+                    this step taller than any other, which pushed Back
+                    and Next down the page and moved them every time the
+                    box was ticked. Side by side the step is the height
+                    of its neighbours and the buttons stay put.
+                --}}
+                <div id="wizard-advance-details" class="pm-wizard-subfields pm-wizard-subfields-row">
                     <div>
                         <label for="wizard-advance-date" class="pm-field-label">
                             <span data-i18n="wizard.advance_date">{{ __('ui.wizard.advance_date') }}</span>
