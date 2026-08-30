@@ -41,48 +41,47 @@
             justify-content: center;
             padding: 2rem 1.5rem;
             background: #f2f6f4;
-            color: #101917;
-            font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+            color: #17201e;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
             line-height: 1.6;
         }
 
         @media (prefers-color-scheme: dark) {
             body { background: #0e1614; color: #f2f6f4; }
-            .card { background: #161c19 !important; border-color: #26302b !important; }
-            .muted { color: #97a69d !important; }
-            .badge { border-color: #26302b !important; color: #97a69d !important; }
-            .contact { background: #1b221e !important; border-color: #26302b !important; }
+            /* White pillars and Mint bars on a dark ground, per the brand. */
+            .mark rect:nth-child(2), .mark rect:nth-child(3) { fill: #ffffff; }
+            .mark rect:nth-child(4), .mark rect:nth-child(5), .mark rect:nth-child(6) { fill: #39D6A3; }
+            .button { background: #0e7a56 !important; }
+            .card { background: #17201e !important; border-color: #2c3936 !important; }
+            .muted { color: #9fada8 !important; }
+            .badge { border-color: #2c3936 !important; color: #9fada8 !important; }
+            .contact { background: #1b2523 !important; border-color: #2c3936 !important; }
         }
 
         .card {
             width: 100%;
             max-width: 34rem;
             background: #ffffff;
-            border: 1px solid #dfe6e2;
+            border: 1px solid #dde6e2;
             border-radius: 1rem;
             padding: 2rem;
         }
 
-        .mark {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 2.25rem;
-            height: 2.25rem;
-            border-radius: 0.75rem;
-            background: #0f2e21;
-            color: #ffffff;
-            font-weight: 600;
-        }
+        /*
+         * The mark is drawn inline rather than linked: these pages have to
+         * render when the application cannot, and an <img> that 404s would
+         * leave a broken picture at the top of an apology.
+         */
+        .mark { display: block; }
 
         h1 { font-size: 1.5rem; margin: 1.25rem 0 0; letter-spacing: -0.01em; }
         p { margin: 0.75rem 0 0; }
-        .muted { color: #5c6b64; font-size: 0.9375rem; }
+        .muted { color: #66736f; font-size: 1rem; }
 
         .badge {
             display: inline-block;
             margin-top: 1.25rem;
-            border: 1px solid #dfe6e2;
+            border: 1px solid #dde6e2;
             border-radius: 9999px;
             padding: 0.25rem 0.625rem;
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -94,7 +93,7 @@
 
         .contact {
             margin-top: 1.5rem;
-            border: 1px solid #dfe6e2;
+            border: 1px solid #dde6e2;
             border-radius: 0.75rem;
             background: #f2f6f4;
             padding: 1rem;
@@ -106,7 +105,7 @@
         .button {
             display: inline-block;
             border-radius: 0.625rem;
-            background: #0f2e21;
+            background: #123d35;
             color: #ffffff;
             padding: 0.625rem 1rem;
             font-size: 0.875rem;
@@ -116,7 +115,7 @@
 
         .button-secondary {
             background: transparent;
-            border: 1px solid #dfe6e2;
+            border: 1px solid #dde6e2;
             color: inherit;
         }
 
@@ -126,7 +125,14 @@
 
 <body>
     <main class="card">
-        <span class="mark">P</span>
+        <svg class="mark" width="36" height="36" viewBox="0 0 64 64" fill="none" role="img" aria-label="Patrimoine 365">
+            <title>Patrimoine 365</title>
+            <rect x="2"  y="4"  width="10" height="56" rx="2" fill="#123D35"/>
+            <rect x="52" y="4"  width="10" height="56" rx="2" fill="#123D35"/>
+            <rect x="18" y="9"  width="28" height="10" rx="2" fill="#0E7A56"/>
+            <rect x="18" y="27" width="28" height="10" rx="2" fill="#0E7A56"/>
+            <rect x="18" y="45" width="28" height="10" rx="2" fill="#0E7A56"/>
+        </svg>
 
         <h1>{{ $text['title'] }}</h1>
 

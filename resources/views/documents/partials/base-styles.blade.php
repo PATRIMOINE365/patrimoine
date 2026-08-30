@@ -18,12 +18,22 @@
     text (15.3:1), the supporting grey at 6.5:1, Slate at 4.5:1, Patrimoine
     Green for headings, Border for rules.
 --}}
-@include('documents.partials.fonts')
-
 <style>
     /*
-     * The font faces themselves live in partials/fonts.blade.php, which
-     * this includes so the fourteen document templates need only one line.
+     * Inter, so a document reads as the same product as the screen it was
+     * generated from.
+     *
+     * The font is registered with the renderer in PHP, by
+     * App\Support\PdfFonts through a container hook — NOT by an @font-face
+     * rule here. It was an @font-face rule first, and every document still
+     * came out in DejaVu Sans: dompdf accepted the stylesheet without
+     * complaint and quietly ignored the faces, in all three of the URL forms
+     * it documents. Nothing was logged. The only way to know was to read the
+     * BaseFont entries back out of a finished PDF.
+     *
+     * DejaVu Sans stays behind Inter in every stack. It is dompdf's own
+     * bundled family, so if registration ever stops working the document
+     * still renders — as it did, unnoticed, until it was checked.
      */
 
     body,

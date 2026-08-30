@@ -7,8 +7,6 @@
         {{ __('activity_log.export_title') }}
     </title>
 
-    @include('documents.partials.fonts')
-
     <style>
         @page {
             margin: 18px 20px;

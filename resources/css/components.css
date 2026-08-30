@@ -165,6 +165,17 @@ html[data-shell-role="administrator"] .shell-admin-only {
     min-width: 0;
 }
 
+/*
+ * A header used inside markup that already supplies the card's padding.
+ * Its value is the WRAPPING: a title and a bank of filters are two flex
+ * items, so when they do not both fit they stack instead of the title
+ * collapsing to one word a line — which is what the hand-rolled xl:flex-row
+ * version did at exactly 1280px.
+ */
+.pm-card-header-bare {
+    padding: 0;
+}
+
 .pm-card-title {
     display: flex;
     align-items: center;
@@ -356,6 +367,49 @@ html[data-shell-role="administrator"] .shell-admin-only {
 .pm-button-danger-outline:focus-visible {
     outline: none;
     box-shadow: var(--pm-shadow-xs), var(--pm-ring-error);
+}
+
+/*
+ * Outlined cautionary action — Terminate, and anything else that is not a
+ * deletion but cannot be undone either. It existed only as a hand-rolled
+ * set of utilities on the lease row, which is why the row had one button
+ * that did not match the four beside it.
+ */
+.pm-button-warning-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    border: 1px solid var(--pm-warning-border);
+    border-radius: var(--radius-md);
+    background: var(--pm-surface);
+    padding: 0.5rem 0.875rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--pm-warning-text);
+    box-shadow: var(--pm-shadow-xs);
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease,
+        box-shadow 120ms ease;
+}
+
+.pm-button-warning-outline:hover:not(:disabled) {
+    background: var(--pm-warning-background);
+}
+
+.pm-button-warning-outline:focus-visible {
+    outline: none;
+    box-shadow: var(--pm-shadow-xs), var(--pm-ring-gray);
+}
+
+.pm-button-warning-outline:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
 }
 
 /* Sizes. Default is md; these are the two the product actually needs. */

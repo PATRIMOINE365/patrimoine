@@ -147,35 +147,23 @@
                 px-5 py-4
             "
         >
-            <div
-                class="
-                    flex flex-col gap-4
-                    xl:flex-row
-                    xl:items-end
-                    xl:justify-between
-                "
-            >
-                <div>
-                    <h2
-                        class="
-                            text-base font-semibold
-                            text-[var(--pm-text)]
-                        "
-                    >
+            <div class="pm-card-header pm-card-header-bare">
+                <div class="pm-card-header-text">
+                    <h2 class="pm-card-title">
                         <span data-i18n="parties.directory">{{ __('ui.parties.directory') }}</span>
                     </h2>
 
-                    <p class="mt-1 text-xs text-[var(--pm-text-muted)]">
+                    <p class="pm-card-note">
                         <span data-i18n="parties.directory_description">{{ __('ui.parties.directory_description') }}</span>
                     </p>
                 </div>
 
                 <div
                     class="
-                        grid w-full gap-3
+                        grid w-full flex-1 gap-3
                         sm:grid-cols-2
-                        xl:w-auto
-                        xl:grid-cols-[minmax(18rem,1.5fr)_repeat(3,minmax(9.5rem,1fr))]
+                        xl:w-auto xl:min-w-[38rem]
+                        xl:grid-cols-[minmax(14rem,1.5fr)_repeat(3,minmax(8rem,1fr))]
                     "
                 >
 

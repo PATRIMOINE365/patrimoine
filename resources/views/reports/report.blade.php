@@ -5,8 +5,6 @@
 
     <title>{{ $title }}</title>
 
-    @include('documents.partials.fonts')
-
     <style>
         @page {
             margin: 36px 42px;

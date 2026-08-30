@@ -19,8 +19,6 @@
         Registry — {{ $entity }}
     </title>
 
-    @include('documents.partials.fonts')
-
     <style>
         @page {
             margin: 18px 20px;

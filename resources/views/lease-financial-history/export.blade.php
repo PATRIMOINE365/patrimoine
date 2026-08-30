@@ -7,8 +7,6 @@
         {{ __('ui.leases.financial_history') }}
     </title>
 
-    @include('documents.partials.fonts')
-
     <style>
         @page {
             margin: 22px;

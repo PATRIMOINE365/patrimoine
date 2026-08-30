@@ -4,8 +4,6 @@
     <meta charset="utf-8">
     <title>{{ $title }}</title>
 
-    @include('documents.partials.fonts')
-
     <style>
         @page {
             margin: 18px;

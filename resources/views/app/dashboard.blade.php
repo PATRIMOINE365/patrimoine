@@ -91,13 +91,13 @@
     >
         <div
             class="
-                pm-card p-5
+                pm-metric
                 sm:col-span-2
                 lg:col-span-4
                 xl:col-span-1
             "
         >
-            <div class="text-sm text-[var(--pm-text-muted)]">
+            <div class="pm-metric-label">
                 <span data-i18n="dashboard.occupancy_rate">
                     {{ __('ui.dashboard.occupancy_rate') }}
                 </span>
@@ -105,10 +105,7 @@
 
             <div
                 id="metric-occupancy-rate"
-                class="
-                    mt-3 text-4xl font-semibold
-                    tracking-tight text-[var(--pm-text)]
-                "
+                class="pm-metric-value"
             >
                 —
             </div>
@@ -231,78 +228,36 @@
             </div>
         </div>
 
-        <div class="pm-card flex h-full flex-col p-5">
-            <div class="text-sm text-[var(--pm-text-muted)]">
-                <span data-i18n="dashboard.rent_overdue">
-                    {{ __('ui.dashboard.rent_overdue') }}
-                </span>
+        <div class="pm-metric">
+            <div class="pm-metric-label">
+                <span data-i18n="dashboard.rent_overdue"> {{ __('ui.dashboard.rent_overdue') }} </span>
             </div>
 
-            <div
-                id="metric-rent-overdue"
-                class="
-                    mt-auto pt-3 text-2xl font-semibold
-                    tracking-tight
-                    text-[var(--pm-danger-text)]
-                "
-            >
-                —
-            </div>
+            <div id="metric-rent-overdue" class="pm-metric-value text-[var(--pm-danger-text)]">—</div>
         </div>
 
-        <div class="pm-card flex h-full flex-col p-5">
-            <div class="text-sm text-[var(--pm-text-muted)]">
-                <span data-i18n="dashboard.rent_due">
-                    {{ __('ui.dashboard.rent_due') }}
-                </span>
+        <div class="pm-metric">
+            <div class="pm-metric-label">
+                <span data-i18n="dashboard.rent_due"> {{ __('ui.dashboard.rent_due') }} </span>
             </div>
 
-            <div
-                id="metric-rent-due"
-                class="
-                    mt-auto pt-3 text-2xl font-semibold
-                    tracking-tight text-[var(--pm-text)]
-                "
-            >
-                —
-            </div>
+            <div id="metric-rent-due" class="pm-metric-value text-[var(--pm-text)]">—</div>
         </div>
 
-        <div class="pm-card flex h-full flex-col p-5">
-            <div class="text-sm text-[var(--pm-text-muted)]">
-                <span data-i18n="dashboard.collected_this_month">
-                    {{ __('ui.dashboard.collected_this_month') }}
-                </span>
+        <div class="pm-metric">
+            <div class="pm-metric-label">
+                <span data-i18n="dashboard.collected_this_month"> {{ __('ui.dashboard.collected_this_month') }} </span>
             </div>
 
-            <div
-                id="metric-collected"
-                class="
-                    mt-auto pt-3 text-2xl font-semibold
-                    tracking-tight
-                    text-[var(--pm-success-text)]
-                "
-            >
-                —
-            </div>
+            <div id="metric-collected" class="pm-metric-value text-[var(--pm-success-text)]">—</div>
         </div>
 
-        <div class="pm-card flex h-full flex-col p-5">
-            <div class="text-sm text-[var(--pm-text-muted)]">
-                <span data-i18n="dashboard.management_fees_this_month">
-                    {{ __('ui.dashboard.management_fees_this_month') }}
-                </span>
+        <div class="pm-metric">
+            <div class="pm-metric-label">
+                <span data-i18n="dashboard.management_fees_this_month"> {{ __('ui.dashboard.management_fees_this_month') }} </span>
             </div>
 
-            <div
-                id="metric-management-fees"
-                class="
-                    mt-auto pt-3 text-2xl font-semibold
-                    tracking-tight text-[var(--pm-text)]
-                "
-            >
-                —
-            </div>
+            <div id="metric-management-fees" class="pm-metric-value text-[var(--pm-text)]">—</div>
         </div>
     </div>
 

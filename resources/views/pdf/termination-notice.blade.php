@@ -3,8 +3,6 @@
 <head>
     <meta charset="utf-8">
 
-    @include('documents.partials.fonts')
-
     <style>
         body {
             font-family: 'Inter', 'DejaVu Sans', sans-serif;

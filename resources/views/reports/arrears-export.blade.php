@@ -5,8 +5,6 @@
 
     <title>{{ __('reports.arrears_report') }}</title>
 
-    @include('documents.partials.fonts')
-
     <style>
         @page {
             margin: 22px;

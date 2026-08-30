@@ -31,13 +31,7 @@
     <header class="border-b border-[var(--pm-border)] bg-[var(--pm-surface)]">
         <div class="mx-auto flex max-w-3xl items-center justify-between px-6 py-5">
             <a href="/login" class="flex items-center gap-3">
-                <span
-                    class="
-                        flex h-9 w-9 items-center justify-center
-                        rounded-xl bg-patrimoine-950
-                        font-semibold text-white
-                    "
-                >P</span>
+                <x-logo :size="36" />
                 <span class="text-lg font-semibold">
                     {{ config('legal.product.name') }}
                 </span>

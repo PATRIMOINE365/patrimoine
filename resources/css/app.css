@@ -1263,63 +1263,56 @@ input[type="checkbox"] {
    DD-MM-YYYY + calendar picker
    -------------------------------------------------------------------------- */
 
-#lease-modal .pm-lease-date-control {
+/*
+ * Scoped by CLASS, not by drawer.
+ *
+ * These rules were written inside #lease-modal, so the SAME control on the
+ * lease register's own filter got none of them: the calendar button lost
+ * its absolute position and dropped underneath the field it belongs to.
+ * The comment below records the identical bug being fixed once already, for
+ * the hidden native input — the button was left behind.
+ */
+
+.pm-lease-date-control {
     position: relative;
     width: 100%;
 }
 
-#lease-modal
-.pm-lease-date-control
-[data-lease-date-input] {
+.pm-lease-date-control [data-lease-date-input] {
     width: 100%;
     padding-right: 2.75rem;
 }
 
-#lease-modal .pm-lease-date-picker-button {
+.pm-lease-date-picker-button {
     position: absolute;
-
     top: 50%;
-    right: 0.625rem;
-
+    right: 0.5rem;
     display: inline-flex;
-
     width: 2rem;
     height: 2rem;
-
     transform: translateY(-50%);
-
     align-items: center;
     justify-content: center;
-
-    border-radius: 0.375rem;
-
-    color: var(--pm-text-muted);
-
+    border-radius: var(--radius-sm);
+    color: var(--pm-text-subtle);
+    cursor: pointer;
     transition:
-        background-color 150ms ease,
-        color 150ms ease;
+        background-color 120ms ease,
+        color 120ms ease,
+        box-shadow 120ms ease;
 }
 
-#lease-modal .pm-lease-date-picker-button:hover {
+.pm-lease-date-picker-button:hover {
     background: var(--pm-hover);
     color: var(--pm-text);
 }
 
-#lease-modal .pm-lease-date-picker-button:focus-visible {
+.pm-lease-date-picker-button:focus-visible {
     outline: none;
-
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 18%,
-            transparent
-        );
+    box-shadow: var(--pm-ring-brand);
 }
 
-#lease-modal
-.pm-lease-date-picker-button
-svg {
+.pm-lease-date-picker-button svg {
     width: 1.125rem;
     height: 1.125rem;
 }
@@ -3580,3 +3573,160 @@ body.pm-admin .pm-icon-button:hover {
 }
 
 /* END V1.0.36 Guide screenshots */
+
+/*
+|--------------------------------------------------------------------------
+| Party directory
+|--------------------------------------------------------------------------
+|
+| The rows of the Parties list, rendered by parties.js.
+|
+| These were carried away with the drawer sections they had been filed
+| under during the v1.0.37 redesign and are restored here, on the new
+| scale: 12px radius rather than 14, and text sizes that are steps of the
+| type scale rather than 13px and 15px.
+|
+*/
+
+.pm-party-row {
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--pm-border);
+    border-radius: var(--radius-xl);
+    background: var(--pm-surface);
+    box-shadow: var(--pm-shadow-xs);
+    transition:
+        border-color 120ms ease,
+        background-color 120ms ease;
+}
+
+.pm-party-row:last-child {
+    margin-bottom: 0;
+}
+
+.pm-party-row:hover {
+    border-color: var(--pm-border-strong);
+    background: var(--pm-hover);
+}
+
+.pm-party-row-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+}
+
+.pm-party-title-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.pm-party-name {
+    font-size: var(--text-md);
+    line-height: var(--text-md--line-height);
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+/*
+ * The type and the roles are badges, and they are the same badge — the one
+ * in components.css. They used to be two hand-built pills that happened to
+ * look alike.
+ */
+.pm-party-type-badge,
+.pm-party-role-badge,
+.pm-party-no-email-badge {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--pm-border);
+    border-radius: 9999px;
+    background: var(--pm-surface-muted);
+    padding: 0.125rem 0.625rem;
+    font-size: var(--text-xs);
+    line-height: 1.125rem;
+    font-weight: 500;
+    color: var(--pm-text-muted);
+    white-space: nowrap;
+}
+
+.pm-party-no-email-badge {
+    border-color: var(--pm-warning-border);
+    background: var(--pm-warning-background);
+    color: var(--pm-warning-text);
+}
+
+.pm-party-contact,
+.pm-party-meta {
+    margin-top: 0.5rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-subtle);
+}
+
+.pm-party-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+}
+
+.pm-party-roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.625rem;
+}
+
+.pm-party-no-role {
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    color: var(--pm-text-subtle);
+}
+
+.pm-party-actions {
+    display: flex;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/*
+ * Row actions are the small button, not the full-size one. Four md buttons
+ * on every row of a twenty-four row list is a wall of buttons.
+ */
+.pm-party-action {
+    min-width: 0;
+    min-height: 2.25rem;
+    padding: 0.375rem 0.75rem;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Ownership total
+|--------------------------------------------------------------------------
+|
+| The running total of an ownership split, which has to read at a glance as
+| complete, short or over — the one number in the property form that can be
+| wrong in a way the form cannot reject.
+|
+*/
+
+#ownership-total.pm-ownership-total-valid {
+    border-color: var(--pm-success-border);
+    background: var(--pm-success-background);
+    color: var(--pm-success-text);
+}
+
+#ownership-total.pm-ownership-total-incomplete {
+    border-color: var(--pm-border);
+    background: var(--pm-surface-muted);
+    color: var(--pm-text-muted);
+}
+
+#ownership-total.pm-ownership-total-excess {
+    border-color: var(--pm-danger-border);
+    background: var(--pm-danger-background);
+    color: var(--pm-danger-text);
+}

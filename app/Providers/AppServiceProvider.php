@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Listeners\AttachPlainTextEmailPart;
 use App\Support\OrganisationContext;
+use App\Support\PdfFonts;
+use Dompdf\Dompdf;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -22,6 +24,22 @@ class AppServiceProvider extends ServiceProvider
          * every test application instance.
          */
         $this->app->scoped(OrganisationContext::class);
+
+        /*
+         * V1.0.37: Inter for the PDF renderer, registered on every Dompdf
+         * the container hands out. See App\Support\PdfFonts for why this
+         * is not the @font-face rule it looks like it should be.
+         *
+         * In register() rather than boot(): a `resolving` callback only
+         * fires for instances built AFTER it is added, and laravel-dompdf
+         * can have made its renderer before any boot() method runs. Every
+         * provider's register() runs before every provider's boot(), so
+         * this is the earliest point that is guaranteed to be early enough.
+         */
+        $this->app->resolving(
+            Dompdf::class,
+            static fn (Dompdf $dompdf) => PdfFonts::register($dompdf)
+        );
     }
 
     /**

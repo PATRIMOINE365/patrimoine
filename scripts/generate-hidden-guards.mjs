@@ -30,7 +30,18 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const cssPath = join(root, 'resources/css/app.css');
+
+/*
+ * BOTH stylesheets. The design system was split at v1.0.37 and the shared
+ * components moved to components.css; scanning only app.css would have left
+ * every button, badge, tile and navigation row in the new component layer
+ * unguarded, which is precisely the failure this file exists to prevent.
+ */
+const cssPaths = [
+    join(root, 'resources/css/components.css'),
+    join(root, 'resources/css/app.css'),
+];
+
 const outPath = join(root, 'resources/css/hidden-guards.css');
 
 /**
@@ -79,7 +90,7 @@ export function offendingClasses(css) {
 }
 
 const classes = offendingClasses(
-    readFileSync(cssPath, 'utf8')
+    cssPaths.map(file => readFileSync(file, 'utf8')).join(String.fromCharCode(10))
 );
 
 writeFileSync(

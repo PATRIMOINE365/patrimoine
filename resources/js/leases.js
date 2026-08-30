@@ -2516,7 +2516,7 @@ function leaseCard(lease) {
                         data-lease-id="${escapeHtml(
                             lease.id
                         )}"
-                        class="pm-button-secondary"
+                        class="pm-button-secondary pm-button-sm max-sm:flex-1"
                     >
                         ${escapeHtml(
                             translate(
@@ -2531,7 +2531,7 @@ function leaseCard(lease) {
                         data-lease-id="${escapeHtml(
                             lease.id
                         )}"
-                        class="pm-button-secondary"
+                        class="pm-button-secondary pm-button-sm max-sm:flex-1"
                     >
                         ${escapeHtml(
                             translate(
@@ -2549,7 +2549,7 @@ function leaseCard(lease) {
                                     data-lease-id="${escapeHtml(
                                         lease.id
                                     )}"
-                                    class="pm-button-secondary"
+                                    class="pm-button-secondary pm-button-sm max-sm:flex-1"
                                 >
                                     ${escapeHtml(
                                         translate(
@@ -2602,16 +2602,7 @@ function leaseCard(lease) {
                                     data-lease-id="${escapeHtml(
                                         lease.id
                                     )}"
-                                    class="
-                                        rounded-lg
-                                        border border-[var(--pm-warning-border)]
-                                        bg-[var(--pm-surface)] px-3.5 py-2
-                                        text-sm font-medium
-                                        text-[var(--pm-warning-text)]
-                                        transition
-                                        max-sm:min-h-[2.625rem]
-                                        hover:bg-[var(--pm-warning-background)]
-                                    "
+                                    class="pm-button-warning-outline pm-button-sm max-sm:flex-1"
                                 >
                                     ${escapeHtml(
                                         translate(
@@ -2629,16 +2620,7 @@ function leaseCard(lease) {
                         data-lease-id="${escapeHtml(
                             lease.id
                         )}"
-                        class="
-                            rounded-lg
-                            border border-[var(--pm-danger-border)]
-                            bg-[var(--pm-surface)] px-3.5 py-2
-                            text-sm font-medium
-                            text-[var(--pm-danger-text)]
-                            transition
-                            max-sm:min-h-[2.625rem]
-                            hover:bg-[var(--pm-danger-background)]
-                        "
+                        class="pm-button-danger-outline pm-button-sm max-sm:flex-1"
                     >
                         ${escapeHtml(
                             translate(

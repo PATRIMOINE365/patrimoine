@@ -255,6 +255,47 @@ class DocumentGenerationTest extends TestCase
     }
 
     /**
+     * The document is set in Inter, not in the renderer's fallback.
+     *
+     * This exists because the first attempt did not work and nothing said
+     * so. The fonts were declared with @font-face in a partial every PDF
+     * template included; dompdf accepted the stylesheet without complaint,
+     * ignored the faces, and rendered every invoice in DejaVu Sans. The
+     * suite stayed green, because a document in the wrong typeface is still
+     * a valid PDF.
+     *
+     * So the assertion reads the BaseFont entries back out of the finished
+     * file. It is the only way to tell.
+     */
+    public function test_documents_are_set_in_inter(): void
+    {
+        $context = $this->createContext();
+
+        $contents = app(
+            InvoiceDocumentService::class
+        )->generate(
+            $context['invoice']
+        );
+
+        preg_match_all(
+            '/BaseFont\s*\/([A-Za-z0-9+\-]+)/',
+            $contents,
+            $matches
+        );
+
+        $fonts = implode(', ', array_unique($matches[1] ?? []));
+
+        $this->assertStringContainsString(
+            'Inter',
+            $fonts,
+            'The invoice was rendered in ['.$fonts.'] rather than in Inter. '
+            .'App\Support\PdfFonts registers the family with every Dompdf '
+            .'the container hands out; if that hook stops firing, documents '
+            .'silently fall back to DejaVu Sans.'
+        );
+    }
+
+    /**
      * Tenant Payment receipt service returns a genuine PDF document.
      */
     public function test_receipt_service_generates_pdf(): void
