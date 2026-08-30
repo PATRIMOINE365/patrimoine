@@ -19,6 +19,23 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.36',
+            'date' => '2026-08-30',
+            'title' => 'Support, a guide you can find your way around, and numbers that carry their year',
+            'changes' => [
+                'Help and Update log have become one entry in your own menu: Support. It opens on a form where you can write to us, with the guide, the error codes and the update log beside it. Your name, your organisation and the address we answer come from your account, so there is nothing else to fill in, and anybody may write — including a Viewer, because being unable to do your work is exactly the thing worth telling us about.',
+                'The guide is read one guide at a time now, chosen from a list or found by searching any word in any step. It used to render all seventy tasks and their pictures into a single page to read one of them.',
+                'Pictures of drawers no longer tower over the words they illustrate. A drawer is photographed tall and a whole screen wide, and at the same width the tall one arrived three times the height of the other.',
+                'The sidebar group called Manage is now Administration, and the Activity Log and Financial Journal have icons that say what they are.',
+                'Your profile no longer explains what a photograph is for. Download my data has moved out from beside Save, where it read as a third thing the button might do, and is a link of its own under the password fields.',
+                'The tabs on Settings and on Support are no longer drawn inside a second box.',
+                'Accounting reads and offers dates the way every other screen does. It was using the browser\'s own control, so a French organisation on an English browser was shown month-first dates. The two fields are one Period now rather than a small From and a small To.',
+                'In the lease assistant, ticking Already received no longer pushes Back and Next down the page.',
+                'Every document number carries the year it belongs to: INV-2026-000003 rather than INV-000003. Numbers now come from a counter of their own rather than from reading the highest one already issued, which means deleting the newest document can no longer hand its number to the next one written.',
+                'Most of the mail Patrimoine sends now leaves after your request rather than during it, so pressing a button no longer waits on our mail provider. Anything you are waiting on — a sign-in code, a verification link, a password reset, an invitation — is still sent while you watch, because a failure there has to be visible.',
+            ],
+        ],
+        [
             'version' => '1.0.35',
             'date' => '2026-08-29',
             'title' => 'Saying the right thing, in the right language',

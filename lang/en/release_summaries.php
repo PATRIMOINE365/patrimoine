@@ -31,7 +31,7 @@ return [
         [
             'through' => '1.0.40',
             'date' => '2026-08-29',
-            'summary' => 'Work since 1.0.35 is described here as it lands.',
+            'summary' => 'Help became Support: one entry in your own menu opens a page where you can write to us, with the guide, the error codes and the update log beside it. The guide is read one guide at a time now, found by searching rather than by scrolling past everything else, and its pictures no longer tower over the words they illustrate. Accounting reads dates the way the rest of Patrimoine does, every document number carries the year it belongs to, and most of what Patrimoine sends by e-mail now leaves after your request instead of during it',
         ],
         [
             'through' => '1.0.35',

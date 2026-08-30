@@ -23,7 +23,7 @@ return [
         [
             'through' => '1.0.40',
             'date' => '2026-08-29',
-            'summary' => 'Les travaux postérieurs à la version 1.0.35 sont décrits ici au fur et à mesure.',
+            'summary' => 'L\'Aide est devenue le Support : une entrée de votre menu ouvre une page où vous pouvez nous écrire, avec le guide, les codes d\'erreur et le journal des mises à jour à côté. Le guide se lit un guide à la fois, trouvé par recherche plutôt qu\'en faisant défiler tout le reste, et ses images n\'écrasent plus le texte qu\'elles illustrent. La Comptabilité lit les dates comme le reste de Patrimoine, chaque numéro de document porte son année, et la plupart des messages que Patrimoine envoie partent après votre demande plutôt que pendant',
         ],
         [
             'through' => '1.0.35',

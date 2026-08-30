@@ -15,6 +15,23 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.36',
+            'date' => '2026-08-30',
+            'title' => 'Le support, un guide où l\'on se retrouve, et des numéros qui portent leur année',
+            'changes' => [
+                'Aide et Journal des mises à jour ne font plus qu\'une entrée dans votre menu : Support. Elle s\'ouvre sur un formulaire pour nous écrire, avec le guide, les codes d\'erreur et le journal des mises à jour à côté. Votre nom, votre organisation et l\'adresse à laquelle nous répondons proviennent de votre compte : il n\'y a rien d\'autre à remplir, et tout le monde peut écrire, y compris un Lecteur, car ne pas pouvoir faire son travail est justement ce qu\'il faut nous signaler.',
+                'Le guide se lit maintenant un guide à la fois, choisi dans une liste ou trouvé en cherchant n\'importe quel mot de n\'importe quelle étape. Il affichait auparavant les soixante-dix tâches et toutes leurs images sur une seule page pour en lire une.',
+                'Les images des panneaux latéraux n\'écrasent plus le texte qu\'elles illustrent. Un panneau est photographié en hauteur et un écran entier en largeur : à largeur égale, le premier arrivait trois fois plus haut que le second.',
+                'Le groupe Gestion de la barre latérale s\'appelle désormais Administration, et le Journal d\'activité comme le Journal financier ont des icônes qui disent ce qu\'ils sont.',
+                'Votre profil n\'explique plus à quoi sert une photographie. Télécharger mes données a quitté le voisinage d\'Enregistrer, où ce bouton semblait en être une variante, et devient un lien à part sous les champs de mot de passe.',
+                'Les onglets des Paramètres et du Support ne sont plus dessinés dans une seconde boîte.',
+                'La Comptabilité lit et propose les dates comme tous les autres écrans. Elle utilisait le contrôle du navigateur : une organisation française sur un navigateur anglais voyait donc des dates commençant par le mois. Les deux champs forment maintenant une seule Période plutôt qu\'un petit Du et un petit Au.',
+                'Dans l\'assistant de bail, cocher Déjà reçu ne repousse plus Précédent et Suivant vers le bas de la page.',
+                'Chaque numéro de document porte l\'année à laquelle il appartient : INV-2026-000003 plutôt que INV-000003. Les numéros proviennent désormais d\'un compteur qui leur est propre, et non de la lecture du plus élevé déjà émis : supprimer le document le plus récent ne peut donc plus donner son numéro au suivant.',
+                'La plupart des messages que Patrimoine envoie partent après votre demande et non pendant, si bien qu\'appuyer sur un bouton n\'attend plus notre prestataire de messagerie. Ce que vous attendez vous-même — un code de connexion, un lien de vérification, une réinitialisation de mot de passe, une invitation — continue d\'être envoyé sous vos yeux, car un échec doit s\'y voir.',
+            ],
+        ],
+        [
             'version' => '1.0.35',
             'date' => '2026-08-29',
             'title' => 'Dire ce qu\'il faut, dans la bonne langue',
