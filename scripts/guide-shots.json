@@ -10,8 +10,8 @@
     "id": "mfa",
     "path": "/login",
     "anonymous": true,
-    "wait": "input[type=\"email\"]",
-    "settle": 400,
+    "wait": "#login-step-mfa:not(.hidden) #mfa-code",
+    "settle": 700,
     "do": [
       {
         "fill": {

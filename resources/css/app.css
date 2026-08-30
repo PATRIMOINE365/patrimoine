@@ -3616,6 +3616,18 @@ body.pm-admin .pm-icon-button:hover {
     padding: 1rem 1.25rem;
 }
 
+/*
+ * Above 1024px the row reads across: who they are on the left, what you can
+ * do about them on the right. Below it, everything stacks.
+ */
+@media (min-width: 1024px) {
+    .pm-party-row-main {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
 .pm-party-title-line {
     display: flex;
     flex-wrap: wrap;
