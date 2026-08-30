@@ -147,7 +147,7 @@ return [
         'leases' => 'Leases',
         'payments' => 'Payments',
         'finance' => 'Finance',
-        'manage' => 'Manage',
+        'manage' => 'Administration',
         'tenants' => 'Tenants',
         'owners' => 'Owners',
         'accounting' => 'Accounting',
@@ -177,9 +177,9 @@ return [
     'profile' => [
         /* ---- V1.0.34 data protection ---- */
         'download_data' => 'Download my data',
+        'download_data_help' => 'A single file holding everything Patrimoine records about you.',
+        'data_section' => 'Your data',
         'downloading' => 'Preparing…',
-        'photo' => 'Photograph',
-        'photo_hint' => 'Shown at the top of the screen and beside your name wherever your account appears.',
         'photo_choose' => 'Choose a picture',
         'photo_reframe' => 'Reframe',
         'photo_remove' => 'Remove',
@@ -192,8 +192,7 @@ return [
 
     'shell' => [
         /* ---- V1.0.7 additions ---- */
-        'help' => 'Help',
-        'update_log' => 'Update log',
+        'support' => 'Support',
         /* ---- end V1.0.7 additions ---- */
         'my_profile' => 'My Profile',
         'my_profile_description' => 'Update my profile',
@@ -2337,6 +2336,7 @@ return [
         'charged_to_owners_hint' => 'Fees plus the VAT on them.',
         'from' => 'From',
         'to' => 'To',
+        'period' => 'Period',
         'apply' => 'Apply',
         'reset' => 'Reset',
         'transactions' => 'Charges',

@@ -584,12 +584,15 @@
                             stroke="currentColor"
                             stroke-width="1.8"
                         >
-                            <path d="M9 5h10"/>
-                            <path d="M9 12h10"/>
-                            <path d="M9 19h10"/>
-                            <circle cx="5" cy="5" r="1"/>
-                            <circle cx="5" cy="12" r="1"/>
-                            <circle cx="5" cy="19" r="1"/>
+                            {{--
+                                V1.0.36: a history dial rather than a
+                                bulleted list. The log answers "what
+                                happened, and when" — the list icon said
+                                only "several things".
+                            --}}
+                            <path d="M3 4v5h5"/>
+                            <path d="M3.5 9A9 9 0 1 1 3 12"/>
+                            <path d="M12 7.5V12l3 2"/>
                         </svg>
 
                         <span data-i18n="navigation.activity_log">{{ __('ui.navigation.activity_log') }}</span>
@@ -616,12 +619,14 @@
                             stroke="currentColor"
                             stroke-width="1.8"
                         >
-                            <path d="M4 5h16"/>
-                            <path d="M4 10h16"/>
-                            <path d="M4 15h16"/>
-                            <path d="M4 20h16"/>
-                            <path d="M8 3v4"/>
-                            <path d="M16 3v4"/>
+                            {{--
+                                V1.0.36: an open ledger. Four ruled lines
+                                and two ticks read as a table, which is
+                                what every other list here is too.
+                            --}}
+                            <path d="M12 7c-1.5-1.4-3.5-2.1-5.6-2.1H4v12.6h2.4c2.1 0 4.1.7 5.6 2.1"/>
+                            <path d="M12 7c1.5-1.4 3.5-2.1 5.6-2.1H20v12.6h-2.4c-2.1 0-4.1.7-5.6 2.1"/>
+                            <path d="M12 7v12.6"/>
                         </svg>
 
                         <span data-i18n="navigation.financial_journal">{{ __('ui.navigation.financial_journal') }}</span>
@@ -1146,7 +1151,13 @@
                             </div>
                         </div>
 
-                        {{-- Help and product information --}}
+                        {{--
+                            V1.0.36: one door instead of two. Help and
+                            Update log were two entries into the same
+                            page; Support lands on the tab where you can
+                            actually ask somebody, with the guide, the
+                            error codes and the update log beside it.
+                        --}}
                         <div
                             class="
                                 border-t border-[var(--pm-border)]
@@ -1165,9 +1176,9 @@
                                     stroke-width="1.8"
                                     aria-hidden="true"
                                 >
-                                    <circle cx="12" cy="12" r="9"/>
-                                    <path d="M9.5 9a2.5 2.5 0 0 1 5 .3c0 1.7-2.5 2.2-2.5 3.7"/>
-                                    <path d="M12 17h.01"/>
+                                    <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L4 21l1.1-3.6A8.4 8.4 0 1 1 21 11.5Z"/>
+                                    <path d="M9.6 9.2a2.5 2.5 0 0 1 4.9.4c0 1.6-2.4 2-2.4 3.4"/>
+                                    <path d="M12 16h.01"/>
                                 </svg>
 
                                 <span
@@ -1175,37 +1186,9 @@
                                         block text-sm font-medium
                                         text-[var(--pm-text)]
                                     "
-                                    data-i18n="shell.help"
+                                    data-i18n="shell.support"
                                 >
-                                    Help
-                                </span>
-                            </a>
-
-                            <a
-                                href="/help#updates"
-                                class="shell-menu-item"
-                            >
-                                <svg
-                                    class="h-4 w-4"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="1.8"
-                                    aria-hidden="true"
-                                >
-                                    <path d="M12 8v4l2.5 2.5"/>
-                                    <path d="M3.5 9A9 9 0 1 1 3 12"/>
-                                    <path d="M3 4v5h5"/>
-                                </svg>
-
-                                <span
-                                    class="
-                                        block text-sm font-medium
-                                        text-[var(--pm-text)]
-                                    "
-                                    data-i18n="shell.update_log"
-                                >
-                                    Update log
+                                    Support
                                 </span>
                             </a>
                         </div>
@@ -1321,7 +1304,7 @@
                 picture is kept behind it, which is what lets Reframe reopen
                 this exactly where it was left.
             --}}
-            <div class="mb-6 flex items-start gap-4">
+            <div class="mb-6 flex flex-col items-center gap-3">
                 <span
                     id="profile-avatar"
                     class="pm-avatar pm-avatar-initials"
@@ -1329,50 +1312,38 @@
                     aria-hidden="true"
                 ></span>
 
-                <div class="min-w-0 flex-1">
-                    <div
-                        class="text-sm font-medium text-[var(--pm-text)]"
-                        data-i18n="profile.photo"
-                    >{{ __('ui.profile.photo') }}</div>
-
-                    <p
-                        class="pm-avatar-hint"
-                        data-i18n="profile.photo_hint"
-                    >{{ __('ui.profile.photo_hint') }}</p>
-
-                    <div class="mt-2.5 flex flex-wrap items-center gap-2">
-                        <button
-                            id="profile-photo-choose"
-                            type="button"
-                            class="pm-button-secondary"
-                        >
-                            <span data-i18n="profile.photo_choose">{{ __('ui.profile.photo_choose') }}</span>
-                        </button>
-
-                        <button
-                            id="profile-photo-reframe"
-                            type="button"
-                            class="pm-button-secondary hidden"
-                        >
-                            <span data-i18n="profile.photo_reframe">{{ __('ui.profile.photo_reframe') }}</span>
-                        </button>
-
-                        <button
-                            id="profile-photo-remove"
-                            type="button"
-                            class="pm-button-danger-outline hidden"
-                        >
-                            <span data-i18n="profile.photo_remove">{{ __('ui.profile.photo_remove') }}</span>
-                        </button>
-                    </div>
-
-                    <input
-                        id="profile-photo-file"
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif"
-                        class="hidden"
+                <div class="flex flex-wrap items-center justify-center gap-2">
+                    <button
+                        id="profile-photo-choose"
+                        type="button"
+                        class="pm-button-secondary"
                     >
+                        <span data-i18n="profile.photo_choose">{{ __('ui.profile.photo_choose') }}</span>
+                    </button>
+
+                    <button
+                        id="profile-photo-reframe"
+                        type="button"
+                        class="pm-button-secondary hidden"
+                    >
+                        <span data-i18n="profile.photo_reframe">{{ __('ui.profile.photo_reframe') }}</span>
+                    </button>
+
+                    <button
+                        id="profile-photo-remove"
+                        type="button"
+                        class="pm-button-danger-outline hidden"
+                    >
+                        <span data-i18n="profile.photo_remove">{{ __('ui.profile.photo_remove') }}</span>
+                    </button>
                 </div>
+
+                <input
+                    id="profile-photo-file"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif"
+                    class="hidden"
+                >
             </div>
 
             {{-- The cropper, shown only while a picture is being framed. --}}
@@ -1650,18 +1621,61 @@
                         </div>
                     </div>
                 </div>
+
+                {{--
+                    V1.0.36: asking for your own data is not an
+                    administrative act, so it sits with the account
+                    rather than among the drawer's save actions, where
+                    it read as a third thing the Save button might do.
+                    It is a link because it takes you somewhere with
+                    your data rather than changing anything here.
+                --}}
+                <div
+                    class="
+                        sm:col-span-2
+                        mt-3 border-t
+                        border-[var(--pm-border)]
+                        pt-6
+                    "
+                >
+                    <div
+                        class="
+                            mb-3 text-xs font-semibold uppercase
+                            tracking-wide
+                            text-[var(--pm-text-subtle)]
+                        "
+                        data-i18n="profile.data_section"
+                    >
+                        {{ __('ui.profile.data_section') }}
+                    </div>
+
+                    <button
+                        id="profile-download-data"
+                        type="button"
+                        class="
+                            text-sm font-medium
+                            text-[var(--pm-accent)]
+                            hover:underline
+                            disabled:opacity-60
+                        "
+                    >
+                        <span data-i18n="profile.download_data">{{ __('ui.profile.download_data') }}</span>
+                    </button>
+
+                    <p
+                        class="
+                            mt-2 text-xs
+                            text-[var(--pm-text-muted)]
+                        "
+                        data-i18n="profile.download_data_help"
+                    >
+                        {{ __('ui.profile.download_data_help') }}
+                    </p>
+                </div>
             </div>
         </div>
 
         <x-drawer-footer>
-            <button
-                id="profile-download-data"
-                type="button"
-                class="pm-button-secondary mr-auto"
-            >
-                <span data-i18n="profile.download_data">{{ __('ui.profile.download_data') }}</span>
-            </button>
-
             <button
                 id="profile-cancel-button"
                 type="button"

@@ -302,6 +302,8 @@ export const translations = {
 
         'activity_actions.security_deposit.settled':
             'Security Deposit Settled',
+        'activity_actions.support.message_sent':
+            'Message Sent To Support',
 
         'activity_actions.owner_expense.recorded':
             'Owner Expense Recorded',
@@ -1128,10 +1130,8 @@ export const translations = {
             'The bill was emailed to the owner.',
         'owners.email_failed':
             'Unable to email the bill.',
-        'shell.help':
-            'Help',
-        'shell.update_log':
-            'Update log',
+        'shell.support':
+            'Support',
         'notifications.loading':
             'Loading notifications…',
         'notifications.unable_load':
@@ -1785,7 +1785,7 @@ export const translations = {
             'Finance',
 
         'navigation.manage':
-            'Manage',
+            'Administration',
 
         'shell.refresh':
             'Refresh',
@@ -1855,6 +1855,9 @@ export const translations = {
 
         'accounting.to':
             'To',
+
+        'accounting.period':
+            'Period',
 
         'accounting.apply':
             'Apply',
@@ -1993,10 +1996,6 @@ export const translations = {
         'navigation.platform_console':
             'Administration',
 
-        'profile.photo':
-            "Photograph",
-        'profile.photo_hint':
-            "Shown at the top of the screen and beside your name wherever your account appears.",
         'profile.photo_choose':
             "Choose a picture",
         'profile.photo_reframe':
@@ -4226,6 +4225,10 @@ export const translations = {
 
         'profile.download_data':
             'Download my data',
+        'profile.download_data_help':
+            'A single file holding everything Patrimoine records about you.',
+        'profile.data_section':
+            'Your data',
 
         'profile.downloading':
             'Preparing…',
@@ -4633,6 +4636,8 @@ export const translations = {
 
         'activity_actions.security_deposit.settled':
             'Dépôt de garantie réglé',
+        'activity_actions.support.message_sent':
+            'Message envoyé au support',
 
         'activity_actions.owner_expense.recorded':
             'Dépense propriétaire enregistrée',
@@ -5459,10 +5464,8 @@ export const translations = {
             'La facture a été envoyée au propriétaire par e-mail.',
         'owners.email_failed':
             'Impossible d\'envoyer la facture par e-mail.',
-        'shell.help':
-            'Aide',
-        'shell.update_log':
-            'Journal des mises à jour',
+        'shell.support':
+            'Support',
         'notifications.loading':
             'Chargement des notifications…',
         'notifications.unable_load':
@@ -6116,7 +6119,7 @@ export const translations = {
             'Finance',
 
         'navigation.manage':
-            'Gestion',
+            'Administration',
 
         'shell.refresh':
             'Actualiser',
@@ -6186,6 +6189,9 @@ export const translations = {
 
         'accounting.to':
             'Au',
+
+        'accounting.period':
+            'Période',
 
         'accounting.apply':
             'Appliquer',
@@ -6324,10 +6330,6 @@ export const translations = {
         'navigation.platform_console':
             'Administration',
 
-        'profile.photo':
-            "Photographie",
-        'profile.photo_hint':
-            "Affichée en haut de l'écran et à côté de votre nom partout où votre compte apparaît.",
         'profile.photo_choose':
             "Choisir une image",
         'profile.photo_reframe':
@@ -7377,6 +7379,10 @@ export const translations = {
 
         'profile.download_data':
             'Télécharger mes données',
+        'profile.download_data_help':
+            'Un seul fichier contenant tout ce que Patrimoine enregistre à votre sujet.',
+        'profile.data_section':
+            'Vos données',
 
         'profile.downloading':
             'Préparation…',

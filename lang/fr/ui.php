@@ -146,7 +146,7 @@ return [
         'leases' => 'Baux',
         'payments' => 'Paiements',
         'finance' => 'Finance',
-        'manage' => 'Gestion',
+        'manage' => 'Administration',
         'tenants' => 'Locataires',
         'owners' => 'Propriétaires',
         'accounting' => 'Comptabilité',
@@ -176,9 +176,9 @@ return [
     'profile' => [
         /* ---- V1.0.34 data protection ---- */
         'download_data' => 'Télécharger mes données',
+        'download_data_help' => 'Un seul fichier contenant tout ce que Patrimoine enregistre à votre sujet.',
+        'data_section' => 'Vos données',
         'downloading' => 'Préparation…',
-        'photo' => 'Photographie',
-        'photo_hint' => 'Affichée en haut de l’écran et à côté de votre nom partout où votre compte apparaît.',
         'photo_choose' => 'Choisir une image',
         'photo_reframe' => 'Recadrer',
         'photo_remove' => 'Retirer',
@@ -191,8 +191,7 @@ return [
 
     'shell' => [
         /* ---- V1.0.7 additions ---- */
-        'help' => 'Aide',
-        'update_log' => 'Journal des mises à jour',
+        'support' => 'Support',
         /* ---- end V1.0.7 additions ---- */
         'my_profile' => 'Mon profil',
         'my_profile_description' => 'Mettre à jour mon profil',
@@ -2338,6 +2337,7 @@ return [
         'charged_to_owners_hint' => 'Les frais et la TVA correspondante.',
         'from' => 'Du',
         'to' => 'Au',
+        'period' => 'Période',
         'apply' => 'Appliquer',
         'reset' => 'Réinitialiser',
         'transactions' => 'Facturations',
