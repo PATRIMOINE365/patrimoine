@@ -4,9 +4,11 @@
 |--------------------------------------------------------------------------
 |
 | Untitled UI is drawn on Inter, and every metric in the type scale below
-| assumes it. The application previously named 'Instrument Sans' in its font
-| stack but never loaded the file, so it had always rendered in whatever the
-| operating system supplies.
+| assumes it. The application ran on Instrument Sans before this, fetched at
+| build time by laravel-vite-plugin's font helper and self-hosted from the
+| bundle. That mechanism is gone with the typeface: two files here carry
+| every weight, and they are checked in rather than downloaded during a
+| build.
 |
 | The font is served from our own origin rather than fonts.googleapis.com.
 | A Google Fonts stylesheet sends every visitor's IP address to Google
