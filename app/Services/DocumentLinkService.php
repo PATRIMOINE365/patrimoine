@@ -69,7 +69,6 @@ class DocumentLinkService
         '#^/api/reports/(payments|occupancy|arrears|funds)/pdf$#',
         '#^/api/reports/(owners|tenants|buildings|units)/\d+/pdf$#',
         '#^/api/reports/managing-organisation/pdf$#',
-        '#^/api/financial-journal/pdf$#',
         '#^/api/registry/export/pdf$#',
     ];
 

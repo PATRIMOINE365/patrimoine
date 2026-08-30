@@ -138,7 +138,6 @@ class FinancialJournalBrowserTest extends TestCase
                 'financial-journal-clear-filters',
                 'financial-journal-list',
                 'financial-journal-pagination',
-                'financial-journal-export-pdf',
                 'financial-journal-export-csv',
                 'financial-journal-export-xlsx',
             ] as $id
@@ -228,7 +227,6 @@ class FinancialJournalBrowserTest extends TestCase
         foreach (
             [
                 '/api/financial-journal/${format}',
-                "'pdf'",
                 "'csv'",
                 "'xlsx'",
             ] as $marker
@@ -257,7 +255,6 @@ class FinancialJournalBrowserTest extends TestCase
                 "'financial_journal.entry_kind':",
                 "'financial_journal.transaction_type':",
                 "'financial_journal.account':",
-                "'financial_journal.export_pdf':",
                 "'financial_journal.export_csv':",
                 "'financial_journal.export_xlsx':",
                 "'financial_journal.accounting_lines':",

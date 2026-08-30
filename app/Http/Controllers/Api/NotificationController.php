@@ -88,6 +88,27 @@ class NotificationController extends Controller
             ];
         }
 
+        /*
+         * V1.0.35: money taken but not yet filed.
+         *
+         * A payment settles invoices oldest first; anything left over
+         * waits to be classified into a tenant fund. Until it is, the
+         * tenant is ahead and does not look it, and nothing anywhere
+         * showed the money. This is what chases it.
+         */
+        $unclassified = $dashboard->unclassifiedPayments();
+
+        if ($unclassified->isNotEmpty()) {
+            $notifications[] = [
+                'kind' => 'payments_unclassified',
+                'severity' => 'warning',
+                'count' => $unclassified->count(),
+                'amount' => $unclassified->sum(
+                    fn ($payment): int => $dashboard->remainingUnclassified($payment)
+                ),
+            ];
+        }
+
         if ($expiring->isNotEmpty()) {
             $notifications[] = [
                 'kind' => 'leases_expiring',

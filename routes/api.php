@@ -1157,10 +1157,13 @@ Route::middleware('auth:sanctum')->group(
                     [FinancialJournalController::class, 'filterOptions']
                 );
 
-                Route::get(
-                    'financial-journal/pdf',
-                    [FinancialJournalExportController::class, 'pdf']
-                )->middleware('document.signed');
+                /*
+                 * V1.0.35: no PDF here either. dompdf holds the whole
+                 * document in memory and this rendered every matching
+                 * entry: 276 entries needed 456 MB against the 128 MB the
+                 * live box allows, and a one-month filter did not fit
+                 * either. CSV and XLSX stream and carry the same columns.
+                 */
 
                 Route::get(
                     'financial-journal/csv',

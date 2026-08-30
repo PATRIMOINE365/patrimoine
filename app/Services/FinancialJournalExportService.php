@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\JournalEntry;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Writer\XLSX\Writer;
@@ -173,46 +172,6 @@ class FinancialJournalExportService
                     ?? ''
                 ),
         ];
-    }
-
-    /**
-     * @param Collection<int, JournalEntry> $entries
-     * @param array<string, mixed> $filters
-     */
-    public function pdf(
-        Collection $entries,
-        array $filters
-    ): string {
-        return Pdf::loadView(
-            'financial-journal.export',
-            [
-                'title' =>
-                    __(
-                        'financial_journal.title'
-                    ),
-
-                'columns' =>
-                    $this->columns(),
-
-                'rows' =>
-                    $this->rows(
-                        $entries
-                    ),
-
-                'filters' =>
-                    $filters,
-
-                'generatedAt' =>
-                    now()->format(
-                        'd-m-Y H:i:s'
-                    ),
-            ]
-        )
-            ->setPaper(
-                'a4',
-                'landscape'
-            )
-            ->output();
     }
 
     /**

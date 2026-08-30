@@ -1150,6 +1150,12 @@ export const translations = {
             '{count} invoices due within 7 days — {amount}',
         'notifications.rent_due_soon_body_one':
             '1 invoice due within 7 days — {amount}',
+        'notifications.payments_unclassified_title':
+            'Money received but not filed',
+        'notifications.payments_unclassified_body':
+            '{count} payments hold money that is not on an invoice or in a fund — {amount}',
+        'notifications.payments_unclassified_body_one':
+            '1 payment holds money that is not on an invoice or in a fund — {amount}',
         'notifications.expenses_unpaid_title':
             'Unpaid expense invoices',
         'notifications.expenses_unpaid_body':
@@ -2147,8 +2153,6 @@ export const translations = {
         'financial_journal.clear_filters':
             'Clear Filters',
 
-        'financial_journal.export_pdf':
-            'PDF',
 
         'financial_journal.export_csv':
             'CSV',
@@ -5477,6 +5481,12 @@ export const translations = {
             '{count} factures dues sous 7 jours — {amount}',
         'notifications.rent_due_soon_body_one':
             '1 facture due sous 7 jours — {amount}',
+        'notifications.payments_unclassified_title':
+            'Sommes reçues mais non affectées',
+        'notifications.payments_unclassified_body':
+            '{count} paiements comportent des sommes qui ne sont ni sur une facture ni dans un fonds — {amount}',
+        'notifications.payments_unclassified_body_one':
+            '1 paiement comporte des sommes qui ne sont ni sur une facture ni dans un fonds — {amount}',
         'notifications.expenses_unpaid_title':
             'Factures de dépenses impayées',
         'notifications.expenses_unpaid_body':
@@ -6474,8 +6484,6 @@ export const translations = {
         'financial_journal.clear_filters':
             'Effacer les filtres',
 
-        'financial_journal.export_pdf':
-            'PDF',
 
         'financial_journal.export_csv':
             'CSV',

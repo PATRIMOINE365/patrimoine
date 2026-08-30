@@ -29,7 +29,7 @@ class FinancialJournalExportTest extends TestCase
     public function test_exports_require_authentication(): void
     {
         foreach (
-            ['pdf', 'csv', 'xlsx']
+            ['csv', 'xlsx']
             as $format
         ) {
             $this
@@ -58,7 +58,7 @@ class FinancialJournalExportTest extends TestCase
             );
 
             foreach (
-                ['pdf', 'csv', 'xlsx']
+                ['csv', 'xlsx']
                 as $format
             ) {
                 $this
@@ -70,28 +70,12 @@ class FinancialJournalExportTest extends TestCase
         }
     }
 
-    public function test_administrator_can_export_pdf_csv_and_xlsx(): void
+    public function test_administrator_can_export_csv_and_xlsx(): void
     {
         $this->entryWithLines();
 
         Sanctum::actingAs(
             $this->administrator()
-        );
-
-        $pdf =
-            $this
-                ->get(
-                    '/api/financial-journal/pdf'
-                )
-                ->assertOk()
-                ->assertHeader(
-                    'content-type',
-                    'application/pdf'
-                );
-
-        $this->assertStringStartsWith(
-            '%PDF',
-            $pdf->getContent()
         );
 
         $csv =
@@ -130,6 +114,27 @@ class FinancialJournalExportTest extends TestCase
             'PK',
             $xlsx->getContent()
         );
+    }
+
+    /**
+     * The Financial Journal has no PDF export, and must not answer as if it had.
+     *
+     * dompdf holds the whole document in memory and this rendered every
+     * matching entry: 276 entries needed 456 MB against the 128 MB the
+     * live box allows, and it is superlinear. A one-month filter did not
+     * rescue it either - a single month of a twelve-unit portfolio is 168
+     * entries. Withdrawn in V1.0.35; CSV and XLSX stream and carry the
+     * same columns.
+     */
+    public function test_the_financial_journal_offers_no_pdf_export(): void
+    {
+        Sanctum::actingAs(
+            $this->administrator()
+        );
+
+        $this
+            ->getJson('/api/financial-journal/pdf')
+            ->assertNotFound();
     }
 
     public function test_csv_contains_accounting_lines(): void
@@ -238,7 +243,7 @@ class FinancialJournalExportTest extends TestCase
         );
 
         foreach (
-            ['pdf', 'csv', 'xlsx']
+            ['csv', 'xlsx']
             as $format
         ) {
             $this
@@ -289,7 +294,7 @@ class FinancialJournalExportTest extends TestCase
         );
 
         foreach (
-            ['pdf', 'csv', 'xlsx']
+            ['csv', 'xlsx']
             as $format
         ) {
             ActivityLog::query()

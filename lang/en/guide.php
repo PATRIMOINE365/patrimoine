@@ -430,7 +430,9 @@ return [
                     'steps' => [
                         ['text' => 'A payment is applied to the oldest open invoice until that invoice is settled.'],
                         ['text' => 'Whatever is left goes to the next oldest, and so on.'],
-                        ['text' => 'Anything remaining after every invoice is settled stays on the tenant account as a credit, and is applied to the next invoice raised.'],
+                        ['text' => 'Anything remaining once every invoice is settled stays on the payment, waiting to be filed into one of the tenant\'s accounts. It is NOT applied to the next invoice on its own.'],
+                        ['text' => 'File it from the payment itself, choosing the rent reserve, the consumable advance or the deposit. Until you do, the money is on no balance and in no account.'],
+                        ['text' => 'The bell keeps telling you money has been received and not filed, with the amount, so nothing sits unnoticed.'],
                         ['text' => 'The allocation is shown on the payment itself, so you can always see which invoices one payment answered.', 'shot' => 'payment-allocation'],
                     ],
                 ],

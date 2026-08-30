@@ -54,16 +54,6 @@
 
         <div class="flex shrink-0 flex-wrap gap-2 max-sm:w-full">
             <button
-                id="financial-journal-export-pdf"
-                type="button"
-                class="pm-button-secondary"
-            >
-                <span data-i18n="financial_journal.export_pdf">
-                    {{ __('ui.financial_journal.export_pdf') }}
-                </span>
-            </button>
-
-            <button
                 id="financial-journal-export-xlsx"
                 type="button"
                 class="pm-button-secondary"

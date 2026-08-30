@@ -1043,6 +1043,13 @@ const NOTIFICATION_LINKS = {
     expenses_unpaid:
         '/tenants',
 
+    /*
+     * Unfiled money is classified from the payment itself, which is
+     * reached through the tenant it belongs to.
+     */
+    payments_unclassified:
+        '/tenants',
+
     owner_bills_unpaid:
         '/owners',
 

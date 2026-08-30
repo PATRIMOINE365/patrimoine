@@ -11,20 +11,19 @@ use Illuminate\Http\Response;
 
 class FinancialJournalExportController extends Controller
 {
-    public function pdf(
-        Request $request,
-        FinancialJournalQueryService $query,
-        FinancialJournalExportService $exports,
-        ActivityLogService $activityLog
-    ): Response {
-        return $this->export(
-            $request,
-            $query,
-            $exports,
-            $activityLog,
-            'pdf'
-        );
-    }
+    /*
+     * There is deliberately no pdf() here.
+     *
+     * dompdf builds a Frame per cell and holds the whole document in
+     * memory, and this rendered EVERY matching entry: 276 entries needed
+     * 456 MB against the 128 MB the live box allows, and it is
+     * superlinear, so it worsens as a portfolio grows. A one-month filter
+     * did not rescue it either - a single month of a twelve-unit
+     * portfolio is 168 entries.
+     *
+     * CSV and XLSX stream, carry the same columns, and are what an
+     * accountant loads anyway.
+     */
 
     public function csv(
         Request $request,

@@ -335,7 +335,6 @@ async function loadFinancialJournalFilterOptions() {
 
 function initializeFinancialJournalExports() {
     [
-        'pdf',
         'csv',
         'xlsx',
     ].forEach(
@@ -401,13 +400,9 @@ async function exportFinancialJournal(
                 {
                     headers: {
                         Accept:
-                            format === 'pdf'
-                                ? 'application/pdf'
-                                : (
-                                    format === 'csv'
-                                        ? 'text/csv'
-                                        : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                                ),
+                            format === 'csv'
+                                ? 'text/csv'
+                                : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                     },
                 }
             );

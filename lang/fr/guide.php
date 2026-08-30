@@ -426,7 +426,9 @@ return [
                     'steps' => [
                         ['text' => 'Un paiement est imputé sur la facture ouverte la plus ancienne jusqu\'à ce qu\'elle soit soldée.'],
                         ['text' => 'Le reliquat passe à la suivante, et ainsi de suite.'],
-                        ['text' => 'Ce qui reste une fois toutes les factures soldées demeure au crédit du compte du locataire et sera imputé sur la prochaine facture émise.'],
+                        ['text' => 'Ce qui reste une fois toutes les factures soldées demeure sur le paiement, en attente d’affectation à l’un des comptes du locataire. Ce montant n’est PAS imputé de lui-même sur la facture suivante.'],
+                        ['text' => 'Affectez-le depuis le paiement lui-même, en choisissant la réserve de loyer, l’avance consommable ou le dépôt de garantie. Tant que vous ne le faites pas, la somme ne figure sur aucun solde ni sur aucun compte.'],
+                        ['text' => 'La cloche signale qu’une somme a été reçue sans être affectée, avec son montant, afin que rien ne reste oublié.'],
                         ['text' => 'L\'imputation est indiquée sur le paiement lui-même : vous voyez toujours à quelles factures un paiement a répondu.', 'shot' => 'payment-allocation'],
                     ],
                 ],

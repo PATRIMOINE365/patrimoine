@@ -8,9 +8,11 @@ use App\Models\Lease;
 use App\Models\OwnerAccount;
 use App\Models\OwnerExpenseBill;
 use App\Models\OwnerTransaction;
+use App\Models\Payment;
 use App\Models\PaymentAllocation;
 use App\Models\RentIncrement;
 use App\Models\TenantFundAccount;
+use App\Models\TenantFundTransaction;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -525,6 +527,62 @@ class DashboardService
                 fn (OwnerExpenseBill $bill): bool => $bill->outstandingAmount() > 0
             )
             ->values();
+    }
+
+    /**
+     * V1.0.35: money received that has not been filed anywhere yet.
+     *
+     * A payment settles invoices oldest first and stops when they run
+     * out. Whatever is left over is not lost — it waits to be classified
+     * into a tenant fund through the Pay flow — but until somebody does
+     * that, it sits on the payment and appears on no balance, in no fund
+     * and nowhere in the ledger.
+     *
+     * Nothing used to chase it, so it could sit for ever: the tenant is
+     * ahead and does not look it, and the next statement asks them again
+     * for money they have already handed over. Surfacing it is the whole
+     * fix — the money was always retrievable, it was just invisible.
+     *
+     * @return Collection<int, Payment>
+     */
+    public function unclassifiedPayments()
+    {
+        return Payment::query()
+            ->with('lease.tenant', 'lease.unit.building')
+            ->orderBy('payment_date')
+            ->orderBy('id')
+            ->get()
+            ->filter(
+                fn (Payment $payment): bool => $this->remainingUnclassified($payment) > 0
+            )
+            ->values();
+    }
+
+    /**
+     * What is left of a payment once its invoices and its fund
+     * classifications are accounted for.
+     *
+     * The same arithmetic PaymentController reports as
+     * `remaining_unclassified_amount`, so the bell and the payment screen
+     * can never disagree about how much is still waiting.
+     */
+    public function remainingUnclassified(
+        Payment $payment
+    ): int {
+        $classified = (int) TenantFundTransaction::query()
+            ->where('payment_id', $payment->id)
+            ->where('direction', 'credit')
+            ->whereIn('category', [
+                'reserve_funding',
+                'advance_funding',
+                'deposit_funding',
+            ])
+            ->sum('amount');
+
+        return max(
+            0,
+            $payment->unallocatedAmount() - $classified
+        );
     }
 
     public function upcomingInvoices(
