@@ -19,6 +19,21 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.35',
+            'date' => '2026-08-29',
+            'title' => 'Saying the right thing, in the right language',
+            'changes' => [
+                'When Patrimoine refuses something, the code it shows you is now the right one. A value that was too long, or a number typed where words belong, used to send you to a page explaining a different rule entirely.',
+                'Organisations working in French now read French in the activity log. Almost half of the recorded actions had never been translated, and because the log tidies up an unknown action into readable English, nothing looked broken.',
+                'Messages your own browser raises — the ones about a field you have left empty — are now in your language rather than the browser\'s.',
+                'Every message that names a field now names it in words: "the rent" rather than the column it is stored in. French organisations had been reading English field names inside French sentences.',
+                'A record that cannot be found says so plainly, instead of quoting the internal name of the thing that was missing.',
+                'The bell now tells you when money has been received that has not yet been filed to any of a tenant\'s accounts, with the amount, so it is not left sitting unnoticed. The guide was wrong about what happens to that money and now says what really does.',
+                'The activity log and the financial journal are taken away as XLSX or CSV. The PDF has been withdrawn: both grow for as long as you use Patrimoine, and a document that has to hold all of it eventually cannot be made at all.',
+                'Withdrawing more than a tenant fund holds, and the other refusals around withdrawals, now explain themselves in both languages and carry their own codes.',
+            ],
+        ],
+        [
             'version' => '1.0.34',
             'date' => '2026-08-29',
             'title' => 'Your data, on request — and a way to forget somebody',

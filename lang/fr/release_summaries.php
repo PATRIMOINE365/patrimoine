@@ -21,9 +21,14 @@ return [
 
     'entries' => [
         [
+            'through' => '1.0.40',
+            'date' => '2026-08-29',
+            'summary' => 'Les travaux postérieurs à la version 1.0.35 sont décrits ici au fur et à mesure.',
+        ],
+        [
             'through' => '1.0.35',
             'date' => '2026-08-29',
-        'summary' => 'Votre photographie apparaît en haut de l’écran, l’assistant de bail peut être quitté puis repris plus tard, et les longues listes se lisent page par page avec des numéros et un choix de 25, 50 ou 100 lignes. Utilisateurs et Licence sont devenus des onglets des Paramètres, qui résument aussi votre compte et permettent à un administrateur de le fermer définitivement, et le Guide a été réécrit pour couvrir chaque tâche étape par étape avec les images des écrans — il est désormais public sur patrimoine365.com. Chacun peut désormais télécharger tout ce qui est détenu sur lui, un administrateur peut produire ou effacer les données d’une personne, et la politique de confidentialité dit clairement ce qui est conservé et combien de temps.',
+        'summary' => 'Votre photographie apparaît désormais en haut de l’écran, l’assistant de bail peut être laissé en plan puis repris, les longues listes se lisent page par page, et Utilisateurs et Licence sont devenus des onglets de Paramètres, qui résume aussi votre compte et permet à un administrateur de le fermer définitivement. Chacun peut télécharger tout ce qui le concerne, un administrateur peut produire ou effacer les données d’une personne, la politique de confidentialité dit clairement ce qui est conservé et combien de temps, et le guide couvre chaque tâche pas à pas avec des images des écrans — il est aussi public sur patrimoine365.com. Les organisations travaillant en français lisent désormais le français partout, y compris dans le journal d’activité et dans les messages de votre propre navigateur, chaque refus renvoie à la bonne explication, la cloche signale les sommes reçues qui n’ont pas encore été affectées au compte d’un locataire, et le journal d’activité comme le journal financier s’exportent en XLSX ou en CSV plutôt qu’en PDF',
         ],
         [
             'through' => '1.0.30',

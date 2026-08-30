@@ -201,4 +201,48 @@ class ReleaseLogTest extends TestCase
             ->getJson('/api/admin/release-log')
             ->assertForbidden();
     }
+
+    /**
+     * On the day a block's own version ships, the next block waits.
+     *
+     * The entry still being filled borrows the running version, because
+     * that is the number a customer can check against their screen. But
+     * when the version that COMPLETES a block ships, the block owns that
+     * number itself — and the next block, opened so later work has
+     * somewhere to go, would borrow the same one and appear beside it as a
+     * second entry reading the same version.
+     */
+    public function test_the_open_block_waits_while_a_finished_block_owns_the_running_version(): void
+    {
+        $entries = $this->getJson('/api/release-log')->json('entries');
+
+        $versions = array_column($entries, 'version');
+
+        $this->assertSame(
+            $versions,
+            array_values(array_unique($versions)),
+            'Two entries cannot both claim the same version.'
+        );
+
+        $current = (string) config('patrimoine.release');
+
+        $blocks = array_column(
+            trans('release_summaries.entries', [], 'en'),
+            'through'
+        );
+
+        if (in_array($current, $blocks, true)) {
+            $this->assertSame(
+                $current,
+                $versions[0] ?? null,
+                'The newest visible entry is the block that owns the running version.'
+            );
+
+            $this->assertCount(
+                1,
+                array_filter($versions, fn (string $v): bool => $v === $current),
+                'The open block must not borrow a version another block owns.'
+            );
+        }
+    }
 }

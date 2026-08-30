@@ -15,6 +15,21 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.35',
+            'date' => '2026-08-29',
+            'title' => 'Dire ce qu\'il faut, dans la bonne langue',
+            'changes' => [
+                'Lorsque Patrimoine refuse quelque chose, le code affiché est désormais le bon. Une valeur trop longue, ou un nombre saisi là où du texte est attendu, renvoyait auparavant à une page expliquant une tout autre règle.',
+                'Les organisations travaillant en français lisent maintenant le français dans le journal d’activité. Près de la moitié des actions enregistrées n’avaient jamais été traduites et, comme le journal met en forme une action inconnue en un anglais lisible, rien ne semblait cassé.',
+                'Les messages émis par votre propre navigateur — ceux qui signalent un champ laissé vide — s’affichent désormais dans votre langue et non dans celle du navigateur.',
+                'Tout message qui nomme un champ le nomme désormais en toutes lettres : « le loyer » plutôt que la colonne où il est stocké. Les organisations françaises lisaient jusqu’ici des noms de champs anglais au milieu de phrases françaises.',
+                'Un enregistrement introuvable le dit simplement, au lieu de citer le nom interne de ce qui manquait.',
+                'La cloche signale désormais les sommes reçues qui n’ont pas encore été affectées à l’un des comptes d’un locataire, avec leur montant, afin qu’elles ne restent pas oubliées. Le guide se trompait sur le sort de ces sommes ; il dit maintenant ce qu’il en advient réellement.',
+                'Le journal d’activité et le journal financier s’exportent en XLSX ou en CSV. Le PDF est retiré : l’un comme l’autre s’allongent aussi longtemps que vous utilisez Patrimoine, et un document censé tout contenir finit par ne plus pouvoir être produit.',
+                'Retirer plus qu’un fonds de locataire ne contient, ainsi que les autres refus liés aux retraits, s’expliquent désormais dans les deux langues et portent leur propre code.',
+            ],
+        ],
+        [
             'version' => '1.0.34',
             'date' => '2026-08-29',
             'title' => 'Vos données, sur demande — et le moyen d’oublier quelqu’un',

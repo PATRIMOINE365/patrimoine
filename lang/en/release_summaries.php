@@ -29,9 +29,14 @@ return [
 
     'entries' => [
         [
+            'through' => '1.0.40',
+            'date' => '2026-08-29',
+            'summary' => 'Work since 1.0.35 is described here as it lands.',
+        ],
+        [
             'through' => '1.0.35',
             'date' => '2026-08-29',
-            'summary' => 'Your photograph now sits at the top of the screen, the lease assistant can be left half-finished and picked up later, and long lists are read a page at a time with numbered pages and a choice of 25, 50 or 100 rows. Users and Licence became tabs of Settings, which also summarises your account and lets an administrator close it for good, and the Guide was rewritten to cover every task step by step with pictures of the screens — the same guide is now public on patrimoine365.com. Anybody can now download everything held about them, an administrator can produce or erase one person\'s data, and the privacy policy says plainly what is kept and for how long.',
+            'summary' => 'Your photograph now sits at the top of the screen, the lease assistant can be left half-finished and picked up later, long lists are read a page at a time, and Users and Licence became tabs of Settings, which also summarises your account and lets an administrator close it for good. Anybody can now download everything held about them, an administrator can produce or erase one person’s data, the privacy policy says plainly what is kept and for how long, and the Guide covers every task step by step with pictures of the screens — the same guide is public on patrimoine365.com. Organisations working in French now read French throughout, including the activity log and the messages your own browser raises, every refusal points at the right explanation, the bell tells you when money has arrived that has not yet been filed to a tenant’s account, and the activity log and financial journal are taken away as XLSX or CSV rather than PDF',
         ],
         [
             'through' => '1.0.30',

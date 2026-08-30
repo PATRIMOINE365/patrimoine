@@ -61,7 +61,18 @@ class ReleaseLogController extends Controller
              * carries it. The one still being filled is ahead of the
              * running version, so it borrows it — anything further ahead
              * than that describes releases nobody has yet.
+             *
+             * The borrowing has one boundary. On the day the version that
+             * COMPLETES a block ships, that block owns the number itself,
+             * and the next block — opened so later work has somewhere to
+             * go — would borrow the very same one and appear beside it as
+             * a second entry reading 1.0.35. It has nothing to describe
+             * yet, so it waits until a release moves past that number.
              */
+            if (! $reached && version_compare($through, $current, '>') && $this->blockOwns($entries, $current)) {
+                continue;
+            }
+
             if ($reached) {
                 $visible[] = [
                     'version' => $through,
@@ -82,5 +93,21 @@ class ReleaseLogController extends Controller
         }
 
         return $visible;
+    }
+
+    /**
+     * Does a finished block already carry this exact version?
+     *
+     * @param  array<int, array<string, string>>  $entries
+     */
+    private function blockOwns(array $entries, string $current): bool
+    {
+        foreach ($entries as $entry) {
+            if ((string) ($entry['through'] ?? '') === $current) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
