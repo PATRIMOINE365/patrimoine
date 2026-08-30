@@ -310,7 +310,7 @@ class PlatformAdminConsoleTest extends TestCase
             $licensing->planFor($this->testOrganisation->fresh()->load('licenses'))
         );
 
-        Mail::assertSent(
+        Mail::assertQueued(
             LicenseIssuedMail::class,
             fn (LicenseIssuedMail $mail): bool =>
                 $mail->hasTo($customerAdmin->email)
@@ -566,7 +566,7 @@ class PlatformAdminConsoleTest extends TestCase
             'accept_legal' => true,
         ])->assertCreated();
 
-        Mail::assertSent(
+        Mail::assertQueued(
             SignupAlertMail::class,
             fn (SignupAlertMail $mail): bool =>
                 $mail->hasTo('hello@patrimoine365.com')
@@ -597,7 +597,7 @@ class PlatformAdminConsoleTest extends TestCase
         $this->artisan('patrimoine:send-plan-expiry-reminders')
             ->assertExitCode(0);
 
-        Mail::assertSent(
+        Mail::assertQueued(
             PlanExpiryReminderMail::class,
             fn (PlanExpiryReminderMail $mail): bool =>
                 $mail->hasTo($customerAdmin->email)
@@ -619,7 +619,7 @@ class PlatformAdminConsoleTest extends TestCase
         $this->artisan('patrimoine:send-plan-expiry-reminders')
             ->assertExitCode(0);
 
-        Mail::assertSent(
+        Mail::assertQueued(
             PlanExpiryReminderMail::class,
             fn (PlanExpiryReminderMail $mail): bool =>
                 $mail->daysLeft === 1
@@ -638,7 +638,7 @@ class PlatformAdminConsoleTest extends TestCase
         $this->artisan('patrimoine:send-plan-expiry-reminders')
             ->assertExitCode(0);
 
-        Mail::assertNotSent(PlanExpiryReminderMail::class);
+        Mail::assertNotQueued(PlanExpiryReminderMail::class);
     }
 
     public function test_weekly_digest_reaches_billing(): void
@@ -654,7 +654,7 @@ class PlatformAdminConsoleTest extends TestCase
         $this->artisan('patrimoine:send-platform-expiry-digest')
             ->assertExitCode(0);
 
-        Mail::assertSent(
+        Mail::assertQueued(
             PlatformExpiryDigestMail::class,
             fn (PlatformExpiryDigestMail $mail): bool =>
                 $mail->hasTo('billing@patrimoine365.com')

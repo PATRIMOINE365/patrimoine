@@ -127,7 +127,7 @@ class SupportMessageTest extends TestCase
         ])->assertStatus(422)
             ->assertJsonValidationErrors(['subject', 'message']);
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     public function test_nobody_signed_out_can_write_to_support(): void
@@ -137,7 +137,7 @@ class SupportMessageTest extends TestCase
             'message' => 'Let me in.',
         ])->assertStatus(401);
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     public function test_sending_is_recorded_in_the_activity_log(): void

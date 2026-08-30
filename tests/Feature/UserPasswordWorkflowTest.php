@@ -160,7 +160,7 @@ class UserPasswordWorkflowTest extends TestCase
             )
             ->assertForbidden();
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     public function test_invitation_can_establish_password(): void
@@ -347,7 +347,7 @@ class UserPasswordWorkflowTest extends TestCase
             )
             ->assertOk();
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     public function test_forgot_password_sends_reset_for_active_verified_user(): void

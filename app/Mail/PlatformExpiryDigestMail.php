@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -16,7 +17,7 @@ use Illuminate\Queue\SerializesModels;
  *
  * @phpstan-type ExpiryRow array{organisation: string, kind: string, plan: string, ends_on: string}
  */
-class PlatformExpiryDigestMail extends Mailable
+class PlatformExpiryDigestMail extends Mailable implements ShouldQueue
 {
     use Queueable;
     use SerializesModels;

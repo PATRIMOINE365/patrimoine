@@ -273,7 +273,7 @@ class EmailWorkflowTest extends TestCase
             ]
         )->assertExitCode(0);
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     /**
@@ -296,7 +296,7 @@ class EmailWorkflowTest extends TestCase
             ]
         )->assertExitCode(0);
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     /**
@@ -317,7 +317,7 @@ class EmailWorkflowTest extends TestCase
             )
             ->assertExitCode(1);
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     /**

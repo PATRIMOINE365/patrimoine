@@ -361,7 +361,7 @@ class OwnerExpenseBillApiTest extends TestCase
                 'email',
             ]);
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     /**

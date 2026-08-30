@@ -104,3 +104,35 @@ Schedule::command('patrimoine:send-platform-expiry-digest')
     ->weeklyOn(1, '08:00')
     ->withoutOverlapping()
     ->onOneServer();
+
+/*
+|--------------------------------------------------------------------------
+| The mail queue
+|--------------------------------------------------------------------------
+|
+| V1.0.36. Every email used to be handed to Resend while the customer's
+| request was still open, so a person signing in, inviting a colleague or
+| pressing Send on an invoice waited for a round trip to another company's
+| API — measured at 140 to 170 milliseconds from the production box, and
+| unbounded when Resend is slow. The nightly reminder run paid it once per
+| overdue invoice, in series.
+|
+| Everything except the mail somebody is actively waiting on is queued now.
+| The worker rides the per-minute schedule that already exists rather than
+| needing a supervised process of its own, which is what makes this
+| affordable on the Plesk box: no systemd unit, no Plesk change, nothing
+| new to watch.
+|
+| --stop-when-empty so the process ends rather than idling; --max-time=50
+| so it can never overlap the next minute's run; --tries=3 so a Resend
+| outage is retried instead of losing the mail.
+|
+| The organisation and its language travel with each job — see
+| QueueTenancyServiceProvider, and read the note there before adding
+| anything else to the queue.
+|
+*/
+Schedule::command('queue:work --stop-when-empty --max-time=50 --tries=3')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->onOneServer();

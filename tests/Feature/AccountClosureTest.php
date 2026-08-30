@@ -128,7 +128,7 @@ class AccountClosureTest extends TestCase
 
         $this->close()->assertOk();
 
-        Mail::assertSent(
+        Mail::assertQueued(
             CustomerAccountClosedMail::class,
             fn (CustomerAccountClosedMail $mail): bool =>
                 $mail->organisationName === 'Closing Properties Ltd'

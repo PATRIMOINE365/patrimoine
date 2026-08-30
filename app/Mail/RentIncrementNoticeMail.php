@@ -6,6 +6,7 @@ use App\Models\Party;
 use App\Models\RentIncrement;
 use App\Services\ApplicationPresentationFormatter;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
@@ -21,7 +22,7 @@ use Illuminate\Queue\SerializesModels;
  * The RentIncrement record preserves the contractual rent-change snapshot,
  * while the related Lease provides Tenant, Unit and Building context.
  */
-class RentIncrementNoticeMail extends Mailable
+class RentIncrementNoticeMail extends Mailable implements ShouldQueue
 {
     use Queueable;
     use SerializesModels;

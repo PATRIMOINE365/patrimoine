@@ -5,6 +5,7 @@ namespace App\Mail;
 use App\Models\Organisation;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -15,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
  *
  * Internal mail to hello@patrimoine365.com; English only.
  */
-class SignupAlertMail extends Mailable
+class SignupAlertMail extends Mailable implements ShouldQueue
 {
     use Queueable;
     use SerializesModels;

@@ -185,7 +185,7 @@ class OwnerReserveTransferApiTest extends TestCase
             ]
         )->assertUnprocessable();
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     public function test_voucher_downloads_and_resends(): void

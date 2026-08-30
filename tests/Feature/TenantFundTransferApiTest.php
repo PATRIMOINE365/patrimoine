@@ -507,7 +507,7 @@ class TenantFundTransferApiTest extends TestCase
             "/api/tenant-fund-transfers/{$fundingTransaction->id}/send-email"
         )->assertUnprocessable();
 
-        \Illuminate\Support\Facades\Mail::assertNothingSent();
+        \Illuminate\Support\Facades\Mail::assertNothingOutgoing();
     }
 
     /**

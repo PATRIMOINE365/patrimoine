@@ -139,7 +139,7 @@ class RentIncrementNotificationTest extends TestCase
             ]
         )->assertSuccessful();
 
-        Mail::assertSent(
+        Mail::assertQueued(
             RentIncrementNoticeMail::class,
             function (
                 RentIncrementNoticeMail $mail
@@ -197,7 +197,7 @@ class RentIncrementNotificationTest extends TestCase
             ]
         )->assertSuccessful();
 
-        Mail::assertSent(
+        Mail::assertQueued(
             RentIncrementNoticeMail::class,
             function (
                 RentIncrementNoticeMail $mail
@@ -238,7 +238,7 @@ class RentIncrementNotificationTest extends TestCase
             ]
         )->assertSuccessful();
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
 
         $this->assertNull(
             $increment
@@ -276,7 +276,7 @@ class RentIncrementNotificationTest extends TestCase
             ]
         )->assertSuccessful();
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     /**
@@ -308,7 +308,7 @@ class RentIncrementNotificationTest extends TestCase
             ]
         )->assertSuccessful();
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
 
         $this->assertNull(
             $increment
@@ -340,7 +340,7 @@ class RentIncrementNotificationTest extends TestCase
             ]
         )->assertSuccessful();
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
 
         $this->assertNull(
             $increment
@@ -374,7 +374,7 @@ class RentIncrementNotificationTest extends TestCase
             ]
         )->assertSuccessful();
 
-        Mail::assertSent(
+        Mail::assertQueued(
             RentIncrementNoticeMail::class,
             function (
                 RentIncrementNoticeMail $mail
@@ -428,7 +428,7 @@ class RentIncrementNotificationTest extends TestCase
             ]
         )->assertSuccessful();
 
-        Mail::assertSent(
+        Mail::assertQueued(
             RentIncrementNoticeMail::class,
             2
         );
@@ -464,7 +464,7 @@ class RentIncrementNotificationTest extends TestCase
             )
             ->assertFailed();
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     /**
@@ -594,7 +594,7 @@ class RentIncrementNotificationTest extends TestCase
             ]
         )->assertSuccessful();
 
-        Mail::assertSent(
+        Mail::assertQueued(
             RentIncrementNoticeMail::class,
             function (
                 RentIncrementNoticeMail $mail

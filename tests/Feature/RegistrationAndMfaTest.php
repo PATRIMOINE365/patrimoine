@@ -347,6 +347,6 @@ class RegistrationAndMfaTest extends TestCase
             'email' => 'ghost@nowhere.test',
         ])->assertOk();
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 }

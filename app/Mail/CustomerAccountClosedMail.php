@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -15,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
  * a model — by the time this is sent there is no organisation left to
  * load, so every fact is passed by value.
  */
-class CustomerAccountClosedMail extends Mailable
+class CustomerAccountClosedMail extends Mailable implements ShouldQueue
 {
     use Queueable;
     use SerializesModels;

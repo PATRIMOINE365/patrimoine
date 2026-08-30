@@ -176,7 +176,7 @@ class PartyEmailSuppressionTest extends TestCase
             app(EmailDeliveryService::class)
                 ->sendInvoice($context['invoice']);
         } finally {
-            Mail::assertNothingSent();
+            Mail::assertNothingOutgoing();
         }
     }
 
@@ -230,7 +230,7 @@ class PartyEmailSuppressionTest extends TestCase
                     $context['invoice']->fresh()
                 );
         } finally {
-            Mail::assertNothingSent();
+            Mail::assertNothingOutgoing();
         }
     }
 
@@ -255,7 +255,7 @@ class PartyEmailSuppressionTest extends TestCase
             app(EmailDeliveryService::class)
                 ->sendReceipt($context['payment']);
         } finally {
-            Mail::assertNothingSent();
+            Mail::assertNothingOutgoing();
         }
     }
 
@@ -356,7 +356,7 @@ class PartyEmailSuppressionTest extends TestCase
                 'Emails to parties are switched off in your organisation settings, so nothing was sent.'
             );
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     /**
@@ -553,7 +553,7 @@ class PartyEmailSuppressionTest extends TestCase
             )
             ->assertExitCode(0);
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
 
         $this->assertDatabaseMissing(
             'activity_logs',
