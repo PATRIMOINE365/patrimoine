@@ -165,22 +165,7 @@
                     </label>
 
                     <div class="relative">
-                        <svg
-                            class="
-                                pointer-events-none
-                                absolute left-3 top-1/2
-                                h-4 w-4
-                                -translate-y-1/2
-                                text-[var(--pm-text-subtle)]
-                            "
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                        >
-                            <circle cx="11" cy="11" r="8"/>
-                            <path d="m21 21-4.35-4.35"/>
-                        </svg>
+                        <x-icon name="search-lg" :size="16" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pm-text-subtle)]" />
 
                         <input
                             id="owners-search"
@@ -259,17 +244,7 @@
                             text-[var(--pm-text-muted)]
                         "
                     >
-                        <svg
-                            class="h-6 w-6"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                        </svg>
+                        <x-icon name="user-check" :size="24" />
                     </div>
 
                     <h2
@@ -1047,7 +1022,7 @@
             <div
                 class="
                     grid gap-4
-                    md:grid-cols-2
+                    panel-md:grid-cols-2
                 "
             >
                 <div>
@@ -1270,7 +1245,7 @@
                     >
                 </div>
 
-                <div class="md:col-span-2">
+                <div class="panel-md:col-span-2">
                     <label
                         for="owner-deposit-notes"
                         class="
@@ -1398,7 +1373,7 @@
                 </div>
             </div>
 
-            <div class="grid gap-4 md:grid-cols-2">
+            <div class="grid gap-4 panel-md:grid-cols-2">
                 <div>
                     <label
                         for="owner-payout-amount"
@@ -1494,7 +1469,7 @@
                     >
                 </div>
 
-                <div class="md:col-span-2">
+                <div class="panel-md:col-span-2">
                     <label
                         for="owner-payout-notes"
                         class="pm-field-label"
@@ -1603,7 +1578,7 @@
 </span>
             </div>
 
-            <div class="grid gap-4 md:grid-cols-2">
+            <div class="grid gap-4 panel-md:grid-cols-2">
                 <div>
                     <label
                         for="owner-adjustment-direction"
@@ -1695,7 +1670,7 @@
                     >
                 </div>
 
-                <div class="md:col-span-2">
+                <div class="panel-md:col-span-2">
                     <label
                         for="owner-adjustment-reason"
                         class="pm-field-label"
@@ -1825,7 +1800,7 @@
         <div
             class="
                 mt-5 grid gap-4
-                sm:grid-cols-2
+                panel-sm:grid-cols-2
             "
         >
             <div
@@ -1893,7 +1868,7 @@
         <div
             class="
                 mt-4 grid gap-4
-                sm:grid-cols-2
+                panel-sm:grid-cols-2
             "
         >
             <div
@@ -2251,7 +2226,7 @@
 
             <div id="owner-expense-bill-fields">
 
-            <div class="mb-4 grid gap-4 md:grid-cols-2">
+            <div class="mb-4 grid gap-4 panel-md:grid-cols-2">
                 <div>
                     <label
                         for="owner-expense-bill-building"
@@ -2300,7 +2275,7 @@
                 </div>
             </div>
 
-            <div class="grid gap-4 md:grid-cols-2">
+            <div class="grid gap-4 panel-md:grid-cols-2">
                 <div>
                     <label
                         for="owner-expense-bill-date"

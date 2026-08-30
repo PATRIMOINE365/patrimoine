@@ -3,11 +3,13 @@
 <head>
     <meta charset="utf-8">
 
+    @include('documents.partials.fonts')
+
     <style>
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'Inter', 'DejaVu Sans', sans-serif;
             font-size: 12px;
-            color: #111827;
+            color: #17201E;
             line-height: 1.55;
         }
 
@@ -27,13 +29,13 @@
         .notice {
             margin-top: 26px;
             padding: 16px;
-            border: 1px solid #d1d5db;
+            border: 1px solid #DDE6E2;
         }
 
         .footer {
             margin-top: 40px;
             font-size: 10px;
-            color: #6b7280;
+            color: #66736F;
             text-align: center;
         }
     </style>

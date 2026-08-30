@@ -43,6 +43,8 @@ import {
 
 import { readPhoneValue } from './phone-input.js';
 
+import { icon } from './icons.js';
+
 /*
 |--------------------------------------------------------------------------
 | Module State
@@ -385,16 +387,7 @@ function renderProperties(
                         text-[var(--pm-accent)]
                     "
                 >
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
-                        <path d="M3 21h18"/>
-                        <path d="M6 21V5l6-2 6 2v16"/>
-                    </svg>
+                    ${icon('building-02')}
                 </div>
 
                 <div
@@ -834,16 +827,7 @@ function propertyCard(
                             text-sm text-[var(--pm-text-muted)]
                         "
                     >
-                        <svg
-                            class="h-4 w-4 shrink-0"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/>
-                            <circle cx="12" cy="10" r="2"/>
-                        </svg>
+                        ${icon('marker-pin', { class: 'shrink-0', size: 16 })}
 
                         <span
                             class="truncate"
@@ -878,16 +862,7 @@ function propertyCard(
                         )}"
                         class="pm-button-secondary gap-2"
                     >
-                        <svg
-                            class="h-4 w-4"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path d="M12 20h9"/>
-                            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/>
-                        </svg>
+                        ${icon('edit-02', { size: 16 })}
 
                         ${escapeHtml(
                             translate(
@@ -917,19 +892,7 @@ function propertyCard(
                             hover:bg-[var(--pm-danger-background)]
                         "
                     >
-                        <svg
-                            class="h-4 w-4"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path d="M3 6h18"/>
-                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
-                            <path d="M10 11v6"/>
-                            <path d="M14 11v6"/>
-                        </svg>
+                        ${icon('trash-01', { size: 16 })}
 
                         ${escapeHtml(
                             translate(
@@ -949,16 +912,7 @@ function propertyCard(
                         )}"
                         class="pm-button-primary gap-2"
                     >
-                        <svg
-                            class="h-4 w-4"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                        >
-                            <path d="M12 5v14"/>
-                            <path d="M5 12h14"/>
-                        </svg>
+                        ${icon('plus', { size: 16 })}
 
                         ${escapeHtml(
                             translate(
@@ -994,24 +948,12 @@ function propertyCard(
                             }
                         </span>
 
-                        <svg
-                            data-property-chevron
-                            class="
-                                h-4 w-4
-                                transition-transform
-                                ${
-                                    expandUnits
-                                        ? 'rotate-180'
-                                        : ''
-                                }
-                            "
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                        >
-                            <path d="m6 9 6 6 6-6"/>
-                        </svg>
+                        ${icon('chevron-down', {
+                            class: `transition-transform ${
+                                expandUnits ? 'rotate-180' : ''
+                            }`,
+                            size: 16,
+                        })}
                     </button>
                 </div>
             </div>
@@ -2619,7 +2561,7 @@ function addPropertyOwnerRow(
         );
 
     row.className =
-        'property-owner-row grid gap-3 rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface-subtle)] p-3 sm:grid-cols-[1fr_150px_auto] sm:items-end';
+        'property-owner-row grid gap-3 rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface-subtle)] p-3 panel-md:grid-cols-[1fr_150px_auto] panel-md:items-end';
 
     row.innerHTML = `
         <div>
@@ -2934,7 +2876,7 @@ function addPropertyUnitRow(
         );
 
     row.className =
-        'property-unit-row grid gap-3 rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface-subtle)] p-3 sm:grid-cols-[220px_1fr_auto] sm:items-end';
+        'property-unit-row grid gap-3 rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface-subtle)] p-3 panel-md:grid-cols-[220px_1fr_auto] panel-md:items-end';
 
     row.innerHTML = `
         <div>

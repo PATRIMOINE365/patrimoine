@@ -14,29 +14,33 @@
         The platform console wears the same mark as the customer app, in a
         dark red rather than the brand green, so an admin tab is
         identifiable at a glance among a row of Patrimoine tabs. The icons
-        are the customer set with every pixel's hue rotated to red and its
-        saturation, lightness and alpha left alone -- #26744b becomes
-        #742626. This is the only place the red set is referenced.
+        set is the customer mark with its hue rotated to red and its
+        saturation and lightness left alone -- Patrimoine Green #123D35
+        becomes #3D1212 and Mint #39D6A3 becomes #D63939, so the two read
+        as one mark in two colours rather than as two marks. Both sets are
+        drawn by scripts/generate-favicons.mjs. This is the only place the
+        red set is referenced.
     --}}
     <link rel="icon" sizes="48x48" href="/branding/favicon/favicon-admin.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/branding/favicon/favicon-admin-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/branding/favicon/favicon-admin-16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/branding/favicon/apple-touch-icon-admin.png">
     <link rel="manifest" href="/branding/admin.webmanifest">
-    <meta name="theme-color" content="#742626">
+    <meta name="theme-color" content="#3d1212">
 
     <x-theme-bootstrap />
 
-    {{-- Untitled UI's typeface. --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {{--
+        Inter used to come from fonts.googleapis.com here, which sent every
+        visitor's IP address to Google before the first paint — in a product
+        whose privacy policy tells customers there are no third parties in
+        the page. It is served from our own origin now, by resources/css/
+        fonts.css, along with the rest of the application.
 
-    <style>
-        html, body { background-color: #f9fafb; }
-        html[data-theme="dark"],
-        html[data-theme="dark"] body { background-color: #0c111d; }
-    </style>
+        The console also used to paint its own background colour inline
+        because it carried its own copy of the Untitled UI palette. It reads
+        the same tokens as everything else now, so there is nothing to paint.
+    --}}
 
     @vite([
         'resources/css/app.css',
@@ -63,11 +67,7 @@
     <aside class="pm-admin-sidebar">
 
         <div class="pm-admin-brand">
-            <img
-                src="/branding/patrimoine-logo.svg"
-                alt="Patrimoine 365"
-                class="pm-admin-brand-logo"
-            >
+            <x-logo :size="32" class="pm-admin-brand-logo" />
 
             <span class="pm-admin-brand-name">Patrimoine&nbsp;<span class="pm-admin-brand-365">365</span></span>
 
@@ -78,44 +78,44 @@
             <div class="pm-admin-nav-group">Workspace</div>
 
             <button type="button" class="pm-admin-nav-item" data-admin-nav="dashboard">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15v2M12 11v6M16 7v10"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
+                <x-icon name="grid-01" />
                 Dashboard
             </button>
 
             <button type="button" class="pm-admin-nav-item" data-admin-nav="users">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7.5" r="3.5"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <x-icon name="users-01" />
                 Users
             </button>
 
             <button type="button" class="pm-admin-nav-item" data-admin-nav="organizations">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 11h-2c-.93 0-1.4 0-1.77.15a2 2 0 0 0-1.08 1.08C2.5 12.6 2.5 13.07 2.5 14v7h19v-7c0-.93 0-1.4-.15-1.77a2 2 0 0 0-1.08-1.08C19.9 11 19.43 11 18.5 11h-2"/><path d="M7.5 21V6.2c0-1.12 0-1.68.22-2.11a2 2 0 0 1 .87-.87C9.02 3 9.58 3 10.7 3h2.6c1.12 0 1.68 0 2.11.22a2 2 0 0 1 .87.87c.22.43.22.99.22 2.11V21"/><path d="M11 7h2M11 11h2M11 15h2"/></svg>
+                <x-icon name="building-07" />
                 Organizations
             </button>
 
             <button type="button" class="pm-admin-nav-item" data-admin-nav="licenses">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18.5H6.2c-1.12 0-1.68 0-2.11-.22a2 2 0 0 1-.87-.87C3 16.98 3 16.42 3 15.3V6.7c0-1.12 0-1.68.22-2.11a2 2 0 0 1 .87-.87C4.52 3.5 5.08 3.5 6.2 3.5h11.6c1.12 0 1.68 0 2.11.22a2 2 0 0 1 .87.87c.22.43.22.99.22 2.11v5.3"/><path d="M6.5 12h3M6.5 8.5h6"/><circle cx="18" cy="15.5" r="2.5"/><path d="M16.5 17.5l-.5 4 2-1.2 2 1.2-.5-4"/></svg>
+                <x-icon name="award-01" />
                 Licenses
             </button>
 
             <div class="pm-admin-nav-group">Operations</div>
 
             <button type="button" class="pm-admin-nav-item" data-admin-nav="emails">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="m3 7 8.15 5.43a1.5 1.5 0 0 0 1.7 0L21 7"/></svg>
+                <x-icon name="mail-01" />
                 Emails
             </button>
 
             <button type="button" class="pm-admin-nav-item" data-admin-nav="activity">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
+                <x-icon name="activity" />
                 Activity
             </button>
 
             <button type="button" class="pm-admin-nav-item" data-admin-nav="releases">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+                <x-icon name="package" />
                 Release log
             </button>
 
             <button type="button" class="pm-admin-nav-item" data-admin-nav="settings">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M18.73 14.6a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V20.6a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H2.4a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.08 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.08a1.65 1.65 0 0 0 1-1.51V2.4a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.08a1.65 1.65 0 0 0 1.51 1h.17a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <x-icon name="settings-01" />
                 Settings
             </button>
         </nav>
@@ -146,7 +146,7 @@
                     aria-label="Sign out"
                     title="Sign out"
                 >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h2"/></svg>
+                    <x-icon name="log-out-01" />
                 </button>
             </div>
         </div>
@@ -164,7 +164,7 @@
 
         <header class="pm-admin-topbar">
             <div class="pm-admin-search">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 shrink-0"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                <x-icon name="search-lg" class="shrink-0" />
 
                 <input
                     id="admin-global-search"
@@ -184,7 +184,7 @@
                     aria-label="Toggle theme"
                     title="Toggle theme"
                 >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+                    <x-icon name="moon" data-theme-icon="moon" />
                 </button>
 
                 <button
@@ -192,7 +192,7 @@
                     type="button"
                     class="pm-button-primary"
                 >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M12 5v14M5 12h14"/></svg>
+                    <x-icon name="plus" />
                     Assign License
                 </button>
             </div>

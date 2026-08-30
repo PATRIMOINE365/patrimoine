@@ -34,6 +34,8 @@ import {
     translationFor,
 } from './translations.js';
 
+import { icon } from './icons.js';
+
 /**
  * The row counts a reader may choose between.
  *
@@ -305,15 +307,7 @@ export function renderPagination(target, meta, options = {}) {
                 aria-label="${escapeHtml(t('pagination.previous'))}"
                 class="pm-pagination-step"
             >
-                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                    <path
-                        d="M12.5 15 7.5 10l5-5"
-                        stroke="currentColor"
-                        stroke-width="1.6"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
-                </svg>
+                ${icon('chevron-left')}
             </button>
 
             ${pages}
@@ -325,15 +319,7 @@ export function renderPagination(target, meta, options = {}) {
                 aria-label="${escapeHtml(t('pagination.next'))}"
                 class="pm-pagination-step"
             >
-                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                    <path
-                        d="m7.5 5 5 5-5 5"
-                        stroke="currentColor"
-                        stroke-width="1.6"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
-                </svg>
+                ${icon('chevron-right')}
             </button>
         `;
 

@@ -17,17 +17,18 @@
     .pm-doc-footer {
         margin-top: 32px;
         padding-top: 10px;
-        border-top: 1px solid #d7e2db;
+        border-top: 1px solid #DDE6E2;
         text-align: center;
-        font-size: 8.5px;
-        color: #777777;
+        font-size: 9px;
+        line-height: 13px;
+        color: #66736F;
     }
 </style>
 
 <div class="pm-doc-footer">
     {{ $footerName }}
     ·
-    Patrimoine <span style="color: #26744b;">365</span>
+    Patrimoine <span style="color: #0E7A56;">365</span>
     ·
     {{ now()->format('Y-m-d') }}
 </div>

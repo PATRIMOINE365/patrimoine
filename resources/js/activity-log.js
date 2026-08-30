@@ -1327,7 +1327,7 @@ function detailStructuredRow(
                 border-b border-[var(--pm-border-subtle)]
                 px-4 py-3
                 last:border-b-0
-                sm:grid-cols-[180px_minmax(0,1fr)]
+                panel-sm:grid-cols-[180px_minmax(0,1fr)]
             "
         >
             ${

@@ -10,9 +10,9 @@
 
     <style>
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'Inter', 'DejaVu Sans', sans-serif;
             font-size: 12px;
-            color: #222;
+            color: #17201E;
             line-height: 1.45;
         }
 
@@ -26,7 +26,7 @@
         }
 
         .muted {
-            color: #666;
+            color: #66736F;
         }
 
         .reference {
@@ -42,14 +42,14 @@
         th,
         td {
             padding: 9px;
-            border: 1px solid #d7d7d7;
+            border: 1px solid #DDE6E2;
             vertical-align: top;
         }
 
         th {
             width: 34%;
             text-align: left;
-            background: #f5f5f5;
+            background: #F7F5EF;
         }
     </style>
     @include('documents.partials.base-styles')
@@ -121,15 +121,15 @@
 
     <table>
         <tr>
-            <th style="width: 33%; background: #efefef;">
+            <th style="width: 33%; background: #FBFCFC;">
                 {{ __('documents.invoice_payment_receipt.payment_date') }}
             </th>
 
-            <th style="width: 33%; background: #efefef;">
+            <th style="width: 33%; background: #FBFCFC;">
                 {{ __('documents.invoice_payment_receipt.source_fund') }}
             </th>
 
-            <th style="width: 34%; background: #efefef; text-align: right;">
+            <th style="width: 34%; background: #FBFCFC; text-align: right;">
                 {{ __('documents.invoice_payment_receipt.amount') }}
             </th>
         </tr>
@@ -154,13 +154,13 @@
         @endforeach
 
         <tr>
-            <td colspan="2" style="background: #f5f5f5;">
+            <td colspan="2" style="background: #F7F5EF;">
                 <strong>
                     {{ __('documents.invoice_payment_receipt.total_paid') }}
                 </strong>
             </td>
 
-            <td style="background: #f5f5f5; text-align: right;">
+            <td style="background: #F7F5EF; text-align: right;">
                 <strong>
                     {{ $formatter->money($invoice->paidAmount()) }}
                 </strong>

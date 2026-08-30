@@ -10,9 +10,9 @@
 
     <style>
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'Inter', 'DejaVu Sans', sans-serif;
             font-size: 12px;
-            color: #222;
+            color: #17201E;
             line-height: 1.45;
         }
 
@@ -26,7 +26,7 @@
         }
 
         .muted {
-            color: #666;
+            color: #66736F;
         }
 
         .reference {
@@ -42,14 +42,14 @@
         th,
         td {
             padding: 9px;
-            border: 1px solid #d7d7d7;
+            border: 1px solid #DDE6E2;
             vertical-align: top;
         }
 
         th {
             width: 34%;
             text-align: left;
-            background: #f5f5f5;
+            background: #F7F5EF;
         }
 
         .description {
@@ -141,11 +141,11 @@
 
     <table>
         <tr>
-            <th style="width: 66%; background: #efefef;">
+            <th style="width: 66%; background: #FBFCFC;">
                 {{ __('documents.tenant_fund_expense.description') }}
             </th>
 
-            <th style="width: 34%; background: #efefef; text-align: right;">
+            <th style="width: 34%; background: #FBFCFC; text-align: right;">
                 {{ __('documents.tenant_fund_expense.amount') }}
             </th>
         </tr>
@@ -161,13 +161,13 @@
         @endforeach
 
         <tr>
-            <td style="background: #f5f5f5;">
+            <td style="background: #F7F5EF;">
                 <strong>
                     {{ __('documents.tenant_fund_expense.total') }}
                 </strong>
             </td>
 
-            <td style="background: #f5f5f5; text-align: right;">
+            <td style="background: #F7F5EF; text-align: right;">
                 <strong>
                     {{ $formatter->money($totalAmount) }}
                 </strong>

@@ -49,19 +49,7 @@
                 data-i18n-aria-label="{{ $closeLabelKey }}"
             @endif
         >
-            <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                class="h-5 w-5"
-                aria-hidden="true"
-            >
-                <path
-                    stroke-linecap="round"
-                    d="M6 6l12 12M18 6L6 18"
-                />
-            </svg>
+            <x-icon name="x-close" />
         </button>
     @endif
 </div>

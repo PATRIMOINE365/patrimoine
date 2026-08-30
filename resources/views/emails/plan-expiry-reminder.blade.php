@@ -7,7 +7,7 @@
 @endsection
 
 @section('content')
-    <h1 style="margin:0 0 18px 0; font-size:21px; line-height:30px; color:#123527; font-weight:600;">
+    <h1 style="margin:0 0 18px 0; font-size:20px; line-height:30px; color:#123D35; font-weight:600;">
         {{ __('emails.plan_expiry.heading', ['days' => $daysLeft]) }}
     </h1>
 
@@ -32,8 +32,8 @@
         {{ __('emails.plan_expiry.what_changes') }}
     </p>
 
-    <p style="margin:0; color:#51615a; font-size:13px; line-height:21px;">
+    <p style="margin:0; color:#4E5B56; font-size:14px; line-height:20px;">
         {{ __('emails.plan_expiry.renew') }}
-        <a href="mailto:{{ config('legal.mailboxes.billing') }}" style="color:#2f6f52;">{{ config('legal.mailboxes.billing') }}</a>
+        <a href="mailto:{{ config('legal.mailboxes.billing') }}" style="color:#0E7A56;">{{ config('legal.mailboxes.billing') }}</a>
     </p>
 @endsection

@@ -29,22 +29,31 @@
 @endphp
 
 <style>
+    /*
+     * The letterhead is the CUSTOMER's identity, not ours: these are their
+     * invoices and receipts, sent to their tenants. Patrimoine appears once,
+     * small, in the footer. The brand shows up here only in the rule and the
+     * colour of the name.
+     */
     .pm-doc-letterhead {
         margin-bottom: 20px;
-        border-bottom: 2px solid #1d5c3f;
+        border-bottom: 2px solid #123D35;
         padding-bottom: 12px;
     }
 
     .pm-doc-letterhead-name {
         font-size: 20px;
-        font-weight: bold;
-        color: #123527;
+        line-height: 26px;
+        font-weight: 600;
+        letter-spacing: -0.2px;
+        color: #123D35;
     }
 
     .pm-doc-letterhead-contact {
-        margin-top: 3px;
+        margin-top: 4px;
         font-size: 9px;
-        color: #666666;
+        line-height: 13px;
+        color: #66736F;
     }
 </style>
 

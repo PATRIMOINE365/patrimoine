@@ -1,0 +1,270 @@
+/*
+|--------------------------------------------------------------------------
+| Patrimoine 365 — design tokens
+|--------------------------------------------------------------------------
+|
+| ONE system for the customer application, the platform console, the
+| authentication pages, the error pages and the legal pages. The marketing
+| site mirrors this file in its own globals.css; the emails and the PDF
+| documents mirror the subset they can express.
+|
+| Structure comes from Untitled UI: the 4px spacing grid, the type scale,
+| the radius and shadow ramps, the 4px focus ring, and the component
+| anatomy in components.css.
+|
+| Colour comes from the Patrimoine 365 Brand Package v1.0. The two systems
+| meet cleanly because every colour the brand names lands exactly on a
+| canonical Untitled UI step:
+|
+|     brand-50   #E6F7EF   Mint Wash
+|     brand-400  #39D6A3   Patrimoine Mint
+|     brand-600  #0E7A56   Mint Deep
+|     brand-900  #123D35   Patrimoine Green
+|     gray-50    #F2F6F4   Mist
+|     gray-200   #DDE6E2   Border
+|     gray-500   #7E8C87   Border Strong
+|     gray-600   #66736F   Slate
+|     gray-900   #17201E   Ink
+|     gray-950   #0E1614   Night
+|
+| Warm Ivory #F7F5EF is deliberately NOT here. The brand reserves it for
+| marketing, email and print; it never appears inside the product.
+|
+| TWO DELIBERATE DEVIATIONS FROM STOCK UNTITLED UI, both taken from the
+| brand package's contrast ledger:
+|
+|   1. Control outlines are gray-500 (3.5:1), not Untitled UI's gray-300
+|      (1.5:1). WCAG 1.4.11 requires 3:1 on the boundary of an input the
+|      user has to find. gray-200 stays the divider between things that
+|      are not controls.
+|
+|   2. The success colour IS the brand ramp rather than a separate green.
+|      Two greens a few degrees apart read as a mistake, and the brand
+|      already says positive figures are mint.
+|
+| Nothing in application markup may name a raw colour. Markup speaks the
+| --pm-* semantic tokens, directly or through a component class, so the
+| entire product recolours from the two blocks in this file.
+|
+*/
+
+/*
+|--------------------------------------------------------------------------
+| Light — the default
+|--------------------------------------------------------------------------
+*/
+
+:root,
+html[data-theme="light"] {
+    color-scheme: light;
+
+    /* ------------------------------ grounds ------------------------------ */
+    --pm-page: var(--color-gray-50);            /* Mist                     */
+    --pm-surface: #ffffff;                      /* cards and data surfaces  */
+    --pm-surface-subtle: var(--color-gray-25);
+    --pm-surface-muted: var(--color-gray-100);
+    --pm-surface-sunken: var(--color-gray-100);
+    --pm-surface-elevated: #ffffff;
+
+    /* ------------------------------- text -------------------------------- */
+    /* 16.6 : 11.0 : 7.1 : 4.9 against white. Four levels, all AA or better. */
+    --pm-text: var(--color-gray-900);           /* Ink                      */
+    --pm-text-secondary: var(--color-gray-800);
+    --pm-text-muted: var(--color-gray-700);
+    --pm-text-subtle: var(--color-gray-600);    /* Slate, 4.54:1 on Mist    */
+
+    /* Placeholder and disabled copy only. Never a label, never a value. */
+    --pm-text-placeholder: var(--color-gray-500);
+
+    /* ------------------------------- lines ------------------------------- */
+    --pm-border: var(--color-gray-200);         /* Border — divides         */
+    --pm-border-subtle: var(--color-gray-100);
+    --pm-border-strong: var(--color-gray-500);  /* Border Strong — encloses */
+
+    /* ---------------------------- interaction ---------------------------- */
+    --pm-hover: var(--color-gray-50);
+    --pm-selected: var(--color-brand-50);       /* Mint Wash                */
+    --pm-accent: var(--color-brand-600);        /* Mint Deep, 5.33:1        */
+    --pm-overlay: color-mix(in srgb, var(--color-gray-950) 60%, transparent);
+
+    --pm-input-background: #ffffff;
+    --pm-input-disabled: var(--color-gray-50);
+
+    /* ------------------------------ actions ------------------------------ */
+    /*
+     * The primary button is Patrimoine Green itself — the brand names it a
+     * primary fill, and white on it is 12.0:1.
+     */
+    --pm-primary: var(--color-brand-900);
+    --pm-primary-hover: var(--color-brand-950);
+    --pm-primary-text: #ffffff;
+
+    --pm-danger-solid: var(--color-error-600);
+    --pm-danger-solid-hover: var(--color-error-700);
+
+    /* ------------------------------ status ------------------------------- */
+    --pm-success-background: var(--color-brand-50);
+    --pm-success-border: var(--color-brand-200);
+    --pm-success-text: var(--color-brand-700);
+
+    --pm-warning-background: var(--color-warning-50);
+    --pm-warning-border: var(--color-warning-200);
+    --pm-warning-text: var(--color-warning-700);
+
+    --pm-danger-background: var(--color-error-50);
+    --pm-danger-border: var(--color-error-200);
+    --pm-danger-text: var(--color-error-700);
+    --pm-danger: var(--color-error-600);
+
+    --pm-info-background: var(--color-blue-50);
+    --pm-info-border: var(--color-blue-200);
+    --pm-info-text: var(--color-blue-700);
+
+    /* ----------------------------- elevation ----------------------------- */
+    --pm-shadow-xs: 0 1px 2px 0 rgb(14 22 20 / 0.05);
+    --pm-shadow-sm: 0 1px 3px 0 rgb(14 22 20 / 0.10), 0 1px 2px -1px rgb(14 22 20 / 0.10);
+    --pm-shadow-md: 0 4px 6px -1px rgb(14 22 20 / 0.10), 0 2px 4px -2px rgb(14 22 20 / 0.06);
+    --pm-shadow-lg: 0 12px 16px -4px rgb(14 22 20 / 0.08), 0 4px 6px -2px rgb(14 22 20 / 0.03);
+    --pm-shadow-xl: 0 20px 24px -4px rgb(14 22 20 / 0.08), 0 8px 8px -4px rgb(14 22 20 / 0.03);
+    --pm-shadow-2xl: 0 24px 48px -12px rgb(14 22 20 / 0.18);
+
+    /*
+     * Untitled UI's focus ring: 4px, outside the control, at 24% of the
+     * ring colour. It is the same shape on every focusable thing in the
+     * product, which is what makes keyboard focus readable at a glance.
+     */
+    --pm-ring-brand: 0 0 0 4px color-mix(in srgb, var(--color-brand-600) 24%, transparent);
+    --pm-ring-gray: 0 0 0 4px color-mix(in srgb, var(--color-gray-500) 20%, transparent);
+    --pm-ring-error: 0 0 0 4px color-mix(in srgb, var(--color-error-500) 24%, transparent);
+
+    /* ---------------------------- the dark band --------------------------- */
+    /*
+     * The sidebar and the auth hero are Patrimoine Green surfaces inside a
+     * light product. They carry their own text tokens, so nothing inside
+     * them has to know it is standing on a dark ground.
+     */
+    --pm-band: var(--color-brand-900);
+    --pm-band-elevated: var(--color-brand-800);
+    --pm-band-text: #ffffff;
+    --pm-band-text-muted: color-mix(in srgb, #ffffff 74%, var(--color-brand-900));
+    --pm-band-border: color-mix(in srgb, #ffffff 14%, transparent);
+    --pm-band-hover: color-mix(in srgb, #ffffff 8%, transparent);
+    --pm-band-selected: color-mix(in srgb, var(--color-brand-400) 16%, transparent);
+    --pm-band-accent: var(--color-brand-400);   /* Mint, 6.49:1 on green    */
+
+    /* -------------------------------- logo -------------------------------- */
+    /*
+     * The brand gives the mark different colours per ground. As two tokens
+     * it is one inlined SVG that follows whatever it stands on rather than
+     * two files swapped by JavaScript.
+     */
+    --pm-logo-pillar: var(--color-brand-900);
+    --pm-logo-bar: var(--color-brand-600);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Dark
+|--------------------------------------------------------------------------
+|
+| The brand package defines dark mode in its own terms: Night is the page,
+| Ink is the card, Mist is the primary text. Only the tokens change — no
+| page anywhere carries a dark-mode rule of its own.
+|
+*/
+
+html[data-theme="dark"] {
+    color-scheme: dark;
+
+    --pm-page: var(--color-gray-950);           /* Night                    */
+    --pm-surface: var(--color-gray-900);        /* Ink                      */
+    --pm-surface-subtle: #1b2523;
+    --pm-surface-muted: #232e2b;
+    --pm-surface-sunken: #0a100f;
+    --pm-surface-elevated: #1b2523;
+
+    --pm-text: var(--color-gray-50);            /* Mist                     */
+    --pm-text-secondary: #cbd5d0;
+    --pm-text-muted: #9fada8;
+    --pm-text-subtle: #8b9994;
+    --pm-text-placeholder: #7e8c87;
+
+    --pm-border: #2c3936;                       /* Night Border             */
+    --pm-border-subtle: #212c29;
+    --pm-border-strong: #626f6a;                /* 3.17:1 on Ink            */
+
+    --pm-hover: #1b2523;
+    --pm-selected: color-mix(in srgb, var(--color-brand-400) 14%, transparent);
+    --pm-accent: var(--color-brand-400);        /* Mint, 8.97:1 on Ink      */
+    --pm-overlay: rgb(0 0 0 / 0.7);
+
+    --pm-input-background: var(--color-gray-950);
+    --pm-input-disabled: #1b2523;
+
+    /*
+     * Patrimoine Green disappears against Night, so the primary action
+     * steps up to Mint Deep. White on it is 5.33:1 and the button reads
+     * 3.44:1 against the page — legible as text, findable as a shape.
+     */
+    --pm-primary: var(--color-brand-600);
+    --pm-primary-hover: var(--color-brand-500);
+    --pm-primary-text: #ffffff;
+
+    --pm-danger-solid: var(--color-error-600);
+    --pm-danger-solid-hover: var(--color-error-500);
+
+    --pm-success-background: color-mix(in srgb, var(--color-brand-400) 12%, transparent);
+    --pm-success-border: color-mix(in srgb, var(--color-brand-400) 32%, transparent);
+    --pm-success-text: var(--color-brand-300);
+
+    --pm-warning-background: color-mix(in srgb, var(--color-warning-400) 12%, transparent);
+    --pm-warning-border: color-mix(in srgb, var(--color-warning-400) 32%, transparent);
+    --pm-warning-text: var(--color-warning-300);
+
+    --pm-danger-background: color-mix(in srgb, var(--color-error-500) 12%, transparent);
+    --pm-danger-border: color-mix(in srgb, var(--color-error-500) 32%, transparent);
+    --pm-danger-text: var(--color-error-300);
+    --pm-danger: var(--color-error-400);
+
+    --pm-info-background: color-mix(in srgb, var(--color-blue-400) 12%, transparent);
+    --pm-info-border: color-mix(in srgb, var(--color-blue-400) 32%, transparent);
+    --pm-info-text: var(--color-blue-300);
+
+    --pm-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.30);
+    --pm-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.35), 0 1px 2px -1px rgb(0 0 0 / 0.35);
+    --pm-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.40), 0 2px 4px -2px rgb(0 0 0 / 0.30);
+    --pm-shadow-lg: 0 12px 16px -4px rgb(0 0 0 / 0.45), 0 4px 6px -2px rgb(0 0 0 / 0.30);
+    --pm-shadow-xl: 0 20px 24px -4px rgb(0 0 0 / 0.50), 0 8px 8px -4px rgb(0 0 0 / 0.30);
+    --pm-shadow-2xl: 0 24px 48px -12px rgb(0 0 0 / 0.60);
+
+    --pm-ring-brand: 0 0 0 4px color-mix(in srgb, var(--color-brand-400) 22%, transparent);
+    --pm-ring-gray: 0 0 0 4px color-mix(in srgb, var(--color-gray-400) 18%, transparent);
+    --pm-ring-error: 0 0 0 4px color-mix(in srgb, var(--color-error-400) 24%, transparent);
+
+    /*
+     * In dark mode the band stops being a contrast device — the whole page
+     * is already dark — so it becomes a slightly raised surface rather than
+     * a green slab, which is what keeps the sidebar from glowing.
+     */
+    --pm-band: #101a18;
+    --pm-band-elevated: #172321;
+    --pm-band-text: var(--color-gray-50);
+    --pm-band-text-muted: #9fada8;
+    --pm-band-border: #2c3936;
+    --pm-band-hover: #1b2523;
+    --pm-band-selected: color-mix(in srgb, var(--color-brand-400) 14%, transparent);
+    --pm-band-accent: var(--color-brand-400);
+
+    --pm-logo-pillar: #ffffff;
+    --pm-logo-bar: var(--color-brand-400);
+}
+
+/*
+ * The band is a dark ground in BOTH themes, so the mark standing on it takes
+ * the reverse pair regardless of which theme is on.
+ */
+.pm-sidebar,
+.pm-auth-hero {
+    --pm-logo-pillar: #ffffff;
+    --pm-logo-bar: var(--color-brand-400);
+}

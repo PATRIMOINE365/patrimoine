@@ -1,710 +1,47 @@
+@import './fonts.css';
 @import './hidden-guards.css';
 @import './flags.css';
 @import 'tailwindcss';
+@import './scale.css';
+@import './tokens.css';
+@import './components.css';
 
 @source '../views/**/*.blade.php';
 @source '../js/**/*.js';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-
-    --color-patrimoine-50: #f4f8f6;
-    --color-patrimoine-100: #e5efe9;
-    --color-patrimoine-200: #cbded2;
-    --color-patrimoine-300: #a3c5af;
-    --color-patrimoine-400: #73a587;
-    --color-patrimoine-500: #528969;
-    --color-patrimoine-600: #3f6e54;
-    --color-patrimoine-700: #345845;
-    --color-patrimoine-800: #2c4739;
-    --color-patrimoine-900: #253b31;
-    --color-patrimoine-950: #12221b;
-}
-
 /*
-|--------------------------------------------------------------------------
-| Patrimoine Semantic Theme
-|--------------------------------------------------------------------------
+|==========================================================================
+| Patrimoine 365 — page structure
+|==========================================================================
 |
-| Application UI should consume these semantic colours rather than knowing
-| whether a surface is slate-50, white, slate-950, etc.
+| The design system lives in four files, in this order:
 |
-| This gives Patrimoine one visual vocabulary that can be switched between
-| Light and Dark presentation without changing business-page markup.
+|   fonts.css       Inter, self-hosted
+|   scale.css       the ramps, the type scale, radii, shadows
+|   tokens.css      the semantic --pm-* tokens, light and dark
+|   components.css  Untitled UI component anatomy
 |
-| data-theme is applied to <html> before the application paints.
+| What remains in THIS file is page structure: the grids, the master-detail
+| shells, the calendar geometry, the telephone menu, the photograph cropper.
+| Layout, not appearance. Every rule here speaks --pm-* tokens, so the whole
+| product recolours from tokens.css without a page knowing about it.
 |
-*/
-
-:root,
-html[data-theme="light"] {
-    color-scheme: light;
-
-    --pm-page: #f5f7f6;
-    --pm-surface: #ffffff;
-    --pm-surface-subtle: #f7faf8;
-    --pm-surface-muted: #eef3f0;
-    --pm-surface-elevated: #ffffff;
-
-    --pm-text: #101b15;
-    --pm-text-secondary: #33423a;
-    --pm-text-muted: #5f6e66;
-    --pm-text-subtle: #8b988f;
-
-    --pm-border: #dfe6e2;
-    --pm-border-subtle: #edf2ef;
-    --pm-border-strong: #c3cec8;
-
-    --pm-hover: #f2f6f4;
-    --pm-selected: #e8f1ec;
-
-    --pm-input-background: #ffffff;
-    --pm-input-disabled: #f4f7f5;
-
-    --pm-overlay: rgb(6 15 10 / 0.50);
-
-    --pm-success-background: #ecfaf1;
-    --pm-success-border: #b5e8c8;
-    --pm-success-text: #157a42;
-
-    --pm-warning-background: #fdf7e7;
-    --pm-warning-border: #f3dfA0;
-    --pm-warning-text: #8f5a0d;
-
-    --pm-danger-background: #fdf1f1;
-    --pm-danger-border: #f4c4c4;
-    --pm-danger-text: #b42323;
-
-    --pm-info-background: #eef5fd;
-    --pm-info-border: #bcd9f5;
-    --pm-info-text: #1a5cb0;
-
-    /* Brand accent for highlighted text (eyebrows, active states). */
-    --pm-accent: #2f7351;
-
-    /*
-     * Primary action surface. Buttons read ONLY these tokens, so the
-     * app-wide button color is a one-line change per theme.
-     */
-    --pm-primary: #2e6b4f;
-    --pm-primary-hover: #245741;
-    --pm-primary-text: #ffffff;
-
-    /* Solid destructive action surface (delete buttons). */
-    --pm-danger-solid: #d03636;
-    --pm-danger-solid-hover: #b32626;
-}
-
-html[data-theme="dark"] {
-    color-scheme: dark;
-
-    --pm-page: #0e1311;
-    --pm-surface: #161c19;
-    --pm-surface-subtle: #1b221e;
-    --pm-surface-muted: #212925;
-    --pm-surface-elevated: #1e2621;
-
-    --pm-text: #eef4f0;
-    --pm-text-secondary: #ccd8d1;
-    --pm-text-muted: #97a69d;
-    --pm-text-subtle: #6e7d74;
-
-    --pm-border: #33403a;
-    --pm-border-subtle: #28312c;
-    --pm-border-strong: #4b5a52;
-
-    --pm-hover: #1f2723;
-    --pm-selected: #24382d;
-
-    --pm-input-background: #161c19;
-    --pm-input-disabled: #1e2621;
-
-    --pm-overlay: rgb(0 0 0 / 0.66);
-
-    --pm-success-background: #132619;
-    --pm-success-border: #2b5c3e;
-    --pm-success-text: #8fdcac;
-
-    --pm-warning-background: #2a2312;
-    --pm-warning-border: #635020;
-    --pm-warning-text: #f2d078;
-
-    --pm-danger-background: #2c1617;
-    --pm-danger-border: #683337;
-    --pm-danger-text: #f3a4a9;
-
-    --pm-info-background: #16222f;
-    --pm-info-border: #2c4d6e;
-    --pm-info-text: #a2cdf4;
-
-    /* Brand accent for highlighted text (eyebrows, active states). */
-    --pm-accent: #7fb598;
-
-    /*
-     * Primary action surface. A slightly brighter green than light mode
-     * so the button reads as the page's strongest element on dark ground.
-     */
-    --pm-primary: #38795b;
-    --pm-primary-hover: #438f6c;
-    --pm-primary-text: #ffffff;
-
-    /* Solid destructive action surface (delete buttons). */
-    --pm-danger-solid: #b42323;
-    --pm-danger-solid-hover: #d33030;
-}
-
-html {
-    background: var(--pm-page);
-}
-
-body {
-    min-height: 100vh;
-    background: var(--pm-page);
-    color: var(--pm-text);
-}
-
-[x-cloak] {
-    display: none !important;
-}
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.3 Role-Aware Application UI
-|--------------------------------------------------------------------------
+| THE RULES, and they are not advisory:
 |
-| Keep authorization visibility separate from Tailwind's normal `hidden`
-| utility. Feature JavaScript may legitimately add/remove `hidden` for
-| modals and conditional sections, but it must never reveal an action that
-| RBAC has hidden.
+|   1. No raw colour. Not a hex, not a Tailwind palette utility. Markup and
+|      page CSS speak --pm-* only.
+|   2. No !important. There were 504 of them; the component layer removed
+|      the need for every one.
+|   3. No #id-scoped styling. Twelve drawers each had their own block of
+|      overrides; they are one set of components now.
+|   4. Inside a drawer, size against the PANEL with a container query, never
+|      against the viewport. A 28rem panel is 28rem on a 27-inch monitor.
+|   5. Dark mode is never written twice. If a page needs a dark-mode rule,
+|      the page is reaching past a token and the page is wrong.
 |
 */
-
-.rbac-hidden {
-    display: none !important;
-}
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Application Shell
-|--------------------------------------------------------------------------
-*/
-
-.shell-admin-only {
-    display: none !important;
-}
-
-/*
- * A role cached from a previously verified /api/auth/me response may reveal
- * the Administrator shell immediately on subsequent navigation.
- *
- * Browser authorization will still re-evaluate the capability after the
- * current /api/auth/me request completes. Server authorization remains
- * authoritative.
- */
-html[data-shell-role="administrator"]
-.shell-admin-only {
-    display: block !important;
-}
-
-.shell-menu-item {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    gap: 0.625rem;
-    border-radius: 0.5rem;
-    padding: 0.625rem 0.75rem;
-    text-align: left;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--pm-text-secondary);
-    transition:
-        background-color 150ms ease,
-        color 150ms ease;
-}
-
-.shell-menu-item:hover {
-    background: var(--pm-hover);
-    color: var(--pm-text);
-}
-
-/*
- * V1.0.30: sign out reads in the same red as the delete buttons, so it is
- * unmistakable in a menu of ordinary rows — but stays a row. The colour is
- * carried by the icon and the words; the background only answers the
- * pointer, which is what keeps a block of red out of the menu.
- */
-.shell-menu-item-danger,
-.shell-menu-item-danger .shell-menu-item-title,
-.shell-menu-item-danger .shell-menu-item-note {
-    color: var(--pm-danger-text);
-}
-
-.shell-menu-item-danger:hover {
-    background: var(--pm-danger-background);
-    color: var(--pm-danger-text);
-}
-
-.shell-menu-item-danger:hover .shell-menu-item-title,
-.shell-menu-item-danger:hover .shell-menu-item-note {
-    color: var(--pm-danger-text);
-}
-
-.shell-menu-item-danger:focus-visible {
-    outline: 2px solid var(--pm-danger-solid);
-    outline-offset: -2px;
-}
-
-.theme-option {
-    border-radius: 0.375rem;
-    padding: 0.4rem 0.3rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--pm-text-muted);
-    transition:
-        background-color 150ms ease,
-        color 150ms ease,
-        box-shadow 150ms ease;
-}
-
-.theme-option:hover {
-    color: var(--pm-text);
-}
-
-.theme-option[data-selected="true"] {
-    background: var(--pm-surface-elevated);
-    color: var(--pm-text);
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
-}
-
-/* V1.0.4 COMPLETE UI PRIMITIVES */
-
-/* --------------------------------------------------------------------------
-   Form controls
-   -------------------------------------------------------------------------- */
-
-.pm-field-label {
-    display: block;
-    margin-bottom: 0.4rem;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--pm-text-secondary);
-}
-
-/*
- * Native toggles pick up the brand colour everywhere. Individual pages
- * must not re-declare accent-color with raw palette values.
- */
-input[type='checkbox'],
-input[type='radio'] {
-    accent-color: var(--pm-primary);
-}
-
-.pm-input {
-    display: block;
-    width: 100%;
-    min-height: 2.625rem;
-    border: 1px solid var(--pm-border);
-    border-radius: 0.5rem;
-    background: var(--pm-input-background);
-    padding: 0.625rem 0.75rem;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    color: var(--pm-text);
-    outline: none;
-    transition:
-        border-color 150ms ease,
-        box-shadow 150ms ease,
-        background-color 150ms ease;
-}
-
-/*
- * V1.0.8: inputs that carry a leading search icon. The Tailwind pl-*
- * utilities live in a cascade layer and can never beat the un-layered
- * .pm-input padding, so icon clearance must be a component rule.
- */
-/*
- * V1.0.8: duration / notice preset chips on the Lease form.
- */
-/*
- * V1.0.8: un-layered hide utility. Tailwind's .hidden lives in a cascade
- * layer and loses to un-layered component display rules (.pm-button-*),
- * so component-level show/hide must use this class instead.
- */
-.pm-hide {
-    display: none !important;
-}
-
-.pm-duration-chip {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid var(--pm-border);
-    border-radius: 9999px;
-    background: var(--pm-surface);
-    padding: 0.375rem 0.75rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--pm-text-secondary);
-    cursor: pointer;
-    transition:
-        background-color 150ms ease,
-        border-color 150ms ease,
-        color 150ms ease;
-}
-
-.pm-duration-chip:hover {
-    border-color: var(--pm-border-strong);
-    background: var(--pm-hover);
-}
-
-.pm-duration-chip[aria-pressed="true"] {
-    border-color: var(--color-patrimoine-500);
-    background: var(--pm-selected);
-    color: var(--pm-text);
-}
-
-/*
- * V1.0.8: inputs with a leading currency prefix. Same cascade-layer
- * rule as .pm-input-search: Tailwind pl-* utilities cannot beat the
- * un-layered .pm-input padding.
- */
-.pm-input-currency {
-    padding-left: 3.75rem;
-}
-
-.pm-input-search {
-    padding-left: 2.5rem;
-}
-
-.pm-input-search-clearable {
-    padding-right: 2.75rem;
-}
-
-.pm-input:hover:not(:disabled) {
-    border-color: var(--pm-border-strong);
-}
-
-.pm-input:focus {
-    border-color: var(--color-patrimoine-500);
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 16%,
-            transparent
-        );
-}
-
-.pm-input:disabled {
-    cursor: not-allowed;
-    background: var(--pm-input-disabled);
-    color: var(--pm-text-muted);
-}
-
-select.pm-input {
-    cursor: pointer;
-}
-
-/*
- * Placeholders read the subtle text token in both themes instead of the
- * browser's half-opacity currentColor default.
- */
-.pm-input::placeholder {
-    color: var(--pm-text-subtle);
-    opacity: 1;
-}
-
-/*
- * Native select popups follow the token theme. The closed control is
- * covered by .pm-input; without this, the open option list renders with
- * UA default colours.
- */
-select.pm-input option {
-    background: var(--pm-input-background);
-    color: var(--pm-text);
-}
-
-/* --------------------------------------------------------------------------
-   Buttons
-   -------------------------------------------------------------------------- */
-
-.pm-button-primary,
-.pm-button-secondary,
-.pm-button-danger {
-    display: inline-flex;
-    min-height: 2.625rem;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
-    padding: 0.625rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    line-height: 1.25rem;
-    transition:
-        background-color 150ms ease,
-        border-color 150ms ease,
-        color 150ms ease,
-        box-shadow 150ms ease,
-        opacity 150ms ease;
-}
-
-.pm-button-primary {
-    border: 1px solid var(--pm-primary);
-    background: var(--pm-primary);
-    color: var(--pm-primary-text);
-    box-shadow: 0 1px 2px rgb(15 23 42 / 0.08);
-}
-
-.pm-button-primary:hover:not(:disabled) {
-    border-color: var(--pm-primary-hover);
-    background: var(--pm-primary-hover);
-}
-
-.pm-button-primary:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.pm-button-secondary {
-    border: 1px solid var(--pm-border);
-    background: var(--pm-surface);
-    color: var(--pm-text-secondary);
-}
-
-.pm-button-secondary:hover:not(:disabled) {
-    border-color: var(--pm-border-strong);
-    background: var(--pm-hover);
-    color: var(--pm-text);
-}
-
-/*
- * Destructive primary action (permanent deletes, cancellations of record).
- * Use in place of .pm-button-primary — never alongside it in one footer.
- */
-.pm-button-danger {
-    border: 1px solid var(--pm-danger-solid);
-    background: var(--pm-danger-solid);
-    color: white;
-    box-shadow: 0 1px 2px rgb(15 23 42 / 0.08);
-}
-
-.pm-button-danger:hover:not(:disabled) {
-    border-color: var(--pm-danger-solid-hover);
-    background: var(--pm-danger-solid-hover);
-}
-
-.pm-button-danger:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-/*
- * Outlined destructive secondary action (row-level deletes). The quiet
- * counterpart of .pm-button-danger for lists where a filled red button
- * would shout on every row.
- */
-.pm-button-danger-outline {
-    display: inline-flex;
-    min-height: 2.625rem;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border: 1px solid var(--pm-danger-border);
-    border-radius: 0.5rem;
-    background: var(--pm-surface);
-    padding: 0.625rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--pm-danger-text);
-    transition:
-        background-color 150ms ease,
-        border-color 150ms ease;
-}
-
-.pm-button-danger-outline:hover:not(:disabled) {
-    background: var(--pm-danger-background);
-}
-
-.pm-button-danger-outline:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-/* --------------------------------------------------------------------------
-   Card
-   -------------------------------------------------------------------------- */
-
-.pm-card {
-    border: 1px solid var(--pm-border);
-    border-radius: 0.875rem;
-    background: var(--pm-surface);
-}
-
-/* --------------------------------------------------------------------------
-   Drawer
-   -------------------------------------------------------------------------- */
-
-.pm-drawer {
-    isolation: isolate;
-
-    /*
-     * Closed drawers remain rendered off-screen.
-     * This gives the browser a real starting position
-     * for the opening transition.
-     */
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.pm-drawer.pm-drawer-active {
-    visibility: visible;
-    pointer-events: auto;
-}
-
-.pm-drawer.pm-drawer-closing {
-    visibility: visible;
-    pointer-events: none;
-}
-
-.pm-drawer-backdrop {
-    background: rgb(15 23 42 / 0.46);
-    backdrop-filter: blur(1.5px);
-    opacity: 0;
-    transition: opacity 800ms ease;
-}
-
-.pm-drawer-panel {
-    background: var(--pm-surface);
-    border-left: 1px solid var(--pm-border);
-    box-shadow:
-        -12px 0 30px rgb(15 23 42 / 0.10),
-        -2px 0 8px rgb(15 23 42 / 0.05);
-    transform: translateX(100%);
-    transition:
-        transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.pm-drawer.pm-drawer-open .pm-drawer-backdrop {
-    opacity: 1;
-}
-
-.pm-drawer.pm-drawer-open .pm-drawer-panel {
-    transform: translateX(0);
-}
-
-.pm-drawer.pm-drawer-closing .pm-drawer-backdrop {
-    opacity: 0;
-}
-
-.pm-drawer.pm-drawer-closing .pm-drawer-panel {
-    transform: translateX(100%);
-}
-
-.pm-drawer-header {
-    display: flex;
-    flex-shrink: 0;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    border-bottom: 1px solid var(--pm-border);
-    background: var(--pm-surface);
-    padding: 1.25rem 1.375rem;
-}
-
-.pm-drawer-footer {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.625rem;
-    border-top: 1px solid var(--pm-border);
-    background: var(--pm-surface);
-    padding: 0.875rem 1.375rem;
-}
-
-.pm-icon-button {
-    display: inline-flex;
-    width: 2.125rem;
-    height: 2.125rem;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
-    color: var(--pm-text-muted);
-    transition:
-        background-color 150ms ease,
-        color 150ms ease;
-}
-
-.pm-icon-button:hover {
-    background: var(--pm-hover);
-    color: var(--pm-text);
-}
-
-/* Compact drawer forms should not feel unnecessarily spacious. */
-.pm-drawer-panel form > div:first-child {
-    padding-top: 1.25rem;
-    padding-bottom: 1.25rem;
-}
-
-/* --------------------------------------------------------------------------
-   Responsive drawer behavior
-   -------------------------------------------------------------------------- */
-
-@media (max-width: 639px) {
-    .pm-drawer-panel {
-        max-width: 100%;
-    }
-
-    .pm-drawer-header {
-        padding: 1rem 1.125rem;
-    }
-
-    .pm-drawer-footer {
-        padding: 0.875rem 1.125rem;
-    }
-
-    .pm-drawer-footer > * {
-        flex: 1;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .pm-drawer-backdrop,
-    .pm-drawer-panel {
-        transition: none;
-    }
-}
-
-
-/* V1.0.4 Drawer Footer Button Balance */
-.pm-drawer-footer .pm-button-primary,
-.pm-drawer-footer .pm-button-secondary,
-.pm-drawer-footer .pm-button-danger {
-    min-width: 7.25rem;
-}
-
-
-/* V1.0.4 Compact Drawer Footer Actions */
-.pm-drawer[data-drawer-width="sm"] .pm-drawer-footer {
-    gap: 0.75rem;
-}
-
-.pm-drawer[data-drawer-width="sm"] .pm-drawer-footer
-.pm-button-primary,
-.pm-drawer[data-drawer-width="sm"] .pm-drawer-footer
-.pm-button-secondary,
-.pm-drawer[data-drawer-width="sm"] .pm-drawer-footer
-.pm-button-danger {
-    flex: 1 1 0;
-    min-width: 0;
-    min-height: 3rem;
-    padding-inline: 1rem;
-    font-size: 0.9375rem;
-}
-
 
 /*
 |--------------------------------------------------------------------------
@@ -716,7 +53,7 @@ select.pm-input option {
     margin-top: 1.75rem;
     overflow: hidden;
     border: 1px solid var(--pm-border);
-    border-radius: 0.875rem;
+    border-radius: 0.75rem;
     background: var(--pm-surface);
 }
 
@@ -821,198 +158,6 @@ select.pm-input option {
         width: 100%;
     }
 }
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Record Payment Drawer Theme Fix
-|--------------------------------------------------------------------------
-|
-| The Payment form predates the semantic V1.0.4 UI primitives and still
-| contains many slate/white utility classes. Keep its markup and business
-| logic intact while making the drawer follow the active application theme.
-|
-*/
-
-/* --------------------------------------------------------------------------
-   Headings, labels and supporting copy
-   -------------------------------------------------------------------------- */
-
-/*
- * Some original section headings inherited very dark Tailwind text colors
- * which became almost invisible on the dark surface.
- */
-
-/* --------------------------------------------------------------------------
-   Dividers and cards
-   -------------------------------------------------------------------------- */
-
-/*
- * Tenant / Owner source cards.
- */
-
-/* --------------------------------------------------------------------------
-   Form controls
-   -------------------------------------------------------------------------- */
-
-/*
- * Disabled Lease / Unit selectors previously stayed almost white in dark
- * mode because of their historical disabled:bg-slate-50 utilities.
- */
-
-/*
- * Native select popup/options should also follow the active color scheme
- * where the browser supports it.
- */
-
-/* --------------------------------------------------------------------------
-   Search result surfaces and selected-party cards
-   -------------------------------------------------------------------------- */
-
-/* --------------------------------------------------------------------------
-   Footer
-   -------------------------------------------------------------------------- */
-
-/*
- * Record Payment is a large drawer, but its footer actions should have the
- * same balanced visual treatment established for the User drawer.
- *
- * Do not let the longer translated Save label determine button width.
- */
-
-/* END V1.0.4 Record Payment Drawer Theme Fix */
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Manage Funds Compact Visual Correction
-|--------------------------------------------------------------------------
-*/
-
-/*
- * Keep Manage Funds intentionally compact.
- */
-
-
-/* --------------------------------------------------------------------------
-   Financial position
-   -------------------------------------------------------------------------- */
-
-/*
- * One compact bordered group rather than five independent dashboard cards.
- */
-
-
-/*
- * Every metric is a single horizontal label/value row.
- */
-
-
-/*
- * Available is the decision-driving number.
- */
-
-
-/* --------------------------------------------------------------------------
-   Complete state
-   -------------------------------------------------------------------------- */
-
-#tenant-fund-complete-message {
-    margin-top: 1rem !important;
-
-    border: 1px solid var(--pm-border) !important;
-    border-radius: 0.75rem !important;
-
-    background: var(--pm-surface-subtle) !important;
-    padding: 0.875rem 1rem !important;
-
-    font-size: 0.8125rem !important;
-    line-height: 1.25rem !important;
-
-    color: var(--pm-text-secondary) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Allocation form
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Footer actions
-   -------------------------------------------------------------------------- */
-
-
-/*
- * Same compact button proportions established elsewhere in V1.0.4.
- */
-
-
-/*
- * When Allocate Funds is unavailable, Cancel remains compact and aligned
- * to the right instead of stretching across the footer.
- */
-
-/* END V1.0.4 Manage Funds Compact Visual Correction */
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Manage Funds Footer Size
-|--------------------------------------------------------------------------
-|
-| Keep Manage Funds consistent with the compact Cancel / Save footer
-| established for the other V1.0.4 drawers.
-|
-*/
-
-/* END V1.0.4 Manage Funds Footer Size */
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Manage Funds Footer Exact Match
-|--------------------------------------------------------------------------
-|
-| Match the established Modify User compact-drawer footer exactly:
-| two equal-width actions sharing all available footer space.
-|
-*/
-
-
-/*
- * Cancel and Save must be identical in width and height.
- *
- * Remove every fixed-width override previously introduced for
- * Manage Funds.
- */
-
-
-/*
- * The hidden Save state must remain genuinely hidden when there
- * is no money available to classify.
- */
-
-
-/*
- * If Save is hidden, Cancel should remain a normal compact action
- * instead of expanding to the whole footer.
- */
-
-
-/* END V1.0.4 Manage Funds Footer Exact Match */
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Record Payment Footer Exact Match
-|--------------------------------------------------------------------------
-|
-| Match the established Modify User / Manage Funds footer:
-| Cancel and Save share the available footer width equally.
-|
-*/
-
-/* END V1.0.4 Record Payment Footer Exact Match */
-
-
-/* V1.0.4 TENANTS WORKSPACE STEP 1 */
-
 /*
 |--------------------------------------------------------------------------
 | Tenant Workspace
@@ -1046,10 +191,9 @@ select.pm-input option {
     top: 1.25rem;
     overflow: hidden;
     border: 1px solid var(--pm-border);
-    border-radius: 0.875rem;
+    border-radius: 0.75rem;
     background: var(--pm-surface);
-    box-shadow:
-        0 1px 2px rgb(15 23 42 / 0.04);
+    box-shadow: var(--pm-shadow-xs);
 }
 
 .pm-tenant-directory-header {
@@ -1197,7 +341,7 @@ html[data-theme="dark"]
 .pm-tenant-directory-secondary {
     margin-top: 0.05rem;
     color: var(--pm-text-muted);
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
     line-height: 1rem;
 }
 
@@ -1216,7 +360,7 @@ html[data-theme="dark"]
     background: var(--pm-surface-subtle);
     padding: 0.2rem 0.45rem;
     color: var(--pm-text-muted);
-    font-size: 0.625rem;
+    font-size: 0.75rem;
     font-weight: 600;
     line-height: 1rem;
     text-overflow: ellipsis;
@@ -1248,20 +392,6 @@ html[data-theme="dark"]
     background: var(--pm-surface);
     padding: 0.75rem 1rem;
 }
-
-/* Existing generated pagination controls. */
-.pm-tenant-directory-pagination button {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text-secondary) !important;
-}
-
-.pm-tenant-directory-pagination button:hover:not(:disabled) {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
 /* --------------------------------------------------------------------------
    Detail shell
    -------------------------------------------------------------------------- */
@@ -1270,10 +400,9 @@ html[data-theme="dark"]
     min-width: 0;
     overflow: hidden;
     border: 1px solid var(--pm-border);
-    border-radius: 0.875rem;
+    border-radius: 0.75rem;
     background: var(--pm-surface);
-    box-shadow:
-        0 1px 2px rgb(15 23 42 / 0.04);
+    box-shadow: var(--pm-shadow-xs);
 }
 
 /*
@@ -1360,25 +489,6 @@ html[data-theme="dark"]
 .pm-owners-page {
     color: var(--pm-text);
 }
-
-
-/* --------------------------------------------------------------------------
-   Primary surfaces
-   -------------------------------------------------------------------------- */
-
-.pm-owners-page
-.pm-owner-directory,
-.pm-owners-page
-.pm-owner-detail-shell {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-
-    box-shadow:
-        0 1px 2px
-        rgb(15 23 42 / 0.04);
-}
-
-
 /* --------------------------------------------------------------------------
    Text
    -------------------------------------------------------------------------- */
@@ -1412,75 +522,6 @@ html[data-theme="dark"]
 button {
     color: var(--pm-text);
 }
-
-/*
- * Legacy generated Owner rows use hover:bg-slate-50.
- */
-.pm-owner-directory
-#owners-list
-button:hover {
-    background: var(--pm-hover) !important;
-}
-
-
-/*
- * Existing selected-row class is bg-patrimoine-50.
- *
- * Use the semantic selected surface in both light and dark mode instead.
- */
-
-
-/* Search field */
-.pm-owner-directory
-input[type="search"] {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-input-background) !important;
-    color: var(--pm-text) !important;
-}
-
-.pm-owner-directory
-input[type="search"]::placeholder {
-    color: var(--pm-text-subtle) !important;
-    opacity: 1;
-}
-
-.pm-owner-directory
-input[type="search"]:hover {
-    border-color: var(--pm-border-strong) !important;
-}
-
-.pm-owner-directory
-input[type="search"]:focus {
-    border-color: var(--color-patrimoine-500) !important;
-
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 16%,
-            transparent
-        ) !important;
-}
-
-
-/* Directory pagination */
-.pm-owner-directory
-#owners-list-pagination
-button {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text-secondary) !important;
-}
-
-.pm-owner-directory
-#owners-list-pagination
-button:hover:not(:disabled) {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
-
 /* --------------------------------------------------------------------------
    Detail header / actions
    -------------------------------------------------------------------------- */
@@ -1489,130 +530,6 @@ button:hover:not(:disabled) {
 #owner-detail-status {
     border: 1px solid var(--pm-border);
 }
-
-
-/*
- * Existing secondary Owner actions still use white/slate Tailwind classes.
- */
-.pm-owner-detail-shell
-#owner-record-deposit-button,
-.pm-owner-detail-shell
-#owner-record-expense-button,
-.pm-owner-detail-shell
-#owner-record-payout-button,
-.pm-owner-detail-shell
-#owner-record-adjustment-button,
-.pm-owner-detail-shell
-#owner-report-link {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text-secondary) !important;
-}
-
-.pm-owner-detail-shell
-#owner-record-deposit-button:hover:not(:disabled),
-.pm-owner-detail-shell
-#owner-record-expense-button:hover:not(:disabled),
-.pm-owner-detail-shell
-#owner-record-payout-button:hover:not(:disabled),
-.pm-owner-detail-shell
-#owner-record-adjustment-button:hover:not(:disabled),
-.pm-owner-detail-shell
-#owner-report-link:hover {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Account summary
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Property cards / unit pills
-   -------------------------------------------------------------------------- */
-
-.pm-owner-detail-shell
-#owner-properties-list
-article {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-subtle) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Ledger
-   -------------------------------------------------------------------------- */
-
-.pm-owner-detail-shell
-#owner-ledger-list
-article {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-subtle) !important;
-}
-
-
-/* Receipt action */
-.pm-owner-detail-shell
-#owner-ledger-list
-button {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text-secondary) !important;
-}
-
-.pm-owner-detail-shell
-#owner-ledger-list
-button:hover {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
-
-/* Ledger pagination */
-.pm-owner-detail-shell
-#owner-ledger-pagination
-button {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text-secondary) !important;
-}
-
-.pm-owner-detail-shell
-#owner-ledger-pagination
-button:hover:not(:disabled) {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Payout history
-   -------------------------------------------------------------------------- */
-
-.pm-owner-detail-shell
-#owner-payouts-list
-> div {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Empty states
-   -------------------------------------------------------------------------- */
-
-.pm-owner-detail-shell
-.border-dashed {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-subtle) !important;
-}
-
-
 /* --------------------------------------------------------------------------
    Status / accounting colours
    -------------------------------------------------------------------------- */
@@ -1625,7 +542,7 @@ button:hover:not(:disabled) {
 @media (max-width: 899px) {
     .pm-owners-workspace {
         grid-template-columns:
-            minmax(0, 1fr) !important;
+            minmax(0, 1fr);
     }
 
     .pm-owner-directory
@@ -1663,373 +580,6 @@ button:hover:not(:disabled) {
 /* END V1.0.4 OWNERS WORKSPACE THEME FIX */
 
 /* V1.0.4 OWNER FINANCIAL DRAWERS VISUAL FIX */
-
-/*
-|--------------------------------------------------------------------------
-| Owner Financial Drawers
-|--------------------------------------------------------------------------
-|
-| Deposit, Expense, Payout and Adjustment now use the shared V1.0.4 drawer.
-| The forms themselves predate the semantic UI system, so normalise their
-| presentation here without altering any field IDs, validation or APIs.
-|
-*/
-
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-.pm-drawer-panel {
-    color: var(--pm-text);
-}
-
-
-/* --------------------------------------------------------------------------
-   Single-column forms
-   -------------------------------------------------------------------------- */
-
-/*
- * These financial actions are sequential workflows. A single column is
- * easier to scan and remains consistent regardless of drawer width.
- */
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-form .grid {
-    grid-template-columns:
-        minmax(0, 1fr) !important;
-}
-
-
-/*
- * Legacy md:col-span-2 elements no longer need special width handling.
- */
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-form .md\:col-span-2 {
-    grid-column: auto !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Labels and text
-   -------------------------------------------------------------------------- */
-
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-label {
-    color: var(--pm-text-secondary) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Form controls
-   -------------------------------------------------------------------------- */
-
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-input:not([type="radio"]):not([type="checkbox"]),
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-select,
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-textarea {
-    width: 100%;
-
-    border-color: var(--pm-border) !important;
-    background: var(--pm-input-background) !important;
-    color: var(--pm-text) !important;
-}
-
-
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-input::placeholder,
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-textarea::placeholder {
-    color: var(--pm-text-subtle) !important;
-    opacity: 1;
-}
-
-
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-input:not(:disabled):hover,
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-select:not(:disabled):hover,
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-textarea:not(:disabled):hover {
-    border-color: var(--pm-border-strong) !important;
-}
-
-
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-input:focus,
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-select:focus,
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-textarea:focus {
-    border-color: var(--color-patrimoine-500) !important;
-
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 18%,
-            transparent
-        ) !important;
-
-    outline: none;
-}
-
-
-/* Disabled Building/Unit selectors. */
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-input:disabled,
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-select:disabled,
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-textarea:disabled {
-    cursor: not-allowed;
-
-    border-color: var(--pm-border) !important;
-    background: var(--pm-input-disabled) !important;
-    color: var(--pm-text-muted) !important;
-
-    opacity: 1;
-}
-
-
-/*
- * Native popup menus should follow the selected application theme where
- * supported by the browser.
- */
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-select,
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-option {
-    background: var(--pm-input-background);
-    color: var(--pm-text);
-}
-
-html[data-theme="dark"]
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-) {
-    color-scheme: dark;
-}
-
-html[data-theme="light"]
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-) {
-    color-scheme: light;
-}
-
-
-/* --------------------------------------------------------------------------
-   Legacy borders/backgrounds
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Validation and warning panels
-   -------------------------------------------------------------------------- */
-
-:is(
-    #owner-deposit-error,
-    #owner-expense-error,
-    #owner-payout-error,
-    #owner-adjustment-error
-) {
-    border-color: var(--pm-danger-border) !important;
-    background: var(--pm-danger-background) !important;
-    color: var(--pm-danger-text) !important;
-}
-
-
-/*
- * Expense ownership warning and Adjustment accounting warning.
- */
-
-
-/* --------------------------------------------------------------------------
-   Payout balance card
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Footer actions
-   -------------------------------------------------------------------------- */
-
-/*
- * Follow the established Patrimoine compact action convention:
- *
- *   Cancel | Save
- *
- * Both controls remain equal regardless of translated label length.
- */
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-.pm-drawer-footer {
-    gap: 0.75rem;
-}
-
-
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-.pm-drawer-footer
-.pm-button-primary,
-:is(
-    #owner-deposit-modal,
-    #owner-expense-modal,
-    #owner-payout-modal,
-    #owner-adjustment-modal
-)
-.pm-drawer-footer
-.pm-button-secondary {
-    width: 9.5rem;
-    min-width: 9.5rem;
-    min-height: 3rem;
-
-    padding-inline: 1rem;
-
-    font-size: 0.9375rem;
-}
-
-
-@media (max-width: 639px) {
-    :is(
-        #owner-deposit-modal,
-        #owner-expense-modal,
-        #owner-payout-modal,
-        #owner-adjustment-modal
-    )
-    .pm-drawer-footer
-    .pm-button-primary,
-    :is(
-        #owner-deposit-modal,
-        #owner-expense-modal,
-        #owner-payout-modal,
-        #owner-adjustment-modal
-    )
-    .pm-drawer-footer
-    .pm-button-secondary {
-        width: auto;
-        min-width: 0;
-        flex: 1 1 0;
-    }
-}
-
-
-/* END V1.0.4 OWNER FINANCIAL DRAWERS VISUAL FIX */
-
-
-/* REPORTS WORKSPACE */
-
 /*
 |--------------------------------------------------------------------------
 | Reports Workspace
@@ -2057,56 +607,6 @@ html[data-theme="light"]
     background: var(--pm-selected);
     color: var(--pm-text);
 }
-
-/* END REPORTS WORKSPACE */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Properties Workspace
-|--------------------------------------------------------------------------
-|
-| Normalise the legacy Properties workspace and its three management drawers
-| against Patrimoine's semantic light/dark presentation tokens.
-|
-| Business behaviour remains entirely in properties.js.
-|
-*/
-
-
-/* --------------------------------------------------------------------------
-   Main Properties workspace
-   -------------------------------------------------------------------------- */
-
-
-/* Search field */
-
-#property-search {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text) !important;
-}
-
-#property-search::placeholder {
-    color: var(--pm-text-subtle) !important;
-}
-
-#property-search:hover {
-    border-color: var(--pm-border-strong) !important;
-}
-
-#property-search:focus {
-    border-color: var(--color-patrimoine-500) !important;
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 16%,
-            transparent
-        ) !important;
-}
-
-
 /* --------------------------------------------------------------------------
    Properties drawers
    -------------------------------------------------------------------------- */
@@ -2118,111 +618,6 @@ html[data-theme="light"]
 ) {
     color: var(--pm-text);
 }
-
-
-/*
- * Drawer panel.
- *
- * The immediate right-side panel is the second child inside the positioning
- * wrapper. Override its original bg-white / border-slate presentation.
- */
-:is(
-    #property-modal,
-    #owner-modal,
-    #existing-unit-modal
-)
-> div:last-child
-> div {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text);
-}
-
-
-/* Headers */
-
-:is(
-    #property-modal,
-    #owner-modal,
-    #existing-unit-modal
-)
-form,
-:is(
-    #property-modal,
-    #owner-modal,
-    #existing-unit-modal
-)
-form > div {
-    border-color: var(--pm-border) !important;
-}
-
-
-/* Section separators */
-
-
-/* --------------------------------------------------------------------------
-   Form controls
-   -------------------------------------------------------------------------- */
-
-:is(
-    #property-modal,
-    #owner-modal,
-    #existing-unit-modal
-)
-input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
-:is(
-    #property-modal,
-    #owner-modal,
-    #existing-unit-modal
-)
-select,
-:is(
-    #property-modal,
-    #owner-modal,
-    #existing-unit-modal
-)
-textarea {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text) !important;
-}
-
-:is(
-    #property-modal,
-    #owner-modal,
-    #existing-unit-modal
-)
-input::placeholder,
-:is(
-    #property-modal,
-    #owner-modal,
-    #existing-unit-modal
-)
-textarea::placeholder {
-    color: var(--pm-text-subtle) !important;
-}
-
-:is(
-    #property-modal,
-    #owner-modal,
-    #existing-unit-modal
-)
-input:not([type="hidden"]):hover,
-:is(
-    #property-modal,
-    #owner-modal,
-    #existing-unit-modal
-)
-select:hover,
-:is(
-    #property-modal,
-    #owner-modal,
-    #existing-unit-modal
-)
-textarea:hover {
-    border-color: var(--pm-border-strong) !important;
-}
-
 :is(
     #property-modal,
     #owner-modal,
@@ -2241,118 +636,16 @@ select:focus,
     #existing-unit-modal
 )
 textarea:focus {
-    border-color: var(--color-patrimoine-500) !important;
-    outline: none !important;
+    border-color: var(--color-patrimoine-500);
+    outline: none;
     box-shadow:
         0 0 0 3px
         color-mix(
             in srgb,
             var(--color-patrimoine-500) 16%,
             transparent
-        ) !important;
+        );
 }
-
-
-/* --------------------------------------------------------------------------
-   Ownership / Unit entry rows
-   -------------------------------------------------------------------------- */
-
-#property-owner-rows .property-owner-row,
-#property-unit-rows .property-unit-row {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-subtle) !important;
-}
-
-#property-owner-rows button,
-#property-unit-rows button {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text-secondary) !important;
-}
-
-#property-owner-rows button:hover,
-#property-unit-rows button:hover {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
-
-/* Keep destructive Remove actions visually restrained until hover. */
-
-#property-owner-rows [data-remove-owner]:hover,
-#property-unit-rows [data-remove-unit]:hover {
-    color: var(--pm-danger-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Parent Property context in Add/Edit Unit
-   -------------------------------------------------------------------------- */
-
-#existing-unit-modal
-#existing-unit-building-name {
-    color: var(--pm-text) !important;
-}
-
-#existing-unit-modal
-#existing-unit-building-name
-    + * {
-    color: var(--pm-text-secondary) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Secondary action buttons
-   -------------------------------------------------------------------------- */
-
-:is(
-    #add-owner-button,
-    #add-unit-button,
-    #property-cancel-button,
-    #owner-cancel-button,
-    #existing-unit-cancel-button
-) {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text-secondary) !important;
-}
-
-:is(
-    #add-owner-button,
-    #add-unit-button,
-    #property-cancel-button,
-    #owner-cancel-button,
-    #existing-unit-cancel-button
-):hover {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Drawer close buttons
-   -------------------------------------------------------------------------- */
-
-:is(
-    #property-modal-close,
-    #owner-modal-close,
-    #existing-unit-modal-close
-) {
-    color: var(--pm-text-muted) !important;
-}
-
-:is(
-    #property-modal-close,
-    #owner-modal-close,
-    #existing-unit-modal-close
-):hover {
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
-
 /* --------------------------------------------------------------------------
    Sticky drawer footer presentation
    -------------------------------------------------------------------------- */
@@ -2365,8 +658,8 @@ textarea:focus {
 form
 > div:last-child {
     flex: 0 0 auto;
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
+    border-color: var(--pm-border);
+    background: var(--pm-surface);
 }
 
 
@@ -2388,7 +681,7 @@ form
     min-width: 10.5rem;
     min-height: 3rem;
     padding-inline: 1rem;
-    font-size: 0.9375rem;
+    font-size: 1rem;
     font-weight: 600;
 }
 
@@ -2413,7 +706,7 @@ form
     )
     > div:last-child
     > div {
-        max-width: 100% !important;
+        max-width: 100%;
     }
 
     :is(
@@ -2432,103 +725,6 @@ form
 
 
 /* END V1.0.4 Properties Workspace */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Property Drawer Single Column
-|--------------------------------------------------------------------------
-|
-| Add/Edit Property is a sequential form. Keep all Property Details,
-| Ownership rows and Unit rows in one vertical column regardless of viewport
-| width. Drawer mechanics and business logic remain unchanged.
-|
-*/
-
-#property-modal form .grid {
-    grid-template-columns:
-        minmax(0, 1fr) !important;
-}
-
-#property-modal form .md\:grid-cols-2,
-#property-modal form .sm\:grid-cols-2,
-#property-modal form .lg\:grid-cols-2,
-#property-modal form .xl\:grid-cols-2,
-#property-modal form .md\:grid-cols-3,
-#property-modal form .lg\:grid-cols-3 {
-    grid-template-columns:
-        minmax(0, 1fr) !important;
-}
-
-/*
- * Any legacy span utilities in dynamically generated Owner / Unit rows
- * become ordinary full-width fields.
- */
-#property-modal form .md\:col-span-2,
-#property-modal form .sm\:col-span-2,
-#property-modal form .lg\:col-span-2 {
-    grid-column: auto !important;
-}
-
-
-/*
- * Keep section actions compact. "Add Owner" and "Add Unit" remain beside
- * their section headings; only form fields/rows are being made single-column.
- */
-
-
-/* END V1.0.4 Property Drawer Single Column */
-
-/* --------------------------------------------------------------------------
-   Property ownership total
-   -------------------------------------------------------------------------- */
-
-#ownership-total.pm-ownership-total-valid {
-    background:
-        color-mix(
-            in srgb,
-            var(--pm-success-text) 16%,
-            var(--pm-surface)
-        );
-    color: var(--pm-success-text);
-}
-
-#ownership-total.pm-ownership-total-incomplete {
-    background:
-        color-mix(
-            in srgb,
-            var(--pm-text-muted) 14%,
-            var(--pm-surface)
-        );
-    color: var(--pm-text);
-}
-
-#ownership-total.pm-ownership-total-excess {
-    background:
-        color-mix(
-            in srgb,
-            var(--pm-danger-text) 14%,
-            var(--pm-surface)
-        );
-    color: var(--pm-danger-text);
-}
-
-/* V1.0.4 Property drawer section action placement */
-
-#property-modal #add-owner-button,
-#property-modal #add-unit-button {
-    align-self: flex-start;
-    width: auto;
-}
-
-/* Keep the ownership total and Add Owner action together below the description. */
-#property-modal #ownership-total {
-    align-self: flex-start;
-}
-
-/* END V1.0.4 Property drawer section action placement */
-
-
 /*
 |--------------------------------------------------------------------------
 | V1.0.4 Property Ownership Total Pill
@@ -2554,408 +750,17 @@ form
 
 #ownership-total {
     display: inline-flex;
-    width: auto !important;
-    min-width: max-content !important;
-    max-width: none !important;
-    flex: 0 0 auto !important;
+    width: auto;
+    min-width: max-content;
+    max-width: none;
+    flex: 0 0 auto;
 
     align-items: center;
     justify-content: center;
 
-    white-space: nowrap !important;
-    word-break: normal !important;
+    white-space: nowrap;
+    word-break: normal;
 }
-
-
-/* END V1.0.4 Property Ownership Total Pill — No Wrap */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Property Drawer Footer — Final
-|--------------------------------------------------------------------------
-*/
-
-
-/* END V1.0.4 Property Drawer Footer — Final */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Property Drawer Footer — Equal Full Width Actions
-|--------------------------------------------------------------------------
-*/
-
-
-/* END V1.0.4 Property Drawer Footer — Equal Full Width Actions */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Property Drawer Footer — Full Drawer Width
-|--------------------------------------------------------------------------
-|
-| The Property drawer footer must match the other compact drawers:
-| full usable drawer width with two equal actions.
-|
-*/
-
-#property-modal
-#property-cancel-button,
-#property-modal
-#property-submit-button {
-    display: flex !important;
-
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: none !important;
-
-    min-height: 3rem !important;
-
-    margin: 0 !important;
-
-    align-items: center !important;
-    justify-content: center !important;
-}
-
-
-/* END V1.0.4 Property Drawer Footer — Full Drawer Width */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Properties Workspace Theme
-|--------------------------------------------------------------------------
-|
-| Normalise the main Properties page onto the shared Patrimoine semantic
-| surface system. This is deliberately scoped to the Properties workspace
-| and does not alter drawer presentation or business behaviour.
-|
-*/
-
-.pm-properties-page {
-    color: var(--pm-text);
-}
-
-
-/* --------------------------------------------------------------------------
-   Page heading
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Borders
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Main cards / white legacy surfaces
-   -------------------------------------------------------------------------- */
-
-
-/*
- * Light secondary surfaces become the semantic subtle surface.
- */
-
-
-/* --------------------------------------------------------------------------
-   Summary metric cards
-   -------------------------------------------------------------------------- */
-
-.pm-properties-page
-[id^="properties-"][id$="-metric"],
-.pm-properties-page
-[data-property-metric] {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    box-shadow: none !important;
-}
-
-
-/*
- * Current markup does not necessarily expose metric-specific attributes,
- * so also normalise the four cards immediately preceding the portfolio.
- */
-.pm-properties-page .shadow-sm {
-    box-shadow: none !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Portfolio workspace
-   -------------------------------------------------------------------------- */
-
-.pm-properties-page
-#properties-list,
-.pm-properties-page
-#properties-container,
-.pm-properties-page
-#property-list {
-    color: var(--pm-text);
-}
-
-
-/*
- * Property cards generated by properties.js.
- */
-.pm-properties-page
-[data-property-id] {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-subtle) !important;
-    color: var(--pm-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Search / inputs
-   -------------------------------------------------------------------------- */
-
-.pm-properties-page
-input:not([type="checkbox"]):not([type="radio"]),
-.pm-properties-page
-select,
-.pm-properties-page
-textarea {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text) !important;
-}
-
-.pm-properties-page
-input::placeholder,
-.pm-properties-page
-textarea::placeholder {
-    color: var(--pm-text-subtle) !important;
-}
-
-.pm-properties-page
-input:focus,
-.pm-properties-page
-select:focus,
-.pm-properties-page
-textarea:focus {
-    border-color: var(--color-patrimoine-500) !important;
-
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 16%,
-            transparent
-        ) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Property pills / badges
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Secondary actions
-   -------------------------------------------------------------------------- */
-
-.pm-properties-page
-button.border,
-.pm-properties-page
-a.border {
-    border-color: var(--pm-border) !important;
-}
-
-.pm-properties-page
-button.border:hover:not(:disabled),
-.pm-properties-page
-a.border:hover {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Empty / loading states
-   -------------------------------------------------------------------------- */
-
-.pm-properties-page .border-dashed {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-subtle) !important;
-}
-
-
-/* END V1.0.4 Properties Workspace Theme */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Properties Workspace — Badge Finishing
-|--------------------------------------------------------------------------
-|
-| Property unit-count badges still inherit legacy light surfaces.
-| Keep them consistent with the semantic dark/light workspace.
-|
-*/
-
-
-/*
- * Compact pills should remain pills rather than expanding with inherited
- * card/background rules.
- */
-.pm-properties-page
-[data-property-id]
-.rounded-full {
-    display: inline-flex !important;
-    width: auto !important;
-    min-width: 0 !important;
-    align-items: center !important;
-    white-space: nowrap !important;
-}
-
-
-/*
- * Slightly distinguish property-row surfaces from the outer portfolio shell.
- */
-.pm-properties-page
-[data-property-id] {
-    background: var(--pm-surface-subtle) !important;
-}
-
-
-/*
- * Keep ownership/unit badges readable without the bright white appearance.
- */
-
-
-/* END V1.0.4 Properties Workspace — Badge Finishing */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Add Unit Drawer
-|--------------------------------------------------------------------------
-|
-| Bring the Add Unit drawer onto the same semantic visual system used by
-| the Property and Owner financial drawers.
-|
-*/
-
-
-/* --------------------------------------------------------------------------
-   Typography
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Borders / light surfaces
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Property context card
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Form controls
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Footer — equal full-width actions
-   -------------------------------------------------------------------------- */
-
-
-/* END V1.0.4 Add Unit Drawer */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Add / Edit Unit Drawer
-|--------------------------------------------------------------------------
-*/
-
-
-/* Text */
-
-
-/* Borders */
-
-
-/* Parent Property context */
-
-#existing-unit-modal .text-patrimoine-600 {
-    color: var(--pm-text-muted) !important;
-}
-
-
-/* Inputs */
-#existing-unit-modal
-input:not([type="checkbox"]):not([type="radio"]),
-#existing-unit-modal
-textarea,
-#existing-unit-modal
-select {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text) !important;
-}
-
-#existing-unit-modal input::placeholder,
-#existing-unit-modal textarea::placeholder {
-    color: var(--pm-text-subtle) !important;
-}
-
-
-/* Error */
-
-
-/*
- * The shared sm drawer already makes these equal.
- * State it explicitly here so legacy Unit rules cannot override it.
- */
-#existing-unit-modal .pm-drawer-footer {
-    gap: 0.75rem;
-}
-
-#existing-unit-modal .pm-drawer-footer
-.pm-button-secondary,
-#existing-unit-modal .pm-drawer-footer
-.pm-button-primary {
-    flex: 1 1 0 !important;
-    width: auto !important;
-    min-width: 0 !important;
-    min-height: 3rem !important;
-}
-
-
-/* END V1.0.4 Add / Edit Unit Drawer */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Property Card Edit Action
-|--------------------------------------------------------------------------
-|
-| Explicit semantic treatment for the generated Property "Edit" action.
-| Keep this independent from badge and generic legacy surface rules.
-|
-*/
-
-.pm-properties-page
-#properties-list
-[data-edit-property] {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface) !important;
-    color: var(--pm-text-secondary) !important;
-}
-
-.pm-properties-page
-#properties-list
-[data-edit-property]:hover:not(:disabled) {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
-
 /* END V1.0.4 Property Card Edit Action */
 
 
@@ -3025,18 +830,6 @@ select {
 
 
 /* END V1.0.4 Existing Unit Drawer Motion */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Existing Unit Drawer Footer
-|--------------------------------------------------------------------------
-*/
-
-
-/* END V1.0.4 Existing Unit Drawer Footer */
-
-
 /*
 |--------------------------------------------------------------------------
 | V1.0.4 Existing Unit Drawer — Closing Hit Testing
@@ -3049,101 +842,6 @@ select {
 
 
 /* END V1.0.4 Existing Unit Drawer — Closing Hit Testing */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Existing Unit Drawer — Match Property Drawer Width
-|--------------------------------------------------------------------------
-|
-| Match the Add/Edit Unit drawer to the width used by Add Property.
-|
-*/
-
-#existing-unit-modal
-> div:not(#existing-unit-modal-backdrop)
-> div {
-    width: min(100%, 28rem) !important;
-    max-width: 28rem !important;
-}
-
-
-/* Mobile remains full width. */
-@media (max-width: 639px) {
-    #existing-unit-modal
-    > div:not(#existing-unit-modal-backdrop)
-    > div {
-        width: 100% !important;
-        max-width: 100% !important;
-    }
-}
-
-
-/* END V1.0.4 Existing Unit Drawer — Match Property Drawer Width */
-
-/* ==========================================================================
-   V1.0.4 — Parties
-   ========================================================================== */
-
-.pm-party-row {
-    margin-bottom: 0.75rem;
-    overflow: hidden;
-    border: 1px solid var(--pm-border);
-    border-radius: 0.875rem;
-    background: var(--pm-surface-subtle);
-    transition:
-        border-color 180ms ease,
-        background-color 180ms ease,
-        box-shadow 180ms ease;
-}
-
-.pm-party-row:last-child {
-    margin-bottom: 0;
-}
-
-.pm-party-row:hover {
-    border-color: var(--pm-border-strong);
-    background: var(--pm-hover);
-}
-
-.pm-party-row-main {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-}
-
-.pm-party-title-line {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.625rem;
-}
-
-.pm-party-name {
-    font-size: 0.9375rem;
-    font-weight: 650;
-    line-height: 1.35;
-    color: var(--pm-text);
-}
-
-.pm-party-type-badge {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 9999px;
-    background: var(--pm-surface-elevated);
-    padding: 0.25rem 0.625rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--pm-text-secondary);
-}
-
-/*
- * V1.0.29: shown on a Party that Patrimoine will not email, either
- * because the organisation switched party emails off or because this
- * Party is individually excluded. Muted rather than alarming — it is a
- * deliberate setting, not a fault.
- */
 /*
 |--------------------------------------------------------------------------
 | Guided Lease Wizard (V1.0.29)
@@ -3210,7 +908,7 @@ select {
     border-radius: 0.75rem;
     background: var(--pm-surface-subtle);
     padding: 0.75rem 1rem;
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     color: var(--pm-text-secondary);
 }
 
@@ -3258,7 +956,7 @@ select {
 }
 
 .pm-wizard-remove {
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     font-weight: 500;
     color: var(--pm-danger-text);
 }
@@ -3289,7 +987,7 @@ select {
 }
 
 .pm-wizard-summary dt {
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     color: var(--pm-text-muted);
 }
 
@@ -3356,7 +1054,7 @@ select {
 
 .pm-party-contact {
     margin-top: 0.5rem;
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     color: var(--pm-text-muted);
 }
 
@@ -3365,7 +1063,7 @@ select {
     flex-wrap: wrap;
     gap: 0.25rem 1.25rem;
     margin-top: 0.5rem;
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     line-height: 1.5;
     color: var(--pm-text-muted);
 }
@@ -3433,73 +1131,6 @@ select {
     border-color: var(--pm-border);
 }
 
-#party-modal label {
-    color: var(--pm-text-muted);
-}
-
-#party-modal input:not([type="checkbox"]),
-#party-modal select,
-#party-modal textarea {
-    border-color: var(--pm-border);
-    background: var(--pm-surface);
-    color: var(--pm-text);
-}
-
-#party-modal input:not([type="checkbox"]):focus,
-#party-modal select:focus,
-#party-modal textarea:focus {
-    border-color: var(--pm-accent);
-}
-
-#party-modal input::placeholder,
-#party-modal textarea::placeholder {
-    color: var(--pm-text-subtle);
-}
-
-#party-modal input[type="checkbox"] {
-    accent-color: var(--pm-accent);
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Party Drawer — Final Visual Corrections
-|--------------------------------------------------------------------------
-*/
-
-/*
- * Legacy Party form headings still carry slate text utilities.
- * Force them onto the semantic drawer text colour in both themes.
- */
-
-/*
- * Supporting section descriptions remain visually secondary.
- */
-
-/*
- * Match the established V1.0.4 drawer footer:
- * Cancel + Save/Create share the available width equally.
- */
-#party-modal .pm-drawer-footer {
-    display: flex;
-    width: 100%;
-    gap: 0.75rem;
-}
-
-#party-modal .pm-drawer-footer
-.pm-button-secondary,
-#party-modal .pm-drawer-footer
-.pm-button-primary {
-    flex: 1 1 0;
-    width: 0;
-    min-width: 0;
-    min-height: 3rem;
-    justify-content: center;
-}
-
-/* END V1.0.4 Party Drawer — Final Visual Corrections */
-
-
 /*
 |--------------------------------------------------------------------------
 | V1.0.4 Party Drawer — Role Selection
@@ -3507,71 +1138,9 @@ select {
 */
 
 /*
- * Role choices should behave like compact selectable options rather than
- * oversized empty form fields.
+ * The role choices are .pm-option-row now — a selectable card rather than a
+ * tick in the margin — so this drawer no longer styles its own labels.
  */
-#party-modal label:has(input[type="checkbox"]) {
-    display: flex;
-    min-height: 3.25rem;
-
-    align-items: center;
-    gap: 0.75rem;
-
-    border: 1px solid var(--pm-border) !important;
-    border-radius: 0.75rem;
-
-    background: var(--pm-surface-subtle) !important;
-
-    padding: 0.75rem 1rem;
-
-    color: var(--pm-text-secondary) !important;
-
-    cursor: pointer;
-
-    transition:
-        border-color 150ms ease,
-        background-color 150ms ease,
-        color 150ms ease;
-}
-
-
-#party-modal label:has(input[type="checkbox"]):hover {
-    border-color: var(--pm-border-strong) !important;
-    background: var(--pm-hover) !important;
-    color: var(--pm-text) !important;
-}
-
-
-/*
- * Selected role.
- */
-#party-modal label:has(input[type="checkbox"]:checked) {
-    border-color: var(--color-patrimoine-500) !important;
-
-    background:
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 10%,
-            var(--pm-surface)
-        ) !important;
-
-    color: var(--pm-text) !important;
-}
-
-
-/*
- * Keep the native checkbox compact and aligned with its label.
- */
-#party-modal input[type="checkbox"] {
-    width: 1.125rem !important;
-    height: 1.125rem !important;
-
-    flex: 0 0 1.125rem;
-
-    margin: 0 !important;
-
-    accent-color: var(--pm-primary);
-}
 
 
 /*
@@ -3592,115 +1161,6 @@ select {
 
 
 /* END V1.0.4 Party Drawer — Role Selection */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Party Drawer — Compact Single Column
-|--------------------------------------------------------------------------
-|
-| Match the established Add Unit drawer:
-| - 28rem desktop width
-| - full width on mobile
-| - single-column form throughout
-|
-*/
-
-
-/* --------------------------------------------------------------------------
-   Drawer width — same as Properties > Add Unit
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Entire Party form becomes single-column
-   -------------------------------------------------------------------------- */
-
-#party-modal .pm-drawer-body .grid {
-    grid-template-columns:
-        minmax(0, 1fr) !important;
-}
-
-
-/*
- * Some existing fields use responsive col-span utilities.
- * Reset those so they cannot create implicit second columns.
- */
-
-#party-modal .md\:col-span-2,
-#party-modal .lg\:col-span-2,
-#party-modal .col-span-2 {
-    grid-column: auto !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Roles
-   -------------------------------------------------------------------------- */
-
-/*
- * Owner / Tenant / Agent should stack vertically in the compact drawer.
- */
-
-#party-modal label:has(input[type="checkbox"]) {
-    width: 100%;
-}
-
-
-/* --------------------------------------------------------------------------
-   Form spacing
-   -------------------------------------------------------------------------- */
-
-#party-modal .pm-drawer-body {
-    padding-left: 1.375rem;
-    padding-right: 1.375rem;
-}
-
-
-/* --------------------------------------------------------------------------
-   Footer remains two equal full-width actions
-   -------------------------------------------------------------------------- */
-
-#party-modal .pm-drawer-footer {
-    display: grid !important;
-
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr)) !important;
-
-    width: 100% !important;
-    gap: 0.75rem !important;
-}
-
-#party-modal .pm-drawer-footer
-.pm-button-secondary,
-#party-modal .pm-drawer-footer
-.pm-button-primary {
-    width: 100% !important;
-    min-width: 0 !important;
-    min-height: 3rem;
-
-    margin: 0 !important;
-
-    justify-content: center;
-}
-
-
-/* --------------------------------------------------------------------------
-   Mobile
-   -------------------------------------------------------------------------- */
-
-@media (max-width: 639px) {
-
-    #party-modal .pm-drawer-body {
-        padding-left: 1.125rem;
-        padding-right: 1.125rem;
-    }
-}
-
-
-/* END V1.0.4 Party Drawer — Compact Single Column */
-
-
 /*
 |--------------------------------------------------------------------------
 | V1.0.4 Add / Edit Lease Drawer
@@ -3722,64 +1182,6 @@ select {
 
     padding: 1.375rem;
 }
-
-
-/* --------------------------------------------------------------------------
-   Typography
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Inputs
-   -------------------------------------------------------------------------- */
-
-#lease-modal
-input:not([type="checkbox"]):not([type="hidden"]),
-#lease-modal
-select,
-#lease-modal
-textarea {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-input-background) !important;
-    color: var(--pm-text) !important;
-}
-
-#lease-modal
-input:not([type="checkbox"]):not([type="hidden"]):hover,
-#lease-modal
-select:hover,
-#lease-modal
-textarea:hover {
-    border-color: var(--pm-border-strong) !important;
-}
-
-#lease-modal
-input::placeholder,
-#lease-modal
-textarea::placeholder {
-    color: var(--pm-text-subtle) !important;
-    opacity: 1;
-}
-
-
-/* --------------------------------------------------------------------------
-   Unit search
-   -------------------------------------------------------------------------- */
-
-#lease-modal
-#lease-unit-results {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-elevated) !important;
-    color: var(--pm-text) !important;
-}
-
-#lease-modal
-#lease-unit-selection {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-subtle) !important;
-}
-
-
 /* --------------------------------------------------------------------------
    Checkbox
    -------------------------------------------------------------------------- */
@@ -3813,128 +1215,6 @@ input[type="checkbox"] {
 
 
 /* END V1.0.4 Add / Edit Lease Drawer */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Lease Drawer — Payment Width Visual Balance
-|--------------------------------------------------------------------------
-*/
-
-
-/* --------------------------------------------------------------------------
-   Narrower drawer grid
-   -------------------------------------------------------------------------- */
-
-/*
- * The Lease drawer now matches Record Payment width.
- *
- * Its old modal was wide enough for 3-4 columns. At the standard drawer
- * width, two columns provide substantially better label and control
- * readability.
- */
-
-@media (min-width: 768px) {
-    #lease-modal
-    .md\:grid-cols-2,
-    #lease-modal
-    .xl\:grid-cols-3,
-    #lease-modal
-    .xl\:grid-cols-4 {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr)) !important;
-    }
-}
-
-
-/* --------------------------------------------------------------------------
-   Remove legacy white surfaces in dark theme
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Consumable Advance calculated display
-   -------------------------------------------------------------------------- */
-
-#lease-modal
-#lease-consumable-advance {
-    border-color: var(--pm-border) !important;
-
-    background:
-        var(--pm-surface-subtle) !important;
-
-    color: var(--pm-text-secondary) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Disabled controls
-   -------------------------------------------------------------------------- */
-
-#lease-modal
-input:disabled,
-#lease-modal
-select:disabled,
-#lease-modal
-textarea:disabled {
-    border-color: var(--pm-border) !important;
-
-    background:
-        var(--pm-surface-subtle) !important;
-
-    color: var(--pm-text-muted) !important;
-
-    opacity: 1 !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Advance Already Received option
-   -------------------------------------------------------------------------- */
-
-/*
- * The legacy option container carries light-only utility colours.
- * Normalize the entire card containing the checkbox.
- */
-
-#lease-modal
-label:has(#lease-advance-received),
-#lease-modal
-div:has(> #lease-advance-received) {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-subtle) !important;
-    color: var(--pm-text) !important;
-}
-
-
-/*
- * Text nested in the Advance Received option should remain readable.
- */
-
-
-/*
- * Checkbox itself.
- */
-#lease-modal
-#lease-advance-received {
-    width: 1.125rem !important;
-    height: 1.125rem !important;
-
-    flex: 0 0 1.125rem;
-
-    accent-color:
-        var(--pm-primary);
-}
-
-
-/* --------------------------------------------------------------------------
-   Keep footer actions balanced
-   -------------------------------------------------------------------------- */
-
-
-/* END V1.0.4 Lease Drawer — Payment Width Visual Balance */
-
-
 /*
 |--------------------------------------------------------------------------
 | V1.0.4 Lease Help + Date Controls
@@ -3944,73 +1224,11 @@ div:has(> #lease-advance-received) {
 
 /* --------------------------------------------------------------------------
    Help question-mark trigger
+   --------------------------------------------------------------------------
+   The trigger itself is [data-field-help] in components.css: it used to be
+   scoped to this drawer, which meant the same control looked different
+   anywhere else it appeared. What stays here is the tooltip it opens.
    -------------------------------------------------------------------------- */
-
-#lease-modal [data-field-help] {
-    display: inline-flex !important;
-
-    width: 1.125rem !important;
-    height: 1.125rem !important;
-
-    flex: 0 0 1.125rem !important;
-
-    margin-left: 0.25rem !important;
-
-    align-items: center !important;
-    justify-content: center !important;
-
-    border: 1px solid var(--pm-text-subtle) !important;
-    border-radius: 9999px !important;
-
-    background: transparent !important;
-    color: var(--pm-text-muted) !important;
-
-    font-size: 0.6875rem !important;
-    font-weight: 600 !important;
-    line-height: 1 !important;
-
-    box-shadow: none !important;
-
-    cursor: help;
-
-    transition:
-        border-color 150ms ease,
-        background-color 150ms ease,
-        color 150ms ease,
-        box-shadow 150ms ease,
-        transform 150ms ease;
-}
-
-#lease-modal [data-field-help]:hover {
-    border-color: var(--color-patrimoine-500) !important;
-
-    background:
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 12%,
-            transparent
-        ) !important;
-
-    color: var(--color-patrimoine-400) !important;
-
-    transform: translateY(-1px);
-}
-
-#lease-modal [data-field-help]:focus-visible {
-    outline: none !important;
-
-    border-color: var(--color-patrimoine-500) !important;
-    color: var(--color-patrimoine-400) !important;
-
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 18%,
-            transparent
-        ) !important;
-}
-
 
 /* --------------------------------------------------------------------------
    Help tooltip
@@ -4021,23 +1239,23 @@ div:has(> #lease-advance-received) {
     max-width: min(
         22rem,
         calc(100vw - 2rem)
-    ) !important;
+    );
 
-    padding: 0.75rem 0.875rem !important;
+    padding: 0.75rem 0.875rem;
 
-    border: 1px solid var(--pm-border) !important;
-    border-radius: 0.625rem !important;
+    border: 1px solid var(--pm-border);
+    border-radius: 0.5rem;
 
-    background: var(--pm-surface-elevated) !important;
-    color: var(--pm-text) !important;
+    background: var(--pm-surface-elevated);
+    color: var(--pm-text);
 
-    font-size: 0.8125rem !important;
-    line-height: 1.45 !important;
-    font-weight: 400 !important;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    font-weight: 400;
 
     box-shadow:
         0 0.75rem 2rem
-        rgb(0 0 0 / 0.20) !important;
+        rgb(0 0 0 / 0.20);
 }
 
 
@@ -4054,7 +1272,7 @@ div:has(> #lease-advance-received) {
 .pm-lease-date-control
 [data-lease-date-input] {
     width: 100%;
-    padding-right: 2.75rem !important;
+    padding-right: 2.75rem;
 }
 
 #lease-modal .pm-lease-date-picker-button {
@@ -4073,7 +1291,7 @@ div:has(> #lease-advance-received) {
     align-items: center;
     justify-content: center;
 
-    border-radius: 0.45rem;
+    border-radius: 0.375rem;
 
     color: var(--pm-text-muted);
 
@@ -4116,1460 +1334,20 @@ svg {
  * register filter and the rent-increments drawer).
  */
 .pm-lease-native-date-picker {
-    position: absolute !important;
+    position: absolute;
 
-    width: 1px !important;
-    height: 1px !important;
+    width: 1px;
+    height: 1px;
 
-    overflow: hidden !important;
+    overflow: hidden;
 
-    opacity: 0 !important;
+    opacity: 0;
 
-    pointer-events: none !important;
+    pointer-events: none;
 }
 
 
 /* END V1.0.4 Lease Help + Date Controls */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Tenant Funds Drawer
-|--------------------------------------------------------------------------
-|
-| IMPORTANT:
-| This is #tenant-funds-modal (plural), used by Lease > Tenant Funds.
-| It is unrelated to the existing #tenant-fund-modal workflow.
-|
-*/
-
-
-/* --------------------------------------------------------------------------
-   Scrollable drawer workspace
-   -------------------------------------------------------------------------- */
-
-#tenant-funds-modal
-.pm-tenant-funds-drawer-body {
-    min-height: 0;
-    flex: 1 1 auto;
-
-    overflow-x: hidden;
-    overflow-y: auto;
-
-    padding: 1.375rem;
-}
-
-
-/* --------------------------------------------------------------------------
-   Legacy theme remapping
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Balance position cards
-   -------------------------------------------------------------------------- */
-
-#tenant-funds-modal
-#tenant-funds-content
-> section:first-child
-> .grid {
-    grid-template-columns:
-        minmax(0, 1fr) !important;
-
-    gap: 0.75rem !important;
-}
-
-#tenant-funds-modal
-#tenant-funds-content
-> section:first-child
-> .grid
-> div {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-subtle) !important;
-
-    padding: 1rem !important;
-}
-
-#tenant-funds-modal
-#tenant-funds-reserve-balance,
-#tenant-funds-modal
-#tenant-funds-advance-balance,
-#tenant-funds-modal
-#tenant-funds-security-balance {
-    color: var(--pm-text) !important;
-}
-
-
-/*
- * Security Deposit hand-off should look like a deliberate secondary action.
- */
-#tenant-funds-modal
-#tenant-funds-security-manage {
-    display: inline-flex;
-    align-items: center;
-
-    margin-top: 0.75rem;
-
-    color: var(--color-patrimoine-600) !important;
-
-    font-size: 0.8125rem;
-    font-weight: 600;
-
-    transition:
-        color 150ms ease,
-        transform 150ms ease;
-}
-
-#tenant-funds-modal
-#tenant-funds-security-manage:hover {
-    color: var(--color-patrimoine-500) !important;
-    transform: translateX(2px);
-}
-
-
-/* --------------------------------------------------------------------------
-   Operational sections
-   -------------------------------------------------------------------------- */
-
-#tenant-funds-modal
-#tenant-funds-content
-> section:not(:first-child) {
-    border-color: var(--pm-border) !important;
-}
-
-
-/*
- * Legacy forms were four columns in a max-w-5xl dialog.
- * At the standard drawer width, two columns are much more readable.
- */
-@media (min-width: 640px) {
-    #tenant-funds-modal
-    #tenant-funds-reserve-form,
-    #tenant-funds-modal
-    #tenant-funds-advance-form {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr)) !important;
-    }
-
-    #tenant-funds-modal
-    #tenant-funds-reserve-form
-    .md\:col-span-2,
-    #tenant-funds-modal
-    #tenant-funds-advance-form
-    .md\:col-span-2 {
-        grid-column:
-            span 2 / span 2 !important;
-    }
-
-    #tenant-funds-modal
-    #tenant-funds-reserve-form
-    .md\:col-span-4,
-    #tenant-funds-modal
-    #tenant-funds-advance-form
-    .md\:col-span-4 {
-        grid-column:
-            span 2 / span 2 !important;
-    }
-}
-
-
-/* --------------------------------------------------------------------------
-   Inputs
-   -------------------------------------------------------------------------- */
-
-#tenant-funds-modal
-input,
-#tenant-funds-modal
-select {
-    border-color: var(--pm-border) !important;
-
-    background:
-        var(--pm-input-background) !important;
-
-    color: var(--pm-text) !important;
-
-    outline: none;
-
-    transition:
-        border-color 150ms ease,
-        box-shadow 150ms ease;
-}
-
-#tenant-funds-modal
-input:hover,
-#tenant-funds-modal
-select:hover {
-    border-color:
-        var(--pm-border-strong) !important;
-}
-
-#tenant-funds-modal
-input:focus,
-#tenant-funds-modal
-select:focus {
-    border-color:
-        var(--color-patrimoine-500) !important;
-
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 15%,
-            transparent
-        );
-}
-
-#tenant-funds-modal
-select:disabled {
-    background:
-        var(--pm-surface-subtle) !important;
-
-    color:
-        var(--pm-text-muted) !important;
-
-    opacity: 1;
-}
-
-
-/* --------------------------------------------------------------------------
-   Empty / unavailable states
-   -------------------------------------------------------------------------- */
-
-#tenant-funds-modal
-#tenant-funds-advance-unavailable {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-surface-subtle) !important;
-    color: var(--pm-text-secondary) !important;
-}
-
-
-/*
- * Keep reserve protection visually distinct without the bright
- * light-theme yellow box.
- */
-#tenant-funds-modal
-#tenant-funds-reserve-unavailable {
-    border-color:
-        color-mix(
-            in srgb,
-            #d97706 35%,
-            var(--pm-border)
-        ) !important;
-
-    background:
-        color-mix(
-            in srgb,
-            #d97706 8%,
-            var(--pm-surface)
-        ) !important;
-
-    color: var(--pm-text-secondary) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Operational submit actions
-   -------------------------------------------------------------------------- */
-
-#tenant-funds-modal
-#tenant-funds-reserve-submit,
-#tenant-funds-modal
-#tenant-funds-advance-submit {
-    min-height: 2.75rem;
-
-    border-radius: 0.5rem;
-
-    background:
-        var(--color-patrimoine-950);
-
-    color: white;
-
-    transition:
-        background-color 150ms ease,
-        opacity 150ms ease;
-}
-
-/* V1.0.7: hover handled by .pm-button-primary. */
-
-
-/* --------------------------------------------------------------------------
-   Mobile
-   -------------------------------------------------------------------------- */
-
-@media (max-width: 639px) {
-    #tenant-funds-modal
-    .pm-tenant-funds-drawer-body {
-        padding: 1.125rem;
-    }
-
-    #tenant-funds-modal
-    #tenant-funds-reserve-form,
-    #tenant-funds-modal
-    #tenant-funds-advance-form {
-        grid-template-columns:
-            minmax(0, 1fr) !important;
-    }
-
-    #tenant-funds-modal
-    #tenant-funds-reserve-form
-    > *,
-    #tenant-funds-modal
-    #tenant-funds-advance-form
-    > * {
-        grid-column: auto !important;
-    }
-
-    #tenant-funds-modal
-    #tenant-funds-reserve-submit,
-    #tenant-funds-modal
-    #tenant-funds-advance-submit {
-        width: 100%;
-    }
-}
-
-
-/* END V1.0.4 Tenant Funds Drawer */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Tenant Funds Drawer — Match Party Drawer Width
-|--------------------------------------------------------------------------
-|
-| Fonds du locataire contains more operational content than a basic form,
-| but it does not need the wider Lease/Payment workspace width.
-|
-| Match the compact Add/Edit Party drawer while leaving all shared drawer
-| width tokens and other workflows unchanged.
-|
-*/
-
-
-/*
- * At this width the financial-position cards remain much easier to scan
- * vertically than trying to force them into multiple columns.
- */
-#tenant-funds-modal
-#tenant-funds-content
-> section:first-child
-> .grid {
-    grid-template-columns:
-        minmax(0, 1fr) !important;
-}
-
-
-/*
- * Operational forms also become a single-column workflow.
- *
- * This avoids compressed Invoice / Amount / Date controls inside the
- * compact drawer.
- */
-#tenant-funds-modal
-#tenant-funds-reserve-form,
-#tenant-funds-modal
-#tenant-funds-advance-form {
-    grid-template-columns:
-        minmax(0, 1fr) !important;
-}
-
-#tenant-funds-modal
-#tenant-funds-reserve-form
-.md\:col-span-2,
-#tenant-funds-modal
-#tenant-funds-reserve-form
-.md\:col-span-4,
-#tenant-funds-modal
-#tenant-funds-advance-form
-.md\:col-span-2,
-#tenant-funds-modal
-#tenant-funds-advance-form
-.md\:col-span-4 {
-    grid-column: auto !important;
-}
-
-
-/*
- * Application buttons should use the available drawer width when their
- * corresponding operation is available.
- */
-#tenant-funds-modal
-#tenant-funds-reserve-submit,
-#tenant-funds-modal
-#tenant-funds-advance-submit {
-    width: 100%;
-}
-
-
-/*
- * Mobile remains a full-width drawer.
- */
-
-
-/* END V1.0.4 Tenant Funds Drawer — Match Party Drawer Width */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Tenant Funds — Operational Form Consistency
-|--------------------------------------------------------------------------
-*/
-
-
-/* --------------------------------------------------------------------------
-   Both unavailable states use one visual language
-   -------------------------------------------------------------------------- */
-
-#tenant-funds-modal
-#tenant-funds-reserve-unavailable,
-#tenant-funds-modal
-#tenant-funds-advance-unavailable {
-    width: 100%;
-
-    border:
-        1px solid
-        var(--pm-border) !important;
-
-    border-radius:
-        0.625rem !important;
-
-    background:
-        var(--pm-surface-subtle) !important;
-
-    padding:
-        0.875rem 1rem !important;
-
-    color:
-        var(--pm-text-secondary) !important;
-
-    font-size:
-        0.875rem !important;
-
-    line-height:
-        1.45 !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Consistent operational spacing
-   -------------------------------------------------------------------------- */
-
-#tenant-funds-modal
-#tenant-funds-reserve-form,
-#tenant-funds-modal
-#tenant-funds-advance-form {
-    gap: 1rem !important;
-}
-
-#tenant-funds-modal
-#tenant-funds-reserve-form
-label,
-#tenant-funds-modal
-#tenant-funds-advance-form
-label {
-    margin-bottom:
-        0.375rem !important;
-
-    color:
-        var(--pm-text) !important;
-
-    font-size:
-        0.875rem !important;
-
-    font-weight:
-        600 !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Consistent field height
-   -------------------------------------------------------------------------- */
-
-#tenant-funds-modal
-#tenant-funds-reserve-form
-input:not(.pm-tenant-funds-native-date-picker),
-#tenant-funds-modal
-#tenant-funds-reserve-form
-select,
-#tenant-funds-modal
-#tenant-funds-advance-form
-input:not(.pm-tenant-funds-native-date-picker),
-#tenant-funds-modal
-#tenant-funds-advance-form
-select {
-    min-height:
-        2.875rem !important;
-
-    border-radius:
-        0.625rem !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   DD-MM-YYYY + calendar button
-   -------------------------------------------------------------------------- */
-
-#tenant-funds-modal
-.pm-tenant-funds-date-control {
-    position: relative;
-    width: 100%;
-}
-
-#tenant-funds-modal
-.pm-tenant-funds-date-control
-[data-tenant-funds-date-input] {
-    width: 100%;
-
-    padding-right:
-        2.75rem !important;
-}
-
-#tenant-funds-modal
-.pm-tenant-funds-date-picker-button {
-    position: absolute;
-
-    top: 50%;
-    right: 0.5rem;
-
-    display: inline-flex;
-
-    width: 2rem;
-    height: 2rem;
-
-    transform:
-        translateY(-50%);
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius:
-        0.45rem;
-
-    color:
-        var(--pm-text-muted);
-
-    transition:
-        background-color 150ms ease,
-        color 150ms ease;
-}
-
-#tenant-funds-modal
-.pm-tenant-funds-date-picker-button:hover {
-    background:
-        var(--pm-hover);
-
-    color:
-        var(--pm-text);
-}
-
-#tenant-funds-modal
-.pm-tenant-funds-date-picker-button:focus-visible {
-    outline: none;
-
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 18%,
-            transparent
-        );
-}
-
-#tenant-funds-modal
-.pm-tenant-funds-date-picker-button
-svg {
-    width: 1rem;
-    height: 1rem;
-}
-
-#tenant-funds-modal
-.pm-tenant-funds-native-date-picker {
-    position: absolute !important;
-
-    width: 1px !important;
-    height: 1px !important;
-
-    overflow: hidden !important;
-
-    opacity: 0 !important;
-
-    pointer-events: none !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Disabled action presentation
-   -------------------------------------------------------------------------- */
-
-#tenant-funds-modal
-#tenant-funds-reserve-submit,
-#tenant-funds-modal
-#tenant-funds-advance-submit {
-    width: 100% !important;
-
-    min-height:
-        2.875rem !important;
-
-    margin-top:
-        0.125rem;
-
-    display: inline-flex;
-
-    align-items: center;
-    justify-content: center;
-
-    font-size:
-        0.875rem;
-
-    font-weight:
-        600;
-}
-
-#tenant-funds-modal
-#tenant-funds-reserve-submit:disabled,
-#tenant-funds-modal
-#tenant-funds-advance-submit:disabled {
-    background:
-        var(--pm-surface-subtle) !important;
-
-    color:
-        var(--pm-text-subtle) !important;
-
-    opacity:
-        1 !important;
-
-    cursor:
-        not-allowed;
-}
-
-
-/* END V1.0.4 Tenant Funds — Operational Form Consistency */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Security Deposit Drawer
-|--------------------------------------------------------------------------
-*/
-
-
-/* Same compact desktop width as Party and Tenant Funds. */
-
-
-/* Scrollable operational workspace. */
-#security-deposit-modal
-.pm-security-deposit-drawer-body {
-    min-height: 0;
-    flex: 1 1 auto;
-
-    overflow-x: hidden;
-    overflow-y: auto;
-
-    padding: 1.375rem;
-}
-
-
-/* Legacy colours -> semantic drawer theme. */
-
-
-/*
- * Five financial-position cards must stack in the compact drawer.
- */
-#security-deposit-modal
-#security-deposit-content
-> section:first-child
-> .grid {
-    grid-template-columns:
-        minmax(0, 1fr) !important;
-
-    gap: 0.75rem !important;
-}
-
-#security-deposit-modal
-#security-deposit-content
-> section:first-child
-> .grid
-> div {
-    border-color: var(--pm-border) !important;
-    border-radius: 0.75rem;
-
-    padding: 1rem !important;
-}
-
-
-/* Operational separators. */
-#security-deposit-modal
-#security-deposit-content
-> section:not(:first-child) {
-    border-color: var(--pm-border) !important;
-}
-
-
-/*
- * Deduction / settlement forms were designed for a wide modal.
- * Force a clean single-column workflow in 28rem.
- */
-#security-deposit-modal
-#security-deduction-form
-.grid,
-#security-deposit-modal
-#security-settlement-form
-.grid {
-    grid-template-columns:
-        minmax(0, 1fr) !important;
-}
-
-#security-deposit-modal
-#security-deduction-form
-.md\:col-span-2,
-#security-deposit-modal
-#security-settlement-form
-.md\:col-span-2 {
-    grid-column: auto !important;
-}
-
-
-/* Form controls. */
-#security-deposit-modal
-input,
-#security-deposit-modal
-select,
-#security-deposit-modal
-textarea {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-input-background) !important;
-    color: var(--pm-text) !important;
-
-    outline: none;
-}
-
-#security-deposit-modal
-input:hover,
-#security-deposit-modal
-select:hover,
-#security-deposit-modal
-textarea:hover {
-    border-color: var(--pm-border-strong) !important;
-}
-
-#security-deposit-modal
-input:focus,
-#security-deposit-modal
-select:focus,
-#security-deposit-modal
-textarea:focus {
-    border-color: var(--color-patrimoine-500) !important;
-
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 15%,
-            transparent
-        );
-}
-
-
-/* Operational buttons occupy the compact drawer width. */
-#security-deposit-modal
-#security-deduction-submit,
-#security-deposit-modal
-#security-settlement-submit {
-    width: 100%;
-
-    min-height: 2.875rem;
-
-    justify-content: center;
-}
-
-
-/* Mobile remains full width. */
-@media (max-width: 639px) {
-
-    #security-deposit-modal
-    .pm-security-deposit-drawer-body {
-        padding: 1.125rem;
-    }
-}
-
-
-/* END V1.0.4 Security Deposit Drawer */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Security Deposit Drawer — Operational Form Cleanup
-|--------------------------------------------------------------------------
-*/
-
-
-/* Deduction form is one linear column in the compact drawer. */
-#security-deposit-modal
-#security-deposit-deduction-form
-.grid {
-    display: grid !important;
-
-    grid-template-columns:
-        minmax(0, 1fr) !important;
-
-    gap: 1rem !important;
-}
-
-#security-deposit-modal
-#security-deposit-deduction-form
-.grid
-> * {
-    grid-column: auto !important;
-    width: 100% !important;
-}
-
-
-/* Settlement form is also one linear column. */
-#security-deposit-modal
-#security-deposit-settlement-form
-.grid {
-    display: grid !important;
-
-    grid-template-columns:
-        minmax(0, 1fr) !important;
-
-    gap: 1rem !important;
-}
-
-#security-deposit-modal
-#security-deposit-settlement-form
-.grid
-> * {
-    grid-column: auto !important;
-    width: 100% !important;
-}
-
-
-/* Normalize both operational form containers. */
-#security-deposit-modal
-#security-deposit-deduction-form,
-#security-deposit-modal
-#security-deposit-settlement-form {
-    border-color: var(--pm-border) !important;
-
-    background:
-        var(--pm-surface-subtle) !important;
-
-    padding:
-        1rem !important;
-}
-
-
-/* DD-MM-YYYY visible control. */
-#security-deposit-modal
-.pm-security-date-control {
-    position: relative;
-    width: 100%;
-}
-
-#security-deposit-modal
-.pm-security-date-control
-[data-security-date-input] {
-    width: 100%;
-
-    padding-right:
-        3rem !important;
-}
-
-
-/* Calendar trigger. */
-#security-deposit-modal
-.pm-security-date-picker-button {
-    position: absolute;
-
-    top: 50%;
-    right: 0.5rem;
-
-    display: inline-flex;
-
-    width: 2rem;
-    height: 2rem;
-
-    transform: translateY(-50%);
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 0.45rem;
-
-    color: var(--pm-text-muted);
-
-    transition:
-        background-color 150ms ease,
-        color 150ms ease;
-}
-
-#security-deposit-modal
-.pm-security-date-picker-button:hover {
-    background: var(--pm-hover);
-    color: var(--pm-text);
-}
-
-#security-deposit-modal
-.pm-security-date-picker-button
-svg {
-    width: 1rem;
-    height: 1rem;
-}
-
-
-/* Keep native date input only as calendar engine. */
-#security-deposit-modal
-.pm-security-native-date-picker {
-    position: absolute !important;
-
-    width: 1px !important;
-    height: 1px !important;
-
-    overflow: hidden !important;
-
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
-
-/* Both operational actions use full available width. */
-#security-deposit-modal
-#security-deduction-submit,
-#security-deposit-modal
-#security-settlement-submit {
-    width: 100% !important;
-
-    min-height: 2.875rem;
-
-    margin: 0 !important;
-
-    justify-content: center;
-}
-
-
-/*
- * During visual preview the actions are disabled.
- * Keep them deliberately muted rather than navy/green.
- */
-#security-deposit-modal
-#security-deduction-submit:disabled,
-#security-deposit-modal
-#security-settlement-submit:disabled {
-    background:
-        var(--pm-surface-subtle) !important;
-
-    color:
-        var(--pm-text-subtle) !important;
-
-    opacity: 1 !important;
-
-    cursor: not-allowed;
-}
-
-
-/* Dark-mode-friendly lifecycle warning. */
-#security-deposit-modal
-#security-deposit-lifecycle-message {
-    border-color:
-        color-mix(
-            in srgb,
-            #d97706 35%,
-            var(--pm-border)
-        ) !important;
-
-    background:
-        color-mix(
-            in srgb,
-            #d97706 8%,
-            var(--pm-surface)
-        ) !important;
-
-    color:
-        var(--pm-text-secondary) !important;
-}
-
-
-/* Final settlement irreversible warning. */
-
-
-/* Refund card — positive but restrained. */
-
-
-/* Tenant debt — negative but restrained. */
-
-
-/* END V1.0.4 Security Deposit Drawer — Operational Form Cleanup */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Security Deposit Drawer — Dark Mode Final Polish
-|--------------------------------------------------------------------------
-|
-| Final semantic treatment for:
-| - summary cards
-| - refund / tenant-debt states
-| - lifecycle warnings
-| - empty deduction state
-| - deduction / settlement form surfaces
-| - inputs
-| - disabled operational actions
-|
-*/
-
-
-/* --------------------------------------------------------------------------
-   Overall nested surfaces
-   -------------------------------------------------------------------------- */
-
-#security-deposit-modal
-#security-deposit-content {
-    color: var(--pm-text);
-}
-
-
-#security-deposit-modal
-#security-deposit-content
-section {
-    border-color:
-        var(--pm-border) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Position summary cards
-   -------------------------------------------------------------------------- */
-
-#security-deposit-modal
-#security-deposit-content
-> section:first-child
-> .grid
-> div {
-    border:
-        1px solid
-        var(--pm-border) !important;
-
-    background:
-        var(--pm-surface-subtle) !important;
-
-    box-shadow:
-        none !important;
-}
-
-
-/*
- * Ordinary summary-card labels.
- */
-
-
-/*
- * Ordinary summary values.
- */
-#security-deposit-modal
-#security-deposit-contractual,
-#security-deposit-modal
-#security-deposit-held,
-#security-deposit-modal
-#security-deposit-deduction-total {
-    color:
-        var(--pm-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Refund card
-   -------------------------------------------------------------------------- */
-
-/*
- * Keep positive semantics without the saturated green appearance.
- */
-#security-deposit-modal
-#security-deposit-refund {
-    color:
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 72%,
-            var(--pm-text)
-        ) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Tenant-debt card
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Lifecycle warning
-   -------------------------------------------------------------------------- */
-
-#security-deposit-modal
-#security-deposit-lifecycle-message {
-    border:
-        1px solid
-        color-mix(
-            in srgb,
-            #d97706 28%,
-            var(--pm-border)
-        ) !important;
-
-    background:
-        color-mix(
-            in srgb,
-            #d97706 5%,
-            var(--pm-surface-subtle)
-        ) !important;
-
-    color:
-        var(--pm-text-secondary) !important;
-
-    line-height:
-        1.5;
-}
-
-
-/* --------------------------------------------------------------------------
-   Section headings
-   -------------------------------------------------------------------------- */
-
-
-#security-deposit-modal
-#security-deposit-content
-h3 + p {
-    color:
-        var(--pm-text-muted) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Empty deduction state
-   -------------------------------------------------------------------------- */
-
-#security-deposit-modal
-#security-deposit-deductions
-> div {
-    border-color:
-        var(--pm-border) !important;
-
-    background:
-        transparent !important;
-
-    color:
-        var(--pm-text-muted) !important;
-}
-
-
-/*
- * Dashed empty state should be intentionally quiet.
- */
-#security-deposit-modal
-#security-deposit-deductions
-.border-dashed {
-    border-style:
-        dashed !important;
-
-    border-color:
-        color-mix(
-            in srgb,
-            var(--pm-border-strong) 65%,
-            transparent
-        ) !important;
-
-    background:
-        color-mix(
-            in srgb,
-            var(--pm-surface-subtle) 45%,
-            transparent
-        ) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Deduction + settlement containers
-   -------------------------------------------------------------------------- */
-
-#security-deposit-modal
-#security-deposit-deduction-form,
-#security-deposit-modal
-#security-deposit-settlement-form {
-    border:
-        1px solid
-        var(--pm-border) !important;
-
-    background:
-        color-mix(
-            in srgb,
-            var(--pm-surface-subtle) 72%,
-            var(--pm-surface)
-        ) !important;
-
-    box-shadow:
-        none !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Labels
-   -------------------------------------------------------------------------- */
-
-#security-deposit-modal
-#security-deposit-deduction-form
-label,
-#security-deposit-modal
-#security-deposit-settlement-form
-label {
-    color:
-        var(--pm-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Inputs
-   -------------------------------------------------------------------------- */
-
-#security-deposit-modal
-#security-deposit-deduction-form
-input,
-#security-deposit-modal
-#security-deposit-deduction-form
-textarea,
-#security-deposit-modal
-#security-deposit-settlement-form
-input,
-#security-deposit-modal
-#security-deposit-settlement-form
-textarea {
-    border:
-        1px solid
-        var(--pm-border) !important;
-
-    background:
-        var(--pm-input-background) !important;
-
-    color:
-        var(--pm-text) !important;
-
-    box-shadow:
-        none !important;
-
-    transition:
-        border-color 150ms ease,
-        background-color 150ms ease,
-        box-shadow 150ms ease;
-}
-
-
-#security-deposit-modal
-#security-deposit-deduction-form
-input:hover,
-#security-deposit-modal
-#security-deposit-deduction-form
-textarea:hover,
-#security-deposit-modal
-#security-deposit-settlement-form
-input:hover,
-#security-deposit-modal
-#security-deposit-settlement-form
-textarea:hover {
-    border-color:
-        var(--pm-border-strong) !important;
-}
-
-
-#security-deposit-modal
-#security-deposit-deduction-form
-input:focus,
-#security-deposit-modal
-#security-deposit-deduction-form
-textarea:focus,
-#security-deposit-modal
-#security-deposit-settlement-form
-input:focus,
-#security-deposit-modal
-#security-deposit-settlement-form
-textarea:focus {
-    border-color:
-        var(--color-patrimoine-500) !important;
-
-    box-shadow:
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-patrimoine-500) 14%,
-            transparent
-        ) !important;
-}
-
-
-/*
- * Placeholders should be visible, but clearly secondary.
- */
-#security-deposit-modal
-#security-deposit-deduction-form
-input::placeholder,
-#security-deposit-modal
-#security-deposit-deduction-form
-textarea::placeholder,
-#security-deposit-modal
-#security-deposit-settlement-form
-input::placeholder,
-#security-deposit-modal
-#security-deposit-settlement-form
-textarea::placeholder {
-    color:
-        var(--pm-text-subtle) !important;
-
-    opacity:
-        1;
-}
-
-
-/* --------------------------------------------------------------------------
-   Calendar action
-   -------------------------------------------------------------------------- */
-
-#security-deposit-modal
-.pm-security-date-picker-button {
-    color:
-        var(--pm-text-muted) !important;
-}
-
-
-#security-deposit-modal
-.pm-security-date-picker-button:hover {
-    background:
-        var(--pm-hover) !important;
-
-    color:
-        var(--pm-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Final settlement warning
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Operational buttons
-   -------------------------------------------------------------------------- */
-
-/*
- * Enabled state follows Patrimoine's primary action treatment.
- */
-#security-deposit-modal
-#security-deduction-submit:not(:disabled),
-#security-deposit-modal
-#security-settlement-submit:not(:disabled) {
-    border:
-        1px solid
-        transparent !important;
-
-    background:
-        var(--color-patrimoine-950) !important;
-
-    color:
-        white !important;
-}
-
-
-/* V1.0.7: hover handled by .pm-button-primary. */
-
-
-/*
- * Disabled actions should still look like controls.
- *
- * Previously the button background almost disappeared into the form,
- * making the label look like loose text.
- */
-#security-deposit-modal
-#security-deduction-submit:disabled,
-#security-deposit-modal
-#security-settlement-submit:disabled {
-    border:
-        1px solid
-        var(--pm-border) !important;
-
-    background:
-        color-mix(
-            in srgb,
-            var(--pm-surface-subtle) 82%,
-            var(--pm-surface)
-        ) !important;
-
-    color:
-        var(--pm-text-subtle) !important;
-
-    opacity:
-        1 !important;
-
-    cursor:
-        not-allowed !important;
-
-    box-shadow:
-        none !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Drawer separators
-   -------------------------------------------------------------------------- */
-
-#security-deposit-modal
-#security-deposit-content
-> section {
-    border-color:
-        var(--pm-border) !important;
-}
-
-
-/* END V1.0.4 Security Deposit Drawer — Dark Mode Final Polish */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Security Deposit Drawer — Unavailable State
-|--------------------------------------------------------------------------
-|
-| The pre-termination Security Deposit message is an availability state,
-| not a warning.
-|
-| Match the Tenant Funds unavailable-state visual language in both light
-| and dark mode. Final-settlement warnings remain amber and unchanged.
-|
-*/
-
-#security-deposit-modal
-#security-deposit-lifecycle-message {
-    border: 1px solid var(--pm-border) !important;
-    border-radius: 0.75rem !important;
-
-    background:
-        var(--pm-surface-subtle) !important;
-
-    padding:
-        1rem 1.25rem !important;
-
-    color:
-        var(--pm-text-secondary) !important;
-
-    font-size: 0.875rem !important;
-    line-height: 1.5rem !important;
-}
-
-
-/*
- * The legacy Blade markup still contains amber utility classes.
- * Prevent those utilities from visually overriding this neutral
- * unavailable state.
- */
-
-
-/* END V1.0.4 Security Deposit Drawer — Unavailable State */
-
-
-
-
 /*
 |--------------------------------------------------------------------------
 | V1.0.4 Payments Workspace
@@ -5725,280 +1503,6 @@ textarea::placeholder {
 
 
 /* END V1.0.4 Record Payment — DD-MM-YYYY Date Control */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Users Workspace — Final Dark / Light Theme Normalisation
-|--------------------------------------------------------------------------
-|
-| The User register is dynamically rendered by users.js and still contains
-| legacy Tailwind slate/white utilities. Normalise those generated elements
-| through the semantic Patrimoine theme instead of duplicating theme logic
-| inside JavaScript.
-|
-*/
-
-
-/* --------------------------------------------------------------------------
-   Register surface
-   -------------------------------------------------------------------------- */
-
-#users-workspace > section {
-    border-color:
-        var(--pm-border) !important;
-
-    background:
-        var(--pm-surface) !important;
-
-    color:
-        var(--pm-text);
-}
-
-
-#users-workspace > section > div:first-child {
-    border-color:
-        var(--pm-border) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Filters
-   -------------------------------------------------------------------------- */
-
-#users-workspace
-#users-search,
-#users-workspace
-#users-role-filter,
-#users-workspace
-#users-status-filter {
-    border-color:
-        var(--pm-border) !important;
-
-    background:
-        var(--pm-input-background) !important;
-
-    color:
-        var(--pm-text) !important;
-}
-
-
-#users-workspace
-#users-search::placeholder {
-    color:
-        var(--pm-text-subtle) !important;
-}
-
-
-#users-workspace
-label {
-    color:
-        var(--pm-text-muted) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   User rows
-   -------------------------------------------------------------------------- */
-
-#users-workspace
-#users-list {
-    color:
-        var(--pm-text);
-}
-
-
-#users-workspace
-#users-list > article {
-    border-color:
-        var(--pm-border) !important;
-
-    background:
-        transparent;
-
-    transition:
-        background-color 150ms ease;
-}
-
-
-#users-workspace
-#users-list > article:hover {
-    background:
-        var(--pm-hover);
-}
-
-
-/*
- * User name.
- *
- * users.js still emits legacy text-slate-950.
- */
-
-
-/*
- * E-mail, role, phone and other supporting metadata.
- */
-
-
-/* --------------------------------------------------------------------------
-   "You" badge
-   -------------------------------------------------------------------------- */
-
-
-#users-workspace
-#users-list
-.text-patrimoine-700 {
-    color:
-        var(--color-patrimoine-400) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Active / inactive status pills
-   -------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------
-   Standard row actions
-   -------------------------------------------------------------------------- */
-
-#users-workspace
-#users-list
-button:not([data-delete-user]) {
-    border-color:
-        var(--pm-border) !important;
-
-    background:
-        var(--pm-surface-subtle) !important;
-
-    color:
-        var(--pm-text-secondary) !important;
-
-    box-shadow:
-        none !important;
-
-    transition:
-        border-color 150ms ease,
-        background-color 150ms ease,
-        color 150ms ease;
-}
-
-
-#users-workspace
-#users-list
-button:not([data-delete-user]):hover {
-    border-color:
-        var(--pm-border-strong) !important;
-
-    background:
-        var(--pm-hover) !important;
-
-    color:
-        var(--pm-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Delete action
-   -------------------------------------------------------------------------- */
-
-#users-workspace
-#users-list
-button[data-delete-user] {
-    border-color:
-        var(--pm-danger-border) !important;
-
-    background:
-        color-mix(
-            in srgb,
-            var(--pm-danger-background) 55%,
-            var(--pm-surface)
-        ) !important;
-
-    color:
-        var(--pm-danger-text) !important;
-
-    box-shadow:
-        none !important;
-
-    transition:
-        border-color 150ms ease,
-        background-color 150ms ease;
-}
-
-
-#users-workspace
-#users-list
-button[data-delete-user]:hover {
-    background:
-        var(--pm-danger-background) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Pagination
-   -------------------------------------------------------------------------- */
-
-#users-workspace
-#users-pagination {
-    border-color:
-        var(--pm-border) !important;
-
-    color:
-        var(--pm-text-muted);
-}
-
-
-#users-workspace
-#users-pagination
-button {
-    border-color:
-        var(--pm-border) !important;
-
-    background:
-        var(--pm-surface-subtle) !important;
-
-    color:
-        var(--pm-text-secondary) !important;
-}
-
-
-#users-workspace
-#users-pagination
-button:hover:not(:disabled) {
-    background:
-        var(--pm-hover) !important;
-
-    color:
-        var(--pm-text) !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   Mobile
-   -------------------------------------------------------------------------- */
-
-@media (max-width: 639px) {
-
-    #users-workspace
-    #users-list
-    > article {
-        padding:
-            1rem !important;
-    }
-
-    #users-workspace
-    #users-list
-    button {
-        min-height:
-            2.625rem;
-    }
-}
-
-
-/* END V1.0.4 Users Workspace — Final Dark / Light Theme Normalisation */
-
-
 /*
 |--------------------------------------------------------------------------
 | V1.0.4 Dashboard Workspace
@@ -6046,101 +1550,6 @@ button:hover:not(:disabled) {
 
 
 /* END V1.0.4 Dashboard Workspace */
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Dashboard — Dark Mode Visual Polish
-|--------------------------------------------------------------------------
-|
-| Final hierarchy corrections after semantic dark-mode conversion.
-| No Dashboard structure, dimensions or business logic are changed.
-|
-*/
-
-
-/* --------------------------------------------------------------------------
-   Header hierarchy
-   -------------------------------------------------------------------------- */
-
-/*
- * Keep the page description clearly secondary.
- */
-
-
-/* --------------------------------------------------------------------------
-   KPI cards
-   -------------------------------------------------------------------------- */
-
-/*
- * KPI labels are supporting information.
- */
-
-
-/*
- * KPI values remain the strongest element inside each card.
- */
-
-
-/*
- * Give KPI cards just enough distinction from the page background without
- * introducing a second arbitrary dark colour.
- */
-
-
-/* --------------------------------------------------------------------------
-   Rent panels
-   -------------------------------------------------------------------------- */
-
-
-/*
- * Panel headings remain strong.
- */
-.pm-dashboard-page
-section
-h2 {
-    color:
-        var(--pm-text) !important;
-}
-
-
-/*
- * Panel descriptions should sit clearly below the heading.
- */
-.pm-dashboard-page
-section
-h2 + p {
-    color:
-        var(--pm-text-muted) !important;
-}
-
-
-/*
- * Keep header separators subtle.
- */
-.pm-dashboard-page
-section
-> div:first-child {
-    border-color:
-        var(--pm-border) !important;
-}
-
-
-/*
- * V1.0.9: the overdue-row and empty-state shims that lived here were
- * removed — dashboard.js renders those blocks with pm tokens directly.
- */
-
-
-/* END V1.0.4 Dashboard — Dark Mode Visual Polish */
-
-/*
- * V1.0.9: the Activity Log / Financial Journal theme shim that lived here
- * was removed. Both pages now render token-native markup directly, and the
- * shared badge / row-action colours live with the V1.0.4 Activity Log
- * Workspace component block.
- */
-
-
 /*
 |--------------------------------------------------------------------------
 | V1.0.4 Navigation Paint Cover
@@ -6206,7 +1615,7 @@ html.pm-navigation-leaving::after {
 
 html[data-shell-role="administrator"]
 #activity-log-workspace.rbac-hidden {
-    display: block !important;
+    display: block;
 }
 
 
@@ -6230,7 +1639,7 @@ html[data-shell-role="administrator"]
 .pm-date-control
 [data-pm-date-input] {
     width: 100%;
-    padding-right: 2.75rem !important;
+    padding-right: 2.75rem;
 }
 
 
@@ -6253,7 +1662,7 @@ html[data-shell-role="administrator"]
     justify-content: center;
 
     border: 0;
-    border-radius: 0.45rem;
+    border-radius: 0.375rem;
 
     background: transparent;
 
@@ -6297,107 +1706,30 @@ html[data-shell-role="administrator"]
  * calendar UI. It must never display its own locale-dependent date field.
  */
 .pm-native-date-picker {
-    position: absolute !important;
+    position: absolute;
 
-    width: 1px !important;
-    height: 1px !important;
+    width: 1px;
+    height: 1px;
 
-    margin: -1px !important;
-    padding: 0 !important;
+    margin: -1px;
+    padding: 0;
 
-    overflow: hidden !important;
+    overflow: hidden;
 
-    clip: rect(0 0 0 0) !important;
-    clip-path: inset(50%) !important;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
 
-    border: 0 !important;
+    border: 0;
 
-    opacity: 0 !important;
+    opacity: 0;
 
-    pointer-events: none !important;
+    pointer-events: none;
 
-    white-space: nowrap !important;
+    white-space: nowrap;
 }
 
 
 /* END V1.0.4 Shared Patrimoine Date Picker */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.4 Date Picker — Cursor Hit Area
-|--------------------------------------------------------------------------
-|
-| Only the visible calendar trigger uses the hand cursor.
-|
-| Date text fields retain the normal text cursor and the surrounding
-| control retains the normal arrow cursor. Hidden native date inputs
-| must never influence pointer presentation.
-|
-*/
-
-/* Normal area surrounding a date control = normal arrow. */
-.pm-date-control,
-.pm-lease-date-control,
-.pm-payment-date-control,
-.pm-security-date-control,
-.pm-tenant-funds-date-control,
-.pm-report-date-control {
-    cursor: default !important;
-}
-
-
-/* Visible date-entry field = text cursor. */
-[data-pm-date-input],
-[data-lease-date-input],
-[data-payment-date-input],
-[data-security-date-input],
-[data-tenant-funds-date-input],
-[data-report-date-input] {
-    cursor: text !important;
-}
-
-
-/* ONLY the actual calendar button gets the hand cursor. */
-.pm-date-picker-button,
-.pm-lease-date-picker-button,
-.pm-payment-date-picker-button,
-.pm-security-date-picker-button,
-.pm-tenant-funds-date-picker-button,
-.pm-report-date-picker-button {
-    cursor: pointer !important;
-}
-
-
-/*
- * SVG artwork itself should not create a separate hit-testing surface.
- * The button remains the sole clickable calendar target.
- */
-.pm-date-picker-button svg,
-.pm-lease-date-picker-button svg,
-.pm-payment-date-picker-button svg,
-.pm-security-date-picker-button svg,
-.pm-tenant-funds-date-picker-button svg,
-.pm-report-date-picker-button svg {
-    pointer-events: none !important;
-}
-
-
-/* Hidden browser-calendar engines must never participate in hit testing. */
-.pm-native-date-picker,
-.pm-lease-native-date-picker,
-.pm-payment-native-date-picker,
-.pm-security-native-date-picker,
-.pm-tenant-funds-native-date-picker,
-.pm-report-native-date-picker {
-    pointer-events: none !important;
-    cursor: default !important;
-}
-
-
-/* END V1.0.4 Date Picker — Cursor Hit Area */
-
-
 /*
 |--------------------------------------------------------------------------
 | V1.0.4 Date Picker — Final Cursor Behaviour
@@ -6417,7 +1749,7 @@ html[data-shell-role="administrator"]
 .pm-security-date-control,
 .pm-tenant-funds-date-control,
 .pm-report-date-control {
-    cursor: default !important;
+    cursor: default;
 }
 
 
@@ -6428,7 +1760,7 @@ input[data-payment-date-input],
 input[data-security-date-input],
 input[data-tenant-funds-date-input],
 input[data-report-date-input] {
-    cursor: text !important;
+    cursor: text;
 }
 
 
@@ -6443,7 +1775,7 @@ button[data-payment-date-picker],
 button[data-security-date-picker],
 button[data-tenant-funds-date-picker],
 button[data-report-date-picker] {
-    cursor: pointer !important;
+    cursor: pointer;
 }
 
 
@@ -6463,7 +1795,7 @@ button[data-tenant-funds-date-picker] svg,
 button[data-tenant-funds-date-picker] svg *,
 button[data-report-date-picker] svg,
 button[data-report-date-picker] svg * {
-    pointer-events: none !important;
+    pointer-events: none;
 }
 
 
@@ -6472,8 +1804,8 @@ button[data-report-date-picker] svg * {
  * They must never create a cursor/hit area of their own.
  */
 input[type="date"][class*="native-date-picker"] {
-    pointer-events: none !important;
-    cursor: default !important;
+    pointer-events: none;
+    cursor: default;
 }
 
 
@@ -6502,14 +1834,12 @@ input[type="date"][class*="native-date-picker"] {
 
     color: var(--pm-text);
 
-    box-shadow:
-        0 18px 45px rgb(15 23 42 / 0.18),
-        0 4px 12px rgb(15 23 42 / 0.08);
+    box-shadow: var(--pm-shadow-xl);
 }
 
 
 .pm-calendar-popover[hidden] {
-    display: none !important;
+    display: none;
 }
 
 
@@ -6547,7 +1877,7 @@ input[type="date"][class*="native-date-picker"] {
     justify-content: center;
 
     border: 0;
-    border-radius: 0.45rem;
+    border-radius: 0.375rem;
 
     background: transparent;
 
@@ -6594,7 +1924,7 @@ input[type="date"][class*="native-date-picker"] {
 
     color: var(--pm-text-muted);
 
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
     font-weight: 600;
 }
 
@@ -6613,13 +1943,13 @@ input[type="date"][class*="native-date-picker"] {
     justify-content: center;
 
     border: 0;
-    border-radius: 0.45rem;
+    border-radius: 0.375rem;
 
     background: transparent;
 
     color: var(--pm-text);
 
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
 
     cursor: pointer;
 }
@@ -6665,7 +1995,7 @@ input[type="date"][class*="native-date-picker"] {
 
 .pm-calendar-today {
     border: 0;
-    border-radius: 0.45rem;
+    border-radius: 0.375rem;
 
     background: transparent;
 
@@ -6705,7 +2035,7 @@ html[data-theme="dark"]
 .pm-security-date-control,
 .pm-tenant-funds-date-control,
 .pm-report-date-control {
-    cursor: default !important;
+    cursor: default;
 }
 
 
@@ -6715,7 +2045,7 @@ input[data-payment-date-input],
 input[data-security-date-input],
 input[data-tenant-funds-date-input],
 input[data-report-date-input] {
-    cursor: text !important;
+    cursor: text;
 }
 
 
@@ -6728,7 +2058,7 @@ button[data-report-date-picker],
 .pm-calendar-nav,
 .pm-calendar-day,
 .pm-calendar-today {
-    cursor: pointer !important;
+    cursor: pointer;
 }
 
 
@@ -6955,269 +2285,6 @@ html.dark
 /* END V1.0.4 PASSWORD WORKFLOW THEME */
 
 /* V1.0.5 TENANT TRANSACTION DRAWER THEME START */
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.5 Tenant Transaction Drawers
-|--------------------------------------------------------------------------
-|
-| Deposit, Withdrawal and Adjustment use the shared V1.0.4 drawer/input
-| primitives, but their inner V1.0.5 markup still contains historical
-| slate utility classes.
-|
-| The drawers are mounted outside the .pm-tenants-page theme scope, so
-| normalize those legacy utilities here using Patrimoine's semantic theme
-| variables. Business markup and JavaScript remain unchanged.
-|
-*/
-
-:is(
-    #tenant-deposit-drawer,
-    #tenant-withdrawal-drawer,
-    #tenant-adjustment-drawer
-) .pm-drawer-panel {
-    color: var(--pm-text);
-}
-
-/* Primary text and form labels. */
-
-/* Secondary text. */
-
-/* Help text, context captions and optional labels. */
-
-/* Legacy neutral borders. */
-
-/*
- * Transaction context and balance-preview surfaces.
- * These are the light cards visible in the dark-mode screenshots.
- */
-
-/* Protect any white legacy surfaces introduced in these drawers later. */
-
-/*
- * Inputs already use .pm-input, but the read-only Cash Receiver field also
- * carries bg-slate-50. Its read-only state should use the semantic disabled
- * surface rather than the transaction-card surface.
- */
-:is(
-    #tenant-deposit-drawer,
-    #tenant-withdrawal-drawer
-) input[readonly].pm-input {
-    background: var(--pm-input-disabled) !important;
-    color: var(--pm-text) !important;
-}
-
-/*
- * Keep disabled selectors visibly disabled while retaining dark-mode
- * contrast.
- */
-:is(
-    #tenant-deposit-drawer,
-    #tenant-withdrawal-drawer,
-    #tenant-adjustment-drawer
-) :is(
-    input,
-    select,
-    textarea
-):disabled {
-    border-color: var(--pm-border) !important;
-    background: var(--pm-input-disabled) !important;
-    color: var(--pm-text-muted) !important;
-    opacity: 1;
-}
-
-/*
- * Native select popup/options should follow the same browser colour scheme
- * as the active Patrimoine theme.
- */
-:is(
-    #tenant-deposit-drawer,
-    #tenant-withdrawal-drawer,
-    #tenant-adjustment-drawer
-) :is(
-    select,
-    option
-) {
-    color: var(--pm-text);
-    background: var(--pm-input-background);
-}
-
-html[data-theme="dark"] :is(
-    #tenant-deposit-drawer,
-    #tenant-withdrawal-drawer,
-    #tenant-adjustment-drawer
-) {
-    color-scheme: dark;
-}
-
-html[data-theme="light"] :is(
-    #tenant-deposit-drawer,
-    #tenant-withdrawal-drawer,
-    #tenant-adjustment-drawer
-) {
-    color-scheme: light;
-}
-
-/*
- * Adjustment warning is intentionally semantic amber rather than neutral.
- * Translate its legacy Tailwind warning colours through the application
- * warning palette so it remains readable in both themes.
- */
-
-/*
- * Likewise keep validation/error surfaces semantic if these hidden error
- * containers become visible.
- */
-
-/* V1.0.5 TENANT TRANSACTION DRAWER THEME END */
-
-/* V1.0.5 TENANT TRANSACTION DRAWER SIZING START */
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.5 Tenant Transaction Drawer Sizing
-|--------------------------------------------------------------------------
-|
-| Deposit, Withdrawal and Adjustment intentionally use the same compact
-| drawer width as Record Owner Deposit.
-|
-| Their footer actions share the complete usable footer width equally so
-| Cancel and Save remain visually balanced in English and French.
-|
-*/
-
-:is(
-    #tenant-deposit-drawer,
-    #tenant-withdrawal-drawer,
-    #tenant-adjustment-drawer
-) .pm-drawer-footer {
-    display: grid !important;
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr)) !important;
-    gap: 0.75rem !important;
-    width: 100% !important;
-}
-
-:is(
-    #tenant-deposit-drawer,
-    #tenant-withdrawal-drawer,
-    #tenant-adjustment-drawer
-) .pm-drawer-footer
-:is(
-    .pm-button-secondary,
-    .pm-button-primary
-) {
-    display: inline-flex !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: none !important;
-
-    min-height: 3rem !important;
-
-    align-items: center !important;
-    justify-content: center !important;
-
-    margin: 0 !important;
-    padding-inline: 1rem !important;
-
-    font-size: 0.9375rem !important;
-}
-
-/*
- * sm already becomes viewport width on narrow screens through the shared
- * drawer primitive. Keep the two actions side-by-side exactly as in the
- * Owner Deposit presentation.
- */
-@media (max-width: 639px) {
-    :is(
-        #tenant-deposit-drawer,
-        #tenant-withdrawal-drawer,
-        #tenant-adjustment-drawer
-    ) .pm-drawer-footer {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr)) !important;
-    }
-}
-
-/* V1.0.5 TENANT TRANSACTION DRAWER SIZING END */
-
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.5 Apply Security Deposit eligibility visibility
-|--------------------------------------------------------------------------
-|
-| The shared .pm-button-secondary primitive declares display:inline-flex
-| later than Tailwind's .hidden utility. Therefore the eligibility button
-| needs an explicit hidden-state rule so an ineligible Lease can never
-| expose the action visually.
-|
-| JavaScript removes the hidden class only after authoritative Lease-detail
-| eligibility has been confirmed.
-|
-*/
-
-[data-apply-security-deposit].hidden {
-    display: none !important;
-}
-
-
-/* V1.0.5 APPLY SECURITY DEPOSIT DRAWER */
-
-#tenant-security-application-drawer {
-    color: var(--pm-text);
-}
-
-#tenant-security-application-drawer .pm-drawer-footer {
-    display: grid !important;
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr)) !important;
-    gap: 0.75rem !important;
-    width: 100% !important;
-}
-
-#tenant-security-application-drawer
-.pm-drawer-footer
-:is(
-    .pm-button-secondary,
-    .pm-button-primary
-) {
-    display: inline-flex !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    min-height: 3rem !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin: 0 !important;
-    padding-inline: 1rem !important;
-}
-
-html[data-theme="dark"]
-#tenant-security-application-drawer {
-    color-scheme: dark;
-}
-
-html[data-theme="light"]
-#tenant-security-application-drawer {
-    color-scheme: light;
-}
-
-/*
-|--------------------------------------------------------------------------
-| V1.0.5 Tenant header Security Deposit action
-|--------------------------------------------------------------------------
-|
-| pm-button-secondary declares display:inline-flex, so explicitly preserve
-| the eligibility-driven hidden state for this contextual financial action.
-|
-*/
-
-[data-apply-security-deposit-header].hidden {
-    display: none !important;
-}
-
-
 /*
 |--------------------------------------------------------------------------
 | Phase 6 — Lease Financial History Theme
@@ -7277,7 +2344,7 @@ html[data-theme="light"]
 
 .pm-legal-document .pm-legal-meta {
     margin-top: 0.5rem;
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     color: var(--pm-text-muted);
 }
 
@@ -7292,7 +2359,7 @@ html[data-theme="light"]
 
 .pm-legal-document p {
     margin-bottom: 0.875rem;
-    font-size: 0.9375rem;
+    font-size: 1rem;
     line-height: 1.625rem;
     color: var(--pm-text-secondary);
 }
@@ -7304,7 +2371,7 @@ html[data-theme="light"]
 
 .pm-legal-document li {
     margin-bottom: 0.375rem;
-    font-size: 0.9375rem;
+    font-size: 1rem;
     line-height: 1.625rem;
     color: var(--pm-text-secondary);
 }
@@ -7322,189 +2389,19 @@ html[data-theme="light"]
 /* END V1.0.10 LEGAL DOCUMENT PAGES */
 
 /* ==========================================================================
-   V1.0.11 PLATFORM ADMINISTRATION SHELL — UNTITLED UI EDITION
+   V1.0.11 PLATFORM ADMINISTRATION SHELL
    --------------------------------------------------------------------------
-   The console follows Untitled UI conventions in both themes. Inside
-   body.pm-admin the shared --pm-* tokens are RE-MAPPED to the Untitled
-   UI palette, so every shared component (inputs, buttons, drawers)
-   adopts the system automatically while the CSS stays central: swap the
-   ramps below and the whole console recolours.
+   The console used to carry its OWN copy of the Untitled UI palette, scoped
+   to body.pm-admin, because it was the only surface following the system.
+   The whole product follows it now, so that copy is gone and the console
+   reads the same tokens as everything else.
 
-   Ramps (Untitled UI): gray 25–950, brand (Patrimoine green expressed
-   as a UUI ramp), error, warning, success, blue.
+   What stays here is the console's layout — a 280px staff sidebar and a
+   flush table card — and its one deliberate difference from the customer
+   application: the sidebar is a light surface rather than the green band, so
+   an admin tab is distinguishable at a glance from a row of customer tabs.
+   The red favicon in layouts/admin.blade.php is the other half of that.
    ========================================================================== */
-
-body.pm-admin {
-    /* ------------------------------ ramps ------------------------------ */
-    --uui-gray-25: #fcfcfd;
-    --uui-gray-50: #f9fafb;
-    --uui-gray-100: #f2f4f7;
-    --uui-gray-200: #eaecf0;
-    --uui-gray-300: #d0d5dd;
-    --uui-gray-400: #98a2b3;
-    --uui-gray-500: #667085;
-    --uui-gray-600: #475467;
-    --uui-gray-700: #344054;
-    --uui-gray-800: #182230;
-    --uui-gray-900: #101828;
-    --uui-gray-950: #0c111d;
-
-    --uui-brand-25: #f6faf8;
-    --uui-brand-50: #eef6f1;
-    --uui-brand-100: #d8ebe0;
-    --uui-brand-200: #b5d8c5;
-    --uui-brand-300: #8bbda2;
-    --uui-brand-400: #5d9c7c;
-    --uui-brand-500: #3f7d5e;
-    --uui-brand-600: #2f6b4e;
-    --uui-brand-700: #275741;
-    --uui-brand-800: #224635;
-    --uui-brand-900: #1d3a2d;
-    --uui-brand-950: #10231a;
-
-    --uui-error-50: #fef3f2;
-    --uui-error-100: #fee4e2;
-    --uui-error-200: #fecdca;
-    --uui-error-300: #fda29b;
-    --uui-error-400: #f97066;
-    --uui-error-500: #f04438;
-    --uui-error-600: #d92d20;
-    --uui-error-700: #b42318;
-
-    --uui-warning-50: #fffaeb;
-    --uui-warning-200: #fedf89;
-    --uui-warning-400: #fdb022;
-    --uui-warning-700: #b54708;
-
-    --uui-success-50: #ecfdf3;
-    --uui-success-200: #abefc6;
-    --uui-success-400: #47cd89;
-    --uui-success-500: #17b26a;
-    --uui-success-700: #067647;
-
-    --uui-blue-50: #eff8ff;
-    --uui-blue-200: #b2ddff;
-    --uui-blue-400: #53b1fd;
-    --uui-blue-700: #175cd3;
-
-    /* --------------------------- elevation ---------------------------- */
-    --uui-shadow-xs: 0 1px 2px 0 rgb(16 24 40 / 0.05);
-    --uui-shadow-sm:
-        0 1px 3px 0 rgb(16 24 40 / 0.10),
-        0 1px 2px -1px rgb(16 24 40 / 0.10);
-    --uui-ring-brand: 0 0 0 4px color-mix(in srgb, var(--uui-brand-500) 24%, transparent);
-    --uui-ring-gray: 0 0 0 4px color-mix(in srgb, var(--uui-gray-400) 14%, transparent);
-    --uui-ring-error: 0 0 0 4px color-mix(in srgb, var(--uui-error-500) 24%, transparent);
-
-    /* ------------- shared tokens re-mapped to Untitled UI ------------- */
-    --pm-page: var(--uui-gray-50);
-    --pm-surface: #ffffff;
-    --pm-surface-subtle: var(--uui-gray-50);
-    --pm-surface-muted: var(--uui-gray-100);
-    --pm-surface-elevated: #ffffff;
-    --pm-text: var(--uui-gray-900);
-    --pm-text-secondary: var(--uui-gray-700);
-    --pm-text-muted: var(--uui-gray-600);
-    --pm-text-subtle: var(--uui-gray-500);
-    --pm-border: var(--uui-gray-200);
-    --pm-border-subtle: var(--uui-gray-100);
-    --pm-border-strong: var(--uui-gray-300);
-    --pm-hover: var(--uui-gray-50);
-    --pm-selected: var(--uui-gray-100);
-    --pm-input-background: #ffffff;
-    --pm-accent: var(--uui-brand-700);
-    --pm-primary: var(--uui-brand-600);
-    --pm-primary-hover: var(--uui-brand-700);
-    --pm-primary-text: #ffffff;
-    --pm-danger: var(--uui-error-600);
-    --pm-danger-solid: var(--uui-error-600);
-    --pm-danger-solid-hover: var(--uui-error-700);
-
-    /* badge tints */
-    --uui-badge-success-bg: var(--uui-success-50);
-    --uui-badge-success-text: var(--uui-success-700);
-    --uui-badge-success-border: var(--uui-success-200);
-    --uui-badge-error-bg: var(--uui-error-50);
-    --uui-badge-error-text: var(--uui-error-700);
-    --uui-badge-error-border: var(--uui-error-200);
-    --uui-badge-brand-bg: var(--uui-brand-50);
-    --uui-badge-brand-text: var(--uui-brand-700);
-    --uui-badge-brand-border: var(--uui-brand-200);
-    --uui-badge-blue-bg: var(--uui-blue-50);
-    --uui-badge-blue-text: var(--uui-blue-700);
-    --uui-badge-blue-border: var(--uui-blue-200);
-    --uui-badge-gray-bg: var(--uui-gray-50);
-    --uui-badge-gray-text: var(--uui-gray-700);
-    --uui-badge-gray-border: var(--uui-gray-200);
-
-    --uui-nav-item-text: var(--uui-gray-700);
-    --uui-nav-item-icon: var(--uui-gray-500);
-    --uui-nav-item-active-bg: var(--uui-gray-50);
-    --uui-nav-item-active-text: var(--uui-gray-800);
-    --uui-table-header-bg: var(--uui-gray-50);
-    --uui-secondary-btn-bg: #ffffff;
-    --uui-secondary-btn-border: var(--uui-gray-300);
-    --uui-secondary-btn-text: var(--uui-gray-700);
-    --uui-secondary-btn-hover: var(--uui-gray-50);
-
-    font-family: 'Inter', var(--font-sans);
-    font-feature-settings: 'cv05', 'cv11';
-    letter-spacing: -0.006em;
-}
-
-/* ----------------------- Untitled UI dark mode ----------------------- */
-html[data-theme="dark"] body.pm-admin {
-    --pm-page: var(--uui-gray-950);
-    --pm-surface: var(--uui-gray-900);
-    --pm-surface-subtle: #161b26;
-    --pm-surface-muted: #1f242f;
-    --pm-surface-elevated: var(--uui-gray-900);
-    --pm-text: #f5f5f6;
-    --pm-text-secondary: #cecfd2;
-    --pm-text-muted: #94969c;
-    --pm-text-subtle: #85888e;
-    --pm-border: #1f242f;
-    --pm-border-subtle: #161b26;
-    --pm-border-strong: #333741;
-    --pm-hover: #161b26;
-    --pm-selected: #1f242f;
-    --pm-input-background: var(--uui-gray-950);
-    --pm-accent: var(--uui-brand-400);
-    --pm-primary: var(--uui-brand-600);
-    --pm-primary-hover: var(--uui-brand-500);
-    --pm-danger: var(--uui-error-400);
-
-    --uui-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.30);
-    --uui-shadow-sm:
-        0 1px 3px 0 rgb(0 0 0 / 0.35),
-        0 1px 2px -1px rgb(0 0 0 / 0.35);
-
-    --uui-badge-success-bg: color-mix(in srgb, var(--uui-success-500) 12%, transparent);
-    --uui-badge-success-text: var(--uui-success-400);
-    --uui-badge-success-border: color-mix(in srgb, var(--uui-success-500) 32%, transparent);
-    --uui-badge-error-bg: color-mix(in srgb, var(--uui-error-500) 12%, transparent);
-    --uui-badge-error-text: var(--uui-error-400);
-    --uui-badge-error-border: color-mix(in srgb, var(--uui-error-500) 32%, transparent);
-    --uui-badge-brand-bg: color-mix(in srgb, var(--uui-brand-500) 14%, transparent);
-    --uui-badge-brand-text: var(--uui-brand-300);
-    --uui-badge-brand-border: color-mix(in srgb, var(--uui-brand-500) 34%, transparent);
-    --uui-badge-blue-bg: color-mix(in srgb, var(--uui-blue-400) 12%, transparent);
-    --uui-badge-blue-text: var(--uui-blue-400);
-    --uui-badge-blue-border: color-mix(in srgb, var(--uui-blue-400) 32%, transparent);
-    --uui-badge-gray-bg: #1f242f;
-    --uui-badge-gray-text: #cecfd2;
-    --uui-badge-gray-border: #333741;
-
-    --uui-nav-item-text: #cecfd2;
-    --uui-nav-item-icon: #85888e;
-    --uui-nav-item-active-bg: #1f242f;
-    --uui-nav-item-active-text: #f5f5f6;
-    --uui-table-header-bg: #161b26;
-    --uui-secondary-btn-bg: var(--uui-gray-900);
-    --uui-secondary-btn-border: #333741;
-    --uui-secondary-btn-text: #cecfd2;
-    --uui-secondary-btn-hover: #1f242f;
-}
 
 body.pm-admin {
     background: var(--pm-page);
@@ -7613,19 +2510,19 @@ body.pm-admin {
 
 .pm-admin-brand-name {
     font-weight: 600;
-    font-size: 0.9375rem;
+    font-size: 1rem;
     color: var(--pm-text);
     white-space: nowrap;
 }
 
 .pm-admin-brand-365 {
-    color: var(--uui-brand-600);
+    color: var(--pm-primary);
 }
 
 .pm-admin-brand-footer {
     padding: 0.875rem 1.25rem 1.125rem;
     border-top: 1px solid var(--pm-border-subtle);
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
     line-height: 1rem;
     color: var(--pm-text-muted);
 }
@@ -7646,9 +2543,9 @@ body.pm-admin {
     padding: 0.125rem 0.5rem;
     font-size: 0.75rem;
     font-weight: 500;
-    color: var(--uui-badge-brand-text);
-    background: var(--uui-badge-brand-bg);
-    border: 1px solid var(--uui-badge-brand-border);
+    color: var(--pm-success-text);
+    background: var(--pm-success-background);
+    border: 1px solid var(--pm-success-border);
 }
 
 .pm-admin-nav {
@@ -7674,7 +2571,7 @@ body.pm-admin {
     margin-bottom: 0.125rem;
     font-size: 1rem;
     font-weight: 600;
-    color: var(--uui-nav-item-text);
+    color: var(--pm-text-muted);
     text-align: left;
     transition: background-color 120ms ease, color 120ms ease;
 }
@@ -7683,17 +2580,17 @@ body.pm-admin {
     width: 1.25rem;
     height: 1.25rem;
     flex-shrink: 0;
-    color: var(--uui-nav-item-icon);
+    color: var(--pm-text-subtle);
 }
 
 .pm-admin-nav-item:hover {
-    background: var(--uui-nav-item-active-bg);
-    color: var(--uui-nav-item-active-text);
+    background: var(--pm-selected);
+    color: var(--pm-text);
 }
 
 .pm-admin-nav-item.pm-admin-nav-active {
-    background: var(--uui-nav-item-active-bg);
-    color: var(--uui-nav-item-active-text);
+    background: var(--pm-selected);
+    color: var(--pm-text);
 }
 
 .pm-admin-nav-item.pm-admin-nav-active svg,
@@ -7720,9 +2617,9 @@ body.pm-admin {
     height: 2.5rem;
     flex-shrink: 0;
     border-radius: 999px;
-    background: var(--uui-badge-brand-bg);
-    color: var(--uui-badge-brand-text);
-    border: 1px solid var(--uui-badge-brand-border);
+    background: var(--pm-success-background);
+    color: var(--pm-success-text);
+    border: 1px solid var(--pm-success-border);
     font-size: 0.875rem;
     font-weight: 600;
 }
@@ -7773,13 +2670,13 @@ body.pm-admin {
     padding: 0.5rem 0.875rem;
     color: var(--pm-text-subtle);
     background: var(--pm-input-background);
-    box-shadow: var(--uui-shadow-xs);
+    box-shadow: var(--pm-shadow-xs);
     transition: box-shadow 120ms ease, border-color 120ms ease;
 }
 
 .pm-admin-search:focus-within {
-    border-color: var(--uui-brand-300);
-    box-shadow: var(--uui-shadow-xs), var(--uui-ring-brand);
+    border-color: var(--color-brand-300);
+    box-shadow: var(--pm-shadow-xs), var(--pm-ring-brand);
 }
 
 .pm-admin-search input {
@@ -7845,7 +2742,7 @@ body.pm-admin {
     border-radius: 0.75rem;
     background: var(--pm-surface);
     padding: 1.5rem;
-    box-shadow: var(--uui-shadow-xs);
+    box-shadow: var(--pm-shadow-xs);
 }
 
 .pm-admin-card-title {
@@ -7866,7 +2763,7 @@ body.pm-admin {
 
 .pm-admin-table th {
     padding: 0.75rem;
-    background: var(--uui-table-header-bg);
+    background: var(--pm-surface-subtle);
     border-top: 1px solid var(--pm-border);
     border-bottom: 1px solid var(--pm-border);
     text-align: left;
@@ -7914,9 +2811,9 @@ body.pm-admin {
     height: 2.5rem;
     flex-shrink: 0;
     border-radius: 999px;
-    background: var(--uui-badge-brand-bg);
-    border: 1px solid var(--uui-badge-brand-border);
-    color: var(--uui-badge-brand-text);
+    background: var(--pm-success-background);
+    border: 1px solid var(--pm-success-border);
+    color: var(--pm-success-text);
     font-size: 0.875rem;
     font-weight: 600;
 }
@@ -7935,21 +2832,21 @@ body.pm-admin {
 }
 
 .pm-admin-plan-professional {
-    color: var(--uui-badge-brand-text);
-    background: var(--uui-badge-brand-bg);
-    border-color: var(--uui-badge-brand-border);
+    color: var(--pm-success-text);
+    background: var(--pm-success-background);
+    border-color: var(--pm-success-border);
 }
 
 .pm-admin-plan-standard {
-    color: var(--uui-badge-blue-text);
-    background: var(--uui-badge-blue-bg);
-    border-color: var(--uui-badge-blue-border);
+    color: var(--pm-info-text);
+    background: var(--pm-info-background);
+    border-color: var(--pm-info-border);
 }
 
 .pm-admin-plan-free {
-    color: var(--uui-badge-gray-text);
-    background: var(--uui-badge-gray-bg);
-    border-color: var(--uui-badge-gray-border);
+    color: var(--pm-text-muted);
+    background: var(--pm-surface-muted);
+    border-color: var(--pm-border);
 }
 
 .pm-admin-status {
@@ -7973,23 +2870,23 @@ body.pm-admin {
 }
 
 .pm-admin-status-active {
-    color: var(--uui-badge-success-text);
-    background: var(--uui-badge-success-bg);
-    border-color: var(--uui-badge-success-border);
+    color: var(--pm-success-text);
+    background: var(--pm-success-background);
+    border-color: var(--pm-success-border);
 }
 
 .pm-admin-status-active::before {
-    background: var(--uui-success-500);
+    background: var(--color-brand-500);
 }
 
 .pm-admin-status-suspended {
-    color: var(--uui-badge-error-text);
-    background: var(--uui-badge-error-bg);
-    border-color: var(--uui-badge-error-border);
+    color: var(--pm-danger-text);
+    background: var(--pm-danger-background);
+    border-color: var(--pm-danger-border);
 }
 
 .pm-admin-status-suspended::before {
-    background: var(--uui-error-500);
+    background: var(--color-error-500);
 }
 
 /* ======================= Buttons (UUI hierarchy) ===================== */
@@ -8006,7 +2903,7 @@ body.pm-admin .pm-button-primary {
     font-size: 0.875rem;
     font-weight: 600;
     color: #ffffff;
-    box-shadow: var(--uui-shadow-xs);
+    box-shadow: var(--pm-shadow-xs);
     transition: background-color 120ms ease, box-shadow 120ms ease;
 }
 
@@ -8017,7 +2914,7 @@ body.pm-admin .pm-button-primary:hover {
 
 body.pm-admin .pm-button-primary:focus-visible {
     outline: none;
-    box-shadow: var(--uui-shadow-xs), var(--uui-ring-brand);
+    box-shadow: var(--pm-shadow-xs), var(--pm-ring-brand);
 }
 
 body.pm-admin .pm-button-secondary {
@@ -8026,23 +2923,23 @@ body.pm-admin .pm-button-secondary {
     justify-content: center;
     gap: 0.375rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--uui-secondary-btn-border);
-    background: var(--uui-secondary-btn-bg);
+    border: 1px solid var(--pm-border-strong);
+    background: var(--pm-surface);
     padding: 0.5rem 0.875rem;
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--uui-secondary-btn-text);
-    box-shadow: var(--uui-shadow-xs);
+    color: var(--pm-text-muted);
+    box-shadow: var(--pm-shadow-xs);
     transition: background-color 120ms ease, box-shadow 120ms ease;
 }
 
 body.pm-admin .pm-button-secondary:hover {
-    background: var(--uui-secondary-btn-hover);
+    background: var(--pm-hover);
 }
 
 body.pm-admin .pm-button-secondary:focus-visible {
     outline: none;
-    box-shadow: var(--uui-shadow-xs), var(--uui-ring-gray);
+    box-shadow: var(--pm-shadow-xs), var(--pm-ring-gray);
 }
 
 body.pm-admin .pm-button-danger {
@@ -8051,24 +2948,24 @@ body.pm-admin .pm-button-danger {
     justify-content: center;
     gap: 0.375rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--uui-error-600);
-    background: var(--uui-error-600);
+    border: 1px solid var(--pm-danger-solid);
+    background: var(--pm-danger-solid);
     padding: 0.5rem 0.875rem;
     font-size: 0.875rem;
     font-weight: 600;
     color: #ffffff;
-    box-shadow: var(--uui-shadow-xs);
+    box-shadow: var(--pm-shadow-xs);
     transition: background-color 120ms ease, box-shadow 120ms ease;
 }
 
 body.pm-admin .pm-button-danger:hover {
-    background: var(--uui-error-700);
-    border-color: var(--uui-error-700);
+    background: var(--pm-danger-solid-hover);
+    border-color: var(--pm-danger-solid-hover);
 }
 
 body.pm-admin .pm-button-danger:focus-visible {
     outline: none;
-    box-shadow: var(--uui-shadow-xs), var(--uui-ring-error);
+    box-shadow: var(--pm-shadow-xs), var(--pm-ring-error);
 }
 
 /* ========================== Inputs (UUI) ============================ */
@@ -8078,7 +2975,7 @@ body.pm-admin .pm-input {
     border: 1px solid var(--pm-border-strong);
     background: var(--pm-input-background);
     color: var(--pm-text);
-    box-shadow: var(--uui-shadow-xs);
+    box-shadow: var(--pm-shadow-xs);
     padding: 0.5rem 0.875rem;
     font-size: 1rem;
     transition: box-shadow 120ms ease, border-color 120ms ease;
@@ -8090,8 +2987,8 @@ body.pm-admin .pm-input::placeholder {
 
 body.pm-admin .pm-input:focus {
     outline: none;
-    border-color: var(--uui-brand-300);
-    box-shadow: var(--uui-shadow-xs), var(--uui-ring-brand);
+    border-color: var(--color-brand-300);
+    box-shadow: var(--pm-shadow-xs), var(--pm-ring-brand);
 }
 
 body.pm-admin .pm-field-label {
@@ -8129,7 +3026,7 @@ body.pm-admin .pm-drawer-panel {
 }
 
 .pm-admin-user-open:focus-visible {
-    box-shadow: var(--uui-ring-gray);
+    box-shadow: var(--pm-ring-gray);
 }
 
 .pm-admin-user-avatar {
@@ -8174,7 +3071,7 @@ body.pm-admin .pm-admin-row-click:focus {
 body.pm-admin .pm-admin-nav-item:focus-visible,
 body.pm-admin .pm-icon-button:focus-visible {
     outline: none;
-    box-shadow: var(--uui-ring-gray);
+    box-shadow: var(--pm-ring-gray);
 }
 
 /* Icon-only buttons: UUI tertiary-gray, 40px square */
@@ -8249,9 +3146,9 @@ body.pm-admin .pm-icon-button:hover {
     font-size: 0.75rem;
     line-height: 1.125rem;
     font-weight: 500;
-    color: var(--uui-badge-brand-text);
-    background: var(--uui-badge-brand-bg);
-    border: 1px solid var(--uui-badge-brand-border);
+    color: var(--pm-success-text);
+    background: var(--pm-success-background);
+    border: 1px solid var(--pm-success-border);
 }
 
 /* ============================ Responsive ============================ */
@@ -8546,18 +3443,6 @@ body.pm-admin .pm-icon-button:hover {
     box-shadow: inset 0 0 0 1px rgb(0 0 0 / 8%);
 }
 
-.pm-avatar-initials {
-    /* Until the name is known, a plain Patrimoine circle rather than a hole. */
-    background: var(--color-patrimoine-700);
-
-    font-weight: 600;
-    line-height: 1;
-    color: #ffffff;
-
-    letter-spacing: 0.01em;
-
-    user-select: none;
-}
 
 /*
  * The top bar button IS the avatar, rather than a button with one inside
@@ -8666,145 +3551,6 @@ body.pm-admin .pm-icon-button:hover {
 /* END V1.0.31 Profile photographs */
 
 
-/*
-|--------------------------------------------------------------------------
-| V1.0.32 Pagination
-|--------------------------------------------------------------------------
-|
-| One control, rendered by resources/js/pagination.js, sitting in the footer
-| of every list in the application and in the platform console.
-|
-| Three parts, and on a narrow screen they stack in the order they matter:
-| what is on screen, how many rows to show, and which page to read next.
-|
-| The current page is filled with the brand colour rather than merely
-| outlined. A reader scanning a row of numbers should not have to work out
-| which one they are standing on.
-|
-*/
-
-.pm-pagination {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-}
-
-.pm-pagination-summary {
-    font-size: 0.8125rem;
-    line-height: 1.25rem;
-    color: var(--pm-text-muted);
-}
-
-.pm-pagination-controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem;
-}
-
-.pm-pagination-size {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-
-    font-size: 0.8125rem;
-    color: var(--pm-text-muted);
-    white-space: nowrap;
-}
-
-.pm-pagination-size select.pm-input {
-    width: auto;
-    min-height: 2.25rem;
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
-
-    font-size: 0.8125rem;
-}
-
-.pm-pagination-pages {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.pm-pagination-page,
-.pm-pagination-step {
-    display: inline-flex;
-    min-width: 2.25rem;
-    min-height: 2.25rem;
-    align-items: center;
-    justify-content: center;
-
-    border: 1px solid transparent;
-    border-radius: 0.5rem;
-    padding: 0 0.5rem;
-
-    font-size: 0.8125rem;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    color: var(--pm-text);
-
-    transition:
-        background-color 150ms ease,
-        border-color 150ms ease,
-        color 150ms ease;
-}
-
-.pm-pagination-page:hover:not(.is-current),
-.pm-pagination-step:hover:not(:disabled) {
-    background: var(--pm-hover);
-}
-
-.pm-pagination-page:focus-visible,
-.pm-pagination-step:focus-visible {
-    outline: 2px solid var(--pm-primary);
-    outline-offset: 2px;
-}
-
-/*
- * The page being read. Filled, not outlined — this is the one thing in the
- * control a reader must never have to hunt for.
- */
-.pm-pagination-page.is-current,
-.pm-pagination-page.is-current:hover {
-    border-color: var(--pm-primary);
-    background: var(--pm-primary);
-    color: var(--pm-primary-text);
-}
-
-.pm-pagination-step {
-    color: var(--pm-text-muted);
-}
-
-.pm-pagination-step svg {
-    width: 1.25rem;
-    height: 1.25rem;
-}
-
-.pm-pagination-step:disabled {
-    cursor: not-allowed;
-    opacity: 0.4;
-}
-
-.pm-pagination-gap {
-    padding: 0 0.25rem;
-
-    font-size: 0.8125rem;
-    color: var(--pm-text-muted);
-}
-
-@media (max-width: 640px) {
-    .pm-pagination,
-    .pm-pagination-controls {
-        align-items: stretch;
-        justify-content: flex-start;
-    }
-}
-
-/* END V1.0.32 Pagination */
 
 /* V1.0.36 Guide screenshots
 |

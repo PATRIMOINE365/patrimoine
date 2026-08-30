@@ -28,6 +28,8 @@ import {
     initializeDateInputs,
 } from './date-input.js';
 
+import { icon } from './icons.js';
+
 /*
 |--------------------------------------------------------------------------
 | Patrimoine Tenant Workspace
@@ -457,20 +459,7 @@ function renderTenantDirectoryRow(
                     ${escapeHtml(type)}
                 </span>
 
-                <svg
-                    class="pm-tenant-directory-chevron"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    aria-hidden="true"
-                >
-                    <path
-                        d="m7.5 5 5 5-5 5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
-                </svg>
+                ${icon('chevron-right', { class: 'pm-tenant-directory-chevron' })}
             </span>
         </button>
     `;
@@ -7379,7 +7368,7 @@ function renderTenantAccountsPosition(
         <div
             class="
                 mt-3 grid gap-3
-                sm:grid-cols-3
+                panel-md:grid-cols-3
             "
         >
             ${financialMetric(
@@ -8846,7 +8835,7 @@ function appendTenantExpenseLine() {
     row.dataset.tenantExpenseLine = '';
 
     row.className =
-        'grid gap-2 sm:grid-cols-[1fr_170px_auto] sm:items-center';
+        'grid gap-2 panel-sm:grid-cols-[1fr_170px_auto] panel-sm:items-center';
 
     row.innerHTML = `
         <input
@@ -8884,16 +8873,7 @@ function appendTenantExpenseLine() {
                 )
             )}"
         >
-            <svg
-                class="h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-                <path d="M18 6 6 18"/>
-                <path d="m6 6 12 12"/>
-            </svg>
+            ${icon('x-close', { size: 16 })}
         </button>
     `;
 

@@ -60,7 +60,7 @@ class ActivityLogBrowserTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            'data-i18n="navigation.activity_log"',
+            'label="navigation.activity_log"',
             $view
         );
 

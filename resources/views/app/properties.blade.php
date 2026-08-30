@@ -44,16 +44,7 @@
                 type="button"
                 class="pm-button-primary gap-2"
             >
-                <svg
-                    class="h-4 w-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
-                    <path d="M12 5v14"/>
-                    <path d="M5 12h14"/>
-                </svg>
+                <x-icon name="plus" :size="16" />
 
                 <span data-i18n="properties.add_property">{{ __('ui.properties.add_property') }}</span>
             </button>
@@ -197,21 +188,7 @@
                     </label>
 
                     <div class="relative">
-                        <svg
-                            class="
-                                pointer-events-none absolute
-                                left-3 top-1/2 h-4 w-4
-                                -translate-y-1/2
-                                text-[var(--pm-text-subtle)]
-                            "
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                        >
-                            <circle cx="11" cy="11" r="8"/>
-                            <path d="m21 21-4.35-4.35"/>
-                        </svg>
+                        <x-icon name="search-lg" :size="16" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pm-text-subtle)]" />
 
                         <input
                             id="property-search"
@@ -442,9 +419,9 @@
             <div
                 class="
                     mb-4 flex flex-col gap-3
-                    sm:flex-row
-                    sm:items-center
-                    sm:justify-between
+                    panel-sm:flex-row
+                    panel-sm:items-center
+                    panel-sm:justify-between
                 "
             >
                 <div>
@@ -527,9 +504,9 @@
             <div
                 class="
                     mb-4 flex flex-col gap-3
-                    sm:flex-row
-                    sm:items-center
-                    sm:justify-between
+                    panel-sm:flex-row
+                    panel-sm:items-center
+                    panel-sm:justify-between
                 "
             >
                 <div>
@@ -688,7 +665,7 @@
                 <div
                     class="
                         grid gap-4
-                        sm:grid-cols-2
+                        panel-sm:grid-cols-2
                     "
                 >
                     <div>
@@ -729,7 +706,7 @@
                 <div
                     class="
                         grid gap-4
-                        sm:grid-cols-2
+                        panel-sm:grid-cols-2
                     "
                 >
                     <x-phone-field
@@ -799,7 +776,7 @@
                 <div
                     class="
                         grid gap-4
-                        sm:grid-cols-2
+                        panel-sm:grid-cols-2
                     "
                 >
                     <x-phone-field

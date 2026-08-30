@@ -11,19 +11,19 @@
 <style>
     .pm-letterhead {
         margin-bottom: 18px;
-        border-bottom: 2px solid #222222;
+        border-bottom: 2px solid #123D35;
         padding-bottom: 12px;
     }
 
     .pm-letterhead-brand {
         font-size: 20px;
         font-weight: bold;
-        color: #222222;
+        color: #17201E;
     }
 
     .pm-letterhead-subtitle {
         margin-top: 2px;
-        color: #666666;
+        color: #66736F;
         font-size: 9px;
     }
 
@@ -31,7 +31,7 @@
         margin-top: 12px;
         font-size: 16px;
         font-weight: bold;
-        color: #222222;
+        color: #17201E;
     }
 </style>
 

@@ -27,6 +27,8 @@ import {
     wireDrawer,
 } from './core.js';
 
+import { icon } from './icons.js';
+
 import {
     applyPhoneValue,
     readPhoneValue,
@@ -1039,7 +1041,7 @@ function leaseFieldSection(heading, fields, lease, risky) {
             <div class="mb-3 text-sm font-semibold ${risky ? 'text-[var(--pm-danger-text)]' : 'text-[var(--pm-text)]'}">
                 ${escapeHtml(heading)}
             </div>
-            <div class="grid gap-4 sm:grid-cols-2">${inputs}</div>
+            <div class="grid gap-4 panel-md:grid-cols-2">${inputs}</div>
         </div>
     `;
 }
@@ -2196,11 +2198,6 @@ export async function initializeAdmin() {
      */
     const themeToggle = document.getElementById('admin-theme-toggle');
 
-    const SUN_ICON =
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
-
-    const MOON_ICON =
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 
     function renderThemeIcon() {
         if (! themeToggle) {
@@ -2213,7 +2210,7 @@ export async function initializeAdmin() {
         /*
          * The icon previews the theme the button switches TO.
          */
-        themeToggle.innerHTML = dark ? SUN_ICON : MOON_ICON;
+        themeToggle.innerHTML = icon(dark ? 'sun' : 'moon');
     }
 
     themeToggle?.addEventListener('click', () => {

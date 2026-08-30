@@ -13,7 +13,7 @@
 
     @if($managingOrganisation?->phone || $managingOrganisation?->email)
         <br>
-        <span style="color:#51615a; font-size:13px;">
+        <span style="color:#4E5B56; font-size:14px; line-height:20px;">
             @if($managingOrganisation?->phone)
                 {{ $managingOrganisation->phone_display }}
             @endif

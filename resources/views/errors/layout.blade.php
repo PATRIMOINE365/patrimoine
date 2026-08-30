@@ -40,14 +40,14 @@
             align-items: center;
             justify-content: center;
             padding: 2rem 1.5rem;
-            background: #f5f7f6;
+            background: #f2f6f4;
             color: #101917;
             font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
             line-height: 1.6;
         }
 
         @media (prefers-color-scheme: dark) {
-            body { background: #0e1311; color: #eef4f0; }
+            body { background: #0e1614; color: #f2f6f4; }
             .card { background: #161c19 !important; border-color: #26302b !important; }
             .muted { color: #97a69d !important; }
             .badge { border-color: #26302b !important; color: #97a69d !important; }
@@ -96,7 +96,7 @@
             margin-top: 1.5rem;
             border: 1px solid #dfe6e2;
             border-radius: 0.75rem;
-            background: #f5f7f6;
+            background: #f2f6f4;
             padding: 1rem;
             font-size: 0.875rem;
         }

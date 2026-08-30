@@ -42,7 +42,7 @@
 
     <meta
         name="theme-color"
-        content="#26744b"
+        content="#123d35"
     >
 
     <x-presentation-language-bootstrap />
@@ -59,12 +59,12 @@
     <style>
         html,
         body {
-            background-color: #f5f7f6;
+            background-color: #f2f6f4;
         }
 
         html[data-theme="dark"],
         html[data-theme="dark"] body {
-            background-color: #0e1311;
+            background-color: #0e1614;
         }
     </style>
 
@@ -83,27 +83,34 @@
 
     <main class="grid min-h-screen lg:grid-cols-2">
 
+        {{--
+            The hero is a Patrimoine Green band — the one place in the
+            product where the brand is the subject rather than the frame.
+            Everything inside it reads --pm-band-*, so nothing here has to
+            know it is standing on a dark ground, and dark mode needs no
+            second copy of any of it.
+        --}}
         <section
             class="
+                pm-auth-hero
                 relative hidden overflow-hidden
-                bg-patrimoine-950
                 lg:flex lg:flex-col lg:justify-between
                 p-12
             "
         >
             <div
                 class="
+                    pm-auth-hero-glow
                     absolute -right-32 -top-32
                     h-96 w-96 rounded-full
-                    bg-patrimoine-800/50
                 "
             ></div>
 
             <div
                 class="
+                    pm-auth-hero-glow pm-auth-hero-glow-soft
                     absolute -bottom-40 -left-32
                     h-[30rem] w-[30rem] rounded-full
-                    bg-patrimoine-800/40
                 "
             ></div>
 
@@ -114,24 +121,17 @@
                     data-marketing-home
                     class="flex items-center gap-3"
                 >
-                    <img
-                        src="/branding/patrimoine-logo.svg"
-                        alt="Patrimoine 365"
-                        class="h-11 w-11"
-                    >
+                    <x-logo :size="44" />
 
-                    <span class="text-xl font-semibold text-white">
-                        Patrimoine <span class="text-patrimoine-300">365</span>
+                    <span class="pm-auth-hero-wordmark">
+                        Patrimoine <span class="pm-auth-hero-365">365</span>
                     </span>
                 </a>
             </div>
 
             <div class="relative z-10 max-w-lg">
                 <p
-                    class="
-                        mb-4 text-xs font-semibold uppercase
-                        tracking-[0.24em] text-patrimoine-300
-                    "
+                    class="pm-auth-hero-kicker"
                 >
                     <span data-i18n="login.hero_kicker">
                         {{ __('ui.login.hero_kicker') }}
@@ -139,10 +139,7 @@
                 </p>
 
                 <h1
-                    class="
-                        text-4xl font-semibold leading-tight
-                        tracking-tight text-white
-                    "
+                    class="pm-auth-hero-title"
                 >
                     <span data-i18n="login.hero_title">
                         {{ __('ui.login.hero_title') }}
@@ -150,10 +147,7 @@
                 </h1>
 
                 <p
-                    class="
-                        mt-6 max-w-md text-base leading-7
-                        text-patrimoine-200
-                    "
+                    class="pm-auth-hero-description mt-6 max-w-md"
                 >
                     <span data-i18n="login.hero_description">
                         {{ __('ui.login.hero_description') }}
@@ -165,12 +159,7 @@
                     edition when the visitor changes language.
                 --}}
                 <div
-                    class="
-                        mt-10 overflow-hidden rounded-2xl
-                        border border-patrimoine-800
-                        bg-patrimoine-900/50 p-1.5
-                        shadow-2xl
-                    "
+                    class="pm-auth-hero-frame mt-10"
                 >
                     {{--
                         Server-rendered default matches the default paint
@@ -189,10 +178,7 @@
             </div>
 
             <div
-                class="
-                    relative z-10 text-sm
-                    text-patrimoine-300
-                "
+                class="pm-auth-hero-footnote relative z-10"
             >
                 <span data-i18n="login.product_name">
                     {{ __('ui.login.product_name') }}
@@ -240,34 +226,9 @@
                         hover:text-[var(--pm-text)]
                     "
                 >
-                    <svg
-                        data-theme-icon="moon"
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        aria-hidden="true"
-                    >
-                        <path d="M20.5 14.1A8.5 8.5 0 0 1 9.9 3.5a8.5 8.5 0 1 0 10.6 10.6Z" />
-                    </svg>
+                    <x-icon name="moon" data-theme-icon="moon" />
 
-                    <svg
-                        data-theme-icon="sun"
-                        class="hidden h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        aria-hidden="true"
-                    >
-                        <circle cx="12" cy="12" r="4" />
-                        <path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-                    </svg>
+                    <x-icon name="sun" data-theme-icon="sun" class="hidden" />
                 </button>
             </div>
 
@@ -278,11 +239,7 @@
                     data-marketing-home
                     class="mb-12 flex items-center gap-3 lg:hidden"
                 >
-                    <img
-                        src="/branding/patrimoine-logo.svg"
-                        alt="Patrimoine 365"
-                        class="h-10 w-10"
-                    >
+                    <x-logo :size="40" />
 
                     <span class="text-xl font-semibold text-[var(--pm-text)]">
                         Patrimoine <span class="text-[var(--pm-accent)]">365</span>

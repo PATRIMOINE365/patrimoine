@@ -4,15 +4,17 @@
     <meta charset="utf-8">
     <title>{{ $title }}</title>
 
+    @include('documents.partials.fonts')
+
     <style>
         @page {
             margin: 18px;
         }
 
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'Inter', 'DejaVu Sans', sans-serif;
             font-size: 8px;
-            color: #1f2937;
+            color: #17201E;
         }
 
         h1 {
@@ -22,7 +24,7 @@
 
         .meta {
             margin-bottom: 12px;
-            color: #4b5563;
+            color: #4E5B56;
         }
 
         table {
@@ -33,14 +35,14 @@
 
         th,
         td {
-            border: 1px solid #d1d5db;
+            border: 1px solid #DDE6E2;
             padding: 4px;
             vertical-align: top;
             overflow-wrap: anywhere;
         }
 
         th {
-            background: #f3f4f6;
+            background: #F7F5EF;
             text-align: left;
             font-size: 7px;
         }

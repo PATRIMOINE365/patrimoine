@@ -17,9 +17,9 @@
     <x-theme-bootstrap />
 
     <style>
-        html, body { background-color: #f5f7f6; }
+        html, body { background-color: #f2f6f4; }
         html[data-theme="dark"],
-        html[data-theme="dark"] body { background-color: #0e1311; }
+        html[data-theme="dark"] body { background-color: #0e1614; }
     </style>
 
     @vite(['resources/css/app.css'])

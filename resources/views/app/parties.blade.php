@@ -38,16 +38,7 @@
             type="button"
             class="pm-button-primary gap-2"
         >
-            <svg
-                class="h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-                <path d="M12 5v14"/>
-                <path d="M5 12h14"/>
-            </svg>
+            <x-icon name="plus" :size="16" />
 
             <span data-i18n="parties.add_party">{{ __('ui.parties.add_party') }}</span>
         </button>
@@ -198,22 +189,7 @@
                         </label>
 
                         <div class="relative">
-                            <svg
-                                class="
-                                    pointer-events-none
-                                    absolute left-3 top-1/2
-                                    h-4 w-4
-                                    -translate-y-1/2
-                                    text-[var(--pm-text-subtle)]
-                                "
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <circle cx="11" cy="11" r="8"/>
-                                <path d="m21 21-4.35-4.35"/>
-                            </svg>
+                            <x-icon name="search-lg" :size="16" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pm-text-subtle)]" />
 
                             <input
                                 id="party-search"
@@ -502,7 +478,7 @@
                         <div
                             class="
                                 grid gap-4
-                                md:grid-cols-2
+                                panel-md:grid-cols-2
                             "
                         >
                             {{--
@@ -597,10 +573,10 @@
                         <div
                             class="
                                 grid gap-4
-                                md:grid-cols-2
+                                panel-md:grid-cols-2
                             "
                         >
-                            <div class="md:col-span-2">
+                            <div class="panel-md:col-span-2">
                                 <label
                                     for="party-legal-name"
                                     class="pm-field-label"
@@ -617,7 +593,7 @@
                                 >
                             </div>
 
-                            <div class="md:col-span-2">
+                            <div class="panel-md:col-span-2">
                                 <label
                                     for="party-contact-name"
                                     class="pm-field-label"
@@ -687,7 +663,7 @@
                         <div
                             class="
                                 grid gap-4
-                                md:grid-cols-2
+                                panel-md:grid-cols-2
                             "
                         >
                             <x-phone-field
@@ -743,7 +719,7 @@
                                 >
                             </div>
 
-                            <div class="md:col-span-2">
+                            <div class="panel-md:col-span-2">
                                 <label
                                     for="party-address"
                                     class="pm-field-label"
@@ -788,95 +764,41 @@
                         <div
                             class="
                                 grid gap-3
-                                sm:grid-cols-3
+                                panel-sm:grid-cols-3
                             "
                         >
-                            <label
-                                class="
-                                    flex cursor-pointer
-                                    items-center gap-3
-                                    rounded-xl border
-                                    border-[var(--pm-border)]
-                                    px-4 py-3
-                                "
-                            >
+                            <label class="pm-option-row">
                                 <input
                                     id="party-role-owner"
                                     type="checkbox"
-                                    class="
-                                        h-4 w-4 rounded
-                                        border-[var(--pm-border-strong)]
-                                        text-[var(--pm-accent)]
-                                        focus:ring-[var(--pm-accent)]
-                                    "
+                                    class="pm-checkbox"
                                 >
 
-                                <span
-                                    class="
-                                        text-sm font-medium
-                                        text-[var(--pm-text-secondary)]
-                                    "
-                                >
+                                <span class="font-medium">
                                     <span data-i18n="parties.owner">{{ __('ui.parties.owner') }}</span>
                                 </span>
                             </label>
 
-                            <label
-                                class="
-                                    flex cursor-pointer
-                                    items-center gap-3
-                                    rounded-xl border
-                                    border-[var(--pm-border)]
-                                    px-4 py-3
-                                "
-                            >
+                            <label class="pm-option-row">
                                 <input
                                     id="party-role-tenant"
                                     type="checkbox"
-                                    class="
-                                        h-4 w-4 rounded
-                                        border-[var(--pm-border-strong)]
-                                        text-[var(--pm-accent)]
-                                        focus:ring-[var(--pm-accent)]
-                                    "
+                                    class="pm-checkbox"
                                 >
 
-                                <span
-                                    class="
-                                        text-sm font-medium
-                                        text-[var(--pm-text-secondary)]
-                                    "
-                                >
+                                <span class="font-medium">
                                     <span data-i18n="parties.tenant">{{ __('ui.parties.tenant') }}</span>
                                 </span>
                             </label>
 
-                            <label
-                                class="
-                                    flex cursor-pointer
-                                    items-center gap-3
-                                    rounded-xl border
-                                    border-[var(--pm-border)]
-                                    px-4 py-3
-                                "
-                            >
+                            <label class="pm-option-row">
                                 <input
                                     id="party-role-agent"
                                     type="checkbox"
-                                    class="
-                                        h-4 w-4 rounded
-                                        border-[var(--pm-border-strong)]
-                                        text-[var(--pm-accent)]
-                                        focus:ring-[var(--pm-accent)]
-                                    "
+                                    class="pm-checkbox"
                                 >
 
-                                <span
-                                    class="
-                                        text-sm font-medium
-                                        text-[var(--pm-text-secondary)]
-                                    "
-                                >
+                                <span class="font-medium">
                                     <span data-i18n="parties.agent">{{ __('ui.parties.agent') }}</span>
                                 </span>
                             </label>
@@ -911,7 +833,7 @@
                         <div
                             class="
                                 grid gap-4
-                                md:grid-cols-2
+                                panel-md:grid-cols-2
                             "
                         >
                             <div>

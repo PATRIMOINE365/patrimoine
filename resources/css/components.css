@@ -1,0 +1,1713 @@
+/*
+|--------------------------------------------------------------------------
+| Patrimoine 365 — component layer
+|--------------------------------------------------------------------------
+|
+| Untitled UI component anatomy, built on the semantic tokens.
+|
+| Everything here is DELIBERATELY UN-LAYERED. Tailwind's utilities live
+| inside a cascade layer, which loses to un-layered rules regardless of
+| specificity. That is what lets a page write `.pm-button-primary` and get
+| the real button rather than a utility-mangled one — and it is also why
+| `.pm-hide` has to exist alongside Tailwind's `.hidden`.
+|
+| The rule for adding to this file: a component earns its place when the
+| same thing appears on three pages. Anything below that count is page
+| structure and belongs in pages.css.
+|
+| WHAT IS NOT HERE, ON PURPOSE:
+|   - no !important (there were 504)
+|   - no #id-scoped styling (there were twelve drawers' worth)
+|   - no viewport breakpoints inside a drawer; drawers are container
+|     queries, because a 28rem panel on a 27in monitor is still 28rem
+|
+*/
+
+/*
+|--------------------------------------------------------------------------
+| Base
+|--------------------------------------------------------------------------
+*/
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: var(--font-sans);
+    /*
+     * Inter's alternate single-storey `a` is not used, but cv05 (lowercase
+     * l with a tail) and cv11 (single-storey g) are: both are letters an
+     * operator has to tell apart from 1 and 9 in an account number.
+     */
+    font-feature-settings: 'cv05', 'cv11';
+    letter-spacing: -0.006em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/*
+ * Tabular figures everywhere a number can be compared down a column. Money
+ * that does not line up is money an operator has to read twice.
+ */
+table,
+input[type='number'],
+.pm-numeric,
+.pm-metric-value,
+.pm-table td,
+.pm-money {
+    font-variant-numeric: tabular-nums;
+}
+
+/*
+ * One focus ring for the whole product. Untitled UI puts it 4px outside the
+ * control at 24% opacity, so it reads on any ground without shifting layout.
+ */
+:where(a, button, [role='button'], summary):focus-visible {
+    outline: none;
+    box-shadow: var(--pm-ring-gray);
+    border-radius: var(--radius-md);
+}
+
+::selection {
+    background: var(--pm-selected);
+    color: var(--pm-text);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Visibility primitives
+|--------------------------------------------------------------------------
+|
+| Kept from V1.0.3/V1.0.8. Authorization visibility must never be something
+| feature JavaScript can undo by toggling `hidden`, and component-level
+| show/hide has to beat un-layered component display rules.
+|
+*/
+
+.rbac-hidden,
+.pm-hide {
+    display: none !important;
+}
+
+.shell-admin-only {
+    display: none !important;
+}
+
+html[data-shell-role="administrator"] .shell-admin-only {
+    display: block !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Typography helpers
+|--------------------------------------------------------------------------
+*/
+
+.pm-page-title {
+    font-size: var(--text-display-xs);
+    line-height: var(--text-display-xs--line-height);
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.pm-page-subtitle {
+    margin-top: 0.25rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-subtle);
+}
+
+.pm-section-title {
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.pm-eyebrow {
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pm-text-subtle);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Card
+|--------------------------------------------------------------------------
+|
+| Untitled UI's card: 12px radius, a hairline, and shadow-xs. The shadow is
+| what separates a card from a box drawn with a border — it is barely
+| visible on its own and unmistakable in aggregate.
+|
+*/
+
+.pm-card {
+    border: 1px solid var(--pm-border);
+    border-radius: var(--radius-xl);
+    background: var(--pm-surface);
+    box-shadow: var(--pm-shadow-xs);
+}
+
+.pm-card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+}
+
+.pm-card-header-text {
+    min-width: 0;
+}
+
+.pm-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.pm-card-note {
+    margin-top: 0.125rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-subtle);
+}
+
+.pm-card-body {
+    padding: 0 1.5rem 1.5rem;
+}
+
+/*
+ * A card whose content is a table runs edge to edge: the header and footer
+ * are padded, the table between them is not.
+ */
+.pm-card-flush > .pm-card-header {
+    border-bottom: 1px solid var(--pm-border);
+}
+
+.pm-card-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-top: 1px solid var(--pm-border);
+    padding: 0.875rem 1.5rem;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Buttons
+|--------------------------------------------------------------------------
+|
+| Untitled UI sizes: sm 36px, md 40px, lg 44px, xl 48px. The product uses md
+| almost everywhere and sm inside table rows. Every filled button carries
+| shadow-xs — without it a solid rectangle reads as a coloured block rather
+| than as something that can be pressed.
+|
+*/
+
+.pm-button-primary,
+.pm-button-secondary,
+.pm-button-danger,
+.pm-button-danger-outline,
+.pm-button-tertiary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.875rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease,
+        color 120ms ease,
+        box-shadow 120ms ease,
+        opacity 120ms ease;
+}
+
+.pm-button-primary:disabled,
+.pm-button-secondary:disabled,
+.pm-button-danger:disabled,
+.pm-button-danger-outline:disabled,
+.pm-button-tertiary:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Icons inside buttons sit on the 20px optical size. */
+.pm-button-primary > svg,
+.pm-button-secondary > svg,
+.pm-button-danger > svg,
+.pm-button-danger-outline > svg,
+.pm-button-tertiary > svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: none;
+}
+
+.pm-button-primary {
+    border: 1px solid var(--pm-primary);
+    background: var(--pm-primary);
+    color: var(--pm-primary-text);
+    box-shadow: var(--pm-shadow-xs);
+}
+
+.pm-button-primary:hover:not(:disabled) {
+    border-color: var(--pm-primary-hover);
+    background: var(--pm-primary-hover);
+}
+
+.pm-button-primary:focus-visible {
+    outline: none;
+    box-shadow: var(--pm-shadow-xs), var(--pm-ring-brand);
+}
+
+.pm-button-secondary {
+    border: 1px solid var(--pm-border-strong);
+    background: var(--pm-surface);
+    color: var(--pm-text-muted);
+    box-shadow: var(--pm-shadow-xs);
+}
+
+.pm-button-secondary:hover:not(:disabled) {
+    background: var(--pm-hover);
+    color: var(--pm-text);
+}
+
+.pm-button-secondary:focus-visible {
+    outline: none;
+    box-shadow: var(--pm-shadow-xs), var(--pm-ring-gray);
+}
+
+/*
+ * Tertiary: the quiet action. No border, no ground until it is pointed at.
+ * Used where a row already has a primary action and a second one would
+ * compete with it.
+ */
+.pm-button-tertiary {
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--pm-text-muted);
+}
+
+.pm-button-tertiary:hover:not(:disabled) {
+    background: var(--pm-hover);
+    color: var(--pm-text);
+}
+
+.pm-button-tertiary:focus-visible {
+    outline: none;
+    box-shadow: var(--pm-ring-gray);
+}
+
+/*
+ * Destructive primary. Never appears in the same footer as
+ * .pm-button-primary — it replaces it.
+ */
+.pm-button-danger {
+    border: 1px solid var(--pm-danger-solid);
+    background: var(--pm-danger-solid);
+    color: #ffffff;
+    box-shadow: var(--pm-shadow-xs);
+}
+
+.pm-button-danger:hover:not(:disabled) {
+    border-color: var(--pm-danger-solid-hover);
+    background: var(--pm-danger-solid-hover);
+}
+
+.pm-button-danger:focus-visible {
+    outline: none;
+    box-shadow: var(--pm-shadow-xs), var(--pm-ring-error);
+}
+
+/*
+ * Outlined destructive. The row-level counterpart — a filled red button on
+ * every row of a list shouts.
+ */
+.pm-button-danger-outline {
+    border: 1px solid var(--pm-danger-border);
+    background: var(--pm-surface);
+    color: var(--pm-danger-text);
+    box-shadow: var(--pm-shadow-xs);
+}
+
+.pm-button-danger-outline:hover:not(:disabled) {
+    border-color: var(--pm-danger-solid);
+    background: var(--pm-danger-background);
+}
+
+.pm-button-danger-outline:focus-visible {
+    outline: none;
+    box-shadow: var(--pm-shadow-xs), var(--pm-ring-error);
+}
+
+/* Sizes. Default is md; these are the two the product actually needs. */
+.pm-button-sm {
+    min-height: 2.25rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.pm-button-lg {
+    min-height: 2.75rem;
+    padding: 0.625rem 1.125rem;
+    font-size: var(--text-md);
+    line-height: var(--text-md--line-height);
+}
+
+.pm-button-block {
+    width: 100%;
+}
+
+/*
+ * A link that is a button semantically but reads as a link.
+ */
+.pm-button-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 600;
+    color: var(--pm-accent);
+    cursor: pointer;
+    transition: color 120ms ease;
+}
+
+.pm-button-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+/*
+ * Square icon-only control. 40px to match the md button so a toolbar of
+ * mixed buttons and icon buttons keeps one baseline.
+ */
+.pm-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--pm-text-subtle);
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        color 120ms ease,
+        box-shadow 120ms ease;
+}
+
+.pm-icon-button:hover:not(:disabled) {
+    background: var(--pm-hover);
+    color: var(--pm-text);
+}
+
+.pm-icon-button:focus-visible {
+    outline: none;
+    box-shadow: var(--pm-ring-gray);
+}
+
+.pm-icon-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.pm-icon-button > svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.pm-icon-button-bordered {
+    border-color: var(--pm-border-strong);
+    background: var(--pm-surface);
+    box-shadow: var(--pm-shadow-xs);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Form controls
+|--------------------------------------------------------------------------
+|
+| Untitled UI's input: 8px radius, shadow-xs, and a 4px brand ring on focus.
+|
+| The border is gray-500 rather than Untitled UI's gray-300. WCAG 1.4.11
+| wants 3:1 on the boundary of a control the user has to find, and gray-300
+| on white is 1.5:1. This is the one deliberate departure from the reference
+| system, and it is the brand package's own rule.
+|
+*/
+
+.pm-field-label {
+    display: block;
+    margin-bottom: 0.375rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 500;
+    color: var(--pm-text-muted);
+}
+
+.pm-field-hint {
+    margin-top: 0.375rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-subtle);
+}
+
+.pm-form-error,
+.pm-field-error {
+    margin-top: 0.375rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-danger-text);
+}
+
+.pm-input {
+    display: block;
+    width: 100%;
+    min-height: 2.5rem;
+    border: 1px solid var(--pm-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--pm-input-background);
+    padding: 0.5rem 0.875rem;
+    font-size: var(--text-md);
+    line-height: var(--text-md--line-height);
+    color: var(--pm-text);
+    box-shadow: var(--pm-shadow-xs);
+    outline: none;
+    transition:
+        border-color 120ms ease,
+        box-shadow 120ms ease,
+        background-color 120ms ease;
+}
+
+/*
+ * 16px is not a style choice on a phone: anything smaller makes iOS Safari
+ * zoom the page when the field is focused, and the operator then has to
+ * pinch back out to see the form they were filling in.
+ */
+@media (min-width: 640px) {
+    .pm-input {
+        font-size: var(--text-sm);
+        line-height: var(--text-sm--line-height);
+    }
+}
+
+textarea.pm-input {
+    min-height: 5rem;
+    resize: vertical;
+}
+
+.pm-input:hover:not(:disabled):not(:focus) {
+    border-color: var(--pm-text-subtle);
+}
+
+.pm-input:focus {
+    border-color: var(--pm-accent);
+    box-shadow: var(--pm-ring-brand);
+}
+
+.pm-input:disabled {
+    cursor: not-allowed;
+    border-color: var(--pm-border);
+    background: var(--pm-input-disabled);
+    color: var(--pm-text-placeholder);
+}
+
+.pm-input[aria-invalid='true'],
+.pm-input.pm-input-invalid {
+    border-color: var(--pm-danger-solid);
+}
+
+.pm-input[aria-invalid='true']:focus,
+.pm-input.pm-input-invalid:focus {
+    box-shadow: var(--pm-ring-error);
+}
+
+.pm-input::placeholder {
+    color: var(--pm-text-placeholder);
+    opacity: 1;
+}
+
+select.pm-input {
+    cursor: pointer;
+    /*
+     * The native arrow is replaced with the Untitled UI chevron so a select
+     * and a combobox look like the same control. Encoded rather than linked
+     * because a background-image URL cannot read a CSS variable.
+     */
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%237e8c87' stroke-width='1.667' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5 10 12.5 15 7.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2.5rem;
+}
+
+html[data-theme='dark'] select.pm-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%238b9994' stroke-width='1.667' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5 10 12.5 15 7.5'/%3E%3C/svg%3E");
+}
+
+/*
+ * The open option list is painted by the operating system, not by us, and
+ * without this it ignores the theme entirely.
+ */
+select.pm-input option {
+    background: var(--pm-input-background);
+    color: var(--pm-text);
+}
+
+/*
+ * Padding variants for inputs that carry something inside them. Tailwind's
+ * pl-* utilities are layered and cannot beat the un-layered .pm-input
+ * padding, so clearance has to be a component rule.
+ */
+.pm-input-search {
+    padding-left: 2.625rem;
+}
+
+.pm-input-search-clearable {
+    padding-right: 2.75rem;
+}
+
+.pm-input-currency {
+    padding-left: 3.75rem;
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+    accent-color: var(--pm-accent);
+}
+
+input[type='checkbox']:focus-visible,
+input[type='radio']:focus-visible {
+    outline: none;
+    box-shadow: var(--pm-ring-brand);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Form grid — container queries, not viewport queries
+|--------------------------------------------------------------------------
+|
+| This is what replaced twelve blocks of #id-scoped !important overrides.
+|
+| Those blocks existed because the drawer forms were written with viewport
+| breakpoints (`md:grid-cols-2`) and then opened inside a 28rem panel, where
+| a two-column layout does not fit. Every drawer had to be told, field by
+| field, to collapse back to one column on a wide screen.
+|
+| A container query asks the panel how wide IT is, so the same form is two
+| columns in a 42rem drawer, one column in a 28rem drawer and one column on
+| a phone — with no drawer knowing anything about it.
+|
+*/
+
+.pm-form-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+}
+
+.pm-form-grid > .pm-form-span-2 {
+    grid-column: 1 / -1;
+}
+
+@container pm-panel (min-width: 34rem) {
+    .pm-form-grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pm-form-grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.pm-fieldset {
+    display: grid;
+    gap: 1rem;
+}
+
+.pm-fieldset + .pm-fieldset {
+    margin-top: 1.25rem;
+    border-top: 1px solid var(--pm-border);
+    padding-top: 1.25rem;
+}
+
+.pm-fieldset-legend {
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Field help
+|--------------------------------------------------------------------------
+|
+| The small "?" beside a label that explains what a field means, rendered by
+| <x-field-help>. It used to be styled by the drawer it happened to live in
+| (#lease-modal), which meant the same control looked different anywhere
+| else. It is keyed on its own attribute now, so it looks the same wherever
+| it appears.
+|
+*/
+
+[data-field-help] {
+    display: inline-flex;
+    width: 1.125rem;
+    height: 1.125rem;
+    flex: 0 0 1.125rem;
+    margin-left: 0.25rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--pm-text-subtle);
+    border-radius: 9999px;
+    background: transparent;
+    color: var(--pm-text-muted);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    line-height: 1;
+    cursor: help;
+    transition:
+        border-color 120ms ease,
+        background-color 120ms ease,
+        color 120ms ease,
+        box-shadow 120ms ease;
+}
+
+[data-field-help]:hover {
+    border-color: var(--pm-accent);
+    background: var(--pm-selected);
+    color: var(--pm-accent);
+}
+
+[data-field-help]:focus-visible {
+    outline: none;
+    border-color: var(--pm-accent);
+    color: var(--pm-accent);
+    box-shadow: var(--pm-ring-brand);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Option row
+|--------------------------------------------------------------------------
+|
+| A checkbox or radio that is a CHOICE rather than a consent — the party
+| roles, the lease options. It reads as a selectable card, not as a lone
+| tick in the margin, and it gives the choice a target big enough for a
+| thumb.
+|
+*/
+
+.pm-option-row {
+    display: flex;
+    min-height: 3.25rem;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid var(--pm-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--pm-surface);
+    padding: 0.75rem 1rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-muted);
+    cursor: pointer;
+    transition:
+        border-color 120ms ease,
+        background-color 120ms ease,
+        color 120ms ease;
+}
+
+.pm-option-row:hover {
+    background: var(--pm-hover);
+    color: var(--pm-text);
+}
+
+.pm-option-row:has(input:checked) {
+    border-color: var(--pm-accent);
+    background: var(--pm-selected);
+    color: var(--pm-text);
+}
+
+.pm-option-row:has(input:focus-visible) {
+    box-shadow: var(--pm-ring-brand);
+}
+
+/*
+ * A checkbox the operator has to hit is 18px, not the browser's 13px.
+ */
+.pm-option-row input[type='checkbox'],
+.pm-option-row input[type='radio'],
+.pm-checkbox {
+    width: 1.125rem;
+    height: 1.125rem;
+    flex: 0 0 1.125rem;
+    margin: 0;
+    cursor: pointer;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Drawer
+|--------------------------------------------------------------------------
+|
+| The only overlay in the product. Two widths: sm for a single record, lg
+| for a workflow. The panel declares a container so everything inside can
+| size itself against the panel instead of the window.
+|
+*/
+
+.pm-drawer {
+    isolation: isolate;
+    /*
+     * A closed drawer stays rendered off-screen so the browser has a real
+     * starting position to animate from.
+     */
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.pm-drawer.pm-drawer-active {
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.pm-drawer.pm-drawer-closing {
+    visibility: visible;
+    pointer-events: none;
+}
+
+.pm-drawer-backdrop {
+    background: var(--pm-overlay);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    transition: opacity 800ms ease;
+}
+
+.pm-drawer-panel {
+    container-type: inline-size;
+    container-name: pm-panel;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--pm-border);
+    background: var(--pm-surface);
+    box-shadow: var(--pm-shadow-2xl);
+    transform: translateX(100%);
+    transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pm-drawer.pm-drawer-open .pm-drawer-backdrop {
+    opacity: 1;
+}
+
+.pm-drawer.pm-drawer-open .pm-drawer-panel {
+    transform: translateX(0);
+}
+
+.pm-drawer.pm-drawer-closing .pm-drawer-backdrop {
+    opacity: 0;
+}
+
+.pm-drawer.pm-drawer-closing .pm-drawer-panel {
+    transform: translateX(100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pm-drawer-backdrop,
+    .pm-drawer-panel {
+        transition: none;
+    }
+}
+
+.pm-drawer-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid var(--pm-border);
+    padding: 1.25rem 1.5rem;
+}
+
+.pm-drawer-title {
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.pm-drawer-description {
+    margin-top: 0.25rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-subtle);
+}
+
+.pm-drawer-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+.pm-drawer-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-top: 1px solid var(--pm-border);
+    background: var(--pm-surface);
+    padding: 1rem 1.5rem;
+}
+
+/*
+ * Cancel and the action share the footer equally. This was settled four
+ * separate times in the old stylesheet, once per drawer; it is one rule.
+ */
+.pm-drawer-footer > * {
+    flex: 1 1 0;
+}
+
+.pm-drawer-footer-single > * {
+    flex: 0 0 auto;
+}
+
+/*
+ * Below 640px a drawer is a full-width sheet, and its footer is the last
+ * thing a thumb reaches.
+ */
+@media (max-width: 639px) {
+    .pm-drawer-panel {
+        max-width: 100%;
+    }
+
+    .pm-drawer-header,
+    .pm-drawer-footer {
+        padding-inline: 1.25rem;
+    }
+
+    .pm-drawer-body {
+        padding: 1.25rem;
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Badges
+|--------------------------------------------------------------------------
+|
+| Untitled UI's pill badge: full radius, a hairline in the same family as
+| the fill, and an optional 6px dot. The dot is what makes a status readable
+| without relying on colour alone.
+|
+*/
+
+.pm-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border: 1px solid var(--pm-border);
+    border-radius: 9999px;
+    background: var(--pm-surface-muted);
+    padding: 0.125rem 0.625rem;
+    font-size: var(--text-xs);
+    line-height: 1.125rem;
+    font-weight: 500;
+    color: var(--pm-text-muted);
+    white-space: nowrap;
+}
+
+.pm-badge::before {
+    content: '';
+    display: none;
+    width: 0.375rem;
+    height: 0.375rem;
+    flex: none;
+    border-radius: 9999px;
+    background: currentColor;
+}
+
+.pm-badge-dot::before {
+    display: block;
+}
+
+.pm-badge-success {
+    border-color: var(--pm-success-border);
+    background: var(--pm-success-background);
+    color: var(--pm-success-text);
+}
+
+.pm-badge-warning {
+    border-color: var(--pm-warning-border);
+    background: var(--pm-warning-background);
+    color: var(--pm-warning-text);
+}
+
+.pm-badge-danger {
+    border-color: var(--pm-danger-border);
+    background: var(--pm-danger-background);
+    color: var(--pm-danger-text);
+}
+
+.pm-badge-info {
+    border-color: var(--pm-info-border);
+    background: var(--pm-info-background);
+    color: var(--pm-info-text);
+}
+
+.pm-badge-brand {
+    border-color: var(--pm-success-border);
+    background: var(--pm-success-background);
+    color: var(--pm-success-text);
+}
+
+/* A count beside a title: "Leases 24". */
+.pm-count-pill {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--pm-border);
+    border-radius: 9999px;
+    background: var(--pm-surface-muted);
+    padding: 0.125rem 0.5rem;
+    font-size: var(--text-xs);
+    line-height: 1.125rem;
+    font-weight: 500;
+    color: var(--pm-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Chips — selectable presets
+|--------------------------------------------------------------------------
+*/
+
+.pm-duration-chip,
+.pm-chip {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--pm-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--pm-surface);
+    padding: 0.375rem 0.75rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 500;
+    color: var(--pm-text-muted);
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease,
+        color 120ms ease;
+}
+
+.pm-duration-chip:hover,
+.pm-chip:hover {
+    background: var(--pm-hover);
+    color: var(--pm-text);
+}
+
+.pm-duration-chip[aria-pressed='true'],
+.pm-chip[aria-pressed='true'] {
+    border-color: var(--pm-accent);
+    background: var(--pm-selected);
+    color: var(--pm-accent);
+}
+
+.pm-duration-chip:focus-visible,
+.pm-chip:focus-visible {
+    outline: none;
+    box-shadow: var(--pm-ring-brand);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Table
+|--------------------------------------------------------------------------
+|
+| Untitled UI's table: a gray-50 header row in a card, 12px vertical rhythm,
+| and hairlines only between rows — never around cells.
+|
+*/
+
+.pm-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.pm-table thead th {
+    border-bottom: 1px solid var(--pm-border);
+    background: var(--pm-surface-subtle);
+    padding: 0.75rem 1.5rem;
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    font-weight: 600;
+    color: var(--pm-text-subtle);
+    white-space: nowrap;
+}
+
+.pm-table tbody td {
+    border-bottom: 1px solid var(--pm-border);
+    padding: 1rem 1.5rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-muted);
+    vertical-align: middle;
+}
+
+.pm-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.pm-table tbody tr:hover td {
+    background: var(--pm-hover);
+}
+
+.pm-table tbody tr[aria-selected='true'] td,
+.pm-table tbody tr.pm-row-selected td {
+    background: var(--pm-selected);
+}
+
+/* The identifying column of a row reads as the row's subject. */
+.pm-table td.pm-cell-primary,
+.pm-table .pm-cell-primary {
+    font-weight: 500;
+    color: var(--pm-text);
+}
+
+.pm-table .pm-cell-numeric {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.pm-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Metric tile
+|--------------------------------------------------------------------------
+|
+| The number is display-md. A dashboard figure is the one thing on the page
+| that should be readable from across a desk.
+|
+*/
+
+.pm-metric {
+    border: 1px solid var(--pm-border);
+    border-radius: var(--radius-2xl);
+    background: var(--pm-surface);
+    padding: 1.25rem;
+    box-shadow: var(--pm-shadow-xs);
+}
+
+.pm-metric-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 500;
+    color: var(--pm-text-muted);
+}
+
+.pm-metric-value {
+    margin-top: 0.5rem;
+    font-size: var(--text-display-md);
+    line-height: var(--text-display-md--line-height);
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.pm-metric-note {
+    margin-top: 0.25rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-subtle);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Alert
+|--------------------------------------------------------------------------
+*/
+
+.pm-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    border: 1px solid var(--pm-border);
+    border-radius: var(--radius-xl);
+    background: var(--pm-surface-subtle);
+    padding: 1rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-muted);
+}
+
+.pm-alert > svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: none;
+    margin-top: 0.0625rem;
+}
+
+.pm-alert-title {
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.pm-alert-success {
+    border-color: var(--pm-success-border);
+    background: var(--pm-success-background);
+    color: var(--pm-success-text);
+}
+
+.pm-alert-warning {
+    border-color: var(--pm-warning-border);
+    background: var(--pm-warning-background);
+    color: var(--pm-warning-text);
+}
+
+.pm-alert-danger {
+    border-color: var(--pm-danger-border);
+    background: var(--pm-danger-background);
+    color: var(--pm-danger-text);
+}
+
+.pm-alert-info {
+    border-color: var(--pm-info-border);
+    background: var(--pm-info-background);
+    color: var(--pm-info-text);
+}
+
+.pm-alert-success .pm-alert-title,
+.pm-alert-warning .pm-alert-title,
+.pm-alert-danger .pm-alert-title,
+.pm-alert-info .pm-alert-title {
+    color: inherit;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Empty state
+|--------------------------------------------------------------------------
+*/
+
+.pm-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+.pm-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--pm-border);
+    border-radius: var(--radius-lg);
+    background: var(--pm-surface-subtle);
+    color: var(--pm-text-subtle);
+    box-shadow: var(--pm-shadow-xs);
+}
+
+.pm-empty-icon > svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.pm-empty-title {
+    font-size: var(--text-md);
+    line-height: var(--text-md--line-height);
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.pm-empty-note {
+    max-width: 24rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-subtle);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Tabs
+|--------------------------------------------------------------------------
+|
+| Untitled UI's "button border" tabs: a segmented control on a recessed
+| ground, which survives a page that already has an underline in it.
+|
+*/
+
+.pm-tabs {
+    display: inline-flex;
+    gap: 0.25rem;
+    border: 1px solid var(--pm-border);
+    border-radius: var(--radius-lg);
+    background: var(--pm-surface-muted);
+    padding: 0.25rem;
+}
+
+.pm-tab {
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.75rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 600;
+    color: var(--pm-text-subtle);
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        color 120ms ease,
+        box-shadow 120ms ease;
+}
+
+.pm-tab:hover {
+    color: var(--pm-text);
+}
+
+.pm-tab[aria-selected='true'],
+.pm-tab[data-selected='true'] {
+    background: var(--pm-surface);
+    color: var(--pm-text);
+    box-shadow: var(--pm-shadow-xs);
+}
+
+.pm-tab:focus-visible {
+    outline: none;
+    box-shadow: var(--pm-ring-gray);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Navigation — sidebar and menus
+|--------------------------------------------------------------------------
+*/
+
+/*
+ * The sidebar is a Patrimoine Green band inside a light product — the brand
+ * calls green "the dominant", and this is where it dominates. In dark mode
+ * the band stops being a contrast device and becomes a raised surface; that
+ * decision lives in tokens.css, not here.
+ */
+.pm-sidebar {
+    background: var(--pm-band);
+    border-right: 1px solid var(--pm-band-border);
+}
+
+.pm-sidebar-brand {
+    display: flex;
+    height: 5rem;
+    flex: none;
+    align-items: center;
+    border-bottom: 1px solid var(--pm-band-border);
+    padding-inline: 1.5rem;
+}
+
+.pm-sidebar-brand-name {
+    font-size: var(--text-md);
+    line-height: var(--text-md--line-height);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--pm-band-text);
+}
+
+/* The 365 is one of mint's five jobs inside the product. */
+.pm-sidebar-brand-365 {
+    color: var(--pm-band-accent);
+}
+
+.pm-sidebar-brand-note {
+    margin-top: 0.125rem;
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    color: var(--pm-band-text-muted);
+}
+
+.pm-sidebar-nav {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 1.5rem 1rem;
+}
+
+.pm-nav-group-spaced {
+    margin-top: 2rem;
+}
+
+.pm-nav-group {
+    padding: 0 0.75rem;
+    margin-bottom: 0.25rem;
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pm-band-text-muted);
+}
+
+.pm-nav-item {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 500;
+    color: var(--pm-band-text-muted);
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        color 120ms ease;
+}
+
+.pm-nav-item > svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: none;
+}
+
+/*
+ * A component's display rule is un-layered and therefore beats the browser's
+ * own [hidden] styling. The platform console link ships hidden and is
+ * revealed by auth.js once /api/auth/me confirms platform staff, so the
+ * component has to honour the attribute explicitly.
+ */
+.pm-nav-item[hidden],
+.pm-nav-item.pm-hide {
+    display: none;
+}
+
+.pm-nav-item:hover {
+    background: var(--pm-band-hover);
+    color: var(--pm-band-text);
+}
+
+.pm-nav-item[aria-current='page'],
+.pm-nav-item.pm-nav-active {
+    background: var(--pm-band-selected);
+    color: var(--pm-band-text);
+    font-weight: 600;
+}
+
+/*
+ * Mint's whole budget inside the product is: the active nav item, the focus
+ * ring, the selected row, positive figures and the logo. This is one of the
+ * five.
+ */
+.pm-nav-item[aria-current='page'] > svg,
+.pm-nav-item.pm-nav-active > svg {
+    color: var(--pm-band-accent);
+}
+
+.pm-nav-item:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--pm-band-accent);
+}
+
+/* Menus that sit on an ordinary surface rather than on the band. */
+.shell-menu-item {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.625rem;
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 500;
+    color: var(--pm-text-muted);
+    transition:
+        background-color 120ms ease,
+        color 120ms ease;
+}
+
+.shell-menu-item:hover {
+    background: var(--pm-hover);
+    color: var(--pm-text);
+}
+
+/*
+ * Sign out reads in the same red as the delete buttons so it is
+ * unmistakable in a menu of ordinary rows — but it stays a row. The colour
+ * is carried by the icon and the words; the ground only answers the pointer.
+ */
+.shell-menu-item-danger,
+.shell-menu-item-danger .shell-menu-item-title,
+.shell-menu-item-danger .shell-menu-item-note {
+    color: var(--pm-danger-text);
+}
+
+.shell-menu-item-danger:hover {
+    background: var(--pm-danger-background);
+    color: var(--pm-danger-text);
+}
+
+.shell-menu-item-danger:hover .shell-menu-item-title,
+.shell-menu-item-danger:hover .shell-menu-item-note {
+    color: var(--pm-danger-text);
+}
+
+.shell-menu-item-danger:focus-visible {
+    outline: none;
+    box-shadow: var(--pm-ring-error);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Theme switch
+|--------------------------------------------------------------------------
+*/
+
+.theme-option {
+    border-radius: var(--radius-sm);
+    padding: 0.375rem 0.5rem;
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    font-weight: 600;
+    color: var(--pm-text-subtle);
+    transition:
+        background-color 120ms ease,
+        color 120ms ease,
+        box-shadow 120ms ease;
+}
+
+.theme-option:hover {
+    color: var(--pm-text);
+}
+
+.theme-option[data-selected='true'] {
+    background: var(--pm-surface);
+    color: var(--pm-text);
+    box-shadow: var(--pm-shadow-xs);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Avatar
+|--------------------------------------------------------------------------
+*/
+
+/*
+ * The photograph itself lives in app.css with the cropper that produces it.
+ * What is here is the shape every avatar takes, and the fallback shown
+ * before a photograph exists.
+ */
+.pm-avatar-initials {
+    /*
+     * A brand tint rather than a solid green disc. Every table row, every
+     * menu and every party card carries one of these, and mint's whole
+     * budget inside the product is five things — a saturated circle in
+     * every row is not one of them. Brand-700 on Mint Wash is 6.5:1.
+     */
+    background: var(--pm-success-background);
+    color: var(--pm-success-text);
+
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+
+    user-select: none;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Pagination
+|--------------------------------------------------------------------------
+|
+| One control, rendered by resources/js/pagination.js, sitting in the footer
+| of every list in the application and in the platform console.
+|
+| Three parts, and on a narrow screen they stack in the order they matter:
+| what is on screen, how many rows to show, and which page to read next.
+|
+| The current page is FILLED with the brand colour rather than merely
+| outlined. A reader scanning a row of numbers should not have to work out
+| which one they are standing on. This is the one place the product spends
+| a solid brand fill on something that is not a button.
+|
+*/
+
+.pm-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+}
+
+.pm-pagination-summary {
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-subtle);
+    font-variant-numeric: tabular-nums;
+}
+
+.pm-pagination-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+}
+
+.pm-pagination-size {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-subtle);
+    white-space: nowrap;
+}
+
+.pm-pagination-size select.pm-input {
+    width: auto;
+    min-height: 2.25rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    font-size: var(--text-sm);
+}
+
+.pm-pagination-pages {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.pm-pagination-page,
+.pm-pagination-step {
+    display: inline-flex;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    padding: 0 0.5rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--pm-text);
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease,
+        color 120ms ease,
+        box-shadow 120ms ease;
+}
+
+.pm-pagination-page:hover:not(.is-current),
+.pm-pagination-step:hover:not(:disabled) {
+    background: var(--pm-hover);
+}
+
+.pm-pagination-page:focus-visible,
+.pm-pagination-step:focus-visible {
+    outline: none;
+    box-shadow: var(--pm-ring-gray);
+}
+
+/*
+ * The page being read. Filled, not outlined — this is the one thing in the
+ * control a reader must never have to hunt for.
+ */
+.pm-pagination-page.is-current,
+.pm-pagination-page.is-current:hover {
+    border-color: var(--pm-primary);
+    background: var(--pm-primary);
+    color: var(--pm-primary-text);
+}
+
+/* The step buttons are bordered, so they read as buttons beside the numbers. */
+.pm-pagination-step {
+    border-color: var(--pm-border-strong);
+    background: var(--pm-surface);
+    color: var(--pm-text-muted);
+    box-shadow: var(--pm-shadow-xs);
+}
+
+.pm-pagination-step svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.pm-pagination-step:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+.pm-pagination-gap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    padding: 0 0.25rem;
+    font-size: var(--text-sm);
+    color: var(--pm-text-subtle);
+}
+
+@media (max-width: 640px) {
+    .pm-pagination,
+    .pm-pagination-controls {
+        align-items: stretch;
+        justify-content: flex-start;
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Positive and negative figures
+|--------------------------------------------------------------------------
+|
+| The last of mint's five jobs in the product.
+|
+*/
+
+.pm-figure-positive {
+    color: var(--pm-accent);
+    font-variant-numeric: tabular-nums;
+}
+
+.pm-figure-negative {
+    color: var(--pm-danger-text);
+    font-variant-numeric: tabular-nums;
+}

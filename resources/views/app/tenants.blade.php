@@ -129,17 +129,7 @@
                             text-[var(--pm-text-muted)]
                         "
                     >
-                        <svg
-                            class="h-6 w-6"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M3 21v-2a6 6 0 0 1 12 0v2"/>
-                            <path d="M17 11h4"/>
-                        </svg>
+                        <x-icon name="users-01" :size="24" />
                     </div>
 
                     <h2
@@ -293,7 +283,7 @@
                         grid gap-3 rounded-xl
                         border border-[var(--pm-border)]
                         bg-[var(--pm-surface-subtle)] p-4
-                        sm:grid-cols-3
+                        panel-sm:grid-cols-3
                     "
                 >
                     <div>
@@ -639,7 +629,7 @@
                     class="
                         grid gap-3 rounded-xl border
                         border-[var(--pm-border)] bg-[var(--pm-surface-subtle)]
-                        p-4 sm:grid-cols-3
+                        p-4 panel-sm:grid-cols-3
                     "
                 >
                     <div>
@@ -1214,7 +1204,7 @@
                     class="
                         grid gap-3 rounded-xl border
                         border-[var(--pm-border)] bg-[var(--pm-surface-subtle)]
-                        p-4 sm:grid-cols-3
+                        p-4 panel-sm:grid-cols-3
                     "
                 >
                     <div>
@@ -1590,7 +1580,7 @@
                         grid gap-3 rounded-xl
                         border border-[var(--pm-border)]
                         bg-[var(--pm-surface-subtle)] p-4
-                        sm:grid-cols-2
+                        panel-sm:grid-cols-2
                     "
                 >
                     <div>

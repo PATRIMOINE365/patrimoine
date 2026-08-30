@@ -10,9 +10,9 @@
 
     <style>
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'Inter', 'DejaVu Sans', sans-serif;
             font-size: 12px;
-            color: #222;
+            color: #17201E;
             line-height: 1.45;
         }
 
@@ -29,7 +29,7 @@
 
         th,
         td {
-            border: 1px solid #d7d7d7;
+            border: 1px solid #DDE6E2;
             padding: 9px;
             vertical-align: top;
         }
@@ -37,7 +37,7 @@
         th {
             width: 34%;
             text-align: left;
-            background: #f5f5f5;
+            background: #F7F5EF;
         }
 
         .reference {

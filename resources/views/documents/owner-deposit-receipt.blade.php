@@ -14,10 +14,10 @@
         }
 
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'Inter', 'DejaVu Sans', sans-serif;
             font-size: 11px;
             line-height: 1.45;
-            color: #222;
+            color: #17201E;
         }
 
         table {
@@ -37,7 +37,7 @@
         }
 
         .muted {
-            color: #666;
+            color: #66736F;
         }
 
         .section {
@@ -60,7 +60,7 @@
         .payment-box {
             margin-top: 24px;
             padding: 18px;
-            border: 1px solid #ccc;
+            border: 1px solid #DDE6E2;
         }
 
         .payment-amount {
@@ -90,10 +90,10 @@
         .footer {
             margin-top: 36px;
             padding-top: 12px;
-            border-top: 1px solid #ddd;
+            border-top: 1px solid #DDE6E2;
             text-align: center;
             font-size: 9px;
-            color: #777;
+            color: #66736F;
         }
     </style>
     @include('documents.partials.base-styles')

@@ -5,15 +5,17 @@
 
     <title>{{ $title }}</title>
 
+    @include('documents.partials.fonts')
+
     <style>
         @page {
             margin: 36px 42px;
         }
 
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'Inter', 'DejaVu Sans', sans-serif;
             font-size: 10px;
-            color: #222222;
+            color: #17201E;
             line-height: 1.4;
         }
 
@@ -27,7 +29,7 @@
             font-weight: bold;
             margin-bottom: 6px;
             padding-bottom: 4px;
-            border-bottom: 1px solid #cccccc;
+            border-bottom: 1px solid #DDE6E2;
         }
 
         table {
@@ -36,27 +38,27 @@
         }
 
         th {
-            background: #f1f1f1;
+            background: #FBFCFC;
             text-align: left;
             font-weight: bold;
             padding: 6px;
-            border: 1px solid #dddddd;
+            border: 1px solid #DDE6E2;
         }
 
         td {
             padding: 6px;
             vertical-align: top;
-            border: 1px solid #dddddd;
+            border: 1px solid #DDE6E2;
         }
 
         .label {
             width: 38%;
             font-weight: bold;
-            background: #fafafa;
+            background: #FBFCFC;
         }
 
         .empty {
-            color: #888888;
+            color: #7E8C87;
             font-style: italic;
             padding: 8px 0;
         }

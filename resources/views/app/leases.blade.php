@@ -58,21 +58,7 @@
             href="/leases/wizard"
             class="pm-button-secondary gap-2"
         >
-            <svg
-                class="h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-            >
-                <path d="M5 3v4"/>
-                <path d="M3 5h4"/>
-                <path d="M6 17v4"/>
-                <path d="M4 19h4"/>
-                <path d="M13 3l2.5 6.5L22 12l-6.5 2.5L13 21l-2.5-6.5L4 12l6.5-2.5z"/>
-            </svg>
+            <x-icon name="file-check" :size="16" />
 
             <span data-i18n="wizard.launch">
                 {{ __('ui.wizard.launch') }}
@@ -84,16 +70,7 @@
             type="button"
             class="pm-button-primary gap-2"
         >
-            <svg
-                class="h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-                <path d="M12 5v14"/>
-                <path d="M5 12h14"/>
-            </svg>
+            <x-icon name="plus" :size="16" />
 
             <span data-i18n="leases.add_lease">
                 {{ __('ui.leases.add_lease') }}
@@ -415,24 +392,7 @@
                                 data-lease-date-picker="lease-ending-before-filter"
                                 aria-label="Choose date"
                             >
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    aria-hidden="true"
-                                >
-                                    <rect
-                                        x="3"
-                                        y="5"
-                                        width="18"
-                                        height="16"
-                                        rx="2"
-                                    />
-                                    <path d="M16 3v4"/>
-                                    <path d="M8 3v4"/>
-                                    <path d="M3 11h18"/>
-                                </svg>
+                                <x-icon name="calendar" />
                             </button>
 
                             <input
@@ -549,12 +509,12 @@
                         <div
                             class="
                                 grid gap-4
-                                md:grid-cols-2
+                                panel-md:grid-cols-2
                             "
                         >
 
 
-<div class="md:col-span-2">
+<div class="panel-md:col-span-2">
     <label
         for="lease-unit-search"
         class="pm-field-label flex items-center gap-1.5"
@@ -587,22 +547,7 @@
         >
 
         <div class="relative">
-            <svg
-                class="
-                    pointer-events-none
-                    absolute left-3.5 top-1/2
-                    h-4 w-4
-                    -translate-y-1/2
-                    text-[var(--pm-text-subtle)]
-                "
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-                <circle cx="11" cy="11" r="7"/>
-                <path d="m20 20-3.5-3.5"/>
-            </svg>
+            <x-icon name="search-lg" :size="16" class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--pm-text-subtle)]" />
 
             <input
                 id="lease-unit-search"
@@ -630,16 +575,7 @@
                 "
 
                     data-i18n-aria-label="leases.clear_selected_unit">
-                <svg
-                    class="h-4 w-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
-                    <path d="M18 6 6 18"/>
-                    <path d="m6 6 12 12"/>
-                </svg>
+                <x-icon name="x-close" :size="16" />
             </button>
         </div>
 
@@ -744,22 +680,7 @@
                                     >
 
                                     <div class="relative">
-                                        <svg
-                                            class="
-                                                pointer-events-none
-                                                absolute left-3.5 top-1/2
-                                                h-4 w-4
-                                                -translate-y-1/2
-                                                text-[var(--pm-text-subtle)]
-                                            "
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                        >
-                                            <circle cx="11" cy="11" r="7"/>
-                                            <path d="m20 20-3.5-3.5"/>
-                                        </svg>
+                                        <x-icon name="search-lg" :size="16" class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--pm-text-subtle)]" />
 
                                         <input
                                             id="lease-tenant-search"
@@ -786,16 +707,7 @@
                                                 hover:text-[var(--pm-text-secondary)]
                                             "
                                             data-i18n-aria-label="leases.clear_selected_tenant">
-                                            <svg
-                                                class="h-4 w-4"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="2"
-                                            >
-                                                <path d="M18 6 6 18"/>
-                                                <path d="m6 6 12 12"/>
-                                            </svg>
+                                            <x-icon name="x-close" :size="16" />
                                         </button>
                                     </div>
 
@@ -837,22 +749,7 @@
                                     >
 
                                     <div class="relative">
-                                        <svg
-                                            class="
-                                                pointer-events-none
-                                                absolute left-3.5 top-1/2
-                                                h-4 w-4
-                                                -translate-y-1/2
-                                                text-[var(--pm-text-subtle)]
-                                            "
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                        >
-                                            <circle cx="11" cy="11" r="7"/>
-                                            <path d="m20 20-3.5-3.5"/>
-                                        </svg>
+                                        <x-icon name="search-lg" :size="16" class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--pm-text-subtle)]" />
 
                                         <input
                                             id="lease-agent-search"
@@ -879,16 +776,7 @@
                                                 hover:text-[var(--pm-text-secondary)]
                                             "
                                             data-i18n-aria-label="leases.clear_selected_agent">
-                                            <svg
-                                                class="h-4 w-4"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="2"
-                                            >
-                                                <path d="M18 6 6 18"/>
-                                                <path d="m6 6 12 12"/>
-                                            </svg>
+                                            <x-icon name="x-close" :size="16" />
                                         </button>
                                     </div>
 
@@ -933,7 +821,7 @@
                         <div
                             class="
                                 grid gap-4
-                                md:grid-cols-2
+                                panel-md:grid-cols-2
                             "
                         >
                                                         <div>
@@ -975,24 +863,7 @@
         data-lease-date-picker="lease-start-date"
         aria-label="Choose date"
     >
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-        >
-            <rect
-                x="3"
-                y="5"
-                width="18"
-                height="16"
-                rx="2"
-            />
-            <path d="M16 3v4"/>
-            <path d="M8 3v4"/>
-            <path d="M3 11h18"/>
-        </svg>
+        <x-icon name="calendar" />
     </button>
 
     <input
@@ -1045,24 +916,7 @@
         data-lease-date-picker="lease-end-date"
         aria-label="Choose date"
     >
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-        >
-            <rect
-                x="3"
-                y="5"
-                width="18"
-                height="16"
-                rx="2"
-            />
-            <path d="M16 3v4"/>
-            <path d="M8 3v4"/>
-            <path d="M3 11h18"/>
-        </svg>
+        <x-icon name="calendar" />
     </button>
 
     <input
@@ -1135,7 +989,7 @@
                             <div
                                 class="
                                     grid gap-4
-                                    md:grid-cols-2
+                                    panel-md:grid-cols-2
                                 "
                             >
                                 <div>
@@ -1175,24 +1029,7 @@
         data-lease-date-picker="lease-notice-date"
         aria-label="Choose date"
     >
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-        >
-            <rect
-                x="3"
-                y="5"
-                width="18"
-                height="16"
-                rx="2"
-            />
-            <path d="M16 3v4"/>
-            <path d="M8 3v4"/>
-            <path d="M3 11h18"/>
-        </svg>
+        <x-icon name="calendar" />
     </button>
 
     <input
@@ -1277,7 +1114,7 @@
                         <div
                             class="
                                 grid gap-4
-                                md:grid-cols-2 xl:grid-cols-4
+                                panel-md:grid-cols-2 panel-md:grid-cols-4
                             "
                         >
                             <div>
@@ -1528,7 +1365,7 @@
                         <div
                             class="
                                 grid gap-4
-                                md:grid-cols-3
+                                panel-md:grid-cols-3
                             "
                         >
                             <div>
@@ -1705,8 +1542,8 @@
                                 class="
                                     mt-5 hidden
                                     grid gap-4
-                                    md:grid-cols-2
-                                    xl:grid-cols-4
+                                    panel-md:grid-cols-2
+                                    panel-md:grid-cols-4
                                 "
                             >
                                 <div>
@@ -1737,24 +1574,7 @@
         data-lease-date-picker="lease-advance-received-date"
         aria-label="Choose date"
     >
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-        >
-            <rect
-                x="3"
-                y="5"
-                width="18"
-                height="16"
-                rx="2"
-            />
-            <path d="M16 3v4"/>
-            <path d="M8 3v4"/>
-            <path d="M3 11h18"/>
-        </svg>
+        <x-icon name="calendar" />
     </button>
 
     <input
@@ -1890,7 +1710,7 @@
                         <div
                             class="
                                 grid gap-4
-                                md:grid-cols-3
+                                panel-md:grid-cols-3
                             "
                         >
                             <div>
@@ -2020,24 +1840,7 @@
         data-lease-date-picker="lease-next-rent-increment-date"
         aria-label="Choose date"
     >
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-        >
-            <rect
-                x="3"
-                y="5"
-                width="18"
-                height="16"
-                rx="2"
-            />
-            <path d="M16 3v4"/>
-            <path d="M8 3v4"/>
-            <path d="M3 11h18"/>
-        </svg>
+        <x-icon name="calendar" />
     </button>
 
     <input
@@ -2086,7 +1889,7 @@
                         <div
                             class="
                                 grid gap-4
-                                md:grid-cols-3
+                                panel-md:grid-cols-3
                             "
                         >
                             <div>
@@ -2362,7 +2165,7 @@
                         rounded-xl border
                         border-[var(--pm-border)]
                         bg-[var(--pm-surface-subtle)] p-4
-                        sm:grid-cols-2
+                        panel-sm:grid-cols-2
                     "
                 >
                     <div>
@@ -2458,7 +2261,7 @@
                     Termination Details
                 </h3>
 
-                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                <div class="mt-4 grid gap-4 panel-sm:grid-cols-2">
                     <div>
                         <label
                             for="lease-termination-notice-date"
@@ -2741,7 +2544,7 @@
                 <div
                     class="
                         mt-4 grid gap-4
-                        sm:grid-cols-2
+                        panel-sm:grid-cols-2
                     "
                 >
                     <div>
@@ -2823,7 +2626,7 @@
                     New Terms
                 </h3>
 
-                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                <div class="mt-4 grid gap-4 panel-sm:grid-cols-2">
                     <div>
                         <label
                             for="lease-extend-effective-from"
@@ -2971,7 +2774,7 @@
                     Rent Increment
                 </h3>
 
-                <div class="mt-4 grid gap-4 sm:grid-cols-3">
+                <div class="mt-4 grid gap-4 panel-sm:grid-cols-3">
                     <div>
                         <label
                             for="lease-extend-increment-type"
@@ -3154,7 +2957,7 @@
                     class="
                         mt-4 grid grid-cols-1
                         gap-3 text-sm
-                        sm:grid-cols-2
+                        panel-sm:grid-cols-2
                     "
                 >
                     <div>
@@ -3255,7 +3058,7 @@
                     <dl
                         class="
                             grid grid-cols-1 gap-3
-                            sm:grid-cols-2
+                            panel-sm:grid-cols-2
                         "
                     >
                         <div class="rounded-xl border border-[var(--pm-border)] bg-[var(--pm-surface)] p-4">
@@ -3507,7 +3310,7 @@
                     bg-[var(--pm-surface-subtle)] p-5
                 "
             >
-                <div class="grid gap-4 sm:grid-cols-2">
+                <div class="grid gap-4 panel-sm:grid-cols-2">
                     <div>
                         <div class="text-xs text-[var(--pm-text-muted)]">
                             <span data-i18n="leases.lease">
@@ -3634,8 +3437,8 @@
                 <div
                     class="
                         mt-4 grid gap-3
-                        sm:grid-cols-2
-                        lg:grid-cols-4
+                        panel-sm:grid-cols-2
+                        panel-md:grid-cols-4
                     "
                 >
                     @foreach ([
@@ -3740,10 +3543,10 @@
                 <div
                     class="
                         mt-3 grid gap-3
-                        sm:grid-cols-2
+                        panel-sm:grid-cols-2
                     "
                 >
-                    <div class="sm:col-span-2">
+                    <div class="panel-sm:col-span-2">
                         <label
                             for="termination-deduction-description"
                             class="pm-field-label"
@@ -4055,7 +3858,7 @@
                 <div
                     class="
                         grid gap-4
-                        sm:grid-cols-2
+                        panel-sm:grid-cols-2
                     "
                 >
                     <div>
@@ -4122,7 +3925,7 @@
                         </div>
                     </div>
 
-                    <div class="sm:col-span-2">
+                    <div class="panel-sm:col-span-2">
                         <label
                             for="rent-increment-effective-date"
                             class="pm-field-label"
@@ -4152,24 +3955,7 @@
                                 data-lease-date-picker="rent-increment-effective-date"
                                 aria-label="Choose date"
                             >
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    aria-hidden="true"
-                                >
-                                    <rect
-                                        x="3"
-                                        y="5"
-                                        width="18"
-                                        height="16"
-                                        rx="2"
-                                    />
-                                    <path d="M16 3v4"/>
-                                    <path d="M8 3v4"/>
-                                    <path d="M3 11h18"/>
-                                </svg>
+                                <x-icon name="calendar" />
                             </button>
 
                             <input

@@ -7,15 +7,17 @@
         {{ __('activity_log.export_title') }}
     </title>
 
+    @include('documents.partials.fonts')
+
     <style>
         @page {
             margin: 18px 20px;
         }
 
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'Inter', 'DejaVu Sans', sans-serif;
             font-size: 8px;
-            color: #1f2937;
+            color: #17201E;
         }
 
         h1 {
@@ -25,7 +27,7 @@
 
         .meta {
             margin-bottom: 14px;
-            color: #6b7280;
+            color: #66736F;
             font-size: 8px;
         }
 
@@ -37,7 +39,7 @@
 
         th,
         td {
-            border: 1px solid #d1d5db;
+            border: 1px solid #DDE6E2;
             padding: 4px;
             vertical-align: top;
             text-align: left;
@@ -46,25 +48,25 @@
         }
 
         th {
-            background: #f3f4f6;
+            background: #F7F5EF;
             font-weight: bold;
         }
 
         .structured {
             white-space: pre-wrap;
-            font-family: DejaVu Sans Mono, monospace;
+            font-family: 'DejaVu Sans Mono', monospace;
             font-size: 6.5px;
         }
 
         .empty {
             padding: 20px 8px;
             text-align: center;
-            color: #6b7280;
+            color: #66736F;
         }
 
         .footer {
             margin-top: 10px;
-            color: #6b7280;
+            color: #66736F;
             font-size: 7px;
         }
     </style>

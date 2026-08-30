@@ -1,0 +1,209 @@
+/*
+|--------------------------------------------------------------------------
+| Patrimoine 365 — the raw scales
+|--------------------------------------------------------------------------
+|
+| The ramps, the type scale, the radii and the shadows, registered with
+| Tailwind so that `bg-brand-600`, `text-gray-700`, `rounded-xl`, `shadow-sm`
+| and `text-display-md` all exist as utilities AND as `var(--color-brand-600)`
+| for the component layer.
+|
+| NOTHING in application markup should reach for these directly. Markup uses
+| the semantic --pm-* tokens in tokens.css, which are built out of these.
+| The exceptions are the two places the brand is literally the subject: the
+| logo and the marketing-style hero panels.
+|
+*/
+
+/*
+|--------------------------------------------------------------------------
+| Panel variants
+|--------------------------------------------------------------------------
+|
+| `md:grid-cols-2` asks the WINDOW how wide it is. Inside a 28rem drawer on
+| a 27-inch monitor that answers "wide", and the form lays itself out in two
+| columns that do not fit. The old stylesheet answered this by overriding
+| every drawer form by #id with !important — 504 of them, one drawer at a
+| time, four separate attempts at the property footer alone.
+|
+| `panel-md:grid-cols-2` asks the PANEL. The same form is then two columns
+| in a 42rem drawer, one column in a 28rem drawer and one column on a phone,
+| and no drawer has to be told anything.
+|
+| The container itself is declared by .pm-drawer-panel in components.css.
+|
+*/
+
+@custom-variant panel-sm (@container pm-panel (width >= 24rem));
+@custom-variant panel-md (@container pm-panel (width >= 34rem));
+@custom-variant panel-lg (@container pm-panel (width >= 44rem));
+
+@theme {
+    /* ---------------------------------------------------------------- type */
+    --font-sans:
+        'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+        'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --font-mono:
+        ui-monospace, 'SF Mono', SFMono-Regular, 'JetBrains Mono', Menlo,
+        Consolas, 'Liberation Mono', monospace;
+
+    /*
+     * Untitled UI's type scale, verbatim. Display sizes carry -2% tracking
+     * because Inter's default spacing is drawn for text sizes and looks
+     * loose above about 30px.
+     */
+    --text-display-2xl: 4.5rem;      --text-display-2xl--line-height: 5.625rem; --text-display-2xl--letter-spacing: -0.02em;
+    --text-display-xl:  3.75rem;     --text-display-xl--line-height:  4.5rem;   --text-display-xl--letter-spacing:  -0.02em;
+    --text-display-lg:  3rem;        --text-display-lg--line-height:  3.75rem;  --text-display-lg--letter-spacing:  -0.02em;
+    --text-display-md:  2.25rem;     --text-display-md--line-height:  2.75rem;  --text-display-md--letter-spacing:  -0.02em;
+    --text-display-sm:  1.875rem;    --text-display-sm--line-height:  2.375rem;
+    --text-display-xs:  1.5rem;      --text-display-xs--line-height:  2rem;
+
+    --text-xl: 1.25rem;              --text-xl--line-height: 1.875rem;
+    --text-lg: 1.125rem;             --text-lg--line-height: 1.75rem;
+    --text-md: 1rem;                 --text-md--line-height: 1.5rem;
+    --text-sm: 0.875rem;             --text-sm--line-height: 1.25rem;
+    --text-xs: 0.75rem;              --text-xs--line-height: 1.125rem;
+
+    /* -------------------------------------------------------------- radius */
+    --radius-xxs: 0.125rem;   /*  2px */
+    --radius-xs:  0.25rem;    /*  4px */
+    --radius-sm:  0.375rem;   /*  6px */
+    --radius-md:  0.5rem;     /*  8px — inputs, buttons                     */
+    --radius-lg:  0.625rem;   /* 10px */
+    --radius-xl:  0.75rem;    /* 12px — cards                               */
+    --radius-2xl: 1rem;       /* 16px — drawers, modals, metric tiles       */
+    --radius-3xl: 1.25rem;    /* 20px */
+    --radius-4xl: 1.5rem;     /* 24px */
+
+    /* -------------------------------------------------------------- shadow */
+    --shadow-xs:  0 1px 2px 0 rgb(14 22 20 / 0.05);
+    --shadow-sm:  0 1px 3px 0 rgb(14 22 20 / 0.10), 0 1px 2px -1px rgb(14 22 20 / 0.10);
+    --shadow-md:  0 4px 6px -1px rgb(14 22 20 / 0.10), 0 2px 4px -2px rgb(14 22 20 / 0.06);
+    --shadow-lg:  0 12px 16px -4px rgb(14 22 20 / 0.08), 0 4px 6px -2px rgb(14 22 20 / 0.03);
+    --shadow-xl:  0 20px 24px -4px rgb(14 22 20 / 0.08), 0 8px 8px -4px rgb(14 22 20 / 0.03);
+    --shadow-2xl: 0 24px 48px -12px rgb(14 22 20 / 0.18);
+    --shadow-3xl: 0 32px 64px -12px rgb(14 22 20 / 0.14);
+
+    /*
+    |------------------------------------------------------------------------
+    | Brand — Patrimoine Green through Patrimoine Mint
+    |------------------------------------------------------------------------
+    |
+    | One ramp spans the whole identity because Green (168°), Mint Deep
+    | (158°) and Mint (160°) are the same hue family. The four colours the
+    | brand package names by name land on 50, 400, 600 and 900.
+    |
+    */
+    --color-brand-25:  #f4fbf8;
+    --color-brand-50:  #e6f7ef;   /* Mint Wash — selected rows, active nav  */
+    --color-brand-100: #c7f0e0;
+    --color-brand-200: #97e5c8;
+    --color-brand-300: #62dbb0;
+    --color-brand-400: #39d6a3;   /* Patrimoine Mint — dark grounds, fills  */
+    --color-brand-500: #17a97c;
+    --color-brand-600: #0e7a56;   /* Mint Deep — links, focus, 5.33:1       */
+    --color-brand-700: #0b6449;
+    --color-brand-800: #0f5140;
+    --color-brand-900: #123d35;   /* Patrimoine Green — the dominant        */
+    --color-brand-950: #0a2722;
+
+    /*
+    |------------------------------------------------------------------------
+    | Gray — the brand's own neutrals, not Untitled UI's blue-tinted ones
+    |------------------------------------------------------------------------
+    |
+    | Patrimoine's neutrals are warm and very slightly green, which is what
+    | stops the product looking like every other blue-gray dashboard. Mist,
+    | Border, Border Strong, Slate, Ink and Night land on 50, 200, 500, 600,
+    | 900 and 950.
+    |
+    | This replaces Tailwind's default gray. Nothing in the product used
+    | gray-* utilities, so there is nothing to migrate.
+    |
+    */
+    --color-gray-25:  #fbfcfc;
+    --color-gray-50:  #f2f6f4;   /* Mist — the page ground                  */
+    --color-gray-100: #e9efec;
+    --color-gray-200: #dde6e2;   /* Border — divides                        */
+    --color-gray-300: #c4cfca;
+    --color-gray-400: #a0aea9;
+    --color-gray-500: #7e8c87;   /* Border Strong — encloses, 3.5:1         */
+    --color-gray-600: #66736f;   /* Slate — 4.9:1 on white                  */
+    --color-gray-700: #4e5b56;
+    --color-gray-800: #333f3b;
+    --color-gray-900: #17201e;   /* Ink — body text                         */
+    --color-gray-950: #0e1614;   /* Night — the dark page                   */
+
+    /*
+    |------------------------------------------------------------------------
+    | Error, warning, info
+    |------------------------------------------------------------------------
+    |
+    | Untitled UI's own ramps. A refusal has to read as a refusal in any
+    | product, and these are already tuned against the same grays.
+    |
+    | There is no success ramp: success IS the brand. See tokens.css.
+    |
+    */
+    --color-error-25:  #fffbfa;
+    --color-error-50:  #fef3f2;
+    --color-error-100: #fee4e2;
+    --color-error-200: #fecdca;
+    --color-error-300: #fda29b;
+    --color-error-400: #f97066;
+    --color-error-500: #f04438;
+    --color-error-600: #d92d20;
+    --color-error-700: #b42318;
+    --color-error-800: #912018;
+    --color-error-900: #7a271a;
+
+    --color-warning-25:  #fffcf5;
+    --color-warning-50:  #fffaeb;
+    --color-warning-100: #fef0c7;
+    --color-warning-200: #fedf89;
+    --color-warning-300: #fec84b;
+    --color-warning-400: #fdb022;
+    --color-warning-500: #f79009;
+    --color-warning-600: #dc6803;
+    --color-warning-700: #b54708;
+    --color-warning-800: #93370d;
+    --color-warning-900: #7a2e0e;
+
+    --color-blue-25:  #f5faff;
+    --color-blue-50:  #eff8ff;
+    --color-blue-100: #d1e9ff;
+    --color-blue-200: #b2ddff;
+    --color-blue-300: #84caff;
+    --color-blue-400: #53b1fd;
+    --color-blue-500: #2e90fa;
+    --color-blue-600: #1570ef;
+    --color-blue-700: #175cd3;
+    --color-blue-800: #1849a9;
+    --color-blue-900: #194185;
+
+    /*
+    |------------------------------------------------------------------------
+    | patrimoine-* — kept alive for existing markup
+    |------------------------------------------------------------------------
+    |
+    | A handful of layout files still write bg-patrimoine-950 and
+    | text-patrimoine-200 directly. Aliasing the old ramp onto the new brand
+    | ramp means those keep working and recolour with everything else. New
+    | markup uses --pm-band-* instead.
+    |
+    */
+    --color-patrimoine-50:  var(--color-brand-50);
+    --color-patrimoine-100: var(--color-brand-100);
+    --color-patrimoine-200: var(--color-brand-200);
+    --color-patrimoine-300: var(--color-brand-300);
+    --color-patrimoine-400: var(--color-brand-400);
+    --color-patrimoine-500: var(--color-brand-500);
+    --color-patrimoine-600: var(--color-brand-600);
+    --color-patrimoine-700: var(--color-brand-700);
+    --color-patrimoine-800: var(--color-brand-800);
+    --color-patrimoine-900: var(--color-brand-900);
+    --color-patrimoine-950: var(--color-brand-950);
+}

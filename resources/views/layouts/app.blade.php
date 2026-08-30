@@ -46,7 +46,7 @@
 
     <meta
         name="theme-color"
-        content="#26744b"
+        content="#123d35"
     >
 
     <script>
@@ -128,12 +128,12 @@
     <style>
         html,
         body {
-            background-color: #f5f7f6;
+            background-color: #f2f6f4;
         }
 
         html[data-theme="dark"],
         html[data-theme="dark"] body {
-            background-color: #0e1311;
+            background-color: #0e1614;
         }
     </style>
 
@@ -166,46 +166,27 @@
     <aside
         id="sidebar"
         class="
+            pm-sidebar
             fixed inset-y-0 left-0 z-50
             flex w-72 -translate-x-full
-            flex-col bg-patrimoine-950
+            flex-col
             transition-transform duration-200
             lg:translate-x-0
         "
     >
-        <div
-            class="
-                flex h-20 items-center
-                border-b border-white/10
-                px-6
-            "
-        >
+        <div class="pm-sidebar-brand">
             <a
                 href="/dashboard"
                 class="flex items-center gap-3"
             >
-                <img
-                    src="/branding/patrimoine-logo.svg"
-                    alt="Patrimoine 365"
-                    class="h-10 w-10 shrink-0"
-                >
+                <x-logo :size="40" class="shrink-0" />
 
                 <div>
-                    <div
-                        class="
-                            text-base font-semibold
-                            tracking-tight text-white
-                        "
-                    >
-                        Patrimoine <span class="text-patrimoine-300">365</span>
+                    <div class="pm-sidebar-brand-name">
+                        Patrimoine <span class="pm-sidebar-brand-365">365</span>
                     </div>
 
-                    <div
-                        class="
-                            mt-0.5 text-[11px]
-                            text-patrimoine-300
-                        "
-                    >
+                    <div class="pm-sidebar-brand-note">
                         <span data-i18n="product.property_management">
                             {{ __('ui.product.property_management') }}
                         </span>
@@ -214,302 +195,69 @@
             </a>
         </div>
 
-        <nav
-            class="
-                flex-1 overflow-y-auto
-                px-4 py-6
-            "
-        >
-            <p
-                class="
-                    mb-3 px-3
-                    text-[10px] font-semibold uppercase
-                    tracking-[0.16em]
-                    text-patrimoine-400
-                "
-            >
+        <nav class="pm-sidebar-nav">
+
+            {{-- Workspace --}}
+            <p class="pm-nav-group">
                 <span data-i18n="navigation.workspace">{{ __('ui.navigation.workspace') }}</span>
             </p>
 
             <div class="space-y-1">
-
-                <a
+                <x-nav-item
                     href="/dashboard"
-                    class="
-                        {{ request()->is('dashboard')
-                            ? 'bg-white/10 text-white'
-                            : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                        }}
-                        flex items-center gap-3
-                        rounded-lg px-3 py-2.5
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
-                        <rect x="3" y="3" width="7" height="7" rx="1"/>
-                        <rect x="14" y="3" width="7" height="7" rx="1"/>
-                        <rect x="3" y="14" width="7" height="7" rx="1"/>
-                        <rect x="14" y="14" width="7" height="7" rx="1"/>
-                    </svg>
+                    icon="grid-01"
+                    label="navigation.dashboard"
+                />
 
-                    <span data-i18n="navigation.dashboard">{{ __('ui.navigation.dashboard') }}</span>
-                </a>
-
-                <a
+                <x-nav-item
                     href="/properties"
-                    class="
-                        {{ request()->is('properties')
-                            ? 'bg-white/10 text-white'
-                            : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                        }}
-                        flex items-center gap-3
-                        rounded-lg px-3 py-2.5
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
-                        <path d="M3 21h18"/>
-                        <path d="M6 21V5l6-2 6 2v16"/>
-                        <path d="M9 9h.01"/>
-                        <path d="M15 9h.01"/>
-                        <path d="M9 13h.01"/>
-                        <path d="M15 13h.01"/>
-                    </svg>
+                    icon="building-02"
+                    label="navigation.properties"
+                />
 
-                    <span data-i18n="navigation.properties">{{ __('ui.navigation.properties') }}</span>
-                </a>
-
-                <a
+                <x-nav-item
                     href="/parties"
-                    class="
-                        {{ request()->is('parties')
-                            ? 'bg-white/10 text-white'
-                            : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                        }}
-                        flex items-center gap-3
-                        rounded-lg px-3 py-2.5
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
+                    icon="users-03"
+                    label="navigation.parties"
+                />
 
-                    <span data-i18n="navigation.parties">{{ __('ui.navigation.parties') }}</span>
-                </a>
-
-
-                <a
+                <x-nav-item
                     href="/leases"
-                    class="
-                        {{ request()->is('leases')
-                            ? 'bg-white/10 text-white'
-                            : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                        }}
-                        flex items-center gap-3
-                        rounded-lg px-3 py-2.5
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="8" y1="13" x2="16" y2="13"/>
-                        <line x1="8" y1="17" x2="16" y2="17"/>
-                    </svg>
-
-                    <span data-i18n="navigation.leases">{{ __('ui.navigation.leases') }}</span>
-                </a>
-
-
-
-
-
+                    icon="file-check"
+                    label="navigation.leases"
+                    :active="['leases', 'leases/*']"
+                />
             </div>
 
-            <p
-                class="
-                    mb-3 mt-8 px-3
-                    text-[10px] font-semibold uppercase
-                    tracking-[0.16em]
-                    text-patrimoine-400
-                "
-            >
+            {{-- Finance --}}
+            <p class="pm-nav-group pm-nav-group-spaced">
                 <span data-i18n="navigation.finance">{{ __('ui.navigation.finance') }}</span>
             </p>
 
-
-
-
-
-
-
             <div class="space-y-1">
-
-                <a
+                <x-nav-item
                     href="/tenants"
-                    class="
-                        {{
-                            request()->is('tenants')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                        }}
-                        flex items-center gap-3
-                        rounded-lg px-3 py-2.5
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M3 21v-2a6 6 0 0 1 12 0v2"/>
-                        <path d="M17 11h4"/>
-                    </svg>
+                    icon="users-01"
+                    label="navigation.tenants"
+                />
 
-                    <span data-i18n="navigation.tenants">{{ __('ui.navigation.tenants') }}</span>
-                </a>
-
-
-                <a
+                <x-nav-item
                     href="/owners"
-                    class="
-                        {{
-                            request()->is('owners')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                        }}
-                        flex items-center gap-3
-                        rounded-lg px-3 py-2.5
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M3 21v-2a6 6 0 0 1 12 0v2"/>
-                        <path d="M17 8h4"/>
-                        <path d="M19 6v4"/>
-                    </svg>
+                    icon="user-check"
+                    label="navigation.owners"
+                />
 
-                    <span data-i18n="navigation.owners">{{ __('ui.navigation.owners') }}</span>
-                </a>
-
-
-                <a
+                <x-nav-item
                     href="/accounting"
-                    class="
-                        {{
-                            request()->is('accounting')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                        }}
-                        flex items-center gap-3
-                        rounded-lg px-3 py-2.5
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
-                        <rect x="4" y="3" width="16" height="18" rx="2"/>
-                        <path d="M8 7h8"/>
-                        <path d="M8 11h3"/>
-                        <path d="M8 15h3"/>
-                        <path d="M15 11v6"/>
-                        <path d="M13.5 13.5h3"/>
-                    </svg>
+                    icon="calculator"
+                    label="navigation.accounting"
+                />
 
-                    <span data-i18n="navigation.accounting">{{ __('ui.navigation.accounting') }}</span>
-                </a>
-
-
-                <a
+                <x-nav-item
                     href="/reports"
-                    class="
-                        {{
-                            request()->is('reports')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                        }}
-                        flex items-center gap-3
-                        rounded-lg px-3 py-2.5
-                        text-sm font-medium
-                        transition
-                    "
-                >
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
-                        <path d="M3 3v18h18"/>
-                        <path d="m7 16 4-5 4 3 5-7"/>
-                    </svg>
-
-                    <span data-i18n="navigation.reports">{{ __('ui.navigation.reports') }}</span>
-                </a>
-
-
-
-
-
-
-
-
-
-
-
-
+                    icon="bar-chart-square"
+                    label="navigation.reports"
+                />
             </div>
 
             {{--
@@ -522,152 +270,51 @@
                 data-requires-capability="view_activity_log"
                 class="rbac-hidden shell-admin-only"
             >
-                <p
-                    class="
-                        mb-3 mt-8 px-3
-                        text-[10px] font-semibold uppercase
-                        tracking-[0.16em]
-                        text-patrimoine-400
-                    "
-                >
+                <p class="pm-nav-group pm-nav-group-spaced">
                     <span data-i18n="navigation.manage">{{ __('ui.navigation.manage') }}</span>
                 </p>
 
                 <div class="space-y-1">
-
-                    <a
+                    <x-nav-item
                         href="/settings"
-                        data-requires-capability="manage_settings"
-                        class="
-                            {{ request()->is('settings')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                            }}
-                            flex items-center gap-3
-                            rounded-lg px-3 py-2.5
-                            text-sm font-medium
-                            transition
-                        "
-                    >
-                        <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <circle cx="12" cy="12" r="3"/>
-                            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.1A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.1A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.2.37.5.7.9.9.3.16.7.2 1.1.2h.1v4h-.1a1.7 1.7 0 0 0-2 .9Z"/>
-                        </svg>
+                        icon="settings-01"
+                        label="navigation.settings"
+                        capability="manage_settings"
+                    />
 
-                        <span data-i18n="navigation.settings">{{ __('ui.navigation.settings') }}</span>
-                    </a>
-
-                    <a
+                    <x-nav-item
                         href="/activity-log"
-                        data-requires-capability="view_activity_log"
-                        class="
-                            {{ request()->is('activity-log')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                            }}
-                            flex items-center gap-3
-                            rounded-lg px-3 py-2.5
-                            text-sm font-medium
-                            transition
-                        "
-                    >
-                        <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            {{--
-                                V1.0.36: a history dial rather than a
-                                bulleted list. The log answers "what
-                                happened, and when" — the list icon said
-                                only "several things".
-                            --}}
-                            <path d="M3 4v5h5"/>
-                            <path d="M3.5 9A9 9 0 1 1 3 12"/>
-                            <path d="M12 7.5V12l3 2"/>
-                        </svg>
+                        icon="clock-rewind"
+                        label="navigation.activity_log"
+                        capability="view_activity_log"
+                    />
 
-                        <span data-i18n="navigation.activity_log">{{ __('ui.navigation.activity_log') }}</span>
-                    </a>
-
-                    <a
+                    <x-nav-item
                         href="/financial-journal"
-                        data-requires-capability="view_financial_journal"
-                        class="
-                            {{ request()->is('financial-journal')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                            }}
-                            flex items-center gap-3
-                            rounded-lg px-3 py-2.5
-                            text-sm font-medium
-                            transition
-                        "
-                    >
-                        <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            {{--
-                                V1.0.36: an open ledger. Four ruled lines
-                                and two ticks read as a table, which is
-                                what every other list here is too.
-                            --}}
-                            <path d="M12 7c-1.5-1.4-3.5-2.1-5.6-2.1H4v12.6h2.4c2.1 0 4.1.7 5.6 2.1"/>
-                            <path d="M12 7c1.5-1.4 3.5-2.1 5.6-2.1H20v12.6h-2.4c-2.1 0-4.1.7-5.6 2.1"/>
-                            <path d="M12 7v12.6"/>
-                        </svg>
-
-                        <span data-i18n="navigation.financial_journal">{{ __('ui.navigation.financial_journal') }}</span>
-                    </a>
+                        icon="book-open"
+                        label="navigation.financial_journal"
+                        capability="view_financial_journal"
+                    />
 
                     {{--
                         V1.0.11: platform staff only; revealed by auth.js
-                        once /api/auth/me confirms is_platform_admin. Both the
-                        attribute and the class are needed: Tailwind's flex
-                        utility would otherwise defeat the attribute alone,
-                        and auth.js clears both.
+                        once /api/auth/me confirms is_platform_admin.
+
+                        The `hidden` attribute is now enough on its own. It
+                        used not to be — a component's display rule is
+                        un-layered and beat it — so the old markup also
+                        carried Tailwind's `hidden` class. .pm-nav-item
+                        honours the attribute explicitly, and auth.js still
+                        clears both, which is harmless.
                     --}}
-                    <a
+                    <x-nav-item
                         href="/admin"
+                        icon="shield-tick"
+                        label="navigation.platform_console"
+                        :active="['admin', 'admin/*']"
                         data-platform-admin-only
                         hidden
-                        class="
-                            hidden
-                            {{ request()->is('admin') || request()->is('admin/*')
-                                ? 'bg-white/10 text-white'
-                                : 'text-patrimoine-200 hover:bg-white/5 hover:text-white'
-                            }}
-                            flex items-center gap-3
-                            rounded-lg px-3 py-2.5
-                            text-sm font-medium
-                            transition
-                        "
-                    >
-                        <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path d="M12 3l8 4v5c0 4.4-3.2 8.4-8 9-4.8-.6-8-4.6-8-9V7l8-4z"/>
-                            <path d="M9.5 12l2 2 3.5-4"/>
-                        </svg>
-
-                        <span data-i18n="navigation.platform_console">{{ __('ui.navigation.platform_console') }}</span>
-                    </a>
+                    />
                 </div>
             </div>
         </nav>
@@ -703,17 +350,7 @@
                 "
                 aria-label="Open navigation"
             >
-                <svg
-                    class="h-5 w-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
-                    <line x1="4" y1="6" x2="20" y2="6"/>
-                    <line x1="4" y1="12" x2="20" y2="12"/>
-                    <line x1="4" y1="18" x2="20" y2="18"/>
-                </svg>
+                <x-icon name="menu-02" />
             </button>
 
             <div class="min-w-0 flex-1">
@@ -774,16 +411,7 @@
                     aria-label="Refresh"
                     title="Refresh"
                 >
-                    <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
-                        <path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 4v5h5"/>
-                        <path d="M4 13a8.1 8.1 0 0 0 15.5 2M20 20v-5h-5"/>
-                    </svg>
+                    <x-icon name="refresh-cw" />
                 </button>
 
                 {{-- Notifications / release information --}}
@@ -804,16 +432,7 @@
                         aria-label="Notifications"
                         aria-expanded="false"
                     >
-                        <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                        </svg>
+                        <x-icon name="bell-01" />
 
                         <span
                             id="notification-unread-badge"
@@ -1040,20 +659,7 @@
                                     hover:bg-[var(--pm-hover)]
                                 "
                             >
-                                <svg
-                                    class="
-                                        h-5 w-5 shrink-0
-                                        text-[var(--pm-text-muted)]
-                                    "
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="1.8"
-                                    aria-hidden="true"
-                                >
-                                    <circle cx="12" cy="8" r="4"/>
-                                    <path d="M4 21a8 8 0 0 1 16 0"/>
-                                </svg>
+                                <x-icon name="user-01" class="shrink-0 text-[var(--pm-text-muted)]" />
 
                                 <span class="min-w-0 flex-1">
                                     <span
@@ -1077,19 +683,7 @@
                                     </span>
                                 </span>
 
-                                <svg
-                                    class="
-                                        h-4 w-4 shrink-0
-                                        text-[var(--pm-text-subtle)]
-                                    "
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    aria-hidden="true"
-                                >
-                                    <path d="m9 18 6-6-6-6"/>
-                                </svg>
+                                <x-icon name="chevron-right" :size="16" class="shrink-0 text-[var(--pm-text-subtle)]" />
                             </button>
                         </div>
 
@@ -1168,18 +762,7 @@
                                 href="/help"
                                 class="shell-menu-item"
                             >
-                                <svg
-                                    class="h-4 w-4"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="1.8"
-                                    aria-hidden="true"
-                                >
-                                    <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L4 21l1.1-3.6A8.4 8.4 0 1 1 21 11.5Z"/>
-                                    <path d="M9.6 9.2a2.5 2.5 0 0 1 4.9.4c0 1.6-2.4 2-2.4 3.4"/>
-                                    <path d="M12 16h.01"/>
-                                </svg>
+                                <x-icon name="message-question" :size="16" />
 
                                 <span
                                     class="
@@ -1205,18 +788,7 @@
                                 type="button"
                                 class="shell-menu-item shell-menu-item-danger"
                             >
-                                <svg
-                                    class="h-4 w-4"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="1.8"
-                                    aria-hidden="true"
-                                >
-                                    <path d="M10 17l5-5-5-5"/>
-                                    <path d="M15 12H3"/>
-                                    <path d="M21 19V5a2 2 0 0 0-2-2h-6"/>
-                                </svg>
+                                <x-icon name="log-out-01" :size="16" />
 
                                 <span class="min-w-0">
                                     <span
@@ -1541,17 +1113,7 @@
                                     "
                                     aria-label="{{ __('ui.password.show_password') }}"
                                 >
-                                    <svg
-                                        class="h-5 w-5"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="1.8"
-                                        aria-hidden="true"
-                                    >
-                                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
+                                    <x-icon name="eye" />
                                 </button>
                             </div>
 
@@ -1595,17 +1157,7 @@
                                     "
                                     aria-label="{{ __('ui.password.show_password') }}"
                                 >
-                                    <svg
-                                        class="h-5 w-5"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="1.8"
-                                        aria-hidden="true"
-                                    >
-                                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
+                                    <x-icon name="eye" />
                                 </button>
                             </div>
 

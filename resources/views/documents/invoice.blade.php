@@ -20,10 +20,10 @@
         }
 
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'Inter', 'DejaVu Sans', sans-serif;
             font-size: 11px;
             line-height: 1.45;
-            color: #222;
+            color: #17201E;
         }
 
         .header-table,
@@ -47,7 +47,7 @@
         }
 
         .muted {
-            color: #666;
+            color: #66736F;
         }
 
         .section {
@@ -72,15 +72,15 @@
         }
 
         .amount-table th {
-            background: #f1f1f1;
+            background: #FBFCFC;
             text-align: left;
             padding: 8px;
-            border: 1px solid #ddd;
+            border: 1px solid #DDE6E2;
         }
 
         .amount-table td {
             padding: 8px;
-            border: 1px solid #ddd;
+            border: 1px solid #DDE6E2;
         }
 
         .numeric {
@@ -100,16 +100,16 @@
         .summary-table .total td {
             font-size: 13px;
             font-weight: bold;
-            border-top: 1px solid #333;
+            border-top: 1px solid #333F3B;
             padding-top: 8px;
         }
 
         .footer {
             margin-top: 36px;
             padding-top: 12px;
-            border-top: 1px solid #ddd;
+            border-top: 1px solid #DDE6E2;
             font-size: 9px;
-            color: #777;
+            color: #66736F;
             text-align: center;
         }
         .meta-table {
@@ -135,7 +135,7 @@
         .status {
             display: inline-block;
             padding: 3px 8px;
-            border: 1px solid #aaa;
+            border: 1px solid #7E8C87;
             font-weight: bold;
             text-transform: uppercase;
             line-height: 1.2;

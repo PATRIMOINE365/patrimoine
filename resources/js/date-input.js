@@ -1,3 +1,5 @@
+
+
 /*
 |--------------------------------------------------------------------------
 | Patrimoine Date Input Helpers
@@ -14,6 +16,8 @@
 | Business date calculations remain in the existing application services.
 |
 */
+
+import { icon } from './icons.js';
 
 /**
  * Convert ISO YYYY-MM-DD into the Patrimoine display date format.
@@ -652,15 +656,7 @@ function renderCalendar(
                 data-pm-calendar-previous
                 aria-label="${usesFrenchDateFormat() ? 'Mois précédent' : 'Previous month'}"
             >
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    aria-hidden="true"
-                >
-                    <path d="m15 18-6-6 6-6"></path>
-                </svg>
+                ${icon('chevron-left')}
             </button>
 
             <div class="pm-calendar-month">
@@ -675,15 +671,7 @@ function renderCalendar(
                 data-pm-calendar-next
                 aria-label="${usesFrenchDateFormat() ? 'Mois suivant' : 'Next month'}"
             >
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    aria-hidden="true"
-                >
-                    <path d="m9 18 6-6-6-6"></path>
-                </svg>
+                ${icon('chevron-right')}
             </button>
         </div>
 
@@ -1074,24 +1062,7 @@ function ensureDateCalendarPicker(
     );
 
     button.innerHTML = `
-        <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-        >
-            <rect
-                x="3"
-                y="5"
-                width="18"
-                height="16"
-                rx="2"
-            ></rect>
-            <path d="M16 3v4"></path>
-            <path d="M8 3v4"></path>
-            <path d="M3 11h18"></path>
-        </svg>
+        ${icon('calendar')}
     `;
 
     button.addEventListener(

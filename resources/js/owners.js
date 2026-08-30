@@ -28,6 +28,8 @@ import {
     initializeDateInputs,
 } from './date-input.js';
 
+import { icon } from './icons.js';
+
 /*
 |--------------------------------------------------------------------------
 | Patrimoine Owners Workspace
@@ -5048,19 +5050,7 @@ function expenseBillLineTemplate() {
                     )
                 )}"
             >
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    class="h-4 w-4"
-                    aria-hidden="true"
-                >
-                    <path
-                        stroke-linecap="round"
-                        d="M6 6l12 12M18 6L6 18"
-                    />
-                </svg>
+                ${icon('x-close', { size: 16 })}
             </button>
         </div>
     `;

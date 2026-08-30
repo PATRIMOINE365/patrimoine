@@ -14,15 +14,15 @@
 
         body {
             margin: 0;
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'Inter', 'DejaVu Sans', sans-serif;
             font-size: 11px;
             line-height: 1.45;
-            color: #0f172a;
+            color: #17201E;
         }
 
         .header {
             width: 100%;
-            border-bottom: 2px solid #0f172a;
+            border-bottom: 2px solid #17201E;
             padding-bottom: 16px;
             margin-bottom: 24px;
         }
@@ -49,7 +49,7 @@
         .voucher-number {
             margin-top: 4px;
             text-align: right;
-            color: #475569;
+            color: #4E5B56;
         }
 
         .section-title {
@@ -67,7 +67,7 @@
         }
 
         .label {
-            color: #64748b;
+            color: #66736F;
             font-size: 9px;
             text-transform: uppercase;
         }
@@ -79,13 +79,13 @@
 
         .deductions-table th,
         .deductions-table td {
-            border: 1px solid #cbd5e1;
+            border: 1px solid #DDE6E2;
             padding: 7px;
             vertical-align: top;
         }
 
         .deductions-table th {
-            background: #f8fafc;
+            background: #F7F5EF;
             text-align: left;
             font-size: 9px;
             text-transform: uppercase;
@@ -103,34 +103,34 @@
 
         .summary-table td {
             padding: 6px 8px;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #DDE6E2;
         }
 
         .summary-table .total {
             font-weight: bold;
-            border-top: 2px solid #0f172a;
+            border-top: 2px solid #17201E;
         }
 
         .result-box {
             margin-top: 22px;
             padding: 14px;
-            border: 1px solid #cbd5e1;
-            background: #f8fafc;
+            border: 1px solid #DDE6E2;
+            background: #F7F5EF;
         }
 
         .notes {
             margin-top: 18px;
             padding: 10px 12px;
-            background: #f8fafc;
-            border-left: 3px solid #94a3b8;
+            background: #F7F5EF;
+            border-left: 3px solid #7E8C87;
         }
 
         .footer {
             margin-top: 34px;
             padding-top: 12px;
-            border-top: 1px solid #cbd5e1;
+            border-top: 1px solid #DDE6E2;
             font-size: 9px;
-            color: #64748b;
+            color: #66736F;
             text-align: center;
         }
     </style>
@@ -264,7 +264,7 @@
                         {{ $deduction->description }}
 
                         @if ($deduction->notes)
-                            <div style="margin-top: 3px; color: #64748b;">
+                            <div style="margin-top: 3px; color: #66736F;">
                                 {{ $deduction->notes }}
                             </div>
                         @endif
@@ -282,7 +282,7 @@
                 <tr>
                     <td
                         colspan="4"
-                        style="text-align: center; color: #64748b;"
+                        style="text-align: center; color: #66736F;"
                     >
                         {{ __('documents.security_deposit_voucher.no_deductions') }}
                     </td>

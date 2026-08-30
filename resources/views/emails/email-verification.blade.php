@@ -7,7 +7,7 @@
 @endsection
 
 @section('content')
-    <h1 style="margin:0 0 18px 0; font-size:21px; line-height:30px; color:#123527; font-weight:600;">
+    <h1 style="margin:0 0 18px 0; font-size:20px; line-height:30px; color:#123D35; font-weight:600;">
         {{ __('emails.email_verification.heading') }}
     </h1>
 
@@ -25,7 +25,7 @@
         <tr>
             <td align="center" style="padding:6px 0 30px 0;">
                 <a href="{{ $verificationUrl }}"
-                   style="display:inline-block; background-color:#1d5c3f; color:#ffffff; font-size:15px; font-weight:600; text-decoration:none; padding:13px 34px; border-radius:8px;">
+                   style="display:inline-block; background-color:#0B6449; color:#ffffff; font-size:16px; line-height:24px; font-weight:600; text-decoration:none; padding:13px 34px; border-radius:8px;">
                     {{ __('emails.email_verification.action') }}
                 </a>
             </td>
@@ -37,27 +37,27 @@
         reads as transactional rather than as a token hidden behind a
         button, and it keeps the message usable when the button fails.
     --}}
-    <p style="margin:0 0 6px 0; color:#51615a; font-size:13px; line-height:21px;">
+    <p style="margin:0 0 6px 0; color:#4E5B56; font-size:14px; line-height:20px;">
         {{ __('emails.email_verification.link_fallback') }}
     </p>
 
-    <p style="margin:0 0 22px 0; font-size:12px; line-height:19px; word-break:break-all;">
-        <a href="{{ $verificationUrl }}" style="color:#2f6f52; text-decoration:underline;">{{ $verificationUrl }}</a>
+    <p style="margin:0 0 22px 0; font-size:12px; line-height:18px; word-break:break-all;">
+        <a href="{{ $verificationUrl }}" style="color:#0E7A56; text-decoration:underline;">{{ $verificationUrl }}</a>
     </p>
 
-    <p style="margin:0 0 14px 0; color:#51615a; font-size:13px; line-height:21px;">
+    <p style="margin:0 0 14px 0; color:#4E5B56; font-size:14px; line-height:20px;">
         {{ __('emails.email_verification.expiry') }}
     </p>
 
-    <p style="margin:0 0 14px 0; color:#51615a; font-size:13px; line-height:21px;">
+    <p style="margin:0 0 14px 0; color:#4E5B56; font-size:14px; line-height:20px;">
         {{ __('emails.email_verification.next_steps') }}
     </p>
 
-    <p style="margin:0 0 14px 0; color:#51615a; font-size:13px; line-height:21px;">
+    <p style="margin:0 0 14px 0; color:#4E5B56; font-size:14px; line-height:20px;">
         {{ __('emails.email_verification.ignore') }}
     </p>
 
-    <p style="margin:0; color:#51615a; font-size:12px; line-height:19px;">
+    <p style="margin:0; color:#4E5B56; font-size:12px; line-height:18px;">
         {{ __('emails.email_verification.sent_to', ['email' => $user->email]) }}
     </p>
 @endsection

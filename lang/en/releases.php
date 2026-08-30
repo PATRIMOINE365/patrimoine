@@ -19,6 +19,21 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.37',
+            'date' => '2026-08-30',
+            'title' => 'One look, everywhere',
+            'changes' => [
+                'Patrimoine has been redrawn. The application, the administration console, the website, the e-mails it sends and the documents it produces now share one design — colours, typeface, spacing, icons and the shape of every button and field. Until now the console had been rebuilt properly and the rest of the product had not, and it showed.',
+                'The colours are the Patrimoine identity: a deep green for navigation and the main action, mint kept for the few things it should mark — where you are, what is selected, and money that has come in. Every colour pair on every screen was measured against the accessibility thresholds rather than judged by eye, in both light and dark.',
+                'The typeface is Inter, and it is served from Patrimoine itself rather than from Google. The pages used to fetch it from Google Fonts, which told Google the address of everyone who opened one.',
+                'The mark is the one from the brand guidelines — two pillars carrying three ledger bars — and it appears in the sidebar, on the sign-in page, in the browser tab, on your home screen and at the top of every e-mail.',
+                'Every icon has been redrawn to one set. The same idea is now the same picture wherever you meet it, instead of a different drawing on each screen.',
+                'Forms inside a side panel now lay themselves out to fit the panel rather than to fit your window. A two-column form in a narrow panel used to be squeezed into it on a wide screen.',
+                'E-mails are on the warm paper colour the identity reserves for correspondence, and invoices, receipts and vouchers are set in the same typeface as the screen they came from.',
+                'Nothing about how Patrimoine works has changed. This release moves nothing, renames nothing and removes nothing you were using.',
+            ],
+        ],
+        [
             'version' => '1.0.36',
             'date' => '2026-08-30',
             'title' => 'Support, a guide you can find your way around, and numbers that carry their year',

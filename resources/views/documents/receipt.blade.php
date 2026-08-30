@@ -14,10 +14,10 @@
         }
 
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'Inter', 'DejaVu Sans', sans-serif;
             font-size: 11px;
             line-height: 1.45;
-            color: #222;
+            color: #17201E;
         }
 
         table {
@@ -37,7 +37,7 @@
         }
 
         .muted {
-            color: #666;
+            color: #66736F;
         }
 
         .section {
@@ -60,7 +60,7 @@
         .payment-box {
             margin-top: 24px;
             padding: 18px;
-            border: 1px solid #ccc;
+            border: 1px solid #DDE6E2;
         }
 
         .payment-amount {
@@ -75,15 +75,15 @@
         }
 
         .allocation-table th {
-            background: #f1f1f1;
+            background: #FBFCFC;
             text-align: left;
             padding: 7px;
-            border: 1px solid #ddd;
+            border: 1px solid #DDE6E2;
         }
 
         .allocation-table td {
             padding: 7px;
-            border: 1px solid #ddd;
+            border: 1px solid #DDE6E2;
         }
 
         .numeric {
@@ -109,23 +109,23 @@
         }
 
         .summary-table .summary-detail {
-            color: #555;
+            color: #4E5B56;
             padding-left: 16px;
         }
 
         .summary-table .total-row td {
             padding-top: 8px;
-            border-top: 1px solid #aaa;
+            border-top: 1px solid #7E8C87;
             font-weight: bold;
         }
 
         .footer {
             margin-top: 36px;
             padding-top: 12px;
-            border-top: 1px solid #ddd;
+            border-top: 1px solid #DDE6E2;
             text-align: center;
             font-size: 9px;
-            color: #777;
+            color: #66736F;
         }
     </style>
     @include('documents.partials.base-styles')

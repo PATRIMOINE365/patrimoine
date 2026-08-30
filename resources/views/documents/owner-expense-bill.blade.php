@@ -14,10 +14,10 @@
         }
 
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'Inter', 'DejaVu Sans', sans-serif;
             font-size: 11px;
             line-height: 1.45;
-            color: #222;
+            color: #17201E;
         }
 
         table {
@@ -37,7 +37,7 @@
         }
 
         .muted {
-            color: #666;
+            color: #66736F;
         }
 
         .section {
@@ -60,14 +60,14 @@
         .lines-table th {
             text-align: left;
             padding: 6px 8px;
-            border-bottom: 2px solid #222;
+            border-bottom: 2px solid #17201E;
             font-size: 10px;
             text-transform: uppercase;
         }
 
         .lines-table td {
             padding: 6px 8px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #DDE6E2;
             vertical-align: top;
         }
 
@@ -79,7 +79,7 @@
         .total-row td {
             padding: 8px;
             border-bottom: none;
-            border-top: 2px solid #222;
+            border-top: 2px solid #17201E;
             font-weight: bold;
             font-size: 13px;
         }
@@ -87,10 +87,10 @@
         .footer {
             margin-top: 36px;
             padding-top: 12px;
-            border-top: 1px solid #ddd;
+            border-top: 1px solid #DDE6E2;
             text-align: center;
             font-size: 9px;
-            color: #777;
+            color: #66736F;
         }
     </style>
     @include('documents.partials.base-styles')

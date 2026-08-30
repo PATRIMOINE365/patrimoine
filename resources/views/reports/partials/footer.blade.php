@@ -11,9 +11,9 @@
 <style>
     .pm-report-footer {
         margin-top: 24px;
-        border-top: 1px solid #dddddd;
+        border-top: 1px solid #DDE6E2;
         padding-top: 8px;
-        color: #888888;
+        color: #7E8C87;
         font-size: 8px;
     }
 </style>

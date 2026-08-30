@@ -7,15 +7,17 @@
         {{ __('ui.leases.financial_history') }}
     </title>
 
+    @include('documents.partials.fonts')
+
     <style>
         @page {
             margin: 22px;
         }
 
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'Inter', 'DejaVu Sans', sans-serif;
             font-size: 9px;
-            color: #111827;
+            color: #17201E;
         }
 
         h1 {
@@ -26,7 +28,7 @@
         .context {
             margin-bottom: 14px;
             line-height: 1.5;
-            color: #4b5563;
+            color: #4E5B56;
         }
 
         table {
@@ -36,13 +38,13 @@
 
         th,
         td {
-            border: 1px solid #d1d5db;
+            border: 1px solid #DDE6E2;
             padding: 6px;
             vertical-align: top;
         }
 
         th {
-            background: #f3f4f6;
+            background: #F7F5EF;
             text-align: left;
             font-weight: 700;
         }
@@ -50,7 +52,7 @@
         .generated {
             margin-top: 12px;
             font-size: 8px;
-            color: #6b7280;
+            color: #66736F;
         }
     </style>
 </head>

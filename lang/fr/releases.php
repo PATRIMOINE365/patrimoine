@@ -15,6 +15,21 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.37',
+            'date' => '2026-08-30',
+            'title' => 'Une seule allure, partout',
+            'changes' => [
+                'Patrimoine a été redessiné. L'application, la console d'administration, le site, les courriels envoyés et les documents produits partagent désormais une seule conception : couleurs, typographie, espacements, icônes et la forme de chaque bouton et de chaque champ. Jusqu'ici la console avait été refaite correctement et le reste du produit non, et cela se voyait.',
+                'Les couleurs sont celles de l'identité Patrimoine : un vert profond pour la navigation et l'action principale, le menthe réservé aux quelques éléments qu'il doit signaler — où vous êtes, ce qui est sélectionné, et l'argent encaissé. Chaque association de couleurs a été mesurée par rapport aux seuils d'accessibilité plutôt qu'appréciée à l'œil, en clair comme en sombre.',
+                'La typographie est Inter, servie par Patrimoine lui-même et non par Google. Les pages allaient la chercher chez Google Fonts, ce qui indiquait à Google l'adresse de toute personne qui en ouvrait une.',
+                'La marque est celle de la charte — deux piliers portant trois barres de registre — et elle figure dans le menu latéral, sur la page de connexion, dans l'onglet du navigateur, sur votre écran d'accueil et en tête de chaque courriel.',
+                'Toutes les icônes ont été redessinées en une seule famille. La même idée est désormais la même image partout, au lieu d'un dessin différent par écran.',
+                'Les formulaires ouverts dans un panneau latéral s'organisent maintenant selon la largeur du panneau et non celle de votre fenêtre. Un formulaire à deux colonnes se retrouvait comprimé dans un panneau étroit sur un grand écran.',
+                'Les courriels adoptent le papier chaud que l'identité réserve à la correspondance, et les factures, reçus et bons sont composés dans la même typographie que l'écran dont ils proviennent.',
+                'Rien n'a changé dans le fonctionnement de Patrimoine. Cette version ne déplace rien, ne renomme rien et ne retire rien de ce que vous utilisiez.',
+            ],
+        ],
+        [
             'version' => '1.0.36',
             'date' => '2026-08-30',
             'title' => 'Le support, un guide où l\'on se retrouve, et des numéros qui portent leur année',

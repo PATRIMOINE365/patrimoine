@@ -7,7 +7,7 @@
 @endsection
 
 @section('content')
-    <h1 style="margin:0 0 18px 0; font-size:21px; line-height:30px; color:#123527; font-weight:600;">
+    <h1 style="margin:0 0 18px 0; font-size:20px; line-height:30px; color:#123D35; font-weight:600;">
         {{ __('emails.license_issued.heading') }}
     </h1>
 
@@ -22,35 +22,35 @@
     </p>
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-           style="margin:0 0 22px 0; background-color:#f6faf8; border:1px solid #dbe7e0; border-radius:10px;">
+           style="margin:0 0 22px 0; background-color:#FBFCFC; border:1px solid #DDE6E2; border-radius:10px;">
         <tr>
-            <td style="padding:12px 18px; font-size:13px; color:#51615a; border-bottom:1px solid #e3ede7;">
+            <td style="padding:12px 18px; font-size:14px; line-height:20px; color:#4E5B56; border-bottom:1px solid #DDE6E2;">
                 {{ __('emails.license_issued.plan') }}
             </td>
-            <td align="right" style="padding:12px 18px; font-weight:700; color:#123527; border-bottom:1px solid #e3ede7;">
+            <td align="right" style="padding:12px 18px; font-weight:700; color:#123D35; border-bottom:1px solid #DDE6E2;">
                 {{ __('emails.plans.'.$license->plan) }}
             </td>
         </tr>
         <tr>
-            <td style="padding:12px 18px; font-size:13px; color:#51615a; border-bottom:1px solid #e3ede7;">
+            <td style="padding:12px 18px; font-size:14px; line-height:20px; color:#4E5B56; border-bottom:1px solid #DDE6E2;">
                 {{ __('emails.license_issued.starts_on') }}
             </td>
-            <td align="right" style="padding:12px 18px; color:#1d2a24; border-bottom:1px solid #e3ede7;">
+            <td align="right" style="padding:12px 18px; color:#17201E; border-bottom:1px solid #DDE6E2;">
                 {{ $license->starts_on?->format('Y-m-d') }}
             </td>
         </tr>
         <tr>
-            <td style="padding:12px 18px; font-size:13px; color:#51615a;">
+            <td style="padding:12px 18px; font-size:14px; line-height:20px; color:#4E5B56;">
                 {{ __('emails.license_issued.expires_on') }}
             </td>
-            <td align="right" style="padding:12px 18px; color:#1d2a24;">
+            <td align="right" style="padding:12px 18px; color:#17201E;">
                 {{ $license->expires_on?->format('Y-m-d') ?? __('emails.license_issued.no_expiry') }}
             </td>
         </tr>
     </table>
 
-    <p style="margin:0; color:#51615a; font-size:13px; line-height:21px;">
+    <p style="margin:0; color:#4E5B56; font-size:14px; line-height:20px;">
         {{ __('emails.license_issued.questions') }}
-        <a href="mailto:{{ config('legal.mailboxes.billing') }}" style="color:#2f6f52;">{{ config('legal.mailboxes.billing') }}</a>
+        <a href="mailto:{{ config('legal.mailboxes.billing') }}" style="color:#0E7A56;">{{ config('legal.mailboxes.billing') }}</a>
     </p>
 @endsection

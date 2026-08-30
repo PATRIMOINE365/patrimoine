@@ -24,6 +24,8 @@
 import { COUNTRIES, KEEPS_TRUNK_ZERO, PREFERRED_FOR_CODE } from './countries.js';
 import { escapeHtml, getPresentationConfiguration, translate } from './core.js';
 
+import { icon } from './icons.js';
+
 /**
  * The active interface language, which decides both the country names and
  * the order they are listed in.
@@ -818,9 +820,7 @@ export function phoneFieldMarkup({ id, national = `${id}-number`, required = fal
             >
                 <span class="pm-flag pm-flag-empty" data-phone-flag></span>
                 <span class="pm-phone-code" data-phone-code>${escapeHtml(translate('phone.select'))}</span>
-                <svg class="pm-phone-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="m6 9 6 6 6-6"/>
-                </svg>
+                ${icon('chevron-down', { class: 'pm-phone-chevron' })}
             </button>
 
             <input

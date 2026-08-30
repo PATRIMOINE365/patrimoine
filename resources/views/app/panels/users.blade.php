@@ -43,16 +43,7 @@
             type="button"
             class="pm-button-primary gap-2"
         >
-            <svg
-                class="h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-                <path d="M12 5v14"/>
-                <path d="M5 12h14"/>
-            </svg>
+            <x-icon name="plus" :size="16" />
 
             <span data-i18n="users.add_user">{{ __('ui.users.add_user') }}</span>
         </button>
@@ -223,7 +214,7 @@
                 role="alert"
             ></div>
 
-            <div class="grid gap-5 sm:grid-cols-2">
+            <div class="grid gap-5 panel-sm:grid-cols-2">
                 {{--
                     V1.0.7 structured names: the API accepts
                     given_names + surname and recomposes the
@@ -262,7 +253,7 @@
                     >
                 </div>
 
-                <div class="sm:col-span-2">
+                <div class="panel-sm:col-span-2">
                     <label
                         for="user-email"
                         class="pm-field-label"
@@ -309,7 +300,7 @@
 
                 <label
                     class="
-                        sm:col-span-2
+                        panel-sm:col-span-2
                         flex items-center gap-3
                         rounded-lg border
                         border-[var(--pm-border)]

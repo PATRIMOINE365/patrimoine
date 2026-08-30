@@ -225,12 +225,19 @@ class RoleAwareApplicationUiTest extends TestCase
          * manage_settings, and both capabilities are Administrator-only.
          */
         $this->assertStringNotContainsString(
-            'data-requires-capability="manage_users"',
+            'capability="manage_users"',
             $layout
         );
 
+        /*
+         * The sidebar links are <x-nav-item> components now, so the layout
+         * declares a capability rather than writing the attribute out. The
+         * component turns one into the other, which
+         * ManageNavigationTest::test_the_component_renders_what_the_layout
+         * _declares holds to.
+         */
         $this->assertStringContainsString(
-            'data-requires-capability="manage_settings"',
+            'capability="manage_settings"',
             $layout
         );
 
@@ -242,10 +249,15 @@ class RoleAwareApplicationUiTest extends TestCase
 
     public function test_rbac_visibility_cannot_be_overridden_by_normal_hidden_state(): void
     {
+        /*
+         * The visibility primitives moved out of app.css when the design
+         * system was split: app.css is page structure now, and everything
+         * shared lives in components.css.
+         */
         $css =
             file_get_contents(
                 resource_path(
-                    'css/app.css'
+                    'css/components.css'
                 )
             );
 
@@ -257,6 +269,24 @@ class RoleAwareApplicationUiTest extends TestCase
         $this->assertStringContainsString(
             'display: none !important',
             $css
+        );
+
+        /*
+         * !important is otherwise banned in this product — the redesign
+         * removed 504 of them. Authorization visibility is the exception
+         * and has to stay one: feature JavaScript may legitimately toggle
+         * `hidden`, and it must never be able to reveal an action RBAC has
+         * taken away.
+         */
+        $this->assertSame(
+            0,
+            substr_count(
+                file_get_contents(
+                    resource_path('css/app.css')
+                ),
+                '!important;'
+            ),
+            'Page CSS must not use !important.'
         );
     }
 

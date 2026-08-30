@@ -71,12 +71,12 @@ class FinancialJournalBrowserTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            'data-requires-capability="view_financial_journal"',
+            'capability="view_financial_journal"',
             $view
         );
 
         $this->assertStringContainsString(
-            'data-i18n="navigation.financial_journal"',
+            'label="navigation.financial_journal"',
             $view
         );
     }
