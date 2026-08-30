@@ -1375,6 +1375,95 @@ input[type='radio']:focus-visible {
 
 /*
 |--------------------------------------------------------------------------
+| The authentication hero
+|--------------------------------------------------------------------------
+|
+| The left half of the sign-in page: a Patrimoine Green band carrying the
+| mark, the promise and a picture of the product. It is the same band as the
+| sidebar and reads the same --pm-band-* tokens, so it needs no dark-mode
+| rule of its own.
+|
+*/
+
+.pm-auth-hero {
+    background: var(--pm-band);
+}
+
+/*
+ * Two soft discs behind the content. They are the only decoration in the
+ * product and they exist to stop a large flat green rectangle reading as a
+ * missing image.
+ */
+.pm-auth-hero-glow {
+    background: color-mix(in srgb, var(--pm-band-elevated) 55%, transparent);
+}
+
+.pm-auth-hero-glow-soft {
+    background: color-mix(in srgb, var(--pm-band-elevated) 40%, transparent);
+}
+
+.pm-auth-hero-wordmark {
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--pm-band-text);
+}
+
+.pm-auth-hero-365 {
+    color: var(--pm-band-accent);
+}
+
+.pm-auth-hero-kicker {
+    margin-bottom: 1rem;
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--pm-band-accent);
+}
+
+.pm-auth-hero-title {
+    font-size: var(--text-display-md);
+    line-height: var(--text-display-md--line-height);
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--pm-band-text);
+}
+
+@media (min-width: 1280px) {
+    .pm-auth-hero-title {
+        font-size: var(--text-display-lg);
+        line-height: var(--text-display-lg--line-height);
+    }
+}
+
+.pm-auth-hero-description {
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+    color: var(--pm-band-text-muted);
+}
+
+/* The product preview sits in a frame, so it reads as a screen and not as a
+ * hole cut in the band. */
+.pm-auth-hero-frame {
+    overflow: hidden;
+    border: 1px solid var(--pm-band-border);
+    border-radius: var(--radius-2xl);
+    background: var(--pm-band-elevated);
+    padding: 0.375rem;
+    box-shadow: var(--pm-shadow-2xl);
+}
+
+.pm-auth-hero-footnote {
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-band-text-muted);
+}
+
+/*
+|--------------------------------------------------------------------------
 | Navigation — sidebar and menus
 |--------------------------------------------------------------------------
 */
