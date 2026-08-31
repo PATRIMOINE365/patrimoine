@@ -15,6 +15,18 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.42',
+            'date' => '2026-08-31',
+            'title' => 'Les archives, des listes plus courtes, et une couleur par type de tiers',
+            'changes' => [
+                'Patrimoine n\\\'a jamais laissé supprimer un enregistrement auquel la comptabilité fait encore référence — un locataire ayant eu un bail, un bien avec un grand livre derrière lui — et il ne le disait qu\\\'après avoir appuyé sur Supprimer. Le bouton le dit maintenant avant : il indique Supprimer tant que l\\\'enregistrement peut partir, et Archiver dès qu\\\'il ne le peut plus.',
+                'L\\\'archivage retire un tiers, un bien, un lot ou un bail des listes et des menus déroulants servant à créer de nouveaux enregistrements, afin que personne ne se voie proposer un locataire parti depuis des années. Rien d\\\'autre ne change : chaque facture, reçu, écriture et ligne du journal d\\\'activité continue de le nommer. Une nouvelle page Archives, sous Audit, répertorie ces enregistrements, et un administrateur peut en restaurer n\\\'importe lequel d\\\'une seule pression.',
+                'Le type d\\\'un tiers et ses rôles portent désormais une couleur, la même partout. Personne, organisation et association prennent le gris, l\\\'indigo et le rose ; locataire, propriétaire et agent prennent le bleu, le violet et l\\\'orange.',
+                'Les listes sont plus courtes. Un tiers tient sur une ligne — le nom, le type, les rôles — le téléphone et le courriel restant sur sa fiche, où ils étaient déjà. Un bail ne répète plus l\\\'agent, le loyer, les dates et le taux de TVA sous chaque ligne, et un bien ne répète plus son adresse. Environ deux fois plus de lignes tiennent à l\\\'écran.',
+                'Télécharger les données et Effacer ont quitté la liste des tiers. Ces actions portent sur les données d\\\'une personne et non sur l\\\'activité, et deux boutons sur chaque ligne invitent à en presser un. Un administrateur peut les rétablir depuis les Paramètres, sous Préférences, aussi longtemps qu\\\'ils sont nécessaires — le réglage explique ce qu\\\'il fait et demande de le désactiver ensuite.',
+            ],
+        ],
+        [
             'version' => '1.0.41',
             'date' => '2026-08-31',
             'title' => 'Chaque mouvement derrière un versement, et une location sur un seul écran',

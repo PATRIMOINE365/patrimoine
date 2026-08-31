@@ -871,5 +871,11 @@
     "wait": "#financial-journal-pagination .pm-pagination",
     "settle": 900,
     "clip": "#financial-journal-pagination"
+  },
+  {
+    "id": "archive-list",
+    "path": "/archive",
+    "wait": "#archive-page:not(.rbac-hidden)",
+    "settle": 900
   }
 ]

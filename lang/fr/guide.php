@@ -888,6 +888,19 @@ return [
                     ],
                 ],
 
+                'archive' => [
+                    'title' => 'Archiver un enregistrement que vous ne pouvez pas supprimer',
+                    'intro' => 'Patrimoine refuse de supprimer ce à quoi la comptabilité fait encore référence. L\'archivage est ce qu\'il propose à la place : l\'enregistrement quitte les listes, et rien d\'autre ne bouge.',
+                    'who' => 'Administrateurs et Gestionnaires immobiliers',
+                    'steps' => [
+                        ['text' => 'Regardez le bouton sur la ligne. Il indique Supprimer tant que l\'enregistrement peut encore être retiré, et Archiver dès qu\'il ne le peut plus.'],
+                        ['text' => 'Appuyez sur Archiver. L\'enregistrement quitte la liste ainsi que les menus déroulants servant à créer de nouveaux enregistrements, afin que personne ne se le voie proposer par erreur.'],
+                        ['text' => 'Rien d\'autre ne change. Chaque facture, reçu, écriture et ligne du journal d\'activité continue de le nommer, car l\'enregistrement lui-même n\'a pas bougé.'],
+                        ['text' => 'Ouvrez Archives, sous Audit, pour voir tout ce qui a été mis de côté et par qui.', 'shot' => 'archive-list'],
+                        ['text' => 'Appuyez sur Restaurer pour en remettre un. Il revient dans toutes les listes et tous les menus déroulants d\'un coup : c\'est donc une décision d\'administrateur.'],
+                    ],
+                ],
+
                 'close_account' => [
                     'title' => 'Fermer le compte',
                     'intro' => 'Supprimer définitivement l\'organisation et tout ce qu\'elle contient. L\'opération est irréversible, pour vous comme pour nous : il n\'y a ni corbeille ni copie conservée.',

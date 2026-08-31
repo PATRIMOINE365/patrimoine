@@ -23,7 +23,7 @@ return [
         [
             'through' => '1.0.45',
             'date' => '2026-08-31',
-            'summary' => 'Le reçu de versement d\'un propriétaire détaille chaque mouvement derrière le montant — les loyers par lot et par période, les honoraires et la taxe correspondante, et chaque charge — de sorte qu\'il puisse les additionner et retrouver ce qui lui a été versé. Chaque bail dispose d\'un bouton Consulter qui ouvre la location en entier sur un seul écran.',
+            'summary' => 'Le reçu de versement d\'un propriétaire détaille chaque mouvement derrière le montant — les loyers par lot et par période, les honoraires et la taxe correspondante, et chaque charge — de sorte qu\'il puisse les additionner et retrouver ce qui lui a été versé. Chaque bail dispose d\'un bouton Consulter qui ouvre la location en entier sur un seul écran. Un enregistrement que Patrimoine refuse de supprimer peut désormais être archivé : il quitte les listes et les menus déroulants, conserve chaque document et chaque écriture qui le nomme, et revient depuis la nouvelle page Archives quand vous le souhaitez ; les listes elles-mêmes sont environ deux fois moins hautes, et le type et les rôles d\'un tiers portent leur propre couleur.',
         ],
         [
             'through' => '1.0.40',

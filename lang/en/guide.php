@@ -892,6 +892,19 @@ return [
                     ],
                 ],
 
+                'archive' => [
+                    'title' => 'Archive a record you cannot delete',
+                    'intro' => 'Patrimoine refuses to delete anything the accounting still refers to. Archiving is what it offers instead: the record leaves the lists, and nothing else about it moves.',
+                    'who' => 'Administrators and Property Managers',
+                    'steps' => [
+                        ['text' => 'Look at the button on the row. It says Delete while the record can still be removed outright, and Archive once it cannot.'],
+                        ['text' => 'Press Archive. The record leaves the list, and leaves the dropdowns used to build new records, so nobody is offered it again by accident.'],
+                        ['text' => 'Nothing else changes. Every invoice, receipt, journal entry and activity-log line still names it, because the record itself has not moved.'],
+                        ['text' => 'Open Archive, under Audit, to see everything that has been put away and who put it there.', 'shot' => 'archive-list'],
+                        ['text' => 'Press Restore to put one back. It returns to every list and every dropdown at once, so it is an administrator\\\'s decision.'],
+                    ],
+                ],
+
                 'close_account' => [
                     'title' => 'Close the account',
                     'intro' => 'Permanently deleting the organisation and everything in it. It cannot be undone, by you or by us: there is no recycle bin and no copy kept.',

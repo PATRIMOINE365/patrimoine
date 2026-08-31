@@ -19,6 +19,18 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.42',
+            'date' => '2026-08-31',
+            'title' => 'Archive, shorter lists, and a colour for every kind of party',
+            'changes' => [
+                'Patrimoine has never let you delete a record the accounting still refers to — a tenant who has held a lease, a property with a ledger behind it — and it only said so after you pressed Delete. Now the button tells you first: it says Delete while the record can still go, and Archive once it cannot.',
+                'Archiving takes a party, property, unit or lease out of the lists and out of the dropdowns used to build new records, so nobody is offered a tenant who left years ago. It changes nothing else: every invoice, receipt, journal entry and activity-log line still names it. A new Archive page, under Audit, is where the archived records are listed, and an administrator can put any of them back with one press.',
+                'A party’s type and its roles now carry a colour, and the same colour everywhere. Person, organisation and association take grey, indigo and pink; tenant, owner and agent take blue, purple and orange.',
+                'The lists are shorter. A party is one line — the name, the type, the roles — with the telephone number and e-mail address on their own record where they were already. A lease no longer repeats the agent, the rent, the dates and the VAT rate under every row, and a property no longer repeats its address. Roughly twice as many rows fit on a screen.',
+                'Download data and Erase have left the parties list. They act on a person’s records rather than on the business, and a pair of buttons on every row is an invitation to press one. An administrator can put them back from Settings, under Preferences, for as long as they are needed — the setting explains what it does and asks for it to go off again afterwards.',
+            ],
+        ],
+        [
             'version' => '1.0.41',
             'date' => '2026-08-31',
             'title' => 'Every transaction behind a payout, and a letting on one screen',
