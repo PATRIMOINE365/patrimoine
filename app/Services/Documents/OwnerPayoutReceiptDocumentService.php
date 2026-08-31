@@ -19,7 +19,8 @@ class OwnerPayoutReceiptDocumentService
 {
     public function __construct(
         private ApplicationIdentityService $identity,
-        private ApplicationPresentationFormatter $formatter
+        private ApplicationPresentationFormatter $formatter,
+        private OwnerPayoutBreakdownService $breakdown
     ) {}
 
     /**
@@ -51,6 +52,15 @@ class OwnerPayoutReceiptDocumentService
                 'ownerBalance' => $payout
                     ->ownerAccount
                     ->balance(),
+
+                /*
+                 * The workings: what came in since the owner last
+                 * collected, what was taken off it, and how that reaches
+                 * the figure above. Null only when the payout has no
+                 * account or party to report on, which cannot happen
+                 * through the application.
+                 */
+                'breakdown' => $this->breakdown->forPayout($payout),
             ]
         )
             ->setPaper('a4')
