@@ -923,6 +923,56 @@
                                 </span>
                             </span>
                         </label>
+
+                        {{--
+                            V1.0.42: the data-protection tools.
+
+                            Download a party's data and Erase a party act on
+                            a real person's records rather than on the
+                            business, and they exist for a reason — somebody
+                            exercising their right to a copy of what is held
+                            about them, or to be forgotten. They are not
+                            day-to-day work, and a pair of buttons on every
+                            row of the parties list is an invitation to press
+                            one.
+
+                            Off for every organisation until somebody here
+                            decides otherwise, and the wording says plainly
+                            what switching it on puts on screen and that it
+                            should go off again afterwards.
+                        --}}
+                        <label class="mt-5 flex items-start gap-3">
+                            <input
+                                id="organisation-data-tools-enabled"
+                                type="checkbox"
+                                class="
+                                    mt-0.5 h-4 w-4 rounded
+                                    border-[var(--pm-border-strong)]
+                                    text-[var(--pm-accent)]
+                                    focus:ring-[var(--pm-accent)]
+                                "
+                            >
+
+                            <span class="min-w-0">
+                                <span
+                                    class="
+                                        block text-sm font-medium
+                                        text-[var(--pm-text-secondary)]
+                                    "
+                                >
+                                    <span data-i18n="settings.data_tools_enabled">{{ __('ui.settings.data_tools_enabled') }}</span>
+                                </span>
+
+                                <span
+                                    class="
+                                        mt-1 block text-xs
+                                        text-[var(--pm-text-muted)]
+                                    "
+                                >
+                                    <span data-i18n="settings.data_tools_help">{{ __('ui.settings.data_tools_help') }}</span>
+                                </span>
+                            </span>
+                        </label>
                     </section>
 
                     {{-- Save --}}

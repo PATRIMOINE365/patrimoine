@@ -471,6 +471,8 @@ return [
         /* ---- V1.0.29 communications ---- */
         'communications' => 'Communications',
         'communications_description' => 'What Patrimoine sends to your tenants, owners and agents.',
+        'data_tools_enabled' => 'Show the data-protection tools on the parties list',
+        'data_tools_help' => 'Adds Download data and Erase to every party. Download data produces a copy of everything held about that person; Erase replaces their name and contact details with a placeholder for good, keeping the accounting intact. Switch this on when somebody has asked you to exercise one of those rights, and switch it off again when you are done — they are not buttons anybody should meet by accident.',
         'party_emails_enabled' => 'Send emails to parties',
         'party_emails_help' => 'When this is off, Patrimoine sends nothing to tenants, owners or agents — no invoices, receipts, reminders, notices or vouchers — and anyone who tries to send one is told why. Individual parties can still be allowed from their own record. Emails to Patrimoine users, such as sign-in codes, invitations and password resets, are never affected.',
 

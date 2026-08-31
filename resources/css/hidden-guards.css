@@ -9,7 +9,7 @@
 | not, so without a rule of their own they would win and an element told to
 | be hidden would stay on screen. Two class selectors beat one.
 |
-| 101 components.
+| 100 components.
 |
 */
 
@@ -57,6 +57,7 @@
 .pm-card-header.hidden,
 .pm-card-title.hidden,
 .pm-chip.hidden,
+.pm-composition-row.hidden,
 .pm-count-pill.hidden,
 .pm-date-picker-button.hidden,
 .pm-drawer-footer.hidden,
@@ -85,11 +86,9 @@
 .pm-party-actions.hidden,
 .pm-party-meta.hidden,
 .pm-party-no-email-badge.hidden,
-.pm-party-role-badge.hidden,
 .pm-party-roles.hidden,
 .pm-party-row-main.hidden,
 .pm-party-title-line.hidden,
-.pm-party-type-badge.hidden,
 .pm-phone.hidden,
 .pm-phone-country.hidden,
 .pm-phone-option.hidden,

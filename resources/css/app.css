@@ -1079,24 +1079,6 @@ form
     color: var(--pm-text-muted);
 }
 
-.pm-party-roles {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.625rem;
-}
-
-.pm-party-role-badge {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 9999px;
-    background: var(--pm-surface-elevated);
-    padding: 0.25rem 0.625rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--pm-text-secondary);
-}
-
 .pm-party-no-role {
     font-size: 0.75rem;
     color: var(--pm-text-subtle);
@@ -3697,23 +3679,19 @@ body.pm-admin .pm-icon-button:hover {
 }
 
 /*
- * The type and the roles are badges, and they are the same badge — the one
- * in components.css. They used to be two hand-built pills that happened to
- * look alike.
+ * The type and the role chips ARE .pm-badge now, so their shape and their
+ * colour both come from components.css. Painting them here would win —
+ * this file is imported after it — and every chip would be grey again.
  */
-.pm-party-type-badge,
-.pm-party-role-badge,
 .pm-party-no-email-badge {
     display: inline-flex;
     align-items: center;
     border: 1px solid var(--pm-border);
     border-radius: 9999px;
-    background: var(--pm-surface-muted);
     padding: 0.125rem 0.625rem;
     font-size: var(--text-xs);
     line-height: 1.125rem;
     font-weight: 500;
-    color: var(--pm-text-muted);
     white-space: nowrap;
 }
 

@@ -1156,6 +1156,51 @@ input[type='radio']:focus-visible {
     color: var(--pm-success-text);
 }
 
+/*
+| A party's type and its role, always in the same colours.
+|
+| Built on .pm-badge so they inherit its shape, and named after the thing
+| rather than the colour — a tenant chip is `pm-badge-tenant`, not
+| `pm-badge-blue`, so the colour can be changed in one place without
+| hunting through markup for what it meant.
+*/
+
+.pm-badge-person {
+    border-color: var(--pm-type-person-border);
+    background: var(--pm-type-person-background);
+    color: var(--pm-type-person-text);
+}
+
+.pm-badge-organisation {
+    border-color: var(--pm-type-organisation-border);
+    background: var(--pm-type-organisation-background);
+    color: var(--pm-type-organisation-text);
+}
+
+.pm-badge-association {
+    border-color: var(--pm-type-association-border);
+    background: var(--pm-type-association-background);
+    color: var(--pm-type-association-text);
+}
+
+.pm-badge-tenant {
+    border-color: var(--pm-role-tenant-border);
+    background: var(--pm-role-tenant-background);
+    color: var(--pm-role-tenant-text);
+}
+
+.pm-badge-owner {
+    border-color: var(--pm-role-owner-border);
+    background: var(--pm-role-owner-background);
+    color: var(--pm-role-owner-text);
+}
+
+.pm-badge-agent {
+    border-color: var(--pm-role-agent-border);
+    background: var(--pm-role-agent-background);
+    color: var(--pm-role-agent-text);
+}
+
 /* A count beside a title: "Leases 24". */
 .pm-count-pill {
     display: inline-flex;

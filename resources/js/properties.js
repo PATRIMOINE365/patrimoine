@@ -734,13 +734,6 @@ function propertyCard(
             ? building.ownerships
             : [];
 
-    const address =
-        building.address
-        || building.location
-        || translate(
-            'properties.no_address'
-        );
-
     const buildingName =
         building.name
         || translate(
@@ -818,23 +811,6 @@ function propertyCard(
                                         'properties.units_lower'
                                     )
                             }
-                        </span>
-                    </div>
-
-                    <div
-                        class="
-                            mt-1 flex items-center gap-2
-                            text-sm text-[var(--pm-text-muted)]
-                        "
-                    >
-                        ${icon('marker-pin', { class: 'shrink-0', size: 16 })}
-
-                        <span
-                            class="truncate"
-                        >
-                            ${escapeHtml(
-                                address
-                            )}
                         </span>
                     </div>
 

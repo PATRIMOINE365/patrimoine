@@ -99,6 +99,19 @@ class ApplicationPresentationController extends Controller
             );
 
         /*
+         * V1.0.42: whether the data-protection tools are on screen. Off
+         * unless the organisation has switched them on, and read here
+         * rather than from a capability because it is not about who may
+         * use them — it is about whether they are offered at all.
+         */
+        $configuration[
+            'data_tools_enabled'
+        ] =
+            (bool) (
+                $settings?->data_tools_enabled ?? false
+            );
+
+        /*
          * V1.0.7: the running release is non-sensitive and lets Settings,
          * the Help page and the update log show the current version.
          */

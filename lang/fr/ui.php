@@ -470,6 +470,8 @@ return [
         /* ---- V1.0.29 communications ---- */
         'communications' => 'Communications',
         'communications_description' => 'Ce que Patrimoine envoie à vos locataires, propriétaires et agents.',
+        'data_tools_enabled' => 'Afficher les outils de protection des données sur la liste des tiers',
+        'data_tools_help' => 'Ajoute Télécharger les données et Effacer sur chaque tiers. Télécharger les données produit une copie de tout ce qui est conservé sur cette personne ; Effacer remplace définitivement son nom et ses coordonnées par un substitut, en conservant la comptabilité intacte. Activez cette option lorsque quelqu\'un vous demande d\'exercer l\'un de ces droits, et désactivez-la ensuite — ce ne sont pas des boutons que l\'on doit rencontrer par accident.',
         'party_emails_enabled' => 'Envoyer des e-mails aux parties',
         'party_emails_help' => 'Lorsque ce paramètre est désactivé, Patrimoine n’envoie rien aux locataires, propriétaires ni agents — ni facture, ni reçu, ni rappel, ni avis, ni bon — et toute tentative d’envoi affiche la raison. Une partie peut malgré tout être autorisée depuis sa propre fiche. Les e-mails destinés aux utilisateurs de Patrimoine (codes de connexion, invitations, réinitialisations de mot de passe) ne sont jamais concernés.',
 

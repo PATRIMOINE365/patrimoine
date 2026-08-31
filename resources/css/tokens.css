@@ -116,6 +116,44 @@ html[data-theme="light"] {
     --pm-danger-text: var(--color-error-700);
     --pm-danger: var(--color-error-600);
 
+    /*
+     * The six badge colours a party is always drawn in.
+     *
+     * A party has a TYPE and, separately, one or more ROLES, and the two
+     * chips sit side by side on every row. So the two groups take colours
+     * from opposite ends: types are cool and quiet, roles are the ones a
+     * reader scans for. Person is the neutral of the three types because
+     * it is the common case, and a list of people should not be a list of
+     * colours.
+     *
+     * These are the colours for these concepts EVERYWHERE. A tenant chip
+     * is blue on the parties list, on the tenants list and anywhere a
+     * tenant is named.
+     */
+    --pm-type-person-background: var(--color-gray-100);
+    --pm-type-person-border: var(--color-gray-300);
+    --pm-type-person-text: var(--color-gray-700);
+
+    --pm-type-organisation-background: var(--color-indigo-50);
+    --pm-type-organisation-border: var(--color-indigo-200);
+    --pm-type-organisation-text: var(--color-indigo-700);
+
+    --pm-type-association-background: var(--color-pink-50);
+    --pm-type-association-border: var(--color-pink-200);
+    --pm-type-association-text: var(--color-pink-700);
+
+    --pm-role-tenant-background: var(--color-blue-50);
+    --pm-role-tenant-border: var(--color-blue-200);
+    --pm-role-tenant-text: var(--color-blue-700);
+
+    --pm-role-owner-background: var(--color-purple-50);
+    --pm-role-owner-border: var(--color-purple-200);
+    --pm-role-owner-text: var(--color-purple-700);
+
+    --pm-role-agent-background: var(--color-orange-50);
+    --pm-role-agent-border: var(--color-orange-200);
+    --pm-role-agent-text: var(--color-orange-700);
+
     --pm-info-background: var(--color-blue-50);
     --pm-info-border: var(--color-blue-200);
     --pm-info-text: var(--color-blue-700);
@@ -225,6 +263,31 @@ html[data-theme="dark"] {
     --pm-danger-border: color-mix(in srgb, var(--color-error-500) 32%, transparent);
     --pm-danger-text: var(--color-error-300);
     --pm-danger: var(--color-error-400);
+
+    /* The six party colours, at dark-mode weight. */
+    --pm-type-person-background: color-mix(in srgb, var(--color-gray-400) 12%, transparent);
+    --pm-type-person-border: color-mix(in srgb, var(--color-gray-400) 32%, transparent);
+    --pm-type-person-text: var(--color-gray-300);
+
+    --pm-type-organisation-background: color-mix(in srgb, var(--color-indigo-400) 12%, transparent);
+    --pm-type-organisation-border: color-mix(in srgb, var(--color-indigo-400) 32%, transparent);
+    --pm-type-organisation-text: var(--color-indigo-300);
+
+    --pm-type-association-background: color-mix(in srgb, var(--color-pink-400) 12%, transparent);
+    --pm-type-association-border: color-mix(in srgb, var(--color-pink-400) 32%, transparent);
+    --pm-type-association-text: var(--color-pink-300);
+
+    --pm-role-tenant-background: color-mix(in srgb, var(--color-blue-400) 12%, transparent);
+    --pm-role-tenant-border: color-mix(in srgb, var(--color-blue-400) 32%, transparent);
+    --pm-role-tenant-text: var(--color-blue-300);
+
+    --pm-role-owner-background: color-mix(in srgb, var(--color-purple-400) 12%, transparent);
+    --pm-role-owner-border: color-mix(in srgb, var(--color-purple-400) 32%, transparent);
+    --pm-role-owner-text: var(--color-purple-300);
+
+    --pm-role-agent-background: color-mix(in srgb, var(--color-orange-400) 12%, transparent);
+    --pm-role-agent-border: color-mix(in srgb, var(--color-orange-400) 32%, transparent);
+    --pm-role-agent-text: var(--color-orange-300);
 
     --pm-info-background: color-mix(in srgb, var(--color-blue-400) 12%, transparent);
     --pm-info-border: color-mix(in srgb, var(--color-blue-400) 32%, transparent);

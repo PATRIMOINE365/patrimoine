@@ -753,6 +753,47 @@ function partyRoleLabel(role) {
 }
 
 /**
+ * Whether this organisation has asked for the data-protection tools.
+ *
+ * Off unless somebody has switched it on in Settings, for every
+ * organisation including the ones that existed before the switch did.
+ *
+ * @returns {boolean}
+ */
+function dataToolsEnabled() {
+    return Boolean(
+        getPresentationConfiguration()?.data_tools_enabled
+    );
+}
+
+/**
+ * The class a party type or role is always drawn in.
+ *
+ * A party's type and its roles carry a colour of their own wherever they
+ * appear, so the mapping lives in one place rather than in each template.
+ * The six are defined in components.css; anything unrecognised falls back
+ * to the plain badge rather than to a class that does not exist.
+ *
+ * @param {string} kind
+ * @returns {string}
+ */
+function partyBadgeClass(kind) {
+    const known = [
+        'person',
+        'organisation',
+        'association',
+        'tenant',
+        'owner',
+        'agent',
+    ];
+
+    return known.includes(kind)
+        ? `pm-badge pm-badge-${kind}`
+        : 'pm-badge';
+}
+
+
+/**
  * Render one Party card.
  */
 function partyCard(party) {
@@ -766,27 +807,47 @@ function partyCard(party) {
             party
         );
 
-    const email =
-        party.type === 'person'
-            ? party.email
-            : party.contact_person_email;
+    /*
+     * V1.0.42: Download this party's data and Erase this party are off
+     * unless the organisation has switched them on in Settings. They act
+     * on a person's records rather than on the business, and a pair of
+     * buttons on every row is an invitation to press one.
+     */
+    const dataTools = dataToolsEnabled()
+        ? `
+            <button
+                type="button"
+                data-export-party
+                data-party-id="${escapeHtml(party.id)}"
+                class="pm-button-secondary pm-party-action max-sm:flex-1"
+            >
+                ${escapeHtml(translate('parties.export_data'))}
+            </button>
 
-    const phone =
-        party.type === 'person'
-            ? party.phone
-            : party.contact_person_phone;
-
-    const contactName =
-        party.type !== 'person'
-            ? party.contact_person_name
-            : null;
+            ${
+                party.erased_at
+                    ? ''
+                    : `
+                        <button
+                            type="button"
+                            data-erase-party
+                            data-party-id="${escapeHtml(party.id)}"
+                            data-party-name="${escapeHtml(displayName)}"
+                            class="pm-button-danger-outline pm-party-action max-sm:flex-1"
+                        >
+                            ${escapeHtml(translate('parties.erase'))}
+                        </button>
+                    `
+            }
+        `
+        : '';
 
     const roleBadges =
         roles.length > 0
             ? roles
                 .map(
                     (role) => `
-                        <span class="pm-party-role-badge">
+                        <span class="${partyBadgeClass(role)}">
                             ${escapeHtml(
                                 partyRoleLabel(
                                     role
@@ -817,13 +878,15 @@ function partyCard(party) {
                             )}
                         </h3>
 
-                        <span class="pm-party-type-badge">
+                        <span class="${partyBadgeClass(party.type)}">
                             ${escapeHtml(
                                 partyTypeLabel(
                                     party.type
                                 )
                             )}
                         </span>
+
+                        ${roleBadges}
 
                         ${
                             partyIsSilenced(
@@ -842,66 +905,6 @@ function partyCard(party) {
                         }
                     </div>
 
-                    ${
-                        contactName
-                            ? `
-                                <div class="pm-party-contact">
-                                    ${escapeHtml(
-                                        translate(
-                                            'parties.contact'
-                                        )
-                                    )}:
-                                    <span class="font-medium">
-                                        ${escapeHtml(
-                                            contactName
-                                        )}
-                                    </span>
-                                </div>
-                            `
-                            : ''
-                    }
-
-                    <div class="pm-party-meta">
-                        ${
-                            phone
-                                ? `
-                                    <span>
-                                        ${escapeHtml(
-                                            phone
-                                        )}
-                                    </span>
-                                `
-                                : ''
-                        }
-
-                        ${
-                            email
-                                ? `
-                                    <span class="break-all">
-                                        ${escapeHtml(
-                                            email
-                                        )}
-                                    </span>
-                                `
-                                : ''
-                        }
-
-                        ${
-                            party.address
-                                ? `
-                                    <span>
-                                        ${escapeHtml(
-                                            party.address
-                                        )}
-                                    </span>
-                                `
-                                : ''
-                        }
-                    </div>
-
-                    <div class="pm-party-roles">
-                        ${roleBadges}
-                    </div>
                 </div>
 
                 <div class="pm-party-actions max-sm:w-full">
@@ -920,44 +923,7 @@ function partyCard(party) {
                         )}
                     </button>
 
-                    <button
-                        type="button"
-                        data-export-party
-                        data-party-id="${escapeHtml(
-                            party.id
-                        )}"
-                        class="pm-button-secondary pm-party-action max-sm:flex-1"
-                    >
-                        ${escapeHtml(
-                            translate(
-                                'parties.export_data'
-                            )
-                        )}
-                    </button>
-
-                    ${
-                        party.erased_at
-                            ? ''
-                            : `
-                                <button
-                                    type="button"
-                                    data-erase-party
-                                    data-party-id="${escapeHtml(
-                                        party.id
-                                    )}"
-                                    data-party-name="${escapeHtml(
-                                        displayName
-                                    )}"
-                                    class="pm-button-danger-outline pm-party-action max-sm:flex-1"
-                                >
-                                    ${escapeHtml(
-                                        translate(
-                                            'parties.erase'
-                                        )
-                                    )}
-                                </button>
-                            `
-                    }
+                    ${dataTools}
 
                     <button
                         type="button"

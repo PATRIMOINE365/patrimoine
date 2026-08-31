@@ -179,6 +179,11 @@ class UpdateManagingOrganisationRequest extends FormRequest
              * V1.0.29: the organisation-wide switch for everything
              * Patrimoine sends to tenants, owners and agents.
              */
+            'data_tools_enabled' => [
+                'sometimes',
+                'boolean',
+            ],
+
             'party_emails_enabled' => [
                 'sometimes',
                 'boolean',

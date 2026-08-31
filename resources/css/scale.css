@@ -172,6 +172,36 @@
     --color-warning-800: #93370d;
     --color-warning-900: #7a2e0e;
 
+    /*
+     * Untitled UI's indigo, purple, orange and pink, at the three steps a
+     * badge uses. Patrimoine needs six badge colours a reader can tell
+     * apart at a glance — three party types and three party roles — and
+     * brand, error, warning and blue are four.
+     */
+    --color-indigo-50:  #eef4ff;
+    --color-indigo-200: #c7d7fe;
+    --color-indigo-700: #3538cd;
+    --color-indigo-300: #a4bcfd;
+    --color-indigo-400: #8098f9;
+
+    --color-purple-50:  #f4f3ff;
+    --color-purple-200: #d9d6fe;
+    --color-purple-700: #5925dc;
+    --color-purple-300: #bdb4fe;
+    --color-purple-400: #9b8afb;
+
+    --color-orange-50:  #fef6ee;
+    --color-orange-200: #f9dbaf;
+    --color-orange-700: #b93815;
+    --color-orange-300: #f7b27a;
+    --color-orange-400: #f38744;
+
+    --color-pink-50:  #fdf2fa;
+    --color-pink-200: #fcceee;
+    --color-pink-700: #c11574;
+    --color-pink-300: #faa7e0;
+    --color-pink-400: #f670c7;
+
     --color-blue-25:  #f5faff;
     --color-blue-50:  #eff8ff;
     --color-blue-100: #d1e9ff;

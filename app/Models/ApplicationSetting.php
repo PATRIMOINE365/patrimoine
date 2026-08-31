@@ -31,6 +31,7 @@ class ApplicationSetting extends Model
         'language',
         'currency',
         'party_emails_enabled',
+        'data_tools_enabled',
     ];
 
     /**
@@ -46,6 +47,7 @@ class ApplicationSetting extends Model
         return [
             'default_vat_rate' => 'decimal:2',
             'party_emails_enabled' => 'boolean',
+            'data_tools_enabled' => 'boolean',
         ];
     }
 

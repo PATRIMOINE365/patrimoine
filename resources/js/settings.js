@@ -2229,6 +2229,20 @@ function populateManagingOrganisationForm(
             organisation.party_emails_enabled ?? true;
     }
 
+    /*
+     * V1.0.42: absent means off, which is what every organisation had
+     * before the switch existed.
+     */
+    const dataTools =
+        document.getElementById(
+            'organisation-data-tools-enabled'
+        );
+
+    if (dataTools) {
+        dataTools.checked =
+            organisation.data_tools_enabled ?? false;
+    }
+
     setFormValue(
         'organisation-bank-name',
         organisation.bank_name
@@ -2450,6 +2464,12 @@ async function submitManagingOrganisation(
                 'organisation-party-emails-enabled'
             )?.checked
             ?? true,
+
+        data_tools_enabled:
+            document.getElementById(
+                'organisation-data-tools-enabled'
+            )?.checked
+            ?? false,
 
         bank_name:
             nullableFormValue(

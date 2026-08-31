@@ -125,6 +125,20 @@ class ManagingOrganisationController extends Controller
                             $settings->party_emails_enabled ?? true
                         );
 
+                /*
+                 * Absent means "leave it as it was", and it has never been
+                 * on unless somebody switched it on.
+                 */
+                $dataToolsEnabled =
+                    array_key_exists(
+                        'data_tools_enabled',
+                        $validated
+                    )
+                        ? (bool) $validated['data_tools_enabled']
+                        : (bool) (
+                            $settings->data_tools_enabled ?? false
+                        );
+
                 unset(
                     $validated[
                         'default_vat_rate'
@@ -137,6 +151,9 @@ class ManagingOrganisationController extends Controller
                     ],
                     $validated[
                         'party_emails_enabled'
+                    ],
+                    $validated[
+                        'data_tools_enabled'
                     ]
                 );
 
@@ -197,6 +214,7 @@ class ManagingOrganisationController extends Controller
                      * It never affects mail addressed to users.
                      */
                     'party_emails_enabled' => $partyEmailsEnabled,
+                    'data_tools_enabled' => $dataToolsEnabled,
                 ]);
 
                 /*

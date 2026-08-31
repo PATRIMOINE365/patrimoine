@@ -2338,12 +2338,6 @@ function leaseCard(lease) {
             lease.tenant
         );
 
-    const agent =
-        lease.agent
-            ? partyDisplayName(
-                lease.agent
-            )
-            : null;
 
     return `
         <article
@@ -2409,96 +2403,6 @@ function leaseCard(lease) {
                             ${escapeHtml(
                                 tenant
                             )}
-                        </span>
-                    </div>
-
-                    ${
-                        agent
-                            ? `
-                                <div
-                                    class="
-                                        mt-1 text-sm
-                                        text-[var(--pm-text-muted)]
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        translate(
-                                            'leases.agent'
-                                        )
-                                    )}:
-                                    ${escapeHtml(
-                                        agent
-                                    )}
-                                </div>
-                            `
-                            : ''
-                    }
-
-                    <div
-                        class="
-                            mt-3 flex flex-wrap
-                            gap-x-6 gap-y-1
-                            text-sm text-[var(--pm-text-muted)]
-                        "
-                    >
-                        <span>
-                            ${escapeHtml(
-                                formatCurrency(
-                                    lease.rent_amount
-                                )
-                            )}
-                            /
-                            ${escapeHtml(
-                                frequencyLabel(
-                                    lease.payment_frequency
-                                )
-                            )}
-                        </span>
-
-                        <span>
-                            ${escapeHtml(
-                                translate(
-                                    'leases.start'
-                                )
-                            )}:
-                            ${escapeHtml(
-                                formatDate(
-                                    lease.start_date
-                                )
-                            )}
-                        </span>
-
-                        ${
-                            lease.end_date
-                                ? `
-                                    <span>
-                                        ${escapeHtml(
-                                            translate(
-                                                'leases.end'
-                                            )
-                                        )}:
-                                        ${escapeHtml(
-                                            formatDate(
-                                                lease.end_date
-                                            )
-                                        )}
-                                    </span>
-                                `
-                                : ''
-                        }
-
-                        <span>
-                            ${escapeHtml(
-                                translate(
-                                    'leases.vat'
-                                )
-                            )}:
-                            ${escapeHtml(
-                                Number(
-                                    lease.vat_rate
-                                    ?? 0
-                                ).toFixed(2)
-                            )}%
                         </span>
                     </div>
 
