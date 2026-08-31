@@ -877,7 +877,18 @@ form
 
 @media (min-width: 640px) {
     .pm-wizard-subfields-row {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/*
+ * V1.0.39: the cashier joined this row and made it four, which wrapped
+ * and put the page back over the height of its neighbours — the thing
+ * V1.0.36 had just fixed by laying these out side by side.
+ */
+@media (min-width: 1024px) {
+    .pm-wizard-subfields-row {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 

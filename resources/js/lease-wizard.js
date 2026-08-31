@@ -1347,7 +1347,168 @@ function reportValidationErrors(payload) {
         showStep(Math.min(...steps));
     }
 
+    markRejectedFields(keys);
+
     revealError();
+}
+
+/*
+ * The server names a field by the name it has in the payload, and the
+ * assistant shows a screen full of fields. "The telephone number field is
+ * required" over a page holding two people and eleven boxes leaves the
+ * reader to work out which box. These say which.
+ */
+
+/** What a party field is called on the screen. */
+const PARTY_FIELD_ELEMENTS = {
+    name: 'given-names',
+    given_names: 'given-names',
+    surname: 'surname',
+    legal_name: 'legal-name',
+    contact_name: 'contact-name',
+    phone: 'phone-number',
+    email: 'email',
+};
+
+/** What a lease field is called on the screen. */
+const LEASE_FIELD_ELEMENTS = {
+    start_date: 'wizard-start-date',
+    end_date: 'wizard-end-date',
+    termination_notice_date: 'wizard-notice-date',
+    rent_amount: 'wizard-rent-amount',
+    payment_frequency: 'wizard-frequency',
+    due_day: 'wizard-due-day',
+    proration_amount: 'wizard-proration',
+    security_deposit_amount: 'wizard-deposit',
+    rent_reserve_amount: 'wizard-reserve',
+    advance_payment_amount: 'wizard-advance-amount',
+    advance_received_date: 'wizard-advance-date',
+    advance_received_method: 'wizard-advance-method',
+    advance_received_reference: 'wizard-advance-reference',
+    advance_received_collector: 'wizard-advance-collector',
+    rent_increment_type: 'wizard-increment-type',
+    rent_increment_value: 'wizard-increment-value',
+    next_rent_increment_date: 'wizard-increment-date',
+    vat_rate: 'wizard-vat-rate',
+    management_fee_type: 'wizard-fee-type',
+    management_fee_value: 'wizard-fee-value',
+    agent_commission_amount: 'wizard-agent-commission',
+};
+
+/**
+ * The element a rejected key belongs to, if it has one.
+ *
+ * @param {string} key
+ * @returns {HTMLElement|null}
+ */
+function elementForErrorKey(key) {
+    const party = (prefix, field) => {
+        const name = PARTY_FIELD_ELEMENTS[field];
+
+        return name
+            ? document.getElementById(`${prefix}-${name}`)
+            : null;
+    };
+
+    if (key.startsWith('building.attributes.')) {
+        const field = key.slice('building.attributes.'.length);
+
+        return document.getElementById(
+            field === 'address'
+                ? 'wizard-building-address'
+                : 'wizard-building-name'
+        );
+    }
+
+    if (key.startsWith('unit.attributes.')) {
+        return document.getElementById('wizard-unit-name');
+    }
+
+    if (key.startsWith('owners.')) {
+        const parts = key.split('.');
+
+        /*
+         * readOwners() walks the rows in document order, so the index in
+         * the rejected key is the position of the row rather than the
+         * number in its data attribute — which does not come back down
+         * when a row is removed.
+         */
+        const row = document.querySelectorAll('[data-owner-row]')[
+            Number(parts[1])
+        ];
+
+        if (! row) {
+            return null;
+        }
+
+        if (parts[2] === 'ownership_percentage') {
+            return row.querySelector('[data-owner-share]');
+        }
+
+        return party(
+            `wizard-owner-${row.dataset.ownerRow}-party`,
+            parts[3] ?? ''
+        );
+    }
+
+    if (key.startsWith('tenant.attributes.')) {
+        return party(
+            'wizard-tenant-party',
+            key.slice('tenant.attributes.'.length)
+        );
+    }
+
+    if (key.startsWith('agent.attributes.')) {
+        return party(
+            'wizard-agent-party',
+            key.slice('agent.attributes.'.length)
+        );
+    }
+
+    if (key.startsWith('lease.')) {
+        const id = LEASE_FIELD_ELEMENTS[key.slice('lease.'.length)];
+
+        return id
+            ? document.getElementById(id)
+            : null;
+    }
+
+    return null;
+}
+
+/**
+ * Put a ring round every rejected field and land on the first of them.
+ *
+ * @param {Array<string>} keys
+ */
+function markRejectedFields(keys) {
+    clearRejectedFields();
+
+    const marked = keys
+        .map(elementForErrorKey)
+        .filter(Boolean);
+
+    marked.forEach((element) => {
+        element.setAttribute('aria-invalid', 'true');
+    });
+
+    /*
+     * Focusing scrolls, and the error box is above the fields, so the box
+     * is read first and the cursor is already in the field to correct.
+     */
+    marked[0]?.focus({ preventScroll: false });
+}
+
+/**
+ * Take the rings off. A correction the operator has already made should
+ * not still be marked wrong.
+ */
+function clearRejectedFields() {
+    document
+        .querySelectorAll('.pm-wizard-page [aria-invalid="true"]')
+        .forEach((element) => {
+            element.removeAttribute('aria-invalid');
+        });
 }
 
 /**
@@ -2261,4 +2422,6 @@ function hideError() {
         .getElementById('wizard-error')
         ?.classList
         .add('hidden');
+
+    clearRejectedFields();
 }

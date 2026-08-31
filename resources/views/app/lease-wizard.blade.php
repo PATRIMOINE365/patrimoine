@@ -681,7 +681,7 @@
                             readonly
                             data-i18n-placeholder="wizard.cashier_placeholder"
                             placeholder="{{ __('ui.wizard.cashier_placeholder') }}"
-                            class="pm-input cursor-not-allowed bg-[var(--pm-input-disabled)]"
+                            class="pm-input"
                         >
                     </div>
 

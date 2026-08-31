@@ -548,6 +548,29 @@ html[data-shell-role="administrator"] .shell-admin-only {
 | background of its own: the input paints the field.
 */
 
+/*
+| A field that is shown rather than asked for.
+|
+| Five fields in Patrimoine are readonly — the cashier, and the computed
+| figures on the owner and tenant screens — and every one of them was
+| drawn identically to a field you can type in. --pm-input-disabled is
+| gray-50, which on a white card is no difference at all, so the only way
+| to discover the field was inert was to click it and watch nothing
+| happen. Styled on the attribute, so it holds wherever one appears.
+*/
+
+.pm-input[readonly] {
+    background: var(--pm-surface-subtle);
+    border-color: var(--pm-border);
+    color: var(--pm-text-muted);
+    cursor: not-allowed;
+}
+
+.pm-input[readonly]:focus {
+    border-color: var(--pm-border);
+    box-shadow: none;
+}
+
 .pm-input-affix {
     position: relative;
 }
@@ -615,13 +638,21 @@ textarea.pm-input {
     color: var(--pm-text-placeholder);
 }
 
+/*
+ * The telephone number is the one field in Patrimoine that is not a
+ * .pm-input — it is the number half of the country-and-number control —
+ * and it is also one of the three fields the lease assistant is most
+ * often refused over. Marked wrong, it has to look wrong.
+ */
 .pm-input[aria-invalid='true'],
-.pm-input.pm-input-invalid {
+.pm-input.pm-input-invalid,
+.pm-phone-number[aria-invalid='true'] {
     border-color: var(--pm-danger-solid);
 }
 
 .pm-input[aria-invalid='true']:focus,
-.pm-input.pm-input-invalid:focus {
+.pm-input.pm-input-invalid:focus,
+.pm-phone-number[aria-invalid='true']:focus {
     box-shadow: var(--pm-ring-error);
 }
 
