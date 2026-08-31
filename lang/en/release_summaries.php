@@ -29,9 +29,14 @@ return [
 
     'entries' => [
         [
+            'through' => '1.0.45',
+            'date' => '2026-08-31',
+            'summary' => 'Work since 1.0.40 is described here as it lands.',
+        ],
+        [
             'through' => '1.0.40',
             'date' => '2026-08-29',
-            'summary' => 'Help became Support: one entry in your own menu opens a page where you can write to us, with the guide, the error codes and the update log beside it. The guide is read one guide at a time now, found by searching rather than by scrolling past everything else, and its pictures no longer tower over the words they illustrate. Accounting reads dates the way the rest of Patrimoine does, every document number carries the year it belongs to, and most of what Patrimoine sends by e-mail now leaves after your request instead of during it. Patrimoine has also been redrawn: the application, the console, the website, the e-mails and the documents now share one design, one typeface served from Patrimoine itself rather than from Google, one mark and one set of icons, and the Activity Log and the Financial Journal have become two tabs of one entry called Audit, the lease assistant shows every amount grouped and in your currency and says which field it is refusing, and your browser no longer fills in forms anywhere but sign-in and sign-up',
+            'summary' => 'Help became Support: one entry in your own menu opens a page where you can write to us, with the guide, the error codes and the update log beside it. The guide is read one guide at a time now, found by searching rather than by scrolling past everything else, and its pictures no longer tower over the words they illustrate. Accounting reads dates the way the rest of Patrimoine does, every document number carries the year it belongs to, and most of what Patrimoine sends by e-mail now leaves after your request instead of during it. Patrimoine has also been redrawn: the application, the console, the website, the e-mails and the documents now share one design, one typeface served from Patrimoine itself rather than from Google, one mark and one set of icons, and the Activity Log and the Financial Journal have become two tabs of one entry called Audit, the lease assistant shows every amount grouped and in your currency and says which field it is refusing, your browser no longer fills in forms anywhere but sign-in and sign-up, and an owner\'s payout receipt now shows what came in and what was deducted to reach the amount they were paid',
         ],
         [
             'through' => '1.0.35',

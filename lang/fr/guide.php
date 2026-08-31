@@ -563,6 +563,7 @@ return [
                         ['text' => 'Le solde disponible est affiché. Saisissez le montant et la date.', 'shot' => 'owner-payout'],
                         ['text' => 'Choisissez le mode de règlement et indiquez qui l\'a autorisé.'],
                         ['text' => 'Appuyez sur Enregistrer. Le versement est rapproché des produits qu\'il solde, du plus ancien au plus récent, et un bon numéroté est produit.'],
+                        ['text' => 'Le reçu montre au propriétaire comment le montant est obtenu : tout ce qui a été reçu depuis son dernier encaissement, ce qui en a été déduit — charges du bien, honoraires de gestion, TVA sur ces honoraires, commission de l\'agent — ainsi que le solde reporté et le solde à reporter. Il peut le vérifier sans vous demander un relevé.'],
                     ],
                 ],
 

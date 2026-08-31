@@ -15,6 +15,17 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.40',
+            'date' => '2026-08-31',
+            'title' => 'Un propriétaire peut vérifier lui-même son reçu de versement',
+            'changes' => [
+                'Le reçu de versement montre désormais comment le montant est obtenu. Tout ce qui a été reçu depuis le dernier encaissement du propriétaire — loyers, dépôts, ajustements, sommes revenues de la réserve — puis tout ce qui en a été déduit : charges du bien, honoraires de gestion, TVA sur ces honoraires et commission de l\\\'agent, chacun sur sa propre ligne.',
+                'En dessous, le calcul : solde reporté, total reçu, total déduit, montant ainsi disponible, ce versement, et solde à reporter. Le propriétaire qui tient le reçu peut vérifier le montant sans demander de relevé à personne.',
+                'Les chiffres proviennent de la même source que le relevé du propriétaire : un reçu et un relevé couvrant la même période ne peuvent pas se contredire.',
+                'Le reçu affichait auparavant « Crédits propriétaire affectés » — un simple nombre de lignes comptables, qui n\\\'apprend rien à celui qui le lit — et un solde courant. Les deux ont disparu : le solde est maintenant indiqué correctement comme solde à reporter, à la fin du calcul.',
+            ],
+        ],
+        [
             'version' => '1.0.39',
             'date' => '2026-08-31',
             'title' => 'L’assistant de bail se lit correctement, et le navigateur cesse de remplir les champs',

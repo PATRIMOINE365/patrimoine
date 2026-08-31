@@ -93,14 +93,24 @@
          * sit tight enough that a period with a dozen movements still
          * fits on the page with the receipt above it.
          */
+        /*
+         * The workings run to about fifteen rows, and a receipt needing a
+         * second page for its last two lines is a worse document than a
+         * slightly tighter one. Section spacing and row padding are both
+         * pulled in so it holds a single page.
+         */
+        .working-section {
+            margin-top: 16px;
+        }
+
         .working-table {
             width: 100%;
-            margin-top: 6px;
+            margin-top: 4px;
             border-collapse: collapse;
         }
 
         .working-table td {
-            padding: 4px 0;
+            padding: 2px 0;
             vertical-align: top;
         }
 
@@ -326,7 +336,7 @@
         movement appears that this receipt does not have a name for; it is
         printed as "Other".
     --}}
-    <div class="section">
+    <div class="section working-section">
         <div class="section-title">
             {{ __('documents.owner_payout_receipt.money_in') }}
         </div>
@@ -373,7 +383,7 @@
         </table>
     </div>
 
-    <div class="section">
+    <div class="section working-section">
         <div class="section-title">
             {{ __('documents.owner_payout_receipt.deducted') }}
         </div>
@@ -407,7 +417,7 @@
         </table>
     </div>
 
-    <div class="section">
+    <div class="section working-section">
         <div class="section-title">
             {{ __('documents.owner_payout_receipt.reconciliation') }}
         </div>

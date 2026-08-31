@@ -19,6 +19,17 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.40',
+            'date' => '2026-08-31',
+            'title' => 'An owner can check their own payout receipt',
+            'changes' => [
+                'The payout receipt now shows how the figure was reached. Everything received since the owner last collected — rent, deposits, adjustments, anything moved back from reserve — then everything deducted from it: property expenses, the management fee, the VAT on that fee, and agent commission, each on its own line.',
+                'Under those, the arithmetic: balance brought forward, total received, total deducted, what that made available, this payout, and the balance carried forward. An owner holding the receipt can check the number without asking anyone for a statement.',
+                'The figures come from the same place the owner statement does, so a receipt and a statement covering the same period cannot disagree.',
+                'The receipt used to show “Allocated Owner Credits” — a count of ledger rows, which tells the person holding it nothing — and a current balance. Both are gone: the balance is now stated properly as the balance carried forward, at the end of the workings.',
+            ],
+        ],
+        [
             'version' => '1.0.39',
             'date' => '2026-08-31',
             'title' => 'The lease assistant reads properly, and the browser stops filling things in',

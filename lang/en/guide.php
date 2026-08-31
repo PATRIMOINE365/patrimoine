@@ -566,7 +566,8 @@ return [
                         ['text' => 'Open Owners, select the owner, and press Make payout.'],
                         ['text' => 'The available balance is shown. Enter the amount and the date.', 'shot' => 'owner-payout'],
                         ['text' => 'Choose how it was paid and name who authorised it.'],
-                        ['text' => 'Press Save. The payout is matched against the earnings it settles, oldest first, and a numbered voucher is produced.'],
+                        ['text' => 'Press Save. The payout is matched against the earnings it settles, oldest first, and a numbered receipt is produced.'],
+                        ['text' => 'The receipt shows the owner how the figure was reached: everything received since they last collected, what was deducted from it — property expenses, the management fee, the VAT on it, agent commission — and the balance brought forward and carried away. They can check it without asking you for a statement.'],
                     ],
                 ],
 
