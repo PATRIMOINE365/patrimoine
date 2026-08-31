@@ -339,7 +339,17 @@
                         <span data-i18n="wizard.agent_commission">{{ __('ui.wizard.agent_commission') }}</span>
                     </label>
 
-                    <input id="wizard-agent-commission" type="text" inputmode="numeric" class="pm-input" value="0">
+                    <div class="pm-input-affix">
+                        <input
+                            id="wizard-agent-commission"
+                            type="text"
+                            inputmode="numeric"
+                            data-money-input
+                            class="pm-input pr-14" value="0"
+                        >
+                    
+                        <span id="wizard-agent-commission-unit" class="pm-input-unit"></span>
+                    </div>
 
                     <p class="pm-wizard-help">
                         <span data-i18n="wizard.agent_commission_help">{{ __('ui.wizard.agent_commission_help') }}</span>
@@ -455,7 +465,17 @@
                             <span data-i18n="wizard.increment_value">{{ __('ui.wizard.increment_value') }}</span>
                         </label>
 
-                        <input id="wizard-increment-value" type="text" inputmode="decimal" class="pm-input" value="0">
+                        <div class="pm-input-affix">
+                            <input
+                                id="wizard-increment-value"
+                                type="text"
+                                inputmode="decimal"
+                                class="pm-input pr-14"
+                                value="0"
+                            >
+
+                            <span id="wizard-increment-unit" class="pm-input-unit"></span>
+                        </div>
                     </div>
 
                     <div>
@@ -491,7 +511,17 @@
                             <span class="text-[var(--pm-danger-text)]">*</span>
                         </label>
 
-                        <input id="wizard-rent-amount" type="text" inputmode="numeric" class="pm-input">
+                        <div class="pm-input-affix">
+                            <input
+                                id="wizard-rent-amount"
+                                type="text"
+                                inputmode="numeric"
+                                data-money-input
+                                class="pm-input pr-14"
+                            >
+                        
+                            <span id="wizard-rent-amount-unit" class="pm-input-unit"></span>
+                        </div>
                     </div>
 
                     <div>
@@ -524,7 +554,17 @@
                             <span data-i18n="wizard.proration">{{ __('ui.wizard.proration') }}</span>
                         </label>
 
-                        <input id="wizard-proration" type="text" inputmode="numeric" class="pm-input">
+                        <div class="pm-input-affix">
+                            <input
+                                id="wizard-proration"
+                                type="text"
+                                inputmode="numeric"
+                                data-money-input
+                                class="pm-input pr-14"
+                            >
+                        
+                            <span id="wizard-proration-unit" class="pm-input-unit"></span>
+                        </div>
 
                         <p class="pm-wizard-help">
                             <span data-i18n="wizard.proration_help">{{ __('ui.wizard.proration_help') }}</span>
@@ -536,7 +576,17 @@
                             <span data-i18n="wizard.security_deposit">{{ __('ui.wizard.security_deposit') }}</span>
                         </label>
 
-                        <input id="wizard-deposit" type="text" inputmode="numeric" class="pm-input" value="0">
+                        <div class="pm-input-affix">
+                            <input
+                                id="wizard-deposit"
+                                type="text"
+                                inputmode="numeric"
+                                data-money-input
+                                class="pm-input pr-14" value="0"
+                            >
+                        
+                            <span id="wizard-deposit-unit" class="pm-input-unit"></span>
+                        </div>
                     </div>
 
                     <div>
@@ -544,7 +594,17 @@
                             <span data-i18n="wizard.rent_reserve">{{ __('ui.wizard.rent_reserve') }}</span>
                         </label>
 
-                        <input id="wizard-reserve" type="text" inputmode="numeric" class="pm-input" value="0">
+                        <div class="pm-input-affix">
+                            <input
+                                id="wizard-reserve"
+                                type="text"
+                                inputmode="numeric"
+                                data-money-input
+                                class="pm-input pr-14" value="0"
+                            >
+                        
+                            <span id="wizard-reserve-unit" class="pm-input-unit"></span>
+                        </div>
                     </div>
                 </div>
 
@@ -555,7 +615,17 @@
                         <span data-i18n="wizard.advance_amount">{{ __('ui.wizard.advance_amount') }}</span>
                     </label>
 
-                    <input id="wizard-advance-amount" type="text" inputmode="numeric" class="pm-input" value="0">
+                    <div class="pm-input-affix">
+                        <input
+                            id="wizard-advance-amount"
+                            type="text"
+                            inputmode="numeric"
+                            data-money-input
+                            class="pm-input pr-14" value="0"
+                        >
+                    
+                        <span id="wizard-advance-amount-unit" class="pm-input-unit"></span>
+                    </div>
                 </div>
 
                 <label class="pm-wizard-checkbox">
@@ -600,6 +670,21 @@
                         </select>
                     </div>
 
+                    <div id="wizard-advance-collector-field">
+                        <label for="wizard-advance-collector" class="pm-field-label">
+                            <span data-i18n="wizard.cashier">{{ __('ui.wizard.cashier') }}</span>
+                        </label>
+
+                        <input
+                            id="wizard-advance-collector"
+                            type="text"
+                            readonly
+                            data-i18n-placeholder="wizard.cashier_placeholder"
+                            placeholder="{{ __('ui.wizard.cashier_placeholder') }}"
+                            class="pm-input cursor-not-allowed bg-[var(--pm-input-disabled)]"
+                        >
+                    </div>
+
                     <div>
                         <label for="wizard-advance-reference" class="pm-field-label">
                             <span data-i18n="wizard.advance_reference">{{ __('ui.wizard.advance_reference') }}</span>
@@ -636,7 +721,17 @@
                             <span data-i18n="wizard.fee_value">{{ __('ui.wizard.fee_value') }}</span>
                         </label>
 
-                        <input id="wizard-fee-value" type="text" inputmode="decimal" class="pm-input" value="0">
+                        <div class="pm-input-affix">
+                            <input
+                                id="wizard-fee-value"
+                                type="text"
+                                inputmode="decimal"
+                                class="pm-input pr-14"
+                                value="0"
+                            >
+
+                            <span id="wizard-fee-unit" class="pm-input-unit"></span>
+                        </div>
                     </div>
 
                     <div>
@@ -644,7 +739,17 @@
                             <span data-i18n="wizard.fee_vat">{{ __('ui.wizard.fee_vat') }}</span>
                         </label>
 
-                        <input id="wizard-vat-rate" type="text" inputmode="decimal" class="pm-input" value="0">
+                        <div class="pm-input-affix">
+                            <input
+                                id="wizard-vat-rate"
+                                type="text"
+                                inputmode="decimal"
+                                class="pm-input pr-14"
+                                value="0"
+                            >
+
+                            <span class="pm-input-unit">%</span>
+                        </div>
 
                         <p class="pm-wizard-help">
                             <span data-i18n="wizard.fee_vat_help">{{ __('ui.wizard.fee_vat_help') }}</span>

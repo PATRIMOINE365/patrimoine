@@ -59,7 +59,10 @@
     No data-auth-required here: admin.js performs its own
     authentication bootstrap and redirects non-staff away.
 --}}
-<body class="pm-admin min-h-screen bg-[var(--pm-page)] font-sans text-[var(--pm-text)]">
+<body
+    data-autofill="off"
+    class="pm-admin min-h-screen bg-[var(--pm-page)] font-sans text-[var(--pm-text)]"
+>
 
 <div class="pm-admin-shell">
 

@@ -46,6 +46,10 @@ import {
 } from './public-presentation.js';
 
 import {
+    initializeAutofillPolicy,
+} from './autofill.js';
+
+import {
     applyCachedPresentationLanguage,
     applyTranslations,
     loadPresentationConfiguration,
@@ -176,6 +180,13 @@ document.addEventListener(
          * (present only in the auth layout; a no-op everywhere else).
          */
         initializePublicPresentationControls();
+
+        /*
+         * The browser may fill in the sign-in and sign-up pages and
+         * nothing else: inside the application the fields hold somebody
+         * else's details, not the operator's.
+         */
+        initializeAutofillPolicy();
 
         /*
          * V1.0.8: live thousands grouping on all monetary inputs,

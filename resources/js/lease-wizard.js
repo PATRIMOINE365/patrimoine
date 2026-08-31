@@ -22,7 +22,12 @@
 import {
     apiRequest,
     escapeHtml,
+    formatCurrency,
+    formatMoneyDigits,
+    getPresentationConfiguration,
+    messageWithErrorCode,
     parseJsonResponse,
+    parseMoneyInput,
     setButtonBusy,
     restoreButton,
     translate,
@@ -646,14 +651,18 @@ function appendOwnerRow() {
                     ${escapeHtml(translate('wizard.share'))}
                 </label>
 
-                <input
-                    id="${prefix}-share"
-                    data-owner-share
-                    type="text"
-                    inputmode="decimal"
-                    class="pm-input"
-                    value="100"
-                >
+                <div class="pm-input-affix">
+                    <input
+                        id="${prefix}-share"
+                        data-owner-share
+                        type="text"
+                        inputmode="decimal"
+                        class="pm-input pr-14"
+                        value="100"
+                    >
+
+                    <span class="pm-input-unit">%</span>
+                </div>
             </div>
         </div>
 
@@ -1010,7 +1019,10 @@ function readLeaseTerms(status) {
         rent_increment_type: value('wizard-increment-type'),
         rent_increment_value: value('wizard-increment-type') === 'none'
             ? 0
-            : decimal('wizard-increment-value'),
+            : dualValue(
+                'wizard-increment-value',
+                value('wizard-increment-type') === 'fixed'
+            ),
         next_rent_increment_date: value('wizard-increment-type') === 'none'
             ? null
             : (dateValue('wizard-increment-date') || null),
@@ -1019,7 +1031,10 @@ function readLeaseTerms(status) {
         management_fee_type: value('wizard-fee-type'),
         management_fee_value: value('wizard-fee-type') === 'none'
             ? 0
-            : decimal('wizard-fee-value'),
+            : dualValue(
+                'wizard-fee-value',
+                value('wizard-fee-type') === 'fixed'
+            ),
 
         agent_commission_amount: value('wizard-agent-mode') === 'none'
             ? 0
@@ -1029,6 +1044,12 @@ function readLeaseTerms(status) {
     if (advanceReceived) {
         terms.advance_received_date = dateValue('wizard-advance-date') || null;
         terms.advance_received_method = value('wizard-advance-method');
+
+        if (terms.advance_received_method === 'cash') {
+            terms.advance_received_collector =
+                value('wizard-advance-collector')
+                || String(document.body.dataset.currentUserName ?? '');
+        }
 
         const reference = value('wizard-advance-reference');
 
@@ -1045,6 +1066,41 @@ function readLeaseTerms(status) {
 | Review
 |--------------------------------------------------------------------------
 */
+
+/**
+ * A money field, as a reader should see it.
+ *
+ * The check page printed the digits exactly as they were typed — 1250000,
+ * with no grouping and no currency — on the one page whose purpose is to
+ * be read back before anything is created.
+ *
+ * @param {string} id
+ * @returns {string}
+ */
+function money(id) {
+    return formatCurrency(
+        integer(id)
+    );
+}
+
+/**
+ * The management fee, with the unit that gives it its meaning.
+ *
+ * @returns {string}
+ */
+function feeSummary() {
+    const type = value('wizard-fee-type');
+
+    if (type === 'none') {
+        return translate('wizard.fee_none');
+    }
+
+    const amount = type === 'fixed'
+        ? money('wizard-fee-value')
+        : `${decimal('wizard-fee-value')}%`;
+
+    return `${selectedText('wizard-fee-type')} · ${amount}`;
+}
 
 /**
  * Show what is about to be created, in the operator's own words.
@@ -1095,23 +1151,30 @@ function renderSummary() {
         ],
         [
             translate('wizard.rent_amount'),
-            `${value('wizard-rent-amount')} · ${selectedText('wizard-frequency')}`,
+            `${money('wizard-rent-amount')} · ${selectedText('wizard-frequency')}`,
         ],
         [
             translate('wizard.security_deposit'),
-            value('wizard-deposit'),
+            money('wizard-deposit'),
+        ],
+        /*
+         * The reserve is money the tenant hands over and cannot be spent
+         * on ordinary rent. It was the one amount the check page did not
+         * show, which is the page whose whole job is to show them.
+         */
+        [
+            translate('wizard.rent_reserve'),
+            money('wizard-reserve'),
         ],
         [
             translate('wizard.advance_amount'),
             checked('wizard-advance-received')
-                ? `${value('wizard-advance-amount')} · ${translate('wizard.advance_received')}`
-                : value('wizard-advance-amount'),
+                ? `${money('wizard-advance-amount')} · ${translate('wizard.advance_received')}`
+                : money('wizard-advance-amount'),
         ],
         [
             translate('wizard.fee_type'),
-            value('wizard-fee-type') === 'none'
-                ? translate('wizard.fee_none')
-                : `${selectedText('wizard-fee-type')} · ${value('wizard-fee-value')}`,
+            feeSummary(),
         ],
     ];
 
@@ -1219,7 +1282,8 @@ async function submitWizard(status, button) {
             } else {
                 showError(
                     payload?.message
-                    ?? translate('wizard.save_failed')
+                    ?? translate('wizard.save_failed'),
+                    payload?.code ?? null
                 );
             }
 
@@ -1271,7 +1335,8 @@ function reportValidationErrors(payload) {
     showError(
         messages.length > 0
             ? messages.join(' ')
-            : (payload?.message ?? translate('wizard.save_failed'))
+            : (payload?.message ?? translate('wizard.save_failed')),
+        payload?.code ?? null
     );
 
     const steps = keys
@@ -1472,7 +1537,30 @@ function applyStoredState(stored) {
 
     applyIncrementType();
 
+    applyFeeType();
+
     applyAdvanceReceived();
+
+    applyCurrencyUnits();
+
+    regroupMoneyFields();
+}
+
+/**
+ * Put the thousands separators back after values are written in bulk.
+ *
+ * The live grouping is driven by the input event, and setting .value from
+ * script raises none — so a restored draft, or a lease copied into the
+ * assistant, would show its amounts as bare digits.
+ */
+function regroupMoneyFields() {
+    document
+        .querySelectorAll('[data-money-input="on"], [data-money-input=""]')
+        .forEach((input) => {
+            input.value = formatMoneyDigits(
+                parseMoneyInput(input.value)
+            );
+        });
 }
 
 /**
@@ -1527,16 +1615,101 @@ function applyAgentMode() {
 }
 
 function applyIncrementType() {
+    const type = value('wizard-increment-type');
+
     toggle(
         'wizard-increment-details',
-        value('wizard-increment-type') !== 'none'
+        type !== 'none'
     );
+
+    /*
+     * A rise of 10 is ten per cent or ten thousand cedis depending on the
+     * setting above it, and the field said neither.
+     */
+    setMoneyMode('wizard-increment-value', type === 'fixed');
+
+    setUnit(
+        'wizard-increment-unit',
+        type === 'percentage'
+            ? '%'
+            : (type === 'fixed' ? currencyLabel() : '')
+    );
+}
+
+function applyFeeType() {
+    const type = value('wizard-fee-type');
+
+    setMoneyMode('wizard-fee-value', type === 'fixed');
+
+    setUnit(
+        'wizard-fee-unit',
+        type === 'percentage'
+            ? '%'
+            : (type === 'fixed' ? currencyLabel() : '')
+    );
+
+    const input = document.getElementById('wizard-fee-value');
+
+    if (input) {
+        input.disabled = type === 'none';
+
+        if (type === 'none') {
+            input.value = '0';
+        }
+    }
+}
+
+/**
+ * Every whole-currency field on the assistant says what currency it is.
+ *
+ * The amounts are the only thing on these pages a person cannot check by
+ * reading: 1250000 and 125000 look alike at a glance, and getting it
+ * wrong sets the rent for a year.
+ */
+function applyCurrencyUnits() {
+    const currency = currencyLabel();
+
+    [
+        'wizard-agent-commission-unit',
+        'wizard-rent-amount-unit',
+        'wizard-proration-unit',
+        'wizard-deposit-unit',
+        'wizard-reserve-unit',
+        'wizard-advance-amount-unit',
+    ].forEach((id) => setUnit(id, currency));
 }
 
 function applyAdvanceReceived() {
     toggle(
         'wizard-advance-details',
         checked('wizard-advance-received')
+    );
+
+    applyAdvanceMethod();
+}
+
+/**
+ * The cashier, when the money came in as cash.
+ *
+ * It is always the person signed in — the server overwrites whatever is
+ * sent — so it is shown rather than asked for. The lease form does
+ * exactly this; the assistant had no such field at all, and the rule on
+ * the lease form therefore refused every cash advance created through it
+ * with "The cashier field is required", naming a field that was not on
+ * the screen.
+ */
+function applyAdvanceMethod() {
+    const isCash =
+        checked('wizard-advance-received')
+        && value('wizard-advance-method') === 'cash';
+
+    toggle('wizard-advance-collector-field', isCash);
+
+    setValue(
+        'wizard-advance-collector',
+        isCash
+            ? String(document.body.dataset.currentUserName ?? '')
+            : ''
     );
 }
 
@@ -1827,7 +2000,19 @@ function wireControls() {
 
     on('wizard-increment-type', 'change', applyIncrementType);
 
+    on('wizard-fee-type', 'change', applyFeeType);
+
     on('wizard-advance-received', 'change', applyAdvanceReceived);
+
+    on('wizard-advance-method', 'change', applyAdvanceMethod);
+
+    applyCurrencyUnits();
+
+    applyFeeType();
+
+    applyIncrementType();
+
+    applyAdvanceMethod();
 
     on('wizard-duration', 'change', applyDuration);
 
@@ -1926,6 +2111,83 @@ function decimal(id) {
     ) || 0;
 }
 
+/**
+ * A field that holds a percentage on one setting and money on another.
+ *
+ * It has to be read the way it is currently written. A GHS amount is
+ * grouped with commas, and decimal() turns a comma into a decimal point —
+ * so reading a grouped 500,000 as a decimal would send 500 to the server
+ * and nobody would see it happen.
+ *
+ * @param {string} id
+ * @param {boolean} isMoney
+ * @returns {number}
+ */
+function dualValue(id, isMoney) {
+    return isMoney
+        ? integer(id)
+        : decimal(id);
+}
+
+/**
+ * The currency the organisation keeps its books in.
+ *
+ * @returns {string}
+ */
+function currencyLabel() {
+    const configuration = getPresentationConfiguration();
+
+    return String(
+        configuration?.currency_definition?.symbol
+        || configuration?.currency
+        || ''
+    );
+}
+
+/**
+ * Put a field into, or out of, money entry.
+ *
+ * Money is grouped as it is typed; a percentage is left as a plain
+ * number. Switching between them re-reads the digits already there, so
+ * changing the setting never changes the amount.
+ *
+ * @param {string} id
+ * @param {boolean} isMoney
+ */
+function setMoneyMode(id, isMoney) {
+    const input = document.getElementById(id);
+
+    if (! input) {
+        return;
+    }
+
+    const digits = parseMoneyInput(input.value);
+
+    if (isMoney) {
+        input.dataset.moneyInput = 'on';
+
+        input.inputMode = 'numeric';
+
+        input.value = formatMoneyDigits(digits);
+
+        return;
+    }
+
+    input.dataset.moneyInput = 'off';
+
+    input.inputMode = 'decimal';
+}
+
+/**
+ * Write the unit that sits at the end of a field.
+ *
+ * @param {string} id
+ * @param {string} unit
+ */
+function setUnit(id, unit) {
+    setText(id, unit);
+}
+
 function setValue(id, newValue) {
     const element = document.getElementById(id);
 
@@ -1949,11 +2211,23 @@ function toggle(id, visible) {
         .toggle('hidden', ! visible);
 }
 
-function showError(message) {
+/**
+ * Show a refusal, with the code that explains it.
+ *
+ * Every other error box in Patrimoine carries a PM code and core.js turns
+ * it into a link to the page that explains it. This one printed the
+ * sentence alone, so the one screen where a person is most likely to be
+ * stuck was the one screen that would not tell them where to read about
+ * it.
+ *
+ * @param {string} message
+ * @param {string|null} code
+ */
+function showError(message, code = null) {
     const box = document.getElementById('wizard-error');
 
     if (box) {
-        box.textContent = message;
+        box.textContent = messageWithErrorCode(message, code);
 
         box.classList.remove('hidden');
     }

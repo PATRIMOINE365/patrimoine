@@ -536,6 +536,33 @@ html[data-shell-role="administrator"] .shell-admin-only {
     color: var(--pm-danger-text);
 }
 
+/*
+| A number that carries its unit.
+|
+| A field holding 12 is ambiguous — twelve per cent, or twelve thousand
+| cedis? The unit sits inside the field, at the end of the number, so the
+| answer is where the number is rather than in a label above it. The
+| input reserves room for it with pr-14; nothing else may sit there.
+|
+| .pm-input-affix is the positioning context. It must not be given a
+| background of its own: the input paints the field.
+*/
+
+.pm-input-affix {
+    position: relative;
+}
+
+.pm-input-unit {
+    position: absolute;
+    top: 50%;
+    right: 0.875rem;
+    transform: translateY(-50%);
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    font-weight: 500;
+    color: var(--pm-text-subtle);
+    pointer-events: none;
+}
 .pm-input {
     display: block;
     width: 100%;

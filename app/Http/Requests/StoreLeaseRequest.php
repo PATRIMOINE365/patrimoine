@@ -191,11 +191,17 @@ class StoreLeaseRequest extends FormRequest
                 'max:255',
             ],
 
+            /*
+             * NOT required, deliberately. The cashier for a cash advance
+             * is ALWAYS the signed-in user: both LeaseController and
+             * LeaseWizardService overwrite whatever arrives here with
+             * $request->user()->name before anything is written. Asking
+             * for it as well meant the value was demanded and then thrown
+             * away — and the lease assistant, which had no such field on
+             * any of its ten pages, was refused with "The cashier field
+             * is required", naming a field nobody could see or fill.
+             */
             'advance_received_collector' => [
-                Rule::requiredIf(
-                    fn (): bool => $this->boolean('advance_received')
-                        && $this->input('advance_received_method') === 'cash'
-                ),
                 'nullable',
                 'string',
                 'max:255',

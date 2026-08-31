@@ -144,6 +144,7 @@
 </head>
 
 <body
+    data-autofill="off"
     class="
         min-h-screen bg-[var(--pm-page)]
         font-sans text-[var(--pm-text)]

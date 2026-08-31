@@ -666,7 +666,7 @@ export const translations = {
             'Owner',
 
         'wizard.share':
-            'Share (%)',
+            'Share',
 
         'wizard.choose_owner':
             'Choose the owner',
@@ -828,7 +828,7 @@ export const translations = {
             'Received on',
 
         'wizard.advance_method':
-            'Received by',
+            'How it was paid',
 
         'wizard.method_cash':
             'Cash',
@@ -841,6 +841,12 @@ export const translations = {
 
         'wizard.method_mobile_money':
             'Mobile money',
+
+        'wizard.cashier':
+            'Cashier',
+
+        'wizard.cashier_placeholder':
+            'Automatically set to the signed-in user',
 
         'wizard.advance_reference':
             'Reference',
@@ -861,7 +867,7 @@ export const translations = {
             'Fee',
 
         'wizard.fee_vat':
-            'VAT on the fee (%)',
+            'VAT on the fee',
 
         'wizard.fee_vat_help':
             'VAT is charged on your fee and billed to the owner, never on the rent.',
@@ -5021,7 +5027,7 @@ export const translations = {
             'Propriétaire',
 
         'wizard.share':
-            'Part (%)',
+            'Part',
 
         'wizard.choose_owner':
             'Choisir le propriétaire',
@@ -5183,7 +5189,7 @@ export const translations = {
             'Reçue le',
 
         'wizard.advance_method':
-            'Reçue par',
+            'Mode de règlement',
 
         'wizard.method_cash':
             'Espèces',
@@ -5196,6 +5202,12 @@ export const translations = {
 
         'wizard.method_mobile_money':
             'Mobile money',
+
+        'wizard.cashier':
+            'Caissier',
+
+        'wizard.cashier_placeholder':
+            'Renseigne automatiquement l’utilisateur connecté',
 
         'wizard.advance_reference':
             'Référence',
@@ -5216,7 +5228,7 @@ export const translations = {
             'Honoraires',
 
         'wizard.fee_vat':
-            'TVA sur les honoraires (%)',
+            'TVA sur les honoraires',
 
         'wizard.fee_vat_help':
             'La TVA porte sur vos honoraires et est facturée au propriétaire, jamais sur le loyer.',

@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Models\Building;
 use App\Models\Lease;
 use App\Models\Party;
+use App\Models\Payment;
 use App\Models\Unit;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\Concerns\AuthenticatesApiUser;
@@ -24,13 +26,15 @@ class LeaseWizardTest extends TestCase
     use AuthenticatesApiUser;
     use RefreshDatabase;
 
+    private User $wizardUser;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         Mail::fake();
 
-        $this->authenticateApiUser('administrator');
+        $this->wizardUser = $this->authenticateApiUser('administrator');
     }
 
     /**
@@ -577,6 +581,65 @@ class LeaseWizardTest extends TestCase
      * The wizard writes registry and lease records, so it is closed to
      * viewers exactly like the forms it replaces.
      */
+    /**
+     * A cash advance goes through without anybody naming the cashier.
+     *
+     * The assistant has no field for it and never did: the cashier for a
+     * cash advance is always the signed-in user, and both LeaseController
+     * and LeaseWizardService overwrite whatever arrives with that name.
+     * StoreLeaseRequest nevertheless REQUIRED it, and because the wizard
+     * delegates its lease validation to that very request, every cash
+     * advance created through the assistant was refused with "The cashier
+     * field is required" — naming a field that appears on none of its ten
+     * pages.
+     */
+    public function test_a_cash_advance_needs_no_cashier_from_the_client(): void
+    {
+        $response = $this->postJson(
+            '/api/lease-wizard',
+            $this->greenfieldPayload([
+                'lease' => $this->leaseTerms([
+                    'advance_payment_amount' => 300000,
+                    'advance_received' => true,
+                    'advance_received_date' => '2026-09-01',
+                    'advance_received_method' => 'cash',
+                ]),
+            ])
+        );
+
+        $response->assertCreated();
+    }
+
+    /**
+     * And the name recorded is the person who is signed in, whatever the
+     * client sent.
+     */
+    public function test_the_cashier_recorded_is_the_signed_in_user(): void
+    {
+        $this->postJson(
+            '/api/lease-wizard',
+            $this->greenfieldPayload([
+                'lease' => $this->leaseTerms([
+                    'advance_payment_amount' => 300000,
+                    'advance_received' => true,
+                    'advance_received_date' => '2026-09-01',
+                    'advance_received_method' => 'cash',
+                    'advance_received_collector' => 'Somebody Else Entirely',
+                ]),
+            ])
+        )->assertCreated();
+
+        $payment = Payment::query()
+            ->where('is_opening_advance', true)
+            ->latest('id')
+            ->firstOrFail();
+
+        $this->assertSame(
+            $this->wizardUser->name,
+            $payment->cash_receiver_name
+        );
+    }
+
     public function test_viewers_cannot_use_the_wizard(): void
     {
         $this->authenticateApiUser('viewer');
