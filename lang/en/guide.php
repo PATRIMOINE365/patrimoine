@@ -304,6 +304,17 @@ return [
 
             'tasks' => [
 
+                'lease_composition' => [
+                    'title' => 'See a whole letting at once',
+                    'intro' => 'A letting is entered across several pages and then lives in several places. View reads it all back on one screen.',
+                    'who' => 'Everyone',
+                    'steps' => [
+                        ['text' => 'Open Leases and press View on the lease you want.', 'shot' => 'lease-view'],
+                        ['text' => 'The panel holds the property and unit, who owns it and in what shares, the tenant, the agent and their commission, the dates, the rent terms, what is held, the increases and the fee.'],
+                        ['text' => 'It is read-only. Each of these values is changed where it belongs — Edit for the terms, Rent increments for the increases — so there is only ever one place a figure can be altered.'],
+                    ],
+                ],
+
                 'lease_wizard' => [
                     'title' => 'Create a lease with the guided assistant',
                     'intro' => 'The assistant builds a whole letting in one sitting — the property, the unit, the owner, the tenant and the lease itself — asking one thing at a time. It is the recommended way to create your first lease.',
@@ -567,7 +578,7 @@ return [
                         ['text' => 'The available balance is shown. Enter the amount and the date.', 'shot' => 'owner-payout'],
                         ['text' => 'Choose how it was paid and name who authorised it.'],
                         ['text' => 'Press Save. The payout is matched against the earnings it settles, oldest first, and a numbered receipt is produced.'],
-                        ['text' => 'The receipt shows the owner how the figure was reached: everything received since they last collected, what was deducted from it — property expenses, the management fee, the VAT on it, agent commission — and the balance brought forward and carried away. They can check it without asking you for a statement.'],
+                        ['text' => 'The receipt shows the owner how the figure was reached. A summary sits under the amount, and under that every movement since they last collected, itemised: the rent by unit and the period it was for, the fee and the VAT on it, and each expense with its building and date. The three tables add up to the payout, so they can check it without asking you for a statement.'],
                     ],
                 ],
 

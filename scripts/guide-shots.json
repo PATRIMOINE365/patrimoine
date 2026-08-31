@@ -246,6 +246,20 @@
     "settle": 700
   },
   {
+    "id": "lease-view",
+    "path": "/leases",
+    "wait": "#leases-list [data-view-lease]",
+    "settle": 900,
+    "do": [
+      {
+        "click": "#leases-list [data-view-lease]",
+        "wait": "#lease-composition-content:not(.hidden)",
+        "pause": 1100
+      }
+    ],
+    "clip": "#lease-composition-modal .pm-drawer-panel"
+  },
+  {
     "id": "lease-drafts",
     "path": "/leases",
     "wait": "#leases-list",

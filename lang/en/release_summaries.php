@@ -31,7 +31,7 @@ return [
         [
             'through' => '1.0.45',
             'date' => '2026-08-31',
-            'summary' => 'Work since 1.0.40 is described here as it lands.',
+            'summary' => 'An owner\'s payout receipt itemises every movement behind the figure — the rent by unit and period, the fees and the tax on them, and each expense — so they can add it up and arrive at what they were paid. Every lease has a View button that opens the whole letting on one screen.',
         ],
         [
             'through' => '1.0.40',

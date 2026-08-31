@@ -23,7 +23,7 @@ return [
         [
             'through' => '1.0.45',
             'date' => '2026-08-31',
-            'summary' => 'Les travaux postérieurs à la version 1.0.40 sont décrits ici au fur et à mesure.',
+            'summary' => 'Le reçu de versement d\'un propriétaire détaille chaque mouvement derrière le montant — les loyers par lot et par période, les honoraires et la taxe correspondante, et chaque charge — de sorte qu\'il puisse les additionner et retrouver ce qui lui a été versé. Chaque bail dispose d\'un bouton Consulter qui ouvre la location en entier sur un seul écran.',
         ],
         [
             'through' => '1.0.40',

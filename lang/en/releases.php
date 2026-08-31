@@ -19,6 +19,17 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.41',
+            'date' => '2026-08-31',
+            'title' => 'Every transaction behind a payout, and a letting on one screen',
+            'changes' => [
+                'The payout receipt now itemises everything. A summary sits directly under the amount — balance brought forward, total received, total management fees and deductions, total expenses, available to pay out, this payout, balance carried forward — and under it three tables holding every movement since the owner last collected.',
+                'Rent and money received names the unit and the period each payment was for. Management fees and deductions names the fee and the VAT on it, again by unit and period, with agent commission and any adjustment. Expenses recorded names what was spent, on which property, and when. Each table totals itself, and the three totals are the summary lines above, so an owner can add them up and arrive at what they were paid.',
+                'Every lease has a View button, before Financial History. It opens the whole letting on one screen: the property and unit, who owns it and in what shares, the tenant, the agent and their commission, the dates, the rent terms, what is held, the increases and the fee. It is read-only — each of those is changed where it belongs, so a figure has only one place it can be altered.',
+                'An organisation with a long name no longer has that name wrapped across two lines at the top of its invoices, receipts and bills.',
+            ],
+        ],
+        [
             'version' => '1.0.40',
             'date' => '2026-08-31',
             'title' => 'An owner can check their own payout receipt',

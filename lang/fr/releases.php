@@ -15,6 +15,17 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.41',
+            'date' => '2026-08-31',
+            'title' => 'Chaque mouvement derrière un versement, et une location sur un seul écran',
+            'changes' => [
+                'Le reçu de versement détaille désormais tout. Un récapitulatif figure juste sous le montant — solde reporté, total reçu, total des honoraires et retenues, total des charges, disponible au versement, ce versement, solde à reporter — et en dessous trois tableaux contenant chaque mouvement depuis le dernier encaissement du propriétaire.',
+                'Loyers et sommes reçues indique le lot et la période concernée par chaque règlement. Honoraires de gestion et retenues indique les honoraires et la TVA correspondante, là encore par lot et par période, avec la commission de l\\\'agent et les éventuels ajustements. Charges enregistrées indique ce qui a été dépensé, sur quel bien et quand. Chaque tableau fait son total, et ces totaux sont les lignes du récapitulatif : le propriétaire peut les additionner et retrouver ce qui lui a été versé.',
+                'Chaque bail dispose d\\\'un bouton Consulter, avant Historique financier. Il ouvre la location en entier sur un seul écran : le bien et le lot, qui le possède et dans quelles proportions, le locataire, l\\\'agent et sa commission, les dates, les conditions de loyer, les sommes détenues, les augmentations et les honoraires. En lecture seule — chacune de ces valeurs se modifie là où elle appartient, de sorte qu\\\'un montant n\\\'a qu\\\'un seul endroit où être changé.',
+                'Une organisation au nom long ne voit plus ce nom coupé sur deux lignes en tête de ses factures, reçus et notes.',
+            ],
+        ],
+        [
             'version' => '1.0.40',
             'date' => '2026-08-31',
             'title' => 'Un propriétaire peut vérifier lui-même son reçu de versement',

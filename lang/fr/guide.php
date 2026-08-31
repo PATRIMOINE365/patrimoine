@@ -300,6 +300,17 @@ return [
 
             'tasks' => [
 
+                'lease_composition' => [
+                    'title' => 'Voir toute une location d\'un coup',
+                    'intro' => 'Une location se saisit sur plusieurs pages puis vit à plusieurs endroits. Consulter la relit en entier sur un seul écran.',
+                    'who' => 'Tout le monde',
+                    'steps' => [
+                        ['text' => 'Ouvrez Baux et appuyez sur Consulter sur le bail voulu.', 'shot' => 'lease-view'],
+                        ['text' => 'Le panneau contient le bien et le lot, qui le possède et dans quelles proportions, le locataire, l\'agent et sa commission, les dates, les conditions de loyer, les sommes détenues, les augmentations et les honoraires.'],
+                        ['text' => 'Il est en lecture seule. Chacune de ces valeurs se modifie là où elle appartient — Modifier pour les conditions, Augmentations pour les hausses — de sorte qu\'il n\'y a jamais qu\'un seul endroit où changer un montant.'],
+                    ],
+                ],
+
                 'lease_wizard' => [
                     'title' => 'Créer un bail avec l\'assistant',
                     'intro' => 'L\'assistant construit une location complète en une seule fois — le bien, l\'unité, le propriétaire, le locataire et le bail lui-même — en demandant une chose à la fois. C\'est la manière recommandée de créer votre premier bail.',
@@ -563,7 +574,7 @@ return [
                         ['text' => 'Le solde disponible est affiché. Saisissez le montant et la date.', 'shot' => 'owner-payout'],
                         ['text' => 'Choisissez le mode de règlement et indiquez qui l\'a autorisé.'],
                         ['text' => 'Appuyez sur Enregistrer. Le versement est rapproché des produits qu\'il solde, du plus ancien au plus récent, et un bon numéroté est produit.'],
-                        ['text' => 'Le reçu montre au propriétaire comment le montant est obtenu : tout ce qui a été reçu depuis son dernier encaissement, ce qui en a été déduit — charges du bien, honoraires de gestion, TVA sur ces honoraires, commission de l\'agent — ainsi que le solde reporté et le solde à reporter. Il peut le vérifier sans vous demander un relevé.'],
+                        ['text' => 'Le reçu montre au propriétaire comment le montant est obtenu. Un récapitulatif figure sous le montant, et en dessous chaque mouvement depuis son dernier encaissement, détaillé : les loyers par lot et la période concernée, les honoraires et la TVA correspondante, et chaque charge avec son bâtiment et sa date. Les trois tableaux font le versement, si bien qu\'il peut vérifier sans vous demander un relevé.'],
                     ],
                 ],
 
