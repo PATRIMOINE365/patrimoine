@@ -30,10 +30,37 @@
             font-weight: bold;
         }
 
+        /*
+         * 18px rather than 22px, and the cells take a top alignment.
+         *
+         * The header is a two-cell table with no widths, so dompdf shares
+         * the room out by content: a 22px title took enough of it that an
+         * organisation with a long name — "Akwaba Property Management" —
+         * had its name wrapped onto two lines and the title wrapped onto
+         * two beside it, and the two collided.
+         */
+        /*
+         * The header is a two-cell table, and dompdf shares the room out
+         * by content unless it is told otherwise — so an organisation
+         * with a long name wrapped onto two lines and pushed the title
+         * onto two beside it. The cells are given widths and both take a
+         * top alignment.
+         */
+        .header-name {
+            width: 58%;
+            vertical-align: top;
+        }
+
+        .header-title {
+            width: 42%;
+            vertical-align: top;
+        }
+
         .document-title {
-            font-size: 22px;
+            font-size: 16px;
             font-weight: bold;
             text-align: right;
+            vertical-align: top;
         }
 
         .muted {
@@ -273,7 +300,7 @@ $allocatedAmount =
 
 <table>
     <tr>
-        <td>
+        <td class="header-name">
             <div class="brand">
                 {{ $managingOrganisation?->legal_name
                     ?? $managingOrganisation?->name
@@ -312,7 +339,7 @@ $allocatedAmount =
             @endif
         </td>
 
-        <td>
+        <td class="header-title">
             <div class="document-title">
                 {{ __('documents.receipt.heading') }}
             </div>
