@@ -3699,6 +3699,86 @@
 
 
 {{-- ================================================================
+     V1.0.41 The whole letting, on one screen
+
+     Everything a lease is made of is spread across the pages that made
+     it: the property and unit, who owns it and in what shares, the
+     tenant, the agent and their commission, the dates, the rent terms,
+     what is held, the increases and the fee. This reads them back in one
+     place, which is the only view that answers "how was this letting put
+     together" without opening five drawers.
+
+     It is read-only by design. Every one of these values has its own
+     place to be changed, and a second way to edit them is a second way
+     for them to disagree.
+================================================================ --}}
+
+<x-drawer
+    id="lease-composition-modal"
+    backdrop-id="lease-composition-modal-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        title-id="lease-composition-modal-title"
+        description-id="lease-composition-modal-description"
+        close-id="lease-composition-modal-close"
+        close-label="Close"
+        close-label-key="leases.close"
+    >
+        <x-slot:title>
+            <span data-i18n="leases.composition">
+                {{ __('ui.leases.composition') }}
+            </span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="leases.composition_description">
+                {{ __('ui.leases.composition_description') }}
+            </span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <div class="min-h-0 flex-1 overflow-y-auto px-5 py-5">
+        <div
+            id="lease-composition-error"
+            class="
+                mb-5 hidden rounded-lg
+                border border-[var(--pm-danger-border)]
+                bg-[var(--pm-danger-background)] px-4 py-3
+                text-sm text-[var(--pm-danger-text)]
+            "
+        ></div>
+
+        <div
+            id="lease-composition-loading"
+            class="py-12 text-center text-sm text-[var(--pm-text-subtle)]"
+        >
+            <span data-i18n="leases.composition_loading">
+                {{ __('ui.leases.composition_loading') }}
+            </span>
+        </div>
+
+        <div
+            id="lease-composition-content"
+            class="hidden space-y-6"
+        ></div>
+    </div>
+
+    <x-drawer-footer>
+        <button
+            id="lease-composition-close-footer"
+            type="button"
+            class="pm-button-secondary"
+        >
+            <span data-i18n="actions.close">
+                {{ __('ui.actions.close') }}
+            </span>
+        </button>
+    </x-drawer-footer>
+</x-drawer>
+
+
+{{-- ================================================================
      Lease Financial History
 ================================================================ --}}
 

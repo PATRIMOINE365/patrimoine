@@ -2512,6 +2512,21 @@ function leaseCard(lease) {
                 >
                     <button
                         type="button"
+                        data-view-lease
+                        data-lease-id="${escapeHtml(
+                            lease.id
+                        )}"
+                        class="pm-button-secondary pm-button-sm max-sm:flex-1"
+                    >
+                        ${escapeHtml(
+                            translate(
+                                'leases.view'
+                            )
+                        )}
+                    </button>
+
+                    <button
+                        type="button"
                         data-financial-history
                         data-lease-id="${escapeHtml(
                             lease.id
@@ -2735,6 +2750,24 @@ function frequencyLabel(frequency) {
 function attachLeaseActionListeners(
     container
 ) {
+    container
+        .querySelectorAll(
+            '[data-view-lease]'
+        )
+        .forEach(
+            (button) => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        openLeaseComposition(
+                            button.dataset
+                                .leaseId
+                        );
+                    }
+                );
+            }
+        );
+
     container
         .querySelectorAll(
             '[data-financial-history]'
@@ -8524,6 +8557,303 @@ function hideRentIncrementsError() {
 
 /*
 |--------------------------------------------------------------------------
+| The whole letting, read back
+|--------------------------------------------------------------------------
+|
+| Everything a lease is made of is entered across several pages and then
+| lives in several drawers. This reads it back in one place: the property
+| and unit, who owns it and in what shares, the tenant, the agent and
+| their commission, the dates, the rent, what is held, the increases and
+| the fee.
+|
+| The lease itself is already in memory — the list carries every term —
+| so the only thing fetched is the ownership of the building, which
+| belongs to the property rather than to the letting.
+|
+| Read-only on purpose. Each of these values has one place it is changed,
+| and a second place to change it is a second way for two screens to
+| disagree.
+|
+*/
+
+/**
+ * Show one lease in full.
+ *
+ * @param {string} leaseId
+ */
+async function openLeaseComposition(leaseId) {
+    /*
+     * The list keeps every rendered lease by id, so the terms are already
+     * here: opening this drawer costs one request for the ownership and
+     * nothing else.
+     */
+    const lease = loadedLeasesById.get(String(leaseId))
+        ?? loadedLeasesById.get(Number(leaseId));
+
+    if (! lease) {
+        return;
+    }
+
+    const content = document.getElementById('lease-composition-content');
+    const loading = document.getElementById('lease-composition-loading');
+    const error = document.getElementById('lease-composition-error');
+
+    error?.classList.add('hidden');
+    content?.classList.add('hidden');
+    loading?.classList.remove('hidden');
+
+    openDrawer('lease-composition-modal');
+
+    let ownerships = [];
+
+    /*
+     * A failure here is not a failure of the drawer: everything else on
+     * it came with the lease. The ownership section says so rather than
+     * the whole panel refusing to open.
+     */
+    try {
+        const buildingId = lease.building?.id ?? lease.unit?.building_id;
+
+        if (buildingId) {
+            const building = await parseJsonResponse(
+                await apiRequest(`/api/buildings/${buildingId}`)
+            );
+
+            ownerships = building?.ownerships ?? [];
+        }
+    } catch {
+        ownerships = null;
+    }
+
+    if (content) {
+        content.innerHTML = leaseCompositionMarkup(lease, ownerships);
+    }
+
+    loading?.classList.add('hidden');
+    content?.classList.remove('hidden');
+}
+
+/**
+ * One titled group of term/value pairs.
+ *
+ * @param {string} title
+ * @param {Array<[string, string]>} rows
+ * @returns {string}
+ */
+function compositionSection(title, rows) {
+    const printable = rows.filter(
+        ([, value]) => value !== null && value !== undefined && value !== ''
+    );
+
+    if (printable.length === 0) {
+        return '';
+    }
+
+    return `
+        <section>
+            <h3 class="pm-composition-title">
+                ${escapeHtml(title)}
+            </h3>
+
+            <dl class="pm-composition-list">
+                ${printable
+                    .map(
+                        ([term, value]) => `
+                            <div class="pm-composition-row">
+                                <dt>${escapeHtml(term)}</dt>
+                                <dd>${escapeHtml(String(value))}</dd>
+                            </div>
+                        `
+                    )
+                    .join('')}
+            </dl>
+        </section>
+    `;
+}
+
+/**
+ * @param {object} lease
+ * @param {Array<object>|null} ownerships
+ * @returns {string}
+ */
+function leaseCompositionMarkup(lease, ownerships) {
+    const money = (value) => formatCurrency(Number(value ?? 0));
+
+    const date = (value) => (value ? formatDate(value) : '');
+
+    const optionText = (selectId, value) => {
+        const option = document
+            .getElementById(selectId)
+            ?.querySelector(`option[value="${value}"]`);
+
+        return option?.textContent?.trim() ?? value ?? '';
+    };
+
+    const feeValue = lease.management_fee_type === 'percentage'
+        ? `${Number(lease.management_fee_value ?? 0)}%`
+        : (
+            lease.management_fee_type === 'fixed'
+                ? money(lease.management_fee_value)
+                : ''
+        );
+
+    const incrementValue = lease.rent_increment_type === 'percentage'
+        ? `${Number(lease.rent_increment_value ?? 0)}%`
+        : (
+            lease.rent_increment_type === 'fixed'
+                ? money(lease.rent_increment_value)
+                : ''
+        );
+
+    const ownershipRows = ownerships === null
+        ? [[translate('leases.composition_owners'), translate('leases.composition_owners_unavailable')]]
+        : ownerships.map(
+            (ownership) => [
+                ownership.party?.name ?? '—',
+                `${Number(ownership.ownership_percentage ?? 0)}%`,
+            ]
+        );
+
+    return [
+        compositionSection(
+            translate('leases.composition_property'),
+            [
+                [translate('leases.property'), lease.building?.name],
+                [translate('leases.unit'), lease.unit?.name],
+                [translate('leases.reference'), lease.reference],
+                [
+                    translate('leases.status'),
+                    optionText('lease-status', lease.status),
+                ],
+            ]
+        ),
+
+        compositionSection(
+            translate('leases.composition_owners'),
+            ownershipRows
+        ),
+
+        compositionSection(
+            translate('leases.composition_parties'),
+            [
+                [translate('leases.tenant'), lease.tenant?.name],
+                [
+                    translate('leases.agent'),
+                    lease.agent?.name
+                        ?? translate('leases.composition_no_agent'),
+                ],
+                [
+                    translate('leases.agent_commission'),
+                    lease.agent
+                        ? money(lease.agent_commission_amount)
+                        : '',
+                ],
+            ]
+        ),
+
+        compositionSection(
+            translate('leases.composition_dates'),
+            [
+                [translate('leases.start_date'), date(lease.start_date)],
+                [
+                    translate('leases.end_date'),
+                    lease.end_date
+                        ? date(lease.end_date)
+                        : translate('leases.composition_open_ended'),
+                ],
+                [
+                    translate('leases.termination_notice_date'),
+                    date(lease.termination_notice_date),
+                ],
+                [
+                    translate('leases.termination_date'),
+                    date(lease.termination_date),
+                ],
+            ]
+        ),
+
+        compositionSection(
+            translate('leases.composition_rent'),
+            [
+                [translate('leases.rent_amount'), money(lease.rent_amount)],
+                [
+                    translate('leases.payment_frequency'),
+                    optionText('lease-payment-frequency', lease.payment_frequency),
+                ],
+                [translate('leases.due_day'), lease.due_day],
+                [
+                    translate('leases.proration_amount'),
+                    lease.proration_amount === null
+                    || lease.proration_amount === undefined
+                        ? ''
+                        : money(lease.proration_amount),
+                ],
+            ]
+        ),
+
+        compositionSection(
+            translate('leases.composition_held'),
+            [
+                [
+                    translate('leases.security_deposit'),
+                    money(lease.security_deposit_amount),
+                ],
+                [
+                    translate('leases.rent_reserve'),
+                    money(lease.rent_reserve_amount),
+                ],
+                [
+                    translate('leases.advance_payment'),
+                    money(lease.advance_payment_amount),
+                ],
+            ]
+        ),
+
+        compositionSection(
+            translate('leases.composition_increases'),
+            [
+                [
+                    translate('leases.rent_increment_type'),
+                    optionText(
+                        'lease-rent-increment-type',
+                        lease.rent_increment_type
+                    ),
+                ],
+                [translate('leases.rent_increment_value'), incrementValue],
+                [
+                    translate('leases.next_rent_increment_date'),
+                    date(lease.next_rent_increment_date),
+                ],
+            ]
+        ),
+
+        compositionSection(
+            translate('leases.composition_fees'),
+            [
+                [
+                    translate('leases.management_fee'),
+                    optionText(
+                        'lease-management-fee-type',
+                        lease.management_fee_type
+                    ),
+                ],
+                [translate('leases.fee_value'), feeValue],
+                [
+                    translate('leases.vat_rate'),
+                    `${Number(lease.vat_rate ?? 0)}%`,
+                ],
+            ]
+        ),
+
+        compositionSection(
+            translate('leases.composition_notes'),
+            [[translate('leases.notes'), lease.notes]]
+        ),
+    ].join('');
+}
+
+/*
+|--------------------------------------------------------------------------
 | Lease Financial History
 |--------------------------------------------------------------------------
 */
@@ -8532,6 +8862,19 @@ function hideRentIncrementsError() {
  * Register Financial History drawer controls.
  */
 function initializeLeaseFinancialHistoryModal() {
+    [
+        'lease-composition-modal-close',
+        'lease-composition-close-footer',
+        'lease-composition-modal-backdrop',
+    ].forEach((id) => {
+        document
+            .getElementById(id)
+            ?.addEventListener(
+                'click',
+                () => closeDrawer('lease-composition-modal')
+            );
+    });
+
     document
         .getElementById(
             'lease-financial-history-modal-close'

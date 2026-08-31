@@ -94,13 +94,14 @@
          * fits on the page with the receipt above it.
          */
         /*
-         * The workings run to about fifteen rows, and a receipt needing a
-         * second page for its last two lines is a worse document than a
-         * slightly tighter one. Section spacing and row padding are both
-         * pulled in so it holds a single page.
+         * The workings.
+         *
+         * A receipt for a busy month runs to a lot of rows, so these are
+         * pulled tighter than the rest of the document: an owner reading
+         * one wants the whole month on as few pages as it will go.
          */
         .working-section {
-            margin-top: 16px;
+            margin-top: 18px;
         }
 
         .working-table {
@@ -109,20 +110,37 @@
             border-collapse: collapse;
         }
 
-        .working-table td {
-            padding: 2px 0;
+        .working-table td,
+        .working-table th {
+            padding: 3px 0;
             vertical-align: top;
+        }
+
+        .working-table thead th {
+            border-bottom: 1px solid #DDE6E2;
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: left;
+            color: #66736F;
+            padding-bottom: 4px;
+        }
+
+        /* The row number: narrow, quiet, and there to be referred to. */
+        .working-number {
+            width: 22px;
+            color: #66736F;
         }
 
         .working-value {
             text-align: right;
-            width: 30%;
+            width: 24%;
             white-space: nowrap;
         }
 
         .working-total td {
             border-top: 1px solid #DDE6E2;
-            padding-top: 6px;
+            padding-top: 5px;
             font-weight: bold;
         }
 
@@ -132,14 +150,22 @@
             margin-bottom: 2px;
         }
 
-        .reconciliation td {
-            padding: 4px 0;
+        /*
+         * The summary sits directly under the amount, because it is the
+         * thing a person checks first and everything below it is the
+         * evidence for it.
+         */
+        .summary-block {
+            margin-top: 20px;
         }
 
-        .reconciliation .final td {
+        .summary-block .working-total td {
             border-top: 1px solid #DDE6E2;
-            padding-top: 6px;
-            font-weight: bold;
+        }
+
+        .summary-rule td {
+            border-top: 1px solid #DDE6E2;
+            padding-top: 5px;
         }
 
         .footer {
@@ -325,20 +351,15 @@
     {{--
         How the figure above was arrived at.
 
-        The receipt used to show the amount, a count of the ledger rows it
-        consumed, and the balance left, which an owner could not check
-        against anything. This is the period they actually ask about —
-        since they last collected — with what came in, what was taken off,
-        and the arithmetic between the two.
-
-        Totals are the period's own credit and debit sums rather than the
-        sum of the lines printed, so the reconciliation holds even if a
-        movement appears that this receipt does not have a name for; it is
-        printed as "Other".
+        The summary comes first, directly under the amount, because it is
+        what a person checks; the three tables under it are the evidence,
+        and every movement in the period is in exactly one of them. Each
+        table's total is therefore the summary line that names it, and an
+        owner can add the tables up and arrive at the payout.
     --}}
-    <div class="section working-section">
+    <div class="section summary-block">
         <div class="section-title">
-            {{ __('documents.owner_payout_receipt.money_in') }}
+            {{ __('documents.owner_payout_receipt.summary') }}
         </div>
 
         <div class="working-period">
@@ -355,101 +376,36 @@
         </div>
 
         <table class="working-table">
-            @forelse($breakdown['received'] as $line)
-                <tr>
-                    <td>
-                        {{ __('documents.owner_payout_receipt.lines.'.$line['key']) }}
-                    </td>
-
-                    <td class="working-value">
-                        {{ $formatter->money($line['amount']) }}
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="2" class="muted">
-                        {{ __('documents.owner_payout_receipt.nothing_received') }}
-                    </td>
-                </tr>
-            @endforelse
-
-            <tr class="working-total">
-                <td>{{ __('documents.owner_payout_receipt.total_in') }}</td>
-
-                <td class="working-value">
-                    {{ $formatter->money($breakdown['received_total']) }}
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <div class="section working-section">
-        <div class="section-title">
-            {{ __('documents.owner_payout_receipt.deducted') }}
-        </div>
-
-        <table class="working-table">
-            @forelse($breakdown['deducted'] as $line)
-                <tr>
-                    <td>
-                        {{ __('documents.owner_payout_receipt.lines.'.$line['key']) }}
-                    </td>
-
-                    <td class="working-value">
-                        {{ $formatter->money($line['amount']) }}
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="2" class="muted">
-                        {{ __('documents.owner_payout_receipt.nothing_deducted') }}
-                    </td>
-                </tr>
-            @endforelse
-
-            <tr class="working-total">
-                <td>{{ __('documents.owner_payout_receipt.total_deducted') }}</td>
-
-                <td class="working-value">
-                    {{ $formatter->money($breakdown['deducted_total']) }}
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <div class="section working-section">
-        <div class="section-title">
-            {{ __('documents.owner_payout_receipt.reconciliation') }}
-        </div>
-
-        <table class="working-table reconciliation">
             <tr>
                 <td>{{ __('documents.owner_payout_receipt.brought_forward') }}</td>
-
                 <td class="working-value">
                     {{ $formatter->money($breakdown['brought_forward']) }}
                 </td>
             </tr>
 
             <tr>
-                <td>{{ __('documents.owner_payout_receipt.total_in') }}</td>
-
+                <td>{{ __('documents.owner_payout_receipt.total_received') }}</td>
                 <td class="working-value">
                     {{ $formatter->money($breakdown['received_total']) }}
                 </td>
             </tr>
 
             <tr>
-                <td>{{ __('documents.owner_payout_receipt.total_deducted') }}</td>
-
+                <td>{{ __('documents.owner_payout_receipt.total_deductions') }}</td>
                 <td class="working-value">
-                    &minus; {{ $formatter->money($breakdown['deducted_total']) }}
+                    &minus; {{ $formatter->money($breakdown['deductions_total']) }}
+                </td>
+            </tr>
+
+            <tr>
+                <td>{{ __('documents.owner_payout_receipt.total_expenses') }}</td>
+                <td class="working-value">
+                    &minus; {{ $formatter->money($breakdown['expenses_total']) }}
                 </td>
             </tr>
 
             <tr class="working-total">
                 <td>{{ __('documents.owner_payout_receipt.available') }}</td>
-
                 <td class="working-value">
                     {{ $formatter->money($breakdown['available']) }}
                 </td>
@@ -458,30 +414,94 @@
             @if($breakdown['other_payouts'] !== 0)
                 <tr>
                     <td>{{ __('documents.owner_payout_receipt.other_payouts') }}</td>
-
                     <td class="working-value">
                         &minus; {{ $formatter->money($breakdown['other_payouts']) }}
                     </td>
                 </tr>
             @endif
 
-            <tr>
+            <tr class="summary-rule">
                 <td>{{ __('documents.owner_payout_receipt.this_payout') }}</td>
-
                 <td class="working-value">
                     &minus; {{ $formatter->money($breakdown['amount']) }}
                 </td>
             </tr>
 
-            <tr class="final working-total">
+            <tr class="working-total">
                 <td>{{ __('documents.owner_payout_receipt.carried_forward') }}</td>
-
                 <td class="working-value">
                     {{ $formatter->money($breakdown['carried_forward']) }}
                 </td>
             </tr>
         </table>
     </div>
+
+    @foreach([
+        ['rows' => $breakdown['received'],   'total' => $breakdown['received_total'],   'title' => 'received_table',   'empty' => 'nothing_received'],
+        ['rows' => $breakdown['deductions'], 'total' => $breakdown['deductions_total'], 'title' => 'deductions_table', 'empty' => 'nothing_deducted'],
+        ['rows' => $breakdown['expenses'],   'total' => $breakdown['expenses_total'],   'title' => 'expenses_table',   'empty' => 'nothing_spent'],
+    ] as $table)
+        <div class="section working-section">
+            <div class="section-title">
+                {{ __('documents.owner_payout_receipt.'.$table['title']) }}
+            </div>
+
+            <table class="working-table">
+                @if(count($table['rows']) > 0)
+                    <thead>
+                        <tr>
+                            <th class="working-number">
+                                {{ __('documents.owner_payout_receipt.column_number') }}
+                            </th>
+
+                            <th>
+                                {{ __('documents.owner_payout_receipt.column_detail') }}
+                            </th>
+
+                            <th class="working-value" style="text-align:right;">
+                                {{ __('documents.owner_payout_receipt.column_amount') }}
+                            </th>
+                        </tr>
+                    </thead>
+                @endif
+
+                <tbody>
+                    @forelse($table['rows'] as $row)
+                        <tr>
+                            <td class="working-number">{{ $row['number'] }}</td>
+
+                            <td>
+                                @include('documents.partials.payout-row', [
+                                    'row' => $row,
+                                    'formatter' => $formatter,
+                                ])
+                            </td>
+
+                            <td class="working-value">
+                                {{ $formatter->money($row['amount']) }}
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="muted">
+                                {{ __('documents.owner_payout_receipt.'.$table['empty']) }}
+                            </td>
+                        </tr>
+                    @endforelse
+
+                    <tr class="working-total">
+                        <td></td>
+
+                        <td>{{ __('documents.owner_payout_receipt.total') }}</td>
+
+                        <td class="working-value">
+                            {{ $formatter->money($table['total']) }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    @endforeach
 @endif
 
 @if($payout->notes)

@@ -88,33 +88,37 @@ class OwnerPayoutBreakdownTest extends TestCase
         $this->assertNotNull($breakdown);
 
         $this->assertSame(14700, $breakdown['received_total']);
-        $this->assertSame(4214, $breakdown['deducted_total']);
+        $this->assertSame(2114, $breakdown['deductions_total']);
+        $this->assertSame(2100, $breakdown['expenses_total']);
         $this->assertSame(0, $breakdown['brought_forward']);
         $this->assertSame(10486, $breakdown['available']);
         $this->assertSame(10486, $breakdown['amount']);
         $this->assertSame(0, $breakdown['carried_forward']);
 
-        $received = collect($breakdown['received'])
-            ->pluck('amount', 'key')
-            ->all();
-
         $this->assertSame(
-            ['rent_entitlement' => 14200, 'owner_deposits' => 500],
-            $received
+            [14200, 500],
+            collect($breakdown['received'])->pluck('amount')->all(),
+            'Each receipt is its own row, in the order it happened.'
         );
 
-        $deducted = collect($breakdown['deducted'])
-            ->pluck('amount', 'key')
-            ->all();
+        $this->assertSame(
+            [1, 2],
+            collect($breakdown['received'])->pluck('number')->all()
+        );
 
         $this->assertSame(
-            [
-                'expenses' => 2100,
-                'management_fees' => 1704,
-                'management_fee_vat' => 256,
-                'agent_commissions' => 154,
-            ],
-            $deducted
+            ['fee', 'vat', 'commission'],
+            collect($breakdown['deductions'])->pluck('label')->all()
+        );
+
+        $this->assertSame(
+            [1704, 256, 154],
+            collect($breakdown['deductions'])->pluck('amount')->all()
+        );
+
+        $this->assertSame(
+            [2100],
+            collect($breakdown['expenses'])->pluck('amount')->all()
         );
     }
 
@@ -160,7 +164,8 @@ class OwnerPayoutBreakdownTest extends TestCase
          * June payout are inside the brought-forward figure.
          */
         $this->assertSame(6000, $breakdown['received_total']);
-        $this->assertSame(600, $breakdown['deducted_total']);
+        $this->assertSame(600, $breakdown['deductions_total']);
+        $this->assertSame(0, $breakdown['expenses_total']);
         $this->assertSame(4000, $breakdown['brought_forward']);
         $this->assertSame(9400, $breakdown['available']);
         $this->assertSame(0, $breakdown['carried_forward']);
@@ -202,12 +207,14 @@ class OwnerPayoutBreakdownTest extends TestCase
             ->forPayout($payout);
 
         $this->assertSame(5250, $breakdown['received_total']);
-        $this->assertSame(100, $breakdown['deducted_total']);
+        $this->assertSame(100, $breakdown['deductions_total']);
+        $this->assertSame(0, $breakdown['expenses_total']);
 
         $this->assertSame(
             $breakdown['brought_forward']
             + $breakdown['received_total']
-            - $breakdown['deducted_total'],
+            - $breakdown['deductions_total']
+            - $breakdown['expenses_total'],
             $breakdown['available']
         );
 
@@ -249,7 +256,8 @@ class OwnerPayoutBreakdownTest extends TestCase
         $this->assertSame(
             $breakdown['brought_forward']
             + $breakdown['received_total']
-            - $breakdown['deducted_total'],
+            - $breakdown['deductions_total']
+            - $breakdown['expenses_total'],
             $breakdown['available'],
             'Brought forward plus receipts less deductions is not the available figure.'
         );
@@ -267,6 +275,109 @@ class OwnerPayoutBreakdownTest extends TestCase
             $account->fresh()->balance(),
             $breakdown['carried_forward']
         );
+    }
+
+    /**
+     * Every movement in the period is in exactly one table.
+     *
+     * This is what lets an owner add the three tables up and arrive at
+     * the payout. A category that fell into none of them would leave the
+     * summary saying one thing and the evidence under it another.
+     */
+    public function test_every_movement_lands_in_exactly_one_table(): void
+    {
+        $account = $this->createAccount();
+
+        $movements = [
+            ['credit', 'rent_entitlement', 8000],
+            ['credit', 'owner_deposit', 1000],
+            ['credit', 'adjustment', 200],
+            ['credit', 'reserve_transfer', 300],
+            ['debit', 'management_fee', 800],
+            ['debit', 'management_fee_vat', 120],
+            ['debit', 'agent_commission', 240],
+            ['debit', 'adjustment', 60],
+            ['debit', 'reserve_transfer', 80],
+            ['debit', 'expense', 1500],
+        ];
+
+        foreach ($movements as $index => [$direction, $category, $amount]) {
+            $this->movement(
+                $account,
+                $direction,
+                $category,
+                $amount,
+                '2026-08-'.str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT)
+            );
+        }
+
+        $payout = app(OwnerPayoutService::class)->create(
+            $account,
+            5700,
+            '2026-08-20',
+            'cash',
+            'CASH-ALL'
+        );
+
+        $breakdown = app(OwnerPayoutBreakdownService::class)
+            ->forPayout($payout);
+
+        /* Ten movements, and the payout is not one of the ten. */
+        $this->assertCount(4, $breakdown['received']);
+        $this->assertCount(5, $breakdown['deductions']);
+        $this->assertCount(1, $breakdown['expenses']);
+
+        foreach (['received', 'deductions', 'expenses'] as $table) {
+            $this->assertSame(
+                $breakdown[$table.'_total'],
+                collect($breakdown[$table])->sum('amount'),
+                'The '.$table.' table does not add up to its own total.'
+            );
+
+            $this->assertSame(
+                range(1, count($breakdown[$table])),
+                collect($breakdown[$table])->pluck('number')->all(),
+                'The '.$table.' rows are not numbered from one.'
+            );
+        }
+
+        $this->assertSame(
+            $breakdown['brought_forward']
+            + $breakdown['received_total']
+            - $breakdown['deductions_total']
+            - $breakdown['expenses_total'],
+            $breakdown['available']
+        );
+    }
+
+    /**
+     * A rent row names the unit and the period the rent was for.
+     */
+    public function test_a_rent_row_carries_its_unit_and_its_period(): void
+    {
+        $account = $this->createAccount();
+
+        $this->movement($account, 'credit', 'rent_entitlement', 4000, '2026-08-01');
+
+        $payout = app(OwnerPayoutService::class)->create(
+            $account,
+            4000,
+            '2026-08-05',
+            'cash',
+            'CASH-ROW'
+        );
+
+        $row = app(OwnerPayoutBreakdownService::class)
+            ->forPayout($payout)['received'][0];
+
+        /*
+         * Without an invoice behind it there is no period to show, so the
+         * row falls back to the date the money moved rather than printing
+         * an empty range.
+         */
+        $this->assertNull($row['from']);
+        $this->assertSame('2026-08-01', $row['date']);
+        $this->assertArrayHasKey('place', $row);
     }
 
     /**
@@ -293,18 +404,27 @@ class OwnerPayoutBreakdownTest extends TestCase
 
         foreach (
             [
-                'money_in',
-                'deducted',
-                'reconciliation',
+                'summary',
+                'received_table',
+                'deductions_table',
+                'expenses_table',
                 'brought_forward',
+                'total_received',
+                'total_deductions',
+                'total_expenses',
                 'available',
                 'this_payout',
                 'carried_forward',
             ] as $key
         ) {
-            $this->assertStringContainsString(
-                'owner_payout_receipt.'.$key,
-                $markup,
+            /*
+             * The three table headings are composed rather than written
+             * out — the tables share one loop — so the key is looked for
+             * on its own as well as fully qualified.
+             */
+            $this->assertTrue(
+                str_contains($markup, 'owner_payout_receipt.'.$key)
+                || str_contains($markup, "'".$key."'"),
                 'The receipt does not print '.$key.'.'
             );
         }
