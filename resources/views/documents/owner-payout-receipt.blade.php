@@ -474,40 +474,6 @@
     </div>
 @endif
 
-<div class="section">
-    <div class="section-title">
-        {{ __('documents.owner_payout_receipt.payout_details') }}
-    </div>
-
-    <table class="summary-table">
-        <tr>
-            <td class="summary-label">
-                {{ __('documents.owner_payout_receipt.allocations_count') }}
-            </td>
-
-            <td class="summary-value">
-                {{ $payout->allocations->count() }}
-            </td>
-        </tr>
-
-        <tr>
-            <td class="summary-label">
-                {{ __('documents.owner_payout_receipt.current_balance') }}
-            </td>
-
-            <td class="summary-value">
-                {{ $formatter->money(
-                    $ownerBalance
-                ) }}
-            </td>
-        </tr>
-    </table>
-
-    <div class="muted" style="margin-top:6px;">
-        {{ __('documents.owner_payout_receipt.balance_explanation') }}
-    </div>
-</div>
-
 @if($payout->notes)
     <div class="section">
         <div class="section-title">
