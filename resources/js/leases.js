@@ -8681,6 +8681,13 @@ function leaseCompositionMarkup(lease, ownerships) {
 
     const date = (value) => (value ? formatDate(value) : '');
 
+    /*
+     * Enumerations are read from the form's own selects where one exists,
+     * so the drawer says exactly what the form says. Status has no such
+     * select — the list renders it through statusLabel() — and the
+     * frequency select is #lease-frequency, not #lease-payment-frequency,
+     * which is why both were printing their raw database value.
+     */
     const optionText = (selectId, value) => {
         const option = document
             .getElementById(selectId)
@@ -8718,12 +8725,16 @@ function leaseCompositionMarkup(lease, ownerships) {
         compositionSection(
             translate('leases.composition_property'),
             [
-                [translate('leases.property'), lease.building?.name],
+                [
+                    translate('leases.property'),
+                    lease.building?.name
+                        ?? lease.unit?.building?.name,
+                ],
                 [translate('leases.unit'), lease.unit?.name],
                 [translate('leases.reference'), lease.reference],
                 [
                     translate('leases.status'),
-                    optionText('lease-status', lease.status),
+                    statusLabel(lease.status),
                 ],
             ]
         ),
@@ -8762,7 +8773,7 @@ function leaseCompositionMarkup(lease, ownerships) {
                         : translate('leases.composition_open_ended'),
                 ],
                 [
-                    translate('leases.termination_notice_date'),
+                    translate('leases.notice_date'),
                     date(lease.termination_notice_date),
                 ],
                 [
@@ -8775,14 +8786,14 @@ function leaseCompositionMarkup(lease, ownerships) {
         compositionSection(
             translate('leases.composition_rent'),
             [
-                [translate('leases.rent_amount'), money(lease.rent_amount)],
+                [translate('leases.monthly_rent'), money(lease.rent_amount)],
                 [
                     translate('leases.payment_frequency'),
-                    optionText('lease-payment-frequency', lease.payment_frequency),
+                    optionText('lease-frequency', lease.payment_frequency),
                 ],
                 [translate('leases.due_day'), lease.due_day],
                 [
-                    translate('leases.proration_amount'),
+                    translate('leases.proration'),
                     lease.proration_amount === null
                     || lease.proration_amount === undefined
                         ? ''
@@ -8813,15 +8824,15 @@ function leaseCompositionMarkup(lease, ownerships) {
             translate('leases.composition_increases'),
             [
                 [
-                    translate('leases.rent_increment_type'),
+                    translate('leases.increment_type'),
                     optionText(
                         'lease-rent-increment-type',
                         lease.rent_increment_type
                     ),
                 ],
-                [translate('leases.rent_increment_value'), incrementValue],
+                [translate('leases.increment_value'), incrementValue],
                 [
-                    translate('leases.next_rent_increment_date'),
+                    translate('leases.next_increment_date'),
                     date(lease.next_rent_increment_date),
                 ],
             ]
@@ -8838,9 +8849,14 @@ function leaseCompositionMarkup(lease, ownerships) {
                     ),
                 ],
                 [translate('leases.fee_value'), feeValue],
+                /*
+                 * The label is "Management Fee VAT Rate %", so the value
+                 * is the number on its own — "0% " under a heading that
+                 * already ends in one read as two per-cent signs.
+                 */
                 [
                     translate('leases.vat_rate'),
-                    `${Number(lease.vat_rate ?? 0)}%`,
+                    String(Number(lease.vat_rate ?? 0)),
                 ],
             ]
         ),
