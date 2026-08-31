@@ -41,6 +41,7 @@ import {
     nullableFormValue,
     openDrawer,
     parseJsonResponse,
+    removalButton,
     requireDangerConfirmation,
     restoreButton,
     setButtonBusy,
@@ -925,23 +926,24 @@ function partyCard(party) {
 
                     ${dataTools}
 
-                    <button
-                        type="button"
-                        data-delete-party
-                        data-party-id="${escapeHtml(
-                            party.id
-                        )}"
-                        data-party-name="${escapeHtml(
-                            displayName
-                        )}"
-                        class="pm-button-danger-outline pm-party-action max-sm:flex-1"
-                    >
-                        ${escapeHtml(
-                            translate(
-                                'parties.delete'
-                            )
-                        )}
-                    </button>
+                    ${removalButton({
+                        deletable: party.is_deletable !== false,
+                        kind: 'party',
+                        id: party.id,
+                        name: displayName,
+                        className: 'pm-button-secondary pm-party-action max-sm:flex-1',
+                        deleteMarkup: `
+                            <button
+                                type="button"
+                                data-delete-party
+                                data-party-id="${escapeHtml(party.id)}"
+                                data-party-name="${escapeHtml(displayName)}"
+                                class="pm-button-danger-outline pm-party-action max-sm:flex-1"
+                            >
+                                ${escapeHtml(translate('parties.delete'))}
+                            </button>
+                        `,
+                    })}
                 </div>
             </div>
         </article>

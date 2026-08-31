@@ -38,37 +38,10 @@ class BusinessRecordDeletionService
                             ->lockForUpdate()
                             ->firstOrFail();
 
-                    /*
-                     * Managing Organisation is application identity and must
-                     * never be removed through generic Party deletion.
-                     */
-                    if (
-                        ApplicationSetting::query()
-                            ->where(
-                                'managing_organisation_party_id',
-                                $locked->id
-                            )
-                            ->exists()
-                    ) {
-                        return __(
-                            'api.deletion.party_managing_organisation'
-                        );
-                    }
+                    $blocked = $this->partyBlockedReason($locked);
 
-                    /*
-                     * Agent references are checked deliberately even though
-                     * the original FK uses nullOnDelete(). Deleting the Agent
-                     * would otherwise erase who historically acted on a Lease.
-                     */
-                    if (
-                        $locked->tenantLeases()->exists()
-                        || $locked->agentLeases()->exists()
-                        || $locked->buildingOwnerships()->exists()
-                        || $locked->ownerAccount()->exists()
-                    ) {
-                        return __(
-                            'api.deletion.party_referenced'
-                        );
+                    if ($blocked !== null) {
+                        return $blocked;
                     }
 
                     $locked->delete();
@@ -106,28 +79,10 @@ class BusinessRecordDeletionService
                             ->lockForUpdate()
                             ->firstOrFail();
 
-                    /*
-                     * Do not allow the Building FK cascade to silently remove
-                     * Units. Administrators must deliberately deal with each
-                     * Unit first.
-                     */
-                    if ($locked->units()->exists()) {
-                        return __(
-                            'api.deletion.building_has_units'
-                        );
-                    }
+                    $blocked = $this->buildingBlockedReason($locked);
 
-                    if (
-                        DB::table('owner_transactions')
-                            ->where('building_id', $locked->id)
-                            ->exists()
-                        || DB::table('owner_expenses')
-                            ->where('building_id', $locked->id)
-                            ->exists()
-                    ) {
-                        return __(
-                            'api.deletion.building_referenced'
-                        );
+                    if ($blocked !== null) {
+                        return $blocked;
                     }
 
                     $locked->delete();
@@ -156,18 +111,10 @@ class BusinessRecordDeletionService
                             ->lockForUpdate()
                             ->firstOrFail();
 
-                    if (
-                        $locked->leases()->exists()
-                        || DB::table('owner_transactions')
-                            ->where('unit_id', $locked->id)
-                            ->exists()
-                        || DB::table('owner_expenses')
-                            ->where('unit_id', $locked->id)
-                            ->exists()
-                    ) {
-                        return __(
-                            'api.deletion.unit_referenced'
-                        );
+                    $blocked = $this->unitBlockedReason($locked);
+
+                    if ($blocked !== null) {
+                        return $blocked;
                     }
 
                     $locked->delete();
@@ -199,38 +146,10 @@ class BusinessRecordDeletionService
                             ->lockForUpdate()
                             ->firstOrFail();
 
-                    if ($locked->status !== 'draft') {
-                        return __(
-                            'api.deletion.lease_not_draft'
-                        );
-                    }
+                    $blocked = $this->leaseBlockedReason($locked);
 
-                    if (
-                        DB::table('invoices')
-                            ->where('lease_id', $locked->id)
-                            ->exists()
-                        || DB::table('payments')
-                            ->where('lease_id', $locked->id)
-                            ->exists()
-                        || DB::table('tenant_fund_accounts')
-                            ->where('lease_id', $locked->id)
-                            ->exists()
-                        || DB::table('security_deposit_deductions')
-                            ->where('lease_id', $locked->id)
-                            ->exists()
-                        || DB::table('security_deposit_settlements')
-                            ->where('lease_id', $locked->id)
-                            ->exists()
-                        || DB::table('rent_increments')
-                            ->where('lease_id', $locked->id)
-                            ->exists()
-                        || DB::table('owner_transactions')
-                            ->where('lease_id', $locked->id)
-                            ->exists()
-                    ) {
-                        return __(
-                            'api.deletion.lease_referenced'
-                        );
+                    if ($blocked !== null) {
+                        return $blocked;
                     }
 
                     $locked->delete();
@@ -243,5 +162,143 @@ class BusinessRecordDeletionService
                 'api.deletion.lease_referenced'
             );
         }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | May this be deleted?
+    |--------------------------------------------------------------------------
+    |
+    | The same rules the delete methods above enforce, asked as a question.
+    |
+    | They exist because the answer has to be known BEFORE anybody presses
+    | anything: a record that can still be deleted offers Delete, and one
+    | that cannot offers Archive instead. Finding out by attempting the
+    | deletion and reading the refusal would mean the button lied.
+    |
+    | Read-only and unlocked. The delete methods call them again inside
+    | their transaction, holding the row, which is where the answer has to
+    | be authoritative.
+    |
+    */
+
+    /**
+     * Why this record cannot be deleted, or null if it can.
+     */
+    public function blockedReason(object $record): ?string
+    {
+        return match (true) {
+            $record instanceof Party => $this->partyBlockedReason($record),
+            $record instanceof Building => $this->buildingBlockedReason($record),
+            $record instanceof Unit => $this->unitBlockedReason($record),
+            $record instanceof Lease => $this->leaseBlockedReason($record),
+            default => null,
+        };
+    }
+
+    public function isDeletable(object $record): bool
+    {
+        return $this->blockedReason($record) === null;
+    }
+
+    private function partyBlockedReason(Party $party): ?string
+    {
+        /*
+         * Managing Organisation is application identity and must never be
+         * removed through generic Party deletion.
+         */
+        if (
+            ApplicationSetting::query()
+                ->where('managing_organisation_party_id', $party->id)
+                ->exists()
+        ) {
+            return __('api.deletion.party_managing_organisation');
+        }
+
+        /*
+         * Agent references are checked deliberately even though the FK uses
+         * nullOnDelete(). Deleting the Agent would otherwise erase who
+         * historically acted on a Lease.
+         */
+        if (
+            $party->tenantLeases()->exists()
+            || $party->agentLeases()->exists()
+            || $party->buildingOwnerships()->exists()
+            || $party->ownerAccount()->exists()
+        ) {
+            return __('api.deletion.party_referenced');
+        }
+
+        return null;
+    }
+
+    private function buildingBlockedReason(Building $building): ?string
+    {
+        /*
+         * Do not allow the Building FK cascade to silently remove Units.
+         * Administrators must deliberately deal with each Unit first.
+         */
+        if ($building->units()->exists()) {
+            return __('api.deletion.building_has_units');
+        }
+
+        if (
+            DB::table('owner_transactions')
+                ->where('building_id', $building->id)
+                ->exists()
+            || DB::table('owner_expenses')
+                ->where('building_id', $building->id)
+                ->exists()
+        ) {
+            return __('api.deletion.building_referenced');
+        }
+
+        return null;
+    }
+
+    private function unitBlockedReason(Unit $unit): ?string
+    {
+        if (
+            $unit->leases()->exists()
+            || DB::table('owner_transactions')
+                ->where('unit_id', $unit->id)
+                ->exists()
+            || DB::table('owner_expenses')
+                ->where('unit_id', $unit->id)
+                ->exists()
+        ) {
+            return __('api.deletion.unit_referenced');
+        }
+
+        return null;
+    }
+
+    private function leaseBlockedReason(Lease $lease): ?string
+    {
+        if ($lease->status !== 'draft') {
+            return __('api.deletion.lease_not_draft');
+        }
+
+        foreach (
+            [
+                'invoices',
+                'payments',
+                'tenant_fund_accounts',
+                'security_deposit_deductions',
+                'security_deposit_settlements',
+                'rent_increments',
+                'owner_transactions',
+            ] as $table
+        ) {
+            if (
+                DB::table($table)
+                    ->where('lease_id', $lease->id)
+                    ->exists()
+            ) {
+                return __('api.deletion.lease_referenced');
+            }
+        }
+
+        return null;
     }
 }

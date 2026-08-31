@@ -174,6 +174,8 @@ return [
         'unit.updated' => 'Unité modifiée',
         'unit.deleted' => 'Unité supprimée',
 
+        'record.archived' => 'Enregistrement archivé',
+        'record.restored' => 'Enregistrement restauré',
         'lease.created' => 'Bail créé',
         'lease.updated' => 'Bail modifié',
         'lease.deleted' => 'Bail supprimé',

@@ -158,6 +158,7 @@ return [
         'activity_log' => 'Journal d’activité',
         'financial_journal' => 'Journal financier',
         'users' => 'Utilisateurs',
+        'archive' => 'Archives',
         'audit' => 'Audit',
         'platform_console' => 'Administration',
     ],
@@ -287,6 +288,29 @@ return [
      * ACTIONS et l'autre celui de L'ARGENT, et qui consulte l'un fait le
      * même travail que qui consulte l'autre.
      */
+    'archive' => [
+        'title' => 'Archives',
+        'eyebrow' => 'Administration',
+        'heading' => 'Archives',
+        'description' => 'Les enregistrements que Patrimoine refuse de supprimer parce que la comptabilité y fait encore référence, mis de côté. Ils n\'apparaissent plus dans les listes ni dans les menus déroulants servant à créer de nouveaux enregistrements ; tout l\'historique continue de les nommer. Un administrateur peut les restaurer.',
+        'list_title' => 'Enregistrements archivés',
+        'loading' => 'Lecture des archives…',
+        'empty' => 'Rien n\'a été archivé.',
+        'archive' => 'Archiver',
+        'archiving' => 'Archivage…',
+        'archive_failed' => 'Cet enregistrement n\'a pas pu être archivé.',
+        'restore' => 'Restaurer',
+        'restoring' => 'Restauration…',
+        'restore_failed' => 'Cet enregistrement n\'a pas pu être restauré.',
+        'load_failed' => 'Les archives n\'ont pas pu être lues.',
+        'archived_on' => 'Archivé le :date',
+        'by' => 'par :name',
+        'kind_party' => 'Tiers',
+        'kind_building' => 'Bien',
+        'kind_unit' => 'Lot',
+        'kind_lease' => 'Bail',
+    ],
+
     'audit' => [
         'title' => 'Audit',
         'eyebrow' => 'Administration',

@@ -45,12 +45,20 @@ class LeaseController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        /*
+         * V1.0.42: archived records leave the lists and the pickers. The
+         * filter is here rather than in a global scope on purpose — a
+         * scope would reach the reports and the documents too, and a set
+         * of accounts whose totals move when somebody tidies a list is a
+         * set of accounts nobody can trust.
+         */
         $query = Lease::query()
             ->with([
                 'unit.building.ownerships.party',
                 'tenant',
                 'agent',
-            ]);
+            ])
+            ->notArchived();
 
         /*
         * Lease lifecycle filter.
@@ -211,6 +219,12 @@ class LeaseController extends Controller
          * Deliberately unfiltered — the tiles describe the whole portfolio
          * while the paginated list below reflects the active filters.
          */
+        /*
+         * So each row can label its own button: Delete while the record
+         * can still go, Archive once it cannot.
+         */
+        $page->getCollection()->each->append('is_deletable');
+
         $statusCounts = Lease::query()
             ->selectRaw('status, COUNT(*) AS aggregate')
             ->groupBy('status')

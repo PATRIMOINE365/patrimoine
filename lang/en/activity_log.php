@@ -177,6 +177,8 @@ return [
         'unit.updated' => 'Unit Updated',
         'unit.deleted' => 'Unit Deleted',
 
+        'record.archived' => 'Record Archived',
+        'record.restored' => 'Record Restored',
         'lease.created' => 'Lease Created',
         'lease.updated' => 'Lease Updated',
         'lease.deleted' => 'Lease Deleted',

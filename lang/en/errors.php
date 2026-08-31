@@ -1378,6 +1378,12 @@ return [
         'fix' => 'Enter the amount actually being paid out. To correct an earlier withdrawal, use an adjustment rather than a zero.',
     ],
 
+    'PM-3096' => [
+        'title' => 'This record can still be deleted, so there is nothing to archive.',
+        'what' => 'Archiving exists for records Patrimoine will not delete, because the accounting still refers to them. This one has no such history behind it, so it can simply be removed.',
+        'fix' => 'Use Delete instead. If you would rather keep it, leave it where it is — archiving is not a way of tidying records that could be deleted outright.',
+    ],
+
     /* ---- 4xxx ---- */
 
     'PM-4001' => [

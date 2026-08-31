@@ -786,6 +786,106 @@ export function messageWithErrorCode(message, code = null) {
         : `${text} (${resolved})`;
 }
 
+/*
+|--------------------------------------------------------------------------
+| Delete, or Archive
+|--------------------------------------------------------------------------
+|
+| Patrimoine will not delete a record the accounting still refers to, and
+| for years the only way to find that out was to press Delete and read the
+| refusal. So the button told a record's story wrongly right up until the
+| moment somebody acted on it.
+|
+| Each list now asks first — the API sends is_deletable with every row —
+| and the button says the truth: Delete while the record can still go, and
+| Archive once it cannot. The two are alternatives, never both.
+|
+| Archiving is not a deletion and does not ask like one. It takes the
+| record out of the lists and the pickers, changes nothing else, is listed
+| on the archive page and comes back with one press, so putting a modal in
+| front of it would be theatre.
+|
+*/
+
+/**
+ * The button a row should carry to get rid of a record.
+ *
+ * @param {{deletable: boolean, kind: string, id: (string|number), name: string, className: string, deleteMarkup: string}} options
+ * @returns {string}
+ */
+export function removalButton(options) {
+    if (options.deletable) {
+        return options.deleteMarkup;
+    }
+
+    return `
+        <button
+            type="button"
+            data-archive-record
+            data-archive-kind="${escapeHtml(options.kind)}"
+            data-archive-id="${escapeHtml(String(options.id))}"
+            data-archive-name="${escapeHtml(options.name ?? '')}"
+            class="${escapeHtml(options.className)}"
+        >
+            ${escapeHtml(translate('archive.archive'))}
+        </button>
+    `;
+}
+
+/**
+ * One delegated listener for every Archive button in the application.
+ *
+ * Delegated because the rows are drawn and redrawn constantly, and a
+ * listener attached per row would have to be re-attached each time.
+ */
+export function initializeArchiveButtons() {
+    document.addEventListener('click', async (event) => {
+        const button = event.target instanceof Element
+            ? event.target.closest('[data-archive-record]')
+            : null;
+
+        if (! button) {
+            return;
+        }
+
+        setButtonBusy(button, 'archive.archiving');
+
+        try {
+            const response = await apiRequest(
+                `/api/archive/${button.dataset.archiveKind}`
+                + `/${button.dataset.archiveId}`,
+                { method: 'POST' }
+            );
+
+            if (! response.ok) {
+                const payload = await response.json().catch(() => ({}));
+
+                throw new Error(
+                    messageWithErrorCode(
+                        payload?.message ?? translate('archive.archive_failed'),
+                        payload?.code ?? null
+                    )
+                );
+            }
+
+            /*
+             * The row has to leave the list it was archived out of, and
+             * each list rebuilds itself from the server. Reloading is the
+             * one thing that is right for all of them.
+             */
+            window.location.reload();
+        } catch (failure) {
+            restoreButton(button);
+
+            window.alert(
+                failure instanceof Error
+                    ? failure.message
+                    : translate('archive.archive_failed')
+            );
+        }
+    });
+}
+
 /**
  * Turn every code shown on the page into a link to its explanation.
  *

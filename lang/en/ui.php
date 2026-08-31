@@ -159,6 +159,7 @@ return [
         'activity_log' => 'Activity Log',
         'financial_journal' => 'Financial Journal',
         'users' => 'Users',
+        'archive' => 'Archive',
         'audit' => 'Audit',
         'platform_console' => 'Administration',
     ],
@@ -288,6 +289,29 @@ return [
      * the record of MONEY, and somebody checking either is doing the same
      * job.
      */
+    'archive' => [
+        'title' => 'Archive',
+        'eyebrow' => 'Administration',
+        'heading' => 'Archive',
+        'description' => 'Records Patrimoine will not delete because the accounting still refers to them, put out of the way. They no longer appear in the lists or in the dropdowns used to build new records; everything historical still names them. An administrator can put any of them back.',
+        'list_title' => 'Archived records',
+        'loading' => 'Reading the archive…',
+        'empty' => 'Nothing has been archived.',
+        'archive' => 'Archive',
+        'archiving' => 'Archiving…',
+        'archive_failed' => 'That record could not be archived.',
+        'restore' => 'Restore',
+        'restoring' => 'Restoring…',
+        'restore_failed' => 'That record could not be restored.',
+        'load_failed' => 'The archive could not be read.',
+        'archived_on' => 'Archived :date',
+        'by' => 'by :name',
+        'kind_party' => 'Party',
+        'kind_building' => 'Property',
+        'kind_unit' => 'Unit',
+        'kind_lease' => 'Lease',
+    ],
+
     'audit' => [
         'title' => 'Audit',
         'eyebrow' => 'Administration',

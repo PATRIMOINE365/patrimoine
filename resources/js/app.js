@@ -50,9 +50,14 @@ import {
 } from './autofill.js';
 
 import {
+    initializeArchive,
+} from './archive.js';
+
+import {
     applyCachedPresentationLanguage,
     applyTranslations,
     loadPresentationConfiguration,
+    initializeArchiveButtons,
     initializeMoneyInputs,
     initializeErrorCodeLinks,
     initializeNativeValidationMessages,
@@ -189,6 +194,13 @@ document.addEventListener(
         initializeAutofillPolicy();
 
         /*
+         * Archive replaces Delete on any record the accounting
+         * still refers to. One delegated listener covers every
+         * list, because the rows are redrawn constantly.
+         */
+        initializeArchiveButtons();
+
+        /*
          * V1.0.8: live thousands grouping on all monetary inputs,
          * using the organisation currency's separator.
          */
@@ -265,6 +277,8 @@ document.addEventListener(
          */
         initializeErrorCodeLinks();
         initializeNativeValidationMessages();
+
+        await initializeArchive();
 
         await initializeDashboard();
 

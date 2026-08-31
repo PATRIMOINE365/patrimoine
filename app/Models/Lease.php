@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Concerns\Archivable;
 
 /**
  * Represents the contractual agreement for renting one Unit
@@ -21,6 +22,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Lease extends Model
 {
+    use Archivable;
+
     use BelongsToOrganisation;
 
     /**
@@ -87,6 +90,7 @@ class Lease extends Model
     protected function casts(): array
     {
         return [
+            'archived_at' => 'datetime',
             'start_date' => 'date',
             'end_date' => 'date',
             'termination_notice_date' => 'date',

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ArchiveController;
 use App\Http\Controllers\Api\AccountingController;
 use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\Admin\AdminActivityController;
@@ -656,6 +657,45 @@ Route::middleware('auth:sanctum')->group(
                     [UnitController::class, 'destroy']
                 );
 
+                /*
+                 * V1.0.42: archiving.
+                 *
+                 * A record Patrimoine will not delete because the
+                 * accounting refers to it can instead be put out of the
+                 * way. It is the alternative to deletion, so it sits under
+                 * the same capability: whoever may remove a record may
+                 * decide to stop showing it.
+                 */
+                Route::post(
+                    'archive/{kind}/{id}',
+                    [ArchiveController::class, 'store']
+                )->whereNumber('id');
+
+            }
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | The archive
+        |--------------------------------------------------------------------------
+        |
+        | Reading it is ordinary work. Putting something back is not: it
+        | returns a record to every list and every picker in the product,
+        | so it is an administrator's decision.
+        |
+        */
+
+        Route::get(
+            'archive',
+            [ArchiveController::class, 'index']
+        );
+
+        Route::middleware('capability:manage_settings')->group(
+            function (): void {
+                Route::delete(
+                    'archive/{kind}/{id}',
+                    [ArchiveController::class, 'destroy']
+                )->whereNumber('id');
             }
         );
 

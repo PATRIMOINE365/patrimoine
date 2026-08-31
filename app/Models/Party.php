@@ -7,6 +7,7 @@ use App\Models\Concerns\HasTelephoneNumbers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Concerns\Archivable;
 
 /**
  * Represents a person, organisation, or association that interacts
@@ -23,6 +24,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Party extends Model
 {
+    use Archivable;
+
     use BelongsToOrganisation;
     use HasTelephoneNumbers;
 
@@ -54,6 +57,7 @@ class Party extends Model
      * flag is not something a form should be able to set.
      */
     protected $casts = [
+        'archived_at' => 'datetime',
         'erased_at' => 'datetime',
     ];
 

@@ -270,6 +270,12 @@ export const translations = {
             'This value is not one of the steps allowed here.',
         'validation_native.pattern_mismatch':
             'This does not match the form this field expects.',
+        'activity_actions.record.archived':
+            'Record Archived',
+
+        'activity_actions.record.restored':
+            'Record Restored',
+
         'activity_actions.lease.created':
             'Lease Created',
 
@@ -1995,6 +2001,69 @@ export const translations = {
 
         'navigation.financial_journal':
             'Financial Journal',
+
+        'archive.title':
+            'Archive',
+
+        'archive.eyebrow':
+            'Administration',
+
+        'archive.heading':
+            'Archive',
+
+        'archive.description':
+            'Records Patrimoine will not delete because the accounting still refers to them, put out of the way. They no longer appear in the lists or in the dropdowns used to build new records; everything historical still names them. An administrator can put any of them back.',
+
+        'archive.list_title':
+            'Archived records',
+
+        'archive.loading':
+            'Reading the archive…',
+
+        'archive.empty':
+            'Nothing has been archived.',
+
+        'archive.archive':
+            'Archive',
+
+        'archive.archiving':
+            'Archiving…',
+
+        'archive.archive_failed':
+            'That record could not be archived.',
+
+        'archive.restore':
+            'Restore',
+
+        'archive.restoring':
+            'Restoring…',
+
+        'archive.restore_failed':
+            'That record could not be restored.',
+
+        'archive.load_failed':
+            'The archive could not be read.',
+
+        'archive.archived_on':
+            'Archived :date',
+
+        'archive.by':
+            'by :name',
+
+        'archive.kind_party':
+            'Party',
+
+        'archive.kind_building':
+            'Property',
+
+        'archive.kind_unit':
+            'Unit',
+
+        'archive.kind_lease':
+            'Lease',
+
+        'navigation.archive':
+            'Archive',
 
         'navigation.audit':
             'Audit',
@@ -4653,6 +4722,12 @@ export const translations = {
             'Cette valeur ne fait pas partie des pas autorisés ici.',
         'validation_native.pattern_mismatch':
             'Cette valeur ne correspond pas au format attendu.',
+        'activity_actions.record.archived':
+            'Enregistrement archivé',
+
+        'activity_actions.record.restored':
+            'Enregistrement restauré',
+
         'activity_actions.lease.created':
             'Bail créé',
 
@@ -6378,6 +6453,69 @@ export const translations = {
 
         'navigation.financial_journal':
             'Journal financier',
+
+        'archive.title':
+            'Archives',
+
+        'archive.eyebrow':
+            'Administration',
+
+        'archive.heading':
+            'Archives',
+
+        'archive.description':
+            'Les enregistrements que Patrimoine refuse de supprimer parce que la comptabilité y fait encore référence, mis de côté. Ils n\'apparaissent plus dans les listes ni dans les menus déroulants servant à créer de nouveaux enregistrements ; tout l\'historique continue de les nommer. Un administrateur peut les restaurer.',
+
+        'archive.list_title':
+            'Enregistrements archivés',
+
+        'archive.loading':
+            'Lecture des archives…',
+
+        'archive.empty':
+            'Rien n\'a été archivé.',
+
+        'archive.archive':
+            'Archiver',
+
+        'archive.archiving':
+            'Archivage…',
+
+        'archive.archive_failed':
+            'Cet enregistrement n\'a pas pu être archivé.',
+
+        'archive.restore':
+            'Restaurer',
+
+        'archive.restoring':
+            'Restauration…',
+
+        'archive.restore_failed':
+            'Cet enregistrement n\'a pas pu être restauré.',
+
+        'archive.load_failed':
+            'Les archives n\'ont pas pu être lues.',
+
+        'archive.archived_on':
+            'Archivé le :date',
+
+        'archive.by':
+            'par :name',
+
+        'archive.kind_party':
+            'Tiers',
+
+        'archive.kind_building':
+            'Bien',
+
+        'archive.kind_unit':
+            'Lot',
+
+        'archive.kind_lease':
+            'Bail',
+
+        'navigation.archive':
+            'Archives',
 
         'navigation.audit':
             'Audit',

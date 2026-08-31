@@ -6,6 +6,7 @@ use App\Models\Concerns\BelongsToOrganisation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Concerns\Archivable;
 
 /**
  * Represents an individually leasable Unit within a Building.
@@ -18,6 +19,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Unit extends Model
 {
+    use Archivable;
+
     use BelongsToOrganisation;
 
     /**
@@ -38,6 +41,7 @@ class Unit extends Model
     protected function casts(): array
     {
         return [
+            'archived_at' => 'datetime',
             'is_commercial' => 'boolean',
         ];
     }

@@ -23,15 +23,24 @@ class BuildingController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        /*
+         * V1.0.42: archived records leave the lists and the pickers. The
+         * filter is here rather than in a global scope on purpose — a
+         * scope would reach the reports and the documents too, and a set
+         * of accounts whose totals move when somebody tidies a list is a
+         * set of accounts nobody can trust.
+         */
         $query = Building::query()
             ->with([
                 'ownerships.party',
                 'units' => fn ($unitQuery) => $unitQuery
+                    ->notArchived()
                     ->withExists([
                         'leases as is_occupied' => fn ($leaseQuery) => $leaseQuery
                             ->whereIn('status', ['active', 'notice']),
                     ]),
-            ]);
+            ])
+            ->notArchived();
 
         /*
         |--------------------------------------------------------------------------
@@ -101,7 +110,7 @@ class BuildingController extends Controller
             );
         }
 
-        return response()->json(
+        $buildings =
             $query
                 ->orderBy('name')
                 ->paginate(
@@ -109,8 +118,15 @@ class BuildingController extends Controller
                         max((int) $request->input('per_page', 25), 1),
                         100
                     )
-                )
-        );
+                );
+
+        /*
+         * So each row can label its own button: Delete while the record
+         * can still go, Archive once it cannot.
+         */
+        $buildings->getCollection()->each->append('is_deletable');
+
+        return response()->json($buildings);
     }
 
     /**

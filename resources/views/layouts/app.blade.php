@@ -300,6 +300,23 @@
                     />
 
                     {{--
+                        V1.0.42: the archive, after Audit.
+
+                        Records Patrimoine will not delete because the
+                        accounting still refers to them, put out of the way.
+                        It sits here because it is the one place they are
+                        still visible, and nothing should be able to vanish
+                        without somewhere to find it again.
+                    --}}
+                    <x-nav-item
+                        href="/archive"
+                        icon="archive"
+                        label="navigation.archive"
+                        capability="view_operations"
+                        :active="['archive']"
+                    />
+
+                    {{--
                         V1.0.11: platform staff only; revealed by auth.js
                         once /api/auth/me confirms is_platform_admin.
 

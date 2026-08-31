@@ -33,8 +33,16 @@ class PartyController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        /*
+         * V1.0.42: archived records leave the lists and the pickers. The
+         * filter is here rather than in a global scope on purpose — a
+         * scope would reach the reports and the documents too, and a set
+         * of accounts whose totals move when somebody tidies a list is a
+         * set of accounts nobody can trust.
+         */
         $query = Party::query()
-            ->with('roles');
+            ->with('roles')
+            ->notArchived();
 
         if ($request->filled('type')) {
             $query->where('type', $request->string('type'));
@@ -93,6 +101,12 @@ class PartyController extends Controller
                     100
                 )
             );
+
+        /*
+         * So each row can label its own button: Delete while the record
+         * can still go, Archive once it cannot.
+         */
+        $parties->getCollection()->each->append('is_deletable');
 
         return response()->json($parties);
     }

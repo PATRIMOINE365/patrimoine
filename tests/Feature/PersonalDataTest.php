@@ -103,6 +103,13 @@ class PersonalDataTest extends TestCase
                 'type',
                 'email_policy',
                 'erased_at',
+                /*
+                 * Archiving is about whether a record is offered in the
+                 * lists, not about the person: it holds no detail of
+                 * theirs and survives erasure untouched.
+                 */
+                'archived_at',
+                'archived_by_user_id',
                 'created_at',
                 'updated_at',
                 'deleted_at',

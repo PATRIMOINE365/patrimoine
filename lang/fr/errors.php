@@ -1378,6 +1378,12 @@ return [
         'fix' => 'Saisissez le montant réellement versé. Pour corriger un retrait antérieur, utilisez un ajustement plutôt qu’un zéro.',
     ],
 
+    'PM-3096' => [
+        'title' => 'Cet enregistrement peut encore être supprimé : il n\'y a rien à archiver.',
+        'what' => 'L\'archivage existe pour les enregistrements que Patrimoine refuse de supprimer, parce que la comptabilité y fait encore référence. Celui-ci n\'a pas d\'historique de ce genre : il peut simplement être supprimé.',
+        'fix' => 'Utilisez Supprimer. Si vous préférez le conserver, laissez-le où il est — l\'archivage n\'est pas un moyen de ranger des enregistrements qui pourraient être supprimés.',
+    ],
+
     /* ---- 4xxx ---- */
 
     'PM-4001' => [

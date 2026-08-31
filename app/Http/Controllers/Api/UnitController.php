@@ -23,8 +23,16 @@ class UnitController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        /*
+         * V1.0.42: archived records leave the lists and the pickers. The
+         * filter is here rather than in a global scope on purpose — a
+         * scope would reach the reports and the documents too, and a set
+         * of accounts whose totals move when somebody tidies a list is a
+         * set of accounts nobody can trust.
+         */
         $query = Unit::query()
-            ->with('building');
+            ->with('building')
+            ->notArchived();
 
         if ($request->filled('building_id')) {
             $query->where(
@@ -53,7 +61,7 @@ class UnitController extends Controller
             );
         }
 
-        return response()->json(
+        $units =
             $query
                 ->orderBy('building_id')
                 ->orderBy('name')
@@ -62,8 +70,15 @@ class UnitController extends Controller
                         max((int) $request->input('per_page', 25), 1),
                         100
                     )
-                )
-        );
+                );
+
+        /*
+         * So each row can label its own button: Delete while the record
+         * can still go, Archive once it cannot.
+         */
+        $units->getCollection()->each->append('is_deletable');
+
+        return response()->json($units);
     }
 
     /**

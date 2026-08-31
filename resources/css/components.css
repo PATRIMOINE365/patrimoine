@@ -612,6 +612,61 @@ html[data-shell-role="administrator"] .shell-admin-only {
     text-align: right;
 }
 
+/*
+| A row on the archive page.
+|
+| One line per record: what it was called, what kind of thing it is, and
+| when it was put away — with Restore on the right. It reads like the
+| lists it was taken out of, on purpose.
+*/
+
+.pm-archive-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--pm-border-subtle);
+}
+
+.pm-archive-row:last-child {
+    border-bottom: 0;
+}
+
+@media (min-width: 640px) {
+    .pm-archive-row {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.pm-archive-title-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pm-archive-name {
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.pm-archive-context {
+    font-size: var(--text-xs);
+    line-height: 1.125rem;
+    color: var(--pm-text-muted);
+}
+
+.pm-archive-meta {
+    margin-top: 0.25rem;
+    font-size: var(--text-xs);
+    line-height: 1.125rem;
+    color: var(--pm-text-subtle);
+}
+
 .pm-input-affix {
     position: relative;
 }

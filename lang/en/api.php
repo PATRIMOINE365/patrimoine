@@ -162,6 +162,10 @@ return [
         'account_disabled' => 'This account has been disabled.',
     ],
 
+    'archive' => [
+        'not_archivable' => 'This record can still be deleted outright, so there is nothing to archive. Delete it, or leave it where it is.',
+    ],
+
     'deletion' => [
         'lease_confirmation_invalid' => 'Type DELETE exactly to confirm Lease deletion.',
         'lease_cannot_delete' => 'This lease cannot be deleted safely.',

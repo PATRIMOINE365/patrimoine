@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\BelongsToOrganisation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Concerns\Archivable;
 
 /**
  * Represents a physical property/building managed in Patrimoine.
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Building extends Model
 {
+    use Archivable;
+
     use BelongsToOrganisation;
 
     /**
@@ -43,6 +46,7 @@ class Building extends Model
     protected function casts(): array
     {
         return [
+            'archived_at' => 'datetime',
             'latitude' => 'decimal:7',
             'longitude' => 'decimal:7',
         ];

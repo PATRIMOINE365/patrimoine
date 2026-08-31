@@ -31,6 +31,7 @@ import {
     nullableFormValue,
     openDrawer,
     parseJsonResponse,
+    removalButton,
     setText,
     translate,
     requireDangerConfirmation,
@@ -847,7 +848,13 @@ function propertyCard(
                         )}
                     </button>
 
-                    <button
+                    ${removalButton({
+                        deletable: building.is_deletable !== false,
+                        kind: 'building',
+                        id: building.id,
+                        name: buildingName,
+                        className: 'inline-flex min-h-[2.625rem] items-center justify-center gap-2 rounded-lg border border-[var(--pm-border-strong)] bg-[var(--pm-surface)] px-4 py-2.5 text-sm font-semibold text-[var(--pm-text-secondary)] transition hover:bg-[var(--pm-surface-muted)]',
+                        deleteMarkup: `                    <button
                         type="button"
                         data-delete-building
                         data-building-id="${escapeHtml(
@@ -875,7 +882,8 @@ function propertyCard(
                                 'properties.delete'
                             )
                         )}
-                    </button>
+                    </button>`,
+                    })}
 
                     <button
                         type="button"

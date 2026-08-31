@@ -162,6 +162,10 @@ return [
         'account_disabled' => 'Ce compte a été désactivé.',
     ],
 
+    'archive' => [
+        'not_archivable' => 'Cet enregistrement peut encore être supprimé définitivement : il n\'y a donc rien à archiver. Supprimez-le, ou laissez-le où il est.',
+    ],
+
     'deletion' => [
         'lease_confirmation_invalid' => 'Saisissez exactement DELETE pour confirmer la suppression du bail.',
         'lease_cannot_delete' => 'Ce bail ne peut pas être supprimé en toute sécurité.',

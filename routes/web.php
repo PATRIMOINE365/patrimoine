@@ -233,3 +233,12 @@ Route::view(
     '/admin',
     'app.admin'
 )->name('admin');
+
+/*
+ * V1.0.42: the archive. Records Patrimoine will not delete, put out of
+ * the way, and the one place they are still visible.
+ */
+Route::view(
+    '/archive',
+    'app.archive'
+)->name('archive');

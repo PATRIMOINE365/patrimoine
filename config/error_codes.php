@@ -1219,6 +1219,11 @@ return [
             'severity' => 'fix_yourself',
             'keys' => ['business.tenant_fund_withdrawal.amount_positive'],
         ],
+        'PM-3096' => [
+            'family' => 3,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.archive.not_archivable'],
+        ],
 
         /* ---- 4xxx money ---- */
 

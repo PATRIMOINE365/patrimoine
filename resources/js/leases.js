@@ -36,6 +36,7 @@ import {
     openDrawer,
     openPdfInNewTab,
     parseJsonResponse,
+    removalButton,
     setText,
     translate,
     parseMoneyInput,
@@ -2533,7 +2534,13 @@ function leaseCard(lease) {
                             : ''
                     }
 
-                    <button
+                    ${removalButton({
+                        deletable: lease.is_deletable !== false,
+                        kind: 'lease',
+                        id: lease.id,
+                        name: `${building} / ${unit}`,
+                        className: 'pm-button-secondary pm-button-sm max-sm:flex-1',
+                        deleteMarkup: `                    <button
                         type="button"
                         data-delete-lease
                         data-lease-id="${escapeHtml(
@@ -2546,7 +2553,8 @@ function leaseCard(lease) {
                                 'leases.delete'
                             )
                         )}
-                    </button>
+                    </button>`,
+                    })}
                 </div>
             </div>
         </article>
