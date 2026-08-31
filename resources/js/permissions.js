@@ -128,6 +128,16 @@ const CAPABILITY_SELECTORS = {
     ],
 
     /*
+     * Every role carries view_operations, so this gate never hides
+     * anything today — but a selector with no entry here is hidden
+     * FOREVER, because nothing ever comes along to reveal it. The archive
+     * page was, until this was added.
+     */
+    view_operations: [
+        '[data-requires-capability="view_operations"]',
+    ],
+
+    /*
      * All three fixed roles currently carry export_reports, so this is a
      * forward-looking gate: report export clusters declare the capability
      * declaratively and hide automatically if a future role loses it.
