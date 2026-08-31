@@ -645,14 +645,27 @@ textarea.pm-input {
  * often refused over. Marked wrong, it has to look wrong.
  */
 .pm-input[aria-invalid='true'],
-.pm-input.pm-input-invalid,
-.pm-phone-number[aria-invalid='true'] {
+.pm-input.pm-input-invalid {
     border-color: var(--pm-danger-solid);
 }
 
 .pm-input[aria-invalid='true']:focus,
-.pm-input.pm-input-invalid:focus,
-.pm-phone-number[aria-invalid='true']:focus {
+.pm-input.pm-input-invalid:focus {
+    box-shadow: var(--pm-ring-error);
+}
+
+/*
+ * The telephone number is the one field in Patrimoine that is not a
+ * .pm-input: it is the number half of the country-and-number control,
+ * and it has no border of its own — .pm-phone draws it. So marking the
+ * input wrong has to reach the box around it, or nothing changes on
+ * screen for one of the three fields the assistant most often refuses.
+ */
+.pm-phone:has(.pm-phone-number[aria-invalid='true']) {
+    border-color: var(--pm-danger-solid);
+}
+
+.pm-phone:has(.pm-phone-number[aria-invalid='true']:focus) {
     box-shadow: var(--pm-ring-error);
 }
 

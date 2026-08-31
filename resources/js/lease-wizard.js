@@ -1361,7 +1361,7 @@ function reportValidationErrors(payload) {
 
 /** What a party field is called on the screen. */
 const PARTY_FIELD_ELEMENTS = {
-    name: 'given-names',
+    name: ['given-names', 'surname'],
     given_names: 'given-names',
     surname: 'surname',
     legal_name: 'legal-name',
@@ -1396,18 +1396,27 @@ const LEASE_FIELD_ELEMENTS = {
 };
 
 /**
- * The element a rejected key belongs to, if it has one.
+ * The element or elements a rejected key belongs to, if any.
  *
  * @param {string} key
- * @returns {HTMLElement|null}
+ * @returns {HTMLElement|Array<HTMLElement>|null}
  */
 function elementForErrorKey(key) {
+    /*
+     * A person's name is sent as one string built from two boxes, so a
+     * rejected `name` belongs to both of them.
+     */
     const party = (prefix, field) => {
-        const name = PARTY_FIELD_ELEMENTS[field];
+        const names = PARTY_FIELD_ELEMENTS[field];
 
-        return name
-            ? document.getElementById(`${prefix}-${name}`)
-            : null;
+        if (! names) {
+            return null;
+        }
+
+        return [names]
+            .flat()
+            .map((name) => document.getElementById(`${prefix}-${name}`))
+            .filter(Boolean);
     };
 
     if (key.startsWith('building.attributes.')) {
@@ -1486,6 +1495,7 @@ function markRejectedFields(keys) {
 
     const marked = keys
         .map(elementForErrorKey)
+        .flat()
         .filter(Boolean);
 
     marked.forEach((element) => {

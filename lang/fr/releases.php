@@ -15,6 +15,21 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.39',
+            'date' => '2026-08-31',
+            'title' => 'L’assistant de bail se lit correctement, et le navigateur cesse de remplir les champs',
+            'changes' => [
+                'Chaque montant de l’assistant de bail est groupé pendant la saisie et porte sa devise : 1 250 000 FCFA plutôt que 1250000. Aucun de ses champs monétaires ne le faisait, si bien que le loyer, le dépôt, la réserve, l’avance et la commission de l’agent se lisaient comme une suite de chiffres — et 1250000 et 125000 se ressemblent au premier coup d’œil.',
+                'Les honoraires de gestion et l’augmentation de loyer désignent un pourcentage dans un cas et un montant dans l’autre, sans jamais le dire. Ils affichent désormais % ou votre devise à la fin du champ, et suivent le réglage au-dessus. La TVA et la part d’un propriétaire sortent leur % de l’intitulé pour le poser sur le nombre.',
+                'La dernière page — celle dont tout l’objet est d’être relue avant que quoi que ce soit ne soit créé — présente chaque montant comme le reste de Patrimoine, et affiche la réserve de loyer, qu’elle omettait purement et simplement.',
+                'Enregistrer une avance reçue en espèces n’échoue plus. L’opération était refusée avec « Le champ caissier est obligatoire », en nommant un champ qui ne figurait sur aucune des dix pages de l’assistant. Le caissier est toujours la personne connectée : il est donc affiché — comme le formulaire de bail le faisait déjà — et non demandé.',
+                'Quand l’assistant refuse quelque chose, il donne le code qui l’explique, comme tous les autres messages de Patrimoine, et encadre les champs concernés au lieu de vous laisser les chercher sur une page de onze cases.',
+                '« Reçue par » était l’intitulé de la liste Espèces, Virement, Chèque. C’est désormais « Mode de règlement », et reçue par désigne une personne.',
+                'Un champ que vous ne pouvez pas modifier en a maintenant l’air. Cinq d’entre eux — le caissier et les montants calculés des écrans propriétaire et locataire — étaient dessinés exactement comme des champs modifiables.',
+                'Votre navigateur ne remplit plus les formulaires à l’intérieur de Patrimoine. Il peut toujours le faire sur les pages de connexion et d’inscription, où il remplit VOS informations ; partout ailleurs les champs contiennent celles de quelqu’un d’autre — le téléphone d’un locataire, le courriel d’un propriétaire — et une valeur enregistrée qui atterrit dans leur fiche est une erreur que personne ne voit se produire. L’extension d’un gestionnaire de mots de passe n’est pas le navigateur et peut encore remplir ce qu’elle veut.',
+            ],
+        ],
+        [
             'version' => '1.0.38',
             'date' => '2026-08-30',
             'title' => 'Audit, et quatre choses qui n’allaient pas',

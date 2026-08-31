@@ -314,6 +314,7 @@ return [
                         ['text' => 'Indiquez la date de début et soit une durée, soit une date de fin. Les dates se saisissent au format de votre organisation, avec le calendrier Patrimoine à côté du champ.', 'shot' => 'wizard-dates'],
                         ['text' => 'Indiquez le préavis, si la location en prévoit un.'],
                         ['text' => 'Saisissez le loyer, sa périodicité, et le dépôt de garantie s\'il y en a un.', 'shot' => 'wizard-rent'],
+                        ['text' => 'Si l\'avance a déjà été reçue, indiquez quand et par quel moyen. Lorsqu\'elle a été reçue en espèces, le caissier est la personne connectée, et Patrimoine le renseigne lui-même.'],
                         ['text' => 'Indiquez les honoraires de gestion, la commission d\'agent et toute augmentation de loyer programmée.'],
                         ['text' => 'Lisez la page de révision. Elle présente en une seule liste tout ce qui va être créé.', 'shot' => 'wizard-review'],
                         ['text' => 'Appuyez sur Enregistrer et activer. Tout est créé ensemble ; rien n\'est enregistré avant ce moment.'],

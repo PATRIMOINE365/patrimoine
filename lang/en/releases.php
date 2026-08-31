@@ -19,6 +19,21 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.39',
+            'date' => '2026-08-31',
+            'title' => 'The lease assistant reads properly, and the browser stops filling things in',
+            'changes' => [
+                'Every amount in the lease assistant is grouped as you type it and says what currency it is: 1,250,000 GH₵ rather than 1250000. Not one of its money fields did this, so the rent, the deposit, the reserve, the advance and the agent’s commission were all read as a run of digits — and 1250000 and 125000 look alike at a glance.',
+                'The management fee and the rent increase each mean a percentage on one setting and an amount on another, and said which nowhere. They now show % or your currency at the end of the box, and change with the setting. VAT and an owner’s share take their % out of the label and put it on the number.',
+                'The last page — the one whose whole job is to be read back before anything is created — shows every amount the way the rest of Patrimoine does, and shows the rent reserve, which it had been leaving out altogether.',
+                'Recording an advance that came in as cash no longer fails. It was refused with “The cashier field is required”, naming a field that appeared on none of the assistant’s ten pages. The cashier is always whoever is signed in, so it is now shown — the way the lease form already showed it — rather than asked for.',
+                'When the assistant refuses something it gives you the code that explains it, as every other message in Patrimoine does, and rings the fields it is talking about instead of leaving you to find them on a page of eleven boxes.',
+                '“Received by” was the label on the list that says Cash, Bank transfer, Cheque. It is “How it was paid” now, and Received by is a person.',
+                'A field you cannot type in now looks like one. Five of them — the cashier, and the calculated figures on the owner and tenant screens — were drawn exactly like fields you can edit.',
+                'Your browser no longer fills in forms inside Patrimoine. It still may on the sign-in and sign-up pages, where it is filling in YOUR details; everywhere else the boxes hold somebody else’s — a tenant’s telephone number, an owner’s e-mail address — and a saved value landing in their record is a mistake nobody sees happen. A password manager’s own extension is not the browser and can still fill what it likes.',
+            ],
+        ],
+        [
             'version' => '1.0.38',
             'date' => '2026-08-30',
             'title' => 'Audit, and four things that were not sitting right',
