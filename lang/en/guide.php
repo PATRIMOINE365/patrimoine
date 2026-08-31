@@ -192,7 +192,7 @@ return [
                     'who' => 'Administrators and Property Managers',
                     'steps' => [
                         ['text' => 'Press Edit on the building to change its name, address or ownership.'],
-                        ['text' => 'Press Delete to remove it. Patrimoine tells you exactly what would go with it before anything happens.', 'shot' => 'property-delete'],
+                        ['text' => 'Press Delete to remove it. Patrimoine tells you exactly what would go with it before anything happens. The button only says Delete while nothing refers to the property — once something does, it says Archive instead.'],
                         ['text' => 'A building with units that have ever been let cannot be deleted. Nor can a unit with a lease behind it.'],
                         ['text' => 'Confirm to delete. There is no undo.'],
                     ],
@@ -268,6 +268,7 @@ return [
                     'intro' => 'Erasure destroys the person, not the accounts. Everything identifying goes for good; the invoices and journal entries stay and refer to them by a reference instead of a name.',
                     'who' => 'Administrators',
                     'steps' => [
+                        ['text' => 'Erase is hidden unless an administrator has switched the data-protection tools on in Settings, under Preferences. Do that first.'],
                         ['text' => 'Open Parties, find the person, and press Erase.', 'shot' => 'party-erase'],
                         ['text' => 'Read what goes: name, email address, telephone numbers, postal address, identity and registration numbers, bank details and notes. All of it, permanently.'],
                         ['text' => 'Read what stays: the invoices, payments and journal entries. The law that requires those kept is the same law that lets you refuse to destroy them, so they remain \u2014 naming the person only as "Erased party #248".'],
@@ -415,7 +416,7 @@ return [
                     'who' => 'Administrators and Property Managers',
                     'steps' => [
                         ['text' => 'Open the lease and find the danger zone at the foot of the page.'],
-                        ['text' => 'Press Delete. Patrimoine lists exactly what the deletion would take with it.', 'shot' => 'lease-delete'],
+                        ['text' => 'Press Delete. Patrimoine lists exactly what the deletion would take with it. Only a draft lease that has taken no money can be deleted; any other says Archive instead.'],
                         ['text' => 'Confirm if the list is empty. If it is not, the lease stays and the reason is named.'],
                     ],
                 ],

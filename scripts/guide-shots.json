@@ -146,20 +146,6 @@
     "clip": "#existing-unit-modal .pm-drawer-panel"
   },
   {
-    "id": "property-delete",
-    "path": "/properties",
-    "wait": "#properties-list",
-    "settle": 400,
-    "do": [
-      {
-        "click": "[data-delete-building]",
-        "wait": "#delete-property-modal.pm-drawer-active",
-        "pause": 900
-      }
-    ],
-    "clip": "#delete-property-modal .pm-drawer-panel"
-  },
-  {
     "id": "parties-list",
     "path": "/parties",
     "wait": "#parties-list",
@@ -320,20 +306,6 @@
       }
     ],
     "clip": "#lease-financial-history-modal .pm-drawer-panel"
-  },
-  {
-    "id": "lease-delete",
-    "path": "/leases",
-    "wait": "#leases-list",
-    "settle": 400,
-    "do": [
-      {
-        "click": "[data-delete-lease]",
-        "wait": "#lease-delete-modal.pm-drawer-active",
-        "pause": 900
-      }
-    ],
-    "clip": "#lease-delete-modal .pm-drawer-panel"
   },
   {
     "id": "rent-increment",

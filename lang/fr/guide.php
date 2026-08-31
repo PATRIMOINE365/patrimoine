@@ -188,7 +188,7 @@ return [
                     'who' => 'Administrateurs et Gestionnaires immobiliers',
                     'steps' => [
                         ['text' => 'Appuyez sur Modifier sur l\'immeuble pour changer son nom, son adresse ou sa propriété.'],
-                        ['text' => 'Appuyez sur Supprimer pour le retirer. Patrimoine vous dit exactement ce qui disparaîtrait avec lui avant que rien ne se produise.', 'shot' => 'property-delete'],
+                        ['text' => 'Appuyez sur Supprimer pour le retirer. Patrimoine vous dit exactement ce qui disparaîtrait avec lui avant que rien ne se produise. Le bouton n\'indique Supprimer que tant que rien ne fait référence au bien — dès que quelque chose le fait, il indique Archiver.'],
                         ['text' => 'Un immeuble dont des unités ont déjà été louées ne peut pas être supprimé. Ni une unité derrière laquelle il y a un bail.'],
                         ['text' => 'Confirmez pour supprimer. Il n\'y a pas de retour en arrière.'],
                     ],
@@ -264,6 +264,7 @@ return [
                     'intro' => 'L’effacement détruit la personne, pas les comptes. Tout ce qui identifie disparaît définitivement ; les factures et les écritures demeurent et la désignent par une référence plutôt que par un nom.',
                     'who' => 'Administrateurs',
                     'steps' => [
+                        ['text' => 'Effacer est masqué tant qu\'un administrateur n\'a pas activé les outils de protection des données dans les Paramètres, sous Préférences. Faites-le d\'abord.'],
                         ['text' => 'Ouvrez Parties, trouvez la personne et appuyez sur Effacer.', 'shot' => 'party-erase'],
                         ['text' => 'Lisez ce qui disparaît : nom, adresse e-mail, numéros de téléphone, adresse postale, numéros d’identité et d’immatriculation, coordonnées bancaires et notes. Tout cela, définitivement.'],
                         ['text' => 'Lisez ce qui reste : les factures, les paiements et les écritures du journal. La loi qui impose de les conserver est celle-là même qui vous autorise à refuser de les détruire : ils demeurent, ne désignant la personne que par « Erased party #248 ».'],
@@ -411,7 +412,7 @@ return [
                     'who' => 'Administrateurs et Gestionnaires immobiliers',
                     'steps' => [
                         ['text' => 'Ouvrez le bail et repérez la zone de danger au bas de la page.'],
-                        ['text' => 'Appuyez sur Supprimer. Patrimoine énumère exactement ce que la suppression emporterait.', 'shot' => 'lease-delete'],
+                        ['text' => 'Appuyez sur Supprimer. Patrimoine énumère exactement ce que la suppression emporterait. Seul un bail au brouillon n\'ayant reçu aucun règlement peut être supprimé ; tout autre indique Archiver.'],
                         ['text' => 'Confirmez si la liste est vide. Si elle ne l\'est pas, le bail reste et la raison est nommée.'],
                     ],
                 ],
