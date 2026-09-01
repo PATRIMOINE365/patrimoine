@@ -796,6 +796,12 @@
     "settle": 900
   },
   {
+    "id": "devices",
+    "path": "/settings#devices",
+    "wait": "#devices-list [data-revoke-device]",
+    "settle": 1200
+  },
+  {
     "id": "users-list",
     "path": "/settings#users",
     "wait": "#users-list",
