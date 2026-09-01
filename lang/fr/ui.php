@@ -175,6 +175,29 @@ return [
     /*
      * V1.0.31 profile photographs.
      */
+    /*
+     * V1.0.48 : le changement d'adresse e-mail de connexion en trois
+     * étapes.
+     */
+    'email_change' => [
+        'open_button' => 'Changer d\'adresse',
+        'title' => 'Changer d\'adresse e-mail',
+        'description' => 'Trois étapes rapides : votre mot de passe, un code envoyé à votre adresse actuelle, puis un code envoyé à la nouvelle.',
+        'new_email_label' => 'Nouvelle adresse e-mail',
+        'current_password_label' => 'Mot de passe actuel',
+        'keep_active_note' => 'Votre adresse actuelle restera active jusqu\'à la fin de la vérification.',
+        'current_step_note' => 'Nous avons envoyé un code à votre adresse e-mail actuelle. En le saisissant, vous confirmez autoriser le remplacement de votre adresse de connexion par celle ci-dessous.',
+        'new_step_note' => 'Presque terminé. Nous avons envoyé un code à la nouvelle adresse ; en le saisissant, vous prouvez que cette boîte est bien la vôtre.',
+        'proposed_label' => 'Nouvelle adresse :',
+        'code_label' => 'Code de confirmation',
+        'resend_button' => 'Renvoyer le code',
+        'code_expiry_note' => 'Le code expire au bout de 10 minutes.',
+        'done_note' => 'Adresse e-mail mise à jour. Utilisez la nouvelle adresse lors de votre prochaine connexion.',
+        'cancel_button' => 'Annuler',
+        'start_button' => 'Envoyer le code',
+        'verify_button' => 'Vérifier',
+    ],
+
     'profile' => [
         /* ---- V1.0.34 data protection ---- */
         'download_data' => 'Télécharger mes données',

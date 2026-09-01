@@ -96,6 +96,19 @@ return [
                     ],
                 ],
 
+                'change_email' => [
+                    'title' => 'Changer votre adresse e-mail de connexion',
+                    'intro' => 'L\'adresse avec laquelle vous vous connectez reçoit aussi vos codes de connexion et vos réinitialisations de mot de passe. La changer prend donc trois courtes étapes : votre mot de passe, un code envoyé à votre adresse actuelle, puis un code envoyé à la nouvelle. Votre adresse actuelle continue de fonctionner jusqu\'à la fin des trois étapes.',
+                    'steps' => [
+                        ['text' => 'Appuyez sur votre photographie ou vos initiales en haut à droite, puis sur Modifier le profil.'],
+                        ['text' => 'Appuyez sur Changer d\'adresse à côté de votre adresse.'],
+                        ['text' => 'Saisissez la nouvelle adresse et votre mot de passe, puis appuyez sur Envoyer le code. Un code à six chiffres part vers votre adresse ACTUELLE, en nommant la nouvelle pour que vous voyiez exactement ce que vous approuvez.'],
+                        ['text' => 'Saisissez ce code. Un second code, différent, part alors vers la NOUVELLE adresse pour prouver que la boîte est bien la vôtre.'],
+                        ['text' => 'Saisissez le second code. L\'adresse change, tous les appareils sont déconnectés sauf celui-ci, et une confirmation est envoyée à votre ancienne adresse.'],
+                    ],
+                    'after' => 'Chaque code dure dix minutes et peut être renvoyé quelques fois. Si vous ne pouvez plus du tout ouvrir votre ancienne boîte, écrivez à l\'assistance depuis les Réglages — l\'équipe de la plateforme pourra vous aider après avoir vérifié votre identité.',
+                ],
+
                 'paging_lists' => [
                     'title' => 'Lire une longue liste',
                     'intro' => 'Toute liste de plus de 25 lignes s\'affiche page par page.',

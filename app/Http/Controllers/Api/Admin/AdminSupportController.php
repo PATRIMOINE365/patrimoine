@@ -409,6 +409,83 @@ class AdminSupportController extends Controller
         ], 201);
     }
 
+    /**
+     * Change a customer user's sign-in email — the one deliberate
+     * bypass of the three-step verified flow, for the person who can no
+     * longer reach their old mailbox.
+     *
+     * The write goes through EmailChangeService::applyForSupport, the
+     * same single write path as the self-service flow: availability and
+     * the reserved-domain rule hold, every session dies with the old
+     * address, and the old mailbox is told. Recorded in BOTH audit
+     * trails like every other console action on a customer.
+     */
+    public function changeEmail(
+        int $userId,
+        Request $request,
+        \App\Services\EmailChangeService $emailChanges,
+        \App\Services\ActivityLogService $activityLog,
+        PlatformAuditService $audit
+    ): JsonResponse {
+        $validated = $request->validate([
+            'email' => ['required', 'email', 'max:255'],
+        ]);
+
+        [$user, $organisation] = $this->customerUser($userId);
+
+        $previousEmail = $user->email;
+
+        \App\Support\OrganisationContext::runAs(
+            (int) $organisation->id,
+            function () use ($emailChanges, $user, $validated): void {
+                $emailChanges->applyForSupport(
+                    $user,
+                    $validated['email']
+                );
+            }
+        );
+
+        $user->refresh();
+
+        /*
+         * The customer's own activity log says what happened inside
+         * their organisation; the platform log says which staff member
+         * did it. Same dual-trail shape as every support tool here.
+         */
+        $activityLog->record(
+            action: 'user.email_changed',
+            request: $request,
+            entityType: 'user',
+            entityId: $user->id,
+            entityLabel: $user->name,
+            before: ['email' => $previousEmail],
+            after: ['email' => $user->email],
+            metadata: [
+                'performed_by_platform_staff' => true,
+            ],
+            organisationId: (int) $organisation->id,
+        );
+
+        $audit->record(
+            action: 'platform.user_email_changed',
+            admin: $request->user(),
+            request: $request,
+            customerOrganisation: $organisation,
+            entityType: 'user',
+            entityId: $user->id,
+            entityLabel: $user->name,
+            metadata: [
+                'from' => $previousEmail,
+                'to' => $user->email,
+            ],
+        );
+
+        return response()->json([
+            'message' => 'Email changed. Both addresses have been notified.',
+            'email' => $user->email,
+        ]);
+    }
+
     private function customerUser(int $userId): array
     {
         $user = User::withoutGlobalScopes()->findOrFail($userId);

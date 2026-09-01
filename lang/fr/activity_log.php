@@ -163,6 +163,8 @@ return [
         'user.password_reset' => 'Réinitialisation du mot de passe effectuée',
 
         'user.password_changed' => 'Mot de passe modifié',
+        'user.email_change_requested' => 'Changement d\'adresse e-mail demandé',
+        'user.email_changed' => 'Adresse e-mail modifiée',
 
         'party.created' => 'Partie créée',
         'party.updated' => 'Partie modifiée',

@@ -327,6 +327,30 @@ class UserController extends Controller
         $validated = $request->validated();
 
         /*
+         * V1.0.48: nobody rewrites a colleague's sign-in email.
+         *
+         * This endpoint used to put a submitted email straight onto the
+         * user row — no password, no verification, verified status kept —
+         * which let any organisation administrator point a colleague's
+         * sign-in and recovery at any mailbox they liked. The account
+         * holder changes their own address through the verified
+         * three-step flow; a customer who lost their mailbox goes
+         * through platform support. An unchanged email still passes so
+         * existing edit forms that echo the field keep working.
+         */
+        if (
+            filled($validated['email'] ?? null)
+            && mb_strtolower(trim((string) $validated['email']))
+                !== mb_strtolower((string) $user->email)
+        ) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => [
+                    __('api.email_change.administrator_locked'),
+                ],
+            ]);
+        }
+
+        /*
          * Freeze the original public User state before any part of the
          * compound update executes. One HTTP update produces at most one
          * Activity Log event regardless of how many fields changed.
@@ -347,13 +371,18 @@ class UserController extends Controller
                  * sends them instead of `name`, so omitting them meant an
                  * edit silently kept the old name.
                  */
+                /*
+                 * email is deliberately absent: an unchanged value was
+                 * allowed through validation above, and writing it back
+                 * would be a no-op — while a changed one was already
+                 * refused. Neither belongs in the update.
+                 */
                 $identity = array_intersect_key(
                     $validated,
                     array_flip([
                         'name',
                         'given_names',
                         'surname',
-                        'email',
                         'phone',
                         'phone_country',
                     ])

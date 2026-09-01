@@ -164,6 +164,27 @@ return [
         'account_disabled' => 'Ce compte a été désactivé.',
     ],
 
+    /*
+     * V1.0.48 : le changement d'adresse de connexion en trois étapes.
+     * Le mot de passe d'abord, puis un code envoyé à la boîte actuelle,
+     * puis un code envoyé à la nouvelle. Rien d'autre ne peut modifier
+     * une adresse.
+     */
+    'email_change' => [
+        'locked' => 'Votre adresse e-mail de connexion se modifie par les étapes « Changer d\'adresse e-mail », où la nouvelle adresse est d\'abord vérifiée.',
+        'administrator_locked' => 'L\'adresse e-mail de connexion d\'un collègue ne peut pas être modifiée ici. Il la modifie lui-même depuis son profil, et l\'assistance de la plateforme peut aider lorsque l\'ancienne boîte est inaccessible.',
+        'same_address' => 'C\'est déjà l\'adresse e-mail de ce compte.',
+        'address_taken' => 'Cette adresse e-mail est déjà utilisée par un autre compte.',
+        'request_expired' => 'Cette demande de changement d\'adresse n\'est plus ouverte. Recommencez depuis votre profil.',
+        'code_invalid' => 'Ce code n\'est pas le bon. Vérifiez le dernier e-mail que nous vous avons envoyé.',
+        'resend_cooldown' => 'Un code vient d\'être envoyé. Patientez une minute avant d\'en demander un autre.',
+        'resend_limit' => 'Plus aucun code ne peut être envoyé pour cette demande. Recommencez depuis votre profil.',
+        'code_sent_current' => 'Un code de confirmation a été envoyé à votre adresse e-mail actuelle.',
+        'code_sent_proposed' => 'Un code de confirmation a été envoyé à la nouvelle adresse e-mail.',
+        'completed' => 'Adresse e-mail mise à jour. Utilisez :email lors de votre prochaine connexion.',
+        'cancelled' => 'Le changement d\'adresse e-mail a été annulé. Votre adresse reste inchangée.',
+    ],
+
     'archive' => [
         'not_archivable' => 'Cet enregistrement peut encore être supprimé définitivement : il n\'y a donc rien à archiver. Supprimez-le, ou laissez-le où il est.',
         'lease_not_terminated' => 'Ce bail est toujours en cours : il ne peut donc pas être archivé. Résiliez-le d’abord : la résiliation règle le dernier loyer, libère le dépôt de garantie et arrête la facturation. L’archivage retire seulement l’enregistrement des listes.',

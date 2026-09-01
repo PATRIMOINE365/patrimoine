@@ -74,6 +74,8 @@ let openEmail = null;
 /** The customer user whose role is being changed. */
 let roleTargetUserId = null;
 
+let emailChangeTargetUserId = null;
+
 /** Which customer record set the organisation page is showing. */
 let currentDataset = 'leases';
 
@@ -1148,6 +1150,59 @@ function openCustomerUserDrawer() {
     openDrawer('admin-customer-user-modal');
 }
 
+/*
+ * V1.0.48: staff set a customer's sign-in email — the support path for
+ * a lost mailbox. The server keeps every invariant (availability, the
+ * reserved domain, session revocation, notification of both addresses).
+ */
+async function submitSupportEmailChange() {
+    const errorBox =
+        document.getElementById('admin-email-change-error');
+
+    const button =
+        document.getElementById('admin-email-change-submit');
+
+    errorBox?.classList.add('hidden');
+
+    if (! emailChangeTargetUserId) {
+        return;
+    }
+
+    if (button) {
+        button.disabled = true;
+    }
+
+    try {
+        await adminRequest(
+            `/api/admin/users/${emailChangeTargetUserId}/email`,
+            'PATCH',
+            {
+                email: document
+                    .getElementById('admin-email-change-input')
+                    .value.trim(),
+            }
+        );
+
+        closeDrawer('admin-email-change-modal');
+
+        if (currentOrganisation) {
+            await openOrganisation(currentOrganisation.id);
+        }
+    } catch (error) {
+        if (errorBox) {
+            errorBox.textContent = error instanceof Error
+                ? error.message
+                : 'The email could not be changed.';
+
+            errorBox.classList.remove('hidden');
+        }
+    } finally {
+        if (button) {
+            button.disabled = false;
+        }
+    }
+}
+
 async function submitRoleChange() {
     const errorBox = document.getElementById('admin-role-error');
     const button = document.getElementById('admin-role-submit');
@@ -1488,6 +1543,7 @@ async function openOrganisation(id) {
                             </button>
                             <button type="button" class="text-[var(--pm-accent)]" data-admin-pwreset="${user.id}">Password reset</button>
                             <button type="button" class="text-[var(--pm-accent)]" data-admin-role="${user.id}" data-admin-role-current="${escapeHtml(String(user.role))}" data-admin-role-name="${escapeHtml(user.name)}">Change role</button>
+                            <button type="button" class="text-[var(--pm-accent)]" data-admin-emailchange="${user.id}" data-admin-emailchange-name="${escapeHtml(user.name)}" data-admin-emailchange-email="${escapeHtml(user.email)}">Change email</button>
                         </span>
                     </td>
                 </tr>
@@ -1756,13 +1812,16 @@ async function submitProfile(event) {
     clearProfileFeedback();
 
     try {
+        /*
+         * V1.0.48: no email in this payload — the address is read-only
+         * here and moves only through the verified three-step flow in
+         * the main application's profile.
+         */
         const data = await adminRequest('/api/auth/me', 'PATCH', {
             given_names:
                 document.getElementById('admin-profile-given').value.trim(),
             surname:
                 document.getElementById('admin-profile-surname').value.trim(),
-            email:
-                document.getElementById('admin-profile-email').value.trim(),
             phone:
                 readPhoneValue('admin-profile-phone').number,
             phone_country:
@@ -1810,9 +1869,6 @@ async function submitPassword(event) {
             surname:
                 document.getElementById('admin-profile-surname').value.trim()
                 || currentUser.surname,
-            email:
-                document.getElementById('admin-profile-email').value.trim()
-                || currentUser.email,
             phone:
                 readPhoneValue('admin-profile-phone').number,
             phone_country:
@@ -2649,6 +2705,64 @@ export async function initializeAdmin() {
 
             openDrawer('admin-role-modal');
         });
+
+    /*
+     * V1.0.48: staff-side email change, the support bypass of the
+     * three-step flow. Same drawer pattern as the role change above.
+     */
+    document
+        .getElementById('admin-detail-users')
+        ?.addEventListener('click', (event) => {
+            const trigger = event.target.closest('[data-admin-emailchange]');
+
+            if (! trigger) {
+                return;
+            }
+
+            emailChangeTargetUserId =
+                Number(trigger.dataset.adminEmailchange);
+
+            const who =
+                document.getElementById('admin-email-change-who');
+
+            if (who) {
+                who.textContent =
+                    `${trigger.dataset.adminEmailchangeName} · ${trigger.dataset.adminEmailchangeEmail}`;
+            }
+
+            const input =
+                document.getElementById('admin-email-change-input');
+
+            if (input) {
+                input.value = '';
+            }
+
+            document
+                .getElementById('admin-email-change-error')
+                ?.classList.add('hidden');
+
+            openDrawer('admin-email-change-modal');
+        });
+
+    document
+        .getElementById('admin-email-change-form')
+        ?.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            await submitSupportEmailChange();
+        });
+
+    for (const id of [
+        'admin-email-change-cancel',
+        'admin-email-change-close',
+        'admin-email-change-backdrop',
+    ]) {
+        document
+            .getElementById(id)
+            ?.addEventListener(
+                'click',
+                () => closeDrawer('admin-email-change-modal')
+            );
+    }
 
     document
         .getElementById('admin-role-form')

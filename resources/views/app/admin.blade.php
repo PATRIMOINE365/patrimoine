@@ -734,7 +734,15 @@
 
                 <div>
                     <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-profile-email">Email address</label>
-                    <input id="admin-profile-email" type="email" class="pm-input" required>
+                    {{--
+                        V1.0.48: read-only. A sign-in email changes only
+                        through the verified three-step flow in the main
+                        application's profile drawer.
+                    --}}
+                    <input id="admin-profile-email" type="email" class="pm-input" readonly>
+                    <p class="mt-2 text-xs text-[var(--pm-text-muted)]">
+                        Changed from the main application's profile, where the new address is verified first.
+                    </p>
                     <p class="mt-1.5 text-xs text-[var(--pm-text-muted)]">
                         Staff accounts stay on @patrimoine365.com.
                     </p>
@@ -1066,6 +1074,50 @@
         <x-drawer-footer>
             <button id="admin-role-cancel" type="button" class="pm-button-secondary">Cancel</button>
             <button id="admin-role-submit" type="submit" class="pm-button-primary">Save role</button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+
+{{--
+    V1.0.48: the one deliberate bypass of the three-step email flow — a
+    customer who cannot reach their old mailbox writes to support, and
+    staff set the new address here. Both mailboxes are notified and both
+    audit trails record it.
+--}}
+<x-drawer
+    id="admin-email-change-modal"
+    backdrop-id="admin-email-change-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="admin-email-change-close"
+        close-label="Close"
+    >
+        <x-slot:title>Change email</x-slot:title>
+        <x-slot:description>
+            For a customer who can no longer reach their old mailbox.
+            Every session is signed out, the new address is treated as
+            verified, and both addresses are notified — so verify the
+            request really comes from the account holder first.
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form id="admin-email-change-form" class="flex min-h-0 flex-1 flex-col">
+        <div class="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6">
+            <div id="admin-email-change-error" class="hidden rounded-xl border border-[var(--pm-danger-border)] bg-[var(--pm-danger-background)] px-4 py-3 text-sm text-[var(--pm-danger-text)]"></div>
+
+            <div id="admin-email-change-who" class="text-sm text-[var(--pm-text-muted)]"></div>
+
+            <div>
+                <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-email-change-input">New email address</label>
+                <input id="admin-email-change-input" type="email" maxlength="255" class="pm-input" required>
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button id="admin-email-change-cancel" type="button" class="pm-button-secondary">Cancel</button>
+            <button id="admin-email-change-submit" type="submit" class="pm-button-primary">Change email</button>
         </x-drawer-footer>
     </form>
 </x-drawer>

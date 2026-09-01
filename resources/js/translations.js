@@ -171,6 +171,12 @@ export const translations = {
         'activity_actions.user.password_changed':
             'Password Changed',
 
+        'activity_actions.user.email_change_requested':
+            'Email Change Requested',
+
+        'activity_actions.user.email_changed':
+            'Email Changed',
+
         'activity_actions.party.created':
             'Party Created',
 
@@ -4590,6 +4596,60 @@ export const translations = {
         'pagination.current_page':
             'Page :page, current page',
 
+        'email_change.open_button':
+            'Change email',
+
+        'email_change.title':
+            'Change email',
+
+        'email_change.description':
+            'Three quick steps: your password, a code to your current address, then a code to the new one.',
+
+        'email_change.new_email_label':
+            'New email address',
+
+        'email_change.current_password_label':
+            'Current password',
+
+        'email_change.keep_active_note':
+            'Your current email will stay active until you finish verification.',
+
+        'email_change.current_step_note':
+            'We sent a code to your current email address. Entering it confirms you authorise changing your sign-in email to the address below.',
+
+        'email_change.new_step_note':
+            'Almost done. We sent a code to the new address; entering it proves the mailbox is yours.',
+
+        'email_change.proposed_label':
+            'New address:',
+
+        'email_change.code_label':
+            'Confirmation code',
+
+        'email_change.resend_button':
+            'Resend code',
+
+        'email_change.code_expiry_note':
+            'The code expires after 10 minutes.',
+
+        'email_change.done_note':
+            'Email updated. Use the new address the next time you sign in.',
+
+        'email_change.cancel_button':
+            'Cancel',
+
+        'email_change.start_button':
+            'Send code',
+
+        'email_change.verify_button':
+            'Verify',
+
+        'email_change.missing_fields':
+            'Enter the new address and your current password.',
+
+        'email_change.missing_code':
+            'Enter the six-digit code.',
+
         'profile.download_data':
             'Download my data',
         'profile.download_data_help':
@@ -4871,6 +4931,12 @@ export const translations = {
 
         'activity_actions.user.password_changed':
             'Mot de passe modifié',
+
+        'activity_actions.user.email_change_requested':
+            'Changement d\'adresse e-mail demandé',
+
+        'activity_actions.user.email_changed':
+            'Adresse e-mail modifiée',
 
         'activity_actions.party.created':
             'Partie créée',
@@ -8033,6 +8099,60 @@ export const translations = {
 
         'pagination.current_page':
             'Page :page, page actuelle',
+
+        'email_change.open_button':
+            'Changer d’adresse',
+
+        'email_change.title':
+            'Changer d’adresse e-mail',
+
+        'email_change.description':
+            'Trois étapes rapides : votre mot de passe, un code envoyé à votre adresse actuelle, puis un code envoyé à la nouvelle.',
+
+        'email_change.new_email_label':
+            'Nouvelle adresse e-mail',
+
+        'email_change.current_password_label':
+            'Mot de passe actuel',
+
+        'email_change.keep_active_note':
+            'Votre adresse actuelle restera active jusqu’à la fin de la vérification.',
+
+        'email_change.current_step_note':
+            'Nous avons envoyé un code à votre adresse e-mail actuelle. En le saisissant, vous confirmez autoriser le remplacement de votre adresse de connexion par celle ci-dessous.',
+
+        'email_change.new_step_note':
+            'Presque terminé. Nous avons envoyé un code à la nouvelle adresse ; en le saisissant, vous prouvez que cette boîte est bien la vôtre.',
+
+        'email_change.proposed_label':
+            'Nouvelle adresse :',
+
+        'email_change.code_label':
+            'Code de confirmation',
+
+        'email_change.resend_button':
+            'Renvoyer le code',
+
+        'email_change.code_expiry_note':
+            'Le code expire au bout de 10 minutes.',
+
+        'email_change.done_note':
+            'Adresse e-mail mise à jour. Utilisez la nouvelle adresse lors de votre prochaine connexion.',
+
+        'email_change.cancel_button':
+            'Annuler',
+
+        'email_change.start_button':
+            'Envoyer le code',
+
+        'email_change.verify_button':
+            'Vérifier',
+
+        'email_change.missing_fields':
+            'Saisissez la nouvelle adresse et votre mot de passe actuel.',
+
+        'email_change.missing_code':
+            'Saisissez le code à six chiffres.',
 
         'profile.download_data':
             'Télécharger mes données',

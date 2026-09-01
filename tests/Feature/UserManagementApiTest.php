@@ -408,12 +408,28 @@ class UserManagementApiTest extends TestCase
                 'before@example.test'
             );
 
+        /*
+         * V1.0.48: a different email is refused here — the address moves
+         * only through the account holder's own verified flow. The rest
+         * of the identity still updates normally.
+         */
+        $this
+            ->patchJson(
+                "/api/users/{$target->id}",
+                [
+                    'email' => 'AFTER@EXAMPLE.TEST',
+                ]
+            )
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'email',
+            ]);
+
         $this
             ->patchJson(
                 "/api/users/{$target->id}",
                 [
                     'name' => 'After Name',
-                    'email' => 'AFTER@EXAMPLE.TEST',
                     'phone' => '+233244000003',
                     'phone_country' => 'GH',
                     'role' => UserRole::Viewer->value,
@@ -427,7 +443,7 @@ class UserManagementApiTest extends TestCase
             )
             ->assertJsonPath(
                 'email',
-                'after@example.test'
+                'before@example.test'
             )
             ->assertJsonPath(
                 'phone',

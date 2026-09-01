@@ -307,6 +307,54 @@ return [
         'fix' => 'Copy the name exactly as the record shows it, including capital letters, spaces and punctuation. If you did not mean to erase anybody, close this panel instead.',
     ],
 
+    'PM-1043' => [
+        'title' => 'Your sign-in email is changed through its own steps.',
+        'what' => 'The address you sign in with also receives your sign-in codes and password resets, so replacing it needs more proof than an ordinary profile edit: your password, then a code to your current mailbox, then a code to the new one.',
+        'fix' => 'Open your profile and use the Change email button. The three steps take about a minute, and your current address keeps working until they are done.',
+    ],
+
+    'PM-1044' => [
+        'title' => 'A colleague\'s sign-in email cannot be changed for them.',
+        'what' => 'The sign-in address decides where a person\'s codes and password resets go, so only the account holder — proving both mailboxes — may move it. An administrator editing it for somebody else would bypass that proof.',
+        'fix' => 'Ask the colleague to change it themselves from their profile. If they can no longer reach their old mailbox, write to support and platform staff will help.',
+    ],
+
+    'PM-1045' => [
+        'title' => 'That is already the address on the account.',
+        'what' => 'The new address you entered is the same as the one the account already uses, so there is nothing to change.',
+        'fix' => 'Enter the address you want to move to, or close the dialog if the current one is right.',
+    ],
+
+    'PM-1046' => [
+        'title' => 'That address already belongs to an account.',
+        'what' => 'Every account has its own sign-in address, and the one you entered is already in use.',
+        'fix' => 'Choose a different address. If you believe the other account is yours, sign in to it instead, or write to support.',
+    ],
+
+    'PM-1047' => [
+        'title' => 'This email change is no longer open.',
+        'what' => 'A change request stays open for a short time and closes after too many wrong codes, after expiry, or when a newer request replaces it. Whatever closed this one, no step of it can be answered any more — and your address has not changed.',
+        'fix' => 'Start again from your profile. The new request sends fresh codes.',
+    ],
+
+    'PM-1048' => [
+        'title' => 'That code is not the one we sent.',
+        'what' => 'The code must match the most recent email exactly. After three wrong answers the whole request closes and the address stays as it was.',
+        'fix' => 'Open the most recent code email and copy the six digits exactly. If it has been more than ten minutes, use Resend code.',
+    ],
+
+    'PM-1049' => [
+        'title' => 'A code was sent moments ago.',
+        'what' => 'Codes can only be re-sent once a minute, so a mistyped address cannot flood anybody\'s inbox.',
+        'fix' => 'Wait a minute, check the mailbox — including spam — and then use Resend code if it still has not arrived.',
+    ],
+
+    'PM-1050' => [
+        'title' => 'This request has used all its codes.',
+        'what' => 'Each change request can re-send its codes a few times; after that it refuses to send more, in case the address is wrong or the mailbox is not yours.',
+        'fix' => 'Start the change again from your profile and check the address carefully before sending.',
+    ],
+
     /* ---- 2xxx ---- */
 
     'PM-2001' => [

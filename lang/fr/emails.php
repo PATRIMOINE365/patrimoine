@@ -183,6 +183,45 @@ return [
         'ignore' => 'Si vous n\'avez pas tenté de vous connecter, nous vous recommandons de changer votre mot de passe immédiatement.',
     ],
 
+    /*
+     * V1.0.48 : le changement d'adresse e-mail en trois étapes. La
+     * boîte actuelle autorise le changement ; la nouvelle prouve
+     * qu'elle existe ; l'ancienne est prévenue quand c'est terminé.
+     */
+    'email_change_current' => [
+        'subject' => ':code est votre code de changement d\'adresse Patrimoine 365',
+        'title' => 'Confirmez votre changement d\'adresse',
+        'preheader' => 'Un changement de votre adresse de connexion a été demandé.',
+        'heading' => 'Confirmez votre changement d\'adresse',
+        'greeting' => 'Bonjour :name,',
+        'introduction' => 'Une demande a été faite pour remplacer votre adresse de connexion Patrimoine 365 par :proposed. Utilisez le code ci-dessous pour confirmer que vous autorisez ce changement.',
+        'unchanged' => 'Votre adresse actuelle reste active tant que toutes les étapes du changement ne sont pas terminées.',
+        'expiry' => 'Ce code expire dans :minutes minutes et ne peut être utilisé qu\'une seule fois.',
+        'not_you' => 'Si vous n\'avez pas demandé ce changement, ne partagez ce code avec personne. Changez votre mot de passe immédiatement et écrivez à :support.',
+    ],
+
+    'email_change_proposed' => [
+        'subject' => ':code est votre code de confirmation d\'adresse Patrimoine 365',
+        'title' => 'Confirmez votre nouvelle adresse e-mail',
+        'preheader' => 'Confirmez cette boîte pour terminer le changement d\'adresse.',
+        'heading' => 'Confirmez votre nouvelle adresse e-mail',
+        'greeting' => 'Bonjour :name,',
+        'introduction' => 'Cette boîte, :proposed, a été proposée comme nouvelle adresse de connexion d\'un compte Patrimoine 365. Saisissez le code ci-dessous pour confirmer que vous recevez bien les e-mails ici et terminer le changement.',
+        'expiry' => 'Ce code expire dans :minutes minutes et ne peut être utilisé qu\'une seule fois.',
+        'ignore' => 'Si vous n\'attendiez pas cet e-mail, vous pouvez l\'ignorer en toute sécurité — rien ne change sans ce code.',
+    ],
+
+    'email_change_completed' => [
+        'subject' => 'Votre adresse de connexion Patrimoine 365 a changé',
+        'title' => 'Votre adresse de connexion a changé',
+        'preheader' => 'L\'adresse e-mail de votre compte a été mise à jour.',
+        'heading' => 'Votre adresse de connexion a changé',
+        'greeting' => 'Bonjour :name,',
+        'introduction' => 'L\'adresse de connexion de votre compte Patrimoine 365 est passée de :previous à :new.',
+        'sign_in' => 'Toutes les sessions ouvertes ont été déconnectées. Utilisez la nouvelle adresse lors de votre prochaine connexion ; les codes et les réinitialisations de mot de passe y sont désormais envoyés.',
+        'not_you' => 'Si vous n\'êtes pas à l\'origine de ce changement, écrivez immédiatement à :support depuis cette adresse afin que nous puissions sécuriser le compte.',
+    ],
+
     'plans' => [
         'free' => 'Gratuit',
         'standard' => 'Standard',

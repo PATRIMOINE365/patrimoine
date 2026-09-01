@@ -73,9 +73,14 @@ class LeaseDeletionService
             $currentPassword === ''
             || ! Hash::check($currentPassword, $actor->password)
         ) {
+            /*
+             * V1.0.48: api.auth.password_confirmation_failed — the key
+             * used before this resolved in no catalogue, so the refusal
+             * printed a raw translation key instead of PM-1007's words.
+             */
             throw ValidationException::withMessages([
                 'current_password' =>
-                    __('api.password.current_password_incorrect'),
+                    __('api.auth.password_confirmation_failed'),
             ]);
         }
 

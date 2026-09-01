@@ -164,6 +164,26 @@ return [
         'account_disabled' => 'This account has been disabled.',
     ],
 
+    /*
+     * V1.0.48: the three-step change of a sign-in email address.
+     * Password first, then a code to the current mailbox, then a code
+     * to the new one. Nothing else is allowed to move an address.
+     */
+    'email_change' => [
+        'locked' => 'Your sign-in email is changed through the Change email steps, where the new address is verified first.',
+        'administrator_locked' => 'A colleague\'s sign-in email cannot be changed here. They change it themselves from their profile, and platform support can help when the old mailbox is out of reach.',
+        'same_address' => 'This is already the email address on the account.',
+        'address_taken' => 'That email address is already used by another account.',
+        'request_expired' => 'This email change request is no longer open. Start it again from your profile.',
+        'code_invalid' => 'That code is not right. Check the most recent email we sent.',
+        'resend_cooldown' => 'A code was sent moments ago. Wait a minute before asking for another.',
+        'resend_limit' => 'No more codes can be sent for this request. Start it again from your profile.',
+        'code_sent_current' => 'A confirmation code has been sent to your current email address.',
+        'code_sent_proposed' => 'A confirmation code has been sent to the new email address.',
+        'completed' => 'Email updated. Use :email the next time you sign in.',
+        'cancelled' => 'The email change has been cancelled. Your address is unchanged.',
+    ],
+
     'archive' => [
         'not_archivable' => 'This record can still be deleted outright, so there is nothing to archive. Delete it, or leave it where it is.',
         'lease_not_terminated' => 'This lease is still running, so it cannot be archived. Terminate it first: termination settles the final rent, releases the deposit and stops the billing. Archiving only takes the record out of the lists.',

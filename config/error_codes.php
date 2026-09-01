@@ -284,6 +284,51 @@ return [
             'keys' => ['api.personal_data.name_confirmation_mismatch'],
         ],
 
+        /*
+         * V1.0.48: the three-step email change. One code per refusal the
+         * flow can answer with.
+         */
+        'PM-1043' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.email_change.locked'],
+        ],
+        'PM-1044' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.email_change.administrator_locked'],
+        ],
+        'PM-1045' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.email_change.same_address'],
+        ],
+        'PM-1046' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.email_change.address_taken'],
+        ],
+        'PM-1047' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.email_change.request_expired'],
+        ],
+        'PM-1048' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.email_change.code_invalid'],
+        ],
+        'PM-1049' => [
+            'family' => 1,
+            'severity' => 'try_again',
+            'keys' => ['api.email_change.resend_cooldown'],
+        ],
+        'PM-1050' => [
+            'family' => 1,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.email_change.resend_limit'],
+        ],
+
         /* ---- 2xxx input ---- */
 
         'PM-2001' => [

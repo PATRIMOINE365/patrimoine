@@ -94,6 +94,29 @@
     "clip": "#profile-modal .pm-drawer-panel"
   },
   {
+    "id": "email-change",
+    "path": "/dashboard",
+    "wait": "main",
+    "settle": 600,
+    "do": [
+      {
+        "click": "#user-menu-toggle",
+        "pause": 700
+      },
+      {
+        "click": "#my-profile-open",
+        "wait": "#profile-modal.pm-drawer-active",
+        "pause": 900
+      },
+      {
+        "click": "#profile-email-change",
+        "wait": "#email-change-modal.pm-drawer-active",
+        "pause": 900
+      }
+    ],
+    "clip": "#email-change-modal .pm-drawer-panel"
+  },
+  {
     "id": "properties-list",
     "path": "/properties",
     "wait": "#properties-list",

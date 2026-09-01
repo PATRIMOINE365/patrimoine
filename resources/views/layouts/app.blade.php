@@ -1026,6 +1026,11 @@
                     >
                 </div>
 
+                {{--
+                    V1.0.48: the address is read here, never written.
+                    Changing it goes through the three-step dialog, where
+                    the new mailbox proves itself before anything moves.
+                --}}
                 <div class="sm:col-span-2">
                     <label
                         for="profile-email"
@@ -1035,13 +1040,23 @@
                         {{ __('ui.users.email') }}
                     </label>
 
-                    <input
-                        id="profile-email"
-                        type="email"
-                        maxlength="255"
-                        required
-                        class="pm-input"
-                    >
+                    <div class="flex items-center gap-2">
+                        <input
+                            id="profile-email"
+                            type="email"
+                            maxlength="255"
+                            readonly
+                            class="pm-input flex-1"
+                        >
+
+                        <button
+                            id="profile-email-change"
+                            type="button"
+                            class="pm-button-secondary shrink-0"
+                        >
+                            <span data-i18n="email_change.open_button">{{ __('ui.email_change.open_button') }}</span>
+                        </button>
+                    </div>
                 </div>
 
                 <x-phone-field
@@ -1269,6 +1284,218 @@
                 <span data-i18n="actions.save">
                     {{ __('ui.actions.save') }}
                 </span>
+            </button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+
+{{--
+    V1.0.48: the three-step change of a sign-in email. The person never
+    leaves this drawer: the new address and the password first, then the
+    code the current mailbox received, then the code the new one did.
+    Nothing on the account moves until the last step answers.
+--}}
+<x-drawer
+    id="email-change-modal"
+    backdrop-id="email-change-modal-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        title-id="email-change-modal-title"
+        description-id="email-change-modal-description"
+        close-id="email-change-modal-close"
+        close-label="Close"
+        close-label-key="actions.close"
+    >
+        <x-slot:title>
+            <span data-i18n="email_change.title">{{ __('ui.email_change.title') }}</span>
+        </x-slot:title>
+
+        <x-slot:description>
+            <span data-i18n="email_change.description">{{ __('ui.email_change.description') }}</span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form
+        id="email-change-form"
+        class="flex min-h-0 flex-1 flex-col"
+    >
+        <div
+            class="
+                min-h-0 flex-1
+                overflow-y-auto
+                px-6 py-6
+            "
+        >
+            <div
+                id="email-change-message"
+                class="
+                    mb-5 hidden rounded-lg
+                    border px-4 py-3
+                    text-sm
+                "
+                role="alert"
+            ></div>
+
+            {{-- Step 1: what to change it to, and the password. --}}
+            <div id="email-change-step-start" class="space-y-5">
+                <div>
+                    <label
+                        for="email-change-new-email"
+                        class="pm-field-label"
+                        data-i18n="email_change.new_email_label"
+                    >
+                        {{ __('ui.email_change.new_email_label') }}
+                    </label>
+
+                    <input
+                        id="email-change-new-email"
+                        type="email"
+                        maxlength="255"
+                        autocomplete="email"
+                        class="pm-input"
+                    >
+                </div>
+
+                <div>
+                    <label
+                        for="email-change-password"
+                        class="pm-field-label"
+                        data-i18n="email_change.current_password_label"
+                    >
+                        {{ __('ui.email_change.current_password_label') }}
+                    </label>
+
+                    <input
+                        id="email-change-password"
+                        type="password"
+                        autocomplete="current-password"
+                        class="pm-input"
+                    >
+                </div>
+
+                <p
+                    class="text-xs text-[var(--pm-text-muted)]"
+                    data-i18n="email_change.keep_active_note"
+                >
+                    {{ __('ui.email_change.keep_active_note') }}
+                </p>
+            </div>
+
+            {{-- Steps 2 and 3 share one shape: a sentence and a code. --}}
+            <div id="email-change-step-code" class="hidden space-y-5">
+                <p class="text-sm text-[var(--pm-text)]">
+                    <span
+                        id="email-change-code-note-current"
+                        class="hidden"
+                        data-i18n="email_change.current_step_note"
+                    >{{ __('ui.email_change.current_step_note') }}</span>
+
+                    <span
+                        id="email-change-code-note-new"
+                        class="hidden"
+                        data-i18n="email_change.new_step_note"
+                    >{{ __('ui.email_change.new_step_note') }}</span>
+                </p>
+
+                <p class="text-sm">
+                    <span
+                        class="text-[var(--pm-text-muted)]"
+                        data-i18n="email_change.proposed_label"
+                    >{{ __('ui.email_change.proposed_label') }}</span>
+                    <strong id="email-change-proposed" class="font-medium"></strong>
+                </p>
+
+                <div>
+                    <label
+                        for="email-change-code"
+                        class="pm-field-label"
+                        data-i18n="email_change.code_label"
+                    >
+                        {{ __('ui.email_change.code_label') }}
+                    </label>
+
+                    <input
+                        id="email-change-code"
+                        type="text"
+                        inputmode="numeric"
+                        autocomplete="one-time-code"
+                        maxlength="6"
+                        class="pm-input tracking-[0.4em] text-center text-lg"
+                    >
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <button
+                        id="email-change-resend"
+                        type="button"
+                        class="
+                            text-sm font-medium
+                            text-[var(--pm-accent)]
+                            hover:underline
+                            disabled:opacity-60
+                        "
+                    >
+                        <span data-i18n="email_change.resend_button">{{ __('ui.email_change.resend_button') }}</span>
+                    </button>
+
+                    <p
+                        class="text-xs text-[var(--pm-text-muted)]"
+                        data-i18n="email_change.code_expiry_note"
+                    >
+                        {{ __('ui.email_change.code_expiry_note') }}
+                    </p>
+                </div>
+            </div>
+
+            {{-- Done: the confirmation the flow ends on. --}}
+            <div id="email-change-step-done" class="hidden space-y-5">
+                <p
+                    class="text-sm text-[var(--pm-text)]"
+                    data-i18n="email_change.done_note"
+                >
+                    {{ __('ui.email_change.done_note') }}
+                </p>
+
+                <p class="text-sm">
+                    <strong id="email-change-final-email" class="font-medium"></strong>
+                </p>
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button
+                id="email-change-cancel"
+                type="button"
+                class="pm-button-secondary"
+            >
+                <span data-i18n="email_change.cancel_button">
+                    {{ __('ui.email_change.cancel_button') }}
+                </span>
+            </button>
+
+            <button
+                id="email-change-submit"
+                type="submit"
+                class="pm-button-primary"
+            >
+                <span
+                    id="email-change-submit-start"
+                    data-i18n="email_change.start_button"
+                >{{ __('ui.email_change.start_button') }}</span>
+
+                <span
+                    id="email-change-submit-verify"
+                    class="hidden"
+                    data-i18n="email_change.verify_button"
+                >{{ __('ui.email_change.verify_button') }}</span>
+
+                <span
+                    id="email-change-submit-done"
+                    class="hidden"
+                    data-i18n="actions.close"
+                >{{ __('ui.actions.close') }}</span>
             </button>
         </x-drawer-footer>
     </form>

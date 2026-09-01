@@ -769,6 +769,8 @@ export async function initializeAuthenticatedShell() {
     initializeShellControls();
     initializeProfileControls();
 
+    initializeEmailChangeControls();
+
     /*
      * Load derived notifications in the background so the consolidated
      * unread badge (release announcement OR any danger notification) is
@@ -1992,6 +1994,11 @@ async function submitProfileForm(
          * V1.0.7 structured names: PATCH /api/auth/me accepts
          * given_names + surname and recomposes the display name.
          */
+        /*
+         * V1.0.48: no email in this payload. The address is read-only
+         * here and changes only through the verified three-step dialog;
+         * the server refuses a different address on this endpoint.
+         */
         const payload = {
             given_names:
                 givenNames.value
@@ -2000,10 +2007,6 @@ async function submitProfileForm(
 
             surname:
                 surname.value
-                    .trim(),
-
-            email:
-                email.value
                     .trim(),
 
             phone:
@@ -2108,6 +2111,477 @@ async function submitProfileForm(
         button.disabled =
             false;
     }
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Email change (V1.0.48)
+|--------------------------------------------------------------------------
+|
+| The sign-in email moves only through this dialog: the new address and
+| the current password, then a code the CURRENT mailbox answers, then a
+| code the NEW one does. The profile field itself is read-only and the
+| API refuses an address change anywhere else.
+|
+*/
+
+const emailChangeState = {
+    token: null,
+    step: 'start',
+};
+
+/**
+ * Show one step of the email change dialog and relabel the buttons.
+ */
+function showEmailChangeStep(step, proposedEmail) {
+    emailChangeState.step = step;
+
+    const panels = {
+        start: document.getElementById('email-change-step-start'),
+        code: document.getElementById('email-change-step-code'),
+        done: document.getElementById('email-change-step-done'),
+    };
+
+    panels.start?.classList.toggle('hidden', step !== 'start');
+    panels.code?.classList.toggle(
+        'hidden',
+        step !== 'verify_current' && step !== 'verify_proposed'
+    );
+    panels.done?.classList.toggle('hidden', step !== 'done');
+
+    document
+        .getElementById('email-change-code-note-current')
+        ?.classList.toggle('hidden', step !== 'verify_current');
+
+    document
+        .getElementById('email-change-code-note-new')
+        ?.classList.toggle('hidden', step !== 'verify_proposed');
+
+    const proposed =
+        document.getElementById('email-change-proposed');
+
+    if (proposed && typeof proposedEmail === 'string') {
+        proposed.textContent = proposedEmail;
+    }
+
+    document
+        .getElementById('email-change-submit-start')
+        ?.classList.toggle('hidden', step !== 'start');
+
+    document
+        .getElementById('email-change-submit-verify')
+        ?.classList.toggle(
+            'hidden',
+            step !== 'verify_current' && step !== 'verify_proposed'
+        );
+
+    document
+        .getElementById('email-change-submit-done')
+        ?.classList.toggle('hidden', step !== 'done');
+
+    /*
+     * Once the change is complete there is nothing left to cancel.
+     */
+    document
+        .getElementById('email-change-cancel')
+        ?.classList.toggle('hidden', step === 'done');
+
+    const code =
+        document.getElementById('email-change-code');
+
+    if (code) {
+        code.value = '';
+
+        if (step === 'verify_current' || step === 'verify_proposed') {
+            code.focus();
+        }
+    }
+}
+
+/**
+ * Present a server sentence inside the dialog, in the shared
+ * success/error styling the profile drawer uses.
+ */
+function showEmailChangeMessage(message, success = false) {
+    const box =
+        document.getElementById('email-change-message');
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent = message;
+
+    box.classList.remove(
+        'hidden',
+        'border-[var(--pm-danger-border)]',
+        'bg-[var(--pm-danger-background)]',
+        'text-[var(--pm-danger-text)]',
+        'border-[var(--pm-success-border)]',
+        'bg-[var(--pm-success-background)]',
+        'text-[var(--pm-success-text)]'
+    );
+
+    box.classList.add(
+        success
+            ? 'border-[var(--pm-success-border)]'
+            : 'border-[var(--pm-danger-border)]',
+        success
+            ? 'bg-[var(--pm-success-background)]'
+            : 'bg-[var(--pm-danger-background)]',
+        success
+            ? 'text-[var(--pm-success-text)]'
+            : 'text-[var(--pm-danger-text)]'
+    );
+}
+
+function hideEmailChangeMessage() {
+    const box =
+        document.getElementById('email-change-message');
+
+    if (! box) {
+        return;
+    }
+
+    box.textContent = '';
+    box.classList.add('hidden');
+}
+
+/**
+ * Open the dialog, resuming a pending request where one is open so a
+ * closed browser tab does not silently strand a half-made change.
+ */
+async function openEmailChangeDialog() {
+    const modal =
+        document.getElementById('email-change-modal');
+
+    if (! modal) {
+        return;
+    }
+
+    hideEmailChangeMessage();
+
+    const newEmail =
+        document.getElementById('email-change-new-email');
+
+    const password =
+        document.getElementById('email-change-password');
+
+    if (newEmail) {
+        newEmail.value = '';
+    }
+
+    if (password) {
+        password.value = '';
+    }
+
+    emailChangeState.token = null;
+
+    showEmailChangeStep('start');
+
+    openDrawer(modal);
+
+    try {
+        const response =
+            await apiRequest('/api/auth/email-change');
+
+        const data =
+            await parseJsonResponse(response);
+
+        if (data?.pending) {
+            emailChangeState.token =
+                data.pending.token;
+
+            showEmailChangeStep(
+                data.pending.step,
+                data.pending.proposed_email
+            );
+        }
+    } catch {
+        /*
+         * Resumption is a convenience: if the lookup fails the dialog
+         * simply starts from the beginning.
+         */
+    }
+}
+
+/**
+ * Drive whichever step the dialog is on.
+ */
+async function submitEmailChange(event) {
+    event.preventDefault();
+
+    const button =
+        document.getElementById('email-change-submit');
+
+    if (! button) {
+        return;
+    }
+
+    if (emailChangeState.step === 'done') {
+        closeDrawer('email-change-modal');
+
+        return;
+    }
+
+    try {
+        hideEmailChangeMessage();
+
+        button.disabled = true;
+
+        if (emailChangeState.step === 'start') {
+            const email = document
+                .getElementById('email-change-new-email')
+                ?.value.trim();
+
+            const password = document
+                .getElementById('email-change-password')
+                ?.value;
+
+            if (! email || ! password) {
+                showEmailChangeMessage(
+                    translate('email_change.missing_fields')
+                );
+
+                return;
+            }
+
+            const response = await apiRequest(
+                '/api/auth/email-change',
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email,
+                        current_password: password,
+                    }),
+                }
+            );
+
+            const data =
+                await parseJsonResponse(response);
+
+            emailChangeState.token =
+                data.change.token;
+
+            showEmailChangeStep(
+                'verify_current',
+                data.change.proposed_email
+            );
+
+            showEmailChangeMessage(data.message, true);
+
+            return;
+        }
+
+        const code = document
+            .getElementById('email-change-code')
+            ?.value.trim();
+
+        if (! code) {
+            showEmailChangeMessage(
+                translate('email_change.missing_code')
+            );
+
+            return;
+        }
+
+        if (emailChangeState.step === 'verify_current') {
+            const response = await apiRequest(
+                '/api/auth/email-change/verify-current',
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        token: emailChangeState.token,
+                        code,
+                    }),
+                }
+            );
+
+            const data =
+                await parseJsonResponse(response);
+
+            showEmailChangeStep(
+                'verify_proposed',
+                data.change.proposed_email
+            );
+
+            showEmailChangeMessage(data.message, true);
+
+            return;
+        }
+
+        /*
+         * The final step. Every session was just rotated with the
+         * address, so the fresh token replaces ours before anything
+         * else asks the API a question.
+         */
+        const response = await apiRequest(
+            '/api/auth/email-change/verify-new',
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    token: emailChangeState.token,
+                    code,
+                }),
+            }
+        );
+
+        const data =
+            await parseJsonResponse(response);
+
+        if (data.token) {
+            saveToken(data.token);
+        }
+
+        if (authenticatedShellUser) {
+            authenticatedShellUser.email =
+                data.email;
+
+            renderCurrentUser(
+                authenticatedShellUser
+            );
+        }
+
+        const profileEmail =
+            document.getElementById('profile-email');
+
+        if (profileEmail) {
+            profileEmail.value = data.email;
+        }
+
+        const finalEmail =
+            document.getElementById('email-change-final-email');
+
+        if (finalEmail) {
+            finalEmail.textContent = data.email;
+        }
+
+        showEmailChangeStep('done');
+
+        showEmailChangeMessage(data.message, true);
+    } catch (error) {
+        showEmailChangeMessage(
+            error instanceof Error
+                ? error.message
+                : translate('email_change.code_invalid')
+        );
+    } finally {
+        button.disabled = false;
+    }
+}
+
+/**
+ * Ask the server to send the outstanding step's code again.
+ */
+async function resendEmailChangeCode() {
+    if (
+        emailChangeState.token === null
+        || (
+            emailChangeState.step !== 'verify_current'
+            && emailChangeState.step !== 'verify_proposed'
+        )
+    ) {
+        return;
+    }
+
+    const button =
+        document.getElementById('email-change-resend');
+
+    try {
+        hideEmailChangeMessage();
+
+        if (button) {
+            button.disabled = true;
+        }
+
+        const response = await apiRequest(
+            '/api/auth/email-change/resend',
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    token: emailChangeState.token,
+                }),
+            }
+        );
+
+        const data =
+            await parseJsonResponse(response);
+
+        showEmailChangeMessage(data.message, true);
+    } catch (error) {
+        showEmailChangeMessage(
+            error instanceof Error
+                ? error.message
+                : translate('email_change.code_invalid')
+        );
+    } finally {
+        if (button) {
+            button.disabled = false;
+        }
+    }
+}
+
+/**
+ * Close the dialog, abandoning any half-made request with it.
+ *
+ * The server treats cancelling with nothing pending as success, so
+ * closing from the first step costs nothing.
+ */
+async function cancelEmailChange() {
+    if (
+        emailChangeState.step === 'verify_current'
+        || emailChangeState.step === 'verify_proposed'
+    ) {
+        try {
+            await apiRequest('/api/auth/email-change', {
+                method: 'DELETE',
+            });
+        } catch {
+            /*
+             * An unreachable cancel must not trap the person in the
+             * dialog; the request dies of expiry on its own.
+             */
+        }
+    }
+
+    emailChangeState.token = null;
+
+    closeDrawer('email-change-modal');
+}
+
+/**
+ * Register the email change dialog once per authenticated document.
+ */
+function initializeEmailChangeControls() {
+    const form =
+        document.getElementById('email-change-form');
+
+    if (! form) {
+        return;
+    }
+
+    document
+        .getElementById('profile-email-change')
+        ?.addEventListener('click', openEmailChangeDialog);
+
+    document
+        .getElementById('email-change-modal-close')
+        ?.addEventListener('click', cancelEmailChange);
+
+    document
+        .getElementById('email-change-modal-backdrop')
+        ?.addEventListener('click', cancelEmailChange);
+
+    document
+        .getElementById('email-change-cancel')
+        ?.addEventListener('click', cancelEmailChange);
+
+    document
+        .getElementById('email-change-resend')
+        ?.addEventListener('click', resendEmailChangeCode);
+
+    form.addEventListener('submit', submitEmailChange);
 }
 
 

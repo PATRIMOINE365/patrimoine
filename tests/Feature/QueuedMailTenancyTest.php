@@ -60,6 +60,16 @@ class QueuedMailTenancyTest extends TestCase
         UserPasswordResetMail::class,
         UserInvitationMail::class,
         SupportMessageMail::class,
+
+        /*
+         * V1.0.48: the email change flow. The two codes hold a person
+         * mid-dialog exactly like an MFA code holds a sign-in, and the
+         * completion notice is the alarm bell for a takeover — the one
+         * mail that must not sit in a queue behind anything.
+         */
+        \App\Mail\EmailChangeCurrentCodeMail::class,
+        \App\Mail\EmailChangeProposedCodeMail::class,
+        \App\Mail\EmailChangeCompletedMail::class,
     ];
 
     /**

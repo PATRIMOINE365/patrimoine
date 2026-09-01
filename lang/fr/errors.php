@@ -307,6 +307,54 @@ return [
         'fix' => "Recopiez le nom exactement tel que la fiche l'affiche, majuscules, espaces et ponctuation comprises. Si vous ne vouliez effacer personne, fermez plutôt ce panneau.",
     ],
 
+    'PM-1043' => [
+        'title' => "Votre adresse de connexion se change par ses propres étapes.",
+        'what' => "L'adresse avec laquelle vous vous connectez reçoit aussi vos codes de connexion et vos réinitialisations de mot de passe. La remplacer exige donc plus de preuves qu'une simple modification de profil : votre mot de passe, puis un code envoyé à votre boîte actuelle, puis un code envoyé à la nouvelle.",
+        'fix' => "Ouvrez votre profil et utilisez le bouton Changer d'adresse. Les trois étapes prennent environ une minute, et votre adresse actuelle continue de fonctionner jusqu'à la fin.",
+    ],
+
+    'PM-1044' => [
+        'title' => "L'adresse de connexion d'un collègue ne peut pas être changée à sa place.",
+        'what' => "L'adresse de connexion décide où partent les codes et les réinitialisations de mot de passe d'une personne : seul le titulaire du compte, en prouvant les deux boîtes, peut la déplacer. Un administrateur qui la modifierait pour quelqu'un d'autre contournerait cette preuve.",
+        'fix' => "Demandez à votre collègue de la changer lui-même depuis son profil. S'il n'a plus accès à son ancienne boîte, écrivez à l'assistance : l'équipe de la plateforme s'en chargera.",
+    ],
+
+    'PM-1045' => [
+        'title' => "C'est déjà l'adresse de ce compte.",
+        'what' => "La nouvelle adresse saisie est identique à celle que le compte utilise déjà : il n'y a donc rien à changer.",
+        'fix' => "Saisissez l'adresse vers laquelle vous voulez migrer, ou fermez la fenêtre si l'adresse actuelle convient.",
+    ],
+
+    'PM-1046' => [
+        'title' => 'Cette adresse appartient déjà à un compte.',
+        'what' => "Chaque compte a sa propre adresse de connexion, et celle que vous avez saisie est déjà utilisée.",
+        'fix' => "Choisissez une autre adresse. Si vous pensez que l'autre compte est le vôtre, connectez-vous-y plutôt, ou écrivez à l'assistance.",
+    ],
+
+    'PM-1047' => [
+        'title' => "Ce changement d'adresse n'est plus ouvert.",
+        'what' => "Une demande de changement reste ouverte peu de temps et se ferme après trop de mauvais codes, à son expiration, ou quand une demande plus récente la remplace. Quelle qu'en soit la raison, plus aucune étape ne peut y répondre — et votre adresse n'a pas changé.",
+        'fix' => "Recommencez depuis votre profil. La nouvelle demande envoie des codes tout neufs.",
+    ],
+
+    'PM-1048' => [
+        'title' => "Ce code n'est pas celui que nous avons envoyé.",
+        'what' => "Le code doit correspondre exactement au dernier e-mail reçu. Après trois mauvaises réponses, la demande entière se ferme et l'adresse reste inchangée.",
+        'fix' => "Ouvrez le dernier e-mail contenant le code et recopiez les six chiffres exactement. S'il date de plus de dix minutes, utilisez Renvoyer le code.",
+    ],
+
+    'PM-1049' => [
+        'title' => "Un code vient d'être envoyé.",
+        'what' => "Les codes ne peuvent être renvoyés qu'une fois par minute, pour qu'une adresse mal saisie ne puisse inonder la boîte de personne.",
+        'fix' => "Patientez une minute, vérifiez la boîte de réception — y compris les indésirables — puis utilisez Renvoyer le code s'il n'est toujours pas arrivé.",
+    ],
+
+    'PM-1050' => [
+        'title' => 'Cette demande a épuisé ses codes.',
+        'what' => "Chaque demande de changement peut renvoyer ses codes quelques fois ; ensuite elle refuse d'en envoyer davantage, au cas où l'adresse serait fausse ou la boîte ne serait pas la vôtre.",
+        'fix' => "Recommencez le changement depuis votre profil et vérifiez soigneusement l'adresse avant l'envoi.",
+    ],
+
     /* ---- 2xxx ---- */
 
     'PM-2001' => [

@@ -183,6 +183,45 @@ return [
         'ignore' => 'If you did not try to sign in, we recommend changing your password immediately.',
     ],
 
+    /*
+     * V1.0.48: the three-step email change. The current mailbox
+     * authorises the change; the proposed one proves itself; the old
+     * one is told when it is done.
+     */
+    'email_change_current' => [
+        'subject' => ':code is your Patrimoine 365 email change code',
+        'title' => 'Confirm your email change',
+        'preheader' => 'A change of your sign-in email was requested.',
+        'heading' => 'Confirm your email change',
+        'greeting' => 'Hello :name,',
+        'introduction' => 'A request was made to change your Patrimoine 365 sign-in email to :proposed. Use the code below to confirm that you authorise this change.',
+        'unchanged' => 'Your current email address stays active until every step of the change is finished.',
+        'expiry' => 'This code expires in :minutes minutes and can only be used once.',
+        'not_you' => 'If you did not request this change, do not share this code with anyone. Change your password immediately and write to :support.',
+    ],
+
+    'email_change_proposed' => [
+        'subject' => ':code is your Patrimoine 365 email confirmation code',
+        'title' => 'Confirm your new email address',
+        'preheader' => 'Confirm this mailbox to finish the email change.',
+        'heading' => 'Confirm your new email address',
+        'greeting' => 'Hello :name,',
+        'introduction' => 'This mailbox, :proposed, was proposed as the new sign-in address for a Patrimoine 365 account. Enter the code below to confirm you can receive email here and complete the change.',
+        'expiry' => 'This code expires in :minutes minutes and can only be used once.',
+        'ignore' => 'If you were not expecting this email, you can safely ignore it — nothing changes without this code.',
+    ],
+
+    'email_change_completed' => [
+        'subject' => 'Your Patrimoine 365 sign-in email has changed',
+        'title' => 'Your sign-in email has changed',
+        'preheader' => 'The email address on your account was updated.',
+        'heading' => 'Your sign-in email has changed',
+        'greeting' => 'Hello :name,',
+        'introduction' => 'The sign-in email on your Patrimoine 365 account has changed from :previous to :new.',
+        'sign_in' => 'Every open session has been signed out. Use the new address the next time you sign in; codes and password resets now go there.',
+        'not_you' => 'If you did not make this change, write to :support immediately from this address so we can secure the account.',
+    ],
+
     'plans' => [
         'free' => 'Free',
         'standard' => 'Standard',

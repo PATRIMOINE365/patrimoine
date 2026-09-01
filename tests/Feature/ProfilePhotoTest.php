@@ -144,7 +144,10 @@ class ProfilePhotoTest extends TestCase
         Sanctum::actingAs($admin);
 
         /*
-         * Leaving the domain would silently revoke console access.
+         * V1.0.48: the profile endpoint refuses ANY changed email — on
+         * or off the domain — because the address moves only through
+         * the verified three-step flow, where the domain rule is
+         * enforced at initiation and again at completion.
          */
         $this->patchJson('/api/auth/me', [
             'given_names' => 'Staff',
@@ -153,14 +156,22 @@ class ProfilePhotoTest extends TestCase
         ])->assertStatus(422)
             ->assertJsonValidationErrors(['email']);
 
-        /*
-         * Staying on the domain is fine.
-         */
         $this->patchJson('/api/auth/me', [
             'given_names' => 'Staff',
             'surname' => 'Member',
             'email' => 'staff2@patrimoine365.com',
-        ])->assertOk();
+        ])->assertStatus(422)
+            ->assertJsonValidationErrors(['email']);
+
+        /*
+         * And the flow itself holds the domain: staff cannot even OPEN
+         * a change that would leave it.
+         */
+        $this->postJson('/api/auth/email-change', [
+            'email' => 'staff@gmail.test',
+            'current_password' => 'password',
+        ])->assertStatus(422)
+            ->assertJsonValidationErrors(['email']);
     }
 
     public function test_customers_cannot_take_the_platform_domain(): void

@@ -176,6 +176,28 @@ return [
     /*
      * V1.0.31 profile photographs.
      */
+    /*
+     * V1.0.48: the three-step change of a sign-in email address.
+     */
+    'email_change' => [
+        'open_button' => 'Change email',
+        'title' => 'Change email',
+        'description' => 'Three quick steps: your password, a code to your current address, then a code to the new one.',
+        'new_email_label' => 'New email address',
+        'current_password_label' => 'Current password',
+        'keep_active_note' => 'Your current email will stay active until you finish verification.',
+        'current_step_note' => 'We sent a code to your current email address. Entering it confirms you authorise changing your sign-in email to the address below.',
+        'new_step_note' => 'Almost done. We sent a code to the new address; entering it proves the mailbox is yours.',
+        'proposed_label' => 'New address:',
+        'code_label' => 'Confirmation code',
+        'resend_button' => 'Resend code',
+        'code_expiry_note' => 'The code expires after 10 minutes.',
+        'done_note' => 'Email updated. Use the new address the next time you sign in.',
+        'cancel_button' => 'Cancel',
+        'start_button' => 'Send code',
+        'verify_button' => 'Verify',
+    ],
+
     'profile' => [
         /* ---- V1.0.34 data protection ---- */
         'download_data' => 'Download my data',

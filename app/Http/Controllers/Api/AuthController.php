@@ -12,7 +12,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -417,38 +416,24 @@ class AuthController extends Controller
                 'max:255',
             ],
 
+            /*
+             * V1.0.48: the sign-in email does NOT change here.
+             *
+             * This endpoint asks for no proof beyond a bearer token when
+             * no password is being changed, and it used to hand the new
+             * address verified status — so a stolen token was enough to
+             * point the account's recovery at a thief's mailbox. The
+             * address moves only through the dedicated three-step flow
+             * (password, old mailbox, new mailbox). The field is still
+             * accepted so an unchanged profile save keeps working; a
+             * DIFFERENT address is refused loudly below rather than
+             * silently ignored.
+             */
             'email' => [
-                'required',
+                'sometimes',
+                'nullable',
                 'email',
                 'max:255',
-                Rule::unique(
-                    'users',
-                    'email'
-                )->ignore($user->id),
-
-                /*
-                 * V1.0.11: the platform staff domain is load-bearing.
-                 * A staff member may not move their account off the
-                 * domain (that would silently revoke console access),
-                 * and a customer may not move onto it.
-                 */
-                function (string $attribute, mixed $value, \Closure $fail) use ($user): void {
-                    $isPlatformDomain = str_ends_with(
-                        mb_strtolower(trim((string) $value)),
-                        '@'.User::PLATFORM_EMAIL_DOMAIN
-                    );
-
-                    $isPlatformMember =
-                        (bool) $user->organisation?->is_platform;
-
-                    if ($isPlatformMember && ! $isPlatformDomain) {
-                        $fail(__('api.user_management.platform_domain_required'));
-                    }
-
-                    if (! $isPlatformMember && $isPlatformDomain) {
-                        $fail(__('api.user_management.platform_domain_reserved'));
-                    }
-                },
             ],
 
             'phone' => PhoneField::number('phone'),
@@ -477,6 +462,23 @@ class AuthController extends Controller
             );
 
         /*
+         * Refuse — never silently drop — an attempt to change the email
+         * here. Silence would leave the person believing their address
+         * moved when it did not.
+         */
+        if (
+            filled($validated['email'] ?? null)
+            && mb_strtolower(trim((string) $validated['email']))
+                !== mb_strtolower((string) $user->email)
+        ) {
+            throw ValidationException::withMessages([
+                'email' => [
+                    __('api.email_change.locked'),
+                ],
+            ]);
+        }
+
+        /*
          * Verify ownership before changing anything.
          *
          * This guarantees that an incorrect current password cannot result
@@ -489,10 +491,16 @@ class AuthController extends Controller
                 $user->password
             )
         ) {
+            /*
+             * V1.0.48: api.auth.password_confirmation_failed, not the
+             * former api.password.current_password_incorrect — that key
+             * existed in no catalogue, so this refusal printed the raw
+             * key at the person instead of a sentence with a code.
+             */
             throw ValidationException::withMessages([
                 'current_password' => [
                     __(
-                        'api.password.current_password_incorrect'
+                        'api.auth.password_confirmation_failed'
                     ),
                 ],
             ]);
@@ -533,13 +541,11 @@ class AuthController extends Controller
                         $validated['name'];
                 }
 
-                $user->email =
-                    mb_strtolower(
-                        trim(
-                            $validated['email']
-                        )
-                    );
-
+                /*
+                 * Deliberately no email write: V1.0.48 moved the address
+                 * to the dedicated verified flow. Anything different was
+                 * refused before this transaction opened.
+                 */
                 $user->phone =
                     $validated['phone']
                     ?? null;

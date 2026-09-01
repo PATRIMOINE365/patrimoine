@@ -166,6 +166,8 @@ return [
         'user.invitation_accepted' => 'User Invitation Accepted',
         'user.password_reset' => 'Password Reset Completed',
         'user.password_changed' => 'Password Changed',
+        'user.email_change_requested' => 'Email Change Requested',
+        'user.email_changed' => 'Email Changed',
 
         'party.created' => 'Party Created',
         'party.updated' => 'Party Updated',

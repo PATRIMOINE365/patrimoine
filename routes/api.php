@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\DocumentLinkController;
+use App\Http\Controllers\Api\EmailChangeController;
 use App\Http\Controllers\Api\InvoiceAccountPaymentController;
 use App\Http\Controllers\Api\EmailController;
 use App\Http\Controllers\Api\FinancialJournalController;
@@ -235,6 +236,45 @@ Route::middleware('auth:sanctum')->group(
         Route::delete(
             'auth/me/avatar',
             [ProfilePhotoController::class, 'destroy']
+        );
+
+        /*
+         * V1.0.48: the sign-in email changes ONLY through this three-step
+         * flow — password, then the current mailbox's code, then the new
+         * mailbox's. PATCH auth/me refuses a changed email outright.
+         *
+         * Initiation is throttled tightly on its own: every request mails
+         * the account's current mailbox, and without a lid that is a
+         * mail cannon pointed at somebody's inbox.
+         */
+        Route::get(
+            'auth/email-change',
+            [EmailChangeController::class, 'show']
+        );
+
+        Route::post(
+            'auth/email-change',
+            [EmailChangeController::class, 'store']
+        )->middleware('throttle:3,10');
+
+        Route::post(
+            'auth/email-change/verify-current',
+            [EmailChangeController::class, 'verifyCurrent']
+        )->middleware('throttle:10,1');
+
+        Route::post(
+            'auth/email-change/verify-new',
+            [EmailChangeController::class, 'verifyProposed']
+        )->middleware('throttle:10,1');
+
+        Route::post(
+            'auth/email-change/resend',
+            [EmailChangeController::class, 'resend']
+        )->middleware('throttle:3,1');
+
+        Route::delete(
+            'auth/email-change',
+            [EmailChangeController::class, 'destroy']
         );
 
         Route::post(
@@ -1572,6 +1612,17 @@ Route::middleware(['auth:sanctum', 'platform.admin'])
         Route::patch(
             'users/{user}/role',
             [AdminSupportController::class, 'changeRole']
+        );
+
+        /*
+         * V1.0.48: the one deliberate bypass of the three-step email
+         * flow — a customer who cannot reach their old mailbox writes to
+         * support, and platform staff set the new address from here.
+         * Never organisation administrators.
+         */
+        Route::patch(
+            'users/{user}/email',
+            [AdminSupportController::class, 'changeEmail']
         );
 
         /*

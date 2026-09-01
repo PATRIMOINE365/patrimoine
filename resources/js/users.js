@@ -979,6 +979,21 @@ function resetUserForm() {
         active.checked = true;
     }
 
+    /*
+     * V1.0.48: the sign-in email is set at creation and never edited
+     * here again. The account holder changes it from their own profile
+     * through the verified steps — the server refuses it on this form.
+     */
+    const email =
+        document.getElementById(
+            'user-email'
+        );
+
+    if (email) {
+        email.readOnly =
+            userFormMode === 'edit';
+    }
+
     hideUserFormError();
 }
 
@@ -1200,17 +1215,24 @@ async function submitUserForm(
                 'user-surname'
             ),
 
-        email:
-            formValue(
-                'user-email'
-            ),
-
         phone:
             readPhoneValue('user-phone').number,
 
         phone_country:
             readPhoneValue('user-phone').country,
     };
+
+    /*
+     * V1.0.48: the email travels only at creation. Editing never sends
+     * it — the address belongs to the account holder and moves only
+     * through their own verified flow.
+     */
+    if (! editing) {
+        payload.email =
+            formValue(
+                'user-email'
+            );
+    }
 
     /*
      * Disabled self-controls are deliberately omitted from an own-account
