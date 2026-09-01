@@ -149,6 +149,8 @@ return [
         'auth.login' => 'Connexion',
         'auth.login_failed' => 'Échec de connexion',
         'auth.logout' => 'Déconnexion',
+        'auth.device_revoked' => 'Appareil déconnecté',
+        'auth.devices_revoked' => 'Autres appareils déconnectés',
 
         'user.created' => 'Utilisateur créé',
         'user.updated' => 'Utilisateur modifié',

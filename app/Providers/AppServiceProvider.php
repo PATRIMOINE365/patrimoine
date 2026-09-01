@@ -3,12 +3,14 @@
 namespace App\Providers;
 
 use App\Listeners\AttachPlainTextEmailPart;
+use App\Models\PersonalAccessToken;
 use App\Support\OrganisationContext;
 use App\Support\PdfFonts;
 use Dompdf\Dompdf;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -47,6 +49,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        /*
+         * V1.0.44: an access token is a device.
+         *
+         * Sanctum's own model is a bearer credential and nothing else.
+         * Patrimoine's carries what the token was minted for and the
+         * ceiling it may not outlive, both of which have to be decided
+         * when the token is created because nothing about a bearer token
+         * can be recovered afterwards.
+         */
+        Sanctum::usePersonalAccessTokenModel(
+            PersonalAccessToken::class
+        );
+
         /*
          * V1.0.17: every email ships a plain-text alternative alongside
          * its HTML body. HTML-only mail scores worse with spam and phish

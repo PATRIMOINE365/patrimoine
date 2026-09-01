@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Support\PhoneField;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AccessTokenService;
 use App\Services\ActivityLogService;
 use App\Services\MfaService;
 use Illuminate\Http\JsonResponse;
@@ -214,7 +215,8 @@ class AuthController extends Controller
     public function mfaVerify(
         Request $request,
         ActivityLogService $activityLog,
-        MfaService $mfa
+        MfaService $mfa,
+        AccessTokenService $tokens
     ): JsonResponse {
         $validated = $request->validate([
             'challenge_token' => [
@@ -264,10 +266,19 @@ class AuthController extends Controller
             throw $exception;
         }
 
-        $tokenName = $validated['device_name']
-            ?? 'patrimoine-api';
-
-        $token = $user->createToken($tokenName);
+        /*
+         * V1.0.44: the token is named for the device that asked for it
+         * and given a lifetime, both fixed here because neither can be
+         * recovered from a bearer token afterwards. A browser token dies
+         * with its tab; a token in a phone's keychain does not, so the
+         * name is what lets somebody point at the handset they lost and
+         * the lifetime is what limits the damage until they do.
+         */
+        $token = $tokens->issue(
+            $user,
+            $request,
+            $validated['device_name'] ?? null
+        );
 
         /*
          * Successful authentication is one meaningful human action.
@@ -285,6 +296,11 @@ class AuthController extends Controller
         return response()->json([
             'token_type' => 'Bearer',
             'access_token' => $token->plainTextToken,
+            'expires_at' => $token->accessToken->expires_at,
+            'device' => [
+                'id' => $token->accessToken->getKey(),
+                'name' => $token->accessToken->name,
+            ],
             'user' => $this->serializeUser($user),
         ]);
     }

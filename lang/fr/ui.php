@@ -484,6 +484,26 @@ return [
         'cancel' => 'Annuler',
         'close' => 'Fermer',
     ],
+    'devices' => [
+
+        'heading' => 'Appareils',
+        'description' => 'Tous les endroits où ce compte est connecté. Si vous n\'avez plus l\'un d\'eux, déconnectez-le ici et il cesse aussitôt de fonctionner.',
+        'loading' => 'Chargement des appareils…',
+        'empty' => 'Aucun autre appareil connecté.',
+        'unnamed' => 'Appareil non reconnu',
+        'this_device' => 'Cet appareil',
+        'sign_out' => 'Déconnecter',
+        'sign_out_others' => 'Déconnecter tous les autres appareils',
+        'last_used' => 'Dernière utilisation',
+        'signed_in' => 'Connexion',
+        'never_used' => 'Jamais utilisé depuis',
+        'client_web' => 'Navigateur',
+        'client_mobile' => 'Application mobile',
+        'client_api' => 'Intégration',
+        'expiry_note' => 'Un appareil inutilisé se déconnecte de lui-même : un navigateur au bout d\'une demi-journée, l\'application mobile au bout de deux mois. Et quelle que soit la fréquence d\'utilisation, chaque appareil doit tôt ou tard se reconnecter.',
+    ],
+
+
     'settings' => [
         /* ---- V1.0.34 data protection ---- */
         'everything_title' => 'Tout télécharger',
@@ -526,6 +546,7 @@ return [
         /* ---- V1.0.9 additions ---- */
         'tab_organisation' => 'Organisation',
         'tab_preferences' => 'Préférences',
+        'tab_devices' => 'Appareils',
         'tab_data' => 'Données',
         'not_configured' => 'L\'organisation gestionnaire n\'est pas encore configurée. Renseignez le formulaire ci-dessous et enregistrez pour la mettre en place.',
         'save_preferences' => 'Enregistrer les préférences',

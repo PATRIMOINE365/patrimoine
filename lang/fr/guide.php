@@ -107,6 +107,18 @@ return [
                     ],
                 ],
 
+                'signed_in_devices' => [
+                    'title' => 'Voir où vous êtes connecté',
+                    'intro' => 'Les Paramètres tiennent la liste de tous les appareils sur lesquels votre compte est actuellement connecté. Si l\'un d\'eux est un téléphone que vous n\'avez plus, vous pouvez le retirer vous-même de la liste : il cesse aussitôt de fonctionner.',
+                    'steps' => [
+                        ['text' => 'Ouvrez les Paramètres et choisissez l\'onglet Appareils.'],
+                        ['text' => 'Chaque ligne nomme l\'appareil, sa dernière utilisation et d\'où elle venait. Celui sur lequel vous lisez ceci porte la mention Cet appareil.'],
+                        ['text' => 'Appuyez sur Déconnecter à côté d\'un appareil que vous ne reconnaissez plus. Il ne peut plus atteindre votre organisation sans se reconnecter depuis le début, code compris.'],
+                        ['text' => 'Déconnecter tous les autres appareils fait la même chose pour tous d\'un coup et vous laisse connecté ici.'],
+                    ],
+                    'after' => 'Un appareil que vous cessez d\'utiliser se déconnecte de lui-même — un navigateur au bout d\'une demi-journée, l\'application mobile au bout de deux mois — et quelle que soit la fréquence d\'utilisation, chaque appareil doit tôt ou tard se reconnecter.',
+                ],
+
                 'ask_for_help' => [
                     'title' => 'Nous demander de l\'aide',
                     'intro' => 'Le support, le guide que vous lisez, les codes d\'erreur et le journal des mises à jour sont sur une seule page, accessible depuis votre photographie en haut à droite.',

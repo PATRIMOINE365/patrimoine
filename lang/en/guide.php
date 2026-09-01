@@ -111,6 +111,18 @@ return [
                     ],
                 ],
 
+                'signed_in_devices' => [
+                    'title' => 'See where you are signed in',
+                    'intro' => 'Settings keeps a list of every device your account is currently signed in on. If one of them is a phone you no longer have, you can take it out of the list yourself and it stops working immediately.',
+                    'steps' => [
+                        ['text' => 'Open Settings and choose the Devices tab.'],
+                        ['text' => 'Each row names the device, when it was last used and where from. The one you are reading this on is marked This device.'],
+                        ['text' => 'Press Sign out beside a device you no longer recognise. It cannot reach your organisation again without signing in from the start, code included.'],
+                        ['text' => 'Sign out every other device does the same to all of them at once and leaves you signed in here.'],
+                    ],
+                    'after' => 'A device you stop using signs itself out on its own — a browser after half a day, the mobile application after two months — and every device has to sign in again eventually however often it is used.',
+                ],
+
                 'ask_for_help' => [
                     'title' => 'Ask us for help',
                     'intro' => 'Support, the guide you are reading, the error codes and the update log are all on one page, reached from your own photograph at the top right.',

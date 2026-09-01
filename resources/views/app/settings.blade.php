@@ -146,6 +146,21 @@
             </button>
 
             <button
+                id="settings-tab-devices"
+                type="button"
+                role="tab"
+                aria-selected="false"
+                aria-controls="settings-devices-panel"
+                class="
+                    rounded-lg px-4 py-2
+                    text-sm font-medium
+                    transition
+                "
+            >
+                <span data-i18n="settings.tab_devices">{{ __('ui.settings.tab_devices') }}</span>
+            </button>
+
+            <button
                 id="settings-tab-data"
                 type="button"
                 role="tab"
@@ -992,6 +1007,19 @@
 
             </form>
         </div>
+    </section>
+
+    {{--
+        Devices tab: V1.0.44. Everywhere this account is signed in, and
+        the button that takes one of them away.
+    --}}
+    <section
+        id="settings-devices-panel"
+        role="tabpanel"
+        aria-labelledby="settings-tab-devices"
+        class="mt-4 hidden"
+    >
+        @include('app.panels.devices')
     </section>
 
     {{--

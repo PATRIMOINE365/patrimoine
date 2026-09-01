@@ -155,6 +155,8 @@ return [
         'auth.login' => 'Signed In',
         'auth.login_failed' => 'Sign-In Failed',
         'auth.logout' => 'Signed Out',
+        'auth.device_revoked' => 'Device Signed Out',
+        'auth.devices_revoked' => 'Other Devices Signed Out',
 
         'user.created' => 'User Created',
         'user.updated' => 'User Updated',

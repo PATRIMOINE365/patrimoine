@@ -48,28 +48,33 @@ class DocumentLinkService
     /**
      * Every document endpoint that may be opened through a signed link.
      *
+     * The optional version segment is part of every pattern: /api and
+     * /api/v1 are the same routes, and a document link issued for one
+     * has to validate at the other. A client that speaks the version
+     * must not be handed links that only work unversioned.
+     *
      * @var list<string>
      */
     private const SIGNABLE_PATHS = [
-        '#^/api/leases/\d+/termination-notice/pdf$#',
-        '#^/api/leases/\d+/financial-history/pdf$#',
-        '#^/api/invoices/\d+/pdf$#',
-        '#^/api/invoices/\d+/payment-receipt$#',
-        '#^/api/payments/\d+/receipt$#',
-        '#^/api/owner-deposits/\d+/receipt$#',
-        '#^/api/owner-expense-bills/\d+/pdf$#',
-        '#^/api/owner-expense-bills/\d+/payment-receipt$#',
-        '#^/api/owner-payouts/\d+/receipt$#',
-        '#^/api/owner-reserve-transfers/\d+/voucher$#',
-        '#^/api/adjustment-vouchers/\d+/pdf$#',
-        '#^/api/withdrawal-receipts/\d+/pdf$#',
-        '#^/api/tenant-fund-expenses/\d+/voucher$#',
-        '#^/api/tenant-fund-transfers/\d+/voucher$#',
-        '#^/api/security-deposit-settlements/\d+/voucher$#',
-        '#^/api/reports/(payments|occupancy|arrears|funds)/pdf$#',
-        '#^/api/reports/(owners|tenants|buildings|units)/\d+/pdf$#',
-        '#^/api/reports/managing-organisation/pdf$#',
-        '#^/api/registry/export/pdf$#',
+        '#^/api(?:/v1)?/leases/\d+/termination-notice/pdf$#',
+        '#^/api(?:/v1)?/leases/\d+/financial-history/pdf$#',
+        '#^/api(?:/v1)?/invoices/\d+/pdf$#',
+        '#^/api(?:/v1)?/invoices/\d+/payment-receipt$#',
+        '#^/api(?:/v1)?/payments/\d+/receipt$#',
+        '#^/api(?:/v1)?/owner-deposits/\d+/receipt$#',
+        '#^/api(?:/v1)?/owner-expense-bills/\d+/pdf$#',
+        '#^/api(?:/v1)?/owner-expense-bills/\d+/payment-receipt$#',
+        '#^/api(?:/v1)?/owner-payouts/\d+/receipt$#',
+        '#^/api(?:/v1)?/owner-reserve-transfers/\d+/voucher$#',
+        '#^/api(?:/v1)?/adjustment-vouchers/\d+/pdf$#',
+        '#^/api(?:/v1)?/withdrawal-receipts/\d+/pdf$#',
+        '#^/api(?:/v1)?/tenant-fund-expenses/\d+/voucher$#',
+        '#^/api(?:/v1)?/tenant-fund-transfers/\d+/voucher$#',
+        '#^/api(?:/v1)?/security-deposit-settlements/\d+/voucher$#',
+        '#^/api(?:/v1)?/reports/(payments|occupancy|arrears|funds)/pdf$#',
+        '#^/api(?:/v1)?/reports/(owners|tenants|buildings|units)/\d+/pdf$#',
+        '#^/api(?:/v1)?/reports/managing-organisation/pdf$#',
+        '#^/api(?:/v1)?/registry/export/pdf$#',
     ];
 
     /**

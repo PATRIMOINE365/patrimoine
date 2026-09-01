@@ -66,6 +66,7 @@ const SETTINGS_TABS = [
     'users',
     'license',
     'preferences',
+    'devices',
     'data',
     'about',
 ];
@@ -96,6 +97,7 @@ export async function initializeSettings() {
 
     initializeSettingsTabs();
     initializeAboutSection();
+    initializeDevices();
     initializeRegistryPortability();
     initializeOrganisationForms();
     initializeAccountClosure();
@@ -588,6 +590,333 @@ function selectSettingsTab(
                 );
         }
     );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Devices
+|--------------------------------------------------------------------------
+|
+| Everywhere this account is currently signed in.
+|
+| The list belongs to the account owner and to nobody else: the API
+| scopes every row to the token making the request, so there is no
+| identifier here that could reach another person's session.
+|
+| Revoking the device you are standing on is allowed. It is a sign-out,
+| and it is handled as one - the next request answers 401 and the shell
+| returns to the sign-in screen exactly as it does on any other expiry.
+|
+*/
+
+/**
+ * Wire the Devices tab.
+ */
+function initializeDevices() {
+    const list =
+        document.getElementById(
+            'devices-list'
+        );
+
+    if (! list) {
+        return;
+    }
+
+    document
+        .getElementById(
+            'devices-revoke-others'
+        )
+        ?.addEventListener(
+            'click',
+            revokeOtherDevices
+        );
+
+    /*
+     * Delegated: the rows are rendered after this runs, and are
+     * rendered again after every revocation.
+     */
+    list.addEventListener(
+        'click',
+        (event) => {
+            const button =
+                event.target.closest(
+                    '[data-revoke-device]'
+                );
+
+            if (! button) {
+                return;
+            }
+
+            revokeDevice(
+                button.dataset.revokeDevice
+            );
+        }
+    );
+
+    loadDevices();
+}
+
+/**
+ * Load and render the signed-in devices.
+ */
+async function loadDevices() {
+    const list =
+        document.getElementById(
+            'devices-list'
+        );
+
+    if (! list) {
+        return;
+    }
+
+    try {
+        const response =
+            await apiRequest(
+                '/api/auth/devices'
+            );
+
+        const payload =
+            await parseJsonResponse(
+                response
+            );
+
+        renderDevices(
+            payload.data ?? []
+        );
+    } catch (error) {
+        showTabError(
+            'devices',
+            error.message
+        );
+
+        list.innerHTML = '';
+    }
+}
+
+/**
+ * Render one row per signed-in device.
+ *
+ * @param {Array<object>} devices
+ */
+function renderDevices(devices) {
+    const list =
+        document.getElementById(
+            'devices-list'
+        );
+
+    if (! list) {
+        return;
+    }
+
+    if (devices.length === 0) {
+        list.innerHTML = `
+            <div
+                class="
+                    px-5 py-12 text-center
+                    text-sm text-[var(--pm-text-muted)]
+                "
+            >
+                ${escapeHtml(translate('devices.empty'))}
+            </div>
+        `;
+
+        return;
+    }
+
+    list.innerHTML = devices
+        .map(
+            (device) => deviceRow(device)
+        )
+        .join('');
+}
+
+/**
+ * One device row.
+ *
+ * @param {object} device
+ * @returns {string}
+ */
+function deviceRow(device) {
+    const name =
+        escapeHtml(
+            device.name
+            || translate('devices.unnamed')
+        );
+
+    const client =
+        translate(
+            `devices.client_${device.client_type || 'web'}`
+        );
+
+    const lastUsed =
+        device.last_used_at
+            ? formatDate(device.last_used_at)
+            : translate('devices.never_used');
+
+    const facts = [
+        escapeHtml(client),
+        `${escapeHtml(translate('devices.last_used'))}: ${escapeHtml(lastUsed)}`,
+        `${escapeHtml(translate('devices.signed_in'))}: ${escapeHtml(formatDate(device.created_at))}`,
+    ];
+
+    if (device.app_version) {
+        facts.splice(
+            1,
+            0,
+            escapeHtml(device.app_version)
+        );
+    }
+
+    if (device.last_used_ip) {
+        facts.push(
+            escapeHtml(device.last_used_ip)
+        );
+    }
+
+    const current =
+        device.is_current
+            ? `
+                <span
+                    class="
+                        rounded-full border px-2 py-0.5
+                        text-xs font-medium
+                        border-[var(--pm-success-border)]
+                        bg-[var(--pm-success-background)]
+                        text-[var(--pm-success-text)]
+                    "
+                >${escapeHtml(translate('devices.this_device'))}</span>
+            `
+            : '';
+
+    return `
+        <div
+            class="
+                flex flex-col gap-3 px-5 py-4
+                sm:flex-row sm:items-center
+                sm:justify-between
+            "
+        >
+            <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span
+                        class="
+                            text-sm font-medium
+                            text-[var(--pm-text)]
+                        "
+                    >${name}</span>
+
+                    ${current}
+                </div>
+
+                <p
+                    class="
+                        mt-1 text-xs leading-5
+                        text-[var(--pm-text-muted)]
+                    "
+                >${facts.join(' &middot; ')}</p>
+            </div>
+
+            <button
+                type="button"
+                data-revoke-device="${device.id}"
+                class="pm-button-secondary shrink-0"
+            >${escapeHtml(translate('devices.sign_out'))}</button>
+        </div>
+    `;
+}
+
+/**
+ * Sign one device out.
+ *
+ * @param {string} id
+ */
+async function revokeDevice(id) {
+    clearTabFeedback('devices');
+
+    try {
+        const response =
+            await apiRequest(
+                `/api/auth/devices/${encodeURIComponent(id)}`,
+                {
+                    method: 'DELETE',
+                }
+            );
+
+        const payload =
+            await parseJsonResponse(
+                response
+            );
+
+        /*
+         * Signing out the device you are standing on ends the session.
+         * Say so by leaving, rather than re-rendering a list the next
+         * request would be refused for.
+         */
+        if (payload.signed_out) {
+            window.location.replace('/login');
+
+            return;
+        }
+
+        showTabSuccess(
+            'devices',
+            payload.message
+        );
+
+        await loadDevices();
+    } catch (error) {
+        showTabError(
+            'devices',
+            error.message
+        );
+    }
+}
+
+/**
+ * Sign every other device out.
+ */
+async function revokeOtherDevices() {
+    const button =
+        document.getElementById(
+            'devices-revoke-others'
+        );
+
+    clearTabFeedback('devices');
+
+    const original =
+        setButtonBusy(button);
+
+    try {
+        const response =
+            await apiRequest(
+                '/api/auth/devices',
+                {
+                    method: 'DELETE',
+                }
+            );
+
+        const payload =
+            await parseJsonResponse(
+                response
+            );
+
+        showTabSuccess(
+            'devices',
+            payload.message
+        );
+
+        await loadDevices();
+    } catch (error) {
+        showTabError(
+            'devices',
+            error.message
+        );
+    } finally {
+        restoreButton(
+            button,
+            original
+        );
+    }
 }
 
 /*

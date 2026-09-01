@@ -14,6 +14,8 @@ return [
         'setup_required' => 'Complete your account setup before signing in.',
         'invalid_credentials' => 'The provided credentials are incorrect.',
         'logged_out' => 'Logged out successfully.',
+        'device_revoked' => 'That device has been signed out.',
+        'devices_revoked' => 'Every other device has been signed out.',
 
         'unauthenticated' => 'Unauthenticated.',
         'forbidden' => 'You are not authorized to perform this action.',

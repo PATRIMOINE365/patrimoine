@@ -50,22 +50,32 @@ class ApplicationLocaleService
          * language localises responses — validation messages, sign-in
          * errors — instead of the English platform default. Once an
          * organisation is bound, its own language remains authoritative.
+         *
+         * V1.0.44: the same declaration may now arrive as an ordinary
+         * Accept-Language header, which is what a native client sends
+         * and what a WebView cannot be relied on to carry in a cookie.
+         *
+         * The order matters. An explicit X-Patrimoine-Language is the
+         * client saying what it is rendering in; Accept-Language is the
+         * device saying what its owner prefers. The first is a statement
+         * about the screen the reply will be shown on, so it wins.
          */
-        if (! \App\Support\OrganisationContext::bound()) {
-            $requested =
-                request()?->header(
-                    'X-Patrimoine-Language'
-                );
+        $declared =
+            $this->declaredLanguage($supported);
 
-            if (
-                is_string($requested)
-                && in_array(
-                    $requested,
-                    $supported,
-                    true
-                )
-            ) {
-                return $requested;
+        if (
+            $declared !== null
+            && (bool) config(
+                'patrimoine.client_language_overrides_organisation',
+                false
+            )
+        ) {
+            return $declared;
+        }
+
+        if (! \App\Support\OrganisationContext::bound()) {
+            if ($declared !== null) {
+                return $declared;
             }
 
             /*
@@ -93,6 +103,23 @@ class ApplicationLocaleService
                 )
             ) {
                 return $cookie;
+            }
+
+            /*
+             * V1.0.44: last, the device's own preference.
+             *
+             * It comes after the cookie deliberately. The cookie is the
+             * language this visitor has already been reading Patrimoine
+             * in; Accept-Language is whatever the handset was set up
+             * with, and letting it win would repaint the sign-in screen
+             * in the wrong language for anybody using an English phone
+             * inside a French organisation.
+             */
+            $accepted =
+                $this->acceptedLanguage($supported);
+
+            if ($accepted !== null) {
+                return $accepted;
             }
         }
 
@@ -234,6 +261,98 @@ class ApplicationLocaleService
 
             'supported_currencies' => $this->supportedCurrencies(),
         ];
+    }
+
+    /**
+     * The language the client states it is rendering in.
+     *
+     * X-Patrimoine-Language is a statement about the screen the reply
+     * will be shown on, not a preference — and getting it right is what
+     * keeps an error message matchable back to its code, since codes are
+     * recovered from the rendered sentence and each language has its own
+     * map. It is the only client signal strong enough to be allowed, by
+     * configuration, to overrule the organisation.
+     *
+     * @param  list<string>  $supported
+     */
+    private function declaredLanguage(array $supported): ?string
+    {
+        $declared = request()?->header('X-Patrimoine-Language');
+
+        return is_string($declared)
+            && in_array($declared, $supported, true)
+                ? $declared
+                : null;
+    }
+
+    /**
+     * The language the device says its owner prefers.
+     *
+     * Every browser sends this whether it means anything or not, which
+     * is why it ranks below both the explicit declaration and the cookie
+     * the browser itself wrote. It matters for the client that has
+     * neither: a native application on its very first call, before it
+     * has been told anything.
+     *
+     * @param  list<string>  $supported
+     */
+    private function acceptedLanguage(array $supported): ?string
+    {
+        $request = request();
+
+        if ($request === null) {
+            return null;
+        }
+
+        $accept = $request->header('Accept-Language');
+
+        if (! is_string($accept) || trim($accept) === '') {
+            return null;
+        }
+
+        /*
+         * Accept-Language is a weighted list: "fr-FR,fr;q=0.9,en;q=0.8".
+         * Each entry is reduced to its primary subtag, because Patrimoine
+         * registers languages, not regional variants, and they are tried
+         * in the order the client ranked them.
+         */
+        $ranked = [];
+
+        foreach (explode(',', $accept) as $entry) {
+            $parts = explode(';q=', trim($entry), 2);
+
+            $tag = mb_strtolower(trim($parts[0]));
+
+            if ($tag === '' || $tag === '*') {
+                continue;
+            }
+
+            $quality = isset($parts[1])
+                ? (float) $parts[1]
+                : 1.0;
+
+            $primary = explode('-', $tag)[0];
+
+            if (! in_array($primary, $supported, true)) {
+                continue;
+            }
+
+            /*
+             * A repeated language keeps the highest weight it was given.
+             */
+            $ranked[$primary] = max(
+                $ranked[$primary] ?? 0.0,
+                $quality
+            );
+        }
+
+        if ($ranked === []) {
+            return null;
+        }
+
+        arsort($ranked);
+
+        return (string) array_key_first($ranked);
     }
 
     /**

@@ -21,7 +21,9 @@ use App\Http\Controllers\Api\ArrearsReportExportController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BuildingController;
 use App\Http\Controllers\Api\ConsumableAdvanceController;
+use App\Http\Controllers\Api\ClientConfigController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\DocumentLinkController;
 use App\Http\Controllers\Api\InvoiceAccountPaymentController;
@@ -101,6 +103,28 @@ use Illuminate\Support\Facades\Route;
 Route::get(
     'presentation-config',
     ApplicationPresentationController::class
+);
+
+/*
+|--------------------------------------------------------------------------
+| Client Configuration (V1.0.44)
+|--------------------------------------------------------------------------
+|
+| The first call an installed application makes, before it shows
+| anything. It answers what the minimum runnable version is, whether the
+| service is open, which API version to speak and where the web journeys
+| live.
+|
+| An installed application cannot be recalled, so the moment it starts is
+| the only moment it can be told it must not run. That is why this exists
+| now rather than in the release where it is first needed.
+|
+| Public, like presentation-config beside it: nobody has signed in yet.
+|
+*/
+Route::get(
+    'config',
+    ClientConfigController::class
 );
 
 /*
@@ -294,6 +318,35 @@ Route::middleware('auth:sanctum')->group(
             'auth/logout',
             [AuthController::class, 'logout']
         );
+
+        /*
+         * V1.0.44: the devices signed in to this account.
+         *
+         * A token that outlives the tab it was minted in is a credential
+         * sitting on a physical object, and physical objects are lost,
+         * sold and handed on. Somebody has to be able to see the list
+         * and take an entry out of it, in their own hands, at the moment
+         * they realise.
+         *
+         * Every route is the acting user's own account. No capability
+         * gate: reading and revoking your own sessions is not an
+         * administrative act, and asking an administrator to do it for
+         * you is the wrong answer to "I left my phone in a taxi".
+         */
+        Route::get(
+            'auth/devices',
+            [DeviceController::class, 'index']
+        );
+
+        Route::delete(
+            'auth/devices',
+            [DeviceController::class, 'destroyOthers']
+        );
+
+        Route::delete(
+            'auth/devices/{device}',
+            [DeviceController::class, 'destroy']
+        )->whereNumber('device');
 
         Route::post(
             'auth/change-password',

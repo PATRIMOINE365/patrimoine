@@ -24,9 +24,13 @@ Recorded 2026-08-21 after a full codebase review. Ordered by priority. Tick item
   derives `INV-%06d` from `Invoice::max('id') + 1`. Two concurrent generations, or generation
   after any historical deletion, can violate the unique index. Move to a dedicated sequence
   (or retry-on-collision inside the existing transaction).
-- [ ] **Sanctum tokens never expire** (`config/sanctum.php` → `'expiration' => null`).
-  Revocation only happens on logout, password change/reset, or account disable. Consider a
-  finite expiry plus token refresh in the JS shell.
+- [x] **Sanctum tokens never expire.** Resolved in v1.0.44. Every token is minted through
+  `App\Services\AccessTokenService` with an idle window each authenticated request slides
+  forward and an absolute ceiling nothing slides past (web 12h/30d, mobile 60d/180d, other
+  clients 30d/90d, all `.env`-overridable). No refresh flow was built and none is needed:
+  an arrived expiry is a 401, which every client already handles by returning to sign-in.
+  Tokens are also named for their device now, and Settings → Devices lists them with a
+  revoke button. See `docs/MOBILE-CONTRACT.md` §2.
 
 ## Low
 

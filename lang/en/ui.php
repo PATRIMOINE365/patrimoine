@@ -485,6 +485,26 @@ return [
         'cancel' => 'Cancel',
         'close' => 'Close',
     ],
+    'devices' => [
+
+        'heading' => 'Devices',
+        'description' => 'Everywhere this account is signed in. If you no longer have one of these, sign it out here and it stops working immediately.',
+        'loading' => 'Loading devices…',
+        'empty' => 'No other device is signed in.',
+        'unnamed' => 'Unrecognised device',
+        'this_device' => 'This device',
+        'sign_out' => 'Sign out',
+        'sign_out_others' => 'Sign out every other device',
+        'last_used' => 'Last used',
+        'signed_in' => 'Signed in',
+        'never_used' => 'Not used since',
+        'client_web' => 'Browser',
+        'client_mobile' => 'Mobile app',
+        'client_api' => 'Integration',
+        'expiry_note' => 'A device that goes unused signs itself out. A browser does so after half a day, the mobile app after two months, and every device has to sign in again eventually however often it is used.',
+    ],
+
+
     'settings' => [
         /* ---- V1.0.34 data protection ---- */
         'everything_title' => 'Download everything',
@@ -527,6 +547,7 @@ return [
         /* ---- V1.0.9 additions ---- */
         'tab_organisation' => 'Organisation',
         'tab_preferences' => 'Preferences',
+        'tab_devices' => 'Devices',
         'tab_data' => 'Data',
         'not_configured' => 'The Managing Organisation is not configured yet. Fill in the form below and save to set it up.',
         'save_preferences' => 'Save Preferences',

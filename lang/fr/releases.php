@@ -15,6 +15,18 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.44',
+            'date' => '2026-09-02',
+            'title' => 'Des appareils que vous pouvez déconnecter, et les fondations d\'un Patrimoine à installer',
+            'changes' => [
+                'Les Paramètres ont un onglet Appareils : tous les endroits où votre compte est connecté — quel appareil, sa dernière utilisation et d\'où — celui que vous lisez étant signalé. Déconnectez-en un, ou tous les autres d\'un coup : ils cessent aussitôt de fonctionner. Personne n\'a besoin de le demander à un administrateur.',
+                'Une session connectée ne dure plus indéfiniment. Elle reste active tant qu\'elle sert et expire quand ce n\'est plus le cas : un navigateur au bout d\'une demi-journée, la future application mobile au bout de deux mois. Et quoi qu\'elle ait fait, chaque appareil doit tôt ou tard se reconnecter. Jusqu\'ici une session ne prenait fin que par une déconnexion, un changement de mot de passe ou une désactivation.',
+                'Chaque session porte désormais le nom de l\'appareil qui l\'a ouverte — « Chrome sur Windows » plutôt que rien du tout — pour que la liste ci-dessus puisse être lue et utilisée.',
+                'L\'écran de connexion et tout ce qui le précède répondent maintenant dans la langue demandée par l\'appareil, à défaut d\'autre indication. Une fois connecté, c\'est toujours votre organisation qui décide : ce qui est affiché et ce que dit le serveur ne peuvent donc jamais diverger.',
+                'Fondations du Patrimoine que vous pourrez installer sur un téléphone : l\'interface par laquelle Patrimoine se parle à lui-même porte désormais un numéro de version, afin qu\'une application installée continue de fonctionner pendant que le produit évolue ; l\'application demandera à ce serveur, à chaque démarrage, si elle a encore le droit de s\'exécuter, ce qui permet d\'imposer une mise à jour ou de fermer le service une heure sans attendre un magasin d\'applications ; et les liens Patrimoine envoyés par e-mail sont préparés pour ouvrir l\'application elle-même une fois celle-ci installée, y compris ceux envoyés avant qu\'elle existe.',
+            ],
+        ],
+        [
             'version' => '1.0.43',
             'date' => '2026-09-01',
             'title' => 'Le dépôt de garantie est encaissé, l\'assistant suit le formulaire de bail, et l\'archivage demande',

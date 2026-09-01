@@ -19,6 +19,18 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.44',
+            'date' => '2026-09-02',
+            'title' => 'Devices you can sign out, and the groundwork for a Patrimoine you install',
+            'changes' => [
+                'Settings has a Devices tab listing everywhere your account is signed in — what the device is, when it was last used and from where — with the one you are reading on marked. Sign out beside any of them, or sign out all the others at once, and they stop working immediately. Nobody has to ask an administrator for it.',
+                'A signed-in session no longer lasts for ever. It stays alive for as long as it is being used and expires when it is not: a browser after half a day, and the coming mobile application after two months. Whatever it has been doing, every device has to sign in again eventually. Until now a session ended only when somebody signed out, changed their password or was deactivated.',
+                'Each session is now named for the device that started it — "Chrome on Windows" rather than nothing at all — so the list above can be read and acted on.',
+                'The sign-in screen and everything before it now answer in the language the device asks for, when nothing else has said otherwise. Once you are signed in your organisation still decides, so what is on screen and what the server says can never disagree.',
+                'Groundwork for the Patrimoine you will be able to install on a phone: the interface Patrimoine speaks to itself with now carries a version number, so an installed application can keep working while the product moves on; the application will ask this server at every start whether it is still allowed to run, which is what makes it possible to require an update or to close the service for an hour without waiting on an app store; and Patrimoine links sent by e-mail are being prepared to open the application itself once it is installed, including the ones sent before it existed.',
+            ],
+        ],
+        [
             'version' => '1.0.43',
             'date' => '2026-09-01',
             'title' => 'The security deposit is received, the assistant follows the lease form, and archiving asks',

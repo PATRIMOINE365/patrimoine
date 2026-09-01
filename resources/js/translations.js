@@ -141,6 +141,12 @@ export const translations = {
         'activity_actions.auth.logout':
             'Signed Out',
 
+        'activity_actions.auth.device_revoked':
+            'Device Signed Out',
+
+        'activity_actions.auth.devices_revoked':
+            'Other Devices Signed Out',
+
         'activity_actions.user.created':
             'User Created',
 
@@ -2813,6 +2819,54 @@ export const translations = {
         'settings.tab_preferences':
             'Preferences',
 
+        'settings.tab_devices':
+            'Devices',
+
+        'devices.heading':
+            'Devices',
+
+        'devices.description':
+            'Everywhere this account is signed in. If you no longer have one of these, sign it out here and it stops working immediately.',
+
+        'devices.loading':
+            'Loading devices…',
+
+        'devices.empty':
+            'No other device is signed in.',
+
+        'devices.unnamed':
+            'Unrecognised device',
+
+        'devices.this_device':
+            'This device',
+
+        'devices.sign_out':
+            'Sign out',
+
+        'devices.sign_out_others':
+            'Sign out every other device',
+
+        'devices.last_used':
+            'Last used',
+
+        'devices.signed_in':
+            'Signed in',
+
+        'devices.never_used':
+            'Not used since',
+
+        'devices.client_web':
+            'Browser',
+
+        'devices.client_mobile':
+            'Mobile app',
+
+        'devices.client_api':
+            'Integration',
+
+        'devices.expiry_note':
+            'A device that goes unused signs itself out. A browser does so after half a day, the mobile app after two months, and every device has to sign in again eventually however often it is used.',
+
         'settings.tab_data':
             'Data',
 
@@ -4715,6 +4769,12 @@ export const translations = {
 
         'activity_actions.auth.logout':
             'Déconnexion',
+
+        'activity_actions.auth.device_revoked':
+            'Appareil déconnecté',
+
+        'activity_actions.auth.devices_revoked':
+            'Autres appareils déconnectés',
 
         'activity_actions.user.created':
             'Utilisateur créé',
@@ -7387,6 +7447,54 @@ export const translations = {
 
         'settings.tab_preferences':
             'Préférences',
+
+        'settings.tab_devices':
+            'Appareils',
+
+        'devices.heading':
+            'Appareils',
+
+        'devices.description':
+            'Tous les endroits où ce compte est connecté. Si vous n\'avez plus l\'un d\'eux, déconnectez-le ici et il cesse aussitôt de fonctionner.',
+
+        'devices.loading':
+            'Chargement des appareils…',
+
+        'devices.empty':
+            'Aucun autre appareil connecté.',
+
+        'devices.unnamed':
+            'Appareil non reconnu',
+
+        'devices.this_device':
+            'Cet appareil',
+
+        'devices.sign_out':
+            'Déconnecter',
+
+        'devices.sign_out_others':
+            'Déconnecter tous les autres appareils',
+
+        'devices.last_used':
+            'Dernière utilisation',
+
+        'devices.signed_in':
+            'Connexion',
+
+        'devices.never_used':
+            'Jamais utilisé depuis',
+
+        'devices.client_web':
+            'Navigateur',
+
+        'devices.client_mobile':
+            'Application mobile',
+
+        'devices.client_api':
+            'Intégration',
+
+        'devices.expiry_note':
+            'Un appareil inutilisé se déconnecte de lui-même : un navigateur au bout d\'une demi-journée, l\'application mobile au bout de deux mois. Et quelle que soit la fréquence d\'utilisation, chaque appareil doit tôt ou tard se reconnecter.',
 
         'settings.tab_data':
             'Données',

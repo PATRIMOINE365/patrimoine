@@ -133,6 +133,23 @@ export async function apiRequest(
         || 'en'
     );
 
+    /*
+     * V1.0.44: say which client this is rather than leaving the server
+     * to guess it from a user-agent string. It decides how long the
+     * token minted at sign-in may live, and a browser token is the
+     * short-lived one: it dies with the tab anyway, so there is no
+     * reason for the row behind it to outlive that.
+     */
+    headers.set(
+        'X-Patrimoine-Client',
+        'web'
+    );
+
+    headers.set(
+        'X-Patrimoine-Platform',
+        'web'
+    );
+
     if (
         options.body
         && ! headers.has(

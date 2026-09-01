@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\AppAssociationController;
 use App\Http\Controllers\ErrorReferenceController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,34 @@ Route::get(
  * provisions new organisations. The old path forwards politely.
  */
 Route::redirect('/setup', '/signup');
+
+/*
+|--------------------------------------------------------------------------
+| Application Association (V1.0.44)
+|--------------------------------------------------------------------------
+|
+| The two files that let an ordinary Patrimoine https link open the
+| installed application instead of a browser tab.
+|
+| They are published before the first build exists, and the deep-link
+| paths they claim are frozen from this release, because a link in an
+| invoice e-mail is opened months after it is sent: whatever shape the
+| link had when it was sent is the shape it will still have then.
+|
+| Both are withheld until the signing identities are configured. Apple
+| caches the association through its own CDN, so a placeholder would be
+| the answer that sticks.
+|
+*/
+Route::get(
+    '/.well-known/apple-app-site-association',
+    [AppAssociationController::class, 'apple']
+)->name('well-known.apple');
+
+Route::get(
+    '/.well-known/assetlinks.json',
+    [AppAssociationController::class, 'android']
+)->name('well-known.android');
 
 Route::view(
     '/signup',

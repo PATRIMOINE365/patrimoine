@@ -14,6 +14,8 @@ return [
         'setup_required' => 'Terminez la configuration de votre compte avant de vous connecter.',
         'invalid_credentials' => 'Les identifiants fournis sont incorrects.',
         'logged_out' => 'Déconnexion effectuée avec succès.',
+        'device_revoked' => 'Cet appareil a été déconnecté.',
+        'devices_revoked' => 'Tous les autres appareils ont été déconnectés.',
 
         'unauthenticated' => 'Vous devez être authentifié pour effectuer cette action.',
         'forbidden' => 'Vous n’êtes pas autorisé à effectuer cette action.',

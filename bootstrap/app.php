@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\ApplyApplicationLocale;
+use App\Http\Middleware\SlideAccessTokenExpiry;
 use App\Support\ErrorCodes;
 use Illuminate\Http\JsonResponse;
 use App\Http\Middleware\AuthenticateSignedDocumentAccess;
@@ -14,6 +15,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -21,6 +23,29 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+
+        /*
+         * V1.0.44: the same API, mounted a second time under its version.
+         *
+         * Until now every route lived at /api with no version segment,
+         * which is survivable only while the client and the server ship
+         * together. An installed application cannot be upgraded on
+         * demand, so from the first release that has one there has to be
+         * a way to introduce a breaking change beside the old behaviour
+         * instead of on top of it. That way is the version segment.
+         *
+         * /api and /api/v1 are the same routes today. The unversioned
+         * prefix stays for the browser application and for anything
+         * already written against it; new clients call the version.
+         */
+        then: function (): void {
+            foreach ((array) config('patrimoine.api.supported', ['v1']) as $version) {
+                Route::middleware('api')
+                    ->prefix('api/'.$version)
+                    ->name($version.'.')
+                    ->group(base_path('routes/api.php'));
+            }
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         /*
@@ -60,6 +85,17 @@ return Application::configure(basePath: dirname(__DIR__))
          */
         $middleware->appendToGroup('api', SetOrganisationContext::class);
         $middleware->appendToGroup('web', SetOrganisationContext::class);
+
+        /*
+         * V1.0.44: a token stays alive for as long as it is used.
+         *
+         * The window is pushed forward after the response, so a request
+         * that was going to fail still fails for its own reason, and it
+         * can never be pushed past the ceiling the token was minted
+         * with. Sanctum refuses an arrived expiry at the same door it
+         * refuses every other invalid token.
+         */
+        $middleware->appendToGroup('api', SlideAccessTokenExpiry::class);
 
         $middleware->appendToPriorityList(
             AuthenticatesRequests::class,
