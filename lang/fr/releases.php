@@ -15,6 +15,15 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.49',
+            'date' => '2026-09-02',
+            'title' => 'L\'assistant accepte un propriétaire existant sur un nouveau bien',
+            'changes' => [
+                'Créer une location via l\'assistant guidé avec un nouveau bien et un propriétaire déjà enregistré fonctionne de nouveau. Depuis l\'arrivée des sélecteurs à recherche, le propriétaire choisi de cette façon disparaissait silencieusement de l\'envoi, et l\'assistant refusait avec « propriétaire requis » quel que soit le choix. Le passage par un bien existant n\'était pas concerné, d\'où l\'absence de signalement.',
+                'Quand l\'assistant refuse quelque chose concernant les personnes ou le bien, il nomme désormais le champ dans votre langue — « propriétaire choisi », « coordonnées du nouveau locataire » — au lieu d\'afficher des chemins internes comme owners.0.id.',
+            ],
+        ],
+        [
             'version' => '1.0.48',
             'date' => '2026-09-02',
             'title' => 'L\'adresse e-mail se change avec des preuves, et l\'argent des propriétaires se compte poche par poche',

@@ -19,6 +19,15 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.49',
+            'date' => '2026-09-02',
+            'title' => 'The assistant accepts an existing owner on a new property',
+            'changes' => [
+                'Creating a letting through the guided assistant with a new property and an already-registered owner works again. Since the searchable pickers arrived, the owner chosen that way was silently dropped from the submission, so the assistant refused with "owner required" no matter what was picked. Choosing an existing property was unaffected, which is why it went unseen.',
+                'When the assistant refuses something about the people or the property, it now names the field in your language — "chosen owner", "new tenant details" — rather than showing internal field paths like owners.0.id.',
+            ],
+        ],
+        [
             'version' => '1.0.48',
             'date' => '2026-09-02',
             'title' => 'Your email is changed with proof, and owner money is counted pool by pool',
