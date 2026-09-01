@@ -578,6 +578,7 @@ return [
                         ['text' => 'Choose how it was paid and name who authorised it.'],
                         ['text' => 'Press Save. The payout is matched against the earnings it settles, oldest first, and a numbered receipt is produced.'],
                         ['text' => 'The receipt shows the owner how the figure was reached. A summary sits under the amount, and under that every movement since they last collected, itemised: the rent by unit and the period it was for, the fee and the VAT on it, and each expense with its building and date. The three tables add up to the payout, so they can check it without asking you for a statement.'],
+                        ['text' => 'The receipt is a record of that moment and does not change afterwards. Money entered later belongs to the next payout even if it carries an earlier date — a rent payment for May, recorded in September, is on the September receipt. That is why a receipt and an owner statement covering what looks like the same period can differ: the statement answers what happened between two dates, the receipt answers what justified one payment.'],
                     ],
                 ],
 

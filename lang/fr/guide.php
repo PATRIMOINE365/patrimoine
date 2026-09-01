@@ -574,6 +574,7 @@ return [
                         ['text' => 'Choisissez le mode de règlement et indiquez qui l\'a autorisé.'],
                         ['text' => 'Appuyez sur Enregistrer. Le versement est rapproché des produits qu\'il solde, du plus ancien au plus récent, et un bon numéroté est produit.'],
                         ['text' => 'Le reçu montre au propriétaire comment le montant est obtenu. Un récapitulatif figure sous le montant, et en dessous chaque mouvement depuis son dernier encaissement, détaillé : les loyers par lot et la période concernée, les honoraires et la TVA correspondante, et chaque charge avec son bâtiment et sa date. Les trois tableaux font le versement, si bien qu\'il peut vérifier sans vous demander un relevé.'],
+                        ['text' => 'Le reçu est le témoin de ce moment et ne change plus ensuite. L’argent saisi plus tard appartient au versement suivant, même s’il porte une date antérieure : un loyer de mai enregistré en septembre figure sur le reçu de septembre. C’est pourquoi un reçu et un relevé de propriétaire portant sur ce qui semble être la même période peuvent différer : le relevé dit ce qui s’est passé entre deux dates, le reçu dit ce qui justifiait un versement.'],
                     ],
                 ],
 
