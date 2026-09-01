@@ -126,7 +126,7 @@ class OwnerPayoutBreakdownService
          * and the one the payout before it stopped at. Everything
          * between the two is what this payout was made against.
          */
-        $through = $this->throughMovementId($account->id, $recordedAt);
+        $through = $this->throughMovementId($account->id, $recordedAt, $payout);
 
         $previousThrough = $this->boundaryOf($previous, $account->id);
 
@@ -206,12 +206,78 @@ class OwnerPayoutBreakdownService
      */
     private function throughMovementId(
         int $accountId,
-        CarbonImmutable $recordedAt
+        CarbonImmutable $recordedAt,
+        ?OwnerPayout $payout = null
     ): int {
-        return (int) OwnerTransaction::query()
+        $byTime = (int) OwnerTransaction::query()
             ->where('owner_account_id', $accountId)
             ->where('created_at', '<=', $recordedAt)
             ->max('id');
+
+        /*
+         * A payout always includes the debit that records it leaving.
+         *
+         * Timestamps are stored to the second, and two payouts entered in
+         * the same second — a seeded account, an import, somebody quick —
+         * read as one moment. The first would then claim every row up to
+         * that second and leave the second payout with an empty window and
+         * a receipt showing an amount and nothing else, which is the very
+         * fault this release exists to remove.
+         *
+         * So the boundary is never earlier than the payout's own ledger
+         * debit. Payout debits are written one per payout, in the order
+         * the payouts were made, so the nth payout owns the nth debit.
+         */
+        $ownDebit = $payout === null
+            ? 0
+            : $this->ownDebitId($payout, $accountId);
+
+        /*
+         * Where the debit is known it IS the boundary, not merely a floor
+         * for it. It is the last owner-ledger row the payout writes, so
+         * everything up to it is what the payout was made against and
+         * everything after it belongs to whatever comes next. Taking the
+         * later of the two would let a payout entered in the same second
+         * as the next one swallow that one's money as well.
+         */
+        return $ownDebit > 0
+            ? $ownDebit
+            : $byTime;
+    }
+
+    /**
+     * The ledger debit that recorded this payout leaving the account.
+     */
+    private function ownDebitId(
+        OwnerPayout $payout,
+        int $accountId
+    ): int {
+        $position = OwnerPayout::query()
+            ->where('owner_account_id', $accountId)
+            ->where(
+                fn ($query) => $query
+                    ->where('created_at', '<', $payout->created_at)
+                    ->orWhere(
+                        fn ($same) => $same
+                            ->where('created_at', '=', $payout->created_at)
+                            ->where('id', '<=', $payout->id)
+                    )
+            )
+            ->count();
+
+        if ($position < 1) {
+            return 0;
+        }
+
+        return (int) OwnerTransaction::query()
+            ->where('owner_account_id', $accountId)
+            ->where('direction', 'debit')
+            ->where('category', 'payout')
+            ->orderBy('id')
+            ->skip($position - 1)
+            ->take(1)
+            ->pluck('id')
+            ->first();
     }
 
     /**
@@ -239,7 +305,7 @@ class OwnerPayoutBreakdownService
             ? CarbonImmutable::parse($payout->created_at)
             : CarbonImmutable::parse($payout->payout_date)->endOfDay();
 
-        return $this->throughMovementId($accountId, $recordedAt);
+        return $this->throughMovementId($accountId, $recordedAt, $payout);
     }
 
     /**

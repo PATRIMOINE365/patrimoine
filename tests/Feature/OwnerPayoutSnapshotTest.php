@@ -209,6 +209,61 @@ class OwnerPayoutSnapshotTest extends TestCase
     }
 
     /**
+     * Two payouts entered in the same second are still two payouts.
+     *
+     * Timestamps are stored to the second, so a seeded account, an import
+     * or somebody quick produces payouts that look simultaneous. Found on
+     * pre-production, where the demonstration data made two payouts in
+     * one second and the first claimed every row up to it — leaving the
+     * second with an empty statement, which is the fault this whole
+     * release exists to remove.
+     *
+     * The boundary is therefore never earlier than the payout's own
+     * ledger debit.
+     */
+    public function test_payouts_recorded_in_the_same_second_are_still_separated(): void
+    {
+        $account = $this->createAccount();
+
+        $this->movement($account, 'credit', 'rent_entitlement', 5000, '2026-08-10', '2026-08-31 16:09:32');
+
+        $first = $this->payout($account, 5000, '2026-08-31', '2026-08-31 16:09:32');
+
+        $this->movement($account, 'credit', 'rent_entitlement', 4000, '2026-08-12', '2026-08-31 16:09:32');
+
+        $second = $this->payout($account, 4000, '2026-08-31', '2026-08-31 16:09:32');
+
+        /*
+         * Both statements are thrown away and composed again, which is
+         * what the backfill does to a payout made before freezing
+         * existed: nothing but the timestamps to go on.
+         */
+        foreach ([$first, $second] as $payout) {
+            $payout->forceFill([
+                'statement' => null,
+                'statement_frozen_at' => null,
+            ])->saveQuietly();
+        }
+
+        $breakdown = app(OwnerPayoutBreakdownService::class);
+
+        $firstStatement = $breakdown->forPayout($first->refresh());
+        $secondStatement = $breakdown->forPayout($second->refresh());
+
+        $this->assertSame(5000, $firstStatement['received_total']);
+        $this->assertSame(5000, $firstStatement['amount']);
+
+        $this->assertSame(
+            4000,
+            $secondStatement['received_total'],
+            'A payout entered in the same second as another still has its own money.'
+        );
+        $this->assertNotEmpty($secondStatement['received']);
+        $this->assertSame(4000, $secondStatement['amount']);
+        $this->assertSame(0, $secondStatement['carried_forward']);
+    }
+
+    /**
      * The arithmetic closes, whatever is in the window.
      */
     public function test_the_statement_always_reconciles(): void
