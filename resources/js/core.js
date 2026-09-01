@@ -800,10 +800,18 @@ export function messageWithErrorCode(message, code = null) {
 | and the button says the truth: Delete while the record can still go, and
 | Archive once it cannot. The two are alternatives, never both.
 |
-| Archiving is not a deletion and does not ask like one. It takes the
-| record out of the lists and the pickers, changes nothing else, is listed
-| on the archive page and comes back with one press, so putting a modal in
-| front of it would be theatre.
+| V1.0.43: archiving ASKS, and it wears the red.
+|
+| To everybody who did not do it, an archived record has simply gone — it
+| is in no list and in no picker — so the fact that it is reversible is a
+| comfort only to somebody who knows the archive page exists. It therefore
+| opens a drawer that says plainly what archiving does and what it does
+| not, and asks for a reason, exactly as deletion does. And it is drawn in
+| the same red, because a button that takes a record off every screen in
+| the product should not look like Edit.
+|
+| The drawer lives on every page, so it is rendered here rather than in
+| four blade files, and the one delegated listener below opens it.
 |
 */
 
@@ -833,13 +841,18 @@ export function removalButton(options) {
 }
 
 /**
+ * The record the archive drawer is currently asking about.
+ */
+let pendingArchive = null;
+
+/**
  * One delegated listener for every Archive button in the application.
  *
  * Delegated because the rows are drawn and redrawn constantly, and a
  * listener attached per row would have to be re-attached each time.
  */
 export function initializeArchiveButtons() {
-    document.addEventListener('click', async (event) => {
+    document.addEventListener('click', (event) => {
         const button = event.target instanceof Element
             ? event.target.closest('[data-archive-record]')
             : null;
@@ -848,42 +861,159 @@ export function initializeArchiveButtons() {
             return;
         }
 
-        setButtonBusy(button, 'archive.archiving');
+        openArchiveDrawer(button);
+    });
 
-        try {
-            const response = await apiRequest(
-                `/api/archive/${button.dataset.archiveKind}`
-                + `/${button.dataset.archiveId}`,
-                { method: 'POST' }
-            );
+    const form = document.getElementById('archive-drawer-form');
 
-            if (! response.ok) {
-                const payload = await response.json().catch(() => ({}));
+    form?.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-                throw new Error(
-                    messageWithErrorCode(
-                        payload?.message ?? translate('archive.archive_failed'),
-                        payload?.code ?? null
-                    )
-                );
+        await submitArchive();
+    });
+
+    ['archive-drawer-cancel', 'archive-drawer-close'].forEach((id) => {
+        document
+            .getElementById(id)
+            ?.addEventListener('click', () => {
+                closeDrawer('archive-drawer');
+            });
+    });
+
+    document
+        .getElementById('archive-drawer-backdrop')
+        ?.addEventListener('click', () => {
+            closeDrawer('archive-drawer');
+        });
+}
+
+/**
+ * Ask before taking a record out of every list in the product.
+ *
+ * @param {HTMLElement} button
+ */
+function openArchiveDrawer(button) {
+    pendingArchive = {
+        kind: button.dataset.archiveKind,
+        id: button.dataset.archiveId,
+        name: button.dataset.archiveName ?? '',
+    };
+
+    const record = document.getElementById('archive-drawer-record');
+
+    if (record) {
+        record.textContent = pendingArchive.name;
+    }
+
+    const reason = document.getElementById('archive-drawer-reason');
+
+    if (reason instanceof HTMLTextAreaElement) {
+        reason.value = '';
+    }
+
+    hideArchiveDrawerError('archive-drawer-error');
+
+    openDrawer('archive-drawer');
+
+    reason?.focus();
+}
+
+/**
+ * Archive the record the drawer is asking about.
+ */
+async function submitArchive() {
+    if (! pendingArchive) {
+        return;
+    }
+
+    const submit = document.getElementById('archive-drawer-submit');
+
+    const reason = String(
+        document.getElementById('archive-drawer-reason')?.value ?? ''
+    ).trim();
+
+    hideArchiveDrawerError('archive-drawer-error');
+
+    setButtonBusy(submit, 'archive.archiving');
+
+    try {
+        const response = await apiRequest(
+            `/api/archive/${pendingArchive.kind}`
+            + `/${pendingArchive.id}`,
+            {
+                method: 'POST',
+                body: JSON.stringify({ reason }),
             }
+        );
 
-            /*
-             * The row has to leave the list it was archived out of, and
-             * each list rebuilds itself from the server. Reloading is the
-             * one thing that is right for all of them.
-             */
-            window.location.reload();
-        } catch (failure) {
-            restoreButton(button);
+        if (! response.ok) {
+            const payload = await response.json().catch(() => ({}));
 
-            window.alert(
-                failure instanceof Error
-                    ? failure.message
-                    : translate('archive.archive_failed')
+            const validation = Object
+                .values(payload?.errors ?? {})
+                .flat()
+                .filter(Boolean)
+                .join(' ');
+
+            throw new Error(
+                messageWithErrorCode(
+                    validation
+                    || payload?.message
+                    || translate('archive.archive_failed'),
+                    payload?.code ?? null
+                )
             );
         }
-    });
+
+        /*
+         * The row has to leave the list it was archived out of, and each
+         * list rebuilds itself from the server. Reloading is the one thing
+         * that is right for all of them.
+         */
+        window.location.reload();
+    } catch (failure) {
+        restoreButton(submit);
+
+        showArchiveDrawerError(
+            'archive-drawer-error',
+            failure instanceof Error
+                ? failure.message
+                : translate('archive.archive_failed')
+        );
+    }
+}
+
+/**
+ * Show a refusal inside an archive drawer.
+ *
+ * @param {string} id
+ * @param {string} message
+ */
+export function showArchiveDrawerError(id, message) {
+    const element = document.getElementById(id);
+
+    if (! element) {
+        return;
+    }
+
+    element.textContent = messageWithErrorCode(message);
+
+    element.classList.remove('hidden');
+}
+
+/**
+ * @param {string} id
+ */
+export function hideArchiveDrawerError(id) {
+    const element = document.getElementById(id);
+
+    if (! element) {
+        return;
+    }
+
+    element.textContent = '';
+
+    element.classList.add('hidden');
 }
 
 /**

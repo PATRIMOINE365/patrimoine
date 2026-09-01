@@ -1399,4 +1399,224 @@ class LeaseApiTest extends TestCase
             $advance['transactions']
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | The security deposit
+    |--------------------------------------------------------------------------
+    |
+    | V1.0.43. Every lease has owned a Security Deposit fund account since
+    | V1.0.8, and the lease form has always asked what the deposit is —
+    | but nothing ever put money into it. The contract said 10,000 and the
+    | account said nothing, on every lease ever entered, and the first
+    | anybody knew of it was reaching for money that was not there.
+    |
+    */
+
+    /**
+     * Entering a deposit funds the account it belongs to.
+     */
+    public function test_the_security_deposit_is_received_at_lease_creation(): void
+    {
+        $context = $this->createContext();
+
+        $response = $this->postJson(
+            '/api/leases',
+            $this->validPayload($context, [
+                'security_deposit_amount' => 12000,
+                'security_deposit_received_date' => '2026-08-01',
+                'security_deposit_received_method' => 'bank_transfer',
+                'security_deposit_received_reference' => 'DEP-001',
+            ])
+        )->assertCreated();
+
+        $lease = Lease::findOrFail(
+            $response->json('id')
+        );
+
+        $account = TenantFundAccount::query()
+            ->where('lease_id', $lease->id)
+            ->where('type', 'security_deposit')
+            ->firstOrFail();
+
+        $this->assertSame(
+            12000,
+            $account->creditedAmount(),
+            'The deposit entered on the lease is the deposit held for the tenant.'
+        );
+
+        $this->assertDatabaseHas('tenant_fund_transactions', [
+            'tenant_fund_account_id' => $account->id,
+            'direction' => 'credit',
+            'category' => 'deposit_funding',
+            'amount' => 12000,
+        ]);
+
+        $this->assertDatabaseHas('payments', [
+            'lease_id' => $lease->id,
+            'amount' => 12000,
+            'is_opening_deposit' => true,
+            'reference' => 'DEP-001',
+        ]);
+    }
+
+    /**
+     * A lease with no deposit takes no money.
+     */
+    public function test_no_deposit_means_no_payment(): void
+    {
+        $context = $this->createContext();
+
+        $response = $this->postJson(
+            '/api/leases',
+            $this->validPayload($context, [
+                'security_deposit_amount' => 0,
+            ])
+        )->assertCreated();
+
+        $this->assertDatabaseMissing('payments', [
+            'lease_id' => $response->json('id'),
+            'is_opening_deposit' => true,
+        ]);
+    }
+
+    /**
+     * Initialization runs again on every lease update, and a deposit
+     * taken twice is a deposit the tenant is owed twice.
+     */
+    public function test_editing_a_lease_does_not_take_the_deposit_again(): void
+    {
+        $context = $this->createContext();
+
+        $created = $this->postJson(
+            '/api/leases',
+            $this->validPayload($context, [
+                'security_deposit_amount' => 12000,
+            ])
+        )->assertCreated();
+
+        $leaseId = $created->json('id');
+
+        $this->putJson(
+            '/api/leases/'.$leaseId,
+            $this->validPayload($context, [
+                'security_deposit_amount' => 12000,
+                'notes' => 'Edited once.',
+            ])
+        )->assertOk();
+
+        $this->assertSame(
+            1,
+            Payment::query()
+                ->where('lease_id', $leaseId)
+                ->where('is_opening_deposit', true)
+                ->count(),
+            'A lease has at most one opening deposit, however often it is edited.'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Money can arrive before the tenancy does
+    |--------------------------------------------------------------------------
+    |
+    | V1.0.43. A deposit and the first advance are usually what secures the
+    | unit, weeks before anybody moves in. The rule used to refuse exactly
+    | that, so an operator entering a real payment had to lie about its
+    | date to get it accepted — and the receipt then said something that
+    | had not happened.
+    |
+    */
+
+    /**
+     * The advance may have been received before the lease begins.
+     */
+    public function test_an_advance_may_be_received_before_the_lease_starts(): void
+    {
+        $context = $this->createContext();
+
+        /*
+         * Settling historical rent posts owner entitlement, so the
+         * building has to know who owns it.
+         */
+        $owner = Party::create([
+            'type' => 'person',
+            'name' => 'Early Money Owner',
+            'phone' => '0200000497',
+            'email' => 'early-money-owner@example.test',
+        ]);
+
+        PartyRole::create([
+            'party_id' => $owner->id,
+            'role' => 'owner',
+        ]);
+
+        BuildingOwner::create([
+            'building_id' => $context['unit']->building_id,
+            'party_id' => $owner->id,
+            'ownership_percentage' => 100.00,
+        ]);
+
+        $response = $this->postJson(
+            '/api/leases',
+            $this->validPayload($context, [
+                'start_date' => '2026-08-01',
+                'advance_payment_amount' => 30000,
+                'advance_received' => true,
+                'advance_received_date' => '2026-07-02',
+                'advance_received_method' => 'bank_transfer',
+            ])
+        )->assertCreated();
+
+        $this->assertDatabaseHas('payments', [
+            'lease_id' => $response->json('id'),
+            'is_opening_advance' => true,
+            'payment_date' => '2026-07-02 00:00:00',
+        ]);
+    }
+
+    /**
+     * And so may the deposit.
+     */
+    public function test_a_deposit_may_be_received_before_the_lease_starts(): void
+    {
+        $context = $this->createContext();
+
+        $response = $this->postJson(
+            '/api/leases',
+            $this->validPayload($context, [
+                'start_date' => '2026-08-01',
+                'security_deposit_amount' => 12000,
+                'security_deposit_received_date' => '2026-06-15',
+                'security_deposit_received_method' => 'cash',
+            ])
+        )->assertCreated();
+
+        $this->assertDatabaseHas('payments', [
+            'lease_id' => $response->json('id'),
+            'is_opening_deposit' => true,
+            'payment_date' => '2026-06-15 00:00:00',
+        ]);
+    }
+
+    /**
+     * The rent increment, by contrast, still cannot precede the lease.
+     * It is a change to a rent that does not exist yet.
+     */
+    public function test_a_rent_increment_may_not_precede_the_lease_start(): void
+    {
+        $context = $this->createContext();
+
+        $this->postJson(
+            '/api/leases',
+            $this->validPayload($context, [
+                'start_date' => '2026-08-01',
+                'rent_increment_type' => 'percentage',
+                'rent_increment_value' => 5,
+                'next_rent_increment_date' => '2026-07-01',
+            ])
+        )
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('next_rent_increment_date');
+    }
 }

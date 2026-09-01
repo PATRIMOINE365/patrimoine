@@ -1224,6 +1224,11 @@ return [
             'severity' => 'fix_yourself',
             'keys' => ['api.archive.not_archivable'],
         ],
+        'PM-3097' => [
+            'family' => 3,
+            'severity' => 'fix_yourself',
+            'keys' => ['api.archive.lease_not_terminated'],
+        ],
 
         /* ---- 4xxx money ---- */
 

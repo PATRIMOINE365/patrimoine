@@ -1,9 +1,28 @@
 /*
 |--------------------------------------------------------------------------
-| Guided Lease Creation (V1.0.29)
+| Guided Lease Creation
 |--------------------------------------------------------------------------
 |
-| Ten pages that end in ONE request. Nothing is written until the last
+| V1.0.43: the assistant IS the lease drawer, paginated. One page per
+| section of the drawer, in the drawer's order and in the drawer's words:
+|
+|     1  Information        what these words mean
+|     2  Property & Tenant   unit, owners, tenant, agent
+|     3  Lease Period        start, duration, end, notice
+|     4  Rent Terms          rent, frequency, due day, VAT, proration,
+|                            deposit and its receipt
+|     5  Advance Payment     advance, reserve, consumable, receipt
+|     6  Rent Increment      type, value, next date
+|     7  Fees & Commission   management fee, agent commission, notes
+|     8  Review
+|
+| The two had drifted into different products asking different questions,
+| and the worst of the differences was silent: this page called the rent
+| field "Rent" and put "Paid every: Quarter" under it, while the drawer
+| called it "Monthly Rent" and the engine has always read it as a month.
+| A quarter's rent typed here was billed at three times itself.
+|
+| Eight pages that end in ONE request. Nothing is written until the last
 | page, so somebody can walk through the whole thing, change their mind
 | and leave the registry exactly as they found it.
 |
@@ -50,7 +69,7 @@ import {
 |--------------------------------------------------------------------------
 */
 
-const TOTAL_STEPS = 10;
+const TOTAL_STEPS = 8;
 
 const STORAGE_KEY = 'patrimoine.lease_wizard';
 
@@ -117,6 +136,12 @@ export async function initializeLeaseWizard() {
     }
 
     addOwnerRow();
+
+    /*
+     * The property list only arrives with the reference data, so whether
+     * ownership needs asking for cannot be known until now.
+     */
+    applyOwnersBlock();
 
     showStep(currentStep);
 }
@@ -383,7 +408,13 @@ function selectedBuilding() {
 /**
  * Does the chosen property already have its ownership recorded?
  *
- * When it does, the owners page has nothing to ask and is skipped.
+ * When it does, there is nothing to ask and the ownership block on the
+ * Property & Tenant page stays out of the way.
+ *
+ * V1.0.43: this used to skip a whole page. Ownership now sits inside the
+ * page that names the property, so it is a block that appears rather than
+ * a page that is stepped over — which also means the step numbers no
+ * longer change depending on what was chosen two answers ago.
  *
  * @returns {boolean}
  */
@@ -395,6 +426,16 @@ function ownersPageIsNeeded() {
     }
 
     return (building.ownerships ?? []).length === 0;
+}
+
+/**
+ * Show the ownership block only when the property needs one.
+ */
+function applyOwnersBlock() {
+    toggle(
+        'wizard-owners-block',
+        ownersPageIsNeeded()
+    );
 }
 
 /*
@@ -871,23 +912,16 @@ function showStep(step) {
 
     toggle('wizard-back', step > 1);
 
+    /*
+     * V1.0.43: Next carries all the way through and becomes Create and
+     * activate on the last page. Save as draft sits at the top beside
+     * Cancel and is offered on every page including the last, because
+     * somebody who reaches the review and is not ready to commit should
+     * not have to walk backwards to keep their work.
+     */
     toggle('wizard-next', step < TOTAL_STEPS);
 
     toggle('wizard-submit', step === TOTAL_STEPS);
-
-    /*
-     * The last page offers the letting, not a draft. Everywhere before it
-     * the draft is the one thing worth writing, so it is the button the
-     * eye lands on.
-     */
-    toggle('wizard-draft', step < TOTAL_STEPS);
-
-    if (step === 9) {
-        setText(
-            'wizard-commission-echo',
-            value('wizard-agent-commission') || '0'
-        );
-    }
 
     if (step === TOTAL_STEPS) {
         renderSummary();
@@ -895,22 +929,19 @@ function showStep(step) {
 }
 
 /**
- * The next step, skipping the owners page when the property already has
- * its ownership recorded.
+ * The next step.
+ *
+ * V1.0.43: no page is skipped any more. Ownership was the only one that
+ * ever was, and it now lives inside the page that names the property, so
+ * "step 4 of 8" means the same thing every time the assistant is opened.
  *
  * @param {number} from
  * @param {number} direction
  * @returns {number}
  */
 function nextStep(from, direction) {
-    let step = from + direction;
-
-    if (step === 3 && ! ownersPageIsNeeded()) {
-        step += direction;
-    }
-
     return Math.min(
-        Math.max(step, 1),
+        Math.max(from + direction, 1),
         TOTAL_STEPS
     );
 }
@@ -1013,6 +1044,11 @@ function readLeaseTerms(status) {
         security_deposit_amount: integer('wizard-deposit'),
         rent_reserve_amount: integer('wizard-reserve'),
 
+        /*
+         * V1.0.43: the drawer's Notes field, which this page never had.
+         */
+        notes: value('wizard-notes') || null,
+
         advance_payment_amount: integer('wizard-advance-amount'),
         advance_received: advanceReceived,
 
@@ -1040,6 +1076,29 @@ function readLeaseTerms(status) {
             ? 0
             : integer('wizard-agent-commission'),
     };
+
+    /*
+     * V1.0.43: receiving the security deposit.
+     *
+     * Entering a deposit receives it — the money goes into the lease's
+     * own Security Deposit account, which every lease has owned since
+     * V1.0.8 and which nothing ever funded. These three only say when it
+     * changed hands and how, and the date is deliberately unbounded by
+     * the lease start.
+     */
+    if (terms.security_deposit_amount > 0) {
+        terms.security_deposit_received_date =
+            dateValue('wizard-deposit-date') || null;
+
+        terms.security_deposit_received_method =
+            value('wizard-deposit-method') || 'bank_transfer';
+
+        const depositReference = value('wizard-deposit-reference');
+
+        if (depositReference) {
+            terms.security_deposit_received_reference = depositReference;
+        }
+    }
 
     if (advanceReceived) {
         terms.advance_received_date = dateValue('wizard-advance-date') || null;
@@ -1157,6 +1216,10 @@ function renderSummary() {
             translate('wizard.security_deposit'),
             money('wizard-deposit'),
         ],
+        [
+            translate('wizard.fee_vat'),
+            `${decimal('wizard-vat-rate')}%`,
+        ],
         /*
          * The reserve is money the tenant hands over and cannot be spent
          * on ordinary rent. It was the one amount the check page did not
@@ -1173,8 +1236,22 @@ function renderSummary() {
                 : money('wizard-advance-amount'),
         ],
         [
+            translate('wizard.consumable_advance'),
+            formatCurrency(consumableAdvance()),
+        ],
+        [
             translate('wizard.fee_type'),
             feeSummary(),
+        ],
+        [
+            translate('wizard.agent_commission'),
+            value('wizard-agent-mode') === 'none'
+                ? translate('wizard.no_agent')
+                : money('wizard-agent-commission'),
+        ],
+        [
+            translate('wizard.notes'),
+            value('wizard-notes'),
         ],
     ];
 
@@ -1393,6 +1470,12 @@ const LEASE_FIELD_ELEMENTS = {
     management_fee_type: 'wizard-fee-type',
     management_fee_value: 'wizard-fee-value',
     agent_commission_amount: 'wizard-agent-commission',
+
+    /* V1.0.43: the fields the assistant gained from the drawer. */
+    notes: 'wizard-notes',
+    security_deposit_received_date: 'wizard-deposit-date',
+    security_deposit_received_method: 'wizard-deposit-method',
+    security_deposit_received_reference: 'wizard-deposit-reference',
 };
 
 /**
@@ -1528,20 +1611,18 @@ function clearRejectedFields() {
  * @returns {number|null}
  */
 function stepForErrorKey(key) {
-    if (key.startsWith('building') || key.startsWith('unit')) {
+    /*
+     * V1.0.43: the property, its owners, the tenant and the agent are
+     * one page now, so four of these answers are the same page.
+     */
+    if (
+        key.startsWith('building')
+        || key.startsWith('unit')
+        || key.startsWith('owners')
+        || key.startsWith('tenant')
+        || key.startsWith('agent')
+    ) {
         return 2;
-    }
-
-    if (key.startsWith('owners')) {
-        return 3;
-    }
-
-    if (key.startsWith('tenant')) {
-        return 4;
-    }
-
-    if (key.startsWith('agent')) {
-        return 5;
     }
 
     if (! key.startsWith('lease.')) {
@@ -1550,16 +1631,14 @@ function stepForErrorKey(key) {
 
     const field = key.slice('lease.'.length);
 
-    if (['start_date', 'end_date'].includes(field)) {
-        return 6;
-    }
-
     if (
-        field === 'termination_notice_date'
-        || field.startsWith('rent_increment')
-        || field === 'next_rent_increment_date'
+        [
+            'start_date',
+            'end_date',
+            'termination_notice_date',
+        ].includes(field)
     ) {
-        return 7;
+        return 3;
     }
 
     if (
@@ -1567,22 +1646,38 @@ function stepForErrorKey(key) {
             'rent_amount',
             'payment_frequency',
             'due_day',
+            'vat_rate',
             'proration_amount',
             'security_deposit_amount',
-            'rent_reserve_amount',
+        ].includes(field)
+        || field.startsWith('security_deposit_received')
+    ) {
+        return 4;
+    }
+
+    if (
+        [
             'advance_payment_amount',
+            'rent_reserve_amount',
         ].includes(field)
         || field.startsWith('advance_received')
     ) {
-        return 8;
+        return 5;
+    }
+
+    if (
+        field.startsWith('rent_increment')
+        || field === 'next_rent_increment_date'
+    ) {
+        return 6;
     }
 
     if (
         field.startsWith('management_fee')
-        || field === 'vat_rate'
         || field === 'agent_commission_amount'
+        || field === 'notes'
     ) {
-        return 9;
+        return 7;
     }
 
     /*
@@ -1590,7 +1685,7 @@ function stepForErrorKey(key) {
      * are only rejected once everything is assembled, so the review page
      * is where the explanation belongs.
      */
-    return 10;
+    return TOTAL_STEPS;
 }
 
 /*
@@ -1623,8 +1718,16 @@ function saveProgress() {
 function collectFieldValues() {
     const fields = {};
 
+    /*
+     * V1.0.43: textarea as well as input and select. The assistant gained
+     * the drawer's Notes field, and a refresh would have dropped it.
+     */
     document
-        .querySelectorAll('.pm-wizard-page input, .pm-wizard-page select')
+        .querySelectorAll(
+            '.pm-wizard-page input,'
+            + ' .pm-wizard-page select,'
+            + ' .pm-wizard-page textarea'
+        )
         .forEach(
             (element) => {
                 if (! element.id) {
@@ -1696,7 +1799,16 @@ function applyStoredState(stored) {
         }
     );
 
-    currentStep = Number(stored.step) || 1;
+    /*
+     * V1.0.43: clamped. Assistants saved before the pages were rebuilt
+     * carry a step of 9 or 10, and there are eight now — an unclamped
+     * value would open a page that does not exist and show nothing at
+     * all.
+     */
+    currentStep = Math.min(
+        Math.max(Number(stored.step) || 1, 1),
+        TOTAL_STEPS
+    );
 
     applyBuildingMode();
 
@@ -1712,9 +1824,59 @@ function applyStoredState(stored) {
 
     applyAdvanceReceived();
 
+    applyOwnersBlock();
+
+    applyDepositReceipt();
+
+    applyConsumableAdvance();
+
     applyCurrencyUnits();
 
     regroupMoneyFields();
+}
+
+/**
+ * What is left of the advance once the reserve is taken out of it.
+ *
+ * The drawer has always shown this. It is the one number that says what
+ * the tenant can actually spend on rent, and working it out was the
+ * reader's own arithmetic on this page.
+ *
+ * @returns {number}
+ */
+function consumableAdvance() {
+    return Math.max(
+        0,
+        integer('wizard-advance-amount')
+        - integer('wizard-reserve')
+    );
+}
+
+/**
+ * Show it.
+ */
+function applyConsumableAdvance() {
+    setText(
+        'wizard-consumable-advance',
+        formatCurrency(
+            consumableAdvance()
+        )
+    );
+}
+
+/**
+ * Ask when and how the deposit was received, once there is a deposit.
+ *
+ * V1.0.43. Entering a deposit receives it into the lease's own Security
+ * Deposit account — every lease has owned one since V1.0.8 and nothing
+ * ever funded it — so these fields appear the moment there is money to
+ * have received, and go away again when the amount returns to nothing.
+ */
+function applyDepositReceipt() {
+    toggle(
+        'wizard-deposit-receipt',
+        integer('wizard-deposit') > 0
+    );
 }
 
 /**
@@ -2159,9 +2321,15 @@ function wireControls() {
         applyBuildingMode();
 
         populateUnitOptions();
+
+        applyOwnersBlock();
     });
 
-    on('wizard-building-id', 'change', populateUnitOptions);
+    on('wizard-building-id', 'change', () => {
+        populateUnitOptions();
+
+        applyOwnersBlock();
+    });
 
     on('wizard-unit-mode', 'change', applyUnitMode);
 
@@ -2176,6 +2344,22 @@ function wireControls() {
     on('wizard-advance-received', 'change', applyAdvanceReceived);
 
     on('wizard-advance-method', 'change', applyAdvanceMethod);
+
+    /*
+     * V1.0.43: the deposit receipt appears with the deposit, and the
+     * consumable advance is recomputed whenever either half of it moves.
+     */
+    on('wizard-deposit', 'input', applyDepositReceipt);
+
+    on('wizard-advance-amount', 'input', applyConsumableAdvance);
+
+    on('wizard-reserve', 'input', applyConsumableAdvance);
+
+    applyOwnersBlock();
+
+    applyDepositReceipt();
+
+    applyConsumableAdvance();
 
     applyCurrencyUnits();
 
@@ -2214,6 +2398,12 @@ function wireControls() {
     );
 
     on('wizard-start-date', 'change', applyDuration);
+
+    /*
+     * Choosing a property is what decides whether ownership is asked for,
+     * and the property list arrives after the controls are wired.
+     */
+    on('wizard-unit-mode', 'change', applyOwnersBlock);
 
     document
         .querySelector('.pm-wizard-page')

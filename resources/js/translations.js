@@ -16,6 +16,34 @@
 
 export const translations = {
     en: {
+        'wizard.step2_note':
+            'The property, its owners, the tenant and any agent. Anything not recorded yet can be created here as you go.',
+        'wizard.step5_note':
+            'Advance payment is rent the tenant hands over before it falls due. Part of it can be held back as a rent reserve, which ordinary rent cannot touch.',
+        'wizard.step8_note':
+            'Creating the lease also creates everything above it. A draft can be activated later from the Leases page.',
+        'wizard.ownership':
+            'Who owns it',
+        'wizard.ownership_note':
+            'Shares must add up to 100%. This is asked only when the property does not have its owners recorded yet.',
+        'wizard.rent_amount_help':
+            'One month of rent, whatever the payment frequency. A quarterly lease at 1,000 a month is invoiced 3,000 a quarter.',
+        'wizard.frequency_help':
+            'How often the rent is invoiced. It does not change the monthly figure above.',
+        'wizard.start_date_help':
+            'The day the tenancy begins. It stays the anniversary for the whole letting: a lease starting on the 31st is billed on the 31st of every month that has one, and on the last day of the months that do not.',
+        'wizard.rent_reserve_help':
+            'The part of the advance held back against the end of the letting. Ordinary rent settlement cannot reach it.',
+        'wizard.consumable_advance':
+            'Consumable advance',
+        'wizard.consumable_advance_help':
+            'What is left of the advance once the reserve is taken out. This is what ordinary rent is settled from.',
+        'wizard.increment_date_help':
+            'When the new rent takes effect. It cannot fall before the lease starts.',
+        'wizard.notes':
+            'Notes',
+        'wizard.notes_help':
+            'Anything about this letting worth writing down. It appears on the lease record, not on the tenant’s documents.',
         /* ---- V1.0.7 additions ---- */
         'leases.record_deduction':
             'Record a security deposit deduction',
@@ -46,7 +74,7 @@ export const translations = {
         'dashboard.collections_trend':
             'Collections Trend',
         'dashboard.collections_trend_description':
-            'Rent collected over the last six months.',
+            'Rent collected each month this year.',
         'dashboard.funds_held':
             'Funds Held',
         'dashboard.funds_held_description':
@@ -552,31 +580,27 @@ export const translations = {
             'A few words first',
 
         'wizard.step2_title':
-            'Property and unit',
+            'Property and tenant',
 
         'wizard.step3_title':
-            'Who owns it',
+            'Lease period',
 
         'wizard.step4_title':
-            'Who is renting',
+            'Rent terms',
 
         'wizard.step5_title':
-            'Is an agent involved',
+            'Advance payment',
 
         'wizard.step6_title':
-            'How long the lease runs',
+            'Rent increment',
 
         'wizard.step7_title':
-            'Notice and rent increases',
-
-        'wizard.step8_title':
-            'Rent and advance payment',
-
-        'wizard.step9_title':
             'Fees and commission',
 
-        'wizard.step10_title':
+        'wizard.step8_title':
             'Check and create',
+
+
 
         'wizard.glossary_party_term':
             'Party',
@@ -662,8 +686,6 @@ export const translations = {
         'wizard.unit_commercial':
             'This is a commercial unit',
 
-        'wizard.step3_note':
-            'Shares must add up to 100%. This page is skipped when the property already has its owners.',
 
         'wizard.add_owner':
             'Add another owner',
@@ -789,7 +811,7 @@ export const translations = {
             'Next increase date',
 
         'wizard.rent_amount':
-            'Rent',
+            'Monthly rent',
 
         'wizard.frequency':
             'Paid every',
@@ -878,11 +900,7 @@ export const translations = {
         'wizard.fee_vat_help':
             'VAT is charged on your fee and billed to the owner, never on the rent.',
 
-        'wizard.commission_echo':
-            'Agent commission entered earlier:',
 
-        'wizard.step10_note':
-            'Creating the lease also creates everything above it. A draft can be activated later from the Leases page.',
 
         'parties.email_policy':
             'Email communications',
@@ -917,10 +935,6 @@ export const translations = {
             'Has email',
         'parties.has_email_no':
             'No email',
-        'parties.sort_by_surname':
-            'Sort by surname',
-        'parties.sort_presentation_only':
-            'Display only — sorts the loaded page',
         'parties.delete_party':
             'Delete Party',
         'parties.delete_party_description':
@@ -2062,6 +2076,72 @@ export const translations = {
         'archive.kind_lease':
             'Lease',
 
+        'archive.kind_all':
+            'Everything',
+
+        'archive.search_label':
+            'Search the archive',
+
+        'archive.search_placeholder':
+            'Search by name, property or reason…',
+
+        'archive.no_matches':
+            'Nothing archived matches what you are looking for.',
+
+        'archive.showing':
+            'Showing :shown of :total',
+
+        'archive.drawer_title':
+            'Archive this record',
+
+        'archive.what_happens':
+            'What this does',
+
+        'archive.effect_lists':
+            'It leaves every list. Nobody browsing Parties, Properties or Leases will see it again.',
+
+        'archive.effect_pickers':
+            'It leaves every dropdown, so it can no longer be chosen when building a new record.',
+
+        'archive.effect_records':
+            'Nothing else changes. Every invoice, receipt, journal entry and audit line still names it, and the accounts do not move.',
+
+        'archive.effect_reversible':
+            'It stays on this Archive page, and an administrator can put it back at any time.',
+
+        'archive.reason':
+            'Why is it being archived?',
+
+        'archive.reason_placeholder':
+            'e.g. the tenancy ended and the tenant has moved abroad',
+
+        'archive.reason_help':
+            'Kept with the record and shown on the Archive page, so the next person to ask why it is missing has the answer in front of them.',
+
+        'archive.restore_title':
+            'Restore this record',
+
+        'archive.restore_effect_lists':
+            'It returns to every list it was taken out of.',
+
+        'archive.restore_effect_pickers':
+            'It can be chosen again when building new records.',
+
+        'archive.restore_effect_reason':
+            'The reason it was archived is cleared. What you write below goes to the activity log.',
+
+        'archive.original_reason':
+            'Why it was archived',
+
+        'archive.restore_reason':
+            'Why is it being restored?',
+
+        'archive.restore_reason_placeholder':
+            'e.g. the same tenant is taking the unit again',
+
+        'archive.restore_reason_help':
+            'Written to the activity log. A restored record is not archived for any reason, so there is nowhere on it to keep this.',
+
         'navigation.archive':
             'Archive',
 
@@ -2641,6 +2721,12 @@ export const translations = {
         'settings.data_tools_help':
             'Adds Download data and Erase to every party. Download data produces a copy of everything held about that person; Erase replaces their name and contact details with a placeholder for good, keeping the accounting intact. Switch this on when somebody has asked you to exercise one of those rights, and switch it off again when you are done — they are not buttons anybody should meet by accident.',
 
+        'settings.sort_parties_by_surname':
+            'Sort the parties list by surname',
+
+        'settings.sort_parties_by_surname_help':
+            'Orders people by the name they are looked up under rather than the one they are greeted by, and organisations and associations by their own name. It applies to everybody in this organisation, so a list read at two desks reads the same way.',
+
         'settings.party_emails_enabled':
             'Send emails to parties',
 
@@ -3100,6 +3186,8 @@ export const translations = {
         'leases.vat_rate': 'Management Fee VAT Rate %',
         'leases.proration_override': 'Proration Override',
         'leases.security_deposit': 'Security Deposit',
+        'leases.security_deposit_received_help':
+            'Entering a deposit receives it into this lease\u2019s Security Deposit account. Say when it changed hands and how; a deposit taken before the tenancy begins is normal and its date may precede the start date.',
         'leases.monthly': 'Monthly',
         'leases.quarterly': 'Quarterly',
         'leases.bi_yearly': 'Bi-Yearly',
@@ -3592,11 +3680,6 @@ export const translations = {
         'tenants.unable_to_load_tenant': 'Unable to load this Tenant.',
         'tenants.no_contact_information': 'No contact information available.',
         'tenants.tenant_statement': 'Tenant Statement',
-        'tenants.total_leases': 'Total Leases',
-        'tenants.current_leases': 'Current Leases',
-        'tenants.historical_leases': 'Historical Leases',
-        'tenants.tenant_details': 'Tenant Details',
-        'tenants.party_type': 'Party Type',
         'tenants.party_type.person': 'Person',
         'tenants.party_type.organisation': 'Organisation',
         'tenants.party_type.organization': 'Organisation',
@@ -3644,14 +3727,11 @@ export const translations = {
         'tenants.category.security_deposit_deduction': 'Security Deposit Deduction',
         'tenants.category.security_deposit_refund': 'Security Deposit Refund',
         'tenants.phone': 'Phone',
-        'tenants.alternate_phone': 'Alternate Phone',
         'tenants.email': 'Email',
         'tenants.address': 'Address',
-        'tenants.id_registration': 'ID / Registration',
         'tenants.leases': 'Leases',
         'tenants.leases_description': 'Current and historical lease relationships for this Tenant.',
         'tenants.financial_position': 'Financial Position',
-        'tenants.financial_position_description': 'Outstanding receivables and tenant-held funds across all leases.',
         'tenants.rent_outstanding': 'Rent Outstanding',
         'tenants.security_deposit_debt': 'Security Deposit Debt',
         'tenants.total_outstanding': 'Total Outstanding',
@@ -3700,6 +3780,9 @@ export const translations = {
         'tenants.no_leases': 'No leases have been recorded for this Tenant.',
         'tenants.building': 'Building',
         'tenants.unit': 'Unit',
+        'tenants.property': 'Property',
+        'tenants.period': 'Period',
+        'tenants.rent': 'Rent',
         'tenants.unnamed_tenant': 'Unnamed Tenant',
         'tenants.lease_ongoing': ':start → ongoing',
         'tenants.lease_dates_unavailable': 'Lease dates unavailable',
@@ -3847,6 +3930,46 @@ export const translations = {
         'owners.make_owner_payout': 'Make Owner Payout',
         'owners.payout_description': 'Withdraw available rent-derived funds for the selected Property Owner.',
         'owners.available_owner_balance': 'Available Owner Balance',
+        'owners.withdraw_all': 'Withdraw all',
+
+        'owners.category':
+            'Category',
+
+        'owners.details':
+            'Details',
+
+        'owners.column_property':
+            'Property',
+
+        'owners.column_units':
+            'Units',
+
+        'owners.column_share':
+            'Share',
+
+        'owners.column_location':
+            'Location',
+
+        'owners.column_unit':
+            'Unit',
+
+        'owners.column_occupancy':
+            'Occupancy',
+
+        'owners.occupied':
+            'Occupied',
+
+        'owners.vacant':
+            'Vacant',
+
+        'owners.no_units':
+            'This property has no units.',
+
+        'owners.properties_and_units':
+            'Properties and units',
+
+        'owners.units_of':
+            'Units of :building',
         'owners.payout_date': 'Withdrawal Date',
         'owners.owner_account_adjustment': 'Owner Account Adjustment',
         'owners.adjustment_description': 'Record an exceptional manual accounting correction.',
@@ -4468,6 +4591,34 @@ export const translations = {
     },
 
     fr: {
+        'wizard.step2_note':
+            'Le bien, ses propriétaires, le locataire et l’éventuel agent. Tout ce qui n’existe pas encore peut être créé ici au fil de la saisie.',
+        'wizard.step5_note':
+            'Le paiement anticipé est un loyer versé par le locataire avant son échéance. Une partie peut être conservée en réserve de loyer, à laquelle le loyer ordinaire ne peut pas toucher.',
+        'wizard.step8_note':
+            'La création du bail crée aussi tout ce qui précède. Un brouillon peut être activé plus tard depuis la page Baux.',
+        'wizard.ownership':
+            'À qui appartient le bien',
+        'wizard.ownership_note':
+            'La somme des parts doit atteindre 100 %. La question n’est posée que si le bien n’a pas encore ses propriétaires.',
+        'wizard.rent_amount_help':
+            'Un mois de loyer, quelle que soit la périodicité. Un bail trimestriel à 1 000 par mois est facturé 3 000 par trimestre.',
+        'wizard.frequency_help':
+            'À quelle fréquence le loyer est facturé. Cela ne change pas le montant mensuel ci-dessus.',
+        'wizard.start_date_help':
+            'Le jour où commence la location. Il reste la date anniversaire pour toute la durée du bail : un bail débutant le 31 est facturé le 31 de chaque mois qui en compte un, et le dernier jour des mois qui n’en ont pas.',
+        'wizard.rent_reserve_help':
+            'La part de l’avance conservée pour la fin de la location. Le règlement du loyer ordinaire ne peut pas y toucher.',
+        'wizard.consumable_advance':
+            'Avance consommable',
+        'wizard.consumable_advance_help':
+            'Ce qui reste de l’avance une fois la réserve prélevée. C’est ce qui règle le loyer ordinaire.',
+        'wizard.increment_date_help':
+            'Date de prise d’effet du nouveau loyer. Elle ne peut pas précéder le début du bail.',
+        'wizard.notes':
+            'Notes',
+        'wizard.notes_help':
+            'Tout ce qui mérite d’être noté sur cette location. Ces notes figurent sur la fiche du bail, pas sur les documents du locataire.',
         /* ---- V1.0.7 additions ---- */
         'leases.record_deduction':
             'Enregistrer une retenue sur caution',
@@ -4498,7 +4649,7 @@ export const translations = {
         'dashboard.collections_trend':
             'Tendance des encaissements',
         'dashboard.collections_trend_description':
-            'Loyers encaissés au cours des six derniers mois.',
+            'Loyers encaissés chaque mois cette année.',
         'dashboard.funds_held':
             'Fonds détenus',
         'dashboard.funds_held_description':
@@ -5004,31 +5155,27 @@ export const translations = {
             'Quelques mots d’abord',
 
         'wizard.step2_title':
-            'Bien et lot',
+            'Bien et locataire',
 
         'wizard.step3_title':
-            'À qui appartient le bien',
-
-        'wizard.step4_title':
-            'Qui loue',
-
-        'wizard.step5_title':
-            'Un agent intervient-il',
-
-        'wizard.step6_title':
             'Durée du bail',
 
+        'wizard.step4_title':
+            'Conditions de loyer',
+
+        'wizard.step5_title':
+            'Paiement anticipé',
+
+        'wizard.step6_title':
+            'Augmentation du loyer',
+
         'wizard.step7_title':
-            'Préavis et augmentations',
-
-        'wizard.step8_title':
-            'Loyer et avance',
-
-        'wizard.step9_title':
             'Honoraires et commission',
 
-        'wizard.step10_title':
+        'wizard.step8_title':
             'Vérifier et créer',
+
+
 
         'wizard.glossary_party_term':
             'Partie',
@@ -5114,8 +5261,6 @@ export const translations = {
         'wizard.unit_commercial':
             'Il s’agit d’un lot commercial',
 
-        'wizard.step3_note':
-            'La somme des parts doit atteindre 100 %. Cette page est ignorée si le bien a déjà ses propriétaires.',
 
         'wizard.add_owner':
             'Ajouter un autre propriétaire',
@@ -5241,7 +5386,7 @@ export const translations = {
             'Date de la prochaine augmentation',
 
         'wizard.rent_amount':
-            'Loyer',
+            'Loyer mensuel',
 
         'wizard.frequency':
             'Payé tous les',
@@ -5330,11 +5475,7 @@ export const translations = {
         'wizard.fee_vat_help':
             'La TVA porte sur vos honoraires et est facturée au propriétaire, jamais sur le loyer.',
 
-        'wizard.commission_echo':
-            'Commission de l’agent saisie précédemment :',
 
-        'wizard.step10_note':
-            'La création du bail crée aussi tout ce qui précède. Un brouillon peut être activé plus tard depuis la page Baux.',
 
         'parties.email_policy':
             'Communications par e-mail',
@@ -5369,10 +5510,6 @@ export const translations = {
             'Avec e-mail',
         'parties.has_email_no':
             'Sans e-mail',
-        'parties.sort_by_surname':
-            'Trier par nom de famille',
-        'parties.sort_presentation_only':
-            'Affichage uniquement — trie la page chargée',
         'parties.delete_party':
             'Supprimer la partie',
         'parties.delete_party_description':
@@ -6514,6 +6651,72 @@ export const translations = {
         'archive.kind_lease':
             'Bail',
 
+        'archive.kind_all':
+            'Tout',
+
+        'archive.search_label':
+            'Rechercher dans les archives',
+
+        'archive.search_placeholder':
+            'Rechercher par nom, bien ou motif…',
+
+        'archive.no_matches':
+            'Aucun enregistrement archivé ne correspond à votre recherche.',
+
+        'archive.showing':
+            ':shown sur :total affichés',
+
+        'archive.drawer_title':
+            'Archiver cet enregistrement',
+
+        'archive.what_happens':
+            'Ce que cela fait',
+
+        'archive.effect_lists':
+            'Il disparaît de toutes les listes. Personne ne le verra plus dans Tiers, Biens ou Baux.',
+
+        'archive.effect_pickers':
+            'Il disparaît de tous les menus déroulants : il ne pourra plus être choisi lors de la création d’un enregistrement.',
+
+        'archive.effect_records':
+            'Rien d’autre ne change. Chaque facture, reçu, écriture et ligne d’audit continue de le nommer, et les comptes ne bougent pas.',
+
+        'archive.effect_reversible':
+            'Il reste sur cette page Archives, et un administrateur peut le restaurer à tout moment.',
+
+        'archive.reason':
+            'Pourquoi est-il archivé ?',
+
+        'archive.reason_placeholder':
+            'ex. la location est terminée et le locataire est parti à l’étranger',
+
+        'archive.reason_help':
+            'Conservé avec l’enregistrement et affiché sur la page Archives, afin que la prochaine personne qui demande pourquoi il a disparu ait la réponse sous les yeux.',
+
+        'archive.restore_title':
+            'Restaurer cet enregistrement',
+
+        'archive.restore_effect_lists':
+            'Il revient dans toutes les listes dont il avait été retiré.',
+
+        'archive.restore_effect_pickers':
+            'Il pourra de nouveau être choisi lors de la création d’enregistrements.',
+
+        'archive.restore_effect_reason':
+            'Le motif d’archivage est effacé. Ce que vous écrivez ci-dessous est consigné dans le journal d’activité.',
+
+        'archive.original_reason':
+            'Motif de l’archivage',
+
+        'archive.restore_reason':
+            'Pourquoi est-il restauré ?',
+
+        'archive.restore_reason_placeholder':
+            'ex. le même locataire reprend le lot',
+
+        'archive.restore_reason_help':
+            'Consigné dans le journal d’activité. Un enregistrement restauré n’est archivé pour aucun motif : il n’y a donc nulle part où le conserver.',
+
         'navigation.archive':
             'Archives',
 
@@ -7092,6 +7295,12 @@ export const translations = {
 
         'settings.data_tools_help':
             'Ajoute Télécharger les données et Effacer sur chaque tiers. Télécharger les données produit une copie de tout ce qui est conservé sur cette personne ; Effacer remplace définitivement son nom et ses coordonnées par un substitut, en conservant la comptabilité intacte. Activez cette option lorsque quelqu\'un vous demande d\'exercer l\'un de ces droits, et désactivez-la ensuite — ce ne sont pas des boutons que l\'on doit rencontrer par accident.',
+
+        'settings.sort_parties_by_surname':
+            'Trier la liste des tiers par nom de famille',
+
+        'settings.sort_parties_by_surname_help':
+            'Classe les personnes par le nom sous lequel on les cherche plutôt que par celui par lequel on les salue, et les organisations et associations par leur propre nom. Le réglage vaut pour toute l’organisation : une liste lue à deux bureaux se lit de la même façon.',
 
         'settings.party_emails_enabled':
             'Envoyer des e-mails aux parties',
@@ -8037,6 +8246,8 @@ export const translations = {
         'leases.vat_rate': 'Taux de TVA sur frais de gestion %',
         'leases.proration_override': 'Prorata personnalisé',
         'leases.security_deposit': 'Dépôt de garantie',
+        'leases.security_deposit_received_help':
+            'Saisir un d\u00e9p\u00f4t l\u2019encaisse sur le compte de d\u00e9p\u00f4t de garantie de ce bail. Indiquez quand et comment il a \u00e9t\u00e9 re\u00e7u\u00a0; un d\u00e9p\u00f4t re\u00e7u avant le d\u00e9but du bail est normal et sa date peut pr\u00e9c\u00e9der la date de d\u00e9but.',
         'leases.monthly': 'Mensuel',
         'leases.quarterly': 'Trimestriel',
         'leases.bi_yearly': 'Semestriel',
@@ -8529,11 +8740,6 @@ export const translations = {
         'tenants.unable_to_load_tenant': 'Impossible de charger ce locataire.',
         'tenants.no_contact_information': 'Aucune coordonnée disponible.',
         'tenants.tenant_statement': 'Relevé du locataire',
-        'tenants.total_leases': 'Total des baux',
-        'tenants.current_leases': 'Baux en cours',
-        'tenants.historical_leases': 'Baux historiques',
-        'tenants.tenant_details': 'Détails du locataire',
-        'tenants.party_type': 'Type de partie',
         'tenants.party_type.person': 'Personne',
         'tenants.party_type.organisation': 'Organisation',
         'tenants.party_type.organization': 'Organisation',
@@ -8581,14 +8787,11 @@ export const translations = {
         'tenants.category.security_deposit_deduction': 'Déduction du dépôt de garantie',
         'tenants.category.security_deposit_refund': 'Remboursement du dépôt de garantie',
         'tenants.phone': 'Téléphone',
-        'tenants.alternate_phone': 'Téléphone secondaire',
         'tenants.email': 'E-mail',
         'tenants.address': 'Adresse',
-        'tenants.id_registration': 'Pièce d’identité / Immatriculation',
         'tenants.leases': 'Baux',
         'tenants.leases_description': 'Relations de bail actuelles et historiques de ce locataire.',
         'tenants.financial_position': 'Situation financière',
-        'tenants.financial_position_description': 'Créances impayées et fonds détenus pour le locataire sur l’ensemble des baux.',
         'tenants.rent_outstanding': 'Loyer impayé',
         'tenants.security_deposit_debt': 'Dette de dépôt de garantie',
         'tenants.total_outstanding': 'Total impayé',
@@ -8637,6 +8840,9 @@ export const translations = {
         'tenants.no_leases': "Aucun bail n'a été enregistré pour ce locataire.",
         'tenants.building': 'Immeuble',
         'tenants.unit': 'Unité',
+        'tenants.property': 'Bien',
+        'tenants.period': 'Période',
+        'tenants.rent': 'Loyer',
         'tenants.unnamed_tenant': 'Locataire sans nom',
         'tenants.lease_ongoing': ':start → en cours',
         'tenants.lease_dates_unavailable': 'Dates du bail indisponibles',
@@ -8784,6 +8990,46 @@ export const translations = {
         'owners.make_owner_payout': 'Effectuer un versement au propriétaire',
         'owners.payout_description': 'Retirez les fonds disponibles issus des loyers pour le propriétaire sélectionné.',
         'owners.available_owner_balance': 'Solde disponible du propriétaire',
+        'owners.withdraw_all': 'Tout retirer',
+
+        'owners.category':
+            'Catégorie',
+
+        'owners.details':
+            'Détails',
+
+        'owners.column_property':
+            'Bien',
+
+        'owners.column_units':
+            'Lots',
+
+        'owners.column_share':
+            'Quote-part',
+
+        'owners.column_location':
+            'Localisation',
+
+        'owners.column_unit':
+            'Lot',
+
+        'owners.column_occupancy':
+            'Occupation',
+
+        'owners.occupied':
+            'Occupé',
+
+        'owners.vacant':
+            'Vacant',
+
+        'owners.no_units':
+            'Ce bien ne comporte aucun lot.',
+
+        'owners.properties_and_units':
+            'Biens et lots',
+
+        'owners.units_of':
+            'Lots de :building',
         'owners.payout_date': 'Date du retrait',
         'owners.owner_account_adjustment': 'Ajustement du compte propriétaire',
         'owners.adjustment_description': 'Enregistrez une correction comptable manuelle exceptionnelle.',

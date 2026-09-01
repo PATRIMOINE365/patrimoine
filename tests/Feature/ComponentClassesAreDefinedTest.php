@@ -170,10 +170,17 @@ class ComponentClassesAreDefinedTest extends TestCase
                  * defined somewhere this audit does not read and should
                  * not try to.
                  */
+                /*
+                 * The separator class admits a backslash as well as a
+                 * slash. RecursiveDirectoryIterator hands back native
+                 * paths, so on Windows every one of these directories
+                 * slipped past the exclusion and the audit failed on
+                 * nine document classes it was never meant to read.
+                 */
                 if (preg_match(
-                    '#views[\\/](documents|reports|pdf|registry|emails'
+                    '#views[\\\\/](documents|reports|pdf|registry|emails'
                     .'|activity-log|financial-journal'
-                    .'|lease-financial-history)[\\/]#',
+                    .'|lease-financial-history)[\\\\/]#',
                     $name
                 )) {
                     continue;

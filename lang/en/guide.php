@@ -74,6 +74,7 @@ return [
                         ['text' => 'Choose the Preferences tab.', 'shot' => 'settings-preferences'],
                         ['text' => 'Pick the language. English and French are both complete: every screen, every document and every email follows it.'],
                         ['text' => 'Pick the currency and the default VAT rate. The currency decides how every amount is written, including the thousands separator.'],
+                        ['text' => 'Under Communications, three switches: whether Patrimoine emails your tenants, owners and agents at all; whether the data-protection tools appear on the parties list; and whether that list is ordered by surname. All three belong to the organisation, so a list read at two desks reads the same way.'],
                         ['text' => 'Press Save. The screen changes language immediately; documents follow from the next one produced.'],
                     ],
                 ],
@@ -318,24 +319,22 @@ return [
 
                 'lease_wizard' => [
                     'title' => 'Create a lease with the guided assistant',
-                    'intro' => 'The assistant builds a whole letting in one sitting — the property, the unit, the owner, the tenant and the lease itself — asking one thing at a time. It is the recommended way to create your first lease.',
+                    'intro' => 'The assistant builds a whole letting in one sitting — the property, the unit, the owner, the tenant and the lease itself — asking one thing at a time. It asks for exactly what the Add lease drawer asks for, one section per page, so a lease made here and a lease made there are the same lease.',
                     'who' => 'Administrators and Property Managers',
                     'steps' => [
                         ['text' => 'Open Leases and press Guided lease.', 'shot' => 'leases-list'],
                         ['text' => 'The first page explains the words the assistant uses — party, owner, unit — so nothing later has to be guessed at. Read it once and press Next.', 'shot' => 'wizard-intro'],
-                        ['text' => 'Choose the property and the unit being let, or create either. A new property is asked for its name and address here.', 'shot' => 'wizard-property'],
-                        ['text' => 'Record who owns it, and their shares. The assistant skips this page when the property already has its ownership recorded.', 'shot' => 'wizard-owners'],
-                        ['text' => 'Choose the tenant, or create one. A new tenant needs a name, an email address and a telephone number with its country.', 'shot' => 'wizard-tenant'],
-                        ['text' => 'Name the letting agent, if one is involved. Leave it as none if not.'],
-                        ['text' => 'Set the start date and either a duration or an end date. Dates are typed in your organisation format, with the Patrimoine calendar beside the field.', 'shot' => 'wizard-dates'],
-                        ['text' => 'Set the notice period, if the letting has one.'],
-                        ['text' => 'Enter the rent, how often it is due, and the deposit if there is one. Amounts are grouped as you type and carry your currency.', 'shot' => 'wizard-rent'],
-                        ['text' => 'If the advance has already been received, say when and how it was paid. When it came in as cash the cashier is whoever is signed in, and Patrimoine fills that in itself.'],
-                        ['text' => 'Set the management fee, the agent commission and any scheduled rent increase.'],
+                        ['text' => 'Property and tenant. Choose the property and the unit being let, or create either; record who owns it and their shares, if Patrimoine does not know yet; then choose the tenant and, if there is one, the agent. Anything not recorded yet can be created here as you go.', 'shot' => 'wizard-property'],
+                        ['text' => 'Lease period. Set the start date and either a duration or an end date, and the notice date if the letting has one. The start date is the anniversary for the whole letting: a lease beginning on the 31st is billed on the 31st of every month that has one, and on the last day of the months that do not.', 'shot' => 'wizard-dates'],
+                        ['text' => 'Rent terms. The rent field is a MONTH of rent, whatever the payment frequency — a quarterly lease at 1,000 a month is invoiced 3,000 a quarter. Set the frequency, the due day, the VAT on your fee, any first-period adjustment, and the deposit.', 'shot' => 'wizard-rent'],
+                        ['text' => 'Entering a deposit receives it: the money goes into this lease\'s own Security Deposit account. Say when it changed hands and how. The date may be before the lease starts, because a deposit is usually what secures the unit.'],
+                        ['text' => 'Advance payment. Enter the advance and how much of it is held back as a rent reserve; Patrimoine shows you what is left as consumable advance. If the advance has already been received, say when and how it was paid — that date may also precede the lease. When it came in as cash the cashier is whoever is signed in, and Patrimoine fills that in itself.'],
+                        ['text' => 'Rent increment. Set a scheduled increase, if there is one. Its date cannot fall before the lease begins.'],
+                        ['text' => 'Fees and commission. Set the management fee, the agent commission and any notes about the letting.'],
                         ['text' => 'Read the review page. It shows everything that is about to be created, in one list.', 'shot' => 'wizard-review'],
-                        ['text' => 'Press Save and activate. Everything is created together; nothing is saved before this point.'],
+                        ['text' => 'Press Create and activate. Everything is created together; nothing is saved before this point. Save as draft sits at the top of the page beside Cancel, and is offered on every page including this one.'],
                     ],
-                    'after' => 'The lease is live and its first invoice follows on the schedule you set.',
+                    'after' => 'The lease is live, its deposit is held, and its first invoice follows on the schedule you set.',
                 ],
 
                 'lease_drafts' => [
@@ -357,8 +356,9 @@ return [
                     'steps' => [
                         ['text' => 'Open Leases and press Add Lease.'],
                         ['text' => 'Choose the unit and the tenant. Both must already exist.', 'shot' => 'lease-drawer'],
-                        ['text' => 'Set the start date, the end date or duration, the rent and how often it is due.'],
-                        ['text' => 'Add the deposit, management fee and agent commission if they apply.'],
+                        ['text' => 'Set the start date, the end date or duration, the rent and how often it is due. The rent field is a MONTH of rent whatever the frequency, and the start date stays the anniversary for the whole letting.'],
+                        ['text' => 'Enter the deposit, if there is one. Entering it receives it: the money goes into this lease\'s own Security Deposit account, and three fields appear asking when it changed hands and how. That date may be before the lease starts, because a deposit is usually what secures the unit.'],
+                        ['text' => 'Add the management fee and the agent commission if they apply.'],
                         ['text' => 'Press Save.'],
                     ],
                 ],
@@ -576,7 +576,7 @@ return [
                     'who' => 'Administrators and Property Managers',
                     'steps' => [
                         ['text' => 'Open Owners, select the owner, and press Make payout.'],
-                        ['text' => 'The available balance is shown. Enter the amount and the date.', 'shot' => 'owner-payout'],
+                        ['text' => 'The available balance is shown. Enter the amount and the date, or press Withdraw all to fill the field with everything owed.', 'shot' => 'owner-payout'],
                         ['text' => 'Choose how it was paid and name who authorised it.'],
                         ['text' => 'Press Save. The payout is matched against the earnings it settles, oldest first, and a numbered receipt is produced.'],
                         ['text' => 'The receipt shows the owner how the figure was reached. A summary sits under the amount, and under that every movement since they last collected, itemised: the rent by unit and the period it was for, the fee and the VAT on it, and each expense with its building and date. The three tables add up to the payout, so they can check it without asking you for a statement.'],
@@ -640,6 +640,7 @@ return [
                     'steps' => [
                         ['text' => 'Each active lease says what the rent is and how often it falls due.'],
                         ['text' => 'The nightly run raises the next invoice as each period comes round, numbered in sequence.', 'shot' => 'invoices-list'],
+                        ['text' => 'The day the lease began is the anniversary, and it is kept for the whole letting. A lease starting on the 31st is billed on 31 January, 28 February, 31 March, 30 April — the last day of a month too short to hold the 31st, and the 31st again the month after. The anniversary is never lost to a short month.'],
                         ['text' => 'An invoice that already exists for a period is never raised twice, however many times the run happens.'],
                         ['text' => 'The invoice is emailed to the tenant, unless emails are switched off for them or for the organisation.'],
                     ],
@@ -723,6 +724,7 @@ return [
                     'steps' => [
                         ['text' => 'Open Dashboard from the sidebar.', 'shot' => 'dashboard'],
                         ['text' => 'The cards show what has been collected, what is outstanding, and what is happening this month.'],
+                        ['text' => 'The collections trend is the whole of the year you are reading, January to December. Months still to come sit at zero until they arrive, so the shape of the year is visible from January onwards.'],
                         ['text' => 'The bell at the top right carries what needs attention: unpaid invoices, unpaid expenses, leases ending.', 'shot' => 'notifications'],
                         ['text' => 'Press any figure to open the list it was counted from.'],
                     ],
@@ -895,14 +897,16 @@ return [
 
                 'archive' => [
                     'title' => 'Archive a record you cannot delete',
-                    'intro' => 'Patrimoine refuses to delete anything the accounting still refers to. Archiving is what it offers instead: the record leaves the lists, and nothing else about it moves.',
+                    'intro' => 'Patrimoine refuses to delete anything the accounting still refers to. Archiving is what it offers instead: the record leaves the lists, and nothing else about it moves. It asks the way deletion asks, because to anybody who did not do it the record has simply gone.',
                     'who' => 'Administrators and Property Managers',
                     'steps' => [
-                        ['text' => 'Look at the button on the row. It says Delete while the record can still be removed outright, and Archive once it cannot.'],
-                        ['text' => 'Press Archive. The record leaves the list, and leaves the dropdowns used to build new records, so nobody is offered it again by accident.'],
+                        ['text' => 'Look at the button on the row. It says Delete while the record can still be removed outright, and Archive once it cannot. Both are red, because both take the record off every screen. Parties, properties, units and leases can all be archived.'],
+                        ['text' => 'Press Archive. A drawer opens saying exactly what archiving does — the record leaves every list and every dropdown, nothing else changes, and it can be put back — and asks why.'],
+                        ['text' => 'Write the reason. It is kept with the record and shown on the Archive page, so the next person to ask why something is missing has the answer in front of them.'],
+                        ['text' => 'A lease has to be terminated first. Archiving a letting that is still running would hide a tenancy still being invoiced and still holding a deposit, so Patrimoine refuses it with PM-3097. Terminate the lease, complete its settlement, and Archive is then available on the same row.'],
                         ['text' => 'Nothing else changes. Every invoice, receipt, journal entry and activity-log line still names it, because the record itself has not moved.'],
-                        ['text' => 'Open Archive, under Audit, to see everything that has been put away and who put it there.', 'shot' => 'archive-list'],
-                        ['text' => 'Press Restore to put one back. It returns to every list and every dropdown at once, so it is an administrator\\\'s decision.'],
+                        ['text' => 'Open Archive, under Audit, to see everything that has been put away, why, and who put it there. Search across the names and the reasons, or narrow to one kind of record with the chips.', 'shot' => 'archive-list'],
+                        ['text' => 'Press Restore to put one back. It asks for a reason too — the record returns to every list and every dropdown at once — and that reason goes to the activity log, because a restored record is not archived for any reason at all.'],
                     ],
                 ],
 

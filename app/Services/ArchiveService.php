@@ -47,9 +47,17 @@ class ArchiveService
 
     /**
      * Hide a record from the lists and the pickers.
+     *
+     * The reason is kept on the row rather than only in the activity log,
+     * because the archive page is where somebody goes to ask why a record
+     * is not in the lists any more, and answering that should not mean
+     * reading an audit trail.
      */
-    public function archive(Model $record, User $user): void
-    {
+    public function archive(
+        Model $record,
+        User $user,
+        string $reason
+    ): void {
         if ($record->archived_at !== null) {
             return;
         }
@@ -57,11 +65,17 @@ class ArchiveService
         $record->forceFill([
             'archived_at' => Carbon::now(),
             'archived_by_user_id' => $user->id,
+            'archived_reason' => $reason,
         ])->save();
     }
 
     /**
      * Put it back.
+     *
+     * The archiving reason goes with it: a record that is back in every
+     * list is not archived for any reason at all. Why it was brought back
+     * is written to the activity log, which is where something that has
+     * already happened belongs.
      */
     public function restore(Model $record): void
     {
@@ -72,6 +86,7 @@ class ArchiveService
         $record->forceFill([
             'archived_at' => null,
             'archived_by_user_id' => null,
+            'archived_reason' => null,
         ])->save();
     }
 
@@ -85,7 +100,43 @@ class ArchiveService
     public function isArchivable(Model $record): bool
     {
         return $record->archived_at === null
+            && $this->blockedReason($record) === null
             && ! $this->deletion->isDeletable($record);
+    }
+
+    /**
+     * Why this record may not be archived, or null when it may.
+     *
+     * -------------------------------------------------------------------
+     * A live letting is not something to tidy away
+     * -------------------------------------------------------------------
+     *
+     * V1.0.43. Archiving takes a record out of every list and every
+     * picker, and to anybody who did not archive it the record has simply
+     * gone. Doing that to a lease that is still running hides a tenancy
+     * that is still billing, still collecting and still owed money — the
+     * invoices keep being raised against a letting nobody can see any
+     * more.
+     *
+     * A lease therefore has to be TERMINATED before it can be archived.
+     * Termination is the workflow that closes the letting properly: it
+     * settles the final rent, releases the deposit and stops the billing.
+     * Archiving is what happens to the record afterwards, when the
+     * tenancy is over and the row is only in the way.
+     *
+     * A lease in notice is not terminated. Notice is the period before the
+     * end, and it is still billing.
+     */
+    public function blockedReason(Model $record): ?string
+    {
+        if (
+            $record instanceof Lease
+            && $record->status !== 'terminated'
+        ) {
+            return 'api.archive.lease_not_terminated';
+        }
+
+        return null;
     }
 
     /**
@@ -119,6 +170,7 @@ class ArchiveService
                     'context' => $this->context($kind, $record),
                     'archived_at' => $record->archived_at?->toIso8601String(),
                     'archived_by' => $record->archivedBy?->name,
+                    'reason' => $record->archived_reason,
                 ];
             }
         }

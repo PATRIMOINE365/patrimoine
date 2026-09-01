@@ -63,6 +63,16 @@ final class PersonalData
         'bank_account_number',
         'bank_branch',
         'notes',
+
+        /*
+         * V1.0.43. The reason a record was archived is free text an
+         * operator wrote about this party — "moved back to Lagos", "left
+         * owing two months" — so it is theirs as much as the notes field
+         * beside it: it goes into their copy of what is held, and it goes
+         * when they are forgotten. Whether the record is archived does
+         * not; archived_at says only that it is out of the lists.
+         */
+        'archived_reason',
     ];
 
     /**

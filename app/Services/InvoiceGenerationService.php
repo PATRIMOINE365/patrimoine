@@ -337,34 +337,57 @@ class InvoiceGenerationService
 
     /**
      * Calculate the end date for a billing period.
+     *
+     * Always the day before the next period begins, so consecutive periods
+     * meet exactly: no gap a day can fall into, no day billed twice.
      */
     private function periodEnd(
         Lease $lease,
         Carbon $periodStart
     ): Carbon {
-        return match ($lease->payment_frequency) {
-            'monthly' => $periodStart->copy()->addMonthNoOverflow()->subDay(),
-
-            'quarterly' => $periodStart->copy()->addMonthsNoOverflow(3)->subDay(),
-
-            'bi_yearly' => $periodStart->copy()->addMonthsNoOverflow(6)->subDay(),
-
-            'yearly' => $periodStart->copy()->addYearNoOverflow()->subDay(),
-
-            default => throw new RuntimeException(
-                'Unsupported Lease payment frequency.'
-            ),
-        };
+        return $this
+            ->nextPeriodStart(
+                $lease,
+                $periodStart
+            )
+            ->subDay();
     }
 
     /**
      * Return the first day of the next billing period.
+     *
+     * -------------------------------------------------------------------
+     * The Lease start date is the permanent anniversary
+     * -------------------------------------------------------------------
+     *
+     * V1.0.43. This used to be a plain addMonthsNoOverflow() from the
+     * PREVIOUS period start, which loses the anniversary the first time a
+     * month is too short to hold it and never gets it back:
+     *
+     *     31 Jan -> 28 Feb -> 28 Mar -> 28 Apr -> 28 May ...
+     *
+     * A tenancy that began on the 31st was then billed on the 28th for the
+     * rest of its life because February happened once.
+     *
+     * The day a Lease began is the anniversary and it is never given up.
+     * The step still walks from the previous period — so that changing the
+     * payment frequency at an extension continues cleanly from where the
+     * last period ended rather than jumping back onto an old cadence — and
+     * the anniversary day is then restored in the month it lands in:
+     *
+     *     31 Jan -> 28 Feb -> 31 Mar -> 30 Apr -> 31 May -> 30 Jun -> 31 Jul
+     *     31 Jan -> 29 Feb -> 31 Mar ...                    (a leap year)
+     *
+     * Where the anniversary does not exist in a month, the last day of that
+     * month stands in for it once, and the next period returns to the real
+     * one. This is the same rule dueDate() has always applied to the day an
+     * Invoice falls due; the period boundaries simply did not share it.
      */
     private function nextPeriodStart(
         Lease $lease,
         Carbon $periodStart
     ): Carbon {
-        return match ($lease->payment_frequency) {
+        $stepped = match ($lease->payment_frequency) {
             'monthly' => $periodStart->copy()->addMonthNoOverflow(),
 
             'quarterly' => $periodStart->copy()->addMonthsNoOverflow(3),
@@ -377,6 +400,31 @@ class InvoiceGenerationService
                 'Unsupported Lease payment frequency.'
             ),
         };
+
+        return $this->onAnniversaryDay(
+            $stepped,
+            $lease->start_date->day
+        );
+    }
+
+    /**
+     * Move a date onto the Lease anniversary day within its own month.
+     *
+     * Shorter months borrow their last day rather than spilling into the
+     * next one, and because the day is read from the Lease each time
+     * rather than from the previous period, borrowing it once never costs
+     * the anniversary permanently.
+     */
+    private function onAnniversaryDay(
+        Carbon $date,
+        int $anniversaryDay
+    ): Carbon {
+        return $date->copy()->day(
+            min(
+                $anniversaryDay,
+                $date->daysInMonth
+            )
+        );
     }
 
     /**

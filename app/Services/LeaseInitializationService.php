@@ -80,6 +80,27 @@ class LeaseInitializationService
 
         /*
          * -------------------------------------------------------------
+         * The Security Deposit
+         * -------------------------------------------------------------
+         *
+         * V1.0.43. Every Lease has owned a Security Deposit account since
+         * V1.0.8, and the Lease form has always asked what the deposit is
+         * — but nothing ever funded it. The contract said 1,000 and the
+         * account said nothing, on every Lease ever entered, and the first
+         * anybody knew of it was reaching for money that was not there.
+         *
+         * A deposit is taken when the tenancy is agreed, so entering it on
+         * the Lease receives it. It is funded BEFORE the advance so that
+         * FIFO rent settlement can never reach money the tenant is owed
+         * back at the end of the letting.
+         */
+        $this->initializeSecurityDeposit(
+            $lease,
+            $openingFinancialData
+        );
+
+        /*
+         * -------------------------------------------------------------
          * Historical money reconstruction
          * -------------------------------------------------------------
          *
@@ -102,6 +123,96 @@ class LeaseInitializationService
         );
 
         return $lease->refresh();
+    }
+
+    /**
+     * Receive the Security Deposit agreed on the Lease.
+     *
+     * One Payment, classified in full into the Lease's own Security
+     * Deposit account. It is deliberately NOT passed through ordinary FIFO
+     * allocation: a deposit is the tenant's money held against the end of
+     * the letting, and settling rent with it would be spending money that
+     * has to be given back.
+     *
+     * Idempotent through is_opening_deposit, because initialization runs
+     * again on every Lease update and a deposit taken twice is a deposit
+     * owed twice.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function initializeSecurityDeposit(
+        Lease $lease,
+        array $data
+    ): void {
+        $amount = (int) $lease->security_deposit_amount;
+
+        if ($amount <= 0) {
+            return;
+        }
+
+        $existing = Payment::query()
+            ->where('lease_id', $lease->id)
+            ->where('is_opening_deposit', true)
+            ->exists();
+
+        if ($existing) {
+            return;
+        }
+
+        /*
+         * The date the deposit actually changed hands. Deposits are
+         * routinely taken before a tenancy begins — they are usually what
+         * secures the unit — so this date is deliberately unbounded by the
+         * Lease start. Absent, the Lease start stands in for it.
+         */
+        $receivedOn =
+            $data['security_deposit_received_date']
+            ?? $lease->start_date->toDateString();
+
+        $method =
+            $data['security_deposit_received_method']
+            ?? 'bank_transfer';
+
+        $payment = Payment::create([
+            'lease_id' => $lease->id,
+
+            'amount' => $amount,
+
+            'payment_date' => $receivedOn,
+
+            'payment_method' => $method,
+
+            'reference' =>
+                $data['security_deposit_received_reference'] ?? null,
+
+            /*
+             * As with the opening advance, Patrimoine cannot safely infer
+             * which User, if any, took cash it is only now being told
+             * about. The supplied name is kept as a frozen snapshot and no
+             * User relationship is claimed.
+             */
+            'cash_receiver_user_id' => null,
+
+            'cash_receiver_name' => (
+                $method === 'cash'
+                    ? ($data['security_deposit_received_collector'] ?? null)
+                    : null
+            ),
+
+            'notes' => 'Security Deposit received at Lease opening.',
+
+            'is_opening_deposit' => true,
+        ]);
+
+        $this->tenantFundAllocation
+            ->allocate(
+                payment: $payment,
+                fundType: 'security_deposit',
+                amount: $amount,
+                transactionDate: $receivedOn,
+                reference: $payment->reference,
+                notes: 'Security Deposit received at Lease opening.'
+            );
     }
 
     /**

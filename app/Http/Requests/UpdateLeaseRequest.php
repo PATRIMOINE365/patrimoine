@@ -112,6 +112,54 @@ class UpdateLeaseRequest extends FormRequest
             ],
 
             /*
+             * V1.0.43 — receiving the Security Deposit.
+             *
+             * Entering a deposit on the Lease receives it: the money goes
+             * into the Lease's own Security Deposit account, which has
+             * existed since V1.0.8 and was never funded by anything.
+             *
+             * All three stay nullable rather than required-with-amount,
+             * because this request is also how a Lease is EDITED, and by
+             * then the deposit has usually already been taken. Absent, the
+             * Lease start date and a bank transfer stand in.
+             *
+             * The date is deliberately unbounded by the Lease start.
+             * A deposit is normally what secures the unit, weeks before
+             * anybody moves in.
+             */
+            'security_deposit_received_date' => [
+                'nullable',
+                'date',
+            ],
+
+            'security_deposit_received_method' => [
+                'nullable',
+                Rule::in([
+                    'cash',
+                    'bank_transfer',
+                    'momo',
+                    'cheque',
+                ]),
+            ],
+
+            'security_deposit_received_reference' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            /*
+             * As with the advance, the cashier for a cash deposit is
+             * always the signed-in user; the controller overwrites
+             * whatever arrives here.
+             */
+            'security_deposit_received_collector' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            /*
             * Contractual Advance Payment.
             *
             * This represents the amount agreed in the Lease and does not create a
@@ -143,13 +191,22 @@ class UpdateLeaseRequest extends FormRequest
                 'boolean',
             ],
 
+            /*
+             * V1.0.43: deliberately NOT after_or_equal:start_date.
+             *
+             * Money changes hands before a tenancy begins all the time — a
+             * deposit and the first advance are usually what secures the
+             * unit in the first place, weeks before anybody moves in. The
+             * rule used to refuse exactly that, so an operator entering a
+             * real payment had to lie about its date to get it accepted,
+             * and the receipt then said something that had not happened.
+             */
             'advance_received_date' => [
                 Rule::requiredIf(
                     fn (): bool => $this->boolean('advance_received')
                 ),
                 'nullable',
                 'date',
-                'after_or_equal:start_date',
             ],
 
             'advance_received_method' => [
@@ -509,16 +566,12 @@ class UpdateLeaseRequest extends FormRequest
             );
         }
 
-        if (
-            $this->filled('advance_received_date')
-            && $this->filled('start_date')
-            && $this->date('advance_received_date')
-                ->lt($this->date('start_date'))
-        ) {
-            $validator->errors()->add(
-                'advance_received_date',
-                __('api.validation.advance_received_before_lease')
-            );
-        }
+        /*
+         * V1.0.43: the date is no longer bounded by the Lease start.
+         * Money receivable at Lease creation — the advance and the
+         * security deposit — is routinely taken before the tenancy
+         * begins, and refusing that date only produced a receipt with a
+         * date nobody recognised.
+         */
     }
 }

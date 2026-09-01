@@ -667,6 +667,80 @@ html[data-shell-role="administrator"] .shell-admin-only {
     color: var(--pm-text-subtle);
 }
 
+/*
+| Why a record was put away.
+|
+| Set apart from the line above it, because the question somebody brings
+| to this page is never "was this archived" but "why is this not in the
+| list any more", and the answer should not be read as more metadata.
+*/
+.pm-archive-reason {
+    margin-top: 0.5rem;
+    max-width: 60ch;
+    font-size: var(--text-sm);
+    line-height: 1.375rem;
+    color: var(--pm-text-secondary);
+}
+
+/*
+| Narrowing a list to one kind of thing.
+|
+| A row of chips rather than a dropdown: there are five of them, they each
+| carry how many records they hold, and reading the counts is half the
+| reason to look at the bar at all.
+*/
+
+.pm-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2rem;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--pm-border-strong);
+    border-radius: 9999px;
+    background: var(--pm-surface);
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 500;
+    color: var(--pm-text-secondary);
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    cursor: pointer;
+}
+
+.pm-filter-chip:hover {
+    background: var(--pm-hover);
+}
+
+.pm-filter-chip:focus-visible {
+    outline: none;
+    box-shadow: var(--pm-ring-gray);
+}
+
+.pm-filter-chip-active {
+    border-color: var(--pm-accent);
+    background: var(--pm-selected);
+    color: var(--pm-text);
+}
+
+.pm-filter-chip-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    padding: 0 0.3125rem;
+    border-radius: 9999px;
+    background: var(--pm-surface-muted);
+    font-size: var(--text-xs);
+    line-height: 1.125rem;
+    font-weight: 600;
+    color: var(--pm-text-muted);
+}
+
+.pm-filter-chip-active .pm-filter-chip-count {
+    background: var(--pm-surface);
+    color: var(--pm-text-secondary);
+}
+
 .pm-input-affix {
     position: relative;
 }
@@ -1254,6 +1328,241 @@ input[type='radio']:focus-visible {
     border-color: var(--pm-role-agent-border);
     background: var(--pm-role-agent-background);
     color: var(--pm-role-agent-text);
+}
+
+/*
+| What kind of record the archive is holding.
+|
+| The archive is the one place a party, a property, a unit and a letting
+| appear in the same column, so the chip carries the distinction the list
+| itself cannot.
+*/
+
+.pm-badge-archive-party {
+    border-color: var(--pm-archive-party-border);
+    background: var(--pm-archive-party-background);
+    color: var(--pm-archive-party-text);
+}
+
+.pm-badge-archive-building {
+    border-color: var(--pm-archive-building-border);
+    background: var(--pm-archive-building-background);
+    color: var(--pm-archive-building-text);
+}
+
+.pm-badge-archive-unit {
+    border-color: var(--pm-archive-unit-border);
+    background: var(--pm-archive-unit-background);
+    color: var(--pm-archive-unit-text);
+}
+
+.pm-badge-archive-lease {
+    border-color: var(--pm-archive-lease-border);
+    background: var(--pm-archive-lease-background);
+    color: var(--pm-archive-lease-text);
+}
+
+/*
+| The toggle switch.
+|
+| Untitled UI's control for a setting that takes effect the moment it is
+| saved, rather than one of several things being chosen. A tickbox asks
+| "is this true?"; a switch says "this is on, and here is how to turn it
+| off" — which is what a preference is.
+|
+| It is a real checkbox underneath, so it is focusable, it is announced as
+| a checkbox, the label toggles it, and a form reads it exactly as it read
+| the tickbox it replaced. Only the painting is different.
+*/
+
+.pm-toggle {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    flex: none;
+    width: 2.25rem;
+    height: 1.25rem;
+    margin: 0;
+    border-radius: 9999px;
+    background: var(--pm-surface-muted);
+    border: 1px solid var(--pm-border-strong);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.pm-toggle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0.125rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 9999px;
+    background: var(--pm-surface);
+    box-shadow: var(--pm-shadow-sm);
+    transform: translateY(-50%);
+    transition: transform 0.15s ease;
+}
+
+.pm-toggle:checked {
+    background: var(--pm-accent);
+    border-color: var(--pm-accent);
+}
+
+.pm-toggle:checked::after {
+    transform: translateY(-50%) translateX(1rem);
+}
+
+.pm-toggle:focus-visible {
+    outline: none;
+    box-shadow: var(--pm-ring-brand);
+}
+
+.pm-toggle:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/*
+| A switch with its label and its explanation beside it.
+|
+| The switch leads, because it is the thing being read for: a column of
+| settings should answer "what is on here?" before it answers "what does
+| each of these mean?".
+*/
+
+.pm-toggle-field {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.pm-toggle-field + .pm-toggle-field {
+    margin-top: 1.25rem;
+}
+
+.pm-toggle-field .pm-toggle {
+    margin-top: 0.125rem;
+}
+
+.pm-toggle-label {
+    display: block;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 500;
+    color: var(--pm-text-secondary);
+}
+
+.pm-toggle-help {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: var(--text-xs);
+    line-height: 1.125rem;
+    color: var(--pm-text-muted);
+}
+
+/*
+| A table inside a record somebody is reading.
+|
+| V1.0.43. The owner ledger, the properties under an owner, a tenant's
+| lettings — all of these used to be stacks of cards, three or four lines
+| each, so six movements filled the screen and the seventh was a scroll
+| away. They are lists of comparable things, and a list of comparable
+| things is a table: one line per record, the same column in the same
+| place on every row, and ten of them visible at once.
+|
+| Ten by default, and 5/10/25/50/100 to choose from — a panel inside a
+| page cannot take the twenty-five rows a page of its own would.
+*/
+
+.pm-panel-table-scroll {
+    overflow-x: auto;
+}
+
+.pm-panel-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.pm-panel-table th {
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    white-space: nowrap;
+    background: var(--pm-surface-subtle);
+    border-bottom: 1px solid var(--pm-border-subtle);
+    font-size: var(--text-xs);
+    line-height: 1.125rem;
+    font-weight: 600;
+    color: var(--pm-text-muted);
+}
+
+.pm-panel-table td {
+    padding: 0.5rem 0.75rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--pm-border-subtle);
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-secondary);
+}
+
+.pm-panel-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.pm-panel-table tbody tr:hover td {
+    background: var(--pm-hover);
+}
+
+/* The column a row is identified by. */
+.pm-panel-table-primary {
+    font-weight: 500;
+    color: var(--pm-text);
+}
+
+/* Money and counts: right-aligned, and digits that line up. */
+.pm-panel-table-numeric {
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.pm-panel-table-nowrap {
+    white-space: nowrap;
+}
+
+/*
+| The one column allowed to be long.
+|
+| A note or a reference can be any length, and letting it push the amount
+| off the right of the table would defeat the point of the table.
+*/
+.pm-panel-table-truncate {
+    max-width: 18rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pm-panel-table-actions {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.pm-panel-table-credit {
+    color: var(--pm-success-text);
+}
+
+.pm-panel-table-debit {
+    color: var(--pm-danger-text);
+}
+
+.pm-panel-empty {
+    padding: 2rem 1.25rem;
+    text-align: center;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-muted);
 }
 
 /* A count beside a title: "Leases 24". */

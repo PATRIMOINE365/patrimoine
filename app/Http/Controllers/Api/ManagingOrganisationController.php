@@ -139,7 +139,26 @@ class ManagingOrganisationController extends Controller
                             $settings->data_tools_enabled ?? false
                         );
 
+                /*
+                 * V1.0.43: how the parties list orders people. It used to be
+                 * a tickbox on the parties page itself, which meant it was a
+                 * per-browser habit rather than a decision the organisation
+                 * had made. Absent means "leave it as it was".
+                 */
+                $sortPartiesBySurname =
+                    array_key_exists(
+                        'sort_parties_by_surname',
+                        $validated
+                    )
+                        ? (bool) $validated['sort_parties_by_surname']
+                        : (bool) (
+                            $settings->sort_parties_by_surname ?? false
+                        );
+
                 unset(
+                    $validated[
+                        'sort_parties_by_surname'
+                    ],
                     $validated[
                         'default_vat_rate'
                     ],
@@ -215,6 +234,7 @@ class ManagingOrganisationController extends Controller
                      */
                     'party_emails_enabled' => $partyEmailsEnabled,
                     'data_tools_enabled' => $dataToolsEnabled,
+                    'sort_parties_by_surname' => $sortPartiesBySurname,
                 ]);
 
                 /*
@@ -321,6 +341,21 @@ class ManagingOrganisationController extends Controller
 
                 'party_emails_enabled' => (bool) (
                     $settings->party_emails_enabled ?? true
+                ),
+
+                /*
+                 * V1.0.43: this was saved but never sent back, so the
+                 * Preferences tickbox read `undefined ?? false` on every
+                 * reload and unticked itself while the parties list went on
+                 * showing the tools. A stored setting the form cannot see is
+                 * a setting nobody can switch off again.
+                 */
+                'data_tools_enabled' => (bool) (
+                    $settings->data_tools_enabled ?? false
+                ),
+
+                'sort_parties_by_surname' => (bool) (
+                    $settings->sort_parties_by_surname ?? false
                 ),
             ]
         );

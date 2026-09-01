@@ -283,7 +283,16 @@ class BrowserLocalisationTest extends TestCase
                 'data-i18n-title="wizard.title"',
                 'data-i18n="wizard.heading"',
                 'data-i18n="wizard.step1_title"',
-                'data-i18n="wizard.step10_title"',
+
+                /*
+                 * V1.0.43: the assistant is the lease drawer paginated,
+                 * so it is eight pages rather than ten. The last one is
+                 * still the review.
+                 */
+                'data-i18n="wizard.step8_title"',
+                'data-i18n="wizard.ownership"',
+                'data-i18n="wizard.notes"',
+                'data-i18n="wizard.consumable_advance"',
                 'data-i18n="wizard.glossary_lease_term"',
                 'data-i18n="wizard.duration_open"',
                 'data-i18n="wizard.advance_received"',

@@ -1383,6 +1383,11 @@ return [
         'what' => 'L\'archivage existe pour les enregistrements que Patrimoine refuse de supprimer, parce que la comptabilité y fait encore référence. Celui-ci n\'a pas d\'historique de ce genre : il peut simplement être supprimé.',
         'fix' => 'Utilisez Supprimer. Si vous préférez le conserver, laissez-le où il est — l\'archivage n\'est pas un moyen de ranger des enregistrements qui pourraient être supprimés.',
     ],
+    'PM-3097' => [
+        'title' => 'Un bail doit être résilié avant de pouvoir être archivé.',
+        'what' => 'L\'archivage retire un enregistrement de toutes les listes et de tous les menus déroulants : pour quiconque ne l\'a pas archivé, le bail a tout simplement disparu. Le faire sur une location en cours masque un bail qui continue d\'être facturé, d\'encaisser des loyers et de détenir le dépôt de garantie du locataire. La résiliation est ce qui clôture correctement une location : elle règle le dernier loyer, libère le dépôt et arrête la facturation.',
+        'fix' => 'Ouvrez le bail et utilisez Résilier, puis complétez le décompte de résiliation. Une fois le bail résilié, Archiver apparaît sur la même ligne. Un bail en préavis n\'est pas encore résilié : le préavis est la période avant la fin, et la facturation continue.',
+    ],
 
     /* ---- 4xxx ---- */
 

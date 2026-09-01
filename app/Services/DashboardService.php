@@ -206,25 +206,38 @@ class DashboardService
     }
 
     /**
-     * V1.0.7: rent actually collected per month for the trailing N months
-     * (oldest first) — the dashboard's collections trend.
+     * Rent actually collected per month across the whole of the year being
+     * read — January to December, oldest first.
+     *
+     * V1.0.43: this used to be the trailing six months, which meant the
+     * chart said something different every month and never once showed a
+     * year. A collections trend is read to compare one month against the
+     * others in the same year, so the year is the frame: months still to
+     * come sit at zero until they arrive, and the shape of the year is
+     * visible from January onwards rather than assembling itself six
+     * months in.
      *
      * @return array<int, array{month: string, amount: int}>
      */
     public function collectionsTrend(
-        Carbon $asOfDate,
-        int $months = 6
+        Carbon $asOfDate
     ): array {
         $trend = [];
 
-        for ($i = $months - 1; $i >= 0; $i--) {
-            $start = $asOfDate->copy()->subMonthsNoOverflow($i)->startOfMonth();
+        $month = $asOfDate
+            ->copy()
+            ->startOfYear();
+
+        for ($index = 0; $index < 12; $index++) {
+            $start = $month->copy();
             $end = $start->copy()->endOfMonth();
 
             $trend[] = [
                 'month' => $start->format('Y-m'),
                 'amount' => $this->rentCollectedBetween($start, $end),
             ];
+
+            $month->addMonthNoOverflow();
         }
 
         return $trend;

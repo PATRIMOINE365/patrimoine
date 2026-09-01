@@ -159,7 +159,15 @@ class OwnerAccountController extends Controller
         OwnerAccount $ownerAccount
     ): JsonResponse {
         $ownerAccount->load([
-            'party.buildingOwnerships.building.units',
+            /*
+             * V1.0.43: archived units leave the owner's property list, as
+             * they leave every other list. The filter is per-query rather
+             * than a global scope on purpose — a scope would reach the
+             * reports and the documents, and a set of accounts whose
+             * totals move when somebody tidies a list is untrustworthy.
+             */
+            'party.buildingOwnerships.building.units' => fn ($units) => $units
+                ->notArchived(),
             'party.buildingOwnerships.building.ownerships.party',
             'payouts',
         ]);

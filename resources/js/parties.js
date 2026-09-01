@@ -238,14 +238,6 @@ function initializePartyFilters() {
             rerenderLoadedParties
         );
 
-    document
-        .getElementById(
-            'party-sort-surname'
-        )
-        ?.addEventListener(
-            'change',
-            rerenderLoadedParties
-        );
 }
 
 /**
@@ -554,12 +546,17 @@ function presentLoadedParties(
             );
     }
 
-    const sortToggle =
-        document.getElementById(
-            'party-sort-surname'
-        );
+    /*
+     * V1.0.43: read from the organisation rather than from a tickbox on
+     * this page. Ordering a list of people is a decision made once, in
+     * Settings, not a habit of whichever browser happens to be open.
+     */
+    const sortBySurname =
+        getPresentationConfiguration()
+            .sort_parties_by_surname
+        === true;
 
-    if (sortToggle?.checked) {
+    if (sortBySurname) {
         displayed.sort(
             (first, second) =>
                 surnameSortKey(
@@ -931,7 +928,7 @@ function partyCard(party) {
                         kind: 'party',
                         id: party.id,
                         name: displayName,
-                        className: 'pm-button-secondary pm-party-action max-sm:flex-1',
+                        className: 'pm-button-danger-outline pm-party-action max-sm:flex-1',
                         deleteMarkup: `
                             <button
                                 type="button"

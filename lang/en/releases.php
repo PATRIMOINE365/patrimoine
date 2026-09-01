@@ -19,6 +19,28 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.43',
+            'date' => '2026-09-01',
+            'title' => 'The security deposit is received, the assistant follows the lease form, and archiving asks',
+            'changes' => [
+                'The security deposit entered on a lease is now RECEIVED. Every lease has carried a Security Deposit account since 1.0.8 and the lease form has always asked for the amount, but nothing ever put money into it — the contract said one figure and the account held nothing. Entering a deposit now funds that account, and three fields beside it ask when it changed hands and how.',
+                'Money that arrives before the tenancy does is accepted. A deposit and the first advance are usually what secure a unit, weeks before anybody moves in, and Patrimoine used to refuse those dates — so an operator had to enter a date that was not true to get a real payment recorded. A scheduled rent increase still cannot precede the lease, because it is a change to a rent that does not exist yet.',
+                'The lease start date is now the permanent anniversary. A letting that began on the 31st is billed on 31 January, 28 February, 31 March, 30 April and 31 May: a month too short to hold the day lends its last one, and the day after that returns to the real anniversary. It used to be lost the first time February came round and never came back.',
+                'The guided assistant is the Add lease form, paginated. Eight pages, one per section of the form, asking exactly what it asks — including the notes, the VAT, the consumable advance and the deposit receipt it never had. Its rent field now says Monthly rent, as the form always did: it had said only "Rent" above "Paid every: Quarter", so a quarter\'s rent typed there was billed at three times itself.',
+                'Save as draft has moved to the top of the assistant, beside Cancel, and is offered on every page including the review. Back and Next now have the foot of the page to themselves, and Next is the button that carries on all the way through.',
+                'Archiving asks before it acts. It reads like deletion to everybody who did not do it — the record leaves every list and every dropdown — so it now opens a drawer that says plainly what it does and what it does not, and asks why. The reason is kept and shown on the Archive page, so the next person to ask why something is missing has the answer. Restoring asks too.',
+                'A lease has to be terminated before it can be archived. Archiving a letting that is still running would hide a tenancy still being invoiced and still holding a deposit.',
+                'A single unit can now be archived, and the Archive button is red like Delete, because both take a record off every screen.',
+                'The Archive page has a search — across the names and the reasons — and a chip per kind of record, each in its own colour and carrying how many it holds.',
+                'The data-protection switch in Settings stays switched on. It was saved correctly and then left out of what the page read back, so it drew an empty box over a setting that was on, and there was no way to switch it off again.',
+                'Sorting the parties list by surname has moved from the list to Settings, under Preferences, so it belongs to the organisation rather than to whichever browser is open. The switches there are now switches rather than tickboxes.',
+                'An owner\'s ledger, the properties they hold and a tenant\'s lettings, invoices, payments, transfers, expenses and fund history are all tables now — one line each, ten at a time, and 5, 10, 25, 50 or 100 to choose from. The tenant page has lost its lease counters, its contact panel and its financial summary: all three restated what was already on the same screen or one press away in Accounts.',
+                'Make owner payout has a Withdraw all button beside the amount.',
+                'The collections trend on the dashboard is the whole of the year, January to December, rather than the last six months.',
+                'Refusals in the tenant payment drawers carry their error code, as refusals do everywhere else. The codes existed; the drawer simply never showed them.',
+            ],
+        ],
+        [
             'version' => '1.0.42',
             'date' => '2026-08-31',
             'title' => 'Archive, shorter lists, and a colour for every kind of party',

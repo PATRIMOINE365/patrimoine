@@ -1330,6 +1330,140 @@
                                 >
                             </div>
                         </div>
+
+                        {{--
+                            V1.0.43: receiving the deposit.
+
+                            Every lease has owned a Security Deposit account
+                            since V1.0.8, and this form has always asked what
+                            the deposit is - but nothing ever put money into
+                            it, so the contract said one thing and the account
+                            said nothing. Entering a deposit now receives it.
+
+                            Hidden while the amount is zero, because there is
+                            then nothing to have received. The date is
+                            deliberately free: a deposit is usually what
+                            secures the unit, taken weeks before the tenancy
+                            begins.
+                        --}}
+                        <div
+                            id="lease-security-deposit-receipt"
+                            class="
+                                mt-5 hidden rounded-xl
+                                border border-[var(--pm-border-subtle)]
+                                bg-[var(--pm-surface-subtle)] p-4
+                            "
+                        >
+                            <p class="text-xs text-[var(--pm-text-muted)]">
+                                <span data-i18n="leases.security_deposit_received_help">
+                                    {{ __('ui.leases.security_deposit_received_help') }}
+                                </span>
+                            </p>
+
+                            <div
+                                class="
+                                    mt-4 grid gap-4
+                                    panel-md:grid-cols-3
+                                "
+                            >
+                                <div>
+                                    <label
+                                        for="lease-security-deposit-date"
+                                        class="pm-field-label flex items-center gap-1.5"
+                                    >
+                                        <span data-i18n="leases.date_received">
+                                            {{ __('ui.leases.date_received') }}
+                                        </span>
+                                    </label>
+
+                                    <div class="pm-lease-date-control">
+<input
+                                        id="lease-security-deposit-date"
+                                    data-lease-date-input
+                                    data-pm-date-input
+                                    inputmode="numeric"
+                                    maxlength="10"
+                                    placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                        type="text"
+                                        class="pm-input"
+                                    >
+    <button
+        type="button"
+        class="pm-lease-date-picker-button"
+        data-lease-date-picker="lease-security-deposit-date"
+        aria-label="Choose date"
+    >
+        <x-icon name="calendar" />
+    </button>
+
+    <input
+        id="lease-security-deposit-date-picker"
+        type="date"
+        class="pm-lease-native-date-picker"
+        tabindex="-1"
+        aria-hidden="true"
+        data-lease-native-date-picker="lease-security-deposit-date"
+    >
+</div>
+                                </div>
+
+                                <div>
+                                    <label
+                                        for="lease-security-deposit-method"
+                                        class="pm-field-label flex items-center gap-1.5"
+                                    >
+                                        <span data-i18n="leases.payment_method">
+                                            {{ __('ui.leases.payment_method') }}
+                                        </span>
+                                    </label>
+
+                                    <select
+                                        id="lease-security-deposit-method"
+                                        class="pm-input"
+                                    >
+                                        <option
+                                        value="bank_transfer"
+                                        data-i18n="leases.bank_transfer"
+                                    >{{ __('ui.leases.bank_transfer') }}</option>
+
+                                        <option
+                                        value="momo"
+                                        data-i18n="leases.mobile_money"
+                                    >{{ __('ui.leases.mobile_money') }}</option>
+
+                                        <option
+                                        value="cash"
+                                        data-i18n="leases.cash"
+                                    >{{ __('ui.leases.cash') }}</option>
+
+                                        <option
+                                        value="cheque"
+                                        data-i18n="leases.cheque"
+                                    >{{ __('ui.leases.cheque') }}</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label
+                                        for="lease-security-deposit-reference"
+                                        class="pm-field-label flex items-center gap-1.5"
+                                    >
+                                        <span data-i18n="leases.reference">
+                                            {{ __('ui.leases.reference') }}
+                                        </span>
+                                    </label>
+
+                                    <input
+                                        id="lease-security-deposit-reference"
+                                        type="text"
+                                        maxlength="255"
+                                        data-i18n-placeholder="leases.optional"
+                                        placeholder="{{ __('ui.leases.optional') }}"
+                                        class="pm-input"
+                                    >
+                                </div>
+                            </div>
+                        </div>
                     </section>
 
 

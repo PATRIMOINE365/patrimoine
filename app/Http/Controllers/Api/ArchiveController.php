@@ -38,6 +38,11 @@ class ArchiveController extends Controller
 
     /**
      * Put a record out of the way.
+     *
+     * V1.0.43: a reason is required. Archiving reads like deletion to
+     * everybody who did not do it — the record leaves every list and every
+     * picker — so it is asked for the way deletion is asked for, and the
+     * answer is kept where the next person will look for it.
      */
     public function store(
         Request $request,
@@ -45,6 +50,27 @@ class ArchiveController extends Controller
         int $id
     ): JsonResponse {
         $record = $this->find($kind, $id);
+
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'min:3', 'max:500'],
+        ]);
+
+        /*
+         * A lease has to be closed properly before it can be tidied away.
+         * Archiving a running letting hides a tenancy that is still
+         * billing and still owed money.
+         */
+        $blocked = $this->archive->blockedReason($record);
+
+        if ($blocked !== null) {
+            return response()->json(
+                [
+                    'message' => __($blocked),
+                    'code' => ErrorCodes::forKey($blocked),
+                ],
+                422
+            );
+        }
 
         /*
          * Archive is what a record offers INSTEAD of Delete, so a record
@@ -71,7 +97,8 @@ class ArchiveController extends Controller
 
         $this->archive->archive(
             $record,
-            $request->user()
+            $request->user(),
+            $validated['reason']
         );
 
         $this->activityLog->record(
@@ -80,6 +107,7 @@ class ArchiveController extends Controller
             entityType: $kind,
             entityId: $record->id,
             entityLabel: (string) ($record->name ?? $record->id),
+            metadata: ['reason' => $validated['reason']],
         );
 
         return response()->json([
@@ -89,6 +117,11 @@ class ArchiveController extends Controller
 
     /**
      * Put it back.
+     *
+     * Restoring returns a record to every list and every picker in the
+     * product, which is as much of a change as taking it out was, so it
+     * asks for a reason too. There is nowhere on the row to keep it — a
+     * restored record is not archived — so it goes to the activity log.
      */
     public function destroy(
         Request $request,
@@ -96,6 +129,10 @@ class ArchiveController extends Controller
         int $id
     ): JsonResponse {
         $record = $this->find($kind, $id);
+
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'min:3', 'max:500'],
+        ]);
 
         $this->archive->restore($record);
 
@@ -105,6 +142,7 @@ class ArchiveController extends Controller
             entityType: $kind,
             entityId: $record->id,
             entityLabel: (string) ($record->name ?? $record->id),
+            metadata: ['reason' => $validated['reason']],
         );
 
         return response()->json([

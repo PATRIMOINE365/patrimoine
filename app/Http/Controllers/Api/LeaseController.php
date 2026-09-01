@@ -302,6 +302,10 @@ class LeaseController extends Controller
                     'advance_received_method',
                     'advance_received_reference',
                     'advance_received_collector',
+                    'security_deposit_received_date',
+                    'security_deposit_received_method',
+                    'security_deposit_received_reference',
+                    'security_deposit_received_collector',
                 ]
             );
 
@@ -317,6 +321,17 @@ class LeaseController extends Controller
                 $request->user()->name;
         }
 
+        /*
+         * V1.0.43: the same rule for a Security Deposit taken in cash.
+         */
+        if (
+            ($openingFinancialData['security_deposit_received_method'] ?? null)
+                === 'cash'
+        ) {
+            $openingFinancialData['security_deposit_received_collector'] =
+                $request->user()->name;
+        }
+
         $leaseAttributes =
             Arr::except(
                 $validated,
@@ -326,6 +341,10 @@ class LeaseController extends Controller
                     'advance_received_method',
                     'advance_received_reference',
                     'advance_received_collector',
+                    'security_deposit_received_date',
+                    'security_deposit_received_method',
+                    'security_deposit_received_reference',
+                    'security_deposit_received_collector',
                 ]
             );
 
@@ -689,6 +708,10 @@ class LeaseController extends Controller
                     'advance_received_method',
                     'advance_received_reference',
                     'advance_received_collector',
+                    'security_deposit_received_date',
+                    'security_deposit_received_method',
+                    'security_deposit_received_reference',
+                    'security_deposit_received_collector',
                 ]
             );
 
@@ -704,6 +727,17 @@ class LeaseController extends Controller
                 $request->user()->name;
         }
 
+        /*
+         * V1.0.43: the same rule for a Security Deposit taken in cash.
+         */
+        if (
+            ($openingFinancialData['security_deposit_received_method'] ?? null)
+                === 'cash'
+        ) {
+            $openingFinancialData['security_deposit_received_collector'] =
+                $request->user()->name;
+        }
+
         $leaseAttributes =
             Arr::except(
                 $validated,
@@ -713,6 +747,10 @@ class LeaseController extends Controller
                     'advance_received_method',
                     'advance_received_reference',
                     'advance_received_collector',
+                    'security_deposit_received_date',
+                    'security_deposit_received_method',
+                    'security_deposit_received_reference',
+                    'security_deposit_received_collector',
                 ]
             );
 

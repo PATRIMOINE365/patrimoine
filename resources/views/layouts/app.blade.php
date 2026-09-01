@@ -847,6 +847,9 @@
 
 
 
+@include('app.panels.archive-drawers')
+
+
 <x-drawer
     id="profile-modal"
     backdrop-id="profile-modal-backdrop"

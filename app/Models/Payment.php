@@ -34,6 +34,7 @@ class Payment extends Model
         'cash_receiver_name',
         'notes',
         'is_opening_advance',
+        'is_opening_deposit',
     ];
 
     /**
@@ -47,6 +48,7 @@ class Payment extends Model
             'amount' => 'integer',
             'payment_date' => 'date',
             'is_opening_advance' => 'boolean',
+            'is_opening_deposit' => 'boolean',
         ];
     }
 

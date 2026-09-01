@@ -112,6 +112,20 @@ class ApplicationPresentationController extends Controller
             );
 
         /*
+         * V1.0.43: how the parties list is ordered. It used to be a
+         * tickbox on the list itself, remembered nowhere, so two people
+         * reading the same list read it in different orders. It is the
+         * organisation's decision now, and every browser reads it from
+         * here.
+         */
+        $configuration[
+            'sort_parties_by_surname'
+        ] =
+            (bool) (
+                $settings?->sort_parties_by_surname ?? false
+            );
+
+        /*
          * V1.0.7: the running release is non-sensitive and lets Settings,
          * the Help page and the update log show the current version.
          */

@@ -123,8 +123,18 @@ class BuildingController extends Controller
         /*
          * So each row can label its own button: Delete while the record
          * can still go, Archive once it cannot.
+         *
+         * V1.0.43: the units too. Their rows carry the same button and had
+         * always drawn Delete, so a unit that had been let offered an
+         * action the server was always going to refuse.
          */
-        $buildings->getCollection()->each->append('is_deletable');
+        $buildings->getCollection()->each(
+            function ($building): void {
+                $building->append('is_deletable');
+
+                $building->units->each->append('is_deletable');
+            }
+        );
 
         return response()->json($buildings);
     }

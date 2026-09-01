@@ -15,6 +15,28 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.43',
+            'date' => '2026-09-01',
+            'title' => 'Le dépôt de garantie est encaissé, l\'assistant suit le formulaire de bail, et l\'archivage demande',
+            'changes' => [
+                'Le dépôt de garantie saisi sur un bail est désormais ENCAISSÉ. Chaque bail possède un compte de dépôt de garantie depuis la 1.0.8 et le formulaire a toujours demandé le montant, mais rien n\'y versait jamais d\'argent — le contrat annonçait un chiffre et le compte ne contenait rien. Saisir un dépôt alimente maintenant ce compte, et trois champs à côté demandent quand et comment il a été reçu.',
+                'L\'argent qui arrive avant la location est accepté. Un dépôt et la première avance servent généralement à réserver un lot, des semaines avant l\'emménagement, et Patrimoine refusait ces dates — il fallait donc saisir une date fausse pour enregistrer un paiement réel. Une augmentation de loyer programmée ne peut toujours pas précéder le bail, car elle modifie un loyer qui n\'existe pas encore.',
+                'La date de début du bail est désormais la date anniversaire permanente. Une location commencée le 31 est facturée le 31 janvier, le 28 février, le 31 mars, le 30 avril et le 31 mai : un mois trop court pour contenir le jour prête son dernier, et le mois suivant revient à la vraie date anniversaire. Elle était auparavant perdue dès le premier mois de février et ne revenait jamais.',
+                'L\'assistant est le formulaire Ajouter un bail, paginé. Huit pages, une par section du formulaire, demandant exactement ce qu\'il demande — y compris les notes, la TVA, l\'avance consommable et l\'encaissement du dépôt qu\'il n\'avait jamais eus. Son champ loyer indique maintenant Loyer mensuel, comme le formulaire l\'a toujours fait : il n\'affichait que « Loyer » au-dessus de « Payé chaque : trimestre », si bien qu\'un loyer trimestriel saisi là était facturé trois fois.',
+                'Enregistrer comme brouillon est passé en haut de l\'assistant, à côté d\'Annuler, et reste proposé sur chaque page, y compris la révision. Précédent et Suivant occupent désormais seuls le bas de page, et Suivant est le bouton qui poursuit d\'un bout à l\'autre.',
+                'L\'archivage demande avant d\'agir. Pour quiconque ne l\'a pas fait, il ressemble à une suppression — l\'enregistrement quitte toutes les listes et tous les menus déroulants — un tiroir explique donc clairement ce qu\'il fait et ce qu\'il ne fait pas, et demande pourquoi. Le motif est conservé et affiché sur la page Archives, afin que la prochaine personne qui s\'étonne d\'une absence ait la réponse. La restauration demande aussi.',
+                'Un bail doit être résilié avant de pouvoir être archivé. Archiver une location encore en cours masquerait un bail toujours facturé et détenant encore un dépôt de garantie.',
+                'Un lot peut désormais être archivé individuellement, et le bouton Archiver est rouge comme Supprimer, car les deux retirent un enregistrement de tous les écrans.',
+                'La page Archives dispose d\'une recherche — sur les noms et les motifs — et d\'une pastille par type d\'enregistrement, chacune de sa couleur et indiquant combien elle en contient.',
+                'L\'interrupteur de protection des données dans Réglages reste activé. Il était correctement enregistré puis omis de ce que la page relisait : elle dessinait donc une case vide par-dessus un réglage actif, sans aucun moyen de le désactiver.',
+                'Le tri de la liste des tiers par nom de famille est passé de la liste aux Réglages, sous Préférences : il appartient à l\'organisation plutôt qu\'au navigateur ouvert. Les réglages y sont désormais des interrupteurs plutôt que des cases à cocher.',
+                'Le grand livre d\'un propriétaire, les biens qu\'il détient et les locations, factures, paiements, virements, dépenses et mouvements de fonds d\'un locataire sont désormais des tableaux — une ligne chacun, dix à la fois, avec le choix entre 5, 10, 25, 50 ou 100. La page locataire a perdu ses compteurs de baux, son panneau de coordonnées et son résumé financier : les trois répétaient ce qui figurait déjà sur le même écran ou à un clic dans Comptes.',
+                'Le versement au propriétaire dispose d\'un bouton Tout retirer à côté du montant.',
+                'La tendance des encaissements du tableau de bord couvre toute l\'année, de janvier à décembre, au lieu des six derniers mois.',
+                'Les refus dans les tiroirs de paiement des locataires portent leur code d\'erreur, comme partout ailleurs. Les codes existaient ; le tiroir ne les affichait simplement pas.',
+            ],
+        ],
+        [
             'version' => '1.0.42',
             'date' => '2026-08-31',
             'title' => 'Les archives, des listes plus courtes, et une couleur par type de tiers',

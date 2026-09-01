@@ -59,7 +59,9 @@ class ArchiveTest extends TestCase
     {
         $building = $this->referencedBuilding();
 
-        $this->postJson('/api/archive/building/'.$building->id)
+        $this->postJson('/api/archive/building/'.$building->id, [
+            'reason' => 'The block was sold in March.',
+        ])
             ->assertOk()
             ->assertJsonPath('archived', true);
 
@@ -80,7 +82,9 @@ class ArchiveTest extends TestCase
             'email' => 'unreferenced@example.test',
         ]);
 
-        $this->postJson('/api/archive/party/'.$party->id)
+        $this->postJson('/api/archive/party/'.$party->id, [
+            'reason' => 'Nobody has ever used them.',
+        ])
             ->assertStatus(422)
             ->assertJsonPath('code', 'PM-3096');
 
@@ -97,7 +101,9 @@ class ArchiveTest extends TestCase
             ->assertOk()
             ->assertJsonFragment(['name' => 'Archive Court']);
 
-        $this->postJson('/api/archive/building/'.$building->id)
+        $this->postJson('/api/archive/building/'.$building->id, [
+            'reason' => 'The block was sold in March.',
+        ])
             ->assertOk();
 
         $this->getJson('/api/buildings')
@@ -112,16 +118,29 @@ class ArchiveTest extends TestCase
     {
         $building = $this->referencedBuilding();
 
-        $this->postJson('/api/archive/building/'.$building->id)
+        $this->postJson('/api/archive/building/'.$building->id, [
+            'reason' => 'The block was sold in March.',
+        ])
             ->assertOk();
 
         $this->getJson('/api/archive')
             ->assertOk()
-            ->assertJsonFragment(['label' => 'Archive Court']);
+            ->assertJsonFragment(['label' => 'Archive Court'])
+            ->assertJsonFragment(['reason' => 'The block was sold in March.']);
 
-        $this->deleteJson('/api/archive/building/'.$building->id)
+        $this->deleteJson('/api/archive/building/'.$building->id, [
+            'reason' => 'The sale fell through.',
+        ])
             ->assertOk()
             ->assertJsonPath('restored', true);
+
+        /*
+         * A record that is back in every list is not archived for any
+         * reason at all, so the reason goes with it.
+         */
+        $this->assertNull(
+            $building->fresh()->archived_reason
+        );
 
         $this->assertNull(
             $building->fresh()->archived_at
@@ -167,7 +186,9 @@ class ArchiveTest extends TestCase
     {
         $building = $this->referencedBuilding();
 
-        $this->postJson('/api/archive/building/'.$building->id)
+        $this->postJson('/api/archive/building/'.$building->id, [
+            'reason' => 'The block was sold in March.',
+        ])
             ->assertOk();
 
         $this->assertDatabaseHas('activity_logs', [
@@ -180,11 +201,174 @@ class ArchiveTest extends TestCase
     }
 
     /**
+     * Archiving asks why, and keeps the answer where it will be read.
+     */
+    public function test_archiving_requires_a_reason(): void
+    {
+        $building = $this->referencedBuilding();
+
+        $this->postJson('/api/archive/building/'.$building->id)
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('reason');
+
+        $this->assertNull(
+            $building->fresh()->archived_at
+        );
+    }
+
+    public function test_restoring_requires_a_reason(): void
+    {
+        $building = $this->referencedBuilding();
+
+        $this->postJson('/api/archive/building/'.$building->id, [
+            'reason' => 'The block was sold in March.',
+        ])->assertOk();
+
+        $this->deleteJson('/api/archive/building/'.$building->id)
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('reason');
+
+        $this->assertNotNull(
+            $building->fresh()->archived_at
+        );
+    }
+
+    /**
+     * -----------------------------------------------------------------
+     * A live letting is not something to tidy away
+     * -----------------------------------------------------------------
+     *
+     * Archiving a running lease hides a tenancy that is still invoicing,
+     * still collecting rent and still holding a deposit. Termination is
+     * the workflow that closes a letting; archiving is only what happens
+     * to the record afterwards.
+     */
+    public function test_a_running_lease_cannot_be_archived(): void
+    {
+        $lease = $this->activeLease();
+
+        $this->postJson('/api/archive/lease/'.$lease->id, [
+            'reason' => 'Tidying the list.',
+        ])
+            ->assertStatus(422)
+            ->assertJsonPath('code', 'PM-3097');
+
+        $this->assertNull(
+            $lease->fresh()->archived_at
+        );
+    }
+
+    /**
+     * Notice is the period BEFORE the end. It is still billing.
+     */
+    public function test_a_lease_in_notice_cannot_be_archived(): void
+    {
+        $lease = $this->activeLease();
+
+        $lease->forceFill([
+            'status' => 'notice',
+            'termination_notice_date' => now()->toDateString(),
+        ])->save();
+
+        $this->postJson('/api/archive/lease/'.$lease->id, [
+            'reason' => 'It is nearly over.',
+        ])
+            ->assertStatus(422)
+            ->assertJsonPath('code', 'PM-3097');
+    }
+
+    public function test_a_terminated_lease_can_be_archived(): void
+    {
+        $lease = $this->activeLease();
+
+        $lease->forceFill([
+            'status' => 'terminated',
+            'termination_date' => now()->toDateString(),
+        ])->save();
+
+        $this->postJson('/api/archive/lease/'.$lease->id, [
+            'reason' => 'The tenancy ended last year.',
+        ])
+            ->assertOk()
+            ->assertJsonPath('archived', true);
+
+        $this->assertNotNull(
+            $lease->fresh()->archived_at
+        );
+    }
+
+    /**
+     * A unit that has been let carries Archive, exactly as its building
+     * does. Its rows had always drawn Delete, which the server was always
+     * going to refuse.
+     */
+    public function test_the_list_says_whether_a_unit_can_be_deleted(): void
+    {
+        $lease = $this->activeLease();
+
+        $response = $this->getJson('/api/buildings')->assertOk();
+
+        $units = collect($response->json('data'))
+            ->flatMap(fn (array $building): array => $building['units'] ?? [])
+            ->keyBy('id');
+
+        $this->assertFalse(
+            $units[$lease->unit_id]['is_deletable'],
+            'A unit that has been let offers Archive, not Delete.'
+        );
+    }
+
+    /**
+     * A lease with a tenant, a unit and a building behind it.
+     */
+    private function activeLease(): \App\Models\Lease
+    {
+        $building = Building::create([
+            'name' => 'Letting Court',
+            'address' => '3 Archive Road',
+        ]);
+
+        $unit = Unit::create([
+            'building_id' => $building->id,
+            'name' => 'Letting Unit 1',
+        ]);
+
+        $tenant = Party::create([
+            'type' => 'person',
+            'name' => 'Archive Tenant',
+            'phone' => '0200000456',
+            'email' => 'archive.tenant@example.test',
+        ]);
+
+        $tenant->roles()->create(['role' => 'tenant']);
+
+        return \App\Models\Lease::create([
+            'unit_id' => $unit->id,
+            'tenant_id' => $tenant->id,
+            'start_date' => now()->subMonths(3)->toDateString(),
+            'status' => 'active',
+            'rent_amount' => 1000,
+            'payment_frequency' => 'monthly',
+            'vat_rate' => 0,
+            'security_deposit_amount' => 0,
+            'advance_payment_amount' => 0,
+            'rent_reserve_amount' => 0,
+            'rent_increment_type' => 'none',
+            'rent_increment_value' => 0,
+            'management_fee_type' => 'none',
+            'management_fee_value' => 0,
+            'agent_commission_amount' => 0,
+        ]);
+    }
+
+    /**
      * Every kind the service claims to handle must actually resolve.
      */
     public function test_an_unknown_kind_is_not_found(): void
     {
-        $this->postJson('/api/archive/invoice/1')
+        $this->postJson('/api/archive/invoice/1', [
+            'reason' => 'Whatever it is.',
+        ])
             ->assertNotFound();
 
         $this->assertSame(

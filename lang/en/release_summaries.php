@@ -31,7 +31,7 @@ return [
         [
             'through' => '1.0.45',
             'date' => '2026-08-31',
-            'summary' => 'An owner\'s payout receipt itemises every movement behind the figure — the rent by unit and period, the fees and the tax on them, and each expense — so they can add it up and arrive at what they were paid. Every lease has a View button that opens the whole letting on one screen. A record Patrimoine will not delete can now be archived instead: it leaves the lists and the dropdowns, keeps every document and ledger line that names it, and comes back from the new Archive page whenever you want it; the lists themselves are about half as tall, and a party\'s type and roles carry a colour of their own.',
+            'summary' => 'An owner\'s payout receipt itemises every movement behind the figure — the rent by unit and period, the fees and the tax on them, and each expense — and every lease has a View button that opens the whole letting on one screen. The security deposit entered on a lease is now genuinely received into the tenant\'s deposit account, money that arrives before the tenancy is accepted as arriving then, a letting that begins on the 31st keeps the 31st for the whole of its life, and the guided assistant asks exactly what the lease form asks, one page per section. A record Patrimoine will not delete can be archived instead — it says what archiving does and asks why, the record leaves the lists and the dropdowns while every document and ledger line still names it, and it comes back from the Archive page whenever you want it; the lists themselves are about half as tall, and a party\'s type and roles carry a colour of their own.',
         ],
         [
             'through' => '1.0.40',

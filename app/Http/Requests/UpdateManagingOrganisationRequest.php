@@ -189,6 +189,14 @@ class UpdateManagingOrganisationRequest extends FormRequest
                 'boolean',
             ],
 
+            /*
+             * V1.0.43: whether the parties list is ordered by surname.
+             */
+            'sort_parties_by_surname' => [
+                'sometimes',
+                'boolean',
+            ],
+
             'notes' => [
                 'nullable',
                 'string',

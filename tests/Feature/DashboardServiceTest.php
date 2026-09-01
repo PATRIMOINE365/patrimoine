@@ -453,6 +453,32 @@ class DashboardServiceTest extends TestCase
             5000,
             $trend->firstWhere('month', '2026-08')['amount']
         );
+
+        /*
+         * V1.0.43: the trend is the whole of the year being read, January
+         * to December, rather than the trailing six months. It used to
+         * say something different every month and never once showed a
+         * year, which is the one thing a collections trend is read for.
+         */
+        $this->assertCount(12, $trend);
+
+        $this->assertSame(
+            '2026-01',
+            $trend->first()['month']
+        );
+
+        $this->assertSame(
+            '2026-12',
+            $trend->last()['month']
+        );
+
+        /*
+         * Months still to come sit at zero until they arrive.
+         */
+        $this->assertSame(
+            0,
+            $trend->firstWhere('month', '2026-12')['amount']
+        );
     }
 
     /**

@@ -782,4 +782,190 @@ class InvoiceGenerationServiceTest extends TestCase
                 ->all()
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | The anniversary
+    |--------------------------------------------------------------------------
+    |
+    | V1.0.43. Billing periods used to advance with addMonthsNoOverflow()
+    | from the PREVIOUS period start, which loses the anniversary the first
+    | time a month is too short to hold it and never gets it back:
+    |
+    |     31 Jan -> 28 Feb -> 28 Mar -> 28 Apr -> 28 May ...
+    |
+    | A tenancy that began on the 31st was billed on the 28th for the rest
+    | of its life because February happened once.
+    |
+    */
+
+    /**
+     * The day a lease began is the anniversary, borrowed from and
+     * returned, never lost.
+     */
+    public function test_a_lease_beginning_on_the_31st_keeps_the_31st(): void
+    {
+        $lease = $this->createLease([
+            'start_date' => '2026-01-31',
+            'payment_frequency' => 'monthly',
+        ]);
+
+        $invoices = app(InvoiceGenerationService::class)
+            ->generateDueInvoices(
+                $lease,
+                Carbon::parse('2026-07-31')
+            );
+
+        $this->assertSame(
+            [
+                '2026-01-31',
+                '2026-02-28',
+                '2026-03-31',
+                '2026-04-30',
+                '2026-05-31',
+                '2026-06-30',
+                '2026-07-31',
+            ],
+            collect($invoices)
+                ->map(
+                    fn (Invoice $invoice): string => $invoice
+                        ->period_start
+                        ->toDateString()
+                )
+                ->all(),
+            'February borrows the last day it has; March takes the 31st back.'
+        );
+    }
+
+    /**
+     * And in a leap year February borrows the 29th.
+     */
+    public function test_february_borrows_the_29th_in_a_leap_year(): void
+    {
+        $lease = $this->createLease([
+            'start_date' => '2028-01-31',
+            'payment_frequency' => 'monthly',
+        ]);
+
+        $invoices = app(InvoiceGenerationService::class)
+            ->generateDueInvoices(
+                $lease,
+                Carbon::parse('2028-03-31')
+            );
+
+        $this->assertSame(
+            [
+                '2028-01-31',
+                '2028-02-29',
+                '2028-03-31',
+            ],
+            collect($invoices)
+                ->map(
+                    fn (Invoice $invoice): string => $invoice
+                        ->period_start
+                        ->toDateString()
+                )
+                ->all()
+        );
+    }
+
+    /**
+     * The same rule on a quarterly cadence.
+     */
+    public function test_a_quarterly_lease_keeps_its_anniversary(): void
+    {
+        $lease = $this->createLease([
+            'start_date' => '2026-01-31',
+            'payment_frequency' => 'quarterly',
+        ]);
+
+        $invoices = app(InvoiceGenerationService::class)
+            ->generateDueInvoices(
+                $lease,
+                Carbon::parse('2027-01-31')
+            );
+
+        $this->assertSame(
+            [
+                '2026-01-31',
+                '2026-04-30',
+                '2026-07-31',
+                '2026-10-31',
+                '2027-01-31',
+            ],
+            collect($invoices)
+                ->map(
+                    fn (Invoice $invoice): string => $invoice
+                        ->period_start
+                        ->toDateString()
+                )
+                ->all()
+        );
+    }
+
+    /**
+     * Consecutive periods still meet exactly: no day is billed twice and
+     * no day falls between two periods.
+     */
+    public function test_periods_meet_without_a_gap_or_an_overlap(): void
+    {
+        $lease = $this->createLease([
+            'start_date' => '2026-01-31',
+            'payment_frequency' => 'monthly',
+        ]);
+
+        $invoices = app(InvoiceGenerationService::class)
+            ->generateDueInvoices(
+                $lease,
+                Carbon::parse('2026-06-30')
+            );
+
+        $previous = null;
+
+        foreach ($invoices as $invoice) {
+            if ($previous !== null) {
+                $this->assertSame(
+                    $previous->period_end->copy()->addDay()->toDateString(),
+                    $invoice->period_start->toDateString(),
+                    'Each period begins the day after the one before it ends.'
+                );
+            }
+
+            $previous = $invoice;
+        }
+    }
+
+    /**
+     * A month that HAS the anniversary is unaffected: this rule only
+     * changes what happens when the day does not exist.
+     */
+    public function test_an_ordinary_anniversary_is_untouched(): void
+    {
+        $lease = $this->createLease([
+            'start_date' => '2026-01-15',
+            'payment_frequency' => 'monthly',
+        ]);
+
+        $invoices = app(InvoiceGenerationService::class)
+            ->generateDueInvoices(
+                $lease,
+                Carbon::parse('2026-04-15')
+            );
+
+        $this->assertSame(
+            [
+                '2026-01-15',
+                '2026-02-15',
+                '2026-03-15',
+                '2026-04-15',
+            ],
+            collect($invoices)
+                ->map(
+                    fn (Invoice $invoice): string => $invoice
+                        ->period_start
+                        ->toDateString()
+                )
+                ->all()
+        );
+    }
 }

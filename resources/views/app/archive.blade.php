@@ -17,6 +17,13 @@
 
     Restoring returns a record to every list and every picker in the
     product, so it is an administrator's decision; reading the page is not.
+
+    V1.0.43 adds the search and the kind filter. This is the one list in
+    Patrimoine that mixes parties, properties, units and lettings in a
+    single column, so once it holds more than a handful of rows the only
+    way to read it is to narrow it — and the reason each record was put
+    away is searched alongside its name, because "everything we archived
+    when the Ridge Road sale went through" is how somebody actually looks.
 --}}
 
 <div
@@ -51,6 +58,42 @@
             <h2 class="pm-card-title">
                 <span data-i18n="archive.list_title">{{ __('ui.archive.list_title') }}</span>
             </h2>
+
+            <p
+                id="archive-showing"
+                class="text-xs text-[var(--pm-text-muted)]"
+            ></p>
+        </div>
+
+        {{--
+            Search and filter. Hidden while the archive is empty: there is
+            nothing to search, and a filter bar over nothing only asks a
+            reader to work out that the page is not broken.
+        --}}
+        <div
+            id="archive-controls"
+            class="
+                hidden border-b border-[var(--pm-border-subtle)]
+                px-5 py-4
+            "
+        >
+            <label for="archive-search" class="sr-only">
+                <span data-i18n="archive.search_label">{{ __('ui.archive.search_label') }}</span>
+            </label>
+
+            <input
+                id="archive-search"
+                type="search"
+                autocomplete="off"
+                data-i18n-placeholder="archive.search_placeholder"
+                placeholder="{{ __('ui.archive.search_placeholder') }}"
+                class="pm-input max-w-md"
+            >
+
+            <div
+                id="archive-kind-filters"
+                class="mt-3 flex flex-wrap items-center gap-2"
+            ></div>
         </div>
 
         <div
@@ -61,6 +104,13 @@
         </div>
 
         <div id="archive-list" class="hidden"></div>
+
+        <div
+            id="archive-no-matches"
+            class="hidden py-12 text-center text-sm text-[var(--pm-text-muted)]"
+        >
+            <span data-i18n="archive.no_matches">{{ __('ui.archive.no_matches') }}</span>
+        </div>
 
         <div
             id="archive-empty"

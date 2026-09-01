@@ -2232,6 +2232,13 @@ function populateManagingOrganisationForm(
     /*
      * V1.0.42: absent means off, which is what every organisation had
      * before the switch existed.
+     *
+     * V1.0.43 — this used to unstick itself on every reload, and the
+     * reason was on the other side of the wire: the setting was saved
+     * faithfully and then left out of the response, so the form read
+     * `undefined ?? false` and drew an empty box over a switch that was
+     * on. A stored setting the form cannot see is a setting nobody can
+     * switch off again.
      */
     const dataTools =
         document.getElementById(
@@ -2241,6 +2248,20 @@ function populateManagingOrganisationForm(
     if (dataTools) {
         dataTools.checked =
             organisation.data_tools_enabled ?? false;
+    }
+
+    /*
+     * V1.0.43: ordering the parties list, moved here from the list
+     * itself so it belongs to the organisation rather than the browser.
+     */
+    const surnameSort =
+        document.getElementById(
+            'organisation-sort-parties-by-surname'
+        );
+
+    if (surnameSort) {
+        surnameSort.checked =
+            organisation.sort_parties_by_surname ?? false;
     }
 
     setFormValue(
@@ -2468,6 +2489,12 @@ async function submitManagingOrganisation(
         data_tools_enabled:
             document.getElementById(
                 'organisation-data-tools-enabled'
+            )?.checked
+            ?? false,
+
+        sort_parties_by_surname:
+            document.getElementById(
+                'organisation-sort-parties-by-surname'
             )?.checked
             ?? false,
 

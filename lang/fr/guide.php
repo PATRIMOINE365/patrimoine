@@ -70,6 +70,7 @@ return [
                         ['text' => 'Choisissez l\'onglet Préférences.', 'shot' => 'settings-preferences'],
                         ['text' => 'Choisissez la langue. L\'anglais et le français sont complets l\'un comme l\'autre : chaque écran, chaque document et chaque e-mail la suivent.'],
                         ['text' => 'Choisissez la devise et le taux de TVA par défaut. La devise décide de l\'écriture de chaque montant, séparateur des milliers compris.'],
+                        ['text' => 'Sous Communications, trois interrupteurs : si Patrimoine envoie des e-mails à vos locataires, propriétaires et agents ; si les outils de protection des données apparaissent sur la liste des tiers ; et si cette liste est triée par nom de famille. Les trois appartiennent à l\'organisation, de sorte qu\'une liste lue à deux bureaux se lit de la même façon.'],
                         ['text' => 'Appuyez sur Enregistrer. L\'écran change de langue immédiatement ; les documents suivent à partir du prochain produit.'],
                     ],
                 ],
@@ -314,24 +315,22 @@ return [
 
                 'lease_wizard' => [
                     'title' => 'Créer un bail avec l\'assistant',
-                    'intro' => 'L\'assistant construit une location complète en une seule fois — le bien, l\'unité, le propriétaire, le locataire et le bail lui-même — en demandant une chose à la fois. C\'est la manière recommandée de créer votre premier bail.',
+                    'intro' => 'L\'assistant construit une location complète en une seule fois — le bien, l\'unité, le propriétaire, le locataire et le bail lui-même — en demandant une chose à la fois. Il demande exactement ce que demande le tiroir Ajouter un bail, une section par page, afin qu\'un bail créé ici et un bail créé là soient le même bail.',
                     'who' => 'Administrateurs et Gestionnaires immobiliers',
                     'steps' => [
                         ['text' => 'Ouvrez Baux et appuyez sur Assistant de bail.', 'shot' => 'leases-list'],
                         ['text' => 'La première page explique les mots employés par l\'assistant — partie, propriétaire, unité — pour que rien n\'ait à être deviné ensuite. Lisez-la une fois et appuyez sur Suivant.', 'shot' => 'wizard-intro'],
-                        ['text' => 'Choisissez le bien et l\'unité louée, ou créez l\'un ou l\'autre. Un nouveau bien se voit demander ici son nom et son adresse.', 'shot' => 'wizard-property'],
-                        ['text' => 'Enregistrez qui le possède, et les quotes-parts. L\'assistant saute cette page lorsque la propriété du bien est déjà enregistrée.', 'shot' => 'wizard-owners'],
-                        ['text' => 'Choisissez le locataire, ou créez-en un. Un nouveau locataire exige un nom, une adresse e-mail et un numéro de téléphone avec son pays.', 'shot' => 'wizard-tenant'],
-                        ['text' => 'Désignez l\'agent immobilier, s\'il y en a un. Laissez « aucun » dans le cas contraire.'],
-                        ['text' => 'Indiquez la date de début et soit une durée, soit une date de fin. Les dates se saisissent au format de votre organisation, avec le calendrier Patrimoine à côté du champ.', 'shot' => 'wizard-dates'],
-                        ['text' => 'Indiquez le préavis, si la location en prévoit un.'],
-                        ['text' => 'Saisissez le loyer, sa périodicité, et le dépôt de garantie s\'il y en a un.', 'shot' => 'wizard-rent'],
-                        ['text' => 'Si l\'avance a déjà été reçue, indiquez quand et par quel moyen. Lorsqu\'elle a été reçue en espèces, le caissier est la personne connectée, et Patrimoine le renseigne lui-même.'],
-                        ['text' => 'Indiquez les honoraires de gestion, la commission d\'agent et toute augmentation de loyer programmée.'],
+                        ['text' => 'Bien et locataire. Choisissez le bien et le lot loué, ou créez l\'un ou l\'autre ; enregistrez qui le possède et les quotes-parts, si Patrimoine ne les connaît pas encore ; puis choisissez le locataire et, le cas échéant, l\'agent. Tout ce qui n\'existe pas encore peut être créé ici au fil de la saisie.', 'shot' => 'wizard-property'],
+                        ['text' => 'Durée du bail. Indiquez la date de début et soit une durée, soit une date de fin, ainsi que la date de préavis si la location en prévoit une. La date de début reste la date anniversaire pour toute la durée du bail : un bail débutant le 31 est facturé le 31 de chaque mois qui en compte un, et le dernier jour des mois qui n\'en ont pas.', 'shot' => 'wizard-dates'],
+                        ['text' => 'Conditions de loyer. Le champ loyer correspond à UN MOIS de loyer, quelle que soit la périodicité — un bail trimestriel à 1 000 par mois est facturé 3 000 par trimestre. Indiquez la périodicité, le jour d\'échéance, la TVA sur vos honoraires, tout ajustement de première période, et le dépôt de garantie.', 'shot' => 'wizard-rent'],
+                        ['text' => 'Saisir un dépôt de garantie l\'encaisse : la somme est versée sur le compte de dépôt de garantie propre à ce bail. Indiquez quand et comment il a été reçu. La date peut précéder le début du bail, car un dépôt sert généralement à réserver le lot.'],
+                        ['text' => 'Paiement anticipé. Saisissez l\'avance et la part conservée en réserve de loyer ; Patrimoine affiche ce qu\'il reste en avance consommable. Si l\'avance a déjà été reçue, indiquez quand et par quel moyen — cette date aussi peut précéder le bail. Lorsqu\'elle a été reçue en espèces, le caissier est la personne connectée, et Patrimoine le renseigne lui-même.'],
+                        ['text' => 'Augmentation du loyer. Programmez une augmentation, s\'il y en a une. Sa date ne peut pas précéder le début du bail.'],
+                        ['text' => 'Honoraires et commission. Indiquez les honoraires de gestion, la commission d\'agent et toute note sur la location.'],
                         ['text' => 'Lisez la page de révision. Elle présente en une seule liste tout ce qui va être créé.', 'shot' => 'wizard-review'],
-                        ['text' => 'Appuyez sur Enregistrer et activer. Tout est créé ensemble ; rien n\'est enregistré avant ce moment.'],
+                        ['text' => 'Appuyez sur Créer et activer. Tout est créé ensemble ; rien n\'est enregistré avant ce moment. Enregistrer comme brouillon se trouve en haut de la page, à côté d\'Annuler, et reste proposé sur chaque page, y compris celle-ci.'],
                     ],
-                    'after' => 'Le bail est actif et sa première facture suit selon la périodicité choisie.',
+                    'after' => 'Le bail est actif, son dépôt de garantie est détenu, et sa première facture suit selon la périodicité choisie.',
                 ],
 
                 'lease_drafts' => [
@@ -353,7 +352,8 @@ return [
                     'steps' => [
                         ['text' => 'Ouvrez Baux et appuyez sur Ajouter un bail.'],
                         ['text' => 'Choisissez l\'unité et le locataire. Les deux doivent déjà exister.', 'shot' => 'lease-drawer'],
-                        ['text' => 'Indiquez la date de début, la date de fin ou la durée, le loyer et sa périodicité.'],
+                        ['text' => 'Indiquez la date de début, la date de fin ou la durée, le loyer et sa périodicité. Le champ loyer correspond à UN MOIS de loyer quelle que soit la périodicité, et la date de début reste la date anniversaire pour toute la durée du bail.'],
+                        ['text' => 'Saisissez le dépôt de garantie, s\'il y en a un. Le saisir l\'encaisse : la somme est versée sur le compte de dépôt de garantie propre à ce bail, et trois champs apparaissent pour indiquer quand et comment il a été reçu. Cette date peut précéder le début du bail, car un dépôt sert généralement à réserver le lot.'],
                         ['text' => 'Ajoutez le dépôt de garantie, les honoraires de gestion et la commission d\'agent s\'ils s\'appliquent.'],
                         ['text' => 'Appuyez sur Enregistrer.'],
                     ],
@@ -572,7 +572,7 @@ return [
                     'who' => 'Administrateurs et Gestionnaires immobiliers',
                     'steps' => [
                         ['text' => 'Ouvrez Propriétaires, sélectionnez le propriétaire et appuyez sur Effectuer un versement.'],
-                        ['text' => 'Le solde disponible est affiché. Saisissez le montant et la date.', 'shot' => 'owner-payout'],
+                        ['text' => 'Le solde disponible est affiché. Saisissez le montant et la date, ou appuyez sur Tout retirer pour remplir le champ avec la totalité due.', 'shot' => 'owner-payout'],
                         ['text' => 'Choisissez le mode de règlement et indiquez qui l\'a autorisé.'],
                         ['text' => 'Appuyez sur Enregistrer. Le versement est rapproché des produits qu\'il solde, du plus ancien au plus récent, et un bon numéroté est produit.'],
                         ['text' => 'Le reçu montre au propriétaire comment le montant est obtenu. Un récapitulatif figure sous le montant, et en dessous chaque mouvement depuis son dernier encaissement, détaillé : les loyers par lot et la période concernée, les honoraires et la TVA correspondante, et chaque charge avec son bâtiment et sa date. Les trois tableaux font le versement, si bien qu\'il peut vérifier sans vous demander un relevé.'],
@@ -636,6 +636,7 @@ return [
                     'steps' => [
                         ['text' => 'Chaque bail actif indique le loyer et sa périodicité.'],
                         ['text' => 'Le traitement nocturne émet la facture suivante dès qu\'une période commence, numérotée dans l\'ordre.', 'shot' => 'invoices-list'],
+                        ['text' => 'Le jour où le bail a commencé est la date anniversaire, et elle est conservée pour toute la durée de la location. Un bail débutant le 31 est facturé le 31 janvier, le 28 février, le 31 mars, le 30 avril — le dernier jour d\'un mois trop court pour contenir le 31, puis de nouveau le 31 le mois suivant. La date anniversaire n\'est jamais perdue à cause d\'un mois court.'],
                         ['text' => 'Une facture qui existe déjà pour une période n\'est jamais émise deux fois, quel que soit le nombre de traitements.'],
                         ['text' => 'La facture est envoyée par e-mail au locataire, sauf si les e-mails sont désactivés pour lui ou pour l\'organisation.'],
                     ],
@@ -719,6 +720,7 @@ return [
                     'steps' => [
                         ['text' => 'Ouvrez Tableau de bord depuis la barre latérale.', 'shot' => 'dashboard'],
                         ['text' => 'Les cartes indiquent ce qui a été encaissé, ce qui reste dû, et ce qui se passe ce mois-ci.'],
+                        ['text' => 'La tendance des encaissements couvre toute l\'année en cours, de janvier à décembre. Les mois à venir restent à zéro jusqu\'à leur arrivée, si bien que la forme de l\'année est lisible dès janvier.'],
                         ['text' => 'La cloche en haut à droite porte ce qui appelle une attention : factures impayées, dépenses impayées, baux qui se terminent.', 'shot' => 'notifications'],
                         ['text' => 'Appuyez sur un chiffre pour ouvrir la liste à partir de laquelle il a été calculé.'],
                     ],
@@ -891,14 +893,16 @@ return [
 
                 'archive' => [
                     'title' => 'Archiver un enregistrement que vous ne pouvez pas supprimer',
-                    'intro' => 'Patrimoine refuse de supprimer ce à quoi la comptabilité fait encore référence. L\'archivage est ce qu\'il propose à la place : l\'enregistrement quitte les listes, et rien d\'autre ne bouge.',
+                    'intro' => 'Patrimoine refuse de supprimer tout ce à quoi la comptabilité fait encore référence. L\'archivage est ce qu\'il propose à la place : l\'enregistrement quitte les listes, et rien d\'autre ne bouge. Il demande comme la suppression demande, car pour quiconque ne l\'a pas fait, l\'enregistrement a tout simplement disparu.',
                     'who' => 'Administrateurs et Gestionnaires immobiliers',
                     'steps' => [
-                        ['text' => 'Regardez le bouton sur la ligne. Il indique Supprimer tant que l\'enregistrement peut encore être retiré, et Archiver dès qu\'il ne le peut plus.'],
-                        ['text' => 'Appuyez sur Archiver. L\'enregistrement quitte la liste ainsi que les menus déroulants servant à créer de nouveaux enregistrements, afin que personne ne se le voie proposer par erreur.'],
+                        ['text' => 'Regardez le bouton sur la ligne. Il indique Supprimer tant que l\'enregistrement peut encore être retiré définitivement, et Archiver dès que ce n\'est plus possible. Les deux sont rouges, car les deux retirent l\'enregistrement de tous les écrans. Tiers, biens, lots et baux peuvent tous être archivés.'],
+                        ['text' => 'Appuyez sur Archiver. Un tiroir s\'ouvre et explique exactement ce que fait l\'archivage — l\'enregistrement quitte toutes les listes et tous les menus déroulants, rien d\'autre ne change, et il peut être restauré — puis demande pourquoi.'],
+                        ['text' => 'Écrivez le motif. Il est conservé avec l\'enregistrement et affiché sur la page Archives, afin que la prochaine personne qui demande pourquoi quelque chose manque ait la réponse sous les yeux.'],
+                        ['text' => 'Un bail doit d\'abord être résilié. Archiver une location encore en cours masquerait un bail toujours facturé et détenant encore un dépôt de garantie : Patrimoine le refuse avec PM-3097. Résiliez le bail, complétez son décompte, et Archiver devient alors disponible sur la même ligne.'],
                         ['text' => 'Rien d\'autre ne change. Chaque facture, reçu, écriture et ligne du journal d\'activité continue de le nommer, car l\'enregistrement lui-même n\'a pas bougé.'],
-                        ['text' => 'Ouvrez Archives, sous Audit, pour voir tout ce qui a été mis de côté et par qui.', 'shot' => 'archive-list'],
-                        ['text' => 'Appuyez sur Restaurer pour en remettre un. Il revient dans toutes les listes et tous les menus déroulants d\'un coup : c\'est donc une décision d\'administrateur.'],
+                        ['text' => 'Ouvrez Archives, sous Audit, pour voir tout ce qui a été mis de côté, pourquoi, et par qui. Cherchez dans les noms et les motifs, ou limitez à un seul type d\'enregistrement à l\'aide des pastilles.', 'shot' => 'archive-list'],
+                        ['text' => 'Appuyez sur Restaurer pour en remettre un. Un motif est demandé là aussi — l\'enregistrement revient d\'un coup dans toutes les listes et tous les menus déroulants — et ce motif est consigné dans le journal d\'activité, car un enregistrement restauré n\'est archivé pour aucun motif.'],
                     ],
                 ],
 

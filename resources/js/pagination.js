@@ -45,6 +45,23 @@ import { icon } from './icons.js';
 export const PAGE_SIZES = [25, 50, 100];
 
 /**
+ * The row counts for a list that sits INSIDE another page.
+ *
+ * V1.0.43. An owner's ledger, the properties under them, a tenant's
+ * lettings: these are panels within a record somebody is reading, not
+ * pages in their own right, and twenty-five rows of ledger pushes
+ * everything else off the screen. Ten is enough to see the shape of it
+ * and short enough to leave the rest of the record visible; five is there
+ * for somebody reading on a phone.
+ */
+export const PANEL_PAGE_SIZES = [5, 10, 25, 50, 100];
+
+/**
+ * The default for a panel list.
+ */
+export const PANEL_PAGE_SIZE = 10;
+
+/**
  * Where a remembered page size is kept.
  *
  * Per list and per browser: somebody who wants 100 rows of activity does
@@ -66,7 +83,7 @@ const WINDOW = 1;
  * @param {string} key
  * @returns {number}
  */
-export function pageSizeFor(key) {
+export function pageSizeFor(key, sizes = PAGE_SIZES) {
     let stored = null;
 
     try {
@@ -77,9 +94,35 @@ export function pageSizeFor(key) {
 
     const size = Number(stored);
 
-    return PAGE_SIZES.includes(size)
+    return sizes.includes(size)
         ? size
-        : PAGE_SIZES[0];
+        : sizes[0];
+}
+
+/**
+ * The page size a panel list should ask for.
+ *
+ * Same storage as any other list, but the default is ten rather than the
+ * smallest size offered, because five is a deliberate choice rather than
+ * a sensible starting point.
+ *
+ * @param {string} key
+ * @returns {number}
+ */
+export function panelPageSizeFor(key) {
+    let stored = null;
+
+    try {
+        stored = window.localStorage.getItem(STORAGE_PREFIX + key);
+    } catch (error) {
+        stored = null;
+    }
+
+    const size = Number(stored);
+
+    return PANEL_PAGE_SIZES.includes(size)
+        ? size
+        : PANEL_PAGE_SIZE;
 }
 
 /**
@@ -238,6 +281,7 @@ function pageButton(page, currentPage, t) {
  *     onPageSize?: function(number): void,
  *     storageKey?: string,
  *     english?: boolean,
+ *     sizes?: Array<number>,
  * }} options
  */
 export function renderPagination(target, meta, options = {}) {
@@ -251,17 +295,25 @@ export function renderPagination(target, meta, options = {}) {
 
     const t = translator(options.english === true);
 
+    /*
+     * V1.0.43: a panel list inside a record offers a shorter set, so the
+     * sizes are an option rather than a constant.
+     */
+    const offered = Array.isArray(options.sizes) && options.sizes.length > 0
+        ? options.sizes
+        : PAGE_SIZES;
+
     const currentPage = Number(meta?.current_page ?? 1);
     const lastPage = Number(meta?.last_page ?? 1);
     const total = Number(meta?.total ?? 0);
-    const perPage = Number(meta?.per_page ?? PAGE_SIZES[0]);
+    const perPage = Number(meta?.per_page ?? offered[0]);
 
     /*
      * A list nobody needs to page through says nothing at all. The test is
      * the total rather than the page count, so a reader who chose 100 rows
-     * and now sees 90 of them can still drop back to 25.
+     * and now sees 90 of them can still drop back to the smallest size.
      */
-    if (total <= PAGE_SIZES[0] && lastPage <= 1) {
+    if (total <= offered[0] && lastPage <= 1) {
         container.innerHTML = '';
 
         container.classList.add('hidden');
@@ -278,7 +330,7 @@ export function renderPagination(target, meta, options = {}) {
         ? t('pagination.empty')
         : t('pagination.summary', { from, to, total });
 
-    const sizes = PAGE_SIZES
+    const sizes = offered
         .map((size) => `
             <option
                 value="${size}"
@@ -380,7 +432,7 @@ export function renderPagination(target, meta, options = {}) {
         ?.addEventListener('change', (event) => {
             const size = Number(event.target.value);
 
-            if (! PAGE_SIZES.includes(size)) {
+            if (! offered.includes(size)) {
                 return;
             }
 

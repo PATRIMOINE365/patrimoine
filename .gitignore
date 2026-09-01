@@ -20,6 +20,10 @@
 /public/storage
 /storage/*.key
 /storage/pail
+
+# dompdf writes its font metrics cache here the first time a PDF is
+# rendered, which for this repository means the first time the tests run.
+/storage/fonts
 /vendor
 _ide_helper.php
 Homestead.json

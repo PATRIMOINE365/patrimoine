@@ -202,6 +202,18 @@
     --color-pink-300: #faa7e0;
     --color-pink-400: #f670c7;
 
+    /*
+     * Untitled UI's teal. Added for the archive, which needs a fourth
+     * colour its three neighbours do not already own: a unit had to be
+     * distinguishable at a glance from the building above it, the party
+     * beside it and the lease below it.
+     */
+    --color-teal-50:  #f0fdf9;
+    --color-teal-200: #99f6e0;
+    --color-teal-700: #107569;
+    --color-teal-300: #5fe9d0;
+    --color-teal-400: #2ed3b7;
+
     --color-blue-25:  #f5faff;
     --color-blue-50:  #eff8ff;
     --color-blue-100: #d1e9ff;

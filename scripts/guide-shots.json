@@ -322,7 +322,7 @@
   {
     "id": null,
     "name": "wizard",
-    "comment": "Walks the lease assistant page by page and photographs each one. Page 1 is a glossary, page 2 holds the property AND the unit, and the ownership page only appears for a property that has none — so a NEW property is entered. Nothing is ever submitted.",
+    "comment": "Walks the lease assistant page by page and photographs each one. V1.0.43: eight pages rather than ten, one per section of the lease drawer. Page 1 is a glossary; page 2 holds the property, the unit, the ownership block and the people; the rest follow the drawer's own order. Nothing is ever submitted.",
     "path": "/leases/wizard",
     "wait": "#wizard-step-counter",
     "settle": 900,
@@ -334,10 +334,6 @@
       {
         "click": "#wizard-next",
         "pause": 900
-      },
-      {
-        "capture": "wizard-property",
-        "settle": 400
       },
       {
         "waitAttached": "#wizard-building-mode option[value=\"new\"]",
@@ -364,24 +360,8 @@
         "pause": 400
       },
       {
-        "click": "#wizard-next",
-        "pause": 900
-      },
-      {
-        "capture": "wizard-owners",
-        "settle": 400
-      },
-      {
-        "click": "#wizard-next",
-        "pause": 900
-      },
-      {
-        "capture": "wizard-tenant",
-        "settle": 400
-      },
-      {
-        "click": "#wizard-next",
-        "pause": 900
+        "capture": "wizard-property",
+        "settle": 500
       },
       {
         "click": "#wizard-next",
@@ -396,12 +376,23 @@
         "pause": 900
       },
       {
-        "click": "#wizard-next",
-        "pause": 900
+        "fill": {
+          "selector": "#wizard-deposit",
+          "value": "12000"
+        },
+        "pause": 500
       },
       {
         "capture": "wizard-rent",
         "settle": 400
+      },
+      {
+        "click": "#wizard-next",
+        "pause": 900
+      },
+      {
+        "click": "#wizard-next",
+        "pause": 900
       },
       {
         "click": "#wizard-next",

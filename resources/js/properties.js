@@ -46,6 +46,21 @@ import { readPhoneValue } from './phone-input.js';
 
 import { icon } from './icons.js';
 
+/**
+ * The button at the end of a unit row.
+ *
+ * V1.0.43: Delete and Archive share it. They do the same thing as far as
+ * the lists are concerned — the unit stops being offered anywhere — so
+ * they look the same, and the difference is what the drawer says rather
+ * than how loud the button is.
+ */
+const UNIT_REMOVAL_BUTTON_CLASS =
+    'rounded-lg border border-[var(--pm-danger-border)]'
+    + ' bg-[var(--pm-surface)] px-3 py-1.5 text-xs font-medium'
+    + ' text-[var(--pm-danger-text)] transition'
+    + ' hover:bg-[var(--pm-danger-background)]';
+
+
 /*
 |--------------------------------------------------------------------------
 | Module State
@@ -837,10 +852,8 @@ function propertyCard(
                         data-building-id="${escapeHtml(
                             building.id
                         )}"
-                        class="pm-button-secondary gap-2"
+                        class="pm-button-secondary"
                     >
-                        ${icon('edit-02', { size: 16 })}
-
                         ${escapeHtml(
                             translate(
                                 'properties.edit'
@@ -853,7 +866,7 @@ function propertyCard(
                         kind: 'building',
                         id: building.id,
                         name: buildingName,
-                        className: 'inline-flex min-h-[2.625rem] items-center justify-center gap-2 rounded-lg border border-[var(--pm-border-strong)] bg-[var(--pm-surface)] px-4 py-2.5 text-sm font-semibold text-[var(--pm-text-secondary)] transition hover:bg-[var(--pm-surface-muted)]',
+                        className: 'inline-flex min-h-[2.625rem] items-center justify-center gap-2 rounded-lg border border-[var(--pm-danger-border)] bg-[var(--pm-surface)] px-4 py-2.5 text-sm font-semibold text-[var(--pm-danger-text)] transition hover:bg-[var(--pm-danger-background)]',
                         deleteMarkup: `                    <button
                         type="button"
                         data-delete-building
@@ -1310,6 +1323,14 @@ function renderPropertyUnits(
                                         )}
                                     </button>
 
+                                    ${removalButton({
+                                        deletable:
+                                            unit.is_deletable !== false,
+                                        kind: 'unit',
+                                        id: unit.id,
+                                        name: unitName,
+                                        className: UNIT_REMOVAL_BUTTON_CLASS,
+                                        deleteMarkup: `
                                     <button
                                         type="button"
                                         data-delete-unit
@@ -1325,22 +1346,15 @@ function renderPropertyUnits(
                                         data-building-name="${escapeHtml(
                                             buildingName
                                         )}"
-                                        class="
-                                            rounded-lg
-                                            border border-[var(--pm-danger-border)]
-                                            bg-[var(--pm-surface)] px-3 py-1.5
-                                            text-xs font-medium
-                                            text-[var(--pm-danger-text)]
-                                            transition
-                                            hover:bg-[var(--pm-danger-background)]
-                                        "
+                                        class="${UNIT_REMOVAL_BUTTON_CLASS}"
                                     >
                                         ${escapeHtml(
                                             translate(
                                                 'properties.delete'
                                             )
                                         )}
-                                    </button>
+                                    </button>`,
+                                    })}
                                 </div>
                             </td>
                         </tr>

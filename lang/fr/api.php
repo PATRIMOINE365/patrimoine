@@ -164,6 +164,7 @@ return [
 
     'archive' => [
         'not_archivable' => 'Cet enregistrement peut encore être supprimé définitivement : il n\'y a donc rien à archiver. Supprimez-le, ou laissez-le où il est.',
+        'lease_not_terminated' => 'Ce bail est toujours en cours : il ne peut donc pas être archivé. Résiliez-le d’abord : la résiliation règle le dernier loyer, libère le dépôt de garantie et arrête la facturation. L’archivage retire seulement l’enregistrement des listes.',
     ],
 
     'deletion' => [

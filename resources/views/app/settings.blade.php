@@ -883,42 +883,30 @@
                             <span data-i18n="settings.communications_description">{{ __('ui.settings.communications_description') }}</span>
                         </p>
 
-                        <label
-                            class="
-                                flex cursor-pointer
-                                items-start gap-3
-                                rounded-xl border
-                                border-[var(--pm-border)]
-                                px-4 py-3
-                            "
-                        >
+                        {{--
+                            V1.0.43: switches, not tickboxes.
+
+                            These are settings that take effect the moment
+                            they are saved, not answers to a question, and
+                            the party-e-mail one used to sit inside its own
+                            bordered box while the data-protection one did
+                            not — so two settings that do the same kind of
+                            thing looked like different kinds of control.
+                            They are one column now.
+                        --}}
+                        <label class="pm-toggle-field">
                             <input
                                 id="organisation-party-emails-enabled"
                                 type="checkbox"
-                                class="
-                                    mt-0.5 h-4 w-4 rounded
-                                    border-[var(--pm-border-strong)]
-                                    text-[var(--pm-accent)]
-                                    focus:ring-[var(--pm-accent)]
-                                "
+                                class="pm-toggle"
                             >
 
                             <span class="min-w-0">
-                                <span
-                                    class="
-                                        block text-sm font-medium
-                                        text-[var(--pm-text-secondary)]
-                                    "
-                                >
+                                <span class="pm-toggle-label">
                                     <span data-i18n="settings.party_emails_enabled">{{ __('ui.settings.party_emails_enabled') }}</span>
                                 </span>
 
-                                <span
-                                    class="
-                                        mt-1 block text-xs
-                                        text-[var(--pm-text-muted)]
-                                    "
-                                >
+                                <span class="pm-toggle-help">
                                     <span data-i18n="settings.party_emails_help">{{ __('ui.settings.party_emails_help') }}</span>
                                 </span>
                             </span>
@@ -941,35 +929,49 @@
                             what switching it on puts on screen and that it
                             should go off again afterwards.
                         --}}
-                        <label class="mt-5 flex items-start gap-3">
+                        <label class="pm-toggle-field">
                             <input
                                 id="organisation-data-tools-enabled"
                                 type="checkbox"
-                                class="
-                                    mt-0.5 h-4 w-4 rounded
-                                    border-[var(--pm-border-strong)]
-                                    text-[var(--pm-accent)]
-                                    focus:ring-[var(--pm-accent)]
-                                "
+                                class="pm-toggle"
                             >
 
                             <span class="min-w-0">
-                                <span
-                                    class="
-                                        block text-sm font-medium
-                                        text-[var(--pm-text-secondary)]
-                                    "
-                                >
+                                <span class="pm-toggle-label">
                                     <span data-i18n="settings.data_tools_enabled">{{ __('ui.settings.data_tools_enabled') }}</span>
                                 </span>
 
-                                <span
-                                    class="
-                                        mt-1 block text-xs
-                                        text-[var(--pm-text-muted)]
-                                    "
-                                >
+                                <span class="pm-toggle-help">
                                     <span data-i18n="settings.data_tools_help">{{ __('ui.settings.data_tools_help') }}</span>
+                                </span>
+                            </span>
+                        </label>
+
+                        {{--
+                            V1.0.43: how the parties list is ordered.
+
+                            This used to be a tickbox above the parties list
+                            itself, which made it a habit of whoever happened
+                            to be at that browser: a colleague reading the
+                            same list saw it in a different order, and the
+                            choice was gone the next time the page loaded
+                            somewhere else. Ordering a list of people is a
+                            decision an organisation makes once.
+                        --}}
+                        <label class="pm-toggle-field">
+                            <input
+                                id="organisation-sort-parties-by-surname"
+                                type="checkbox"
+                                class="pm-toggle"
+                            >
+
+                            <span class="min-w-0">
+                                <span class="pm-toggle-label">
+                                    <span data-i18n="settings.sort_parties_by_surname">{{ __('ui.settings.sort_parties_by_surname') }}</span>
+                                </span>
+
+                                <span class="pm-toggle-help">
+                                    <span data-i18n="settings.sort_parties_by_surname_help">{{ __('ui.settings.sort_parties_by_surname_help') }}</span>
                                 </span>
                             </span>
                         </label>

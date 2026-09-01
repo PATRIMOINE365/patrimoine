@@ -154,6 +154,34 @@ html[data-theme="light"] {
     --pm-role-agent-border: var(--color-orange-200);
     --pm-role-agent-text: var(--color-orange-700);
 
+    /*
+     * The four kinds of record the archive holds.
+     *
+     * The archive is the one list in Patrimoine that mixes parties,
+     * properties, units and lettings in a single column, so the kind chip
+     * is doing real work: it is how a reader picks the row they came for
+     * out of everything else that has been put away. Four hues a reader
+     * can tell apart without reading the word.
+     *
+     * Named after the kind rather than the colour, exactly as the party
+     * chips are, so a change lands in one place.
+     */
+    --pm-archive-party-background: var(--color-indigo-50);
+    --pm-archive-party-border: var(--color-indigo-200);
+    --pm-archive-party-text: var(--color-indigo-700);
+
+    --pm-archive-building-background: var(--color-orange-50);
+    --pm-archive-building-border: var(--color-orange-200);
+    --pm-archive-building-text: var(--color-orange-700);
+
+    --pm-archive-unit-background: var(--color-teal-50);
+    --pm-archive-unit-border: var(--color-teal-200);
+    --pm-archive-unit-text: var(--color-teal-700);
+
+    --pm-archive-lease-background: var(--color-blue-50);
+    --pm-archive-lease-border: var(--color-blue-200);
+    --pm-archive-lease-text: var(--color-blue-700);
+
     --pm-info-background: var(--color-blue-50);
     --pm-info-border: var(--color-blue-200);
     --pm-info-text: var(--color-blue-700);
@@ -288,6 +316,23 @@ html[data-theme="dark"] {
     --pm-role-agent-background: color-mix(in srgb, var(--color-orange-400) 12%, transparent);
     --pm-role-agent-border: color-mix(in srgb, var(--color-orange-400) 32%, transparent);
     --pm-role-agent-text: var(--color-orange-300);
+
+    /* The four archive kinds, at dark-mode weight. */
+    --pm-archive-party-background: color-mix(in srgb, var(--color-indigo-400) 12%, transparent);
+    --pm-archive-party-border: color-mix(in srgb, var(--color-indigo-400) 32%, transparent);
+    --pm-archive-party-text: var(--color-indigo-300);
+
+    --pm-archive-building-background: color-mix(in srgb, var(--color-orange-400) 12%, transparent);
+    --pm-archive-building-border: color-mix(in srgb, var(--color-orange-400) 32%, transparent);
+    --pm-archive-building-text: var(--color-orange-300);
+
+    --pm-archive-unit-background: color-mix(in srgb, var(--color-teal-400) 12%, transparent);
+    --pm-archive-unit-border: color-mix(in srgb, var(--color-teal-400) 32%, transparent);
+    --pm-archive-unit-text: var(--color-teal-300);
+
+    --pm-archive-lease-background: color-mix(in srgb, var(--color-blue-400) 12%, transparent);
+    --pm-archive-lease-border: color-mix(in srgb, var(--color-blue-400) 32%, transparent);
+    --pm-archive-lease-text: var(--color-blue-300);
 
     --pm-info-background: color-mix(in srgb, var(--color-blue-400) 12%, transparent);
     --pm-info-border: color-mix(in srgb, var(--color-blue-400) 32%, transparent);

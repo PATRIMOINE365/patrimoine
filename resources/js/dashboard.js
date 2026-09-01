@@ -9,7 +9,7 @@
 |
 | - occupancy hero band (rate, meter, vacancy split);
 | - financial metric tiles;
-| - six-month collections trend chart (hand-rolled, div based);
+| - twelve-month collections trend chart (hand-rolled, div based);
 | - owner and tenant funds held;
 | - overdue rent and upcoming rent lists;
 | - leases expiring within 90 days;
@@ -491,7 +491,10 @@ function renderDashboardSummary(
 }
 
 /**
- * Render the six-month collections trend as a hand-rolled div bar chart.
+ * Render the year's collections trend as a hand-rolled div bar chart.
+ *
+ * V1.0.43: twelve columns rather than six — the whole of the year being
+ * read, so a month can be compared against the others in its own year.
  *
  * No chart library and no canvas: a flex row of columns whose inner bar
  * heights are proportional to the highest month in the series. A
@@ -595,7 +598,7 @@ function renderCollectionsTrend(
                             class="
                                 flex min-w-0 flex-1
                                 flex-col items-center
-                                gap-2
+                                gap-1.5
                             "
                             title="${escapeHtml(
                                 tooltip
@@ -629,8 +632,10 @@ function renderCollectionsTrend(
 
                             <div
                                 class="
-                                    text-center text-xs
+                                    text-center text-[10px]
+                                    leading-tight
                                     text-[var(--pm-text-muted)]
+                                    sm:text-xs
                                 "
                             >
                                 ${escapeHtml(
@@ -655,8 +660,8 @@ function renderCollectionsTrend(
         <div
             aria-hidden="true"
             class="
-                flex items-end gap-2
-                sm:gap-4
+                flex items-end gap-1
+                sm:gap-2
             "
         >
             ${bars}

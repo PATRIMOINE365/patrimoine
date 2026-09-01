@@ -14,7 +14,10 @@ import {
 } from './core.js';
 
 import {
+    PANEL_PAGE_SIZES,
+    clientPage,
     pageSizeFor,
+    panelPageSizeFor,
     renderPagination,
 } from './pagination.js';
 
@@ -545,7 +548,7 @@ async function selectOwnerAccount(
                     ),
 
                 transactions_per_page:
-                    String(pageSizeFor('owner-ledger')),
+                    String(panelPageSizeFor('owner-ledger')),
             });
 
         const response =
@@ -779,7 +782,37 @@ function renderOwnerStatus(
 */
 
 /**
- * Render all Buildings owned by the selected Party.
+ * Which page of the owner's properties is on screen.
+ *
+ * Everything the owner holds arrives with the account, so the paging is
+ * done here rather than asked for again.
+ */
+let ownerPropertyPage = 1;
+
+/**
+ * Every unit the selected owner holds, flattened, newest query first.
+ *
+ * @type {Array<object>}
+ */
+let ownerPropertyRows = [];
+
+/**
+ * Render every Building owned by the selected Party, and its units.
+ *
+ * -------------------------------------------------------------------
+ * One line per unit
+ * -------------------------------------------------------------------
+ *
+ * V1.0.43. This used to be a grid of cards, one per building, each
+ * carrying its units as a wrapped row of chips. Two buildings filled the
+ * panel and an owner with eight was a page of scrolling — and the units,
+ * which are the thing being looked for, were the hardest part to read.
+ *
+ * It is one table now: a line per unit, naming the building it belongs
+ * to, so an owner with forty units is forty lines rather than eight cards
+ * of chips. A building with no units still gets its line, because an
+ * owner who holds a property Patrimoine knows nothing else about should
+ * be able to see that it is there.
  *
  * Lease activity is deliberately irrelevant here.
  *
@@ -788,6 +821,88 @@ function renderOwnerStatus(
 function renderOwnerProperties(
     properties
 ) {
+    ownerPropertyRows = flattenOwnerProperties(
+        properties
+    );
+
+    ownerPropertyPage = 1;
+
+    drawOwnerProperties();
+}
+
+/**
+ * Turn buildings-with-units into one row per unit.
+ *
+ * @param {Array<object>} properties
+ * @returns {Array<object>}
+ */
+function flattenOwnerProperties(
+    properties
+) {
+    const rows = [];
+
+    (Array.isArray(properties) ? properties : []).forEach(
+        (property) => {
+            const building =
+                property.building
+                ?? {};
+
+            const share =
+                property.ownership_percentage
+                ?? '0.00';
+
+            const location =
+                [
+                    building.location,
+                    building.address,
+                ]
+                    .filter(Boolean)
+                    .join(' \u00b7 ');
+
+            const buildingName =
+                building.name
+                ?? `${translate('owners.building')} #${building.id ?? ''}`;
+
+            const units =
+                Array.isArray(building.units)
+                    ? building.units
+                    : [];
+
+            if (units.length === 0) {
+                rows.push({
+                    building: buildingName,
+                    location,
+                    unit: null,
+                    description: null,
+                    share,
+                });
+
+                return;
+            }
+
+            units.forEach(
+                (unit) => {
+                    rows.push({
+                        building: buildingName,
+                        location,
+                        unit:
+                            unit.name
+                            ?? `${translate('owners.unit')} #${unit.id}`,
+                        description: unit.description ?? null,
+                        share,
+                    });
+                }
+            );
+        }
+    );
+
+    return rows;
+}
+
+/**
+ * Draw the page of the property table the reader is on.
+ */
+function drawOwnerProperties() {
     const container =
         document.getElementById(
             'owner-properties-list'
@@ -797,190 +912,111 @@ function renderOwnerProperties(
         return;
     }
 
-    if (properties.length === 0) {
+    if (ownerPropertyRows.length === 0) {
         container.innerHTML = `
-            <div
-                class="
-                    col-span-full rounded-xl
-                    border border-dashed
-                    border-[var(--pm-border)]
-                    px-5 py-8
-                    text-center
-                    text-sm text-[var(--pm-text-muted)]
-                "
-            >
-                ${translate(
-                    'owners.no_building_ownership'
+            <div class="pm-panel-empty">
+                ${escapeHtml(
+                    translate(
+                        'owners.no_building_ownership'
+                    )
                 )}
             </div>
         `;
 
+        renderPagination(
+            'owner-properties-pagination',
+            { current_page: 1, last_page: 1, per_page: 10, total: 0, from: 0, to: 0 },
+            { onPage: () => {} }
+        );
+
         return;
     }
 
-    container.innerHTML =
-        properties
-            .map(
-                renderOwnerProperty
-            )
-            .join('');
+    const perPage =
+        panelPageSizeFor(
+            'owner-properties'
+        );
+
+    const page =
+        clientPage(
+            ownerPropertyRows,
+            ownerPropertyPage,
+            perPage
+        );
+
+    container.innerHTML = `
+        <div class="pm-panel-table-scroll">
+            <table class="pm-panel-table">
+                <thead>
+                    <tr>
+                        <th>${escapeHtml(translate('owners.column_property'))}</th>
+                        <th>${escapeHtml(translate('owners.column_location'))}</th>
+                        <th>${escapeHtml(translate('owners.column_unit'))}</th>
+                        <th>${escapeHtml(translate('owners.details'))}</th>
+                        <th class="pm-panel-table-numeric">
+                            ${escapeHtml(translate('owners.column_share'))}
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${page.rows.map(renderOwnerPropertyRow).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    renderPagination(
+        'owner-properties-pagination',
+        page.meta,
+        {
+            sizes: PANEL_PAGE_SIZES,
+            storageKey: 'owner-properties',
+            onPage: (next) => {
+                ownerPropertyPage = next;
+
+                drawOwnerProperties();
+            },
+            onPageSize: () => {
+                ownerPropertyPage = 1;
+
+                drawOwnerProperties();
+            },
+        }
+    );
 }
 
 /**
- * Render one Building ownership card.
+ * One unit of one property the owner holds.
  *
- * @param {object} property
+ * @param {object} row
  * @returns {string}
  */
-function renderOwnerProperty(
-    property
+function renderOwnerPropertyRow(
+    row
 ) {
-    const building =
-        property.building
-        ?? {};
-
-    const units =
-        Array.isArray(
-            building.units
-        )
-            ? building.units
-            : [];
-
-    const address =
-        [
-            building.location,
-            building.address,
-        ]
-            .filter(Boolean)
-            .join(' · ');
-
     return `
-        <article
-            class="
-                pm-card p-4
-            "
-        >
-            <div
-                class="
-                    flex items-start
-                    justify-between gap-4
-                "
-            >
-                <div class="min-w-0">
-                    <div
-                        class="
-                            text-sm font-semibold
-                            text-[var(--pm-text)]
-                        "
-                    >
-                        ${escapeHtml(
-                            building.name
-                            ?? `${translate(
-                                'owners.building'
-                            )} #${building.id ?? ''}`
-                        )}
-                    </div>
+        <tr>
+            <td class="pm-panel-table-primary pm-panel-table-truncate" title="${escapeAttribute(row.building)}">
+                ${escapeHtml(row.building)}
+            </td>
 
-                    ${
-                        address
-                            ? `
-                                <div
-                                    class="
-                                        mt-1 text-xs
-                                        text-[var(--pm-text-muted)]
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        address
-                                    )}
-                                </div>
-                            `
-                            : ''
-                    }
-                </div>
+            <td class="pm-panel-table-truncate" title="${escapeAttribute(row.location ?? '')}">
+                ${row.location ? escapeHtml(row.location) : '\u2014'}
+            </td>
 
-                <span
-                    class="
-                        shrink-0 rounded-full
-                        bg-[var(--pm-surface-muted)]
-                        px-2.5 py-1
-                        text-xs font-medium
-                        text-[var(--pm-text-secondary)]
-                    "
-                >
-                    ${escapeHtml(
-                        property.ownership_percentage
-                        ?? '0.00'
-                    )}%
-                </span>
-            </div>
+            <td class="pm-panel-table-nowrap">
+                ${row.unit ? escapeHtml(row.unit) : '\u2014'}
+            </td>
 
-            <div
-                class="
-                    mt-4 border-t
-                    border-[var(--pm-border-subtle)] pt-3
-                "
-            >
-                <div
-                    class="
-                        text-[11px] font-semibold
-                        uppercase tracking-wide
-                        text-[var(--pm-text-subtle)]
-                    "
-                >
-                    ${translate(
-                        'owners.units'
-                    )}
-                </div>
+            <td class="pm-panel-table-truncate" title="${escapeAttribute(row.description ?? '')}">
+                ${row.description ? escapeHtml(row.description) : '\u2014'}
+            </td>
 
-                ${
-                    units.length > 0
-                        ? `
-                            <div
-                                class="
-                                    mt-2 flex flex-wrap
-                                    gap-2
-                                "
-                            >
-                                ${units
-                                    .map(
-                                        (unit) => `
-                                            <span
-                                                class="
-                                                    rounded-lg
-                                                    bg-[var(--pm-surface-subtle)]
-                                                    px-2.5 py-1.5
-                                                    text-xs
-                                                    text-[var(--pm-text-secondary)]
-                                                "
-                                            >
-                                                ${escapeHtml(
-                                                    unit.name
-                                                    ?? `${translate(
-                                                        'owners.unit'
-                                                    )} #${unit.id}`
-                                                )}
-                                            </span>
-                                        `
-                                    )
-                                    .join('')}
-                            </div>
-                        `
-                        : `
-                            <div
-                                class="
-                                    mt-2 text-xs
-                                    text-[var(--pm-text-subtle)]
-                                "
-                            >
-                                ${translate(
-                                    'owners.no_units_created'
-                                )}
-                            </div>
-                        `
-                }
-            </div>
-        </article>
+            <td class="pm-panel-table-numeric">
+                ${escapeHtml(String(row.share))}%
+            </td>
+        </tr>
     `;
 }
 
@@ -992,6 +1028,21 @@ function renderOwnerProperty(
 
 /**
  * Render the selected owner's ledger page.
+ *
+ * -------------------------------------------------------------------
+ * One line per movement
+ * -------------------------------------------------------------------
+ *
+ * V1.0.43. The ledger used to be a stack of cards, four or five lines
+ * each: a badge, a category, a row of metadata, sometimes a note, and the
+ * amount off to the right. Six movements filled the screen and the
+ * seventh was a scroll away — which is a poor way to read the one thing
+ * a ledger is for, namely comparing movements against each other.
+ *
+ * It is a table now. The detail that used to sit on its own lines is
+ * gathered into one column, and anything longer than the column is
+ * truncated with the whole of it on the row's title, so nothing is lost
+ * and nothing pushes the amount off the right-hand edge.
  *
  * @param {object} pagination
  */
@@ -1016,16 +1067,11 @@ function renderOwnerLedger(
 
     if (transactions.length === 0) {
         container.innerHTML = `
-            <div
-                class="
-                    rounded-xl border
-                    border-dashed border-[var(--pm-border)]
-                    px-5 py-8 text-center
-                    text-sm text-[var(--pm-text-muted)]
-                "
-            >
-                ${translate(
-                    'owners.no_transactions'
+            <div class="pm-panel-empty">
+                ${escapeHtml(
+                    translate(
+                        'owners.no_transactions'
+                    )
                 )}
             </div>
         `;
@@ -1033,16 +1079,36 @@ function renderOwnerLedger(
         return;
     }
 
-    container.innerHTML =
-        transactions
-            .map(
-                renderOwnerTransaction
-            )
-            .join('');
+    container.innerHTML = `
+        <div class="pm-panel-table-scroll">
+            <table class="pm-panel-table">
+                <thead>
+                    <tr>
+                        <th>${escapeHtml(translate('owners.transaction_date'))}</th>
+                        <th>${escapeHtml(translate('owners.category'))}</th>
+                        <th>${escapeHtml(translate('owners.column_property'))}</th>
+                        <th>${escapeHtml(translate('owners.details'))}</th>
+                        <th class="pm-panel-table-numeric">
+                            ${escapeHtml(translate('owners.amount'))}
+                        </th>
+                        <th class="pm-panel-table-actions"></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${
+                        transactions
+                            .map(renderOwnerTransaction)
+                            .join('')
+                    }
+                </tbody>
+            </table>
+        </div>
+    `;
 }
 
 /**
- * Render one OwnerTransaction.
+ * One OwnerTransaction, on one line.
  *
  * @param {object} transaction
  * @returns {string}
@@ -1057,17 +1123,55 @@ function renderOwnerTransaction(
     const amountPrefix =
         credit
             ? '+'
-            : '−';
+            : '\u2212';
 
     const amountClass =
         credit
-            ? 'text-[var(--pm-success-text)]'
-            : 'text-[var(--pm-danger-text)]';
+            ? 'pm-panel-table-credit'
+            : 'pm-panel-table-debit';
 
     const property =
         transactionPropertyLabel(
             transaction
         );
+
+    /*
+     * Everything the card used to give its own line: how it was paid, the
+     * reference, what a deposit was for, who took the cash, the invoice
+     * it settled, and the note. Gathered into one column so the row stays
+     * one line, and repeated whole on the row's title so a truncated
+     * detail is still readable.
+     */
+    const details =
+        [
+            transaction.payment_method
+                ? paymentMethodLabel(
+                    transaction.payment_method
+                )
+                : null,
+
+            transaction.deposit_purpose
+                ? depositPurposeLabel(
+                    transaction.deposit_purpose
+                )
+                : null,
+
+            transaction.reference
+                ? `${translate('owners.reference_short')} ${transaction.reference}`
+                : null,
+
+            transaction.collector_name
+                ? `${translate('owners.collector_short')} ${transaction.collector_name}`
+                : null,
+
+            transaction.invoice_id
+                ? `${translate('owners.invoice')} #${transaction.invoice_id}`
+                : null,
+
+            transaction.notes || null,
+        ]
+            .filter(Boolean)
+            .join(' \u00b7 ');
 
     const receipt =
         transaction.receipt_endpoint
@@ -1077,228 +1181,52 @@ function renderOwnerTransaction(
                     data-owner-receipt-endpoint="${escapeAttribute(
                         transaction.receipt_endpoint
                     )}"
-                    class="
-                        rounded-lg border
-                        border-[var(--pm-border)]
-                        bg-[var(--pm-surface)] px-3 py-2
-                        text-xs font-medium
-                        text-[var(--pm-text-secondary)]
-                        transition
-                        hover:border-[var(--pm-border-strong)]
-                        hover:bg-[var(--pm-hover)]
-                    "
+                    class="pm-button-secondary pm-button-sm"
                 >
-                    ${translate(
-                        'owners.receipt'
-                    )}
+                    ${escapeHtml(translate('owners.receipt'))}
                 </button>
             `
             : '';
 
     return `
-        <article
-            class="
-                mb-3 pm-card p-4
-                last:mb-0
-            "
-        >
-            <div
-                class="
-                    flex flex-col gap-4
-                    lg:flex-row
-                    lg:items-start
-                    lg:justify-between
-                "
-            >
-                <div class="min-w-0">
-                    <div
-                        class="
-                            flex flex-wrap
-                            items-center gap-2
-                        "
-                    >
-                        <span
-                            class="
-                                inline-flex items-center
-                                rounded-full
-                                ${
-                                    credit
-                                        ? 'bg-[var(--pm-success-background)] text-[var(--pm-success-text)]'
-                                        : 'bg-[var(--pm-danger-background)] text-[var(--pm-danger-text)]'
-                                }
-                                px-2.5 py-1
-                                text-xs font-medium
-                            "
-                        >
-                            ${
-                                credit
-                                    ? translate(
-                                        'owners.credit'
-                                    )
-                                    : translate(
-                                        'owners.debit'
-                                    )
-                            }
-                        </span>
+        <tr>
+            <td class="pm-panel-table-nowrap">
+                ${escapeHtml(
+                    formatDate(
+                        transaction.transaction_date
+                    )
+                )}
+            </td>
 
-                        <span
-                            class="
-                                text-sm font-semibold
-                                text-[var(--pm-text)]
-                            "
-                        >
-                            ${escapeHtml(
-                                ownerTransactionCategoryLabel(
-                                    transaction.category
-                                )
-                            )}
-                        </span>
-                    </div>
+            <td class="pm-panel-table-primary pm-panel-table-nowrap">
+                ${escapeHtml(
+                    ownerTransactionCategoryLabel(
+                        transaction.category
+                    )
+                )}
+            </td>
 
-                    <div
-                        class="
-                            mt-2 flex flex-wrap
-                            gap-x-5 gap-y-1
-                            text-xs text-[var(--pm-text-muted)]
-                        "
-                    >
-                        <span>
-                            ${escapeHtml(
-                                formatDate(
-                                    transaction.transaction_date
-                                )
-                            )}
-                        </span>
+            <td class="pm-panel-table-truncate" title="${escapeAttribute(property)}">
+                ${property ? escapeHtml(property) : '\u2014'}
+            </td>
 
-                        ${
-                            property
-                                ? `
-                                    <span>
-                                        ${escapeHtml(
-                                            property
-                                        )}
-                                    </span>
-                                `
-                                : ''
-                        }
+            <td class="pm-panel-table-truncate" title="${escapeAttribute(details)}">
+                ${details ? escapeHtml(details) : '\u2014'}
+            </td>
 
-                        ${
-                            transaction.payment_method
-                                ? `
-                                    <span>
-                                        ${escapeHtml(
-                                            paymentMethodLabel(
-                                                transaction.payment_method
-                                            )
-                                        )}
-                                    </span>
-                                `
-                                : ''
-                        }
+            <td class="pm-panel-table-numeric ${amountClass}">
+                ${amountPrefix}${escapeHtml(
+                    formatCurrency(
+                        transaction.amount
+                        ?? 0
+                    )
+                )}
+            </td>
 
-                        ${
-                            transaction.reference
-                                ? `
-                                    <span>
-                                        ${translate(
-                                            'owners.reference_short'
-                                        )}
-                                        ${escapeHtml(
-                                            transaction.reference
-                                        )}
-                                    </span>
-                                `
-                                : ''
-                        }
-
-                        ${
-                            transaction.deposit_purpose
-                                ? `
-                                    <span>
-                                        ${escapeHtml(
-                                            depositPurposeLabel(
-                                                transaction.deposit_purpose
-                                            )
-                                        )}
-                                    </span>
-                                `
-                                : ''
-                        }
-
-                        ${
-                            transaction.collector_name
-                                ? `
-                                    <span>
-                                        ${translate(
-                                            'owners.collector_short'
-                                        )}
-                                        ${escapeHtml(
-                                            transaction.collector_name
-                                        )}
-                                    </span>
-                                `
-                                : ''
-                        }
-
-                        ${
-                            transaction.invoice_id
-                                ? `
-                                    <span>
-                                        ${translate(
-                                            'owners.invoice'
-                                        )} #${escapeHtml(
-                                            transaction.invoice_id
-                                        )}
-                                    </span>
-                                `
-                                : ''
-                        }
-                    </div>
-
-                    ${
-                        transaction.notes
-                            ? `
-                                <div
-                                    class="
-                                        mt-3 max-w-3xl
-                                        text-xs leading-5
-                                        text-[var(--pm-text-muted)]
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        transaction.notes
-                                    )}
-                                </div>
-                            `
-                            : ''
-                    }
-                </div>
-
-                <div
-                    class="
-                        flex shrink-0
-                        items-center gap-3
-                        lg:pl-6
-                    "
-                >
-                    <div
-                        class="
-                            text-lg font-semibold
-                            ${amountClass}
-                        "
-                    >
-                        ${amountPrefix}${escapeHtml(
-                            formatCurrency(
-                                transaction.amount
-                                ?? 0
-                            )
-                        )}
-                    </div>
-
-                    ${receipt}
-                </div>
-            </div>
-        </article>
+            <td class="pm-panel-table-actions">
+                ${receipt}
+            </td>
+        </tr>
     `;
 }
 
@@ -1326,6 +1254,7 @@ function renderOwnerLedgerPagination(
         'owner-ledger-pagination',
         payload,
         {
+            sizes: PANEL_PAGE_SIZES,
             storageKey: 'owner-ledger',
             onPage: (page) => selectOwnerAccount(
                 selectedOwnerAccountId,
@@ -3786,6 +3715,55 @@ function initializeOwnerWorkspaceActions() {
                 event.preventDefault();
 
                 await submitOwnerPayout();
+            }
+        );
+
+    /*
+     * V1.0.43: the whole of what is owed, without reading the figure off
+     * the panel above and typing it back in. The value is grouped the way
+     * the money inputs group everything else, so the field looks the same
+     * whether it was filled by hand or by this button.
+     */
+    document
+        .getElementById(
+            'owner-payout-withdraw-all'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                const amountInput =
+                    document.getElementById(
+                        'owner-payout-amount'
+                    );
+
+                if (! amountInput) {
+                    return;
+                }
+
+                const available =
+                    Math.max(
+                        0,
+                        Math.trunc(
+                            Number(
+                                selectedOwner?.balance
+                                ?? 0
+                            )
+                        )
+                    );
+
+                amountInput.value =
+                    formatMoneyDigits(
+                        String(available)
+                    );
+
+                amountInput.dispatchEvent(
+                    new Event(
+                        'input',
+                        { bubbles: true }
+                    )
+                );
+
+                amountInput.focus();
             }
         );
 

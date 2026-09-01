@@ -483,4 +483,111 @@ class ManagingOrganisationApiTest extends TestCase
             $settings->currency
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Preferences have to come back
+    |--------------------------------------------------------------------------
+    |
+    | V1.0.43. data_tools_enabled was saved faithfully and then left out of
+    | the response, so the Preferences form read `undefined ?? false` and
+    | drew an empty tickbox over a setting that was on. The buttons it
+    | controls were on the parties list the whole time, and there was no
+    | way to switch them off again without knowing to tick a box that
+    | already looked unticked.
+    |
+    */
+
+    public function test_the_data_protection_switch_comes_back_as_it_was_saved(): void
+    {
+        $this->putJson(
+            '/api/managing-organisation',
+            $this->validPayload() + ['data_tools_enabled' => true]
+        )
+            ->assertOk()
+            ->assertJsonPath('data_tools_enabled', true);
+
+        $this->getJson('/api/managing-organisation')
+            ->assertOk()
+            ->assertJsonPath('data_tools_enabled', true);
+
+        $this->putJson(
+            '/api/managing-organisation',
+            $this->validPayload() + ['data_tools_enabled' => false]
+        )->assertOk();
+
+        $this->getJson('/api/managing-organisation')
+            ->assertOk()
+            ->assertJsonPath('data_tools_enabled', false);
+    }
+
+    /**
+     * Ordering the parties list is the organisation's decision, not a
+     * habit of whichever browser is open.
+     */
+    public function test_the_surname_sort_is_stored_and_returned(): void
+    {
+        $this->getJson('/api/managing-organisation')
+            ->assertNotFound();
+
+        $this->putJson(
+            '/api/managing-organisation',
+            $this->validPayload() + ['sort_parties_by_surname' => true]
+        )
+            ->assertOk()
+            ->assertJsonPath('sort_parties_by_surname', true);
+
+        $this->assertTrue(
+            (bool) ApplicationSetting::query()
+                ->firstOrFail()
+                ->sort_parties_by_surname
+        );
+
+        $this->getJson('/api/managing-organisation')
+            ->assertOk()
+            ->assertJsonPath('sort_parties_by_surname', true);
+    }
+
+    /**
+     * Absent means "leave it as it was", so an older client that does not
+     * know about a switch cannot turn it off by omission.
+     */
+    public function test_an_absent_switch_keeps_its_value(): void
+    {
+        $this->putJson(
+            '/api/managing-organisation',
+            $this->validPayload() + [
+                'data_tools_enabled' => true,
+                'sort_parties_by_surname' => true,
+            ]
+        )->assertOk();
+
+        $this->putJson(
+            '/api/managing-organisation',
+            $this->validPayload()
+        )
+            ->assertOk()
+            ->assertJsonPath('data_tools_enabled', true)
+            ->assertJsonPath('sort_parties_by_surname', true);
+    }
+
+    /**
+     * And every browser reads it from the presentation configuration,
+     * which is where the parties list looks.
+     */
+    public function test_the_presentation_configuration_carries_both_switches(): void
+    {
+        $this->putJson(
+            '/api/managing-organisation',
+            $this->validPayload() + [
+                'data_tools_enabled' => true,
+                'sort_parties_by_surname' => true,
+            ]
+        )->assertOk();
+
+        $this->getJson('/api/presentation-config')
+            ->assertOk()
+            ->assertJsonPath('data_tools_enabled', true)
+            ->assertJsonPath('sort_parties_by_surname', true);
+    }
 }

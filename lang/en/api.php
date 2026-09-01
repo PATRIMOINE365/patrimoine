@@ -164,6 +164,7 @@ return [
 
     'archive' => [
         'not_archivable' => 'This record can still be deleted outright, so there is nothing to archive. Delete it, or leave it where it is.',
+        'lease_not_terminated' => 'This lease is still running, so it cannot be archived. Terminate it first: termination settles the final rent, releases the deposit and stops the billing. Archiving only takes the record out of the lists.',
     ],
 
     'deletion' => [

@@ -6,11 +6,42 @@
 @section('content')
 
 {{--
-    V1.0.29 guided lease creation.
+    Guided lease creation.
 
-    Ten pages, one submission. Nothing is written until the last page, so
-    somebody can walk the whole way through, change their mind, and leave
-    the registry exactly as they found it.
+    ================================================================
+    V1.0.43: the assistant is the lease drawer, paginated
+    ================================================================
+
+    The wizard and the Add lease drawer had drifted into two different
+    products. The drawer asked for eighteen things the assistant did not,
+    it grouped them differently, and — worst of the three — it called the
+    rent field "Monthly Rent" while the assistant called it "Rent" and put
+    "Paid every: Quarter" underneath. Somebody entering 1,000 a quarter in
+    the assistant got a quarterly invoice of 3,000, because the engine has
+    always read that number as a month's rent. The lease was wrong and
+    nothing on the screen had lied to them.
+
+    So the assistant is now the drawer, one section per page, in the
+    drawer's own order and in the drawer's own words:
+
+        0  Information       what these words mean
+        1  Property & Tenant  the unit, its owners, the tenant, the agent
+        2  Lease Period       start, duration, end, notice
+        3  Rent Terms         rent, frequency, due day, VAT, proration,
+                              deposit — and receiving the deposit
+        4  Advance Payment    advance, reserve, consumable, receipt
+        5  Rent Increment     type, value, next date
+        6  Fees & Commission  management fee, agent commission, notes
+        7  Review
+
+    Everything the drawer can ask is here. The one thing the drawer cannot
+    do — create the property, its units, its owners, the tenant and the
+    agent as it goes — stays on page 1, because it is the whole reason the
+    assistant exists.
+
+    Nothing is written until the last page, so somebody can walk the whole
+    way through, change their mind, and leave the registry exactly as they
+    found it.
 
     The party field blocks (new owner, new tenant, new agent) are rendered
     by lease-wizard.js from a single function, so the three can never
@@ -23,39 +54,54 @@
          Header
     ============================================================ --}}
 
-    <div
-        class="
-            mb-6 flex flex-col gap-4
-            sm:flex-row sm:items-end sm:justify-between
-        "
-    >
-        <div>
-            <p
-                class="
-                    text-xs font-semibold uppercase tracking-[0.14em]
-                    text-[var(--pm-text-muted)]
-                "
-            >
-                <span data-i18n="wizard.eyebrow">{{ __('ui.wizard.eyebrow') }}</span>
-            </p>
+    <div class="mb-6">
+        <p
+            class="
+                text-xs font-semibold uppercase tracking-[0.14em]
+                text-[var(--pm-text-muted)]
+            "
+        >
+            <span data-i18n="wizard.eyebrow">{{ __('ui.wizard.eyebrow') }}</span>
+        </p>
 
-            <h1
-                class="
-                    mt-1 text-3xl font-semibold
-                    tracking-tight text-[var(--pm-text)]
-                "
-            >
-                <span data-i18n="wizard.heading">{{ __('ui.wizard.heading') }}</span>
-            </h1>
+        <h1
+            class="
+                mt-1 text-3xl font-semibold
+                tracking-tight text-[var(--pm-text)]
+            "
+        >
+            <span data-i18n="wizard.heading">{{ __('ui.wizard.heading') }}</span>
+        </h1>
 
-            <p class="mt-2 text-sm text-[var(--pm-text-muted)]">
-                <span data-i18n="wizard.subtitle">{{ __('ui.wizard.subtitle') }}</span>
-            </p>
-        </div>
+        <p class="mt-2 text-sm text-[var(--pm-text-muted)]">
+            <span data-i18n="wizard.subtitle">{{ __('ui.wizard.subtitle') }}</span>
+        </p>
+    </div>
+
+    {{--
+        V1.0.43: leaving, and keeping.
+
+        Save as draft used to sit at the far right, in the place the eye
+        goes for the action that finishes the job — so the button that
+        stopped short looked like the button that completed. It moves up
+        here beside Cancel, where the two things that take you off the
+        page live, and is drawn as an ordinary button. Back and Next take
+        the footer, and Next is the one that looks like the primary
+        action, because on the last page it is the one that creates the
+        letting.
+    --}}
+    <div class="mb-6 flex flex-wrap items-center justify-end gap-3">
+        <button
+            id="wizard-draft"
+            type="button"
+            class="pm-button-secondary"
+        >
+            <span data-i18n="wizard.save_draft">{{ __('ui.wizard.save_draft') }}</span>
+        </button>
 
         <a
             href="/leases"
-            class="pm-button-danger-outline self-start sm:self-auto"
+            class="pm-button-danger-outline"
         >
             <span data-i18n="wizard.cancel">{{ __('ui.wizard.cancel') }}</span>
         </a>
@@ -87,7 +133,7 @@
             <div
                 id="wizard-progress-bar"
                 class="h-full rounded-full bg-[var(--pm-accent)]"
-                style="width: 10%"
+                style="width: 12.5%"
             ></div>
         </div>
     </div>
@@ -114,7 +160,9 @@
     --}}
     <div id="wizard-steps" class="pm-card p-6">
 
-        {{-- 1. What these words mean --}}
+        {{-- ------------------------------------------------------------
+             0. Information
+        ------------------------------------------------------------ --}}
         <section data-wizard-step="1">
             <h2 class="pm-wizard-step-heading">
                 <span data-i18n="wizard.step1_title">{{ __('ui.wizard.step1_title') }}</span>
@@ -162,11 +210,23 @@
             </p>
         </section>
 
-        {{-- 2. Property and unit --}}
+        {{-- ------------------------------------------------------------
+             1. Property & Tenant
+
+             The drawer's first section, plus the one thing the drawer
+             cannot do: create the property, the unit and the people as it
+             goes. The owners block appears only when the property is new
+             or has no ownership recorded, because that is the only time
+             there is anything to ask.
+        ------------------------------------------------------------ --}}
         <section data-wizard-step="2" class="hidden">
             <h2 class="pm-wizard-step-heading">
                 <span data-i18n="wizard.step2_title">{{ __('ui.wizard.step2_title') }}</span>
             </h2>
+
+            <p class="pm-wizard-note">
+                <span data-i18n="wizard.step2_note">{{ __('ui.wizard.step2_note') }}</span>
+            </p>
 
             <div class="pm-wizard-fields">
                 <div>
@@ -247,41 +307,36 @@
                         <span data-i18n="wizard.unit_commercial">{{ __('ui.wizard.unit_commercial') }}</span>
                     </label>
                 </div>
-            </div>
-        </section>
 
-        {{-- 3. Owners --}}
-        <section data-wizard-step="3" class="hidden">
-            <h2 class="pm-wizard-step-heading">
-                <span data-i18n="wizard.step3_title">{{ __('ui.wizard.step3_title') }}</span>
-            </h2>
+                {{-- Ownership, when the property does not have it yet --}}
+                <div id="wizard-owners-block" class="hidden">
+                    <div class="pm-wizard-divider"></div>
 
-            <p class="pm-wizard-note">
-                <span data-i18n="wizard.step3_note">{{ __('ui.wizard.step3_note') }}</span>
-            </p>
+                    <h3 class="pm-field-label">
+                        <span data-i18n="wizard.ownership">{{ __('ui.wizard.ownership') }}</span>
+                    </h3>
 
-            <div id="wizard-owner-rows" class="pm-wizard-fields"></div>
+                    <p class="pm-wizard-help">
+                        <span data-i18n="wizard.ownership_note">{{ __('ui.wizard.ownership_note') }}</span>
+                    </p>
 
-            <div class="mt-4 flex items-center justify-between gap-4">
-                <button
-                    id="wizard-add-owner"
-                    type="button"
-                    class="pm-button-secondary"
-                >
-                    <span data-i18n="wizard.add_owner">{{ __('ui.wizard.add_owner') }}</span>
-                </button>
+                    <div id="wizard-owner-rows" class="pm-wizard-fields"></div>
 
-                <p id="wizard-owner-total" class="text-sm text-[var(--pm-text-muted)]"></p>
-            </div>
-        </section>
+                    <div class="mt-4 flex items-center justify-between gap-4">
+                        <button
+                            id="wizard-add-owner"
+                            type="button"
+                            class="pm-button-secondary"
+                        >
+                            <span data-i18n="wizard.add_owner">{{ __('ui.wizard.add_owner') }}</span>
+                        </button>
 
-        {{-- 4. Tenant --}}
-        <section data-wizard-step="4" class="hidden">
-            <h2 class="pm-wizard-step-heading">
-                <span data-i18n="wizard.step4_title">{{ __('ui.wizard.step4_title') }}</span>
-            </h2>
+                        <p id="wizard-owner-total" class="text-sm text-[var(--pm-text-muted)]"></p>
+                    </div>
+                </div>
 
-            <div class="pm-wizard-fields">
+                <div class="pm-wizard-divider"></div>
+
                 <div>
                     <label for="wizard-tenant-mode" class="pm-field-label">
                         <span data-i18n="wizard.tenant">{{ __('ui.wizard.tenant') }}</span>
@@ -302,16 +357,9 @@
                 </div>
 
                 <div id="wizard-tenant-new" class="hidden"></div>
-            </div>
-        </section>
 
-        {{-- 5. Agent --}}
-        <section data-wizard-step="5" class="hidden">
-            <h2 class="pm-wizard-step-heading">
-                <span data-i18n="wizard.step5_title">{{ __('ui.wizard.step5_title') }}</span>
-            </h2>
+                <div class="pm-wizard-divider"></div>
 
-            <div class="pm-wizard-fields">
                 <div>
                     <label for="wizard-agent-mode" class="pm-field-label">
                         <span data-i18n="wizard.agent">{{ __('ui.wizard.agent') }}</span>
@@ -333,120 +381,447 @@
                 </div>
 
                 <div id="wizard-agent-new" class="hidden"></div>
+            </div>
+        </section>
 
-                <div id="wizard-agent-commission-field" class="hidden">
-                    <label for="wizard-agent-commission" class="pm-field-label">
-                        <span data-i18n="wizard.agent_commission">{{ __('ui.wizard.agent_commission') }}</span>
-                    </label>
+        {{-- ------------------------------------------------------------
+             2. Lease Period
+        ------------------------------------------------------------ --}}
+        <section data-wizard-step="3" class="hidden">
+            <h2 class="pm-wizard-step-heading">
+                <span data-i18n="wizard.step3_title">{{ __('ui.wizard.step3_title') }}</span>
+            </h2>
 
-                    <div class="pm-input-affix">
+            <div class="pm-wizard-fields">
+                <div class="pm-wizard-grid">
+                    <div>
+                        <label for="wizard-start-date" class="pm-field-label">
+                            <span data-i18n="wizard.start_date">{{ __('ui.wizard.start_date') }}</span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
+                        </label>
+
                         <input
-                            id="wizard-agent-commission"
+                            id="wizard-start-date"
                             type="text"
+                            data-pm-date-input
                             inputmode="numeric"
-                            data-money-input
-                            class="pm-input pr-14" value="0"
+                            maxlength="10"
+                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                            class="pm-input"
                         >
-                    
-                        <span id="wizard-agent-commission-unit" class="pm-input-unit"></span>
+
+                        <p class="pm-wizard-help">
+                            <span data-i18n="wizard.start_date_help">{{ __('ui.wizard.start_date_help') }}</span>
+                        </p>
                     </div>
 
-                    <p class="pm-wizard-help">
-                        <span data-i18n="wizard.agent_commission_help">{{ __('ui.wizard.agent_commission_help') }}</span>
-                    </p>
+                    <div>
+                        <label for="wizard-duration" class="pm-field-label">
+                            <span data-i18n="wizard.duration">{{ __('ui.wizard.duration') }}</span>
+                        </label>
+
+                        <select id="wizard-duration" class="pm-input">
+                            <option value="12" data-i18n="wizard.duration_12">{{ __('ui.wizard.duration_12') }}</option>
+                            <option value="6" data-i18n="wizard.duration_6">{{ __('ui.wizard.duration_6') }}</option>
+                            <option value="24" data-i18n="wizard.duration_24">{{ __('ui.wizard.duration_24') }}</option>
+                            <option value="custom" data-i18n="wizard.duration_custom">{{ __('ui.wizard.duration_custom') }}</option>
+                            <option value="open" data-i18n="wizard.duration_open">{{ __('ui.wizard.duration_open') }}</option>
+                        </select>
+                    </div>
+
+                    <div id="wizard-end-date-field">
+                        <label for="wizard-end-date" class="pm-field-label">
+                            <span data-i18n="wizard.end_date">{{ __('ui.wizard.end_date') }}</span>
+                        </label>
+
+                        <input
+                            id="wizard-end-date"
+                            type="text"
+                            data-pm-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                            class="pm-input"
+                        >
+
+                        <p class="pm-wizard-help">
+                            <span data-i18n="wizard.end_date_help">{{ __('ui.wizard.end_date_help') }}</span>
+                        </p>
+                    </div>
+
+                    <div>
+                        <label for="wizard-notice-date" class="pm-field-label">
+                            <span data-i18n="wizard.notice_date">{{ __('ui.wizard.notice_date') }}</span>
+                        </label>
+
+                        <input
+                            id="wizard-notice-date"
+                            type="text"
+                            data-pm-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                            class="pm-input"
+                        >
+
+                        <p class="pm-wizard-help">
+                            <span data-i18n="wizard.notice_date_help">{{ __('ui.wizard.notice_date_help') }}</span>
+                        </p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        {{-- 6. Duration --}}
+        {{-- ------------------------------------------------------------
+             3. Rent Terms
+        ------------------------------------------------------------ --}}
+        <section data-wizard-step="4" class="hidden">
+            <h2 class="pm-wizard-step-heading">
+                <span data-i18n="wizard.step4_title">{{ __('ui.wizard.step4_title') }}</span>
+            </h2>
+
+            <div class="pm-wizard-fields">
+                <div class="pm-wizard-grid">
+                    <div>
+                        {{--
+                            V1.0.43: "Monthly rent", as the drawer has
+                            always called it. This field said "Rent" with
+                            "Paid every: Quarter" beneath it, so 1,000
+                            entered as a quarter's rent was billed at
+                            3,000 — the engine reads this number as one
+                            month and multiplies by the frequency.
+                        --}}
+                        <label for="wizard-rent-amount" class="pm-field-label">
+                            <span data-i18n="wizard.rent_amount">{{ __('ui.wizard.rent_amount') }}</span>
+                            <span class="text-[var(--pm-danger-text)]">*</span>
+                        </label>
+
+                        <div class="pm-input-affix">
+                            <input
+                                id="wizard-rent-amount"
+                                type="text"
+                                inputmode="numeric"
+                                data-money-input
+                                class="pm-input pr-14"
+                            >
+
+                            <span id="wizard-rent-amount-unit" class="pm-input-unit"></span>
+                        </div>
+
+                        <p class="pm-wizard-help">
+                            <span data-i18n="wizard.rent_amount_help">{{ __('ui.wizard.rent_amount_help') }}</span>
+                        </p>
+                    </div>
+
+                    <div>
+                        <label for="wizard-frequency" class="pm-field-label">
+                            <span data-i18n="wizard.frequency">{{ __('ui.wizard.frequency') }}</span>
+                        </label>
+
+                        <select id="wizard-frequency" class="pm-input">
+                            <option value="monthly" data-i18n="wizard.frequency_monthly">{{ __('ui.wizard.frequency_monthly') }}</option>
+                            <option value="quarterly" data-i18n="wizard.frequency_quarterly">{{ __('ui.wizard.frequency_quarterly') }}</option>
+                            <option value="bi_yearly" data-i18n="wizard.frequency_bi_yearly">{{ __('ui.wizard.frequency_bi_yearly') }}</option>
+                            <option value="yearly" data-i18n="wizard.frequency_yearly">{{ __('ui.wizard.frequency_yearly') }}</option>
+                        </select>
+
+                        <p class="pm-wizard-help">
+                            <span data-i18n="wizard.frequency_help">{{ __('ui.wizard.frequency_help') }}</span>
+                        </p>
+                    </div>
+
+                    <div>
+                        <label for="wizard-due-day" class="pm-field-label">
+                            <span data-i18n="wizard.due_day">{{ __('ui.wizard.due_day') }}</span>
+                        </label>
+
+                        <input id="wizard-due-day" type="number" min="1" max="31" class="pm-input">
+
+                        <p class="pm-wizard-help">
+                            <span data-i18n="wizard.due_day_help">{{ __('ui.wizard.due_day_help') }}</span>
+                        </p>
+                    </div>
+
+                    <div>
+                        <label for="wizard-vat-rate" class="pm-field-label">
+                            <span data-i18n="wizard.fee_vat">{{ __('ui.wizard.fee_vat') }}</span>
+                        </label>
+
+                        <div class="pm-input-affix">
+                            <input
+                                id="wizard-vat-rate"
+                                type="text"
+                                inputmode="decimal"
+                                class="pm-input pr-14"
+                                value="0"
+                            >
+
+                            <span class="pm-input-unit">%</span>
+                        </div>
+
+                        <p class="pm-wizard-help">
+                            <span data-i18n="wizard.fee_vat_help">{{ __('ui.wizard.fee_vat_help') }}</span>
+                        </p>
+                    </div>
+
+                    <div>
+                        <label for="wizard-proration" class="pm-field-label">
+                            <span data-i18n="wizard.proration">{{ __('ui.wizard.proration') }}</span>
+                        </label>
+
+                        <div class="pm-input-affix">
+                            <input
+                                id="wizard-proration"
+                                type="text"
+                                inputmode="numeric"
+                                data-money-input
+                                class="pm-input pr-14"
+                            >
+
+                            <span id="wizard-proration-unit" class="pm-input-unit"></span>
+                        </div>
+
+                        <p class="pm-wizard-help">
+                            <span data-i18n="wizard.proration_help">{{ __('ui.wizard.proration_help') }}</span>
+                        </p>
+                    </div>
+
+                    <div>
+                        <label for="wizard-deposit" class="pm-field-label">
+                            <span data-i18n="wizard.security_deposit">{{ __('ui.wizard.security_deposit') }}</span>
+                        </label>
+
+                        <div class="pm-input-affix">
+                            <input
+                                id="wizard-deposit"
+                                type="text"
+                                inputmode="numeric"
+                                data-money-input
+                                class="pm-input pr-14" value="0"
+                            >
+
+                            <span id="wizard-deposit-unit" class="pm-input-unit"></span>
+                        </div>
+                    </div>
+                </div>
+
+                {{--
+                    V1.0.43: receiving the deposit.
+
+                    Entering a deposit receives it into the lease's own
+                    Security Deposit account. These three only say when it
+                    changed hands and how — and the date is deliberately
+                    free of the lease start, because a deposit is usually
+                    what secures the unit, weeks before anybody moves in.
+                --}}
+                <div id="wizard-deposit-receipt" class="hidden">
+                    <div class="pm-wizard-divider"></div>
+
+                    <p class="pm-wizard-help">
+                        <span data-i18n="leases.security_deposit_received_help">{{ __('ui.leases.security_deposit_received_help') }}</span>
+                    </p>
+
+                    <div class="pm-wizard-subfields pm-wizard-subfields-row">
+                        <div>
+                            <label for="wizard-deposit-date" class="pm-field-label">
+                                <span data-i18n="wizard.advance_date">{{ __('ui.wizard.advance_date') }}</span>
+                            </label>
+
+                            <input
+                                id="wizard-deposit-date"
+                                type="text"
+                                data-pm-date-input
+                                inputmode="numeric"
+                                maxlength="10"
+                                placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                                class="pm-input"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="wizard-deposit-method" class="pm-field-label">
+                                <span data-i18n="wizard.advance_method">{{ __('ui.wizard.advance_method') }}</span>
+                            </label>
+
+                            <select id="wizard-deposit-method" class="pm-input">
+                                <option value="bank_transfer" data-i18n="wizard.method_bank_transfer">{{ __('ui.wizard.method_bank_transfer') }}</option>
+                                <option value="momo" data-i18n="wizard.method_mobile_money">{{ __('ui.wizard.method_mobile_money') }}</option>
+                                <option value="cash" data-i18n="wizard.method_cash">{{ __('ui.wizard.method_cash') }}</option>
+                                <option value="cheque" data-i18n="wizard.method_cheque">{{ __('ui.wizard.method_cheque') }}</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="wizard-deposit-reference" class="pm-field-label">
+                                <span data-i18n="wizard.advance_reference">{{ __('ui.wizard.advance_reference') }}</span>
+                            </label>
+
+                            <input id="wizard-deposit-reference" type="text" maxlength="255" class="pm-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- ------------------------------------------------------------
+             4. Advance Payment
+        ------------------------------------------------------------ --}}
+        <section data-wizard-step="5" class="hidden">
+            <h2 class="pm-wizard-step-heading">
+                <span data-i18n="wizard.step5_title">{{ __('ui.wizard.step5_title') }}</span>
+            </h2>
+
+            <p class="pm-wizard-note">
+                <span data-i18n="wizard.step5_note">{{ __('ui.wizard.step5_note') }}</span>
+            </p>
+
+            <div class="pm-wizard-fields">
+                <div class="pm-wizard-grid">
+                    <div>
+                        <label for="wizard-advance-amount" class="pm-field-label">
+                            <span data-i18n="wizard.advance_amount">{{ __('ui.wizard.advance_amount') }}</span>
+                        </label>
+
+                        <div class="pm-input-affix">
+                            <input
+                                id="wizard-advance-amount"
+                                type="text"
+                                inputmode="numeric"
+                                data-money-input
+                                class="pm-input pr-14" value="0"
+                            >
+
+                            <span id="wizard-advance-amount-unit" class="pm-input-unit"></span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="wizard-reserve" class="pm-field-label">
+                            <span data-i18n="wizard.rent_reserve">{{ __('ui.wizard.rent_reserve') }}</span>
+                        </label>
+
+                        <div class="pm-input-affix">
+                            <input
+                                id="wizard-reserve"
+                                type="text"
+                                inputmode="numeric"
+                                data-money-input
+                                class="pm-input pr-14" value="0"
+                            >
+
+                            <span id="wizard-reserve-unit" class="pm-input-unit"></span>
+                        </div>
+
+                        <p class="pm-wizard-help">
+                            <span data-i18n="wizard.rent_reserve_help">{{ __('ui.wizard.rent_reserve_help') }}</span>
+                        </p>
+                    </div>
+
+                    {{--
+                        What is left of the advance once the reserve is
+                        taken out of it. The drawer shows this; the
+                        assistant did not, so the one number that says
+                        what the tenant can actually spend on rent was
+                        the reader's own arithmetic.
+                    --}}
+                    <div>
+                        <div class="pm-field-label">
+                            <span data-i18n="wizard.consumable_advance">{{ __('ui.wizard.consumable_advance') }}</span>
+                        </div>
+
+                        <p
+                            id="wizard-consumable-advance"
+                            class="
+                                mt-1 text-sm font-semibold
+                                text-[var(--pm-text)]
+                            "
+                        ></p>
+
+                        <p class="pm-wizard-help">
+                            <span data-i18n="wizard.consumable_advance_help">{{ __('ui.wizard.consumable_advance_help') }}</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pm-wizard-divider"></div>
+
+                <label class="pm-wizard-checkbox">
+                    <input id="wizard-advance-received" type="checkbox" checked>
+                    <span data-i18n="wizard.advance_received">{{ __('ui.wizard.advance_received') }}</span>
+                </label>
+
+                {{--
+                    V1.0.36: three stacked fields under the tick made
+                    this step taller than any other, which pushed Back
+                    and Next down the page and moved them every time the
+                    box was ticked. Side by side the step is the height
+                    of its neighbours and the buttons stay put.
+                --}}
+                <div id="wizard-advance-details" class="pm-wizard-subfields pm-wizard-subfields-row">
+                    <div>
+                        <label for="wizard-advance-date" class="pm-field-label">
+                            <span data-i18n="wizard.advance_date">{{ __('ui.wizard.advance_date') }}</span>
+                        </label>
+
+                        <input
+                            id="wizard-advance-date"
+                            type="text"
+                            data-pm-date-input
+                            inputmode="numeric"
+                            maxlength="10"
+                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
+                            class="pm-input"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="wizard-advance-method" class="pm-field-label">
+                            <span data-i18n="wizard.advance_method">{{ __('ui.wizard.advance_method') }}</span>
+                        </label>
+
+                        <select id="wizard-advance-method" class="pm-input">
+                            <option value="cash" data-i18n="wizard.method_cash">{{ __('ui.wizard.method_cash') }}</option>
+                            <option value="bank_transfer" data-i18n="wizard.method_bank_transfer">{{ __('ui.wizard.method_bank_transfer') }}</option>
+                            <option value="cheque" data-i18n="wizard.method_cheque">{{ __('ui.wizard.method_cheque') }}</option>
+                            <option value="momo" data-i18n="wizard.method_mobile_money">{{ __('ui.wizard.method_mobile_money') }}</option>
+                        </select>
+                    </div>
+
+                    <div id="wizard-advance-collector-field">
+                        <label for="wizard-advance-collector" class="pm-field-label">
+                            <span data-i18n="wizard.cashier">{{ __('ui.wizard.cashier') }}</span>
+                        </label>
+
+                        <input
+                            id="wizard-advance-collector"
+                            type="text"
+                            readonly
+                            data-i18n-placeholder="wizard.cashier_placeholder"
+                            placeholder="{{ __('ui.wizard.cashier_placeholder') }}"
+                            class="pm-input"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="wizard-advance-reference" class="pm-field-label">
+                            <span data-i18n="wizard.advance_reference">{{ __('ui.wizard.advance_reference') }}</span>
+                        </label>
+
+                        <input id="wizard-advance-reference" type="text" maxlength="255" class="pm-input">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- ------------------------------------------------------------
+             5. Rent Increment
+        ------------------------------------------------------------ --}}
         <section data-wizard-step="6" class="hidden">
             <h2 class="pm-wizard-step-heading">
                 <span data-i18n="wizard.step6_title">{{ __('ui.wizard.step6_title') }}</span>
             </h2>
 
             <div class="pm-wizard-fields">
-                <div>
-                    <label for="wizard-start-date" class="pm-field-label">
-                        <span data-i18n="wizard.start_date">{{ __('ui.wizard.start_date') }}</span>
-                        <span class="text-[var(--pm-danger-text)]">*</span>
-                    </label>
-
-                    <input
-                        id="wizard-start-date"
-                        type="text"
-                        data-pm-date-input
-                        inputmode="numeric"
-                        maxlength="10"
-                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
-                        class="pm-input"
-                    >
-                </div>
-
-                <div>
-                    <label for="wizard-duration" class="pm-field-label">
-                        <span data-i18n="wizard.duration">{{ __('ui.wizard.duration') }}</span>
-                    </label>
-
-                    <select id="wizard-duration" class="pm-input">
-                        <option value="12" data-i18n="wizard.duration_12">{{ __('ui.wizard.duration_12') }}</option>
-                        <option value="6" data-i18n="wizard.duration_6">{{ __('ui.wizard.duration_6') }}</option>
-                        <option value="24" data-i18n="wizard.duration_24">{{ __('ui.wizard.duration_24') }}</option>
-                        <option value="custom" data-i18n="wizard.duration_custom">{{ __('ui.wizard.duration_custom') }}</option>
-                        <option value="open" data-i18n="wizard.duration_open">{{ __('ui.wizard.duration_open') }}</option>
-                    </select>
-                </div>
-
-                <div id="wizard-end-date-field">
-                    <label for="wizard-end-date" class="pm-field-label">
-                        <span data-i18n="wizard.end_date">{{ __('ui.wizard.end_date') }}</span>
-                    </label>
-
-                    <input
-                        id="wizard-end-date"
-                        type="text"
-                        data-pm-date-input
-                        inputmode="numeric"
-                        maxlength="10"
-                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
-                        class="pm-input"
-                    >
-                </div>
-
-                <p class="pm-wizard-help">
-                    <span data-i18n="wizard.end_date_help">{{ __('ui.wizard.end_date_help') }}</span>
-                </p>
-            </div>
-        </section>
-
-        {{-- 7. Notice and increments --}}
-        <section data-wizard-step="7" class="hidden">
-            <h2 class="pm-wizard-step-heading">
-                <span data-i18n="wizard.step7_title">{{ __('ui.wizard.step7_title') }}</span>
-            </h2>
-
-            <div class="pm-wizard-fields">
-                <div>
-                    <label for="wizard-notice-date" class="pm-field-label">
-                        <span data-i18n="wizard.notice_date">{{ __('ui.wizard.notice_date') }}</span>
-                    </label>
-
-                    <input
-                        id="wizard-notice-date"
-                        type="text"
-                        data-pm-date-input
-                        inputmode="numeric"
-                        maxlength="10"
-                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
-                        class="pm-input"
-                    >
-
-                    <p class="pm-wizard-help">
-                        <span data-i18n="wizard.notice_date_help">{{ __('ui.wizard.notice_date_help') }}</span>
-                    </p>
-                </div>
-
-                <div class="pm-wizard-divider"></div>
-
                 <div>
                     <label for="wizard-increment-type" class="pm-field-label">
                         <span data-i18n="wizard.increment_type">{{ __('ui.wizard.increment_type') }}</span>
@@ -484,222 +859,29 @@
                         </label>
 
                         <input
-                        id="wizard-increment-date"
-                        type="text"
-                        data-pm-date-input
-                        inputmode="numeric"
-                        maxlength="10"
-                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
-                        class="pm-input"
-                    >
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        {{-- 8. Rent terms --}}
-        <section data-wizard-step="8" class="hidden">
-            <h2 class="pm-wizard-step-heading">
-                <span data-i18n="wizard.step8_title">{{ __('ui.wizard.step8_title') }}</span>
-            </h2>
-
-            <div class="pm-wizard-fields">
-                <div class="pm-wizard-grid">
-                    <div>
-                        <label for="wizard-rent-amount" class="pm-field-label">
-                            <span data-i18n="wizard.rent_amount">{{ __('ui.wizard.rent_amount') }}</span>
-                            <span class="text-[var(--pm-danger-text)]">*</span>
-                        </label>
-
-                        <div class="pm-input-affix">
-                            <input
-                                id="wizard-rent-amount"
-                                type="text"
-                                inputmode="numeric"
-                                data-money-input
-                                class="pm-input pr-14"
-                            >
-                        
-                            <span id="wizard-rent-amount-unit" class="pm-input-unit"></span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="wizard-frequency" class="pm-field-label">
-                            <span data-i18n="wizard.frequency">{{ __('ui.wizard.frequency') }}</span>
-                        </label>
-
-                        <select id="wizard-frequency" class="pm-input">
-                            <option value="monthly" data-i18n="wizard.frequency_monthly">{{ __('ui.wizard.frequency_monthly') }}</option>
-                            <option value="quarterly" data-i18n="wizard.frequency_quarterly">{{ __('ui.wizard.frequency_quarterly') }}</option>
-                            <option value="bi_yearly" data-i18n="wizard.frequency_bi_yearly">{{ __('ui.wizard.frequency_bi_yearly') }}</option>
-                            <option value="yearly" data-i18n="wizard.frequency_yearly">{{ __('ui.wizard.frequency_yearly') }}</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="wizard-due-day" class="pm-field-label">
-                            <span data-i18n="wizard.due_day">{{ __('ui.wizard.due_day') }}</span>
-                        </label>
-
-                        <input id="wizard-due-day" type="number" min="1" max="31" class="pm-input">
-
-                        <p class="pm-wizard-help">
-                            <span data-i18n="wizard.due_day_help">{{ __('ui.wizard.due_day_help') }}</span>
-                        </p>
-                    </div>
-
-                    <div>
-                        <label for="wizard-proration" class="pm-field-label">
-                            <span data-i18n="wizard.proration">{{ __('ui.wizard.proration') }}</span>
-                        </label>
-
-                        <div class="pm-input-affix">
-                            <input
-                                id="wizard-proration"
-                                type="text"
-                                inputmode="numeric"
-                                data-money-input
-                                class="pm-input pr-14"
-                            >
-                        
-                            <span id="wizard-proration-unit" class="pm-input-unit"></span>
-                        </div>
-
-                        <p class="pm-wizard-help">
-                            <span data-i18n="wizard.proration_help">{{ __('ui.wizard.proration_help') }}</span>
-                        </p>
-                    </div>
-
-                    <div>
-                        <label for="wizard-deposit" class="pm-field-label">
-                            <span data-i18n="wizard.security_deposit">{{ __('ui.wizard.security_deposit') }}</span>
-                        </label>
-
-                        <div class="pm-input-affix">
-                            <input
-                                id="wizard-deposit"
-                                type="text"
-                                inputmode="numeric"
-                                data-money-input
-                                class="pm-input pr-14" value="0"
-                            >
-                        
-                            <span id="wizard-deposit-unit" class="pm-input-unit"></span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="wizard-reserve" class="pm-field-label">
-                            <span data-i18n="wizard.rent_reserve">{{ __('ui.wizard.rent_reserve') }}</span>
-                        </label>
-
-                        <div class="pm-input-affix">
-                            <input
-                                id="wizard-reserve"
-                                type="text"
-                                inputmode="numeric"
-                                data-money-input
-                                class="pm-input pr-14" value="0"
-                            >
-                        
-                            <span id="wizard-reserve-unit" class="pm-input-unit"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pm-wizard-divider"></div>
-
-                <div>
-                    <label for="wizard-advance-amount" class="pm-field-label">
-                        <span data-i18n="wizard.advance_amount">{{ __('ui.wizard.advance_amount') }}</span>
-                    </label>
-
-                    <div class="pm-input-affix">
-                        <input
-                            id="wizard-advance-amount"
+                            id="wizard-increment-date"
                             type="text"
+                            data-pm-date-input
                             inputmode="numeric"
-                            data-money-input
-                            class="pm-input pr-14" value="0"
-                        >
-                    
-                        <span id="wizard-advance-amount-unit" class="pm-input-unit"></span>
-                    </div>
-                </div>
-
-                <label class="pm-wizard-checkbox">
-                    <input id="wizard-advance-received" type="checkbox" checked>
-                    <span data-i18n="wizard.advance_received">{{ __('ui.wizard.advance_received') }}</span>
-                </label>
-
-                {{--
-                    V1.0.36: three stacked fields under the tick made
-                    this step taller than any other, which pushed Back
-                    and Next down the page and moved them every time the
-                    box was ticked. Side by side the step is the height
-                    of its neighbours and the buttons stay put.
-                --}}
-                <div id="wizard-advance-details" class="pm-wizard-subfields pm-wizard-subfields-row">
-                    <div>
-                        <label for="wizard-advance-date" class="pm-field-label">
-                            <span data-i18n="wizard.advance_date">{{ __('ui.wizard.advance_date') }}</span>
-                        </label>
-
-                        <input
-                        id="wizard-advance-date"
-                        type="text"
-                        data-pm-date-input
-                        inputmode="numeric"
-                        maxlength="10"
-                        placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
-                        class="pm-input"
-                    >
-                    </div>
-
-                    <div>
-                        <label for="wizard-advance-method" class="pm-field-label">
-                            <span data-i18n="wizard.advance_method">{{ __('ui.wizard.advance_method') }}</span>
-                        </label>
-
-                        <select id="wizard-advance-method" class="pm-input">
-                            <option value="cash" data-i18n="wizard.method_cash">{{ __('ui.wizard.method_cash') }}</option>
-                            <option value="bank_transfer" data-i18n="wizard.method_bank_transfer">{{ __('ui.wizard.method_bank_transfer') }}</option>
-                            <option value="cheque" data-i18n="wizard.method_cheque">{{ __('ui.wizard.method_cheque') }}</option>
-                            <option value="mobile_money" data-i18n="wizard.method_mobile_money">{{ __('ui.wizard.method_mobile_money') }}</option>
-                        </select>
-                    </div>
-
-                    <div id="wizard-advance-collector-field">
-                        <label for="wizard-advance-collector" class="pm-field-label">
-                            <span data-i18n="wizard.cashier">{{ __('ui.wizard.cashier') }}</span>
-                        </label>
-
-                        <input
-                            id="wizard-advance-collector"
-                            type="text"
-                            readonly
-                            data-i18n-placeholder="wizard.cashier_placeholder"
-                            placeholder="{{ __('ui.wizard.cashier_placeholder') }}"
+                            maxlength="10"
+                            placeholder="{{ app()->getLocale() === 'fr' ? 'jj-mm-aaaa' : 'dd/mm/yyyy' }}"
                             class="pm-input"
                         >
-                    </div>
 
-                    <div>
-                        <label for="wizard-advance-reference" class="pm-field-label">
-                            <span data-i18n="wizard.advance_reference">{{ __('ui.wizard.advance_reference') }}</span>
-                        </label>
-
-                        <input id="wizard-advance-reference" type="text" maxlength="255" class="pm-input">
+                        <p class="pm-wizard-help">
+                            <span data-i18n="wizard.increment_date_help">{{ __('ui.wizard.increment_date_help') }}</span>
+                        </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        {{-- 9. Fees and commission --}}
-        <section data-wizard-step="9" class="hidden">
+        {{-- ------------------------------------------------------------
+             6. Fees & Commission
+        ------------------------------------------------------------ --}}
+        <section data-wizard-step="7" class="hidden">
             <h2 class="pm-wizard-step-heading">
-                <span data-i18n="wizard.step9_title">{{ __('ui.wizard.step9_title') }}</span>
+                <span data-i18n="wizard.step7_title">{{ __('ui.wizard.step7_title') }}</span>
             </h2>
 
             <div class="pm-wizard-fields">
@@ -734,48 +916,66 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label for="wizard-vat-rate" class="pm-field-label">
-                            <span data-i18n="wizard.fee_vat">{{ __('ui.wizard.fee_vat') }}</span>
+                    {{--
+                        The agent's one-off commission. It belongs with the
+                        fees, as it does in the drawer, rather than beside
+                        the agent's name: it is money, not identity.
+                    --}}
+                    <div id="wizard-agent-commission-field" class="hidden">
+                        <label for="wizard-agent-commission" class="pm-field-label">
+                            <span data-i18n="wizard.agent_commission">{{ __('ui.wizard.agent_commission') }}</span>
                         </label>
 
                         <div class="pm-input-affix">
                             <input
-                                id="wizard-vat-rate"
+                                id="wizard-agent-commission"
                                 type="text"
-                                inputmode="decimal"
-                                class="pm-input pr-14"
-                                value="0"
+                                inputmode="numeric"
+                                data-money-input
+                                class="pm-input pr-14" value="0"
                             >
 
-                            <span class="pm-input-unit">%</span>
+                            <span id="wizard-agent-commission-unit" class="pm-input-unit"></span>
                         </div>
 
                         <p class="pm-wizard-help">
-                            <span data-i18n="wizard.fee_vat_help">{{ __('ui.wizard.fee_vat_help') }}</span>
+                            <span data-i18n="wizard.agent_commission_help">{{ __('ui.wizard.agent_commission_help') }}</span>
                         </p>
                     </div>
                 </div>
 
                 <div class="pm-wizard-divider"></div>
 
-                <p class="text-sm text-[var(--pm-text-secondary)]">
-                    <span data-i18n="wizard.commission_echo">{{ __('ui.wizard.commission_echo') }}</span>
-                    <strong id="wizard-commission-echo"></strong>
-                </p>
+                <div>
+                    <label for="wizard-notes" class="pm-field-label">
+                        <span data-i18n="wizard.notes">{{ __('ui.wizard.notes') }}</span>
+                    </label>
+
+                    <textarea
+                        id="wizard-notes"
+                        rows="3"
+                        class="pm-input"
+                    ></textarea>
+
+                    <p class="pm-wizard-help">
+                        <span data-i18n="wizard.notes_help">{{ __('ui.wizard.notes_help') }}</span>
+                    </p>
+                </div>
             </div>
         </section>
 
-        {{-- 10. Review --}}
-        <section data-wizard-step="10" class="hidden">
+        {{-- ------------------------------------------------------------
+             7. Review
+        ------------------------------------------------------------ --}}
+        <section data-wizard-step="8" class="hidden">
             <h2 class="pm-wizard-step-heading">
-                <span data-i18n="wizard.step10_title">{{ __('ui.wizard.step10_title') }}</span>
+                <span data-i18n="wizard.step8_title">{{ __('ui.wizard.step8_title') }}</span>
             </h2>
 
             <dl id="wizard-summary" class="pm-wizard-summary"></dl>
 
             <p class="pm-wizard-note">
-                <span data-i18n="wizard.step10_note">{{ __('ui.wizard.step10_note') }}</span>
+                <span data-i18n="wizard.step8_note">{{ __('ui.wizard.step8_note') }}</span>
             </p>
         </section>
 
@@ -786,10 +986,10 @@
     ============================================================ --}}
 
     {{--
-        Back and Next travel together, and the button that actually writes
-        something sits last. On the review page that slot stops offering a
-        draft and offers the letting itself; anybody who wants a draft
-        instead steps back one page and takes it there.
+        Back and Next, and nothing else. Next is the primary action all
+        the way through and becomes Create and activate on the last page,
+        so the button the eye goes to is always the one that carries on.
+        Save as draft and Cancel are up at the top, where leaving lives.
     --}}
     <div class="mt-6 flex flex-wrap items-center justify-end gap-3">
         <button
@@ -803,17 +1003,9 @@
         <button
             id="wizard-next"
             type="button"
-            class="pm-button-secondary"
-        >
-            <span data-i18n="wizard.next">{{ __('ui.wizard.next') }}</span>
-        </button>
-
-        <button
-            id="wizard-draft"
-            type="button"
             class="pm-button-primary"
         >
-            <span data-i18n="wizard.save_draft">{{ __('ui.wizard.save_draft') }}</span>
+            <span data-i18n="wizard.next">{{ __('ui.wizard.next') }}</span>
         </button>
 
         <button

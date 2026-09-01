@@ -1383,6 +1383,11 @@ return [
         'what' => 'Archiving exists for records Patrimoine will not delete, because the accounting still refers to them. This one has no such history behind it, so it can simply be removed.',
         'fix' => 'Use Delete instead. If you would rather keep it, leave it where it is — archiving is not a way of tidying records that could be deleted outright.',
     ],
+    'PM-3097' => [
+        'title' => 'A lease has to be terminated before it can be archived.',
+        'what' => 'Archiving takes a record out of every list and every dropdown, and to anybody who did not archive it the lease has simply gone. Doing that to a letting that is still running hides a tenancy that is still being invoiced, still collecting rent and still holding the tenant’s deposit. Termination is what closes a letting properly: it settles the final rent, releases the deposit and stops the billing.',
+        'fix' => 'Open the lease and use Terminate, then complete the termination settlement. Once the lease is terminated, Archive is available on the same row. A lease in notice is not yet terminated — notice is the period before the end, and it is still billing.',
+    ],
 
     /* ---- 4xxx ---- */
 

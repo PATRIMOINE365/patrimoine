@@ -2539,7 +2539,7 @@ function leaseCard(lease) {
                         kind: 'lease',
                         id: lease.id,
                         name: `${building} / ${unit}`,
-                        className: 'pm-button-secondary pm-button-sm max-sm:flex-1',
+                        className: 'pm-button-danger-outline pm-button-sm max-sm:flex-1',
                         deleteMarkup: `                    <button
                         type="button"
                         data-delete-lease
@@ -3517,6 +3517,23 @@ function resetLeaseForm() {
         ''
     );
 
+    setFormValue(
+        'lease-security-deposit-date',
+        ''
+    );
+
+    setFormValue(
+        'lease-security-deposit-method',
+        'bank_transfer'
+    );
+
+    setFormValue(
+        'lease-security-deposit-reference',
+        ''
+    );
+
+    updateSecurityDepositReceiptControls();
+
     updateAdvanceReceivedControls();
 
 
@@ -3644,6 +3661,14 @@ function populateLeaseForm(
         lease.security_deposit_amount
     );
 
+    /*
+     * V1.0.43: the deposit is received once, at Lease opening, and the
+     * server refuses to take it twice. Editing a Lease therefore shows the
+     * amount but leaves the receipt details empty rather than pretending
+     * to be able to restate them.
+     */
+    updateSecurityDepositReceiptControls();
+
     setFormValue(
     'lease-advance-payment',
     lease.advance_payment_amount
@@ -3757,6 +3782,38 @@ function setFormValue(
 */
 
 /**
+ * Show the Security Deposit receipt details only when there is a deposit.
+ *
+ * V1.0.43. The amount is what receives the money — every Lease has owned a
+ * Security Deposit account since V1.0.8 and nothing ever funded it — so
+ * these fields only say when it changed hands and how. With no deposit
+ * there is nothing to have received, and the block stays out of the way.
+ */
+function updateSecurityDepositReceiptControls() {
+    const block =
+        document.getElementById(
+            'lease-security-deposit-receipt'
+        );
+
+    if (! block) {
+        return;
+    }
+
+    const amount =
+        Number(
+            formValue(
+                'lease-security-deposit'
+            )
+        )
+        || 0;
+
+    block.classList.toggle(
+        'hidden',
+        amount <= 0
+    );
+}
+
+/**
  * Configure calculated and conditional Lease fields.
  */
 function initializeLeaseFinancialControls() {
@@ -3816,6 +3873,22 @@ function initializeLeaseFinancialControls() {
             'change',
             updateAdvanceReceivedControls
         );
+
+    /*
+     * V1.0.43: entering a Security Deposit receives it, so the receipt
+     * details appear the moment there is a deposit to have received and
+     * go away again when the amount returns to nothing.
+     */
+    document
+        .getElementById(
+            'lease-security-deposit'
+        )
+        ?.addEventListener(
+            'input',
+            updateSecurityDepositReceiptControls
+        );
+
+    updateSecurityDepositReceiptControls();
 
     updateAdvanceReceivedControls();
 
@@ -6788,6 +6861,29 @@ function buildLeasePayload() {
         advance_received_collector:
             nullableFormValue(
                 'lease-advance-received-collector'
+            ),
+
+        /*
+         * V1.0.43: how the Security Deposit was received.
+         *
+         * The amount above is what receives it — these three only say when
+         * and how — so they are sent whatever the amount is and the server
+         * ignores them when there is no deposit. Absent, it uses the Lease
+         * start date and a bank transfer.
+         */
+        security_deposit_received_date:
+            nullableDateForApi(
+                'lease-security-deposit-date'
+            ),
+
+        security_deposit_received_method:
+            nullableFormValue(
+                'lease-security-deposit-method'
+            ),
+
+        security_deposit_received_reference:
+            nullableFormValue(
+                'lease-security-deposit-reference'
             ),
 
 

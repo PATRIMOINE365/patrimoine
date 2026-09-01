@@ -6,6 +6,7 @@ import {
     formatDate,
     formatLongDate,
     formatNumber,
+    messageWithErrorCode,
     openDrawer,
     openPdfInNewTab,
     parseJsonResponse,
@@ -14,7 +15,10 @@ import {
 } from './core.js';
 
 import {
+    PANEL_PAGE_SIZES,
+    clientPage,
     pageSizeFor,
+    panelPageSizeFor,
     renderPagination,
 } from './pagination.js';
 
@@ -61,6 +65,112 @@ let selectedTenant = null;
 let selectedTenantLeases = [];
 let selectedTenantLeaseDetails = new Map();
 let selectedTenantStatement = null;
+
+/*
+|--------------------------------------------------------------------------
+| Paging the panels inside a tenant
+|--------------------------------------------------------------------------
+|
+| V1.0.43. Everything below a tenant's name — the lettings, the invoices,
+| the payments, the transfers, the expenses and the fund history — used to
+| be drawn whole. A tenant of three years is hundreds of rows in six
+| stacked tables, and reading any one of them meant scrolling past the
+| others.
+|
+| Each panel now shows ten rows, and offers 5/10/25/50/100. The rows are
+| already in the browser — they arrive with the statement — so the paging
+| is done here rather than asked for again, and the whole record is
+| redrawn from the values it was drawn from the first time.
+|
+*/
+
+let selectedTenantOperationalHistory = {};
+
+const tenantPanelPages = {
+    leases: 1,
+    invoices: 1,
+    payments: 1,
+    transfers: 1,
+    expenses: 1,
+    funds: 1,
+};
+
+/**
+ * One page of a panel's rows, and the paginator payload for it.
+ *
+ * @param {string} key
+ * @param {Array} rows
+ * @returns {{rows: Array, meta: object}}
+ */
+function tenantPanelSlice(key, rows) {
+    return clientPage(
+        rows,
+        tenantPanelPages[key] ?? 1,
+        panelPageSizeFor(`tenant-${key}`)
+    );
+}
+
+/**
+ * The container a panel's pagination control is drawn into.
+ *
+ * Emitted by the panel itself, wired after the whole record is on screen,
+ * because the panels are composed into one innerHTML.
+ *
+ * @param {string} key
+ * @returns {string}
+ */
+function tenantPanelPaginationSlot(key) {
+    return `<div id="tenant-${key}-pagination"></div>`;
+}
+
+/**
+ * Wire every panel's pagination control.
+ *
+ * @param {object} pages
+ */
+function wireTenantPanelPagination(pages) {
+    Object.entries(pages).forEach(
+        ([key, meta]) => {
+            renderPagination(
+                `tenant-${key}-pagination`,
+                meta,
+                {
+                    sizes: PANEL_PAGE_SIZES,
+                    storageKey: `tenant-${key}`,
+                    onPage: (page) => {
+                        tenantPanelPages[key] = page;
+
+                        redrawTenantDetail();
+                    },
+                    onPageSize: () => {
+                        tenantPanelPages[key] = 1;
+
+                        redrawTenantDetail();
+                    },
+                }
+            );
+        }
+    );
+}
+
+/**
+ * Draw the tenant on screen again from what is already held.
+ *
+ * Turning a page inside one panel must not go back to the server: the
+ * rows have not changed, only which of them are being read.
+ */
+function redrawTenantDetail() {
+    if (! selectedTenant) {
+        return;
+    }
+
+    renderTenantDetail(
+        selectedTenant,
+        selectedTenantLeases,
+        selectedTenantStatement,
+        selectedTenantOperationalHistory
+    );
+}
 
 /*
  * V1.0.7 Transfer presentation cache.
@@ -582,6 +692,18 @@ async function selectTenant(
         selectedTenantStatement =
             statement;
 
+        selectedTenantOperationalHistory =
+            operationalHistory;
+
+        /*
+         * A different tenant starts at the top of every panel.
+         */
+        Object.keys(tenantPanelPages).forEach(
+            (key) => {
+                tenantPanelPages[key] = 1;
+            }
+        );
+
         renderTenantDetail(
             tenant,
             leases,
@@ -657,16 +779,41 @@ function renderTenantDetail(
         return;
     }
 
-    const activeLeases =
-        leases.filter(
-            (lease) =>
-                [
-                    'active',
-                    'notice',
-                ].includes(
-                    lease.status
-                )
-        );
+    /*
+     * V1.0.43: every panel is sliced before the record is composed, so
+     * the six tables below a tenant's name are ten rows each rather than
+     * however many years of history the tenant happens to have.
+     *
+     * The filtering that used to live inside each renderer has to happen
+     * BEFORE the slice — page two of "invoices" means the second ten
+     * invoices, not whatever survives filtering the second ten rows of a
+     * list that also holds expenses.
+     */
+    const allInvoices =
+        (Array.isArray(statement?.invoices) ? statement.invoices : [])
+            .filter((invoice) => invoice?.type !== 'expense');
+
+    const allExpenses =
+        (Array.isArray(statement?.invoices) ? statement.invoices : [])
+            .filter((invoice) => invoice?.type === 'expense');
+
+    const allFunds =
+        Array.isArray(operationalHistory?.fundTransactions)
+            ? operationalHistory.fundTransactions
+            : [];
+
+    const leasePage = tenantPanelSlice('leases', leases);
+    const invoicePage = tenantPanelSlice('invoices', allInvoices);
+    const paymentPage = tenantPanelSlice(
+        'payments',
+        Array.isArray(statement?.payments) ? statement.payments : []
+    );
+    const transferPage = tenantPanelSlice(
+        'transfers',
+        tenantTransferVouchers(allFunds)
+    );
+    const expensePage = tenantPanelSlice('expenses', allExpenses);
+    const fundPage = tenantPanelSlice('funds', allFunds);
 
     container.innerHTML = `
         <div
@@ -730,96 +877,15 @@ function renderTenantDetail(
             </div>
         </div>
 
-        <div
-            class="
-                grid gap-4
-                border-b border-[var(--pm-border-subtle)]
-                bg-[var(--pm-surface-subtle)]
-                px-6 py-5
-                sm:grid-cols-3
-            "
-        >
-            ${summaryMetric(
-                translate('tenants.total_leases'),
-                leases.length
-            )}
-
-            ${summaryMetric(
-                translate('tenants.current_leases'),
-                activeLeases.length
-            )}
-
-            ${summaryMetric(
-                translate('tenants.historical_leases'),
-                Math.max(
-                    0,
-                    leases.length
-                    - activeLeases.length
-                )
-            )}
-        </div>
-
-        <div
-            class="
-                border-b border-[var(--pm-border-subtle)]
-                px-6 py-6
-            "
-        >
-            <h3
-                class="
-                    text-base font-semibold
-                    text-[var(--pm-text)]
-                "
-            >
-                ${escapeHtml(
-                    translate(
-                        'tenants.tenant_details'
-                    )
-                )}
-            </h3>
-
-            <div
-                class="
-                    mt-4 grid gap-5
-                    sm:grid-cols-2
-                    xl:grid-cols-3
-                "
-            >
-                ${detailItem(
-                    translate('tenants.party_type'),
-                    tenantDynamicLabel(
-                        'party_type',
-                        tenant.type
-                    )
-                )}
-
-                ${detailItem(
-                    translate('tenants.phone'),
-                    tenant.phone
-                )}
-
-                ${detailItem(
-                    translate('tenants.alternate_phone'),
-                    tenant.alternate_phone
-                )}
-
-                ${detailItem(
-                    translate('tenants.email'),
-                    tenant.email
-                )}
-
-                ${detailItem(
-                    translate('tenants.address'),
-                    tenant.address
-                )}
-
-                ${detailItem(
-                    translate('tenants.id_registration'),
-                    tenant.id_number
-                    || tenant.registration_number
-                )}
-            </div>
-        </div>
+        <!--
+            V1.0.43: the three lease counters used to sit here, and the
+            Tenant details block beneath them. Both restated what the
+            table below already says — the lettings are listed, with their
+            status on every row, and the contact details are one click
+            away in the party record that owns them. Removed rather than
+            moved: a summary of a list that is on the same screen is not a
+            summary, it is a second place to be wrong.
+        -->
 
         <div class="px-6 py-6">
             <div>
@@ -852,21 +918,19 @@ function renderTenantDetail(
 
             <div class="mt-4">
                 ${renderTenantLeases(
-                    leases
+                    leasePage.rows
                 )}
             </div>
+
+            ${tenantPanelPaginationSlot('leases')}
         </div>
 
-        <div
-            class="
-                border-t border-[var(--pm-border-subtle)]
-                px-6 py-6
-            "
-        >
-            ${renderTenantFinancialPosition(
-                statement
-            )}
-        </div>
+        <!--
+            V1.0.43: Financial position used to sit here. Every figure in
+            it is the Accounts drawer's, which is one press away on this
+            same record and is the place a person acts on them. Two
+            renderings of one position is one rendering too many.
+        -->
 
         <div
             class="
@@ -875,8 +939,10 @@ function renderTenantDetail(
             "
         >
             ${renderTenantInvoices(
-                statement?.invoices
+                invoicePage.rows
             )}
+
+            ${tenantPanelPaginationSlot('invoices')}
         </div>
 
         <div
@@ -886,9 +952,11 @@ function renderTenantDetail(
             "
         >
             ${renderTenantPayments(
-                statement?.payments,
+                paymentPage.rows,
                 operationalHistory?.payments
             )}
+
+            ${tenantPanelPaginationSlot('payments')}
         </div>
 
         <div
@@ -898,8 +966,10 @@ function renderTenantDetail(
             "
         >
             ${renderTenantTransfers(
-                operationalHistory?.fundTransactions
+                transferPage.rows
             )}
+
+            ${tenantPanelPaginationSlot('transfers')}
         </div>
 
         <div
@@ -909,8 +979,10 @@ function renderTenantDetail(
             "
         >
             ${renderTenantExpenses(
-                statement?.invoices
+                expensePage.rows
             )}
+
+            ${tenantPanelPaginationSlot('expenses')}
         </div>
 
         <div
@@ -920,8 +992,10 @@ function renderTenantDetail(
             "
         >
             ${renderTenantFundHistory(
-                operationalHistory?.fundTransactions
+                fundPage.rows
             )}
+
+            ${tenantPanelPaginationSlot('funds')}
         </div>
     `;
 
@@ -930,121 +1004,15 @@ function renderTenantDetail(
     initializeTenantTransferVoucherActions();
     initializeTenantExpenseVoucherActions();
     initializeTenantTransactionActionButtons();
-}
 
-
-/**
- * Render the Tenant's current financial position.
- *
- * Values come directly from TenantStatementService. The browser performs
- * formatting only and does not recalculate accounting balances.
- *
- * @param {object} statement
- * @returns {string}
- */
-function renderTenantFinancialPosition(
-    statement
-) {
-    const summary =
-        statement?.summary
-        ?? {};
-
-    return `
-        <div>
-            <h3
-                class="
-                    text-base font-semibold
-                    text-[var(--pm-text)]
-                "
-            >
-                ${escapeHtml(
-                    translate(
-                        'tenants.financial_position'
-                    )
-                )}
-            </h3>
-
-            <p
-                class="
-                    mt-1 text-xs
-                    text-[var(--pm-text-muted)]
-                "
-            >
-                ${escapeHtml(
-                    translate(
-                        'tenants.financial_position_description'
-                    )
-                )}
-            </p>
-        </div>
-
-        <div
-            class="
-                mt-4 grid gap-3
-                sm:grid-cols-2
-                xl:grid-cols-3
-            "
-        >
-            ${financialMetric(
-                translate('tenants.rent_outstanding'),
-                summary.rent_outstanding
-            )}
-
-            ${financialMetric(
-                translate('tenants.security_deposit_debt'),
-                summary.security_deposit_debt_outstanding
-            )}
-
-            ${financialMetric(
-                translate('tenants.total_outstanding'),
-                summary.total_outstanding
-            )}
-        </div>
-
-        <div
-            class="
-                mt-6
-                border-t border-[var(--pm-border-subtle)]
-                pt-5
-            "
-        >
-            <h4
-                class="
-                    text-sm font-semibold
-                    text-[var(--pm-text)]
-                "
-            >
-                ${escapeHtml(
-                    translate(
-                        'tenants.held_funds'
-                    )
-                )}
-            </h4>
-
-            <div
-                class="
-                    mt-3 grid gap-3
-                    sm:grid-cols-2
-                    xl:grid-cols-3
-                "
-            >
-                ${financialMetric(
-                    translate('tenants.rent_reserve'),
-                    summary.rent_reserve_balance
-                )}
-
-                ${financialMetric(
-                    translate('tenants.consumable_advance'),
-                    summary.consumable_advance_balance
-                )}
-
-                ${financialMetric(
-                    translate('tenants.security_deposit'),
-                    summary.security_deposit_balance
-                )}
-            </div>
-        </div>
-    `;
+    wireTenantPanelPagination({
+        leases: leasePage.meta,
+        invoices: invoicePage.meta,
+        payments: paymentPage.meta,
+        transfers: transferPage.meta,
+        expenses: expensePage.meta,
+        funds: fundPage.meta,
+    });
 }
 
 
@@ -3179,7 +3147,7 @@ async function resendTenantReceipt(
  * @param {Array<object>} transactions
  * @returns {string}
  */
-function renderTenantTransfers(
+function tenantTransferVouchers(
     transactions
 ) {
     const ledger =
@@ -3189,27 +3157,41 @@ function renderTenantTransfers(
             ? transactions
             : [];
 
-    const transfers =
-        ledger
-            .filter(
-                (transaction) =>
-                    transaction?.category === 'transfer'
-                    && transaction?.direction === 'debit'
-            )
-            .map(
-                (debit) => ({
-                    debit,
-                    credit:
-                        ledger.find(
-                            (candidate) =>
-                                candidate?.category === 'transfer'
-                                && candidate?.direction === 'credit'
-                                && candidate?.reference === debit.reference
-                        )
-                        ?? null,
-                })
-            );
+    return ledger
+        .filter(
+            (transaction) =>
+                transaction?.category === 'transfer'
+                && transaction?.direction === 'debit'
+        )
+        .map(
+            (debit) => ({
+                debit,
+                credit:
+                    ledger.find(
+                        (candidate) =>
+                            candidate?.category === 'transfer'
+                            && candidate?.direction === 'credit'
+                            && candidate?.reference === debit.reference
+                    )
+                    ?? null,
+            })
+        );
+}
 
+/**
+ * Draw one page of already-paired transfer vouchers.
+ *
+ * V1.0.43: the pairing happens before the paging rather than inside this
+ * function. A transfer is two ledger rows sharing one reference, so
+ * slicing the ledger first would page a debit away from its credit and
+ * lose the destination fund it names.
+ *
+ * @param {Array<object>} transfers
+ * @returns {string}
+ */
+function renderTenantTransfers(
+    transfers
+) {
     const header = `
         <div>
             <h3
@@ -4161,14 +4143,7 @@ function renderTenantLeases(
 ) {
     if (leases.length === 0) {
         return `
-            <div
-                class="
-                    rounded-xl border
-                    border-dashed border-[var(--pm-border)]
-                    px-5 py-8 text-center
-                    text-sm text-[var(--pm-text-muted)]
-                "
-            >
+            <div class="pm-panel-empty">
                 ${escapeHtml(
                     translate(
                         'tenants.no_leases'
@@ -4178,165 +4153,89 @@ function renderTenantLeases(
         `;
     }
 
-    return leases
-        .map(
-            (lease) => {
-                const building =
-                    lease?.unit?.building?.name
-                    ?? translate('tenants.building');
-
-                const unit =
-                    lease?.unit?.name
-                    ?? translate('tenants.unit');
-
-                return `
-                    <article
-                        class="
-                            pm-card
-                            mb-3 p-4
-                            last:mb-0
-                        "
-                    >
-                        <div
-                            class="
-                                flex flex-col gap-3
-                                sm:flex-row
-                                sm:items-center
-                                sm:justify-between
-                            "
-                        >
-                            <div>
-                                <div
-                                    class="
-                                        text-sm font-semibold
-                                        text-[var(--pm-text)]
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        `${building} / ${unit}`
-                                    )}
-                                </div>
-
-                                <div
-                                    class="
-                                        mt-1 text-xs
-                                        text-[var(--pm-text-muted)]
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        formatLeasePeriod(
-                                            lease
-                                        )
-                                    )}
-                                </div>
-                            </div>
-
-                            <div
-                                class="
-                                    flex items-center gap-3
-                                "
-                            >
-                                <div
-                                    class="
-                                        text-sm font-semibold
-                                        text-[var(--pm-text)]
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        formatCurrency(
-                                            lease.rent_amount
-                                            ?? 0
-                                        )
-                                    )}
-                                </div>
-
-                                <span
-                                    class="
-                                        rounded-full bg-[var(--pm-surface-muted)]
-                                        px-2.5 py-1
-                                        text-xs font-medium
-                                        text-[var(--pm-text-secondary)]
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        tenantDynamicLabel(
-                                            'lease_status',
-                                            lease.status
-                                            ?? 'unknown'
-                                        )
-                                    )}
-                                </span>
-                            </div>
-                        </div>
-                    </article>
-                `;
-            }
-        )
-        .join('');
-}
-
-
-/**
- * Summary metric.
- */
-function summaryMetric(
-    label,
-    value
-) {
     return `
-        <div>
-            <div
-                class="
-                    text-xs font-medium
-                    uppercase tracking-wide
-                    text-[var(--pm-text-muted)]
-                "
-            >
-                ${escapeHtml(label)}
-            </div>
+        <div class="pm-panel-table-scroll">
+            <table class="pm-panel-table">
+                <thead>
+                    <tr>
+                        <th>${escapeHtml(translate('tenants.property'))}</th>
+                        <th>${escapeHtml(translate('tenants.unit'))}</th>
+                        <th>${escapeHtml(translate('tenants.period'))}</th>
+                        <th class="pm-panel-table-numeric">
+                            ${escapeHtml(translate('tenants.rent'))}
+                        </th>
+                        <th>${escapeHtml(translate('tenants.status'))}</th>
+                    </tr>
+                </thead>
 
-            <div
-                class="
-                    mt-2 text-xl font-semibold
-                    text-[var(--pm-text)]
-                "
-            >
-                ${escapeHtml(value)}
-            </div>
+                <tbody>
+                    ${leases.map(renderTenantLeaseRow).join('')}
+                </tbody>
+            </table>
         </div>
     `;
 }
 
-
 /**
- * Detail item.
+ * One letting, on one line.
+ *
+ * V1.0.43: this used to be a card per lease — the property and unit on
+ * one line, the period beneath it, the rent and the status off to the
+ * right — so a tenant with four lettings filled the panel. The same five
+ * facts now sit in five columns.
+ *
+ * @param {object} lease
+ * @returns {string}
  */
-function detailItem(
-    label,
-    value
+function renderTenantLeaseRow(
+    lease
 ) {
-    return `
-        <div>
-            <div
-                class="
-                    text-xs font-medium
-                    text-[var(--pm-text-muted)]
-                "
-            >
-                ${escapeHtml(label)}
-            </div>
+    const building =
+        lease?.unit?.building?.name
+        ?? translate('tenants.building');
 
-            <div
-                class="
-                    mt-1 text-sm
-                    text-[var(--pm-text)]
-                "
-            >
+    const unit =
+        lease?.unit?.name
+        ?? translate('tenants.unit');
+
+    const period =
+        formatLeasePeriod(
+            lease
+        );
+
+    return `
+        <tr>
+            <td class="pm-panel-table-primary pm-panel-table-truncate" title="${escapeHtml(building)}">
+                ${escapeHtml(building)}
+            </td>
+
+            <td class="pm-panel-table-nowrap">
+                ${escapeHtml(unit)}
+            </td>
+
+            <td class="pm-panel-table-nowrap">
+                ${escapeHtml(period)}
+            </td>
+
+            <td class="pm-panel-table-numeric">
                 ${escapeHtml(
-                    value || '—'
+                    formatCurrency(
+                        lease.rent_amount
+                        ?? 0
+                    )
                 )}
-            </div>
-        </div>
+            </td>
+
+            <td class="pm-panel-table-nowrap">
+                ${escapeHtml(
+                    tenantDynamicLabel(
+                        'lease_status',
+                        lease.status
+                        ?? 'unknown'
+                    )
+                )}
+            </td>
+        </tr>
     `;
 }
 
@@ -4901,54 +4800,65 @@ function initializeTenantTransactionControls() {
     tenantTransactionControlsInitialized =
         true;
 
+    /*
+     * -------------------------------------------------------------------
+     * Every drawer on this page closes the three ways a drawer closes
+     * -------------------------------------------------------------------
+     *
+     * V1.0.43. This loop used to build its ids from `tenant-${action}-`,
+     * which quietly excluded the two drawers whose ids do not start that
+     * way: Pay Invoice and Cancel payment. Their X did nothing and their
+     * backdrop did nothing, so the only way out of Pay Invoice was the
+     * Cancel button at the bottom — and a drawer that will not close when
+     * you press the cross reads as a stuck screen, not as a missing
+     * listener.
+     *
+     * It iterates over whole drawer ids now, so adding a drawer to this
+     * page means adding one line here rather than remembering which
+     * naming convention the loop happens to assume.
+     */
     [
-        'deposit',
-        'withdrawal',
-        'expense',
-        'adjustment',
-        'accounts',
-        'transfer',
+        'tenant-deposit-drawer',
+        'tenant-withdrawal-drawer',
+        'tenant-expense-drawer',
+        'tenant-adjustment-drawer',
+        'tenant-accounts-drawer',
+        'tenant-transfer-drawer',
+        'invoice-pay-drawer',
+        'invoice-cancel-payment-drawer',
     ].forEach(
-        (action) => {
+        (drawer) => {
+            const close = () => {
+                closeDrawer(drawer);
+            };
+
             document
                 .getElementById(
-                    `tenant-${action}-drawer-close`
+                    `${drawer}-close`
                 )
                 ?.addEventListener(
                     'click',
-                    () => {
-                        closeDrawer(
-                            `tenant-${action}-drawer`
-                        );
-                    }
+                    close
                 );
 
             document
                 .getElementById(
-                    `tenant-${action}-drawer-backdrop`
+                    `${drawer}-backdrop`
                 )
                 ?.addEventListener(
                     'click',
-                    () => {
-                        closeDrawer(
-                            `tenant-${action}-drawer`
-                        );
-                    }
+                    close
                 );
 
             document
                 .querySelectorAll(
-                    `[data-close-tenant-transaction="tenant-${action}-drawer"]`
+                    `[data-close-tenant-transaction="${drawer}"]`
                 )
                 .forEach(
                     (button) => {
                         button.addEventListener(
                             'click',
-                            () => {
-                                closeDrawer(
-                                    `tenant-${action}-drawer`
-                                );
-                            }
+                            close
                         );
                     }
                 );
@@ -8182,7 +8092,8 @@ async function openTenantDocument(
  */
 function showTenantTransactionError(
     id,
-    message
+    message,
+    code = null
 ) {
     const element =
         document.getElementById(
@@ -8193,8 +8104,19 @@ function showTenantTransactionError(
         return;
     }
 
+    /*
+     * V1.0.43: every refusal in these drawers used to be written straight
+     * into the box, so a customer reading "Payment exceeds the available
+     * account balance." had nothing to quote and nothing to look up —
+     * even though PM-3080 had existed for that exact sentence all along.
+     * messageWithErrorCode() matches the rendered sentence back to the
+     * catalogue, which is how codes are attached everywhere else.
+     */
     element.textContent =
-        message;
+        messageWithErrorCode(
+            message,
+            code
+        );
 
     element.classList.remove(
         'hidden'

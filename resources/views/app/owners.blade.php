@@ -608,13 +608,17 @@
                         </div>
                     </div>
 
+                    {{--
+                        V1.0.43: one line per unit rather than a grid of
+                        cards. An owner with forty units is forty lines,
+                        ten at a time, instead of eight cards of chips.
+                    --}}
                     <div
                         id="owner-properties-list"
-                        class="
-                            mt-4 grid gap-3
-                            lg:grid-cols-2
-                        "
+                        class="mt-4"
                     ></div>
+
+                    <div id="owner-properties-pagination"></div>
                 </div>
 
                 {{-- ====================================================
@@ -1385,14 +1389,31 @@
                         <span class="text-[var(--pm-danger-text)]">*</span>
                     </label>
 
-                    <input
-                        id="owner-payout-amount"
-                        type="text"
-                                        inputmode="numeric"
-                                        data-money-input
-                        required
-                        class="pm-input"
-                    >
+                    {{--
+                        V1.0.43: an owner asking for everything owed to
+                        them is the commonest payout there is, and typing
+                        the figure out of the panel above it is both work
+                        and a chance to mistype. The field gives up a
+                        little width so the shortcut can sit beside it.
+                    --}}
+                    <div class="flex items-center gap-2">
+                        <input
+                            id="owner-payout-amount"
+                            type="text"
+                            inputmode="numeric"
+                            data-money-input
+                            required
+                            class="pm-input min-w-0 flex-1"
+                        >
+
+                        <button
+                            id="owner-payout-withdraw-all"
+                            type="button"
+                            class="pm-button-secondary pm-button-sm shrink-0 whitespace-nowrap"
+                        >
+                            <span data-i18n="owners.withdraw_all">{{ __('ui.owners.withdraw_all') }}</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div>

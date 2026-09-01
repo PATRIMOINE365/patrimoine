@@ -32,6 +32,7 @@ class ApplicationSetting extends Model
         'currency',
         'party_emails_enabled',
         'data_tools_enabled',
+        'sort_parties_by_surname',
     ];
 
     /**
@@ -48,6 +49,7 @@ class ApplicationSetting extends Model
             'default_vat_rate' => 'decimal:2',
             'party_emails_enabled' => 'boolean',
             'data_tools_enabled' => 'boolean',
+            'sort_parties_by_surname' => 'boolean',
         ];
     }
 

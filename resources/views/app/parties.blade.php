@@ -298,40 +298,14 @@
             </div>
 
             {{--
-                Presentation-only surname sort: reorders the currently
-                loaded page in the browser; server ordering is unchanged.
+                V1.0.43: the surname sort used to be a tickbox here.
+
+                It reordered the page in the browser and was remembered
+                nowhere, so a colleague reading the same list saw it in a
+                different order and the choice was gone on the next load.
+                It is a preference of the organisation now, and it lives in
+                Settings > Preferences with the others.
             --}}
-            <label
-                for="party-sort-surname"
-                class="
-                    mt-3 flex cursor-pointer
-                    items-center gap-2
-                "
-            >
-                <input
-                    id="party-sort-surname"
-                    type="checkbox"
-                    class="
-                        h-4 w-4 rounded
-                        border-[var(--pm-border-strong)]
-                        text-[var(--pm-accent)]
-                        focus:ring-[var(--pm-accent)]
-                    "
-                >
-
-                <span
-                    class="
-                        text-sm font-medium
-                        text-[var(--pm-text-secondary)]
-                    "
-                >
-                    <span data-i18n="parties.sort_by_surname">{{ __('ui.parties.sort_by_surname') }}</span>
-                </span>
-
-                <span class="text-xs text-[var(--pm-text-muted)]">
-                    <span data-i18n="parties.sort_presentation_only">{{ __('ui.parties.sort_presentation_only') }}</span>
-                </span>
-            </label>
         </div>
 
         {{-- Records --}}
