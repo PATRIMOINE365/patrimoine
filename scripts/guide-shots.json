@@ -360,6 +360,10 @@
         "pause": 400
       },
       {
+        "evaluate": "window.scrollTo(0, 0)",
+        "pause": 350
+      },
+      {
         "capture": "wizard-property",
         "settle": 500
       },
@@ -381,6 +385,10 @@
           "value": "12000"
         },
         "pause": 500
+      },
+      {
+        "evaluate": "window.scrollTo(0, 0)",
+        "pause": 350
       },
       {
         "capture": "wizard-rent",
