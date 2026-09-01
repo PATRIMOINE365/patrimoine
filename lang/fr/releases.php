@@ -15,6 +15,19 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.48',
+            'date' => '2026-09-02',
+            'title' => 'L\'adresse e-mail se change avec des preuves, et l\'argent des propriétaires se compte poche par poche',
+            'changes' => [
+                'Votre adresse e-mail de connexion se change désormais par trois courtes étapes qui lui sont propres : votre mot de passe, puis un code envoyé à votre adresse actuelle — en nommant la nouvelle, pour que vous voyiez exactement ce que vous approuvez — puis un code envoyé à la nouvelle adresse pour prouver que cette boîte est bien la vôtre. Votre adresse actuelle continue de fonctionner, et de recevoir vos codes et vos réinitialisations de mot de passe, jusqu\'à la fin de toutes les étapes ; la conclusion déconnecte tous les autres appareils et prévient votre ancienne adresse.',
+                'Personne d\'autre ne peut plus réécrire votre adresse de connexion. Elle se modifiait auparavant comme n\'importe quel champ du profil — par quiconque détenait votre session, et par tout administrateur depuis la page Utilisateurs — et l\'adresse de remplacement recevait aussitôt les codes de connexion et les réinitialisations du compte. Les deux chemins sont fermés : l\'adresse d\'un collègue est en lecture seule sur la page Utilisateurs, et si l\'ancienne boîte est réellement inaccessible, l\'assistance de la plateforme peut définir une nouvelle adresse après vérification, les deux adresses étant prévenues.',
+                'Un retrait valable d\'un propriétaire n\'échoue plus à cause d\'une dette côté dépôt. Le compte Versements et le compte Dépôts/Charges sont désormais comptés séparément de bout en bout : une charge tirée du côté dépôt devient une dette de ce côté, comme les règles l\'ont toujours dit, et cesse d\'entamer un loyer que le propriétaire avait parfaitement le droit de retirer.',
+                'Un versement se souvient désormais d\'où venait son argent — y compris l\'argent libéré de la réserve, si bien qu\'un versement financé par un dépôt restitué peut le dire plutôt que de le présenter comme du loyer.',
+                'Les relevés et les reçus de versement traitent un transfert de réserve pour ce qu\'il est : votre argent qui change de poche. Il apparaît sur sa propre ligne, et ne gonfle plus les sommes reçues, les dépenses ni le solde de clôture. Chaque nouveau reçu est vérifié contre le grand livre avant d\'être figé, et porte une marque disant quelles règles l\'ont composé.',
+                'Un montant partagé entre propriétaires ne peut plus produire de part négative. Partager 2 entre des propriétaires à 30/30/30/10 pour cent donne désormais 1, 1, 0 et 0 — jamais 1, 1, 1 et −1 — et le même partage donne toujours le même résultat.',
+            ],
+        ],
+        [
             'version' => '1.0.47',
             'date' => '2026-09-02',
             'title' => 'Un versement terminé cesse de changer',

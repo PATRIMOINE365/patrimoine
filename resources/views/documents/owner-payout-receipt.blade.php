@@ -464,11 +464,30 @@
         </table>
     </div>
 
-    @foreach([
-        ['rows' => $breakdown['received'],   'total' => $breakdown['received_total'],   'title' => 'received_table',   'empty' => 'nothing_received'],
-        ['rows' => $breakdown['deductions'], 'total' => $breakdown['deductions_total'], 'title' => 'deductions_table', 'empty' => 'nothing_deducted'],
-        ['rows' => $breakdown['expenses'],   'total' => $breakdown['expenses_total'],   'title' => 'expenses_table',   'empty' => 'nothing_spent'],
-    ] as $table)
+    @php
+        /*
+         * V1.0.48: internal reserve transfers get their own table, with
+         * zero effect on the summary above. Statements frozen before
+         * that carry no transfers key, and nothing is shown for them;
+         * an empty table is likewise not worth a section.
+         */
+        $breakdownTables = [
+            ['rows' => $breakdown['received'],   'total' => $breakdown['received_total'],   'title' => 'received_table',   'empty' => 'nothing_received'],
+            ['rows' => $breakdown['deductions'], 'total' => $breakdown['deductions_total'], 'title' => 'deductions_table', 'empty' => 'nothing_deducted'],
+            ['rows' => $breakdown['expenses'],   'total' => $breakdown['expenses_total'],   'title' => 'expenses_table',   'empty' => 'nothing_spent'],
+        ];
+
+        if (! empty($breakdown['transfers'] ?? [])) {
+            $breakdownTables[] = [
+                'rows' => $breakdown['transfers'],
+                'total' => $breakdown['transfers_total'] ?? 0,
+                'title' => 'transfers_table',
+                'empty' => 'nothing_transferred',
+            ];
+        }
+    @endphp
+
+    @foreach($breakdownTables as $table)
         <div class="section working-section">
             <div class="section-title">
                 {{ __('documents.owner_payout_receipt.'.$table['title']) }}

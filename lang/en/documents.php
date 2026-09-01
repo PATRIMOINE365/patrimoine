@@ -173,6 +173,8 @@ return [
         'received_table' => 'Rent and money received',
         'deductions_table' => 'Management fees and deductions',
         'expenses_table' => 'Expenses recorded',
+        'transfers_table' => 'Movements between your accounts (no effect on the totals)',
+        'nothing_transferred' => 'No internal movements in this period.',
         'column_number' => '#',
         'column_detail' => 'Detail',
         'column_amount' => 'Amount',

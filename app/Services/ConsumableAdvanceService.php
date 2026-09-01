@@ -212,20 +212,23 @@ class ConsumableAdvanceService
             );
         }
 
-        $remainingAmount = $amount;
+        /*
+         * V1.0.48 (audit finding 4): largest-remainder shares — exact
+         * total, no share below zero, deterministic. One utility for
+         * every shared amount.
+         */
+        $shares = \App\Support\ProportionalShares::allocate(
+            $amount,
+            $ownerships
+                ->mapWithKeys(fn ($ownership) => [
+                    $ownership->id =>
+                        $ownership->ownership_percentage,
+                ])
+                ->all()
+        );
 
-        foreach ($ownerships as $index => $ownership) {
-            if ($index === $ownerships->count() - 1) {
-                $ownerShare = $remainingAmount;
-            } else {
-                $ownerShare = (int) round(
-                    $amount
-                    * (float) $ownership->ownership_percentage
-                    / 100
-                );
-
-                $remainingAmount -= $ownerShare;
-            }
+        foreach ($ownerships as $ownership) {
+            $ownerShare = $shares[$ownership->id];
 
             $ownerAccount = OwnerAccount::firstOrCreate([
                 'party_id' => $ownership->party_id,

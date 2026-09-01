@@ -30,8 +30,8 @@ return [
     'entries' => [
         [
             'through' => '1.0.50',
-            'date' => '2026-09-01',
-            'summary' => 'There is one way to create a letting now: Add lease opens the guided assistant, and the older form beside it is retired. The assistant finds a property, a unit, a tenant, an agent or an owner by typing rather than by scrolling a list that only ever held the first hundred, a person added along the way can be told straight away whether Patrimoine may write to them, and the VAT on your fee starts at the rate your organisation has set. An owner payout receipt is also a historical record now: it says what the account held when that money was released, and a payment recorded afterwards with an earlier date belongs to the next payout rather than rewriting one already made.',
+            'date' => '2026-09-02',
+            'summary' => 'There is one way to create a letting now: Add lease opens the guided assistant, and the older form beside it is retired; the assistant finds a property, a unit, a tenant, an agent or an owner by typing rather than by scrolling a list that only ever held the first hundred, a person added along the way can be told straight away whether Patrimoine may write to them, and the VAT on your fee starts at the rate your organisation has set. An owner payout receipt is also a historical record now: it says what the account held when that money was released, a payment recorded afterwards with an earlier date belongs to the next payout rather than rewriting one already made, and an owner\'s two accounts are counted separately all the way down — deposit-side debt no longer blocks a valid withdrawal, a reserve transfer sits on its own line without inflating a statement, a payout can say its money came from a returned deposit, and a shared amount can never round anybody below zero. Your sign-in email is changed through three verified steps of its own — your password, a code to your current address, a code to the new one — and nobody else can rewrite it for you.',
         ],
         [
             'through' => '1.0.45',

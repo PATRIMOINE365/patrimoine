@@ -19,6 +19,19 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.48',
+            'date' => '2026-09-02',
+            'title' => 'Your email is changed with proof, and owner money is counted pool by pool',
+            'changes' => [
+                'Your sign-in email address is now changed through three short steps of its own: your password, then a code sent to your current address — naming the new one, so you see exactly what you are approving — then a code sent to the new address to prove that mailbox is yours. Your current address keeps working, and keeps receiving your codes and password resets, until every step is done; finishing signs out every other device and tells your old address what happened.',
+                'Nobody else can rewrite your sign-in email any more. It could previously be edited like any other profile field — by anybody holding your session, and by any administrator on the Users page — and the replacement address immediately received the account\'s sign-in codes and password resets. Both routes are closed: a colleague\'s email is read-only on the Users page, and if the old mailbox is genuinely out of reach, platform support can set a new address after verifying the request, with both addresses notified.',
+                'A valid owner withdrawal no longer fails because of deposit-side debt. The Payout account and the Deposit/Expense account are now counted separately all the way down: an expense drawn on the deposit side becomes debt on that side, as the rules have always said, and stops eating into rent money the owner was fully entitled to withdraw.',
+                'A payout now remembers where its money came from — including money released back from the reserve, so a payout funded by a returned deposit can say so rather than presenting it as rent.',
+                'Statements and payout receipts treat a reserve transfer as what it is: your money changing pockets. It appears on its own line, and no longer inflates the money received, the money spent or the closing balance. Every new receipt is checked against the ledger before it is frozen, and carries a mark saying which rules composed it.',
+                'An amount shared between owners can no longer produce a negative share. Splitting 2 between owners of 30/30/30/10 percent now gives 1, 1, 0 and 0 — never 1, 1, 1 and −1 — and the same split always comes out the same way.',
+            ],
+        ],
+        [
             'version' => '1.0.47',
             'date' => '2026-09-02',
             'title' => 'A completed payout stops changing',

@@ -330,12 +330,20 @@ class OwnerPayoutBreakdownTest extends TestCase
         $breakdown = app(OwnerPayoutBreakdownService::class)
             ->forPayout($payout);
 
-        /* Ten movements, and the payout is not one of the ten. */
-        $this->assertCount(4, $breakdown['received']);
-        $this->assertCount(5, $breakdown['deductions']);
+        /*
+         * Ten movements, and the payout is not one of the ten.
+         *
+         * V1.0.48 (audit finding 3): the two reserve transfers moved to
+         * their own zero-effect table — a transfer is the owner's money
+         * changing pockets, so it belongs in neither money-in nor
+         * money-out.
+         */
+        $this->assertCount(3, $breakdown['received']);
+        $this->assertCount(4, $breakdown['deductions']);
         $this->assertCount(1, $breakdown['expenses']);
+        $this->assertCount(2, $breakdown['transfers']);
 
-        foreach (['received', 'deductions', 'expenses'] as $table) {
+        foreach (['received', 'deductions', 'expenses', 'transfers'] as $table) {
             $this->assertSame(
                 $breakdown[$table.'_total'],
                 collect($breakdown[$table])->sum('amount'),

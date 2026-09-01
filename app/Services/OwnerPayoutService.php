@@ -5,9 +5,9 @@ namespace App\Services;
 use App\Models\OwnerAccount;
 use App\Models\OwnerPayout;
 use App\Models\OwnerPayoutAllocation;
-use App\Services\Documents\OwnerPayoutBreakdownService;
 use App\Models\OwnerTransaction;
 use App\Services\Accounting\OwnerFinancialJournalService;
+use App\Services\Documents\OwnerPayoutBreakdownService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -15,31 +15,33 @@ use RuntimeException;
  * Handles payouts of owner funds held by Patrimoine.
  *
  * Patrimoine business rules:
- * - An owner may be paid only from a positive available balance.
+ * - An owner may be paid only from a positive Payout-account balance;
+ *   Deposit/Expense money must be reserve-transferred back first.
  * - A payout may span several Buildings, Units and rent periods.
- * - Eligible owner credits are consumed FIFO for traceability.
- * - Historical owner debits consume the oldest credits before payouts.
+ * - Eligible funds are consumed FIFO for traceability, and every
+ *   consumed portion remembers WHICH ledger credit it came from —
+ *   including deposit money released by a reserve transfer, so the
+ *   receipt can say where the money originated.
  * - The payout itself creates a debit in the owner ledger.
- * - A payout can never exceed the owner's available balance.
- * - All operations are performed inside a database transaction.
+ * - Validation, allocation, the ledger debit, the journal posting and
+ *   the frozen statement all happen in ONE database transaction.
  *
- * Important accounting distinction:
- *
- * OwnerAccount::balance() gives the correct NET amount held for an owner.
- *
- * OwnerPayoutAllocation provides attribution by identifying which historical
- * positive credits are ultimately represented by a payout.
- *
- * Expenses, management fees, agent commissions and debit adjustments do not
- * point directly to individual credits. For payout attribution purposes,
- * these debits are therefore treated as consuming the oldest owner credits
- * first.
+ * V1.0.48 (audit finding 2): attribution comes from
+ * OwnerPayoutAllocationEngine, which replays the ledger keeping the
+ * Payout and Deposit/Expense pools apart. The old shortcut subtracted
+ * every historical debit from every historical credit regardless of
+ * pool, so an owner whose deposit side was in debt could not withdraw
+ * perfectly available rent money. The fail-closed safeguard — refuse
+ * rather than record an unattributable payout — is deliberately kept:
+ * it is the only reason that fault was ever visible.
  */
 class OwnerPayoutService
 {
     public function __construct(
         private readonly OwnerFinancialJournalService $journal,
-        private readonly OwnerPayoutBreakdownService $breakdown
+        private readonly OwnerPayoutBreakdownService $breakdown,
+        private readonly OwnerPayoutAllocationEngine $allocations,
+        private readonly OwnerLedgerProjection $projection
     ) {
     }
 
@@ -86,29 +88,24 @@ class OwnerPayoutService
             }
 
             /*
-             * Owner balance is derived from the complete ledger:
-             *
-             *     credits - debits
-             *
-             * Credits may include:
-             * - collected rent entitlement;
-             * - owner deposits;
-             * - positive adjustments.
-             *
-             * Debits may include:
-             * - property expenses;
-             * - management fees;
-             * - agent commissions;
-             * - previous payouts;
-             * - negative adjustments.
-             *
-             * Negative balances naturally carry forward.
+             * Lock the ledger rows the replay will read, in the same
+             * FIFO order the previous implementation locked credits, so
+             * a concurrent expense or transfer cannot slip between the
+             * validation and the allocation.
              */
+            OwnerTransaction::query()
+                ->where('owner_account_id', $account->id)
+                ->orderBy('transaction_date')
+                ->orderBy('id')
+                ->lockForUpdate()
+                ->get(['id']);
+
             /*
-             * V1.0.8: withdrawals draw ONLY from the Payout account —
-             * the rent-derived side. Money in the Deposit/Expense
-             * account is earmarked and must be reserve-transferred back
-             * before it becomes withdrawable.
+             * Withdrawals draw ONLY from the Payout account — the
+             * rent-derived side. Money in the Deposit/Expense account is
+             * earmarked and must be reserve-transferred back before it
+             * becomes withdrawable; deposit-side DEBT likewise stays on
+             * its own side and never consumes payout funds.
              */
             $availableBalance = $account->payoutAccountBalance();
 
@@ -125,11 +122,19 @@ class OwnerPayoutService
             }
 
             /*
-             * Create the payout header first.
-             *
-             * If any later validation/allocation fails, the surrounding
-             * database transaction rolls this record back automatically.
+             * Attribution: which remaining portions of which credits
+             * this payout consumes, FIFO, origins preserved. The engine
+             * cross-checks itself against the balance above and refuses
+             * — rolling everything back — when the ledger holds
+             * something the arithmetic does not understand. Recording
+             * an unattributable payout would be worse than refusing a
+             * valid one.
              */
+            $planned = $this->allocations->planAllocations(
+                (int) $account->id,
+                $amount
+            );
+
             $payout = OwnerPayout::create([
                 'owner_account_id' => $account->id,
                 'amount' => $amount,
@@ -139,126 +144,12 @@ class OwnerPayoutService
                 'notes' => $notes,
             ]);
 
-            /*
-             * Determine how much of the owner's historical credits has
-             * already been economically consumed by non-payout debits.
-             *
-             * These include:
-             * - expenses;
-             * - management fees;
-             * - agent commissions;
-             * - debit adjustments.
-             *
-             * Payout debits are deliberately excluded because previous
-             * payout consumption is already represented explicitly by
-             * OwnerPayoutAllocation records.
-             *
-             * Example:
-             *
-             * Rent credit     + 10,000
-             * Expense         -  3,000
-             *
-             * Only GHS 7,000 of that historical credit remains economically
-             * available for payout attribution.
-             */
-            $debitsToAbsorb = (int) OwnerTransaction::query()
-                ->where('owner_account_id', $account->id)
-                ->where('direction', 'debit')
-                ->where('category', '!=', 'payout')
-                ->sum('amount');
-
-            /*
-             * Amount of the new payout still requiring attribution.
-             */
-            $remaining = $amount;
-
-            /*
-             * Owner credits are processed FIFO.
-             *
-             * transaction_date is the primary ordering key.
-             * id provides deterministic ordering where two credits share the
-             * same effective transaction date.
-             */
-            $credits = OwnerTransaction::query()
-                ->where('owner_account_id', $account->id)
-                ->where('direction', 'credit')
-                ->orderBy('transaction_date')
-                ->orderBy('id')
-                ->lockForUpdate()
-                ->get();
-
-            foreach ($credits as $credit) {
-                if ($remaining <= 0) {
-                    break;
-                }
-
-                /*
-                 * First consume historical non-payout debits against the
-                 * oldest credits.
-                 *
-                 * This is an attribution calculation only. No new ledger
-                 * transaction is created here because those debits already
-                 * exist in OwnerTransaction.
-                 */
-                $absorbedByDebits = min(
-                    $debitsToAbsorb,
-                    $credit->amount
-                );
-
-                $debitsToAbsorb -= $absorbedByDebits;
-
-                /*
-                 * Previous payouts may already have consumed part of this
-                 * positive credit. Those amounts are represented directly by
-                 * OwnerPayoutAllocation records.
-                 */
-                $alreadyPaidOut = (int) $credit
-                    ->payoutAllocations()
-                    ->sum('amount');
-
-                /*
-                 * Calculate the portion of this credit that is still both:
-                 *
-                 * 1. not economically consumed by non-payout debits; and
-                 * 2. not already attributed to an earlier payout.
-                 */
-                $creditAvailable = $credit->amount
-                    - $absorbedByDebits
-                    - $alreadyPaidOut;
-
-                if ($creditAvailable <= 0) {
-                    continue;
-                }
-
-                /*
-                 * Consume only what is required from this credit before
-                 * moving to the next FIFO credit.
-                 */
-                $allocationAmount = min(
-                    $remaining,
-                    $creditAvailable
-                );
-
+            foreach ($planned as $portion) {
                 OwnerPayoutAllocation::create([
                     'owner_payout_id' => $payout->id,
-                    'owner_transaction_id' => $credit->id,
-                    'amount' => $allocationAmount,
+                    'owner_transaction_id' => $portion['origin'],
+                    'amount' => $portion['amount'],
                 ]);
-
-                $remaining -= $allocationAmount;
-            }
-
-            /*
-             * Since we already validated that the owner has sufficient NET
-             * balance, failure to attribute the full payout indicates an
-             * inconsistent ledger or allocation history.
-             *
-             * Rolling back is safer than recording an unattributable payout.
-             */
-            if ($remaining !== 0) {
-                throw new RuntimeException(
-                    __('business.owner.payout_allocation_failed')
-                );
             }
 
             /*
@@ -303,12 +194,93 @@ class OwnerPayoutService
              * Last, after the ledger debit and the journal posting, so
              * the statement includes the payment it describes.
              */
+            $statement = $this->breakdown->compose($payout);
+
+            /*
+             * V1.0.48 pre-freeze invariants: a statement is checked
+             * BEFORE it becomes permanent, because a frozen document is
+             * never silently rewritten afterwards. Finding 3 sat in
+             * issued receipts precisely because nothing looked at them
+             * on the way to the freezer.
+             */
+            $this->assertStatementReconciles(
+                $statement,
+                (int) $account->id,
+                $amount
+            );
+
             $payout->forceFill([
-                'statement' => $this->breakdown->compose($payout),
+                'statement' => $statement,
                 'statement_frozen_at' => now(),
             ])->save();
 
             return $payout;
         });
+    }
+
+    /**
+     * Refuse to freeze a statement that does not add up.
+     *
+     * Three independent checks:
+     *  - the itemised tables must total to the summary lines above them;
+     *  - the closing figure must match the shared projection at the
+     *    same ledger boundary — the receipt and the account may not
+     *    disagree about the same rows;
+     *  - the projection's own payout + deposit = total invariant runs
+     *    on the way (it throws from inside balancesThrough).
+     *
+     * @param  array<string, mixed>|null  $statement
+     */
+    private function assertStatementReconciles(
+        ?array $statement,
+        int $accountId,
+        int $amount
+    ): void {
+        if ($statement === null) {
+            throw new RuntimeException(
+                __('business.owner.payout_allocation_failed')
+            );
+        }
+
+        $tablesReconcile =
+            array_sum(array_column($statement['received'], 'amount'))
+                === $statement['received_total']
+            && array_sum(array_column($statement['deductions'], 'amount'))
+                === $statement['deductions_total']
+            && array_sum(array_column($statement['expenses'], 'amount'))
+                === $statement['expenses_total'];
+
+        $arithmeticCloses =
+            $statement['available']
+                === $statement['brought_forward']
+                    + $statement['received_total']
+                    - $statement['deductions_total']
+                    - $statement['expenses_total']
+            && $statement['carried_forward']
+                === $statement['available']
+                    - $amount
+                    - (int) $statement['other_payouts'];
+
+        /*
+         * The receipt's carried-forward figure and the account's own
+         * net position at the same boundary are the same question asked
+         * two ways; they must give one answer.
+         */
+        $agreesWithLedger =
+            $statement['carried_forward']
+                === $this->projection->balancesThrough(
+                    $accountId,
+                    (int) $statement['through_movement_id']
+                )['total'];
+
+        if (
+            ! $tablesReconcile
+            || ! $arithmeticCloses
+            || ! $agreesWithLedger
+        ) {
+            throw new RuntimeException(
+                __('business.owner.payout_allocation_failed')
+            );
+        }
     }
 }

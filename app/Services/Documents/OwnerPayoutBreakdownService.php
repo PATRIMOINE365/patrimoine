@@ -60,6 +60,15 @@ use Illuminate\Support\Collection;
 class OwnerPayoutBreakdownService
 {
     /**
+     * The arithmetic behind a frozen statement, named so a receipt can
+     * say which rules produced it. Version 2 (V1.0.48) took internal
+     * reserve transfers out of the money-in/money-out tables and the
+     * brought-forward figure — they move money between the owner's own
+     * two pools and belong on their own zero-effect lines.
+     */
+    public const CALCULATION_VERSION = 2;
+
+    /**
      * Debit categories that are fees, tax or other deductions rather than
      * money spent on the property.
      */
@@ -68,7 +77,6 @@ class OwnerPayoutBreakdownService
         'management_fee_vat',
         'agent_commission',
         'adjustment',
-        'reserve_transfer',
     ];
 
     /**
@@ -140,6 +148,15 @@ class OwnerPayoutBreakdownService
         $deductions = $this->deductions($movements);
         $expenses = $this->expenses($movements);
 
+        /*
+         * V1.0.48 (audit finding 3): internal reserve transfers appear
+         * on their own lines with ZERO effect on the arithmetic. A
+         * transfer moves the owner's money between their own two pools;
+         * counting its single ledger row into received or deductions
+         * made the consolidated figures wrong by exactly its amount.
+         */
+        $transfers = $this->transfers($movements);
+
         $broughtForward = $this->netPositionThrough(
             $account->id,
             $previousThrough
@@ -195,6 +212,19 @@ class OwnerPayoutBreakdownService
             'received' => $received['rows'],
             'deductions' => $deductions['rows'],
             'expenses' => $expenses['rows'],
+
+            /*
+             * Internal movements between the owner's own pools, shown
+             * for completeness and deliberately outside the arithmetic.
+             */
+            'transfers' => $transfers['rows'],
+            'transfers_total' => $transfers['total'],
+
+            /*
+             * Which rules composed this statement. Receipts frozen
+             * before this key existed were composed by version 1.
+             */
+            'calculation_version' => self::CALCULATION_VERSION,
         ];
     }
 
@@ -323,19 +353,14 @@ class OwnerPayoutBreakdownService
             return 0;
         }
 
-        $credits = OwnerTransaction::query()
-            ->where('owner_account_id', $accountId)
-            ->where('direction', 'credit')
-            ->where('id', '<=', $throughId)
-            ->sum('amount');
-
-        $debits = OwnerTransaction::query()
-            ->where('owner_account_id', $accountId)
-            ->where('direction', 'debit')
-            ->where('id', '<=', $throughId)
-            ->sum('amount');
-
-        return (int) $credits - (int) $debits;
+        /*
+         * V1.0.48 (audit finding 3): through the shared projection, so
+         * internal reserve transfers cannot inflate the figure — and so
+         * this service can no longer disagree with OwnerAccount about
+         * what the same rows are worth.
+         */
+        return app(\App\Services\OwnerLedgerProjection::class)
+            ->balancesThrough($accountId, $throughId)['total'];
     }
 
     /**
@@ -384,12 +409,13 @@ class OwnerPayoutBreakdownService
     private function received(Collection $movements): array
     {
         return $this->table(
-            $movements->where('direction', 'credit'),
+            $movements
+                ->where('direction', 'credit')
+                ->where('category', '!=', 'reserve_transfer'),
             fn (OwnerTransaction $movement): array => match ($movement->category) {
                 'rent_entitlement' => $this->period($movement, null),
                 'owner_deposit' => $this->dated($movement, 'deposit'),
                 'adjustment' => $this->dated($movement, 'adjustment_in'),
-                'reserve_transfer' => $this->dated($movement, 'reserve_in'),
                 default => $this->dated($movement, null),
             }
         );
@@ -413,9 +439,34 @@ class OwnerPayoutBreakdownService
                 'management_fee_vat' => $this->period($movement, 'vat'),
                 'agent_commission' => $this->period($movement, 'commission'),
                 'adjustment' => $this->dated($movement, 'adjustment_out'),
-                'reserve_transfer' => $this->dated($movement, 'reserve_out'),
                 default => $this->dated($movement, null),
             }
+        );
+    }
+
+    /**
+     * Internal movements between the owner's own two pools.
+     *
+     * Shown so the receipt accounts for every row in the period, and
+     * kept OUT of the money-in/money-out arithmetic: a transfer changes
+     * which pocket the money sits in, never how much of it there is.
+     *
+     * A credit row set money aside into the reserve; a debit row
+     * released it back to the payout side.
+     *
+     * @param  Collection<int, OwnerTransaction>  $movements
+     * @return array{rows: array<int, array<string, mixed>>, total: int}
+     */
+    private function transfers(Collection $movements): array
+    {
+        return $this->table(
+            $movements->where('category', 'reserve_transfer'),
+            fn (OwnerTransaction $movement): array => $this->dated(
+                $movement,
+                $movement->direction === 'credit'
+                    ? 'reserve_out'
+                    : 'reserve_in'
+            )
         );
     }
 
@@ -437,6 +488,7 @@ class OwnerPayoutBreakdownService
                 ->reject(
                     fn (OwnerTransaction $movement): bool =>
                         $movement->category === 'payout'
+                        || $movement->category === 'reserve_transfer'
                         || in_array(
                             $movement->category,
                             self::DEDUCTION_CATEGORIES,

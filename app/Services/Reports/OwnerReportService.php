@@ -58,15 +58,26 @@ class OwnerReportService
         $openingBalance = 0;
 
         if ($fromDate !== null) {
+            /*
+             * V1.0.48 (audit finding 3): internal reserve transfers are
+             * excluded here. A transfer moves money between the owner's
+             * own two pools — one ledger row, no matching opposite —
+             * so counting it into a consolidated opening balance
+             * invented money that did not exist. The statement still
+             * SHOWS transfers, on their own lines below, with zero
+             * effect on the arithmetic.
+             */
             $openingCredits = OwnerTransaction::query()
                 ->where('owner_account_id', $account->id)
                 ->where('direction', 'credit')
+                ->where('category', '<>', 'reserve_transfer')
                 ->whereDate('transaction_date', '<', $fromDate)
                 ->sum('amount');
 
             $openingDebits = OwnerTransaction::query()
                 ->where('owner_account_id', $account->id)
                 ->where('direction', 'debit')
+                ->where('category', '<>', 'reserve_transfer')
                 ->whereDate('transaction_date', '<', $fromDate)
                 ->sum('amount');
 
@@ -94,12 +105,20 @@ class OwnerReportService
             ->orderBy('id')
             ->get();
 
+        /*
+         * V1.0.48 (audit finding 3): consolidated income and expenditure
+         * exclude internal reserve transfers — a transfer is the owner's
+         * own money changing pockets, not money received or spent. The
+         * reserve_transfers_credit/debit lines below still show them.
+         */
         $credits = (int) $transactions
             ->where('direction', 'credit')
+            ->where('category', '!=', 'reserve_transfer')
             ->sum('amount');
 
         $debits = (int) $transactions
             ->where('direction', 'debit')
+            ->where('category', '!=', 'reserve_transfer')
             ->sum('amount');
 
         return [

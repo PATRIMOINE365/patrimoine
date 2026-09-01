@@ -79,74 +79,30 @@ class OwnerAccount extends Model
      * Current owner funds held by Patrimoine.
      *
      * Negative balances are permitted and intentionally carried forward.
+     *
+     * V1.0.48: all three balances come from OwnerLedgerProjection, which
+     * computes payout, deposit and total INDEPENDENTLY and verifies
+     * total = payout + deposit on every read. Before that, the payout
+     * figure was derived as total − deposit, which made the invariant a
+     * tautology — and let three services disagree about the same ledger.
      */
     public function balance(): int
     {
-        return $this->creditedAmount() - $this->debitedAmount();
+        return $this->projectedBalances()['total'];
     }
 
     /**
      * V1.0.8 Deposit/Expense account: the owner's earmarked money.
      *
-     * Owner deposits fund it, every expense draws from it, and manual
-     * reserve transfers move money between it and the Payout account.
-     * It may go negative — expenses beyond the deposits are debt the
-     * owner owes the agency, never silently taken from rent money.
+     * Owner deposits fund it, every deposit-funded expense draws from
+     * it, and manual reserve transfers move money between it and the
+     * Payout account. It may go negative — expenses beyond the deposits
+     * are debt the owner owes the agency, never silently taken from
+     * rent money.
      */
     public function depositAccountBalance(): int
     {
-        $deposits = (int) $this->transactions()
-            ->where('category', 'owner_deposit')
-            ->where('direction', 'credit')
-            ->sum('amount');
-
-        /*
-         * V1.0.8 expense bill payments choose their funding source.
-         *
-         * Only Deposit-account-funded expenses draw from this balance;
-         * a NULL funding source is the historical default and belongs
-         * here too. Payout-funded expense payments reduce the Payout
-         * account instead, which falls out of the balance()-minus-
-         * deposit arithmetic without further work.
-         *
-         * Cancelled expense payments are credit reversal rows in the
-         * same category and funding source, so they are netted out.
-         */
-        $expenseDebits = (int) $this->transactions()
-            ->where('category', 'expense')
-            ->where('direction', 'debit')
-            ->where(function ($query): void {
-                $query
-                    ->whereNull('funding_source')
-                    ->orWhere('funding_source', 'deposit_account');
-            })
-            ->sum('amount');
-
-        $expenseCredits = (int) $this->transactions()
-            ->where('category', 'expense')
-            ->where('direction', 'credit')
-            ->where(function ($query): void {
-                $query
-                    ->whereNull('funding_source')
-                    ->orWhere('funding_source', 'deposit_account');
-            })
-            ->sum('amount');
-
-        $transfersIn = (int) $this->transactions()
-            ->where('category', 'reserve_transfer')
-            ->where('direction', 'credit')
-            ->sum('amount');
-
-        $transfersOut = (int) $this->transactions()
-            ->where('category', 'reserve_transfer')
-            ->where('direction', 'debit')
-            ->sum('amount');
-
-        return $deposits
-            - $expenseDebits
-            + $expenseCredits
-            + $transfersIn
-            - $transfersOut;
+        return $this->projectedBalances()['deposit'];
     }
 
     /**
@@ -157,8 +113,16 @@ class OwnerAccount extends Model
      */
     public function payoutAccountBalance(): int
     {
-        return $this->balance()
-            - $this->depositAccountBalance();
+        return $this->projectedBalances()['payout'];
+    }
+
+    /**
+     * @return array{payout: int, deposit: int, total: int}
+     */
+    private function projectedBalances(): array
+    {
+        return app(\App\Services\OwnerLedgerProjection::class)
+            ->balancesFor((int) $this->id);
     }
 
     /**

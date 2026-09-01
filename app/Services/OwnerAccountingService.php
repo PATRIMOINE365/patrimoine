@@ -69,28 +69,30 @@ class OwnerAccountingService
                 );
             }
 
-            $remainingAmount = $expense->amount;
+            /*
+             * V1.0.48 (audit finding 4): largest-remainder shares.
+             *
+             * The old arithmetic rounded each share and left the LAST
+             * owner whatever remained — which for 2 split 30/30/30/10
+             * was [1, 1, 1, −1], an amount the ledger's unsigned column
+             * rightly refuses. Every shared amount in this service now
+             * goes through the one utility that cannot produce a
+             * negative share.
+             */
+            $shares = \App\Support\ProportionalShares::allocate(
+                (int) $expense->amount,
+                $ownerships
+                    ->mapWithKeys(fn ($ownership) => [
+                        $ownership->id =>
+                            $ownership->ownership_percentage,
+                    ])
+                    ->all()
+            );
+
             $transactions = [];
 
-            foreach ($ownerships as $index => $ownership) {
-                /*
-                 * The final owner receives the remaining integer amount.
-                 *
-                 * This guarantees that allocated shares always sum exactly
-                 * to the original expense, even when percentage arithmetic
-                 * produces fractional currency values.
-                 */
-                if ($index === $ownerships->count() - 1) {
-                    $ownerShare = $remainingAmount;
-                } else {
-                    $ownerShare = (int) round(
-                        $expense->amount
-                        * (float) $ownership->ownership_percentage
-                        / 100
-                    );
-
-                    $remainingAmount -= $ownerShare;
-                }
+            foreach ($ownerships as $ownership) {
+                $ownerShare = $shares[$ownership->id];
 
                 $account = OwnerAccount::firstOrCreate([
                     'party_id' => $ownership->party_id,
@@ -201,26 +203,24 @@ class OwnerAccountingService
             */
             $collectedAmount = $allocation->amount;
 
-            $remainingAmount = $collectedAmount;
+            /*
+             * V1.0.48: largest-remainder shares — exact total, no share
+             * below zero, deterministic. See allocateExpense above.
+             */
+            $shares = \App\Support\ProportionalShares::allocate(
+                (int) $collectedAmount,
+                $ownerships
+                    ->mapWithKeys(fn ($ownership) => [
+                        $ownership->id =>
+                            $ownership->ownership_percentage,
+                    ])
+                    ->all()
+            );
+
             $transactions = [];
 
-            foreach ($ownerships as $index => $ownership) {
-                /*
-                * The final owner receives any integer-rounding remainder.
-                * This guarantees the total owner entitlement exactly equals
-                * the tenant cash allocation.
-                */
-                if ($index === $ownerships->count() - 1) {
-                    $ownerShare = $remainingAmount;
-                } else {
-                    $ownerShare = (int) round(
-                        $collectedAmount
-                        * (float) $ownership->ownership_percentage
-                        / 100
-                    );
-
-                    $remainingAmount -= $ownerShare;
-                }
+            foreach ($ownerships as $ownership) {
+                $ownerShare = $shares[$ownership->id];
 
                 $account = OwnerAccount::firstOrCreate([
                     'party_id' => $ownership->party_id,
@@ -520,21 +520,24 @@ class OwnerAccountingService
             );
         }
 
-        $remainingAmount = $amount;
+        /*
+         * V1.0.48: largest-remainder shares — exact total, no share
+         * below zero, deterministic. See allocateExpense above.
+         */
+        $shares = \App\Support\ProportionalShares::allocate(
+            $amount,
+            $ownerships
+                ->mapWithKeys(fn ($ownership) => [
+                    $ownership->id =>
+                        $ownership->ownership_percentage,
+                ])
+                ->all()
+        );
+
         $transactions = [];
 
-        foreach ($ownerships as $index => $ownership) {
-            if ($index === $ownerships->count() - 1) {
-                $ownerShare = $remainingAmount;
-            } else {
-                $ownerShare = (int) round(
-                    $amount
-                    * (float) $ownership->ownership_percentage
-                    / 100
-                );
-
-                $remainingAmount -= $ownerShare;
-            }
+        foreach ($ownerships as $ownership) {
+            $ownerShare = $shares[$ownership->id];
 
             $account = OwnerAccount::firstOrCreate([
                 'party_id' => $ownership->party_id,

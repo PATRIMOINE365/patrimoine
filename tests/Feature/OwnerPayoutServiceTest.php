@@ -289,23 +289,25 @@ class OwnerPayoutServiceTest extends TestCase
         );
 
         /*
-        * The old GHS 5,000 credit is economically exhausted:
+        * V1.0.48 (audit finding 2): the expense above carries no funding
+        * source, which means the Deposit/Expense account. It becomes
+        * deposit-side DEBT — the business rule explicitly permits that —
+        * and does NOT consume the owner's rent money.
         *
-        * GHS 3,000 expense
-        * GHS 2,000 first payout
-        *
-        * Therefore the new payout must be attributed entirely to the new
-        * GHS 4,000 credit.
+        * So of the old GHS 5,000 credit, only the first payout's
+        * GHS 2,000 is spoken for: GHS 3,000 of it is still payable, and
+        * FIFO attribution draws that down before touching the new
+        * credit.
         */
         $this->assertSame(
-            0,
-            $secondPayout->allocations()
+            3000,
+            (int) $secondPayout->allocations()
                 ->where('owner_transaction_id', $oldCredit->id)
                 ->sum('amount')
         );
 
         $this->assertSame(
-            4000,
+            1000,
             (int) $secondPayout->allocations()
                 ->where('owner_transaction_id', $newCredit->id)
                 ->sum('amount')

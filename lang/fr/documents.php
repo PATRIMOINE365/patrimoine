@@ -173,6 +173,8 @@ return [
         'received_table' => 'Loyers et sommes reçues',
         'deductions_table' => 'Honoraires de gestion et retenues',
         'expenses_table' => 'Charges enregistrées',
+        'transfers_table' => 'Mouvements entre vos comptes (sans effet sur les totaux)',
+        'nothing_transferred' => 'Aucun mouvement interne sur cette période.',
         'column_number' => 'N°',
         'column_detail' => 'Détail',
         'column_amount' => 'Montant',
