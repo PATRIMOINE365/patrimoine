@@ -489,21 +489,12 @@ function populatePartyOptions(role) {
             : 'new'
     );
 
-    if (role === 'owner') {
-        document
-            .querySelectorAll('[data-owner-party-select]')
-            .forEach(
-                (ownerSelect) => {
-                    const previous = ownerSelect.value;
-
-                    ownerSelect.innerHTML = markup;
-
-                    if (previous) {
-                        ownerSelect.value = previous;
-                    }
-                }
-            );
-    }
+    /*
+     * V1.0.48: the branch that refreshed <select data-owner-party-select>
+     * options is gone with the selects themselves — it matched nothing
+     * since V1.0.46 and referenced a variable this function never had,
+     * which only never crashed because the loop body never ran.
+     */
 }
 
 /**
@@ -1428,9 +1419,18 @@ function readOwners() {
                     row.querySelector('[data-owner-mode]')?.value
                     === 'existing'
                 ) {
+                    /*
+                     * V1.0.48: the chosen owner lives in the picker's
+                     * hidden input, wizard-owner-N-id. The old selector
+                     * looked for the <select> the pickers replaced in
+                     * V1.0.46, found nothing, and submitted every
+                     * existing owner as null — so a letting with an
+                     * existing owner on a new property could never be
+                     * created through the assistant at all.
+                     */
                     return {
                         id: Number(
-                            row.querySelector('[data-owner-party-select]')?.value
+                            document.getElementById(`${prefix}-id`)?.value
                         ) || null,
                         ownership_percentage: share,
                     };

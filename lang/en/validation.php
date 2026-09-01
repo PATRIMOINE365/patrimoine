@@ -168,6 +168,24 @@ return [
         'owners' => 'owners',
         'owners.*.ownership_percentage' => 'ownership share',
         'owners.*.party_id' => 'owner',
+
+        /*
+         * V1.0.48: the lease assistant's nested paths. Without these a
+         * refusal read "The owners.0.id field is required when
+         * owners.0.attributes is not present." — raw field paths, at a
+         * customer, in English whatever their language.
+         */
+        'owners.*.id' => 'chosen owner',
+        'owners.*.attributes' => 'new owner details',
+        'building.id' => 'chosen property',
+        'building.attributes' => 'new property details',
+        'unit.id' => 'chosen unit',
+        'unit.attributes' => 'new unit details',
+        'tenant.id' => 'chosen tenant',
+        'tenant.attributes' => 'new tenant details',
+        'agent.id' => 'chosen agent',
+        'agent.attributes' => 'new agent details',
+        'lease' => 'lease details',
         'party_emails_enabled' => 'party e-mails',
         'password' => 'password',
         'payment_date' => 'payment date',

@@ -168,6 +168,23 @@ return [
         'owners' => 'propriétaires',
         'owners.*.ownership_percentage' => 'quote-part',
         'owners.*.party_id' => 'propriétaire',
+
+        /*
+         * V1.0.48 : les chemins imbriqués de l'assistant de bail. Sans
+         * ces libellés, un refus affichait les chemins bruts
+         * (« owners.0.id ») au client.
+         */
+        'owners.*.id' => 'propriétaire choisi',
+        'owners.*.attributes' => 'coordonnées du nouveau propriétaire',
+        'building.id' => 'bien choisi',
+        'building.attributes' => 'coordonnées du nouveau bien',
+        'unit.id' => 'lot choisi',
+        'unit.attributes' => 'coordonnées du nouveau lot',
+        'tenant.id' => 'locataire choisi',
+        'tenant.attributes' => 'coordonnées du nouveau locataire',
+        'agent.id' => 'agent choisi',
+        'agent.attributes' => 'coordonnées du nouvel agent',
+        'lease' => 'détails du bail',
         'party_emails_enabled' => 'e-mails aux tiers',
         'password' => 'mot de passe',
         'payment_date' => 'date du paiement',
