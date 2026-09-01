@@ -284,7 +284,7 @@ return [
                         ['text' => 'Erase is hidden unless an administrator has switched the data-protection tools on in Settings, under Preferences. Do that first.'],
                         ['text' => 'Open Parties, find the person, and press Erase.', 'shot' => 'party-erase'],
                         ['text' => 'Read what goes: name, email address, telephone numbers, postal address, identity and registration numbers, bank details and notes. All of it, permanently.'],
-                        ['text' => 'Read what stays: the invoices, payments and journal entries. The law that requires those kept is the same law that lets you refuse to destroy them, so they remain \u2014 naming the person only as "Erased party #248".'],
+                        ['text' => 'Read what stays: the invoices, payments and journal entries. The law that requires those kept is the same law that lets you refuse to destroy them, so they remain — naming the person only as "Erased party #248".'],
                         ['text' => 'Type the name exactly as the record shows it, and enter your own password.'],
                         ['text' => 'Press Erase this person. It cannot be undone, and Patrimoine will never email them again.'],
                     ],
@@ -334,9 +334,9 @@ return [
                     'intro' => 'The assistant builds a whole letting in one sitting — the property, the unit, the owner, the tenant and the lease itself — asking one thing at a time. It asks for exactly what the Add lease drawer asks for, one section per page, so a lease made here and a lease made there are the same lease.',
                     'who' => 'Administrators and Property Managers',
                     'steps' => [
-                        ['text' => 'Open Leases and press Guided lease.', 'shot' => 'leases-list'],
+                        ['text' => 'Open Leases and press Add lease. The assistant is how a letting is created — there is no second, shorter form to choose between.', 'shot' => 'leases-list'],
                         ['text' => 'The first page explains the words the assistant uses — party, owner, unit — so nothing later has to be guessed at. Read it once and press Next.', 'shot' => 'wizard-intro'],
-                        ['text' => 'Property and tenant. Choose the property and the unit being let, or create either; record who owns it and their shares, if Patrimoine does not know yet; then choose the tenant. Anything not recorded yet can be created here as you go.', 'shot' => 'wizard-property'],
+                        ['text' => 'Property and tenant. Start typing to find the property and the unit being let, or create either; record who owns it and their shares, if Patrimoine does not know yet; then find the tenant the same way. Anything not recorded yet can be created here as you go, and a new person can be told straight away whether Patrimoine may email them.', 'shot' => 'wizard-property'],
                         ['text' => 'Lease period. Set the start date and either a duration or an end date, and the notice date if the letting has one. The start date is the anniversary for the whole letting: a lease beginning on the 31st is billed on the 31st of every month that has one, and on the last day of the months that do not.', 'shot' => 'wizard-dates'],
                         ['text' => 'Rent terms. The rent field is a MONTH of rent, whatever the payment frequency — a lease paid every 3 Months at 1,000 a month is invoiced 3,000 a quarter. Paid every counts months from the start date rather than calendar quarters, which is why it reads 1 Month, 3 Months, 6 Months and 12 Months. Set it, then the due day, the VAT on your fee, any first-period adjustment, and the deposit.', 'shot' => 'wizard-rent'],
                         ['text' => 'Entering a deposit receives it: the money goes into this lease\'s own Security Deposit account. Say when it changed hands and how. The date may be before the lease starts, because a deposit is usually what secures the unit.'],
@@ -358,20 +358,6 @@ return [
                         ['text' => 'The draft appears under Unfinished assistants at the top of the Leases page, named after whoever started it and the day they did.', 'shot' => 'lease-drafts'],
                         ['text' => 'Press Continue. Everything you had typed comes back, and the assistant opens on the first page — press Next to walk to wherever you had got to.'],
                         ['text' => 'Press Discard to throw it away. Discarding an unfinished assistant deletes nothing else — there was never a lease.'],
-                    ],
-                ],
-
-                'create_lease_directly' => [
-                    'title' => 'Create a lease directly',
-                    'intro' => 'When the property, unit and tenant already exist, the direct form is quicker than the assistant.',
-                    'who' => 'Administrators and Property Managers',
-                    'steps' => [
-                        ['text' => 'Open Leases and press Add Lease.'],
-                        ['text' => 'Choose the unit and the tenant. Both must already exist.', 'shot' => 'lease-drawer'],
-                        ['text' => 'Set the start date, the end date or duration, the rent and how often it is due. The rent field is a MONTH of rent whatever the frequency, and the start date stays the anniversary for the whole letting.'],
-                        ['text' => 'Enter the deposit, if there is one. Entering it receives it: the money goes into this lease\'s own Security Deposit account, and three fields appear asking when it changed hands and how. That date may be before the lease starts, because a deposit is usually what secures the unit.'],
-                        ['text' => 'Add the management fee and the agent commission if they apply.'],
-                        ['text' => 'Press Save.'],
                     ],
                 ],
 
@@ -890,7 +876,7 @@ return [
                     'steps' => [
                         ['text' => 'Press your photograph at the top right, then Edit profile.'],
                         ['text' => 'Press Download my data.', 'shot' => 'my-data'],
-                        ['text' => 'The file holds your account details, the tokens your account can be used with, and every action you have taken \u2014 including the address, browser and device each came from.'],
+                        ['text' => 'The file holds your account details, the tokens your account can be used with, and every action you have taken — including the address, browser and device each came from.'],
                         ['text' => 'Your password is never in it. It is stored only as a hash and cannot be turned back into anything.'],
                     ],
                 ],

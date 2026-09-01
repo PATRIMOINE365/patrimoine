@@ -15,6 +15,18 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.46',
+            'date' => '2026-09-01',
+            'title' => 'Une seule façon de créer une location, et des champs qui trouvent tout le monde',
+            'changes' => [
+                'Ajouter un bail ouvre désormais l\'assistant. Il y avait deux façons de créer une location et elles avaient divergé : l\'assistant pouvait créer le bien, le lot et les personnes au fil de la saisie, tandis que l\'ancien formulaire ne pouvait que choisir ce qui existait déjà, et il fallait les tenir à jour à la main à chaque changement de champ. L\'ancien formulaire est retiré et le bouton Assistant de bail qui l\'accompagnait disparaît : il n\'y a plus rien entre quoi choisir.',
+                'L\'assistant trouve les enregistrements en tapant plutôt qu\'en faisant défiler une liste. Le bien, le lot, le locataire, l\'agent et chaque propriétaire se choisissent de la même façon, et la recherche atteint tout votre registre : les anciennes listes déroulantes ne contenaient que les cent premiers enregistrements sans rien dire du reste, si bien qu\'au-delà de cent locataires l\'assistant ne pouvait tout simplement pas les proposer.',
+                'Une personne ajoutée pendant la création d\'un bail peut désormais recevoir aussitôt son autorisation d\'e-mail. C\'était la seule chose du formulaire complet qui ne pouvait raisonnablement pas attendre : le temps qu\'on s\'en aperçoive, la location lui avait déjà envoyé quelque chose, ou avait échoué à le faire.',
+                'Les cases à cocher de l\'assistant sont maintenant des interrupteurs, comme dans les Paramètres.',
+                'La TVA sur vos honoraires de gestion démarre au taux défini par votre organisation. L\'ancien formulaire le lisait dans vos paramètres, l\'assistant jamais : chaque nouvelle location serait partie de zéro.',
+            ],
+        ],
+        [
             'version' => '1.0.45',
             'date' => '2026-09-01',
             'title' => 'L\'assistant demande l\'agent là où est l\'argent, et l\'historique d\'une location devient un tableau',

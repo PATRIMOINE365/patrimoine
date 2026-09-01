@@ -252,20 +252,6 @@
     "settle": 700
   },
   {
-    "id": "lease-drawer",
-    "path": "/leases",
-    "wait": "#leases-list",
-    "settle": 400,
-    "do": [
-      {
-        "click": "#add-lease-button",
-        "wait": "#lease-modal.pm-drawer-active",
-        "pause": 900
-      }
-    ],
-    "clip": "#lease-modal .pm-drawer-panel"
-  },
-  {
     "id": "lease-extend",
     "path": "/leases",
     "wait": "#leases-list",

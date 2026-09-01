@@ -238,16 +238,15 @@ class BrowserLocalisationTest extends TestCase
                 'data-i18n="leases.register"',
                 false
             )
-            ->assertSee(
-                'data-i18n="leases.property_unit"',
-                false
-            )
+            /*
+             * V1.0.45: the hooks that used to be checked here belonged to
+             * the Add lease drawer, which is retired - Add lease opens the
+             * assistant now. What is left on the page is the register, the
+             * drawers that act on a letting that already exists, and the
+             * link out to the assistant.
+             */
             ->assertSee(
                 'data-i18n="leases.monthly_rent"',
-                false
-            )
-            ->assertSee(
-                'data-i18n="leases.advance_payment"',
                 false
             )
             ->assertSee(
@@ -255,7 +254,7 @@ class BrowserLocalisationTest extends TestCase
                 false
             )
             ->assertSee(
-                'data-i18n-aria-label="leases.close"',
+                'data-i18n="leases.add_lease"',
                 false
             )
             ->assertSeeText(

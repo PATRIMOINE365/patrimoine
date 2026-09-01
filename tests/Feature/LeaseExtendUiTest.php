@@ -135,59 +135,50 @@ class LeaseExtendUiTest extends TestCase
         );
     }
 
-    public function test_add_lease_browser_submission_is_creation_only(): void
+    /**
+     * V1.0.45: there is one way to create a letting, and it is the
+     * assistant.
+     *
+     * This used to assert that the Add lease drawer only ever POSTed and
+     * never PATCHed - that it created and could not edit. The drawer is
+     * gone, so the guarantee is now structural: the Leases page carries
+     * no lease form at all, and Add lease is a link to the assistant.
+     *
+     * Worth keeping as a test rather than as a memory. Two ways to create
+     * the same record is how the two drifted apart in the first place,
+     * and nothing else would notice a second one being added back.
+     */
+    public function test_a_lease_is_created_in_one_place_only(): void
     {
-        $javascript =
-            file_get_contents(
-                resource_path(
-                    'js/leases.js'
-                )
-            );
-
-        $start =
-            strpos(
-                $javascript,
-                'async function submitLeaseForm'
-            );
-
-        $this->assertNotFalse(
-            $start
+        $blade = file_get_contents(
+            resource_path('views/app/leases.blade.php')
         );
 
-        $end =
-            strpos(
-                $javascript,
-                'function initializeLeaseExtendDrawer',
-                $start
-            );
-
-        if ($end === false) {
-            $end =
-                strlen(
-                    $javascript
-                );
-        }
-
-        $submission =
-            substr(
-                $javascript,
-                $start,
-                $end - $start
-            );
-
-        $this->assertStringContainsString(
-            "'/api/leases'",
-            $submission
-        );
-
-        $this->assertStringContainsString(
-            "'POST'",
-            $submission
+        $javascript = file_get_contents(
+            resource_path('js/leases.js')
         );
 
         $this->assertStringNotContainsString(
-            "'PATCH'",
-            $submission
+            'id="lease-modal"',
+            $blade,
+            'The Leases page must not carry a lease creation drawer.'
+        );
+
+        $this->assertStringNotContainsString(
+            'id="lease-form"',
+            $blade
+        );
+
+        $this->assertStringContainsString(
+            'href="/leases/wizard"',
+            $blade,
+            'Add lease must lead to the assistant.'
+        );
+
+        $this->assertStringNotContainsString(
+            'submitLeaseForm',
+            $javascript,
+            'The retired drawer left its submission behind.'
         );
     }
 }

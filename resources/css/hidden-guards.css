@@ -9,7 +9,7 @@
 | not, so without a rule of their own they would win and an element told to
 | be hidden would stay on screen. Two class selectors beat one.
 |
-| 100 components.
+| 110 components.
 |
 */
 
@@ -36,6 +36,8 @@
 .pm-admin-user-open.hidden,
 .pm-admin-user-role.hidden,
 .pm-alert.hidden,
+.pm-archive-row.hidden,
+.pm-archive-title-line.hidden,
 .pm-avatar.hidden,
 .pm-avatar-crop-canvas.hidden,
 .pm-avatar-zoom.hidden,
@@ -68,6 +70,8 @@
 .pm-empty-icon.hidden,
 .pm-field-label.hidden,
 .pm-fieldset.hidden,
+.pm-filter-chip.hidden,
+.pm-filter-chip-count.hidden,
 .pm-form-grid.hidden,
 .pm-guide-figure-tall.hidden,
 .pm-icon-button.hidden,
@@ -103,13 +107,19 @@
 .pm-tenant-directory-row.hidden,
 .pm-tenant-directory-secondary.hidden,
 .pm-tenants-workspace.hidden,
-.pm-wizard-checkbox.hidden,
+.pm-toggle-field.hidden,
+.pm-toggle-help.hidden,
+.pm-toggle-label.hidden,
 .pm-wizard-fields.hidden,
 .pm-wizard-glossary.hidden,
 .pm-wizard-grid.hidden,
 .pm-wizard-invite.hidden,
 .pm-wizard-invite-body.hidden,
 .pm-wizard-owner-row.hidden,
+.pm-wizard-picker-clear.hidden,
+.pm-wizard-picker-option.hidden,
+.pm-wizard-picker-option-detail.hidden,
+.pm-wizard-picker-option-name.hidden,
 .pm-wizard-subfields.hidden,
 .pm-wizard-summary.hidden,
 .shell-menu-item.hidden {

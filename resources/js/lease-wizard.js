@@ -127,6 +127,19 @@ export async function initializeLeaseWizard() {
     await loadReferenceData();
 
     /*
+     * V1.0.45: the VAT the organisation charges on its fee.
+     *
+     * The retired Add lease drawer read this from the organisation's own
+     * settings and the assistant never did - it started every letting at
+     * zero. Now that the assistant is the only way in, losing that
+     * default would mean every new lease silently charging no VAT until
+     * somebody noticed.
+     *
+     * Applied before anything is restored, so a saved answer still wins.
+     */
+    applyDefaultVatRate();
+
+    /*
      * Continuing a saved assistant wins over the progress this tab kept:
      * somebody who followed a Continue link means that one.
      */
@@ -206,6 +219,62 @@ async function loadParties(role) {
 }
 
 /**
+ * Mount a party picker for one role.
+ *
+ * Used by the tenant and the agent, and by every owner row, so the three
+ * search the same way and read the same way.
+ *
+ * @param {string} id
+ * @param {HTMLElement} mount
+ * @param {string} role
+ */
+function mountPartyPicker(id, mount, role) {
+    mountPicker({
+        id,
+        mount,
+        placeholderKey: `wizard.search_${role}`,
+        emptyKey: 'wizard.no_party_found',
+        seed: () => partyCache[role] ?? [],
+        label: partyName,
+        detail: (party) => [party?.phone, party?.email]
+            .filter(Boolean)
+            .join(' \u00b7 '),
+        search: async (term) => {
+            const payload = await parseJsonResponse(
+                await apiRequest(
+                    `/api/parties?role=${encodeURIComponent(role)}`
+                    + `&search=${encodeURIComponent(term)}&per_page=15`
+                )
+            );
+
+            return payload?.data ?? [];
+        },
+    });
+}
+
+/**
+ * Start the VAT field at the organisation's own rate.
+ */
+function applyDefaultVatRate() {
+    const rate = Number(
+        getPresentationConfiguration()?.default_vat_rate
+    );
+
+    if (
+        ! Number.isFinite(rate)
+        || rate < 0
+        || rate > 100
+    ) {
+        return;
+    }
+
+    setValue(
+        'wizard-vat-rate',
+        String(rate)
+    );
+}
+
+/**
  * Display name for a party, whichever kind it is.
  *
  * @param {object} party
@@ -227,25 +296,63 @@ function partyName(party) {
  * Fill the property picker, then its units.
  */
 function populateBuildingOptions() {
-    const select = document.getElementById(
-        'wizard-building-id'
+    const mount = document.getElementById(
+        'wizard-building-picker'
     );
 
-    if (! select) {
+    if (! mount) {
         return;
     }
 
-    const previous = select.value;
+    mountPicker({
+        id: 'wizard-building-id',
+        mount,
+        placeholderKey: 'wizard.search_property',
+        emptyKey: 'wizard.no_property_found',
+        seed: () => buildings,
+        label: (building) => String(building.name ?? ''),
+        detail: (building) => String(building.location ?? building.address ?? ''),
+        search: async (term) => {
+            const payload = await parseJsonResponse(
+                await apiRequest(
+                    `/api/buildings?search=${encodeURIComponent(term)}&per_page=15`
+                )
+            );
 
-    select.innerHTML = buildings
-        .map(
-            (building) => `
-                <option value="${building.id}">
-                    ${escapeHtml(building.name)}
-                </option>
-            `
-        )
-        .join('');
+            const found = payload?.data ?? [];
+
+            /*
+             * A property found by searching has to join the cache: the
+             * unit picker and the ownership question both read the
+             * chosen property's own record out of it, and a property
+             * beyond the first hundred was never in there.
+             */
+            found.forEach(
+                (building) => {
+                    if (
+                        ! buildings.some(
+                            (known) => Number(known.id) === Number(building.id)
+                        )
+                    ) {
+                        buildings.push(building);
+                    }
+                }
+            );
+
+            return found;
+        },
+        onChange: () => {
+            /*
+             * A different property means different units, and possibly a
+             * different answer to whether ownership is known.
+             */
+            setPickerValue('wizard-unit-id', null, { silent: true });
+
+            populateUnitOptions();
+
+            applyOwnersBlock();
+        },
+    });
 
     if (buildings.length === 0) {
         /*
@@ -254,8 +361,6 @@ function populateBuildingOptions() {
          * property fields rather than an empty list.
          */
         setValue('wizard-building-mode', 'new');
-    } else if (previous) {
-        select.value = previous;
     }
 
     applyBuildingMode();
@@ -270,29 +375,47 @@ function populateBuildingOptions() {
  * offering it would only produce a rejection at the end.
  */
 function populateUnitOptions() {
-    const select = document.getElementById(
-        'wizard-unit-id'
+    const mount = document.getElementById(
+        'wizard-unit-picker'
     );
 
-    if (! select) {
+    if (! mount) {
         return;
     }
 
-    const building = selectedBuilding();
+    const vacantUnits = () => {
+        const building = selectedBuilding();
 
-    const units = (building?.units ?? []).filter(
-        (unit) => ! unit.is_occupied
-    );
+        return (building?.units ?? []).filter(
+            (unit) => ! unit.is_occupied
+        );
+    };
 
-    select.innerHTML = units
-        .map(
-            (unit) => `
-                <option value="${unit.id}">
-                    ${escapeHtml(unit.name)}
-                </option>
-            `
-        )
-        .join('');
+    const units = vacantUnits();
+
+    /*
+     * The units of one property arrive inside the property itself, so
+     * this picker filters what is already here rather than asking the
+     * server. It is still a picker: a block of forty flats is no easier
+     * to read in a dropdown than four hundred tenants.
+     */
+    mountPicker({
+        id: 'wizard-unit-id',
+        mount,
+        placeholderKey: 'wizard.search_unit',
+        emptyKey: 'wizard.no_unit_found',
+        seed: vacantUnits,
+        label: (unit) => String(unit.name ?? ''),
+        search: async (term) => {
+            const needle = term.toLowerCase();
+
+            return vacantUnits().filter(
+                (unit) => String(unit.name ?? '')
+                    .toLowerCase()
+                    .includes(needle)
+            );
+        },
+    });
 
     if (units.length === 0) {
         setValue('wizard-unit-mode', 'new');
@@ -307,22 +430,20 @@ function populateUnitOptions() {
  * @param {string} role
  */
 function populatePartyOptions(role) {
-    const select = document.getElementById(
-        `wizard-${role === 'owner' ? 'owner' : role}-id`
+    /*
+     * The owner rows carry a picker each and mount their own; only the
+     * tenant and the agent have one fixed place on the page.
+     */
+    const mount = document.getElementById(
+        `wizard-${role}-picker`
     );
 
-    const markup = partyCache[role]
-        .map(
-            (party) => `
-                <option value="${party.id}">
-                    ${escapeHtml(partyName(party))}
-                </option>
-            `
-        )
-        .join('');
-
-    if (select) {
-        select.innerHTML = markup;
+    if (mount) {
+        mountPartyPicker(
+            `wizard-${role}-id`,
+            mount,
+            role
+        );
     }
 
     /*
@@ -441,6 +562,402 @@ function applyOwnersBlock() {
 
 /*
 |--------------------------------------------------------------------------
+| Searchable Pickers
+|--------------------------------------------------------------------------
+|
+| V1.0.45: the assistant used plain dropdowns while the lease drawer beside
+| it had type-to-search boxes. Two problems with that, and the second is
+| the serious one.
+|
+| A dropdown of four hundred tenants is unusable, and the reference lists
+| were loaded ONE HUNDRED AT A TIME - so beyond a hundred properties or a
+| hundred tenants the assistant could not offer the record at all, and
+| nothing on screen said so. A picker that asks the server as you type has
+| no such ceiling.
+|
+| One factory serves the property, the unit, the tenant, the agent and
+| every owner row, so the five can never behave differently. Each keeps the
+| chosen id in a hidden input carrying the id the select used to carry,
+| which is what lets the draft machinery, the review page and the error
+| mapping go on reading them exactly as before.
+|
+*/
+
+/**
+ * Every picker on the page, by the id of its hidden value input.
+ *
+ * @type {Object<string, object>}
+ */
+const pickers = {};
+
+/**
+ * How long to wait after a keystroke before asking the server.
+ */
+const PICKER_DEBOUNCE = 250;
+
+/**
+ * How many suggestions to show before anything has been typed.
+ */
+const PICKER_SEED_LIMIT = 12;
+
+/**
+ * The markup for one picker.
+ *
+ * @param {string} id
+ * @param {string} placeholderKey
+ * @returns {string}
+ */
+function pickerMarkup(id, placeholderKey) {
+    const placeholder = escapeHtml(
+        translate(placeholderKey)
+    );
+
+    return `
+        <div class="pm-wizard-picker" data-picker="${escapeHtml(id)}">
+            <input id="${escapeHtml(id)}" type="hidden">
+
+            <div class="relative">
+                <input
+                    id="${escapeHtml(id)}-search"
+                    type="search"
+                    autocomplete="off"
+                    placeholder="${placeholder}"
+                    class="pm-input pm-input-search pm-input-search-clearable"
+                >
+
+                <button
+                    id="${escapeHtml(id)}-clear"
+                    type="button"
+                    class="pm-wizard-picker-clear"
+                    aria-label="${escapeHtml(translate('wizard.clear_choice'))}"
+                >&times;</button>
+            </div>
+
+            <div
+                id="${escapeHtml(id)}-results"
+                class="pm-card pm-wizard-picker-results hidden"
+            ></div>
+        </div>
+    `;
+}
+
+/**
+ * Render a picker into its mount point and wire it up.
+ *
+ * @param {{
+ *     id: string,
+ *     mount: string|HTMLElement,
+ *     placeholderKey: string,
+ *     emptyKey: string,
+ *     seed: function(): Array<object>,
+ *     search: function(string): Promise<Array<object>>,
+ *     label: function(object): string,
+ *     detail?: function(object): string,
+ *     onChange?: function(object|null): void,
+ * }} config
+ */
+function mountPicker(config) {
+    const mount = typeof config.mount === 'string'
+        ? document.getElementById(config.mount)
+        : config.mount;
+
+    if (! mount) {
+        return;
+    }
+
+    mount.innerHTML = pickerMarkup(
+        config.id,
+        config.placeholderKey
+    );
+
+    pickers[config.id] = {
+        ...config,
+        selected: null,
+        timer: null,
+    };
+
+    const search = document.getElementById(`${config.id}-search`);
+
+    const clear = document.getElementById(`${config.id}-clear`);
+
+    search?.addEventListener('input', () => {
+        /*
+         * Typing over a chosen name means the reader is looking for
+         * somebody else, so the choice is released before the search
+         * runs. Leaving it would submit a record nobody can still see.
+         */
+        if (pickers[config.id].selected) {
+            setPickerValue(config.id, null, { keepText: true });
+        }
+
+        schedulePickerSearch(config.id, search.value);
+    });
+
+    search?.addEventListener('focus', () => {
+        if (! pickers[config.id].selected) {
+            schedulePickerSearch(config.id, search.value);
+        }
+    });
+
+    clear?.addEventListener('click', () => {
+        setPickerValue(config.id, null);
+
+        search?.focus();
+
+        schedulePickerSearch(config.id, '');
+    });
+
+    /*
+     * A click anywhere else closes the suggestions. Without this the
+     * list stays open over the next question.
+     */
+    document.addEventListener('click', (event) => {
+        if (! mount.contains(event.target)) {
+            hidePickerResults(config.id);
+        }
+    });
+
+    updatePickerClear(config.id);
+}
+
+/**
+ * Ask for suggestions, once the typing has paused.
+ *
+ * @param {string} id
+ * @param {string} term
+ */
+function schedulePickerSearch(id, term) {
+    const picker = pickers[id];
+
+    if (! picker) {
+        return;
+    }
+
+    window.clearTimeout(picker.timer);
+
+    const trimmed = String(term ?? '').trim();
+
+    if (trimmed === '') {
+        renderPickerResults(
+            id,
+            picker.seed().slice(0, PICKER_SEED_LIMIT)
+        );
+
+        return;
+    }
+
+    picker.timer = window.setTimeout(
+        async () => {
+            try {
+                renderPickerResults(
+                    id,
+                    await picker.search(trimmed)
+                );
+            } catch {
+                /*
+                 * A failed suggestion must never block the page: fall
+                 * back to what is already loaded.
+                 */
+                renderPickerResults(
+                    id,
+                    picker.seed().slice(0, PICKER_SEED_LIMIT)
+                );
+            }
+        },
+        PICKER_DEBOUNCE
+    );
+}
+
+/**
+ * Draw one picker's suggestions.
+ *
+ * @param {string} id
+ * @param {Array<object>} rows
+ */
+function renderPickerResults(id, rows) {
+    const picker = pickers[id];
+
+    const results = document.getElementById(`${id}-results`);
+
+    if (! picker || ! results) {
+        return;
+    }
+
+    if (rows.length === 0) {
+        results.innerHTML = `
+            <div class="pm-wizard-picker-empty">
+                ${escapeHtml(translate(picker.emptyKey))}
+            </div>
+        `;
+
+        results.classList.remove('hidden');
+
+        return;
+    }
+
+    results.innerHTML = rows
+        .map(
+            (row) => {
+                const detail = picker.detail
+                    ? picker.detail(row)
+                    : '';
+
+                return `
+                    <button
+                        type="button"
+                        data-picker-choice="${escapeHtml(row.id)}"
+                        class="pm-wizard-picker-option"
+                    >
+                        <span class="pm-wizard-picker-option-name">
+                            ${escapeHtml(picker.label(row))}
+                        </span>
+
+                        ${
+                            detail === ''
+                                ? ''
+                                : `<span class="pm-wizard-picker-option-detail">${escapeHtml(detail)}</span>`
+                        }
+                    </button>
+                `;
+            }
+        )
+        .join('');
+
+    results.classList.remove('hidden');
+
+    results
+        .querySelectorAll('[data-picker-choice]')
+        .forEach(
+            (button) => {
+                button.addEventListener('click', () => {
+                    const chosen = rows.find(
+                        (row) => String(row.id)
+                            === String(button.dataset.pickerChoice)
+                    );
+
+                    if (chosen) {
+                        setPickerValue(id, chosen);
+                    }
+                });
+            }
+        );
+}
+
+/**
+ * Close one picker's suggestions.
+ *
+ * @param {string} id
+ */
+function hidePickerResults(id) {
+    document
+        .getElementById(`${id}-results`)
+        ?.classList.add('hidden');
+}
+
+/**
+ * Choose a record, or release the choice.
+ *
+ * @param {string} id
+ * @param {object|null} item
+ * @param {{keepText?: boolean, silent?: boolean}} options
+ */
+function setPickerValue(id, item, options = {}) {
+    const picker = pickers[id];
+
+    if (! picker) {
+        return;
+    }
+
+    picker.selected = item ?? null;
+
+    const hidden = document.getElementById(id);
+
+    const search = document.getElementById(`${id}-search`);
+
+    if (hidden) {
+        hidden.value = item
+            ? String(item.id)
+            : '';
+    }
+
+    if (search && ! options.keepText) {
+        search.value = item
+            ? picker.label(item)
+            : '';
+    }
+
+    if (item) {
+        hidePickerResults(id);
+    }
+
+    updatePickerClear(id);
+
+    if (! options.silent) {
+        picker.onChange?.(picker.selected);
+
+        saveProgress();
+    }
+}
+
+/**
+ * Show the clear button only when there is something to clear.
+ *
+ * @param {string} id
+ */
+function updatePickerClear(id) {
+    const search = document.getElementById(`${id}-search`);
+
+    const clear = document.getElementById(`${id}-clear`);
+
+    if (! clear) {
+        return;
+    }
+
+    clear.hidden = String(search?.value ?? '').trim() === '';
+}
+
+/**
+ * The name shown for whatever a picker currently holds.
+ *
+ * The review page reads this where it used to read a select's chosen
+ * option text.
+ *
+ * @param {string} id
+ * @returns {string}
+ */
+function pickerLabel(id) {
+    return String(
+        document.getElementById(`${id}-search`)?.value ?? ''
+    ).trim();
+}
+
+/**
+ * Put every picker back in step with the values just restored into it.
+ *
+ * The hidden input and the search box are both ordinary fields, so a
+ * restored assistant already carries the id and the name it was showing.
+ * What it does not carry is the selected record itself, which is what the
+ * clear button and the "typing means a new search" rule read.
+ */
+function resyncPickers() {
+    Object.keys(pickers).forEach(
+        (id) => {
+            const chosen = document.getElementById(id)?.value ?? '';
+
+            pickers[id].selected = chosen === ''
+                ? null
+                : {
+                    id: chosen,
+                    name: pickerLabel(id),
+                };
+
+            updatePickerClear(id);
+        }
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
 | Party Field Blocks
 |--------------------------------------------------------------------------
 */
@@ -531,6 +1048,30 @@ function partyFieldsMarkup(prefix) {
                     <input id="${prefix}-email" type="email" maxlength="255" class="pm-input">
                 </div>
             </div>
+
+            <div>
+                <label for="${prefix}-email-policy" class="pm-field-label">
+                    ${escapeHtml(translate('wizard.email_policy'))}
+                </label>
+
+                <select id="${prefix}-email-policy" class="pm-input">
+                    <option value="inherit">
+                        ${escapeHtml(translate('wizard.email_policy_inherit'))}
+                    </option>
+
+                    <option value="always">
+                        ${escapeHtml(translate('wizard.email_policy_always'))}
+                    </option>
+
+                    <option value="never">
+                        ${escapeHtml(translate('wizard.email_policy_never'))}
+                    </option>
+                </select>
+
+                <p class="pm-wizard-help">
+                    ${escapeHtml(translate('wizard.email_policy_help'))}
+                </p>
+            </div>
         </div>
     `;
 }
@@ -610,6 +1151,14 @@ function readPartyFields(container, prefix) {
         phone: telephone.number,
         phone_country: telephone.country,
         email: value(`${prefix}-email`),
+
+        /*
+         * V1.0.45: whether Patrimoine may write to this person. It is
+         * the one thing on the full party form that cannot sensibly be
+         * left until later - by the time somebody notices, the letting
+         * has already sent them something, or failed to.
+         */
+        email_policy: value(`${prefix}-email-policy`) || 'inherit',
     };
 
     if (type === 'person') {
@@ -709,11 +1258,11 @@ function appendOwnerRow() {
         </div>
 
         <div data-owner-existing>
-            <label for="${prefix}-id" class="pm-field-label">
+            <label for="${prefix}-id-search" class="pm-field-label">
                 ${escapeHtml(translate('wizard.choose_owner'))}
             </label>
 
-            <select id="${prefix}-id" data-owner-party-select class="pm-input"></select>
+            <div data-owner-party-picker></div>
         </div>
 
         <div data-owner-new class="hidden">
@@ -732,6 +1281,12 @@ function appendOwnerRow() {
     `;
 
     container.appendChild(row);
+
+    mountPartyPicker(
+        `${prefix}-id`,
+        row.querySelector('[data-owner-party-picker]'),
+        'owner'
+    );
 
     wirePartyTypeToggle(
         row.querySelector('[data-owner-new]')
@@ -1186,13 +1741,13 @@ function renderSummary() {
         [
             translate('wizard.unit'),
             value('wizard-unit-mode') === 'existing'
-                ? selectedText('wizard-unit-id')
+                ? pickerLabel('wizard-unit-id')
                 : value('wizard-unit-name'),
         ],
         [
             translate('wizard.tenant'),
             value('wizard-tenant-mode') === 'existing'
-                ? selectedText('wizard-tenant-id')
+                ? pickerLabel('wizard-tenant-id')
                 : summaryPartyName('wizard-tenant-party'),
         ],
         [
@@ -1303,7 +1858,7 @@ function agentSummary() {
     }
 
     const name = mode === 'existing'
-        ? selectedText('wizard-agent-id')
+        ? pickerLabel('wizard-agent-id')
         : summaryPartyName('wizard-agent-party');
 
     const commission = value('wizard-agent-commission');
@@ -1854,6 +2409,14 @@ function applyStoredState(stored) {
     applyCurrencyUnits();
 
     regroupMoneyFields();
+
+    /*
+     * The pickers hold their id and their name in ordinary fields, so
+     * both came back with everything else. What did not come back is the
+     * record each one is holding, which is what the clear button and the
+     * "typing means a new search" rule read.
+     */
+    resyncPickers();
 }
 
 /**
@@ -2340,12 +2903,6 @@ function wireControls() {
     on('wizard-building-mode', 'change', () => {
         applyBuildingMode();
 
-        populateUnitOptions();
-
-        applyOwnersBlock();
-    });
-
-    on('wizard-building-id', 'change', () => {
         populateUnitOptions();
 
         applyOwnersBlock();

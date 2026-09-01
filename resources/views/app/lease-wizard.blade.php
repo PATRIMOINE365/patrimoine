@@ -245,12 +245,18 @@
                     </select>
                 </div>
 
-                <div id="wizard-building-existing">
-                    <label for="wizard-building-id" class="pm-field-label">
+<div id="wizard-building-existing">
+                    <label for="wizard-building-id-search" class="pm-field-label">
                         <span data-i18n="wizard.choose_property">{{ __('ui.wizard.choose_property') }}</span>
                     </label>
 
-                    <select id="wizard-building-id" class="pm-input"></select>
+                    {{--
+                        V1.0.45: a searchable picker, built by
+                        resources/js/lease-wizard.js. The dropdown it
+                        replaces could only ever offer the first hundred
+                        properties, and said nothing about the rest.
+                    --}}
+                    <div id="wizard-building-picker"></div>
                 </div>
 
                 <div id="wizard-building-new" class="hidden pm-wizard-subfields">
@@ -285,12 +291,12 @@
                     </select>
                 </div>
 
-                <div id="wizard-unit-existing">
-                    <label for="wizard-unit-id" class="pm-field-label">
+<div id="wizard-unit-existing">
+                    <label for="wizard-unit-id-search" class="pm-field-label">
                         <span data-i18n="wizard.choose_unit">{{ __('ui.wizard.choose_unit') }}</span>
                     </label>
 
-                    <select id="wizard-unit-id" class="pm-input"></select>
+                    <div id="wizard-unit-picker"></div>
 
                     <p class="pm-wizard-help">
                         <span data-i18n="wizard.vacant_units_only">{{ __('ui.wizard.vacant_units_only') }}</span>
@@ -307,9 +313,20 @@
                         <input id="wizard-unit-name" type="text" maxlength="255" class="pm-input">
                     </div>
 
-                    <label class="pm-wizard-checkbox">
-                        <input id="wizard-unit-commercial" type="checkbox">
-                        <span data-i18n="wizard.unit_commercial">{{ __('ui.wizard.unit_commercial') }}</span>
+{{--
+                        V1.0.45: a switch rather than a tickbox. A tickbox
+                        asks "is this true?"; a switch says "this is on,
+                        and here is how to turn it off", which is what
+                        these two actually are.
+                    --}}
+                    <label class="pm-toggle-field">
+                        <input id="wizard-unit-commercial" type="checkbox" class="pm-toggle">
+
+                        <span class="min-w-0">
+                            <span class="pm-toggle-label">
+                                <span data-i18n="wizard.unit_commercial">{{ __('ui.wizard.unit_commercial') }}</span>
+                            </span>
+                        </span>
                     </label>
                 </div>
 
@@ -353,12 +370,12 @@
                     </select>
                 </div>
 
-                <div id="wizard-tenant-existing">
-                    <label for="wizard-tenant-id" class="pm-field-label">
+<div id="wizard-tenant-existing">
+                    <label for="wizard-tenant-id-search" class="pm-field-label">
                         <span data-i18n="wizard.choose_tenant">{{ __('ui.wizard.choose_tenant') }}</span>
                     </label>
 
-                    <select id="wizard-tenant-id" class="pm-input"></select>
+                    <div id="wizard-tenant-picker"></div>
                 </div>
 
                 <div id="wizard-tenant-new" class="hidden"></div>
@@ -727,9 +744,14 @@
 
                 <div class="pm-wizard-divider"></div>
 
-                <label class="pm-wizard-checkbox">
-                    <input id="wizard-advance-received" type="checkbox" checked>
-                    <span data-i18n="wizard.advance_received">{{ __('ui.wizard.advance_received') }}</span>
+                <label class="pm-toggle-field">
+                    <input id="wizard-advance-received" type="checkbox" class="pm-toggle" checked>
+
+                    <span class="min-w-0">
+                        <span class="pm-toggle-label">
+                            <span data-i18n="wizard.advance_received">{{ __('ui.wizard.advance_received') }}</span>
+                        </span>
+                    </span>
                 </label>
 
                 {{--
@@ -889,12 +911,12 @@
                     </select>
                 </div>
 
-                <div id="wizard-agent-existing" class="hidden">
-                    <label for="wizard-agent-id" class="pm-field-label">
+<div id="wizard-agent-existing" class="hidden">
+                    <label for="wizard-agent-id-search" class="pm-field-label">
                         <span data-i18n="wizard.choose_agent">{{ __('ui.wizard.choose_agent') }}</span>
                     </label>
 
-                    <select id="wizard-agent-id" class="pm-input"></select>
+                    <div id="wizard-agent-picker"></div>
                 </div>
 
                 <div id="wizard-agent-new" class="hidden"></div>

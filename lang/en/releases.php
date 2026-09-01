@@ -19,6 +19,18 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.46',
+            'date' => '2026-09-01',
+            'title' => 'One way to create a letting, and pickers that can find anybody',
+            'changes' => [
+                'Add lease now opens the assistant. There were two ways to create a letting and they had drifted apart: the assistant could create the property, the unit and the people as it went, while the older form could only choose ones that already existed, and the two had to be kept in step by hand every time a field changed. The older form is retired and the Guided lease button beside it is gone, because there is nothing left to choose between.',
+                'The assistant finds records by typing rather than by scrolling a list. The property, the unit, the tenant, the agent and every owner are all chosen the same way, and the search reaches your whole registry: the old dropdowns were filled with the first hundred records and said nothing about the rest, so beyond a hundred tenants the assistant simply could not offer them.',
+                'Somebody added while creating a lease can now be told straight away whether Patrimoine may write to them. It was the one thing on the full party form that could not sensibly wait: by the time anybody noticed, the letting had already sent them something, or failed to.',
+                'The assistant\'s tickboxes are switches now, like the ones in Settings.',
+                'The VAT on your management fee starts at the rate your organisation has set. The retired form read it from your settings and the assistant never did, so it would have started every new letting at zero.',
+            ],
+        ],
+        [
             'version' => '1.0.45',
             'date' => '2026-09-01',
             'title' => 'The assistant asks for the agent where the money is, and a letting\'s history is a table',

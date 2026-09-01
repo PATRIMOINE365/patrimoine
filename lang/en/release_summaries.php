@@ -31,7 +31,7 @@ return [
         [
             'through' => '1.0.50',
             'date' => '2026-09-01',
-            'summary' => 'The block the next few releases are being written into. It stays out of the update log until a release moves past 1.0.45, because until then it has nothing to describe.',
+            'summary' => 'There is one way to create a letting now: Add lease opens the guided assistant, and the older form beside it is retired. The assistant finds a property, a unit, a tenant, an agent or an owner by typing rather than by scrolling a list that only ever held the first hundred, a person added along the way can be told straight away whether Patrimoine may write to them, and the VAT on your fee starts at the rate your organisation has set.',
         ],
         [
             'through' => '1.0.45',

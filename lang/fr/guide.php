@@ -330,9 +330,9 @@ return [
                     'intro' => 'L\'assistant construit une location complète en une seule fois — le bien, l\'unité, le propriétaire, le locataire et le bail lui-même — en demandant une chose à la fois. Il demande exactement ce que demande le tiroir Ajouter un bail, une section par page, afin qu\'un bail créé ici et un bail créé là soient le même bail.',
                     'who' => 'Administrateurs et Gestionnaires immobiliers',
                     'steps' => [
-                        ['text' => 'Ouvrez Baux et appuyez sur Assistant de bail.', 'shot' => 'leases-list'],
+                        ['text' => 'Ouvrez Baux et appuyez sur Ajouter un bail. L\'assistant est la façon de créer une location — il n\'y a pas de second formulaire plus court entre lesquels choisir.', 'shot' => 'leases-list'],
                         ['text' => 'La première page explique les mots employés par l\'assistant — partie, propriétaire, unité — pour que rien n\'ait à être deviné ensuite. Lisez-la une fois et appuyez sur Suivant.', 'shot' => 'wizard-intro'],
-                        ['text' => 'Bien et locataire. Choisissez le bien et le lot loué, ou créez l\'un ou l\'autre ; enregistrez qui le possède et les quotes-parts, si Patrimoine ne les connaît pas encore ; puis choisissez le locataire. Tout ce qui n\'existe pas encore peut être créé ici au fil de la saisie.', 'shot' => 'wizard-property'],
+                        ['text' => 'Bien et locataire. Tapez pour trouver le bien et le lot loué, ou créez l\'un ou l\'autre ; enregistrez qui le possède et les quotes-parts, si Patrimoine ne les connaît pas encore ; puis trouvez le locataire de la même façon. Tout ce qui n\'existe pas encore peut être créé ici au fil de la saisie, et l\'on peut indiquer aussitôt si Patrimoine a le droit d\'écrire à une nouvelle personne.', 'shot' => 'wizard-property'],
                         ['text' => 'Durée du bail. Indiquez la date de début et soit une durée, soit une date de fin, ainsi que la date de préavis si la location en prévoit une. La date de début reste la date anniversaire pour toute la durée du bail : un bail débutant le 31 est facturé le 31 de chaque mois qui en compte un, et le dernier jour des mois qui n\'en ont pas.', 'shot' => 'wizard-dates'],
                         ['text' => 'Conditions de loyer. Le champ loyer correspond à UN MOIS de loyer, quelle que soit la périodicité — un bail payé tous les 3 mois à 1 000 par mois est facturé 3 000 par trimestre. Payé tous les compte des mois à partir de la date de début, et non des trimestres civils : c\'est pourquoi il indique 1 mois, 3 mois, 6 mois et 12 mois. Indiquez-le, puis le jour d\'échéance, la TVA sur vos honoraires, tout ajustement de première période, et le dépôt de garantie.', 'shot' => 'wizard-rent'],
                         ['text' => 'Saisir un dépôt de garantie l\'encaisse : la somme est versée sur le compte de dépôt de garantie propre à ce bail. Indiquez quand et comment il a été reçu. La date peut précéder le début du bail, car un dépôt sert généralement à réserver le lot.'],
@@ -354,20 +354,6 @@ return [
                         ['text' => 'Le brouillon apparaît sous Assistants inachevés en haut de la page Baux, au nom de la personne qui l\'a commencé et du jour où elle l\'a fait.', 'shot' => 'lease-drafts'],
                         ['text' => 'Appuyez sur Continuer. Tout ce que vous aviez saisi revient, et l\'assistant s\'ouvre sur la première page — appuyez sur Suivant pour rejoindre l\'endroit où vous en étiez.'],
                         ['text' => 'Appuyez sur Supprimer pour le jeter. Supprimer un assistant inachevé n\'efface rien d\'autre — il n\'y a jamais eu de bail.'],
-                    ],
-                ],
-
-                'create_lease_directly' => [
-                    'title' => 'Créer un bail directement',
-                    'intro' => 'Lorsque le bien, l\'unité et le locataire existent déjà, le formulaire direct est plus rapide que l\'assistant.',
-                    'who' => 'Administrateurs et Gestionnaires immobiliers',
-                    'steps' => [
-                        ['text' => 'Ouvrez Baux et appuyez sur Ajouter un bail.'],
-                        ['text' => 'Choisissez l\'unité et le locataire. Les deux doivent déjà exister.', 'shot' => 'lease-drawer'],
-                        ['text' => 'Indiquez la date de début, la date de fin ou la durée, le loyer et sa périodicité. Le champ loyer correspond à UN MOIS de loyer quelle que soit la périodicité, et la date de début reste la date anniversaire pour toute la durée du bail.'],
-                        ['text' => 'Saisissez le dépôt de garantie, s\'il y en a un. Le saisir l\'encaisse : la somme est versée sur le compte de dépôt de garantie propre à ce bail, et trois champs apparaissent pour indiquer quand et comment il a été reçu. Cette date peut précéder le début du bail, car un dépôt sert généralement à réserver le lot.'],
-                        ['text' => 'Ajoutez le dépôt de garantie, les honoraires de gestion et la commission d\'agent s\'ils s\'appliquent.'],
-                        ['text' => 'Appuyez sur Enregistrer.'],
                     ],
                 ],
 

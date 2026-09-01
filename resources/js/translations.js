@@ -529,7 +529,7 @@ export const translations = {
             'Cancel',
 
         'wizard.launch':
-            'Guided lease',
+            'Add lease',
 
         'wizard.invite_title':
             'Create your first lease',
@@ -827,6 +827,48 @@ export const translations = {
 
         'wizard.frequency':
             'Paid every',
+
+        'wizard.search_property':
+            'Search properties',
+
+        'wizard.search_unit':
+            'Search units',
+
+        'wizard.search_tenant':
+            'Search tenants',
+
+        'wizard.search_agent':
+            'Search agents',
+
+        'wizard.search_owner':
+            'Search owners',
+
+        'wizard.no_property_found':
+            'No property matches that.',
+
+        'wizard.no_unit_found':
+            'No vacant unit matches that.',
+
+        'wizard.no_party_found':
+            'Nobody matches that. Add them as a new party instead.',
+
+        'wizard.clear_choice':
+            'Clear the choice',
+
+        'wizard.email_policy':
+            'Email communications',
+
+        'wizard.email_policy_inherit':
+            'Follow organisation setting',
+
+        'wizard.email_policy_always':
+            'Always email this party',
+
+        'wizard.email_policy_never':
+            'Never email this party',
+
+        'wizard.email_policy_help':
+            'Whether Patrimoine may send documents and notices to them.',
 
         'wizard.frequency_monthly':
             '1 Month',
@@ -5188,7 +5230,7 @@ export const translations = {
             'Annuler',
 
         'wizard.launch':
-            'Assistant de bail',
+            'Ajouter un bail',
 
         'wizard.invite_title':
             'Créez votre premier bail',
@@ -5486,6 +5528,48 @@ export const translations = {
 
         'wizard.frequency':
             'Payé tous les',
+
+        'wizard.search_property':
+            'Rechercher un bien',
+
+        'wizard.search_unit':
+            'Rechercher un lot',
+
+        'wizard.search_tenant':
+            'Rechercher un locataire',
+
+        'wizard.search_agent':
+            'Rechercher un agent',
+
+        'wizard.search_owner':
+            'Rechercher un propriétaire',
+
+        'wizard.no_property_found':
+            'Aucun bien ne correspond.',
+
+        'wizard.no_unit_found':
+            'Aucun lot vacant ne correspond.',
+
+        'wizard.no_party_found':
+            'Personne ne correspond. Ajoutez-la comme nouvelle partie.',
+
+        'wizard.clear_choice':
+            'Effacer le choix',
+
+        'wizard.email_policy':
+            'Communications par e-mail',
+
+        'wizard.email_policy_inherit':
+            'Suivre le paramètre de l’organisation',
+
+        'wizard.email_policy_always':
+            'Toujours envoyer à cette partie',
+
+        'wizard.email_policy_never':
+            'Ne jamais envoyer à cette partie',
+
+        'wizard.email_policy_help':
+            'Indique si Patrimoine peut lui envoyer des documents et des avis.',
 
         'wizard.frequency_monthly':
             '1 mois',
