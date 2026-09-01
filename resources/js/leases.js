@@ -9493,7 +9493,7 @@ function drawLeaseFinancialHistory() {
         ${exportActions}
 
         <div class="pm-panel-table-scroll">
-            <table class="pm-panel-table">
+            <table class="pm-panel-table pm-panel-table-dense">
                 <thead>
                     <tr>
                         <th>${escapeHtml(translate('leases.financial_history_export_date'))}</th>

@@ -1532,6 +1532,30 @@ input[type='radio']:focus-visible {
 }
 
 /*
+| A table with more columns than a drawer comfortably holds.
+|
+| V1.0.45, for the lease financial history: seven columns, and in French
+| the headers alone ("Mode de paiement") push the last of them past the
+| edge. Narrower gutters buy back most of that without touching the type
+| size, which is what a reader actually needs to keep.
+*/
+.pm-panel-table-dense th,
+.pm-panel-table-dense td {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.pm-panel-table-dense th:first-child,
+.pm-panel-table-dense td:first-child {
+    padding-left: 0.75rem;
+}
+
+.pm-panel-table-dense th:last-child,
+.pm-panel-table-dense td:last-child {
+    padding-right: 0.75rem;
+}
+
+/*
 | The one column allowed to be long.
 |
 | A note or a reference can be any length, and letting it push the amount
