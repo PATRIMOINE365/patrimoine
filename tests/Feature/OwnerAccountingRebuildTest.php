@@ -597,6 +597,74 @@ class OwnerAccountingRebuildTest extends TestCase
         $this->assertSame(0, $account->fresh()->payoutAccountBalance());
     }
 
+    /**
+     * Found live on pre-production: the pre-V1.0.48 allocator attributed
+     * payouts against EVERY credit FIFO, deposit credits included, so
+     * history can hold an allocation naming a credit that never fed the
+     * payout pool. Replay must fall back to FIFO for that portion —
+     * reproducing the ledger's arithmetic — rather than draining the
+     * deposit pool or refusing the whole account for ever.
+     */
+    public function test_legacy_allocations_against_deposit_credits_still_reconcile(): void
+    {
+        $account = $this->createAccount();
+
+        $rent = $this->movement($account, 'credit', 'rent_entitlement', 3000, '2026-08-01');
+        $deposit = $this->movement($account, 'credit', 'owner_deposit', 4000, '2026-08-02');
+
+        /*
+         * A payout written the old way: the ledger debit exists, the
+         * payout row exists, and its allocation points at the DEPOSIT
+         * credit even though the money economically left the rent side.
+         */
+        $payout = OwnerPayout::create([
+            'owner_account_id' => $account->id,
+            'amount' => 1000,
+            'payout_date' => '2026-08-05',
+            'payment_method' => 'cash',
+        ]);
+
+        OwnerPayoutAllocation::create([
+            'owner_payout_id' => $payout->id,
+            'owner_transaction_id' => $deposit->id,
+            'amount' => 1000,
+        ]);
+
+        $this->movement($account, 'debit', 'payout', 1000, '2026-08-05');
+
+        $balances = app(OwnerLedgerProjection::class)
+            ->balancesFor((int) $account->id);
+
+        $this->assertSame(2000, $balances['payout']);
+        $this->assertSame(4000, $balances['deposit']);
+
+        $pools = app(OwnerPayoutAllocationEngine::class)
+            ->poolsFor((int) $account->id);
+
+        $this->assertSame(
+            $balances['payout'],
+            $pools['payout_available'] - $pools['payout_deficit']
+        );
+
+        $this->assertSame(
+            $balances['deposit'],
+            $pools['deposit_available'] - $pools['deposit_deficit']
+        );
+
+        /*
+         * And the account still works: the remaining rent money is
+         * withdrawable.
+         */
+        $next = app(OwnerPayoutService::class)->create(
+            $account->fresh(),
+            2000,
+            '2026-08-10',
+            'cash'
+        );
+
+        $this->assertSame(2000, $this->allocated($next, $rent));
+    }
+
     public function test_the_engine_and_the_projection_agree_on_a_busy_ledger(): void
     {
         $account = $this->createAccount();

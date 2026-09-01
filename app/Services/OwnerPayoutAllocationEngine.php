@@ -66,24 +66,15 @@ class OwnerPayoutAllocationEngine
     public function poolsFor(int $accountId): array
     {
         /*
-         * Everything already attributed to an issued payout, credit by
-         * credit. These amounts leave the pools at the source, which is
-         * what "counted exactly once" means mechanically.
+         * What each issued payout consumed, keyed by the ledger DEBIT
+         * that recorded it. Payout debits are written one per payout in
+         * the order the payouts were made, so the nth debit belongs to
+         * the nth payout — the same correspondence the frozen-statement
+         * boundary uses. Replaying a payout debit then consumes exactly
+         * the portions its recorded allocations name, which is what
+         * "counted exactly once, never reassigned" means mechanically.
          */
-        $allocated = OwnerPayoutAllocation::query()
-            ->whereIn(
-                'owner_transaction_id',
-                OwnerTransaction::query()
-                    ->where('owner_account_id', $accountId)
-                    ->select('id')
-            )
-            ->selectRaw(
-                'owner_transaction_id, SUM(amount) as allocated'
-            )
-            ->groupBy('owner_transaction_id')
-            ->pluck('allocated', 'owner_transaction_id')
-            ->map(fn ($value): int => (int) $value)
-            ->all();
+        $allocationsByDebit = $this->allocationsByDebit($accountId);
 
         /*
          * FIFO order is the order the money became the owner's:
@@ -110,7 +101,7 @@ class OwnerPayoutAllocationEngine
         foreach ($movements as $movement) {
             $this->replay(
                 $movement,
-                $allocated,
+                $allocationsByDebit,
                 $payout,
                 $deposit
             );
@@ -217,15 +208,66 @@ class OwnerPayoutAllocationEngine
     }
 
     /**
+     * The recorded allocations of every issued payout, keyed by the
+     * ledger debit row that recorded the payout leaving.
+     *
+     * @return array<int, list<array{origin: int, amount: int}>>
+     */
+    private function allocationsByDebit(int $accountId): array
+    {
+        $debitIds = OwnerTransaction::query()
+            ->where('owner_account_id', $accountId)
+            ->where('direction', 'debit')
+            ->where('category', 'payout')
+            ->orderBy('id')
+            ->pluck('id')
+            ->all();
+
+        if ($debitIds === []) {
+            return [];
+        }
+
+        $payoutIds = \App\Models\OwnerPayout::query()
+            ->where('owner_account_id', $accountId)
+            ->orderBy('created_at')
+            ->orderBy('id')
+            ->pluck('id')
+            ->all();
+
+        $allocations = OwnerPayoutAllocation::query()
+            ->whereIn('owner_payout_id', $payoutIds)
+            ->orderBy('id')
+            ->get(['owner_payout_id', 'owner_transaction_id', 'amount'])
+            ->groupBy('owner_payout_id');
+
+        $map = [];
+
+        foreach ($debitIds as $position => $debitId) {
+            $payoutId = $payoutIds[$position] ?? null;
+
+            $map[$debitId] = $payoutId === null
+                ? []
+                : ($allocations[$payoutId] ?? collect())
+                    ->map(fn ($row): array => [
+                        'origin' => (int) $row->owner_transaction_id,
+                        'amount' => (int) $row->amount,
+                    ])
+                    ->all();
+        }
+
+        return $map;
+    }
+
+    /**
      * Apply one movement to the pools.
      *
-     * @param  array<int, int>  $allocated
+     * @param  array<int, list<array{origin: int, amount: int}>>  $allocationsByDebit
      * @param  array{portions: array<int, array{origin: int, amount: int}>, deficit: int}  $payout
      * @param  array{portions: array<int, array{origin: int, amount: int}>, deficit: int}  $deposit
      */
     private function replay(
         OwnerTransaction $movement,
-        array $allocated,
+        array $allocationsByDebit,
         array &$payout,
         array &$deposit
     ): void {
@@ -251,10 +293,20 @@ class OwnerPayoutAllocationEngine
 
         if ($category === 'payout' && $direction === 'debit') {
             /*
-             * Already counted: each credit entered the pool net of what
-             * issued payouts had claimed from it. Consuming it again
-             * here would count the same money twice.
+             * An issued payout consumes exactly what its recorded
+             * allocations name, portion by portion. History written by
+             * the pre-V1.0.48 allocator may name a credit that never
+             * entered THIS pool — it allocated against every credit
+             * regardless of side — and the fallback for that is plain
+             * FIFO, which reproduces the projection's arithmetic while
+             * leaving the deposit pool alone.
              */
+            $this->consumeForPayout(
+                $payout,
+                $allocationsByDebit[$movement->id] ?? [],
+                $amount
+            );
+
             return;
         }
 
@@ -278,26 +330,84 @@ class OwnerPayoutAllocationEngine
         }
 
         if ($signed > 0) {
-            $entering = $signed;
-
-            if ($direction === 'credit') {
-                $entering -= $allocated[$movement->id] ?? 0;
-            }
-
-            if ($entering < 0) {
-                /*
-                 * Allocations exceeding their credit would mean the
-                 * stored history itself is broken.
-                 */
-                throw new RuntimeException(
-                    __('business.owner.payout_allocation_failed')
-                );
-            }
-
-            $this->credit($target, $entering, (int) $movement->id);
+            $this->credit($target, $signed, (int) $movement->id);
         } elseif ($signed < 0) {
             $this->consume($target, -$signed);
         }
+    }
+
+    /**
+     * A payout debit leaves the payout pool: first the portions its
+     * recorded allocations name, by origin; whatever those cannot cover
+     * — a legacy attribution, or no allocations at all — leaves FIFO.
+     *
+     * @param  array{portions: array<int, array{origin: int, amount: int}>, deficit: int}  $pool
+     * @param  list<array{origin: int, amount: int}>  $allocations
+     */
+    private function consumeForPayout(
+        array &$pool,
+        array $allocations,
+        int $amount
+    ): void {
+        $consumed = 0;
+
+        foreach ($allocations as $allocation) {
+            $wanted = min(
+                $allocation['amount'],
+                $amount - $consumed
+            );
+
+            if ($wanted <= 0) {
+                break;
+            }
+
+            $consumed += $this->consumeOrigin(
+                $pool,
+                $allocation['origin'],
+                $wanted
+            );
+        }
+
+        if ($amount > $consumed) {
+            $this->consume($pool, $amount - $consumed);
+        }
+    }
+
+    /**
+     * Take up to $amount from portions carrying one specific origin.
+     * Returns what was actually taken.
+     *
+     * @param  array{portions: array<int, array{origin: int, amount: int}>, deficit: int}  $pool
+     */
+    private function consumeOrigin(
+        array &$pool,
+        int $origin,
+        int $amount
+    ): int {
+        $taken = 0;
+
+        foreach ($pool['portions'] as $key => $portion) {
+            if ($amount <= 0) {
+                break;
+            }
+
+            if ($portion['origin'] !== $origin) {
+                continue;
+            }
+
+            $take = min($amount, $portion['amount']);
+
+            $amount -= $take;
+            $taken += $take;
+
+            if ($take === $portion['amount']) {
+                unset($pool['portions'][$key]);
+            } else {
+                $pool['portions'][$key]['amount'] -= $take;
+            }
+        }
+
+        return $taken;
     }
 
     /**

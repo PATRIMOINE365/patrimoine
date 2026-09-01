@@ -105,7 +105,7 @@ return [
                     'intro' => 'The address you sign in with also receives your sign-in codes and password resets, so changing it takes three short steps: your password, a code sent to your current address, and a code sent to the new one. Your current address keeps working until all three are done.',
                     'steps' => [
                         ['text' => 'Press your photograph or initials at the top right, then Edit profile.'],
-                        ['text' => 'Press Change email beside your address.'],
+                        ['text' => 'Press Change email beside your address.', 'shot' => 'email-change'],
                         ['text' => 'Enter the new address and your password, then press Send code. A six-digit code goes to your CURRENT address, naming the new one so you can see exactly what you are approving.'],
                         ['text' => 'Enter that code. A second, different code then goes to the NEW address to prove the mailbox is yours.'],
                         ['text' => 'Enter the second code. The address changes, every device is signed out except this one, and a confirmation is sent to your old address.'],
