@@ -178,7 +178,7 @@ return [
         'column_amount' => 'Amount',
         'total' => 'Total',
         'between' => ':from to :to',
-        'period_since_payout' => 'Everything recorded since the last payout: :from to :to.',
+        'period_since_payout' => 'Everything recorded since the payout of :from, up to :to.',
         'period_from_start' => 'Everything recorded up to :to. This is the first payout.',
         'nothing_received' => 'Nothing was received in this period.',
         'nothing_deducted' => 'No fees or deductions in this period.',

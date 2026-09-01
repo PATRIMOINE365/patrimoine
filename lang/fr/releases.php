@@ -15,6 +15,18 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.47',
+            'date' => '2026-09-02',
+            'title' => 'Un versement terminé cesse de changer',
+            'changes' => [
+                'Le reçu de versement à un propriétaire est désormais un document historique. Il indique ce que contenait le compte du propriétaire au moment où cet argent a été versé, et rien de ce qui est enregistré ensuite ne peut le modifier. La composition est inscrite sur le versement au moment où il est effectué, et le reçu est imprimé à partir de celle-ci plutôt que recalculé à partir du grand livre tel qu\'il est aujourd\'hui.',
+                'C\'était incorrect, et de façon visible. Patrimoine permet d\'enregistrer aujourd\'hui un paiement portant une date de mai, ce qui est légitime et souvent nécessaire. Mais le reçu sélectionnait son contenu d\'après ces dates : un paiement saisi après un versement déjà effectué entrait dans le reçu de ce versement — et sortait de celui qui l\'avait réellement libéré, lequel n\'affichait plus qu\'un montant sans rien pour l\'expliquer.',
+                'Deux versements effectués le même jour peuvent maintenant présenter chacun leur propre argent. La période allait du lendemain du versement précédent au versement en cours : un second versement à la même date couvrait donc zéro jour, et son reçu ne montrait aucun détail.',
+                'Les reçus déjà émis ont été reconstruits à partir de ce qui était enregistré à l\'époque : un propriétaire comparant un ancien reçu à un nouveau voit désormais chaque somme à un seul endroit. Les montants versés ont toujours été exacts ; c\'est l\'explication en dessous qui se déplaçait.',
+                'La période d\'un reçu se lit maintenant « depuis le versement du 30 juin, jusqu\'au 31 juillet » plutôt que comme une plage de dates, puisque les dates ne déterminent plus l\'appartenance.',
+            ],
+        ],
+        [
             'version' => '1.0.46',
             'date' => '2026-09-01',
             'title' => 'Une seule façon de créer une location, et des champs qui trouvent tout le monde',

@@ -31,7 +31,7 @@ return [
         [
             'through' => '1.0.50',
             'date' => '2026-09-01',
-            'summary' => 'There is one way to create a letting now: Add lease opens the guided assistant, and the older form beside it is retired. The assistant finds a property, a unit, a tenant, an agent or an owner by typing rather than by scrolling a list that only ever held the first hundred, a person added along the way can be told straight away whether Patrimoine may write to them, and the VAT on your fee starts at the rate your organisation has set.',
+            'summary' => 'There is one way to create a letting now: Add lease opens the guided assistant, and the older form beside it is retired. The assistant finds a property, a unit, a tenant, an agent or an owner by typing rather than by scrolling a list that only ever held the first hundred, a person added along the way can be told straight away whether Patrimoine may write to them, and the VAT on your fee starts at the rate your organisation has set. An owner payout receipt is also a historical record now: it says what the account held when that money was released, and a payment recorded afterwards with an earlier date belongs to the next payout rather than rewriting one already made.',
         ],
         [
             'through' => '1.0.45',

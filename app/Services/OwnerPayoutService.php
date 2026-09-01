@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\OwnerAccount;
 use App\Models\OwnerPayout;
 use App\Models\OwnerPayoutAllocation;
+use App\Services\Documents\OwnerPayoutBreakdownService;
 use App\Models\OwnerTransaction;
 use App\Services\Accounting\OwnerFinancialJournalService;
 use Illuminate\Support\Facades\DB;
@@ -37,7 +38,8 @@ use RuntimeException;
 class OwnerPayoutService
 {
     public function __construct(
-        private readonly OwnerFinancialJournalService $journal
+        private readonly OwnerFinancialJournalService $journal,
+        private readonly OwnerPayoutBreakdownService $breakdown
     ) {
     }
 
@@ -286,6 +288,25 @@ class OwnerPayoutService
                 $payout,
                 $ledgerTransaction
             );
+
+            /*
+             * V1.0.47: freeze what this payout was made against.
+             *
+             * Composed here, once, with the ledger in the state that
+             * justified the payment — and written onto the payout so the
+             * receipt renders from it rather than asking the database
+             * again later. Patrimoine allows backdating, so asking again
+             * is asking a different question: a movement recorded
+             * tomorrow with a date from May would otherwise walk into
+             * this receipt and out of the one that actually releases it.
+             *
+             * Last, after the ledger debit and the journal posting, so
+             * the statement includes the payment it describes.
+             */
+            $payout->forceFill([
+                'statement' => $this->breakdown->compose($payout),
+                'statement_frozen_at' => now(),
+            ])->save();
 
             return $payout;
         });

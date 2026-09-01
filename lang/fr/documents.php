@@ -178,7 +178,7 @@ return [
         'column_amount' => 'Montant',
         'total' => 'Total',
         'between' => 'du :from au :to',
-        'period_since_payout' => 'Tout ce qui a été enregistré depuis le dernier versement : du :from au :to.',
+        'period_since_payout' => 'Tout ce qui a été enregistré depuis le versement du :from, jusqu’au :to.',
         'period_from_start' => 'Tout ce qui a été enregistré jusqu\'au :to. Il s\'agit du premier versement.',
         'nothing_received' => 'Aucune somme reçue sur cette période.',
         'nothing_deducted' => 'Aucun honoraire ni retenue sur cette période.',

@@ -19,6 +19,18 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.47',
+            'date' => '2026-09-02',
+            'title' => 'A completed payout stops changing',
+            'changes' => [
+                'An owner payout receipt is now a historical record. It answers what the owner\'s account held when that money was released, and nothing recorded afterwards can alter it. The composition is written onto the payout when the payout is made, and the receipt is printed from that rather than worked out again from the ledger as it stands today.',
+                'This was wrong, and visibly so. Patrimoine lets you record a payment today carrying a date from May, which is right and often necessary. But the receipt selected its contents by those dates, so a payment entered after a payout had been made walked into that payout\'s receipt — and out of the one that actually released it, which was left showing an amount with nothing to explain it.',
+                'Two payouts made on the same day can now each show their own money. The period ran from the day after the previous payout to the current one, so a second payout on the same date had a period of no days at all and a receipt with no workings whatsoever.',
+                'Receipts already issued have been rebuilt from what was recorded at the time, so an owner comparing an old receipt against a new one sees the same money in one place only. The amounts paid were always correct; it was the explanation beneath them that moved.',
+                'The period on a receipt now reads "since the payout of 30 June, up to 31 July" rather than as a range of dates, because dates are no longer what decides membership.',
+            ],
+        ],
+        [
             'version' => '1.0.46',
             'date' => '2026-09-01',
             'title' => 'One way to create a letting, and pickers that can find anybody',

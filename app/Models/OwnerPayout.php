@@ -34,6 +34,14 @@ class OwnerPayout extends Model
         return [
             'amount' => 'integer',
             'payout_date' => 'date',
+
+            /*
+             * V1.0.47: the composition this payout was made against,
+             * frozen when it was made. A completed payout answers what
+             * justified it at the time, not what the ledger holds now.
+             */
+            'statement' => 'array',
+            'statement_frozen_at' => 'datetime',
         ];
     }
 

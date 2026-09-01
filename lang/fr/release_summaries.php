@@ -23,7 +23,7 @@ return [
         [
             'through' => '1.0.50',
             'date' => '2026-09-01',
-            'summary' => 'Il n\'y a plus qu\'une façon de créer une location : Ajouter un bail ouvre l\'assistant, et l\'ancien formulaire est retiré. L\'assistant trouve un bien, un lot, un locataire, un agent ou un propriétaire en tapant plutôt qu\'en faisant défiler une liste qui ne contenait que les cent premiers, une personne ajoutée en chemin peut recevoir aussitôt son autorisation d\'e-mail, et la TVA sur vos honoraires démarre au taux défini par votre organisation.',
+            'summary' => 'Il n\'y a plus qu\'une façon de créer une location : Ajouter un bail ouvre l\'assistant, et l\'ancien formulaire est retiré. L\'assistant trouve un bien, un lot, un locataire, un agent ou un propriétaire en tapant plutôt qu\'en faisant défiler une liste qui ne contenait que les cent premiers, une personne ajoutée en chemin peut recevoir aussitôt son autorisation d\'e-mail, et la TVA sur vos honoraires démarre au taux défini par votre organisation. Le reçu de versement à un propriétaire est lui aussi devenu un document historique : il indique ce que contenait le compte au moment du versement, et un paiement enregistré ensuite avec une date antérieure appartient au versement suivant plutôt que de réécrire un versement déjà effectué.',
         ],
         [
             'through' => '1.0.45',

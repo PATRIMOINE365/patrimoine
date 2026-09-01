@@ -4,7 +4,6 @@ namespace App\Services\Documents;
 
 use App\Models\OwnerPayout;
 use App\Models\OwnerTransaction;
-use App\Services\Reports\OwnerReportService;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 
@@ -17,10 +16,29 @@ use Illuminate\Support\Collection;
  * transactions themselves, itemised — the rent collected, the fees and
  * the tax on them, and the expenses recorded against the property.
  *
- * The period is the one an owner asks about — everything since they last
- * collected — running from the day after the previous payout up to and
- * including this one. Where there is no previous payout it runs from the
- * beginning of the account.
+ * V1.0.47: THE PERIOD IS A RECORDING PERIOD, NOT A DATE RANGE.
+ *
+ * It used to run from the day after the previous payout to this one, over
+ * the live ledger, keyed on each movement's effective date. That made a
+ * completed receipt a question about today's database, and Patrimoine
+ * allows backdating: a payment recorded after a payout but dated before
+ * it walked into that payout's receipt, and left the payout that actually
+ * released it with nothing to show.
+ *
+ * It was also unable to describe two payouts made on the same day at all.
+ * The second one's window ran from the day after the first to the same
+ * date — an empty range — so its receipt showed an amount and no
+ * workings.
+ *
+ * So the period is now everything RECORDED since the previous payout was
+ * recorded, up to the moment this one was. That is the question a receipt
+ * answers: what did the owner's account hold when this money was
+ * released. A movement backdated afterwards belongs to the next payout,
+ * whatever date it carries.
+ *
+ * The composition is frozen onto the payout when it is made and the
+ * receipt renders from that. Composing it again is only ever a fallback,
+ * for payouts made before this existed.
  *
  * Three rules keep it honest whatever the ledger holds:
  *
@@ -29,9 +47,15 @@ use Illuminate\Support\Collection;
  *    reader can add the tables up and arrive at the payout;
  *  - a category nobody thought of still lands in a table, under its own
  *    name, rather than being dropped;
- *  - the totals are checked against OwnerReportService — the service
- *    behind the owner statement — so a receipt and a statement covering
- *    the same period cannot disagree.
+ *  - brought forward is the account's own net position at the previous
+ *    payout, so brought forward plus the tables IS available, and
+ *    available less this payout IS carried forward. The arithmetic
+ *    closes by construction rather than by agreement with another
+ *    service.
+ *
+ * A receipt and an owner STATEMENT covering "the same period" may now
+ * legitimately differ, and should: a statement answers what happened
+ * between two dates, a receipt answers what justified one payment.
  */
 class OwnerPayoutBreakdownService
 {
@@ -47,14 +71,36 @@ class OwnerPayoutBreakdownService
         'reserve_transfer',
     ];
 
-    public function __construct(
-        private OwnerReportService $reports
-    ) {}
-
     /**
+     * The statement this payout was made against.
+     *
+     * The frozen one, where there is one. A payout made before payouts
+     * were frozen has none, and composing it again is the best that can
+     * be done for it.
+     *
      * @return array<string, mixed>|null
      */
     public function forPayout(OwnerPayout $payout): ?array
+    {
+        $frozen = $payout->statement;
+
+        if (is_array($frozen) && $frozen !== []) {
+            return $frozen;
+        }
+
+        return $this->compose($payout);
+    }
+
+    /**
+     * Work out the composition from the ledger as it stands.
+     *
+     * Called once, when the payout is made. Calling it later answers a
+     * different question than it did then, which is the whole reason the
+     * answer is written down.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function compose(OwnerPayout $payout): ?array
     {
         $payout->loadMissing('ownerAccount.party');
 
@@ -65,32 +111,39 @@ class OwnerPayoutBreakdownService
             return null;
         }
 
-        $to = CarbonImmutable::parse($payout->payout_date);
+        /*
+         * The moment this payout was recorded is the edge of what it
+         * could possibly have been made against.
+         */
+        $recordedAt = $payout->created_at
+            ? CarbonImmutable::parse($payout->created_at)
+            : CarbonImmutable::parse($payout->payout_date)->endOfDay();
 
-        $previous = $this->previousPayoutDate($payout);
+        $previous = $this->previousPayout($payout);
 
         /*
-         * OwnerReportService treats `from` inclusively and computes the
-         * opening balance from everything strictly before it, so starting
-         * the day after the previous payout puts that payout — and every
-         * movement up to it — into the brought-forward figure. It is the
-         * same convention the statement drawer pre-fills with.
+         * The last ledger row that existed when this payout was made,
+         * and the one the payout before it stopped at. Everything
+         * between the two is what this payout was made against.
          */
-        $from = $previous?->addDay();
+        $through = $this->throughMovementId($account->id, $recordedAt);
 
-        $movements = $this->movements($account->id, $from, $to);
+        $previousThrough = $this->boundaryOf($previous, $account->id);
+
+        $movements = $this->movements(
+            $account->id,
+            $previousThrough,
+            $through
+        );
 
         $received = $this->received($movements);
         $deductions = $this->deductions($movements);
         $expenses = $this->expenses($movements);
 
-        $summary = $this->reports->generate(
-            $owner,
-            $from?->toDateString(),
-            $to->toDateString()
-        )['summary'];
-
-        $broughtForward = (int) $summary['opening_balance'];
+        $broughtForward = $this->netPositionThrough(
+            $account->id,
+            $previousThrough
+        );
 
         $available =
             $broughtForward
@@ -99,18 +152,35 @@ class OwnerPayoutBreakdownService
             - $expenses['total'];
 
         /*
-         * A second payout dated inside the window is not possible through
-         * the application, but a backdated one is, and an owner reading a
-         * receipt that does not add up would be right to distrust all of
-         * it. Shown as its own line when it happens.
+         * Another payout inside a recording window cannot happen: each
+         * payout closes its own window at the moment it is recorded. The
+         * line is kept so a reconstructed statement for something odd in
+         * the history still adds up on the page rather than silently
+         * not.
          */
-        $otherPayouts =
-            (int) $summary['payouts']
+        $otherPayouts = $movements
+            ->where('direction', 'debit')
+            ->where('category', 'payout')
+            ->sum('amount')
             - (int) $payout->amount;
 
         return [
-            'from' => $from?->toDateString(),
-            'to' => $to->toDateString(),
+            /*
+             * The label an owner reads is the DATE of the payout they
+             * last collected — the event they remember. The boundary the
+             * statement was actually selected on is the ledger row it
+             * stopped at, which is a fact about the database and not
+             * something to print on a receipt.
+             */
+            'from' => $previous?->payout_date?->toDateString(),
+
+            /*
+             * Kept so the next payout knows exactly where this one
+             * stopped, without having to work it out from timestamps
+             * that may since have become ambiguous.
+             */
+            'through_movement_id' => $through,
+            'to' => CarbonImmutable::parse($payout->payout_date)->toDateString(),
             'has_previous_payout' => $previous !== null,
 
             'brought_forward' => $broughtForward,
@@ -119,8 +189,8 @@ class OwnerPayoutBreakdownService
             'expenses_total' => $expenses['total'],
             'available' => $available,
             'amount' => (int) $payout->amount,
-            'other_payouts' => $otherPayouts,
-            'carried_forward' => (int) $summary['closing_balance'],
+            'other_payouts' => (int) $otherPayouts,
+            'carried_forward' => $available - (int) $payout->amount - (int) $otherPayouts,
 
             'received' => $received['rows'],
             'deductions' => $deductions['rows'],
@@ -129,14 +199,93 @@ class OwnerPayoutBreakdownService
     }
 
     /**
-     * Every movement in the period, with what it takes to describe one.
+     * The last ledger row on this account that existed at a moment.
+     *
+     * Ledger ids are monotonic, so this is the whole of "what had been
+     * recorded by then" expressed as one number.
+     */
+    private function throughMovementId(
+        int $accountId,
+        CarbonImmutable $recordedAt
+    ): int {
+        return (int) OwnerTransaction::query()
+            ->where('owner_account_id', $accountId)
+            ->where('created_at', '<=', $recordedAt)
+            ->max('id');
+    }
+
+    /**
+     * Where a payout stopped.
+     *
+     * Its own frozen statement says so. One made before payouts were
+     * frozen has to be reconstructed from when it was recorded, which is
+     * the best evidence left.
+     */
+    private function boundaryOf(
+        ?OwnerPayout $payout,
+        int $accountId
+    ): int {
+        if ($payout === null) {
+            return 0;
+        }
+
+        $frozen = $payout->statement;
+
+        if (is_array($frozen) && isset($frozen['through_movement_id'])) {
+            return (int) $frozen['through_movement_id'];
+        }
+
+        $recordedAt = $payout->created_at
+            ? CarbonImmutable::parse($payout->created_at)
+            : CarbonImmutable::parse($payout->payout_date)->endOfDay();
+
+        return $this->throughMovementId($accountId, $recordedAt);
+    }
+
+    /**
+     * What the account was worth when the previous payout stopped.
+     *
+     * Everything up to and including that row, netted — which includes
+     * the previous payout's own debit, so the figure is what was left
+     * after the owner last collected.
+     */
+    private function netPositionThrough(
+        int $accountId,
+        int $throughId
+    ): int {
+        if ($throughId <= 0) {
+            return 0;
+        }
+
+        $credits = OwnerTransaction::query()
+            ->where('owner_account_id', $accountId)
+            ->where('direction', 'credit')
+            ->where('id', '<=', $throughId)
+            ->sum('amount');
+
+        $debits = OwnerTransaction::query()
+            ->where('owner_account_id', $accountId)
+            ->where('direction', 'debit')
+            ->where('id', '<=', $throughId)
+            ->sum('amount');
+
+        return (int) $credits - (int) $debits;
+    }
+
+    /**
+     * Every movement recorded in the period, with what it takes to
+     * describe one.
+     *
+     * Bounded by the ledger rows themselves, not by the dates they
+     * carry. A rent payment for May entered in September belongs to
+     * whatever payout was next after September.
      *
      * @return Collection<int, OwnerTransaction>
      */
     private function movements(
         int $accountId,
-        ?CarbonImmutable $from,
-        CarbonImmutable $to
+        int $after,
+        int $through
     ): Collection {
         $query = OwnerTransaction::query()
             ->where('owner_account_id', $accountId)
@@ -151,11 +300,8 @@ class OwnerPayoutBreakdownService
                 'invoice:id,invoice_number,period_start,period_end',
                 'ownerExpenseBill:id,bill_number',
             ])
-            ->whereDate('transaction_date', '<=', $to);
-
-        if ($from !== null) {
-            $query->whereDate('transaction_date', '>=', $from);
-        }
+            ->where('id', '>', $after)
+            ->where('id', '<=', $through);
 
         return $query
             ->orderBy('transaction_date')
@@ -353,31 +499,31 @@ class OwnerPayoutBreakdownService
     /**
      * The date of the payout before this one, if there is one.
      */
-    private function previousPayoutDate(
+    /**
+     * The payout recorded immediately before this one.
+     *
+     * By when it was RECORDED, not by the date it carries: two payouts
+     * made on the same day are ordered by the moment each was entered,
+     * which is the only ordering that can separate them. Falling back to
+     * the id keeps that deterministic where a timestamp is missing.
+     */
+    private function previousPayout(
         OwnerPayout $payout
-    ): ?CarbonImmutable {
-        $previous = OwnerPayout::query()
+    ): ?OwnerPayout {
+        return OwnerPayout::query()
             ->where('owner_account_id', $payout->owner_account_id)
             ->where('id', '!=', $payout->id)
             ->where(
                 fn ($query) => $query
-                    ->whereDate('payout_date', '<', $payout->payout_date)
+                    ->where('created_at', '<', $payout->created_at)
                     ->orWhere(
                         fn ($same) => $same
-                            ->whereDate(
-                                'payout_date',
-                                '=',
-                                $payout->payout_date
-                            )
+                            ->where('created_at', '=', $payout->created_at)
                             ->where('id', '<', $payout->id)
                     )
             )
-            ->orderByDesc('payout_date')
+            ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->first();
-
-        return $previous === null
-            ? null
-            : CarbonImmutable::parse($previous->payout_date);
     }
 }

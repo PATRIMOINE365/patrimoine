@@ -156,7 +156,15 @@ class OwnerPayoutBreakdownTest extends TestCase
         $breakdown = $service->forPayout($second);
 
         $this->assertTrue($breakdown['has_previous_payout']);
-        $this->assertSame('2026-07-01', $breakdown['from']);
+
+        /*
+         * V1.0.47: the period is bounded by when the previous payout was
+         * RECORDED, and the label names that payout by its own date —
+         * "since the payout of 30 June" — rather than by the day after
+         * it. Membership was never really a date question; pretending it
+         * was is what let a backdated movement into a closed receipt.
+         */
+        $this->assertSame('2026-06-30', $breakdown['from']);
         $this->assertSame('2026-07-31', $breakdown['to']);
 
         /*
