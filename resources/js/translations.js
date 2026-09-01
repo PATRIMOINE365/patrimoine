@@ -17,7 +17,7 @@
 export const translations = {
     en: {
         'wizard.step2_note':
-            'The property, its owners, the tenant and any agent. Anything not recorded yet can be created here as you go.',
+            'The property, its owners and the tenant. Start typing to find one, or create it here as you go — the agent is asked for later, beside their commission.',
         'wizard.step5_note':
             'Advance payment is rent the tenant hands over before it falls due. Part of it can be held back as a rent reserve, which ordinary rent cannot touch.',
         'wizard.step8_note':
@@ -4718,7 +4718,7 @@ export const translations = {
 
     fr: {
         'wizard.step2_note':
-            'Le bien, ses propriétaires, le locataire et l’éventuel agent. Tout ce qui n’existe pas encore peut être créé ici au fil de la saisie.',
+            'Le bien, ses propriétaires et le locataire. Tapez pour les trouver, ou créez-les ici au fil de la saisie — l’agent est demandé plus loin, à côté de sa commission.',
         'wizard.step5_note':
             'Le paiement anticipé est un loyer versé par le locataire avant son échéance. Une partie peut être conservée en réserve de loyer, à laquelle le loyer ordinaire ne peut pas toucher.',
         'wizard.step8_note':

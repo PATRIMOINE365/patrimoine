@@ -863,7 +863,7 @@ return [
     ],
 
     'wizard' => [
-        'step2_note' => 'Le bien, ses propriétaires, le locataire et l’éventuel agent. Tout ce qui n’existe pas encore peut être créé ici au fil de la saisie.',
+        'step2_note' => 'Le bien, ses propriétaires et le locataire. Tapez pour les trouver, ou créez-les ici au fil de la saisie — l’agent est demandé plus loin, à côté de sa commission.',
         'step5_note' => 'Le paiement anticipé est un loyer versé par le locataire avant son échéance. Une partie peut être conservée en réserve de loyer, à laquelle le loyer ordinaire ne peut pas toucher.',
         'step8_note' => 'La création du bail crée aussi tout ce qui précède. Un brouillon peut être activé plus tard depuis la page Baux.',
         'ownership' => 'À qui appartient le bien',

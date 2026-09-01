@@ -697,7 +697,7 @@ return [
     ],
 
     'wizard' => [
-        'step2_note' => 'The property, its owners, the tenant and any agent. Anything not recorded yet can be created here as you go.',
+        'step2_note' => 'The property, its owners and the tenant. Start typing to find one, or create it here as you go — the agent is asked for later, beside their commission.',
         'step5_note' => 'Advance payment is rent the tenant hands over before it falls due. Part of it can be held back as a rent reserve, which ordinary rent cannot touch.',
         'step8_note' => 'Creating the lease also creates everything above it. A draft can be activated later from the Leases page.',
         'ownership' => 'Who owns it',
