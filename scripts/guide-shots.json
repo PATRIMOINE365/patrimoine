@@ -322,7 +322,7 @@
   {
     "id": null,
     "name": "wizard",
-    "comment": "Walks the lease assistant page by page and photographs each one. V1.0.43: eight pages rather than ten, one per section of the lease drawer. Page 1 is a glossary; page 2 holds the property, the unit, the ownership block and the people; the rest follow the drawer's own order. Nothing is ever submitted.",
+    "comment": "Walks the lease assistant page by page and photographs each one. V1.0.45: the agent is chosen on the Fees & Commission page, beside the commission that is theirs, so an agent is picked before that page is photographed - the commission field only exists once there is somebody to owe it to. Nothing is ever submitted.",
     "path": "/leases/wizard",
     "wait": "#wizard-step-counter",
     "settle": 900,
@@ -405,6 +405,28 @@
       {
         "click": "#wizard-next",
         "pause": 900
+      },
+      {
+        "select": {
+          "selector": "#wizard-agent-mode",
+          "value": "existing"
+        },
+        "pause": 700
+      },
+      {
+        "fill": {
+          "selector": "#wizard-agent-commission",
+          "value": "1500"
+        },
+        "pause": 300
+      },
+      {
+        "evaluate": "window.scrollTo(0, 0)",
+        "pause": 350
+      },
+      {
+        "capture": "wizard-fees",
+        "settle": 400
       },
       {
         "click": "#wizard-next",

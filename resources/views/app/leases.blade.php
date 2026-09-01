@@ -3916,10 +3916,18 @@
      Lease Financial History
 ================================================================ --}}
 
+{{--
+    V1.0.45: the large drawer, like Extend beside it.
+
+    The history is a ledger - one row per movement, eight columns wide -
+    and it was being read as a column of cards in a panel narrow enough
+    that every record took four lines. A letting of any age scrolled for
+    a minute and could not be scanned down a date or an amount.
+--}}
 <x-drawer
     id="lease-financial-history-modal"
     backdrop-id="lease-financial-history-modal-backdrop"
-    width="sm"
+    width="lg"
 >
     <x-drawer-header
         title-id="lease-financial-history-modal-title"
@@ -3964,6 +3972,16 @@
         <div
             id="lease-financial-history-content"
             class="hidden space-y-4"
+        ></div>
+
+        {{--
+            The shared pagination control: how many rows out of how many,
+            25 / 50 / 100, and every page one press away. The same one
+            every other list in Patrimoine uses.
+        --}}
+        <div
+            id="lease-financial-history-pagination"
+            class="mt-4 hidden"
         ></div>
     </div>
 

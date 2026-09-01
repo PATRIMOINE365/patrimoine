@@ -29,9 +29,14 @@ return [
 
     'entries' => [
         [
+            'through' => '1.0.50',
+            'date' => '2026-09-01',
+            'summary' => 'The block the next few releases are being written into. It stays out of the update log until a release moves past 1.0.45, because until then it has nothing to describe.',
+        ],
+        [
             'through' => '1.0.45',
             'date' => '2026-08-31',
-            'summary' => 'An owner\'s payout receipt itemises every movement behind the figure — the rent by unit and period, the fees and the tax on them, and each expense — and every lease has a View button that opens the whole letting on one screen. The security deposit entered on a lease is now genuinely received into the tenant\'s deposit account, money that arrives before the tenancy is accepted as arriving then, a letting that begins on the 31st keeps the 31st for the whole of its life, and the guided assistant asks exactly what the lease form asks, one page per section. A record Patrimoine will not delete can be archived instead — it says what archiving does and asks why, the record leaves the lists and the dropdowns while every document and ledger line still names it, and it comes back from the Archive page whenever you want it; the lists themselves are about half as tall, and a party\'s type and roles carry a colour of their own; Settings now lists every device your account is signed in on and lets you sign any of them out on the spot, and a session that goes unused ends on its own instead of lasting for ever.',
+            'summary' => 'An owner\'s payout receipt itemises every movement behind the figure — the rent by unit and period, the fees and the tax on them, and each expense — and every lease has a View button that opens the whole letting on one screen. The security deposit entered on a lease is now genuinely received into the tenant\'s deposit account, money that arrives before the tenancy is accepted as arriving then, a letting that begins on the 31st keeps the 31st for the whole of its life, and the guided assistant asks exactly what the lease form asks, one page per section. A record Patrimoine will not delete can be archived instead — it says what archiving does and asks why, the record leaves the lists and the dropdowns while every document and ledger line still names it, and it comes back from the Archive page whenever you want it; the lists themselves are about half as tall, and a party\'s type and roles carry a colour of their own; Settings now lists every device your account is signed in on and lets you sign any of them out on the spot, and a session that goes unused ends on its own instead of lasting for ever; the lease assistant asks for the agent beside the commission that is theirs and always opens on its first page, Paid every is written in months rather than calendar names, the Extend and Terminate drawers have their date pickers back, and a letting\'s financial history is now a paged table in the wide drawer.',
         ],
         [
             'through' => '1.0.40',

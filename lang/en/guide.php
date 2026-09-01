@@ -336,13 +336,13 @@ return [
                     'steps' => [
                         ['text' => 'Open Leases and press Guided lease.', 'shot' => 'leases-list'],
                         ['text' => 'The first page explains the words the assistant uses — party, owner, unit — so nothing later has to be guessed at. Read it once and press Next.', 'shot' => 'wizard-intro'],
-                        ['text' => 'Property and tenant. Choose the property and the unit being let, or create either; record who owns it and their shares, if Patrimoine does not know yet; then choose the tenant and, if there is one, the agent. Anything not recorded yet can be created here as you go.', 'shot' => 'wizard-property'],
+                        ['text' => 'Property and tenant. Choose the property and the unit being let, or create either; record who owns it and their shares, if Patrimoine does not know yet; then choose the tenant. Anything not recorded yet can be created here as you go.', 'shot' => 'wizard-property'],
                         ['text' => 'Lease period. Set the start date and either a duration or an end date, and the notice date if the letting has one. The start date is the anniversary for the whole letting: a lease beginning on the 31st is billed on the 31st of every month that has one, and on the last day of the months that do not.', 'shot' => 'wizard-dates'],
-                        ['text' => 'Rent terms. The rent field is a MONTH of rent, whatever the payment frequency — a quarterly lease at 1,000 a month is invoiced 3,000 a quarter. Set the frequency, the due day, the VAT on your fee, any first-period adjustment, and the deposit.', 'shot' => 'wizard-rent'],
+                        ['text' => 'Rent terms. The rent field is a MONTH of rent, whatever the payment frequency — a lease paid every 3 Months at 1,000 a month is invoiced 3,000 a quarter. Paid every counts months from the start date rather than calendar quarters, which is why it reads 1 Month, 3 Months, 6 Months and 12 Months. Set it, then the due day, the VAT on your fee, any first-period adjustment, and the deposit.', 'shot' => 'wizard-rent'],
                         ['text' => 'Entering a deposit receives it: the money goes into this lease\'s own Security Deposit account. Say when it changed hands and how. The date may be before the lease starts, because a deposit is usually what secures the unit.'],
                         ['text' => 'Advance payment. Enter the advance and how much of it is held back as a rent reserve; Patrimoine shows you what is left as consumable advance. If the advance has already been received, say when and how it was paid — that date may also precede the lease. When it came in as cash the cashier is whoever is signed in, and Patrimoine fills that in itself.'],
                         ['text' => 'Rent increment. Set a scheduled increase, if there is one. Its date cannot fall before the lease begins.'],
-                        ['text' => 'Fees and commission. Set the management fee, the agent commission and any notes about the letting.'],
+                        ['text' => 'Fees and commission. Choose the agent, if the letting has one, and say what they are owed; the commission field appears the moment an agent is chosen, directly under their name. Then set your management fee and any notes about the letting.'],
                         ['text' => 'Read the review page. It shows everything that is about to be created, in one list.', 'shot' => 'wizard-review'],
                         ['text' => 'Press Create and activate. Everything is created together; nothing is saved before this point. Save as draft sits at the top of the page beside Cancel, and is offered on every page including this one.'],
                     ],
@@ -356,7 +356,7 @@ return [
                     'steps' => [
                         ['text' => 'Press Save as draft at any point before the review page.'],
                         ['text' => 'The draft appears under Unfinished assistants at the top of the Leases page, named after whoever started it and the day they did.', 'shot' => 'lease-drafts'],
-                        ['text' => 'Press Continue to pick it up on the page you left.'],
+                        ['text' => 'Press Continue. Everything you had typed comes back, and the assistant opens on the first page — press Next to walk to wherever you had got to.'],
                         ['text' => 'Press Discard to throw it away. Discarding an unfinished assistant deletes nothing else — there was never a lease.'],
                     ],
                 ],
@@ -417,8 +417,8 @@ return [
                     'intro' => 'Everything that has ever happened on one letting, in one place: invoices raised, payments received, deposits held, vouchers issued.',
                     'steps' => [
                         ['text' => 'Open the lease and press Financial history.'],
-                        ['text' => 'The list runs newest first and is paged like every other list.', 'shot' => 'lease-history'],
-                        ['text' => 'Press any row to open the document behind it.'],
+                        ['text' => 'Every movement is one row: the date, what it was, its reference, the fund it touched, how it was paid and how much. Twenty-five rows a page, or 50 or 100, and every page one press away.', 'shot' => 'lease-history'],
+                        ['text' => 'Where a movement produced a document, Open in the last column brings it up.'],
                     ],
                 ],
 

@@ -170,6 +170,11 @@
 
             <dl class="pm-wizard-glossary">
                 <div>
+                    <dt data-i18n="wizard.glossary_organisation_term">{{ __('ui.wizard.glossary_organisation_term') }}</dt>
+                    <dd data-i18n="wizard.glossary_organisation_text">{{ __('ui.wizard.glossary_organisation_text') }}</dd>
+                </div>
+
+                <div>
                     <dt data-i18n="wizard.glossary_party_term">{{ __('ui.wizard.glossary_party_term') }}</dt>
                     <dd data-i18n="wizard.glossary_party_text">{{ __('ui.wizard.glossary_party_text') }}</dd>
                 </div>
@@ -358,29 +363,6 @@
 
                 <div id="wizard-tenant-new" class="hidden"></div>
 
-                <div class="pm-wizard-divider"></div>
-
-                <div>
-                    <label for="wizard-agent-mode" class="pm-field-label">
-                        <span data-i18n="wizard.agent">{{ __('ui.wizard.agent') }}</span>
-                    </label>
-
-                    <select id="wizard-agent-mode" class="pm-input">
-                        <option value="none" data-i18n="wizard.no_agent">{{ __('ui.wizard.no_agent') }}</option>
-                        <option value="existing" data-i18n="wizard.use_existing_party">{{ __('ui.wizard.use_existing_party') }}</option>
-                        <option value="new" data-i18n="wizard.add_new_party">{{ __('ui.wizard.add_new_party') }}</option>
-                    </select>
-                </div>
-
-                <div id="wizard-agent-existing" class="hidden">
-                    <label for="wizard-agent-id" class="pm-field-label">
-                        <span data-i18n="wizard.choose_agent">{{ __('ui.wizard.choose_agent') }}</span>
-                    </label>
-
-                    <select id="wizard-agent-id" class="pm-input"></select>
-                </div>
-
-                <div id="wizard-agent-new" class="hidden"></div>
             </div>
         </section>
 
@@ -885,6 +867,67 @@
             </h2>
 
             <div class="pm-wizard-fields">
+                {{--
+                    V1.0.45: the agent is chosen here rather than on the
+                    Property & Tenant page.
+
+                    Their commission has always lived with the fees, which
+                    left the person who had just picked an agent two pages
+                    earlier reading a money field with no name attached to
+                    it. Choosing the agent and saying what they are owed is
+                    one decision, so it is now one place.
+                --}}
+                <div>
+                    <label for="wizard-agent-mode" class="pm-field-label">
+                        <span data-i18n="wizard.agent">{{ __('ui.wizard.agent') }}</span>
+                    </label>
+
+                    <select id="wizard-agent-mode" class="pm-input">
+                        <option value="none" data-i18n="wizard.no_agent">{{ __('ui.wizard.no_agent') }}</option>
+                        <option value="existing" data-i18n="wizard.use_existing_party">{{ __('ui.wizard.use_existing_party') }}</option>
+                        <option value="new" data-i18n="wizard.add_new_party">{{ __('ui.wizard.add_new_party') }}</option>
+                    </select>
+                </div>
+
+                <div id="wizard-agent-existing" class="hidden">
+                    <label for="wizard-agent-id" class="pm-field-label">
+                        <span data-i18n="wizard.choose_agent">{{ __('ui.wizard.choose_agent') }}</span>
+                    </label>
+
+                    <select id="wizard-agent-id" class="pm-input"></select>
+                </div>
+
+                <div id="wizard-agent-new" class="hidden"></div>
+
+                {{--
+                    Directly under the agent, so the amount is read as
+                    theirs and nobody has to guess what the commission is
+                    for.
+                --}}
+                <div id="wizard-agent-commission-field" class="hidden">
+                    <label for="wizard-agent-commission" class="pm-field-label">
+                        <span data-i18n="wizard.agent_commission">{{ __('ui.wizard.agent_commission') }}</span>
+                    </label>
+
+                    <div class="pm-input-affix">
+                        <input
+                            id="wizard-agent-commission"
+                            type="text"
+                            inputmode="numeric"
+                            data-money-input
+                            class="pm-input pr-14" value="0"
+                        >
+
+                        <span id="wizard-agent-commission-unit" class="pm-input-unit"></span>
+                    </div>
+
+                    <p class="pm-wizard-help">
+                        <span data-i18n="wizard.agent_commission_help">{{ __('ui.wizard.agent_commission_help') }}</span>
+                    </p>
+                </div>
+
+                <div class="pm-wizard-divider"></div>
+
                 <div class="pm-wizard-grid">
                     <div>
                         <label for="wizard-fee-type" class="pm-field-label">
@@ -914,33 +957,6 @@
 
                             <span id="wizard-fee-unit" class="pm-input-unit"></span>
                         </div>
-                    </div>
-
-                    {{--
-                        The agent's one-off commission. It belongs with the
-                        fees, as it does in the drawer, rather than beside
-                        the agent's name: it is money, not identity.
-                    --}}
-                    <div id="wizard-agent-commission-field" class="hidden">
-                        <label for="wizard-agent-commission" class="pm-field-label">
-                            <span data-i18n="wizard.agent_commission">{{ __('ui.wizard.agent_commission') }}</span>
-                        </label>
-
-                        <div class="pm-input-affix">
-                            <input
-                                id="wizard-agent-commission"
-                                type="text"
-                                inputmode="numeric"
-                                data-money-input
-                                class="pm-input pr-14" value="0"
-                            >
-
-                            <span id="wizard-agent-commission-unit" class="pm-input-unit"></span>
-                        </div>
-
-                        <p class="pm-wizard-help">
-                            <span data-i18n="wizard.agent_commission_help">{{ __('ui.wizard.agent_commission_help') }}</span>
-                        </p>
                     </div>
                 </div>
 

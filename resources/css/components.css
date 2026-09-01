@@ -1549,6 +1549,17 @@ input[type='radio']:focus-visible {
     white-space: nowrap;
 }
 
+/*
+| A cell with nothing to say.
+|
+| An em dash rather than an empty box: a blank cell in a table of money
+| reads as a rendering fault, and half the columns of a financial history
+| are legitimately empty on any given row.
+*/
+.pm-panel-table-muted {
+    color: var(--pm-text-subtle);
+}
+
 .pm-panel-table-credit {
     color: var(--pm-success-text);
 }

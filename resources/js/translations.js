@@ -608,6 +608,12 @@ export const translations = {
 
 
 
+        'wizard.glossary_organisation_term':
+            'Managing Organisation',
+
+        'wizard.glossary_organisation_text':
+            'Your own company. The agency letting and managing these properties.',
+
         'wizard.glossary_party_term':
             'Party',
 
@@ -823,16 +829,16 @@ export const translations = {
             'Paid every',
 
         'wizard.frequency_monthly':
-            'Month',
+            '1 Month',
 
         'wizard.frequency_quarterly':
-            'Quarter',
+            '3 Months',
 
         'wizard.frequency_bi_yearly':
-            'Six months',
+            '6 Months',
 
         'wizard.frequency_yearly':
-            'Year',
+            '12 Months',
 
         'wizard.due_day':
             'Due day',
@@ -2984,6 +2990,27 @@ export const translations = {
         'leases.financial_history_reference': 'Reference',
         'leases.financial_history_payment_method': 'Payment Method',
         'leases.financial_history_fund': 'Fund',
+        'leases.financial_history_export_date':
+            'Date',
+
+        'leases.financial_history_export_type':
+            'Type',
+
+        'leases.financial_history_export_reference':
+            'Reference',
+
+        'leases.financial_history_export_fund':
+            'Fund',
+
+        'leases.financial_history_export_payment_method':
+            'Payment Method',
+
+        'leases.financial_history_export_amount':
+            'Amount',
+
+        'leases.financial_history_export_document':
+            'Document',
+
         'leases.financial_history_open_document': 'Open Document',
         'leases.financial_history_unable_open_document': 'Unable to open document.',
         'leases.financial_history_event_invoice': 'Invoice',
@@ -3115,10 +3142,10 @@ export const translations = {
         'leases.status_active': 'Active',
         'leases.status_notice': 'Notice',
         'leases.status_terminated': 'Terminated',
-        'leases.frequency_month': 'month',
-        'leases.frequency_quarter': 'quarter',
-        'leases.frequency_six_months': 'six months',
-        'leases.frequency_year': 'year',
+        'leases.frequency_month': '1 Month',
+        'leases.frequency_quarter': '3 Months',
+        'leases.frequency_six_months': '6 Months',
+        'leases.frequency_year': '12 Months',
         'leases.page': 'Page',
         'leases.of': 'of',
         'leases.previous': 'Previous',
@@ -3242,10 +3269,10 @@ export const translations = {
         'leases.security_deposit': 'Security Deposit',
         'leases.security_deposit_received_help':
             'Entering a deposit receives it into this lease\u2019s Security Deposit account. Say when it changed hands and how; a deposit taken before the tenancy begins is normal and its date may precede the start date.',
-        'leases.monthly': 'Monthly',
-        'leases.quarterly': 'Quarterly',
-        'leases.bi_yearly': 'Bi-Yearly',
-        'leases.yearly': 'Yearly',
+        'leases.monthly': '1 Month',
+        'leases.quarterly': '3 Months',
+        'leases.bi_yearly': '6 Months',
+        'leases.yearly': '12 Months',
         'leases.from_start_date': 'From start date',
         'leases.automatic': 'Automatic',
         'leases.advance_payment': 'Advance Payment',
@@ -5237,6 +5264,12 @@ export const translations = {
 
 
 
+        'wizard.glossary_organisation_term':
+            'Organisation gestionnaire',
+
+        'wizard.glossary_organisation_text':
+            'Votre propre société. L’agence qui loue et gère ces biens.',
+
         'wizard.glossary_party_term':
             'Partie',
 
@@ -5452,16 +5485,16 @@ export const translations = {
             'Payé tous les',
 
         'wizard.frequency_monthly':
-            'Mois',
+            '1 mois',
 
         'wizard.frequency_quarterly':
-            'Trimestre',
+            '3 mois',
 
         'wizard.frequency_bi_yearly':
-            'Six mois',
+            '6 mois',
 
         'wizard.frequency_yearly':
-            'An',
+            '12 mois',
 
         'wizard.due_day':
             'Jour d’échéance',
@@ -8098,6 +8131,27 @@ export const translations = {
         'leases.financial_history_reference': 'Référence',
         'leases.financial_history_payment_method': 'Mode de paiement',
         'leases.financial_history_fund': 'Fonds',
+        'leases.financial_history_export_date':
+            'Date',
+
+        'leases.financial_history_export_type':
+            'Type',
+
+        'leases.financial_history_export_reference':
+            'Référence',
+
+        'leases.financial_history_export_fund':
+            'Fonds',
+
+        'leases.financial_history_export_payment_method':
+            'Mode de paiement',
+
+        'leases.financial_history_export_amount':
+            'Montant',
+
+        'leases.financial_history_export_document':
+            'Document',
+
         'leases.financial_history_open_document': 'Ouvrir le document',
         'leases.financial_history_unable_open_document': 'Impossible d’ouvrir le document.',
         'leases.financial_history_event_invoice': 'Facture',
@@ -8229,10 +8283,10 @@ export const translations = {
         'leases.status_active': 'Actif',
         'leases.status_notice': 'Préavis',
         'leases.status_terminated': 'Résilié',
-        'leases.frequency_month': 'mois',
-        'leases.frequency_quarter': 'trimestre',
-        'leases.frequency_six_months': 'six mois',
-        'leases.frequency_year': 'an',
+        'leases.frequency_month': '1 mois',
+        'leases.frequency_quarter': '3 mois',
+        'leases.frequency_six_months': '6 mois',
+        'leases.frequency_year': '12 mois',
         'leases.page': 'Page',
         'leases.of': 'sur',
         'leases.previous': 'Précédent',
@@ -8356,10 +8410,10 @@ export const translations = {
         'leases.security_deposit': 'Dépôt de garantie',
         'leases.security_deposit_received_help':
             'Saisir un d\u00e9p\u00f4t l\u2019encaisse sur le compte de d\u00e9p\u00f4t de garantie de ce bail. Indiquez quand et comment il a \u00e9t\u00e9 re\u00e7u\u00a0; un d\u00e9p\u00f4t re\u00e7u avant le d\u00e9but du bail est normal et sa date peut pr\u00e9c\u00e9der la date de d\u00e9but.',
-        'leases.monthly': 'Mensuel',
-        'leases.quarterly': 'Trimestriel',
-        'leases.bi_yearly': 'Semestriel',
-        'leases.yearly': 'Annuel',
+        'leases.monthly': '1 mois',
+        'leases.quarterly': '3 mois',
+        'leases.bi_yearly': '6 mois',
+        'leases.yearly': '12 mois',
         'leases.from_start_date': 'Selon la date de début',
         'leases.automatic': 'Automatique',
         'leases.advance_payment': 'Paiement anticipé',

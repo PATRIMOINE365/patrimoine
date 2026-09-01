@@ -332,13 +332,13 @@ return [
                     'steps' => [
                         ['text' => 'Ouvrez Baux et appuyez sur Assistant de bail.', 'shot' => 'leases-list'],
                         ['text' => 'La première page explique les mots employés par l\'assistant — partie, propriétaire, unité — pour que rien n\'ait à être deviné ensuite. Lisez-la une fois et appuyez sur Suivant.', 'shot' => 'wizard-intro'],
-                        ['text' => 'Bien et locataire. Choisissez le bien et le lot loué, ou créez l\'un ou l\'autre ; enregistrez qui le possède et les quotes-parts, si Patrimoine ne les connaît pas encore ; puis choisissez le locataire et, le cas échéant, l\'agent. Tout ce qui n\'existe pas encore peut être créé ici au fil de la saisie.', 'shot' => 'wizard-property'],
+                        ['text' => 'Bien et locataire. Choisissez le bien et le lot loué, ou créez l\'un ou l\'autre ; enregistrez qui le possède et les quotes-parts, si Patrimoine ne les connaît pas encore ; puis choisissez le locataire. Tout ce qui n\'existe pas encore peut être créé ici au fil de la saisie.', 'shot' => 'wizard-property'],
                         ['text' => 'Durée du bail. Indiquez la date de début et soit une durée, soit une date de fin, ainsi que la date de préavis si la location en prévoit une. La date de début reste la date anniversaire pour toute la durée du bail : un bail débutant le 31 est facturé le 31 de chaque mois qui en compte un, et le dernier jour des mois qui n\'en ont pas.', 'shot' => 'wizard-dates'],
-                        ['text' => 'Conditions de loyer. Le champ loyer correspond à UN MOIS de loyer, quelle que soit la périodicité — un bail trimestriel à 1 000 par mois est facturé 3 000 par trimestre. Indiquez la périodicité, le jour d\'échéance, la TVA sur vos honoraires, tout ajustement de première période, et le dépôt de garantie.', 'shot' => 'wizard-rent'],
+                        ['text' => 'Conditions de loyer. Le champ loyer correspond à UN MOIS de loyer, quelle que soit la périodicité — un bail payé tous les 3 mois à 1 000 par mois est facturé 3 000 par trimestre. Payé tous les compte des mois à partir de la date de début, et non des trimestres civils : c\'est pourquoi il indique 1 mois, 3 mois, 6 mois et 12 mois. Indiquez-le, puis le jour d\'échéance, la TVA sur vos honoraires, tout ajustement de première période, et le dépôt de garantie.', 'shot' => 'wizard-rent'],
                         ['text' => 'Saisir un dépôt de garantie l\'encaisse : la somme est versée sur le compte de dépôt de garantie propre à ce bail. Indiquez quand et comment il a été reçu. La date peut précéder le début du bail, car un dépôt sert généralement à réserver le lot.'],
                         ['text' => 'Paiement anticipé. Saisissez l\'avance et la part conservée en réserve de loyer ; Patrimoine affiche ce qu\'il reste en avance consommable. Si l\'avance a déjà été reçue, indiquez quand et par quel moyen — cette date aussi peut précéder le bail. Lorsqu\'elle a été reçue en espèces, le caissier est la personne connectée, et Patrimoine le renseigne lui-même.'],
                         ['text' => 'Augmentation du loyer. Programmez une augmentation, s\'il y en a une. Sa date ne peut pas précéder le début du bail.'],
-                        ['text' => 'Honoraires et commission. Indiquez les honoraires de gestion, la commission d\'agent et toute note sur la location.'],
+                        ['text' => 'Honoraires et commission. Choisissez l\'agent, si la location en a un, et indiquez ce qui lui est dû ; le champ de commission apparaît dès qu\'un agent est choisi, juste sous son nom. Indiquez ensuite vos honoraires de gestion et toute note sur la location.'],
                         ['text' => 'Lisez la page de révision. Elle présente en une seule liste tout ce qui va être créé.', 'shot' => 'wizard-review'],
                         ['text' => 'Appuyez sur Créer et activer. Tout est créé ensemble ; rien n\'est enregistré avant ce moment. Enregistrer comme brouillon se trouve en haut de la page, à côté d\'Annuler, et reste proposé sur chaque page, y compris celle-ci.'],
                     ],
@@ -352,7 +352,7 @@ return [
                     'steps' => [
                         ['text' => 'Appuyez sur Enregistrer comme brouillon à tout moment avant la page de révision.'],
                         ['text' => 'Le brouillon apparaît sous Assistants inachevés en haut de la page Baux, au nom de la personne qui l\'a commencé et du jour où elle l\'a fait.', 'shot' => 'lease-drafts'],
-                        ['text' => 'Appuyez sur Continuer pour le reprendre à la page où vous l\'aviez laissé.'],
+                        ['text' => 'Appuyez sur Continuer. Tout ce que vous aviez saisi revient, et l\'assistant s\'ouvre sur la première page — appuyez sur Suivant pour rejoindre l\'endroit où vous en étiez.'],
                         ['text' => 'Appuyez sur Supprimer pour le jeter. Supprimer un assistant inachevé n\'efface rien d\'autre — il n\'y a jamais eu de bail.'],
                     ],
                 ],
@@ -413,8 +413,8 @@ return [
                     'intro' => 'Tout ce qui s\'est passé sur une location, au même endroit : factures émises, paiements reçus, dépôts détenus, bons produits.',
                     'steps' => [
                         ['text' => 'Ouvrez le bail et appuyez sur Historique financier.'],
-                        ['text' => 'La liste va du plus récent au plus ancien et se pagine comme toutes les autres.', 'shot' => 'lease-history'],
-                        ['text' => 'Appuyez sur une ligne pour ouvrir le document correspondant.'],
+                        ['text' => 'Chaque mouvement tient sur une ligne : la date, sa nature, sa référence, le fonds concerné, le mode de paiement et le montant. Vingt-cinq lignes par page, ou 50 ou 100, et chaque page à une pression.', 'shot' => 'lease-history'],
+                        ['text' => 'Lorsqu\'un mouvement a produit un document, Ouvrir, dans la dernière colonne, l\'affiche.'],
                     ],
                 ],
 

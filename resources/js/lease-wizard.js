@@ -7,13 +7,14 @@
 | section of the drawer, in the drawer's order and in the drawer's words:
 |
 |     1  Information        what these words mean
-|     2  Property & Tenant   unit, owners, tenant, agent
+|     2  Property & Tenant   unit, owners, tenant
 |     3  Lease Period        start, duration, end, notice
 |     4  Rent Terms          rent, frequency, due day, VAT, proration,
 |                            deposit and its receipt
 |     5  Advance Payment     advance, reserve, consumable, receipt
 |     6  Rent Increment      type, value, next date
-|     7  Fees & Commission   management fee, agent commission, notes
+|     7  Fees & Commission   agent, their commission, management fee,
+|                            notes
 |     8  Review
 |
 | The two had drifted into different products asking different questions,
@@ -1195,10 +1196,6 @@ function renderSummary() {
                 : summaryPartyName('wizard-tenant-party'),
         ],
         [
-            translate('wizard.agent'),
-            agentSummary(),
-        ],
-        [
             translate('wizard.start_date'),
             value('wizard-start-date'),
         ],
@@ -1242,6 +1239,15 @@ function renderSummary() {
         [
             translate('wizard.fee_type'),
             feeSummary(),
+        ],
+        /*
+         * V1.0.45: the agent is read where they are now asked for, so the
+         * check page walks the assistant in its own order rather than in
+         * the order the pages used to be in.
+         */
+        [
+            translate('wizard.agent'),
+            agentSummary(),
         ],
         [
             translate('wizard.agent_commission'),
@@ -1612,17 +1618,25 @@ function clearRejectedFields() {
  */
 function stepForErrorKey(key) {
     /*
-     * V1.0.43: the property, its owners, the tenant and the agent are
-     * one page now, so four of these answers are the same page.
+     * V1.0.43: the property, its owners and the tenant are one page now,
+     * so three of these answers are the same page.
      */
     if (
         key.startsWith('building')
         || key.startsWith('unit')
         || key.startsWith('owners')
         || key.startsWith('tenant')
-        || key.startsWith('agent')
     ) {
         return 2;
+    }
+
+    /*
+     * V1.0.45: the agent moved to Fees & Commission, beside the money
+     * that is theirs. A rejected agent field has to follow them there,
+     * or the operator is sent to a page the field is no longer on.
+     */
+    if (key.startsWith('agent')) {
+        return 7;
     }
 
     if (! key.startsWith('lease.')) {
@@ -1703,7 +1717,12 @@ function saveProgress() {
         sessionStorage.setItem(
             STORAGE_KEY,
             JSON.stringify({
-                step: currentStep,
+                /*
+                 * V1.0.45: the page number is no longer kept. The
+                 * assistant opens on page one whatever happened before,
+                 * so storing where somebody was would only be a value
+                 * nothing reads.
+                 */
                 fields: collectFieldValues(),
             })
         );
@@ -1800,15 +1819,17 @@ function applyStoredState(stored) {
     );
 
     /*
-     * V1.0.43: clamped. Assistants saved before the pages were rebuilt
-     * carry a step of 9 or 10, and there are eight now — an unclamped
-     * value would open a page that does not exist and show nothing at
-     * all.
+     * V1.0.45: the assistant always opens on page one.
+     *
+     * It used to reopen wherever you last were, which reads as being
+     * dropped into the middle of something — you cannot see what has
+     * already been answered above you, and there is no way to tell the
+     * assistant you would rather start at the beginning.
+     *
+     * What was typed is still put back, so nothing is lost. Only the
+     * page number is forgotten, and Next walks to wherever you were.
      */
-    currentStep = Math.min(
-        Math.max(Number(stored.step) || 1, 1),
-        TOTAL_STEPS
-    );
+    currentStep = 1;
 
     applyBuildingMode();
 
@@ -2109,7 +2130,6 @@ function applyDuration() {
  */
 function draftPayload() {
     return {
-        step: currentStep,
         fields: collectFieldValues(),
 
         /*

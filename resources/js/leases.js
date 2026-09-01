@@ -45,6 +45,7 @@ import {
 } from './core.js';
 
 import {
+    clientPage,
     pageSizeFor,
     renderPagination,
 } from './pagination.js';
@@ -3151,11 +3152,23 @@ function positionLeaseFieldTooltip(
 /**
  * Initialise DD-MM-YYYY Lease date inputs while retaining a native
  * calendar picker beside each field.
+ *
+ * V1.0.45: every date field on the page, not only the ones carrying the
+ * lease-specific attribute.
+ *
+ * The narrower selector was silently missing five: the Extend drawer's
+ * Effective From, End Date and Next Increment Date, and the Termination
+ * drawer's Notice Date and Termination Date. All five were marked
+ * data-pm-date-input like every other date field in Patrimoine and
+ * simply never matched, so they typed as plain text and offered no
+ * calendar at all.
+ *
+ * Widening it cannot produce a second calendar button: the shared
+ * initialiser skips any field that already has one of the page-specific
+ * pickers beside it.
  */
 function initializeLeaseDateInputs() {
-    initializeDateInputs(
-        '[data-lease-date-input]'
-    );
+    initializeDateInputs();
 
     document
         .querySelectorAll(
@@ -9074,6 +9087,30 @@ function resetLeaseFinancialHistoryModal() {
     if (error) {
         error.textContent = '';
     }
+
+    /*
+     * V1.0.45: the control goes with the table it belonged to. Leaving
+     * "1-25 of 300" behind would describe the last letting somebody
+     * looked at while the next one is still loading.
+     */
+    const pagination =
+        document.getElementById(
+            'lease-financial-history-pagination'
+        );
+
+    pagination?.classList.add(
+        'hidden'
+    );
+
+    if (pagination) {
+        pagination.innerHTML = '';
+    }
+
+    leaseFinancialHistoryRows = [];
+
+    leaseFinancialHistoryPage = 1;
+
+    leaseFinancialHistoryExportId = null;
 }
 
 function showLeaseFinancialHistoryError(
@@ -9295,39 +9332,96 @@ function initializeLeaseFinancialHistoryExportActions(
 }
 
 
+/*
+|--------------------------------------------------------------------------
+| Lease Financial History
+|--------------------------------------------------------------------------
+|
+| V1.0.45: a table, a page at a time.
+|
+| It used to be a column of cards in the narrow drawer, four lines to a
+| record, which meant a letting of any age could not be scanned down a
+| date or an amount without scrolling for a minute. The columns are the
+| ones the export already writes, in the export's order and in the
+| export's words, so the screen and the spreadsheet cannot disagree.
+|
+| The endpoint answers with the whole history in one go - it is one
+| letting, not a registry - so the paging happens here, through the same
+| control every other list in Patrimoine uses.
+|
+*/
+
+/**
+ * Every event of the letting on screen, newest ordering as the server
+ * returned it.
+ *
+ * @type {Array<object>}
+ */
+let leaseFinancialHistoryRows = [];
+
+/**
+ * Which page of that history is being read.
+ */
+let leaseFinancialHistoryPage = 1;
+
+/**
+ * The lease the exports at the top of the drawer belong to.
+ */
+let leaseFinancialHistoryExportId = null;
+
 function renderLeaseFinancialHistory(
     payload
 ) {
-    const loading =
-        document.getElementById(
+    document
+        .getElementById(
             'lease-financial-history-loading'
+        )
+        ?.classList.add(
+            'hidden'
         );
 
-    const content =
-        document.getElementById(
-            'lease-financial-history-content'
-        );
-
-    if (! content) {
-        return;
-    }
-
-    loading?.classList.add(
-        'hidden'
-    );
-
-    const events =
+    leaseFinancialHistoryRows =
         Array.isArray(
             payload?.events
         )
             ? payload.events
             : [];
 
-    if (events.length === 0) {
+    leaseFinancialHistoryExportId =
+        payload?.export_lease_id
+        ?? null;
+
+    leaseFinancialHistoryPage = 1;
+
+    drawLeaseFinancialHistory();
+}
+
+/**
+ * Draw the page of the history the reader is on.
+ */
+function drawLeaseFinancialHistory() {
+    const content =
+        document.getElementById(
+            'lease-financial-history-content'
+        );
+
+    const pagination =
+        document.getElementById(
+            'lease-financial-history-pagination'
+        );
+
+    if (! content) {
+        return;
+    }
+
+    const exportActions =
+        leaseFinancialHistoryExportActions(
+            leaseFinancialHistoryExportId
+        );
+
+    if (leaseFinancialHistoryRows.length === 0) {
         content.innerHTML = `
-            ${leaseFinancialHistoryExportActions(
-                payload?.export_lease_id
-            )}
+            ${exportActions}
 
             <div
                 class="
@@ -9368,6 +9462,14 @@ function renderLeaseFinancialHistory(
             'hidden'
         );
 
+        pagination?.classList.add(
+            'hidden'
+        );
+
+        if (pagination) {
+            pagination.innerHTML = '';
+        }
+
         initializeLeaseFinancialHistoryExportActions(
             content
         );
@@ -9375,18 +9477,68 @@ function renderLeaseFinancialHistory(
         return;
     }
 
-    content.innerHTML =
-        leaseFinancialHistoryExportActions(
-            payload?.export_lease_id
-        )
-        + events
-            .map(
-                leaseFinancialHistoryEvent
-            )
-            .join('');
+    const perPage =
+        pageSizeFor(
+            'lease-financial-history'
+        );
+
+    const page =
+        clientPage(
+            leaseFinancialHistoryRows,
+            leaseFinancialHistoryPage,
+            perPage
+        );
+
+    content.innerHTML = `
+        ${exportActions}
+
+        <div class="pm-panel-table-scroll">
+            <table class="pm-panel-table">
+                <thead>
+                    <tr>
+                        <th>${escapeHtml(translate('leases.financial_history_export_date'))}</th>
+                        <th>${escapeHtml(translate('leases.financial_history_export_type'))}</th>
+                        <th>${escapeHtml(translate('leases.financial_history_export_reference'))}</th>
+                        <th>${escapeHtml(translate('leases.financial_history_export_fund'))}</th>
+                        <th>${escapeHtml(translate('leases.financial_history_export_payment_method'))}</th>
+                        <th class="pm-panel-table-numeric">
+                            ${escapeHtml(translate('leases.financial_history_export_amount'))}
+                        </th>
+                        <th>${escapeHtml(translate('leases.financial_history_export_document'))}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${page.rows.map(leaseFinancialHistoryRow).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
 
     content.classList.remove(
         'hidden'
+    );
+
+    pagination?.classList.remove(
+        'hidden'
+    );
+
+    renderPagination(
+        'lease-financial-history-pagination',
+        page.meta,
+        {
+            storageKey: 'lease-financial-history',
+            onPage: (next) => {
+                leaseFinancialHistoryPage = next;
+
+                drawLeaseFinancialHistory();
+            },
+            onPageSize: () => {
+                leaseFinancialHistoryPage = 1;
+
+                drawLeaseFinancialHistory();
+            },
+        }
     );
 
     initializeLeaseFinancialHistoryExportActions(
@@ -9411,77 +9563,16 @@ function renderLeaseFinancialHistory(
         );
 }
 
-function leaseFinancialHistoryEvent(
+/**
+ * One movement, on one line.
+ *
+ * @param {object} event
+ * @returns {string}
+ */
+function leaseFinancialHistoryRow(
     event
 ) {
-    const reference =
-        event.reference
-            ? `
-                <div
-                    class="
-                        pm-lease-financial-history-muted
-                        mt-1 text-xs
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'leases.financial_history_reference'
-                        )
-                    )}:
-                    ${escapeHtml(
-                        event.reference
-                    )}
-                </div>
-            `
-            : '';
-
-    const method =
-        event.payment_method
-            ? `
-                <div
-                    class="
-                        pm-lease-financial-history-muted
-                        mt-1 text-xs
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'leases.financial_history_payment_method'
-                        )
-                    )}:
-                    ${escapeHtml(
-                        financialHistoryPaymentMethodLabel(
-                            event.payment_method
-                        )
-                    )}
-                </div>
-            `
-            : '';
-
-    const fund =
-        event.fund_type
-            ? `
-                <div
-                    class="
-                        pm-lease-financial-history-muted
-                        mt-1 text-xs
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'leases.financial_history_fund'
-                        )
-                    )}:
-                    ${escapeHtml(
-                        financialHistoryFundLabel(
-                            event.fund_type
-                        )
-                    )}
-                </div>
-            `
-            : '';
-
-    const documentButton =
+    const document_ =
         event.document?.endpoint
             ? `
                 <button
@@ -9490,89 +9581,72 @@ function leaseFinancialHistoryEvent(
                     data-endpoint="${escapeHtml(
                         event.document.endpoint
                     )}"
-                    class="
-                        pm-lease-financial-history-document
-                        mt-3 inline-flex
-                        items-center rounded-lg
-                        border px-3 py-2
-                        text-xs font-medium
-                        transition
-                    "
-                >
-                    ${escapeHtml(
-                        translate(
-                            'leases.financial_history_open_document'
-                        )
-                    )}
-                </button>
+                    class="pm-button-link"
+                >${escapeHtml(
+                    translate(
+                        'leases.financial_history_open_document'
+                    )
+                )}</button>
             `
-            : '';
+            : '<span class="pm-panel-table-muted">&mdash;</span>';
+
+    const fund =
+        event.fund_type
+            ? escapeHtml(
+                financialHistoryFundLabel(
+                    event.fund_type
+                )
+            )
+            : '<span class="pm-panel-table-muted">&mdash;</span>';
+
+    const method =
+        event.payment_method
+            ? escapeHtml(
+                financialHistoryPaymentMethodLabel(
+                    event.payment_method
+                )
+            )
+            : '<span class="pm-panel-table-muted">&mdash;</span>';
+
+    const reference =
+        event.reference
+            ? escapeHtml(
+                String(event.reference)
+            )
+            : '<span class="pm-panel-table-muted">&mdash;</span>';
+
+    const label =
+        financialHistoryEventLabel(
+            event
+        );
 
     return `
-        <article
-            class="
-                pm-lease-financial-history-event
-                rounded-xl border p-4
-            "
-        >
-            <div
-                class="
-                    flex items-start
-                    justify-between gap-4
-                "
-            >
-                <div class="min-w-0">
-                    <div
-                        class="
-                            pm-lease-financial-history-title
-                            text-sm font-semibold
-                        "
-                    >
-                        ${escapeHtml(
-                            financialHistoryEventLabel(
-                                event
-                            )
-                        )}
-                    </div>
+        <tr>
+            <td>${escapeHtml(
+                formatDate(
+                    event.occurred_on
+                )
+            )}</td>
 
-                    <div
-                        class="
-                            pm-lease-financial-history-muted
-                            mt-1 text-xs
-                        "
-                    >
-                        ${escapeHtml(
-                            formatDate(
-                                event.occurred_on
-                            )
-                        )}
-                    </div>
+            <td class="pm-panel-table-primary">${escapeHtml(label)}</td>
 
-                    ${reference}
-                    ${method}
-                    ${fund}
-                </div>
+            <td>${reference}</td>
 
-                <div
-                    class="
-                        pm-lease-financial-history-title
-                        shrink-0 text-right
-                        text-sm font-semibold
-                    "
-                >
-                    ${escapeHtml(
-                        formatCurrency(
-                            Number(
-                                event.amount
-                                ?? 0
-                            )
-                        )
-                    )}
-                </div>
-            </div>
+            <td>${fund}</td>
 
-            ${documentButton}
-        </article>
+            <td>${method}</td>
+
+            <td class="pm-panel-table-numeric">${escapeHtml(
+                formatCurrency(
+                    Number(
+                        event.amount
+                        ?? 0
+                    )
+                )
+            )}</td>
+
+            <td>${document_}</td>
+        </tr>
     `;
 }
 

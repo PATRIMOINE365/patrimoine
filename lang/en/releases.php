@@ -19,6 +19,19 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.45',
+            'date' => '2026-09-01',
+            'title' => 'The assistant asks for the agent where the money is, and a letting\'s history is a table',
+            'changes' => [
+                'The guided assistant now asks for the agent on the Fees and commission page rather than two pages earlier, and the commission field sits directly under their name. The commission has always lived with the fees, which left whoever had just chosen an agent reading a money field with nothing to attach it to.',
+                'The assistant opens on the first page every time. It used to reopen wherever you last were, which reads as being dropped into the middle of something you cannot see the top of. Everything you had typed still comes back — only the page number is forgotten — so Next walks you to wherever you had got to.',
+                'The first page now explains Managing Organisation as well, since that is your own company and the assistant asks about it by name.',
+                'Paid every is written in months: 1 Month, 3 Months, 6 Months, 12 Months, in the assistant and in the lease drawer alike. It counts months from the start date and never calendar quarters, and the old wording invited exactly the opposite reading.',
+                'The Extend and Terminate drawers have their date pickers back. Five date fields on the Leases page — Effective from, End date, Next increment date, Notice date and Termination date — were typed as plain text and offered no calendar at all.',
+                'A lease\'s financial history opens in the wide drawer and reads as a table: one row per movement, with the date, what it was, its reference, the fund it touched, how it was paid and how much. Twenty-five rows a page, 50 or 100 if you would rather, and every page one press away. The columns are the ones the export already writes, so the screen and the spreadsheet say the same thing.',
+            ],
+        ],
+        [
             'version' => '1.0.44',
             'date' => '2026-09-02',
             'title' => 'Devices you can sign out, and the groundwork for a Patrimoine you install',

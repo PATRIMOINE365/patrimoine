@@ -15,6 +15,19 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.45',
+            'date' => '2026-09-01',
+            'title' => 'L\'assistant demande l\'agent là où est l\'argent, et l\'historique d\'une location devient un tableau',
+            'changes' => [
+                'L\'assistant demande désormais l\'agent sur la page Honoraires et commission, et non deux pages plus tôt, et le champ de commission se place juste sous son nom. La commission a toujours vécu avec les honoraires, ce qui laissait la personne venant de choisir un agent devant un champ monétaire sans rien à quoi le rattacher.',
+                'L\'assistant s\'ouvre sur la première page à chaque fois. Il rouvrait auparavant là où vous vous étiez arrêté, ce qui revient à être déposé au milieu de quelque chose dont on ne voit pas le début. Tout ce que vous aviez saisi revient — seule la page est oubliée — et Suivant vous ramène là où vous en étiez.',
+                'La première page explique aussi Organisation gestionnaire, puisqu\'il s\'agit de votre propre société et que l\'assistant la nomme.',
+                'Payé tous les s\'écrit en mois : 1 mois, 3 mois, 6 mois, 12 mois, dans l\'assistant comme dans le tiroir du bail. Il compte des mois à partir de la date de début, jamais des trimestres civils, et l\'ancienne formulation invitait exactement à la lecture inverse.',
+                'Les tiroirs Prolonger et Résilier retrouvent leurs sélecteurs de date. Cinq champs de date de la page Baux — Effective à partir du, Date de fin, Prochaine augmentation, Date de préavis et Date de résiliation — se saisissaient en texte libre et n\'offraient aucun calendrier.',
+                'L\'historique financier d\'un bail s\'ouvre dans le grand tiroir et se lit comme un tableau : une ligne par mouvement, avec la date, sa nature, sa référence, le fonds concerné, le mode de paiement et le montant. Vingt-cinq lignes par page, 50 ou 100 si vous préférez, et chaque page à une pression. Les colonnes sont celles que l\'export écrit déjà : l\'écran et le tableur disent donc la même chose.',
+            ],
+        ],
+        [
             'version' => '1.0.44',
             'date' => '2026-09-02',
             'title' => 'Des appareils que vous pouvez déconnecter, et les fondations d\'un Patrimoine à installer',
