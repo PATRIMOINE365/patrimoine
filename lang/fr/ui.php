@@ -1205,6 +1205,7 @@ return [
         'financial_history_reference' => 'Référence',
         'financial_history_payment_method' => 'Mode de paiement',
         'financial_history_fund' => 'Fonds',
+        'financial_history_open' => 'Ouvrir',
         'financial_history_open_document' => 'Ouvrir le document',
         'financial_history_unable_open_document' => 'Impossible d’ouvrir le document.',
         'financial_history_event_invoice' => 'Facture',

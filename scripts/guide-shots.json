@@ -296,16 +296,17 @@
   {
     "id": "lease-history",
     "path": "/leases",
-    "wait": "#leases-list",
+    "wait": "#leases-list [data-financial-history][data-lease-id=\"53\"]",
     "settle": 600,
     "do": [
       {
-        "click": "[data-financial-history]",
+        "click": "#leases-list [data-financial-history][data-lease-id=\"53\"]",
         "wait": "#lease-financial-history-modal.pm-drawer-active",
-        "pause": 1300
+        "pause": 1500
       }
     ],
-    "clip": "#lease-financial-history-modal .pm-drawer-panel"
+    "clip": "#lease-financial-history-modal .pm-drawer-panel",
+    "comment": "Lease 53 rather than whichever letting happens to be first: the first one has never taken any money, so the picture was of an empty state on a page whose whole subject is the history."
   },
   {
     "id": "rent-increment",

@@ -9584,7 +9584,7 @@ function leaseFinancialHistoryRow(
                     class="pm-button-link"
                 >${escapeHtml(
                     translate(
-                        'leases.financial_history_open_document'
+                        'leases.financial_history_open'
                     )
                 )}</button>
             `
@@ -9622,7 +9622,7 @@ function leaseFinancialHistoryRow(
 
     return `
         <tr>
-            <td>${escapeHtml(
+            <td class="pm-panel-table-nowrap">${escapeHtml(
                 formatDate(
                     event.occurred_on
                 )
@@ -9630,7 +9630,7 @@ function leaseFinancialHistoryRow(
 
             <td class="pm-panel-table-primary">${escapeHtml(label)}</td>
 
-            <td>${reference}</td>
+            <td class="pm-panel-table-nowrap">${reference}</td>
 
             <td>${fund}</td>
 
@@ -9645,7 +9645,7 @@ function leaseFinancialHistoryRow(
                 )
             )}</td>
 
-            <td>${document_}</td>
+            <td class="pm-panel-table-nowrap">${document_}</td>
         </tr>
     `;
 }

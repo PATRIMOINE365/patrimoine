@@ -2280,13 +2280,11 @@ html.dark
 | Do not hard-code light-only Slate backgrounds into dynamically rendered
 | history events.
 |
+| V1.0.45: the history became a table, so the event card and its document
+| button went with it. What is left dresses the empty state and the two
+| text weights the Leases list still borrows from here.
+|
 */
-
-.pm-lease-financial-history-event {
-    border-color: var(--pm-border);
-    background: var(--pm-surface);
-    color: var(--pm-text);
-}
 
 .pm-lease-financial-history-empty {
     border-color: var(--pm-border);
@@ -2299,18 +2297,6 @@ html.dark
 
 .pm-lease-financial-history-muted {
     color: var(--pm-text-muted);
-}
-
-.pm-lease-financial-history-document {
-    border-color: var(--pm-border);
-    background: var(--pm-surface);
-    color: var(--pm-text-secondary);
-}
-
-.pm-lease-financial-history-document:hover {
-    border-color: var(--pm-border-strong);
-    background: var(--pm-hover);
-    color: var(--pm-text);
 }
 
 /* END PHASE 6 LEASE FINANCIAL HISTORY THEME */

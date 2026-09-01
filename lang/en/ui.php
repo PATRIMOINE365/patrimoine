@@ -1039,6 +1039,7 @@ return [
         'financial_history_reference' => 'Reference',
         'financial_history_payment_method' => 'Payment Method',
         'financial_history_fund' => 'Fund',
+        'financial_history_open' => 'Open',
         'financial_history_open_document' => 'Open Document',
         'financial_history_unable_open_document' => 'Unable to open document.',
         'financial_history_event_invoice' => 'Invoice',

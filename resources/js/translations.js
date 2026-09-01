@@ -3011,6 +3011,9 @@ export const translations = {
         'leases.financial_history_export_document':
             'Document',
 
+        'leases.financial_history_open':
+            'Open',
+
         'leases.financial_history_open_document': 'Open Document',
         'leases.financial_history_unable_open_document': 'Unable to open document.',
         'leases.financial_history_event_invoice': 'Invoice',
@@ -8151,6 +8154,9 @@ export const translations = {
 
         'leases.financial_history_export_document':
             'Document',
+
+        'leases.financial_history_open':
+            'Ouvrir',
 
         'leases.financial_history_open_document': 'Ouvrir le document',
         'leases.financial_history_unable_open_document': 'Impossible d’ouvrir le document.',
