@@ -309,7 +309,7 @@
   {
     "id": null,
     "name": "wizard",
-    "comment": "Walks the lease assistant page by page and photographs each one. V1.0.45: the agent is chosen on the Fees & Commission page, beside the commission that is theirs, so an agent is picked before that page is photographed - the commission field only exists once there is somebody to owe it to. Nothing is ever submitted.",
+    "comment": "Walks the lease assistant page by page and photographs each one. V1.0.46: the property, the unit, the tenant and the agent are found by typing now, so the walk chooses an existing property through its picker rather than filling in a new one - the picture has to show the control the step describes. Nothing is ever submitted.",
     "path": "/leases/wizard",
     "wait": "#wizard-step-counter",
     "settle": 900,
@@ -323,28 +323,27 @@
         "pause": 900
       },
       {
-        "waitAttached": "#wizard-building-mode option[value=\"new\"]",
-        "pause": 200
-      },
-      {
-        "select": {
-          "selector": "#wizard-building-mode",
-          "value": "new"
-        },
-        "pause": 600
-      },
-      {
-        "fill": {
-          "selector": "#wizard-building-name",
-          "value": "Frangipani Court"
-        }
-      },
-      {
-        "fill": {
-          "selector": "#wizard-building-address",
-          "value": "12 Independence Avenue, Accra"
-        },
+        "waitAttached": "#wizard-building-id-search",
         "pause": 400
+      },
+      {
+        "fill": {
+          "selector": "#wizard-building-id-search",
+          "value": "Acacia"
+        },
+        "pause": 1200
+      },
+      {
+        "click": "#wizard-building-id-results [data-picker-choice]",
+        "pause": 900
+      },
+      {
+        "click": "#wizard-unit-id-search",
+        "pause": 700
+      },
+      {
+        "click": "#wizard-unit-id-results [data-picker-choice]",
+        "pause": 700
       },
       {
         "evaluate": "window.scrollTo(0, 0)",

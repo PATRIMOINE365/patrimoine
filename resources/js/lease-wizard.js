@@ -369,6 +369,14 @@ function populateBuildingOptions() {
 }
 
 /**
+ * Whether somebody chose the unit question's answer themselves.
+ *
+ * Only a trusted event sets it, so the automatic tracking above can tell
+ * its own writes apart from a person's.
+ */
+let unitModeChosenByHand = false;
+
+/**
  * Fill the unit picker with the chosen property's VACANT units.
  *
  * A unit that already carries an active lease cannot take another, so
@@ -417,9 +425,31 @@ function populateUnitOptions() {
         },
     });
 
+    /*
+     * V1.0.46: the choice follows what the property actually has, in
+     * both directions.
+     *
+     * It only ever went one way before, which did not show while the
+     * property was a dropdown - a dropdown selects its first option, so
+     * a property was always chosen and its units were always known. A
+     * picker starts empty, so the page opened with no property, no
+     * vacant units, and the unit question forced to "add a new one" -
+     * and choosing a property afterwards never undid it.
+     *
+     * A deliberate choice is left alone: unitModeChosenByHand is only
+     * set by an event the browser itself raised.
+     */
     if (units.length === 0) {
         setValue('wizard-unit-mode', 'new');
+    } else if (! unitModeChosenByHand) {
+        setValue('wizard-unit-mode', 'existing');
     }
+
+    disableExistingChoice(
+        document.getElementById('wizard-unit-mode'),
+        units.length === 0,
+        'new'
+    );
 
     applyUnitMode();
 }
@@ -2908,7 +2938,13 @@ function wireControls() {
         applyOwnersBlock();
     });
 
-    on('wizard-unit-mode', 'change', applyUnitMode);
+    on('wizard-unit-mode', 'change', (event) => {
+        if (event?.isTrusted) {
+            unitModeChosenByHand = true;
+        }
+
+        applyUnitMode();
+    });
 
     on('wizard-tenant-mode', 'change', applyTenantMode);
 
