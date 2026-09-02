@@ -9,6 +9,13 @@
     "plugins": {
         "Keyboard": {
             "resize": "native"
+        },
+        "SplashScreen": {
+            "launchAutoHide": false,
+            "backgroundColor": "#123D35",
+            "showSpinner": false,
+            "splashFullScreen": true,
+            "splashImmersive": true
         }
     }
 }

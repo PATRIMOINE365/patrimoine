@@ -23,6 +23,7 @@ import { fetchConfig, evaluate, LAUNCH_OK, LAUNCH_UPDATE_REQUIRED, LAUNCH_MAINTE
 import { setLanguage, preferredLanguage, t } from './i18n/index.js';
 import { el, mount } from './ui/dom.js';
 import { startTheme } from './ui/theme.js';
+import { showSplash, hideSplash } from './ui/splash.js';
 import { signIn } from './screens/signin.js';
 import { appShell } from './screens/app-shell.js';
 import { tabletShell } from './screens/tablet-shell.js';
@@ -68,7 +69,25 @@ async function boot() {
     /* Before the first paint, so nothing flashes the wrong theme. */
     startTheme();
 
-    mount(root, el('p', { class: 'muted centred', text: t('launch.checking') }));
+    /*
+     * The launch screen stays up until there is a finished screen beneath
+     * it. Nothing half-built is ever shown - no spinner, no heading with
+     * rows arriving underneath.
+     */
+    showSplash();
+
+    try {
+        await launch();
+    } finally {
+        /*
+         * In a finally: a launch that fails must reveal the screen saying
+         * what went wrong, not leave somebody looking at a logo for ever.
+         */
+        await hideSplash();
+    }
+}
+
+async function launch() {
 
     if (API_BASE === undefined || API_BASE === '') {
         mount(root, el('p', {
@@ -167,8 +186,10 @@ async function boot() {
      * is the only place a person waits for a list.
      */
     async function showApp() {
-        mount(root, el('p', { class: 'muted centred', text: t('launch.loading') }));
-
+        /*
+         * No loading line: the splash is still covering the screen, which is
+         * the whole point. This await is what it is waiting for.
+         */
         await store.prime(client);
 
         /*
@@ -180,8 +201,14 @@ async function boot() {
         shell(root, { client, config: decision.config, onSignedOut: () => showSignIn(null) });
     }
 
+    /*
+     * AWAITED. showApp fetches the working set, and the splash is lifted in
+     * boot()'s finally - so without the await the launch screen would come
+     * down before the data it is waiting for had arrived, which is the one
+     * thing it exists to prevent.
+     */
     if (session.isSignedIn()) {
-        showApp();
+        await showApp();
     } else {
         showSignIn(null);
     }

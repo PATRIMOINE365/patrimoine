@@ -1175,3 +1175,38 @@ textarea.input {
     font-variant-numeric: tabular-nums;
     color: var(--pm-text-subtle);
 }
+
+/*
+|--------------------------------------------------------------------------
+| The launch screen
+|--------------------------------------------------------------------------
+|
+| The web half of the native splash: same mark, same ground, so `npm run
+| dev` behaves like the device and so there is no flash of page background
+| between the native splash hiding and the first screen painting.
+*/
+
+.splash {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Patrimoine Green, matching the native splash and the app tile. */
+    background: #123D35;
+    opacity: 1;
+    transition: opacity 240ms ease;
+}
+
+.splash.is-hiding {
+    opacity: 0;
+    /* Nothing beneath it should be un-tappable during the fade. */
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .splash {
+        transition: none;
+    }
+}
