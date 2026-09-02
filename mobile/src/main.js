@@ -21,6 +21,7 @@ import { session } from './auth/session.js';
 import { fetchConfig, evaluate, LAUNCH_OK, LAUNCH_UPDATE_REQUIRED, LAUNCH_MAINTENANCE } from './boot/config.js';
 import { setLanguage, preferredLanguage, t } from './i18n/index.js';
 import { el, mount } from './ui/dom.js';
+import { startTheme } from './ui/theme.js';
 import { signIn } from './screens/signin.js';
 import { appShell } from './screens/app-shell.js';
 import { updateRequired, maintenance, unreachable } from './screens/blocked.js';
@@ -61,6 +62,9 @@ async function appVersion() {
 const root = document.querySelector('#app');
 
 async function boot() {
+    /* Before the first paint, so nothing flashes the wrong theme. */
+    startTheme();
+
     mount(root, el('p', { class: 'muted centred', text: t('launch.checking') }));
 
     if (API_BASE === undefined || API_BASE === '') {

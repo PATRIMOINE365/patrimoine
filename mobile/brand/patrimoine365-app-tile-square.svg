@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64.00 64.00" width="64.00" height="64.00" role="img" aria-label="Patrimoine 365">
+  <title>Patrimoine 365</title>
+  <desc>Square app tile for platforms that apply their own mask.</desc>
+  <rect width="64" height="64" fill="#123D35"/><g transform="translate(9.600,9.600) scale(0.7000)"><rect x="2" y="4" width="10" height="56" rx="2" fill="#FFFFFF"/><rect x="52" y="4" width="10" height="56" rx="2" fill="#FFFFFF"/><rect x="18" y="9" width="28" height="10" rx="2" fill="#39D6A3"/><rect x="18" y="27" width="28" height="10" rx="2" fill="#39D6A3"/><rect x="18" y="45" width="28" height="10" rx="2" fill="#39D6A3"/></g>
+</svg>

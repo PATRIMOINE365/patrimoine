@@ -12,7 +12,8 @@
         "ios": "npm run build && cap sync ios && cap open ios",
         "build:tokens": "node scripts/build-tokens.mjs",
         "predev": "npm run build:tokens",
-        "prebuild": "npm run build:tokens"
+        "prebuild": "npm run build:tokens",
+        "build:icons": "node scripts/build-icons.mjs"
     },
     "dependencies": {
         "@capacitor/app": "^8.0.0",
@@ -25,6 +26,7 @@
     "devDependencies": {
         "@capacitor/cli": "^8.5.1",
         "@capacitor/ios": "^8.5.1",
+        "sharp": "^0.35.4",
         "vite": "^8.0.0"
     },
     "browserslist": [
