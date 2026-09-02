@@ -25,32 +25,40 @@ function options(values, prefix) {
     return values.map((value) => ({ value, label: t(`${prefix}.${value}`) }));
 }
 
-/* Every unit of every building already held, as one pickable list. */
-function unitOptions() {
-    const buildings = store.read('buildings').data;
-    const list = Array.isArray(buildings) ? buildings : (buildings?.data ?? []);
-
-    return list.flatMap((building) => (building.units ?? []).map((unit) => ({
-        value: String(unit.id),
-        label: `${unit.name ?? unit.label ?? `#${unit.id}`} — ${building.name}`,
-    })));
+function rows(payload) {
+    return Array.isArray(payload) ? payload : (payload?.data ?? []);
 }
 
-function tenantOptions() {
-    const parties = store.read('parties').data;
-    const list = Array.isArray(parties) ? parties : (parties?.data ?? []);
+/*
+ * Units and tenants are ASKED FOR, not filtered out of what happens to be
+ * cached. The buildings list does not carry its units, and `roles` is a
+ * relation rather than a string - filtering the cache for "tenant" matched
+ * nothing and the form announced there were no tenants when there were.
+ */
+async function unitOptions(client) {
+    const units = rows(await client.get('/units').catch(() => null));
 
-    return list
-        .filter((party) => String(party.roles ?? party.role ?? '').includes('tenant'))
-        .map((party) => ({ value: String(party.id), label: titleOf(party) }));
+    return units.map((unit) => ({
+        value: String(unit.id),
+        label: [unit.name ?? unit.label ?? `#${unit.id}`, unit.building?.name]
+            .filter(Boolean).join(' — '),
+    }));
+}
+
+async function tenantOptions(client) {
+    const parties = rows(await client.get(`${endpoints.parties}?role=tenant`).catch(() => null));
+
+    return parties.map((party) => ({ value: String(party.id), label: titleOf(party) }));
 }
 
 /**
  * @returns {Promise<boolean>} whether a lease was created
  */
 export async function newLease(client) {
-    const units = unitOptions();
-    const tenants = tenantOptions();
+    const [units, tenants] = await Promise.all([
+        unitOptions(client),
+        tenantOptions(client),
+    ]);
 
     /*
      * Without a unit or a tenant there is nothing to lease. Saying so is

@@ -13,7 +13,7 @@
  */
 
 import { el, mount, errorLine } from '../ui/dom.js';
-import { titleOf, subtitleOf } from '../data/record.js';
+import { titleOf, subtitleOf, fieldLabel, fieldValue } from '../data/record.js';
 import { icon } from '../ui/icon.js';
 import { t, language } from '../i18n/index.js';
 import { endpoints } from '../api/endpoints.js';
@@ -391,8 +391,8 @@ function factsOf(record) {
     }
 
     return el('dl', { class: 'facts' }, pairs.flatMap(([key, value]) => [
-        el('dt', { class: 'fact-label', text: key.replace(/_/g, ' ') }),
-        el('dd', { class: 'fact-value', text: String(value) }),
+        el('dt', { class: 'fact-label', text: fieldLabel(key) }),
+        el('dd', { class: 'fact-value', text: fieldValue(value) }),
     ]));
 }
 

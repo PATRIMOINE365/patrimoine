@@ -142,6 +142,9 @@ export function openSheet({ title, fields, submitLabel, onSubmit }) {
             }
         }
 
+        /* Nothing to fill in: this sheet is telling, not asking. */
+        const informational = fields.every((spec) => spec.type === 'note');
+
         function render(errors = {}, message = null) {
             const built = fields.map((spec) => field(spec, errors[spec.name]));
 
@@ -196,15 +199,21 @@ export function openSheet({ title, fields, submitLabel, onSubmit }) {
             }, [
                 message === null ? null : el('p', { class: 'error', role: 'alert', text: message }),
                 ...built.map((f) => f.node),
-                el('div', { class: 'sheet-actions' }, [
-                    el('button', {
-                        class: 'button button-secondary',
-                        type: 'button',
-                        text: t('common.cancel'),
-                        onclick: () => close(false),
-                    }),
-                    submit,
-                ]),
+                /*
+                 * A sheet that only explains something needs one button, not
+                 * a Cancel beside a Close that do the same thing.
+                 */
+                el('div', { class: 'sheet-actions' }, informational
+                    ? [submit]
+                    : [
+                        el('button', {
+                            class: 'button button-secondary',
+                            type: 'button',
+                            text: t('common.cancel'),
+                            onclick: () => close(false),
+                        }),
+                        submit,
+                    ]),
             ]);
 
             mount(sheet,
@@ -219,7 +228,13 @@ export function openSheet({ title, fields, submitLabel, onSubmit }) {
                 form
             );
 
-            built[0]?.input.focus();
+            /*
+             * A note field has no input to focus. Calling it anyway threw,
+             * and because the sheet is built inside a promise the throw
+             * surfaced as an unhandled rejection - which is the "it just
+             * gives me an error" on New lease.
+             */
+            built[0]?.input?.focus?.();
         }
 
         const sheet = el('div', {

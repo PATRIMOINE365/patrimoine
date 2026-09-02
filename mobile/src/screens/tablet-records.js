@@ -23,7 +23,7 @@ import { icon } from '../ui/icon.js';
 import { t } from '../i18n/index.js';
 import { endpoints } from '../api/endpoints.js';
 import { money, shortDate } from '../ui/money.js';
-import { titleOf, subtitleOf } from '../data/record.js';
+import { titleOf, subtitleOf, hasRole, fieldLabel, fieldValue } from '../data/record.js';
 import { openSheet } from '../ui/sheet.js';
 import { openDocument, FORMATS } from '../data/exports.js';
 import * as store from '../data/store.js';
@@ -55,7 +55,7 @@ function value(key, raw) {
         return shortDate(raw);
     }
 
-    return String(raw);
+    return fieldValue(raw);
 }
 
 function facts(record, only) {
@@ -71,7 +71,7 @@ function facts(record, only) {
     }
 
     return el('dl', { class: 'facts' }, entries.flatMap(([key, raw]) => [
-        el('dt', { class: 'fact-label', text: key.replace(/_/g, ' ') }),
+        el('dt', { class: 'fact-label', text: fieldLabel(key) }),
         el('dd', { class: 'fact-value', text: value(key, raw) }),
     ]));
 }
@@ -261,9 +261,8 @@ const VIEWS = {
          * statement are different documents. Only the ones the party's role
          * actually supports are offered.
          */
-        const roles = String(full.roles ?? full.role ?? '');
-        const asOwner = roles.includes('owner');
-        const asTenant = roles.includes('tenant');
+        const asOwner = hasRole(full, 'owner');
+        const asTenant = hasRole(full, 'tenant');
 
         return el('div', { class: 'record' }, [
             actionBar([

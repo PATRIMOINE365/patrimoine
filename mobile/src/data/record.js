@@ -73,3 +73,114 @@ export function filterRecords(records, query) {
 
     return trimmed === '' ? records : records.filter((record) => matches(record, trimmed));
 }
+
+
+/**
+ * Does this party hold a role?
+ *
+ * `roles` is an eager-loaded RELATION - an array of role rows - not a
+ * string. Testing it with String(...).includes() stringifies to
+ * "[object Object]" and matches nothing, which is why a party who is
+ * plainly a tenant was invisible to anything that asked.
+ */
+export function hasRole(party, role) {
+    const roles = party?.roles ?? party?.role;
+
+    if (Array.isArray(roles)) {
+        return roles.some((entry) => (
+            (typeof entry === 'string' ? entry : entry?.role ?? entry?.name) === role
+        ));
+    }
+
+    return typeof roles === 'string' && roles.split(/[,\s]+/).includes(role);
+}
+
+/*
+ * A human label for an API field name. The record screens used to print the
+ * key with its underscores swapped for spaces - "vat rate", "rent amount",
+ * "advance received" - which is a database column, not a caption.
+ */
+const LABELS = {
+    name: 'Name',
+    legal_name: 'Legal name',
+    given_names: 'Given names',
+    surname: 'Surname',
+    email: 'Email address',
+    phone: 'Telephone',
+    alternate_phone: 'Alternate telephone',
+    address: 'Address',
+    location: 'Location',
+    description: 'Description',
+    notes: 'Notes',
+    status: 'Status',
+    type: 'Type',
+    reference: 'Reference',
+    id_number: 'ID number',
+    registration_number: 'Registration number',
+    vat_tin: 'VAT / TIN',
+    vat_rate: 'VAT rate',
+    bank_name: 'Bank',
+    bank_account_name: 'Account name',
+    bank_account_number: 'Account number',
+    bank_branch: 'Branch',
+    contact_person_name: 'Contact person',
+    contact_person_phone: 'Contact telephone',
+    contact_person_email: 'Contact email',
+    rent_amount: 'Rent',
+    monthly_rent: 'Monthly rent',
+    payment_frequency: 'Payment frequency',
+    start_date: 'Start date',
+    end_date: 'End date',
+    due_day: 'Payment due day',
+    security_deposit_amount: 'Security deposit',
+    advance_payment_amount: 'Advance payment',
+    advance_received: 'Advance received',
+    rent_reserve_amount: 'Rent reserve',
+    rent_increment_type: 'Rent increment',
+    rent_increment_value: 'Increment value',
+    management_fee_type: 'Management fee',
+    management_fee_value: 'Fee value',
+    agent_commission_amount: 'Agent commission',
+    balance: 'Balance',
+    credited_amount: 'Credited',
+    debited_amount: 'Debited',
+    property_count: 'Properties',
+    units_count: 'Units',
+    invoice_number: 'Invoice number',
+    total_amount: 'Total',
+    paid_amount: 'Paid',
+    outstanding_amount: 'Outstanding',
+    due_date: 'Due date',
+    occupancy_rate: 'Occupancy',
+    currency: 'Currency',
+    language: 'Language',
+};
+
+/** Title-case a key nobody has named yet: "unit_label" -> "Unit label". */
+export function fieldLabel(key) {
+    if (LABELS[key] !== undefined) {
+        return LABELS[key];
+    }
+
+    const words = String(key).replace(/_/g, ' ').trim();
+
+    return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+/*
+ * Values that arrive as machine tokens - "bank_transfer", "bi_yearly" - and
+ * should be read as words.
+ */
+export function fieldValue(raw) {
+    if (typeof raw !== 'string') {
+        return String(raw);
+    }
+
+    if (! /^[a-z][a-z0-9_]*$/.test(raw) || raw.length > 40) {
+        return raw;
+    }
+
+    const words = raw.replace(/_/g, ' ');
+
+    return words.charAt(0).toUpperCase() + words.slice(1);
+}

@@ -14,9 +14,23 @@ import { language, t } from '../i18n/index.js';
 
 let currency = null;
 
+/*
+ * A three-letter ISO 4217 code is the only thing Intl accepts. The
+ * organisation's setting is NOT guaranteed to be one: this account's is
+ * "FCFA", which is what people call the West African franc, whose actual
+ * code is XOF. Intl throws on it, and rejecting it outright - which is what
+ * this did first - dropped the currency from every figure in the
+ * application and left bare numbers on a money screen.
+ *
+ * So anything that is not an ISO code is kept and used as a LABEL. The
+ * organisation said what its money is called; writing it is more honest
+ * than writing nothing.
+ */
+const ISO_CODE = /^[A-Z]{3}$/;
+
 /** Called once the organisation is known. */
 export function setCurrency(code) {
-    currency = typeof code === 'string' && code.length === 3 ? code : null;
+    currency = typeof code === 'string' && code.trim() !== '' ? code.trim() : null;
 }
 
 export function currencyCode() {
@@ -38,21 +52,36 @@ export function money(amount) {
         return String(amount);
     }
 
-    if (currency === null) {
-        /*
-         * Grouped, but unlabelled. Better to show a number nobody can
-         * mistake for a currency than to guess at a symbol.
-         */
-        return new Intl.NumberFormat(language()).format(value);
-    }
-
-    return new Intl.NumberFormat(language(), {
-        style: 'currency',
-        currency,
-        /* Whole units in, whole units out. */
+    const grouped = new Intl.NumberFormat(language(), {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
     }).format(value);
+
+    if (currency === null) {
+        /*
+         * Grouped, but unlabelled. Better a number nobody can mistake for a
+         * currency than a guess at a symbol.
+         */
+        return grouped;
+    }
+
+    if (! ISO_CODE.test(currency.toUpperCase())) {
+        /* A name, not a code: "FCFA 42,300". */
+        return `${currency} ${grouped}`;
+    }
+
+    try {
+        return new Intl.NumberFormat(language(), {
+            style: 'currency',
+            currency: currency.toUpperCase(),
+            /* Whole units in, whole units out. */
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        }).format(value);
+    } catch {
+        /* A well-formed code Intl still will not take. */
+        return `${currency} ${grouped}`;
+    }
 }
 
 /** "Due in 3 days", "Today", "5 days ago" - for a date the API returned. */
