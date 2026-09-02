@@ -1593,3 +1593,319 @@ html[data-theme="dark"] .stat-warning {
     /* Ringed in the header's own colour so it reads as a badge, not a dot. */
     box-shadow: 0 0 0 2px var(--pm-surface);
 }
+
+/*
+|--------------------------------------------------------------------------
+| The iPad, to the second design
+|--------------------------------------------------------------------------
+|
+| The sidebar is LIGHT here, not the green band. The design makes the same
+| move the phone's tab bar does: keep the surface pale and let the active
+| item be Patrimoine Green, which is 11:1 on white. No band means mint is
+| never asked to carry text on a light ground, which it cannot.
+*/
+
+.sidebar {
+    background: var(--pm-surface);
+    border-right: 1px solid var(--pm-border);
+}
+
+.sidebar-head {
+    padding: 0 0.5rem 1.25rem;
+}
+
+.nav-item {
+    color: var(--pm-text-muted);
+}
+
+.nav-item:active {
+    background: var(--pm-surface-muted);
+}
+
+/* The active destination is a filled green pill, as the design draws it. */
+.nav-item.is-active {
+    background: var(--pm-primary);
+    color: var(--pm-primary-text);
+    font-weight: 600;
+}
+
+.nav-item.is-active svg {
+    color: var(--pm-primary-text);
+}
+
+.icon-button.on-band {
+    color: var(--pm-text-subtle);
+}
+
+.icon-button.on-band:active {
+    background: var(--pm-surface-muted);
+}
+
+/* Who is signed in, closing the sidebar. */
+.user-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.625rem 0.5rem;
+    border: 0;
+    border-top: 1px solid var(--pm-border);
+    border-radius: 0;
+    background: transparent;
+    font-family: inherit;
+    text-align: left;
+}
+
+.user-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex: none;
+    border-radius: 999px;
+    background: var(--color-brand-600);
+    color: #fff;
+    font-size: var(--text-sm);
+    font-weight: 600;
+}
+
+.user-words {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.user-name {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--pm-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-role {
+    font-size: var(--text-xs);
+    color: var(--pm-text-subtle);
+}
+
+.user-chevron {
+    margin-left: auto;
+    flex: none;
+    color: var(--pm-text-subtle);
+}
+
+/* The workspace, when a section is one wide surface. */
+.workspace-head {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem 1.5rem 0;
+}
+
+.dashboard {
+    padding: 0 1.5rem 1.5rem;
+}
+
+/*
+ * Five figures in ONE row that scrolls, not a wrapping grid.
+ *
+ * A grid orphaned the fifth card: at iPad landscape the workspace is about
+ * 752px and five cards with their gaps need more, so four sat in a row and
+ * one sat alone beside a hole. Narrowing them until five fitted wrapped
+ * "GHS 42,300" onto two lines, which is worse - it is the figure the screen
+ * exists to show.
+ *
+ * So they grow to fill a large iPad and scroll on a small one. Never
+ * orphaned, never squashed.
+ */
+.stats-grid {
+    display: flex;
+    gap: 1rem;
+    padding: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+}
+
+.stats-grid .stat {
+    /* grow to fill, but never shrink below a legible width */
+    flex: 1 0 10.5rem;
+}
+
+.stat-accent .stat-badge { background: var(--color-purple-500, #7a5af8); }
+.stat-teal .stat-badge { background: var(--color-teal-500, #15b79e); }
+
+.stat-accent { background: var(--color-purple-50, var(--pm-surface)); }
+.stat-teal { background: var(--color-teal-50, var(--pm-surface)); }
+
+html[data-theme="dark"] .stat-accent,
+html[data-theme="dark"] .stat-teal {
+    background: var(--pm-surface);
+    border-color: var(--pm-border);
+}
+
+/* Two panels abreast, stacking when there is not room for both. */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+@media (min-width: 62rem) {
+    .grid-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.grid-2 .card {
+    margin: 0;
+}
+
+/* Tables: for the iPad, where a row genuinely has columns. */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+}
+
+.table th {
+    padding: 0.5rem 1rem;
+    text-align: left;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pm-text-subtle);
+    border-bottom: 1px solid var(--pm-border);
+}
+
+.table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--pm-border);
+    vertical-align: middle;
+}
+
+.table tr:last-child td {
+    border-bottom: 0;
+}
+
+.table .is-numeric {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.cell-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+}
+
+.cell-title {
+    font-weight: 500;
+    color: var(--pm-text);
+}
+
+.cell-sub {
+    font-size: var(--text-xs);
+    color: var(--pm-text-subtle);
+}
+
+/* A due date is the one thing on this screen that is a warning. */
+.cell-sub.is-due {
+    color: var(--color-error-600);
+    /* "Sep 5, 2026" must not break across two lines in a narrow column. */
+    white-space: nowrap;
+}
+
+/* The days-remaining badge on a lease expiry. */
+.days-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    min-width: 3.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-md);
+    background: var(--color-error-50);
+    color: var(--color-error-600);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-align: center;
+}
+
+html[data-theme="dark"] .days-badge {
+    background: rgba(240, 68, 56, 0.16);
+    color: var(--color-error-400);
+}
+
+/* Revenue chart. */
+.chart-body {
+    padding: 0 1rem 1rem;
+}
+
+.chart-value {
+    display: block;
+    font-size: var(--text-display-xs);
+    line-height: var(--text-display-xs--line-height);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--pm-text);
+}
+
+.chart-caption {
+    display: block;
+    font-size: var(--text-sm);
+    color: var(--pm-text-subtle);
+}
+
+.chart-wrap {
+    margin-top: 1rem;
+}
+
+.chart {
+    display: block;
+    width: 100%;
+    height: 10rem;
+}
+
+.chart-area {
+    fill: var(--pm-band-selected);
+}
+
+.chart-line {
+    fill: none;
+    stroke: var(--color-brand-600);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    /* The viewBox is stretched to fit, so the stroke must not stretch. */
+    vector-effect: non-scaling-stroke;
+}
+
+html[data-theme="dark"] .chart-line {
+    stroke: var(--color-brand-400);
+}
+
+.chart-axis {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.375rem;
+}
+
+.chart-tick {
+    font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--pm-text-subtle);
+}
+
+.app-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem 0 0;
+    font-size: var(--text-xs);
+    color: var(--pm-text-subtle);
+}

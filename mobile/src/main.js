@@ -208,7 +208,7 @@ async function launch() {
          */
         const shell = isTablet() ? tabletShell : appShell;
 
-        shell(root, { client, config: decision.config, onSignedOut: () => showSignIn(null) });
+        shell(root, { client, config: decision.config, version, onSignedOut: () => showSignIn(null) });
     }
 
     /*

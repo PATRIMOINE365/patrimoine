@@ -24,6 +24,8 @@ import { App as CapacitorApp } from '@capacitor/app';
 import { ACTIONS } from './write-flows.js';
 import { searchField } from '../ui/search.js';
 import { titleOf, subtitleOf, filterRecords } from '../data/record.js';
+import { brandMark } from '../ui/brand.js';
+import { tabletDashboard } from './tablet-dashboard.js';
 
 const REFRESH_INTERVAL = 5 * 60 * 1000;
 
@@ -77,7 +79,7 @@ function factsOf(record) {
     ]));
 }
 
-export function tabletShell(root, { client, config, onSignedOut }) {
+export function tabletShell(root, { client, config, version = '1.0.0', onSignedOut }) {
     let current = SECTIONS[0];
     let selectedId = null;
     let unsubscribe = () => {};
@@ -126,10 +128,45 @@ export function tabletShell(root, { client, config, onSignedOut }) {
 
     const unsubscribeLoading = store.subscribeAny(reflectLoading);
 
+    /*
+     * The user chip that closes the sidebar in the design. Initials rather
+     * than an avatar: the API serves a photograph only for those who have
+     * uploaded one, and a broken image is worse than two letters.
+     */
+    function userChip() {
+        const me = store.read('me').data;
+        const user = me?.user ?? me ?? {};
+        const name = user.name ?? '';
+        const initials = name.split(/\s+/).filter(Boolean).slice(0, 2)
+            .map((part) => part[0].toUpperCase()).join('');
+
+        return el('button', { class: 'user-chip', onclick: () => select('settings') }, [
+            el('span', { class: 'user-avatar', text: initials }),
+            el('span', { class: 'user-words' }, [
+                el('span', { class: 'user-name', text: name }),
+                el('span', { class: 'user-role', text: user.role_label ?? user.role ?? '' }),
+            ]),
+            icon('chevron-down', { size: 16, class: 'user-chevron' }),
+        ]);
+    }
+
+    /*
+     * NO "MORE" ENTRY, on Komla's instruction: every destination is listed,
+     * in the order the application has them. A tablet has the room, and an
+     * operator should not have to open a drawer to find Archive.
+     */
     const sidebar = el('aside', { class: 'sidebar' }, [
         el('div', { class: 'sidebar-head' }, [
-            el('span', { class: 'sidebar-title', text: t('app.name') }),
-            refreshButton,
+            el('div', { class: 'brand' }, [
+                el('div', { class: 'brand-tile' }, [brandMark(22)]),
+                el('div', { class: 'brand-words' }, [
+                    el('span', { class: 'brand-name' }, [
+                        el('strong', { text: 'Patrimoine' }),
+                        el('span', { class: 'brand-365', text: ' 365' }),
+                    ]),
+                    el('span', { class: 'brand-tagline', text: t('app.tagline') }),
+                ]),
+            ]),
         ]),
         nav,
         el('div', { class: 'sidebar-foot' }, [
@@ -141,6 +178,7 @@ export function tabletShell(root, { client, config, onSignedOut }) {
                 class: 'nav-item is-danger',
                 onclick: signOut,
             }, [icon('log-out-01', { size: 20 }), el('span', { class: 'nav-label', text: t('more.signout') })]),
+            userChip(),
         ]),
     ]);
 
@@ -320,84 +358,24 @@ export function tabletShell(root, { client, config, onSignedOut }) {
      * which is better than a screen pretending to be finished.
      */
     async function renderSection(section) {
-        if (section.kind !== 'dashboard') {
-            mount(listPane, el('div', { class: 'empty' }, [
-                el('div', { class: 'empty-icon' }, [icon(section.icon, { size: 24 })]),
-                el('p', { class: 'empty-text', text: t('detail.not_built') }),
-            ]));
+        if (section.kind === 'dashboard') {
+            mount(
+                listPane,
+                el('div', { class: 'workspace-head' }, [refreshButton]),
+                tabletDashboard({ onOpenSection: select }),
+                el('footer', { class: 'app-footer' }, [
+                    el('span', { text: t('app.copyright', { year: new Date().getFullYear() }) }),
+                    el('span', { text: `v${version}` }),
+                ])
+            );
 
             return;
         }
 
-        mount(listPane, el('p', { class: 'muted centred', text: t('list.loading') }));
-
-        try {
-            const summary = await client.get(endpoints.dashboard.summary);
-            const metrics = summary?.metrics ?? {};
-
-            const tiles = [
-                ['dashboard.occupancy', `${summary.occupancy_rate ?? 0}%`],
-                ['dashboard.units', metrics.total_units],
-                ['dashboard.occupied', metrics.occupied_units],
-                ['dashboard.active_leases', metrics.active_leases],
-            ].filter(([, value]) => value !== undefined && value !== null);
-
-            /*
-             * The trend arrives as [{ month: 'YYYY-MM', amount }]. Drawn as
-             * bars against the largest month rather than a chart library:
-             * twelve values do not justify a dependency, and a library
-             * would bring its own colours into a system that has some.
-             */
-            const trend = Array.isArray(summary.collections_trend)
-                ? summary.collections_trend
-                : [];
-
-            const peak = trend.reduce((high, point) => Math.max(high, point.amount ?? 0), 0);
-
-            const expiring = Array.isArray(summary.expiring_leases)
-                ? summary.expiring_leases
-                : [];
-
-            mount(listPane, el('div', { class: 'dashboard' }, [
-                el('div', { class: 'tiles' }, tiles.map(([label, value]) => el('div', { class: 'tile' }, [
-                    el('span', { class: 'tile-value', text: String(value) }),
-                    el('span', { class: 'tile-label', text: t(label) }),
-                ]))),
-
-                trend.length === 0 ? null : el('section', { class: 'panel' }, [
-                    el('h2', { class: 'panel-title', text: t('dashboard.collections') }),
-                    el('div', { class: 'trend' }, trend.map((point) => el('div', { class: 'trend-bar' }, [
-                        el('div', {
-                            class: 'trend-fill',
-                            /* Zero months still show a hairline, not nothing. */
-                            style: `height: ${peak > 0 ? Math.max(2, Math.round((point.amount ?? 0) * 100 / peak)) : 2}%`,
-                            title: `${point.month}: ${point.amount ?? 0}`,
-                        }),
-                        el('span', { class: 'trend-label', text: String(point.month ?? '').slice(5) }),
-                    ]))),
-                ]),
-
-                expiring.length === 0 ? null : el('section', { class: 'panel' }, [
-                    el('h2', { class: 'panel-title', text: t('dashboard.expiring') }),
-                    el('ul', { class: 'list' }, expiring.map((lease) => {
-                        const where = [lease.unit_name, lease.building_name]
-                            .filter(Boolean).join(' · ');
-
-                        return el('li', { class: 'row' }, [
-                            el('div', { class: 'row-main' }, [
-                                el('span', { class: 'row-title', text: lease.tenant_name ?? `#${lease.id}` }),
-                                where === '' ? null : el('span', { class: 'row-subtitle', text: where }),
-                            ]),
-                            lease.end_date
-                                ? el('span', { class: 'row-figure', text: lease.end_date })
-                                : null,
-                        ]);
-                    })),
-                ]),
-            ]));
-        } catch (failure) {
-            mount(listPane, errorLine(failure, t('signin.offline')));
-        }
+        mount(listPane, el('div', { class: 'empty' }, [
+            el('div', { class: 'empty-icon' }, [icon(section.icon, { size: 24 })]),
+            el('p', { class: 'empty-text', text: t('detail.not_built') }),
+        ]));
     }
 
     /* ------------------------------------------------------- lifecycle */
