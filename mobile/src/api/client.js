@@ -145,6 +145,69 @@ export class ApiClient {
         return this.request('GET', path, undefined, options);
     }
 
+    /**
+     * A multipart upload: the profile photograph, a registry backup. The
+     * browser sets the boundary itself, so no Content-Type is written; the
+     * JSON-body rule does not apply because the body is never empty.
+     */
+    async upload(path, formData) {
+        const url = `${this.baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
+        let response;
+
+        try {
+            response = await fetch(url, { method: 'POST', headers: this.headers(), body: formData });
+        } catch (cause) {
+            throw ApiError.unreachable(cause);
+        }
+
+        if (response.status === 204) {
+            return null;
+        }
+
+        const payload = await this.decode(response);
+
+        if (response.ok) {
+            return payload;
+        }
+
+        if (response.status === 401 && this.onUnauthenticated !== null) {
+            this.onUnauthenticated();
+        }
+
+        throw ApiError.fromResponse(response, payload);
+    }
+
+    /**
+     * Bytes, for the downloads the browser application saves as files: a
+     * CSV, a workbook, a JSON copy of somebody's data. Returns the blob and
+     * the filename the server proposed.
+     */
+    async download(path) {
+        const url = `${this.baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
+        let response;
+
+        try {
+            response = await fetch(url, { method: 'GET', headers: this.headers({ Accept: '*/*' }) });
+        } catch (cause) {
+            throw ApiError.unreachable(cause);
+        }
+
+        if (! response.ok) {
+            if (response.status === 401 && this.onUnauthenticated !== null) {
+                this.onUnauthenticated();
+            }
+
+            throw ApiError.fromResponse(response, await this.decode(response));
+        }
+
+        const disposition = response.headers.get('content-disposition') ?? '';
+        const utf8 = /filename\*=UTF-8''([^;]+)/i.exec(disposition);
+        const plain = /filename="?([^";]+)"?/i.exec(disposition);
+        const filename = utf8 ? decodeURIComponent(utf8[1]) : (plain ? plain[1] : null);
+
+        return { blob: await response.blob(), filename };
+    }
+
     post(path, body, options) {
         return this.request('POST', path, body, options);
     }

@@ -1049,7 +1049,7 @@ body {
     color: var(--color-error-600);
 }
 
-.field:has(.field-error) .input {
+.field:has(.field-error:not([hidden])) .input {
     border-color: var(--color-error-500);
 }
 

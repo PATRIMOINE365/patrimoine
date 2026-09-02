@@ -31,6 +31,7 @@ import { tabletShell } from './screens/tablet-shell.js';
 import { isTablet } from './ui/device.js';
 import { updateRequired, maintenance, unreachable } from './screens/blocked.js';
 import './styles.css';
+import './styles-full.css';
 
 /*
  * Set at build time. There is no default: a build that does not know which
@@ -208,7 +209,7 @@ async function launch() {
          */
         const shell = isTablet() ? tabletShell : appShell;
 
-        shell(root, { client, config: decision.config, version, onSignedOut: () => showSignIn(null) });
+        shell(root, { client, config: decision.config, version, apiBase: API_BASE, onSignedOut: () => showSignIn(null) });
     }
 
     /*

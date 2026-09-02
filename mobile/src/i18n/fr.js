@@ -190,6 +190,9 @@ export const fr = {
     'reports.payments': 'Paiements',
     'reports.funds': 'Fonds',
 
+    'common.add': 'Ajouter',
+    'common.confirm': 'Confirmer',
+    'common.remove': 'Retirer',
     'common.cancel': 'Annuler',
 
     'sheet.saving': 'Enregistrement…',

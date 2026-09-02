@@ -7,7 +7,9 @@
  * perfectly and the screen rendered the literal text "more.signout" where a
  * person expected "Sign out".
  *
- * This reads the source and checks what it actually asks for.
+ * This reads the source and checks what it actually asks for - against the
+ * client's own catalogue AND the browser application's, since the tablet
+ * addresses the web's strings by their Laravel keys.
  */
 
 import test from 'node:test';
@@ -17,6 +19,7 @@ import { join } from 'node:path';
 
 import { en } from '../src/i18n/en.js';
 import { fr } from '../src/i18n/fr.js';
+import { WEB_STRINGS } from '../src/generated/web-strings.js';
 
 function sourceFiles(dir) {
     return readdirSync(dir).flatMap((entry) => {
@@ -46,13 +49,13 @@ function keysUsed() {
 }
 
 test('every key the source asks for exists in English', () => {
-    const missing = keysUsed().filter((key) => en[key] === undefined);
+    const missing = keysUsed().filter((key) => en[key] === undefined && WEB_STRINGS.en[key] === undefined);
 
     assert.deepEqual(missing, [], `used but undefined: ${missing.join(', ')}`);
 });
 
 test('every key the source asks for exists in French', () => {
-    const missing = keysUsed().filter((key) => fr[key] === undefined);
+    const missing = keysUsed().filter((key) => fr[key] === undefined && WEB_STRINGS.fr[key] === undefined);
 
     assert.deepEqual(missing, [], `used but undefined: ${missing.join(', ')}`);
 });

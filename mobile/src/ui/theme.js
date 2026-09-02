@@ -8,16 +8,20 @@
  * attribute has to be set, and a client that only asks the media query
  * renders light on a dark handset - which is what happened here first.
  *
- * On a phone the choice is the system's until there is a setting to
- * override it, so this follows the device and keeps following it: iOS can
- * change appearance while the application is open, on a schedule or by
- * hand, and a theme fixed at launch would be stale by evening.
+ * The choice is the web's three-way one - Light, Dark, System - kept on the
+ * device. System follows iOS and keeps following it: appearance can change
+ * while the application is open, on a schedule or by hand, and a theme
+ * fixed at launch would be stale by evening.
  */
 
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
+import { Preferences } from '@capacitor/preferences';
 
+const KEY = 'ui.theme';
 const query = () => window.matchMedia('(prefers-color-scheme: dark)');
+
+let preference = 'system';
 
 function apply(dark) {
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
@@ -39,18 +43,45 @@ function apply(dark) {
     return dark;
 }
 
+function resolve() {
+    return preference === 'dark' ? true : preference === 'light' ? false : query().matches;
+}
+
 export function startTheme() {
     const media = query();
 
-    apply(media.matches);
+    apply(resolve());
 
     /*
      * addEventListener on a MediaQueryList is Safari 14+, so it is safe on
      * the 15.8 floor; the deprecated addListener is not needed.
      */
-    media.addEventListener('change', (event) => apply(event.matches));
+    media.addEventListener('change', () => {
+        if (preference === 'system') {
+            apply(media.matches);
+        }
+    });
 
-    return media.matches ? 'dark' : 'light';
+    /* The stored choice arrives a tick later; the first paint follows the system. */
+    Preferences.get({ key: KEY }).then(({ value }) => {
+        if (value === 'light' || value === 'dark' || value === 'system') {
+            preference = value;
+            apply(resolve());
+        }
+    }).catch(() => {});
+
+    return resolve() ? 'dark' : 'light';
+}
+
+export function themePreference() {
+    return preference;
+}
+
+export function setThemePreference(next) {
+    preference = next === 'light' || next === 'dark' ? next : 'system';
+    apply(resolve());
+    Preferences.set({ key: KEY, value: preference }).catch(() => {});
+    document.dispatchEvent(new CustomEvent('patrimoine:theme-changed', { detail: preference }));
 }
 
 export function isDark() {

@@ -1,564 +1,333 @@
 /*
- * The iPad client.
+ * The iPad client - the full product.
  *
- * NOT a stretched phone. Komla's instruction, and the right one: the tablet
- * is the full client and the phone stays simple. So this is a different
- * application sharing the same store, tokens and icons - Apple's sidebar
- * pattern, a content list in the middle where one makes sense, and a detail
- * pane on the right.
+ * The sidebar MIRRORS THE WEB APPLICATION entry for entry, group for
+ * group: Workspace (Dashboard, Properties, Parties, Leases), Finance
+ * (Tenants, Owners, Accounting, Reports), Administration (Settings,
+ * Audit, Archive) - with the web's own icons, from the same icon file, and
+ * the same capability gates. The top bar carries what the web's carries:
+ * the organisation, the date, Refresh, the bell and the avatar menu with
+ * My Profile, Appearance, Support and Sign out.
  *
- * The sidebar MIRRORS THE WEB APPLICATION entry for entry, in the web
- * application's order, with the web application's icons - read from the same
- * resources/icons/untitled-ui.json. Somebody who knows the web product must
- * not have to learn a second information architecture to use the tablet.
- * Only the platform console is left out; it is staff-only.
+ * Every screen is the browser page rebuilt for touch; nothing here is a
+ * WebView of it. Only the platform console is left out: it is staff-only.
  */
 
-import { el, mount, errorLine } from '../ui/dom.js';
+import { el, mount } from '../ui/dom.js';
 import { icon } from '../ui/icon.js';
 import { t } from '../i18n/index.js';
 import { endpoints } from '../api/endpoints.js';
 import { session } from '../auth/session.js';
 import * as store from '../data/store.js';
 import { App as CapacitorApp } from '@capacitor/app';
-import { ACTIONS } from './write-flows.js';
-import { searchField } from '../ui/search.js';
-import { titleOf, subtitleOf, filterRecords } from '../data/record.js';
 import { brandMark } from '../ui/brand.js';
-import { tabletDashboard } from './tablet-dashboard.js';
-import { openDocument } from '../data/exports.js';
-import { recordView } from './tablet-records.js';
 import { attachPullToRefresh } from '../ui/pull-refresh.js';
-import { newLease } from './new-lease.js';
-import { PROFILE, signOutScreen } from './detail.js';
-import { shortDate } from '../ui/money.js';
+import { setUser, can, isPlatformAdmin } from '../auth/capabilities.js';
+import { setThemePreference, themePreference } from '../ui/theme.js';
+import { formatLongDate, isoToday } from '../ui/format.js';
+import { setCurrency } from '../ui/money.js';
+import { confirmSheet } from '../ui/sheet.js';
+import { avatar, roleLabel, partyName } from './common.js';
+import { dashboardScreen } from './dashboard.js';
+import { propertiesScreen } from './properties.js';
+import { partiesScreen } from './parties.js';
+import { leasesScreen } from './leases.js';
+import { tenantsScreen } from './tenants.js';
+import { ownersScreen } from './owners.js';
+import { accountingScreen } from './accounting.js';
+import { reportsScreen } from './reports.js';
+import { settingsScreen } from './settings.js';
+import { auditScreen } from './audit.js';
+import { archiveScreen } from './archive.js';
+import { helpScreen } from './help.js';
+import { profileSheet } from './profile.js';
+import { notificationsPanel } from './notifications.js';
+import { leaseWizard } from './lease-wizard.js';
 
 const REFRESH_INTERVAL = 5 * 60 * 1000;
 
-/*
- * The web sidebar, in its own order. `key` names a store entry where one
- * exists; `path` is used for the entries fetched on demand. `detail` marks
- * the sections that are a list with a record beside it rather than one
- * full-width surface.
- */
-const SECTIONS = [
-    { id: 'dashboard', label: 'nav.dashboard', icon: 'grid-01', kind: 'dashboard' },
-    { id: 'properties', label: 'nav.properties', icon: 'building-02', kind: 'list', key: 'buildings', detail: (id) => endpoints.building(id) },
-    { id: 'parties', label: 'nav.parties', icon: 'users-03', kind: 'list', key: 'parties', detail: (id) => endpoints.party(id) },
-    { id: 'leases', label: 'nav.leases', icon: 'file-check', kind: 'list', key: 'leases', detail: (id) => endpoints.lease(id) },
-    { id: 'tenants', label: 'nav.tenants', icon: 'users-01', kind: 'list', path: '/parties?role=tenant', detail: (id) => endpoints.party(id) },
-    { id: 'owners', label: 'nav.owners', icon: 'user-check', kind: 'list', path: '/parties?role=owner', detail: (id) => endpoints.party(id) },
-    { id: 'accounting', label: 'nav.accounting', icon: 'calculator', kind: 'list', key: 'ownerAccounts', detail: (id) => endpoints.ownerAccount(id) },
-    { id: 'reports', label: 'nav.reports', icon: 'bar-chart-square', kind: 'reports' },
-    { id: 'users', label: 'nav.users', icon: 'user-01', kind: 'list', path: endpoints.users, detail: (id) => endpoints.user(id) },
-    { id: 'settings', label: 'nav.settings', icon: 'settings-01', kind: 'settings' },
-    { id: 'audit', label: 'nav.audit', icon: 'clock-rewind', kind: 'list', path: endpoints.activityLog, exports: { base: endpoints.activityLog, formats: ['csv', 'xlsx'] } },
-    { id: 'journal', label: 'nav.financial_journal', icon: 'scale-balanced', kind: 'list', path: endpoints.financialJournal, exports: { base: endpoints.financialJournal, formats: ['csv', 'xlsx'] } },
-    { id: 'archive', label: 'nav.archive', icon: 'archive', kind: 'list', path: endpoints.archive },
+const GROUPS = [
+    { label: 'ui.navigation.workspace', items: [
+        { id: 'dashboard', label: 'ui.navigation.dashboard', icon: 'grid-01' },
+        { id: 'properties', label: 'ui.navigation.properties', icon: 'building-02' },
+        { id: 'parties', label: 'ui.navigation.parties', icon: 'users-03' },
+        { id: 'leases', label: 'ui.navigation.leases', icon: 'file-check' },
+    ] },
+    { label: 'ui.navigation.finance', items: [
+        { id: 'tenants', label: 'ui.navigation.tenants', icon: 'users-01' },
+        { id: 'owners', label: 'ui.navigation.owners', icon: 'user-check' },
+        { id: 'accounting', label: 'ui.navigation.accounting', icon: 'calculator', capability: 'view_financial_journal' },
+        { id: 'reports', label: 'ui.navigation.reports', icon: 'bar-chart-square' },
+    ] },
+    { label: 'ui.navigation.manage', items: [
+        { id: 'settings', label: 'ui.navigation.settings', icon: 'settings-01', capability: 'manage_settings' },
+        { id: 'audit', label: 'ui.navigation.audit', icon: 'clock-rewind', capability: 'view_activity_log' },
+        { id: 'archive', label: 'ui.navigation.archive', icon: 'archive' },
+    ] },
 ];
 
-function rows(payload) {
-    return Array.isArray(payload) ? payload : (payload?.data ?? []);
-}
-
-/*
- * A record rendered as its own fields. Deliberately generic: the API returns
- * a different shape per type and nothing here invents one. Per-type detail
- * screens replace this as they are built.
- */
-function factsOf(record) {
-    const skip = new Set(['id', 'created_at', 'updated_at', 'deleted_at', 'archived_at']);
-
-    const pairs = Object.entries(record)
-        .filter(([key, value]) => (
-            ! skip.has(key)
-            && value !== null
-            && value !== ''
-            && typeof value !== 'object'
-        ));
-
-    if (pairs.length === 0) {
-        return el('p', { class: 'muted', text: t('list.empty') });
-    }
-
-    return el('dl', { class: 'facts' }, pairs.flatMap(([key, value]) => [
-        el('dt', { class: 'fact-label', text: key.replace(/_/g, ' ') }),
-        el('dd', { class: 'fact-value', text: String(value) }),
-    ]));
-}
-
-export function tabletShell(root, { client, config, version = '1.0.0', onSignedOut }) {
-    let current = SECTIONS[0];
-    let selectedId = null;
-    let unsubscribe = () => {};
+export function tabletShell(root, { client, config, version = '1.0.0', apiBase = '', onSignedOut }) {
+    let currentId = 'dashboard';
+    let currentScreen = null;
     let timer = null;
-    let query = '';
+    let popover = null;
 
-    const search = searchField((value) => {
-        query = value;
-        paintList();
-    });
+    const me = store.read('me').data ?? {};
+    let user = me.user ?? me;
 
-    const listPane = el('div', { class: 'pane pane-list' });
-    const detailPane = el('div', { class: 'pane pane-detail' });
-    const workspace = el('div', { class: 'workspace' }, [listPane, detailPane]);
+    setUser(user);
 
-    /* ---------------------------------------------------------- sidebar */
-
+    const content = el('div', { class: 'workspace-scroll' });
     const navItems = new Map();
 
-    const nav = el('nav', { class: 'sidebar-nav' }, SECTIONS.map((section) => {
-        const item = el('button', {
-            class: 'nav-item',
-            onclick: () => select(section.id),
-        }, [
-            icon(section.icon, { size: 20 }),
-            el('span', { class: 'nav-label', text: t(section.label) }),
-        ]);
+    /* ---------------------------------------------------------- nav */
 
-        navItems.set(section.id, item);
+    const nav = el('nav', { class: 'sidebar-nav' }, GROUPS.flatMap((group) => {
+        const items = group.items.filter((item) => ! item.capability || can(item.capability));
 
-        return item;
+        if (items.length === 0) {
+            return [];
+        }
+
+        return [
+            el('div', { class: 'sidebar-group', text: t(group.label) }),
+            ...items.map((item) => {
+                const node = el('button', { class: 'nav-item', onclick: () => open(item.id) }, [
+                    icon(item.icon, { size: 20 }),
+                    el('span', { class: 'nav-label', text: t(item.label) }),
+                ]);
+
+                navItems.set(item.id, node);
+
+                return node;
+            }),
+        ];
     }));
 
-    const refreshButton = el('button', {
-        class: 'icon-button on-band',
-        'aria-label': t('common.refresh'),
-        onclick: () => store.refreshAll(client),
-    }, [icon('refresh-cw', { size: 20 })]);
-
-    function reflectLoading() {
-        const loading = store.isLoading();
-
-        refreshButton.classList.toggle('is-spinning', loading);
-        refreshButton.disabled = loading;
+    if (isPlatformAdmin()) {
+        nav.append(el('button', { class: 'nav-item', onclick: () => window.open(`${apiBase.replace(/\/api(\/v\d+)?\/?$/, '')}/admin`, '_blank') }, [
+            icon('shield-tick', { size: 20 }),
+            el('span', { class: 'nav-label', text: t('ui.navigation.platform_console') }),
+        ]));
     }
 
-    const unsubscribeLoading = store.subscribeAny(reflectLoading);
-
-    /*
-     * The user chip that closes the sidebar in the design. Initials rather
-     * than an avatar: the API serves a photograph only for those who have
-     * uploaded one, and a broken image is worse than two letters.
-     */
     function userChip() {
-        const me = store.read('me').data;
-        const user = me?.user ?? me ?? {};
-        const name = user.name ?? '';
-        const initials = name.split(/\s+/).filter(Boolean).slice(0, 2)
-            .map((part) => part[0].toUpperCase()).join('');
-
-        return el('button', {
-            class: 'user-chip',
-            /* The name opens the person, not the organisation's settings. */
-            onclick: () => open(PROFILE),
-        }, [
-            el('span', { class: 'user-avatar', text: initials }),
+        return el('button', { class: 'user-chip', onclick: (event) => toggleMenu(event.currentTarget) }, [
+            avatar(user),
             el('span', { class: 'user-words' }, [
-                el('span', { class: 'user-name', text: name }),
-                el('span', { class: 'user-role', text: user.role_label ?? user.role ?? '' }),
+                el('span', { class: 'user-name', text: user.name ?? '' }),
+                el('span', { class: 'user-role', text: roleLabel(user.role) }),
             ]),
             icon('chevron-down', { size: 16, class: 'user-chevron' }),
         ]);
     }
 
-    /*
-     * NO "MORE" ENTRY, on Komla's instruction: every destination is listed,
-     * in the order the application has them. A tablet has the room, and an
-     * operator should not have to open a drawer to find Archive.
-     */
+    const chipHost = el('div');
+
     const sidebar = el('aside', { class: 'sidebar' }, [
         el('div', { class: 'sidebar-head' }, [
             el('div', { class: 'brand' }, [
                 el('div', { class: 'brand-tile' }, [brandMark(22)]),
                 el('div', { class: 'brand-words' }, [
-                    el('span', { class: 'brand-name' }, [
-                        el('strong', { text: 'Patrimoine' }),
-                        el('span', { class: 'brand-365', text: ' 365' }),
-                    ]),
+                    el('span', { class: 'brand-name' }, [el('strong', { text: 'Patrimoine' }), el('span', { class: 'brand-365', text: ' 365' })]),
                 ]),
             ]),
         ]),
         nav,
         el('div', { class: 'sidebar-foot' }, [
-            el('button', {
-                class: 'nav-item',
-                onclick: () => window.open(config?.links?.support ?? '#', '_blank'),
-            }, [icon('life-buoy', { size: 20 }), el('span', { class: 'nav-label', text: t('more.support') })]),
-            el('button', {
-                class: 'nav-item is-danger',
-                /*
-                 * A screen, not an instant action - as the web application
-                 * does it. Signing out of a tablet somebody shares should
-                 * take a deliberate second tap.
-                 */
-                onclick: () => open(signOutScreen(signOut)),
-            }, [icon('log-out-01', { size: 20 }), el('span', { class: 'nav-label', text: t('nav.sign_out') })]),
-            userChip(),
+            el('button', { class: 'nav-item', onclick: () => open('help') }, [icon('life-buoy', { size: 20 }), el('span', { class: 'nav-label', text: t('ui.shell.support') })]),
+            el('button', { class: 'nav-item is-danger', onclick: signOutAsk }, [icon('log-out-01', { size: 20 }), el('span', { class: 'nav-label', text: t('ui.navigation.sign_out') })]),
+            chipHost,
         ]),
     ]);
 
-    /* ------------------------------------------------------------ panes */
+    mount(chipHost, userChip());
 
-    function showDetailPlaceholder(iconName) {
-        mount(detailPane, el('div', { class: 'empty' }, [
-            el('div', { class: 'empty-icon' }, [icon(iconName, { size: 24 })]),
-            el('p', { class: 'empty-text', text: t('detail.none') }),
-        ]));
+    /* ------------------------------------------------------- top bar */
+
+    const orgName = el('span', { class: 'topbar-org', text: '' });
+    const bell = el('button', { class: 'icon-button', 'aria-label': t('ui.shell.notifications'), onclick: (event) => toggleBell(event.currentTarget) }, [icon('bell-01', { size: 20 })]);
+    const refreshButton = el('button', { class: 'icon-button', 'aria-label': t('ui.shell.refresh'), onclick: () => refresh() }, [icon('refresh-cw', { size: 20 })]);
+    const avatarButton = el('button', { class: 'icon-button', 'aria-label': t('ui.shell.my_profile'), onclick: (event) => toggleMenu(event.currentTarget) }, [avatar(user)]);
+
+    const topbar = el('div', { class: 'topbar' }, [
+        el('div', {}, [
+            orgName,
+            el('span', { class: 'topbar-date', style: 'display:block', text: formatLongDate(isoToday()) }),
+        ]),
+        el('div', { class: 'topbar-spacer' }),
+        refreshButton,
+        bell,
+        avatarButton,
+    ]);
+
+    function paintOrganisation() {
+        const organisation = store.read('organisation').data;
+        const org = organisation?.data ?? organisation ?? {};
+
+        orgName.textContent = org.legal_name ?? org.name ?? t('app.name');
+        setCurrency(org.currency);
     }
 
-    function clearRecord() {
-        selectedId = null;
-        workspace.classList.remove('has-detail');
-        paintList();
-        showDetailPlaceholder(current.icon);
+    function closePopover() {
+        popover?.remove();
+        popover = null;
+        document.removeEventListener('click', outside, true);
     }
 
-    async function openRecord(section, record) {
-        selectedId = record.id ?? null;
-        /* At compact width this is what swaps the list for the record. */
-        workspace.classList.add('has-detail');
-        paintList();
+    function outside(event) {
+        if (popover && ! popover.contains(event.target)) {
+            closePopover();
+        }
+    }
 
-        mount(detailPane, el('p', { class: 'muted centred', text: t('list.loading') }));
+    function place(node, anchor) {
+        const rect = anchor.getBoundingClientRect();
 
-        try {
-            const render = recordView(section.id);
-            const body = await render(client, record, {
-                reload: () => openRecord(section, record),
-                open,
-            });
+        node.style.top = `${rect.bottom + 8}px`;
+        node.style.right = `${Math.max(8, window.innerWidth - rect.right)}px`;
+        document.body.append(node);
+        popover = node;
+        setTimeout(() => document.addEventListener('click', outside, true), 0);
+    }
 
-            mount(detailPane, el('div', {}, [
-                el('header', { class: 'detail-head' }, [
-                    el('button', {
-                        class: 'detail-back',
-                        onclick: clearRecord,
-                    }, [icon('arrow-left', { size: 20 }), el('span', { text: t(current.label) })]),
-                    el('h2', { class: 'detail-title', text: titleOf(record) }),
-                    subtitleOf(record) === ''
-                        ? null
-                        : el('p', { class: 'detail-subtitle', text: subtitleOf(record) }),
-                    ACTIONS[section.id] === undefined ? null : el('div', { class: 'detail-actions' }, [
-                        el('button', {
-                            class: 'button button-compact',
-                            onclick: () => ACTIONS[section.id].run(client, record),
-                        }, [
-                            icon(ACTIONS[section.id].icon, { size: 20 }),
-                            el('span', { text: t(ACTIONS[section.id].label) }),
-                        ]),
+    function toggleBell(anchor) {
+        if (popover?.dataset.kind === 'bell') {
+            closePopover();
+
+            return;
+        }
+
+        closePopover();
+
+        const panel = notificationsPanel(client, {
+            onOpenSection: (id) => open(id),
+            onOpenUpdates: () => open('help', { tab: 'updates' }),
+            onUnread: (unread) => bell.classList.toggle('badge-dot', unread),
+            onClose: closePopover,
+        });
+
+        panel.node.dataset.kind = 'bell';
+        place(panel.node, anchor);
+    }
+
+    function toggleMenu(anchor) {
+        if (popover?.dataset.kind === 'menu') {
+            closePopover();
+
+            return;
+        }
+
+        closePopover();
+
+        const segmented = el('div', { class: 'segmented' }, ['light', 'dark', 'system'].map((choice) => el('button', {
+            class: themePreference() === choice ? 'is-active' : '', type: 'button', text: t(`ui.shell.theme_${choice}`),
+            onclick: (event) => {
+                setThemePreference(choice);
+
+                for (const b of event.currentTarget.parentNode.querySelectorAll('button')) {
+                    b.classList.toggle('is-active', b === event.currentTarget);
+                }
+            },
+        })));
+
+        const menu = el('div', { class: 'popover', dataset: { kind: 'menu' } }, [
+            el('div', { class: 'menu-section' }, [
+                el('div', { class: 'inline' }, [
+                    avatar(user, { size: 'lg' }),
+                    el('span', { class: 'grow' }, [
+                        el('span', { class: 'cell-strong', style: 'display:block', text: user.name ?? '' }),
+                        el('span', { class: 'muted-small', style: 'display:block', text: user.email ?? '' }),
+                        el('span', { class: 'chip chip-info', text: roleLabel(user.role) }),
                     ]),
                 ]),
-                body,
-            ]));
-        } catch (failure) {
-            mount(detailPane, errorLine(failure, t('signin.offline')));
-        }
-    }
-
-    function paintList() {
-        const section = current;
-        const held = section.key ? store.read(section.key) : store.read(`section:${section.id}`);
-
-        if (held.data === null) {
-            mount(listPane, el('p', { class: 'muted centred', text: t('list.loading') }));
-
-            return;
-        }
-
-        const all = rows(held.data);
-
-        if (all.length === 0) {
-            mount(listPane, el('div', { class: 'empty' }, [
-                el('div', { class: 'empty-icon' }, [icon(section.icon, { size: 24 })]),
-                el('p', { class: 'empty-text', text: t('list.empty') }),
-            ]));
-
-            return;
-        }
-
-        const found = filterRecords(all, query);
-
-        const listNode = found.length === 0
-            ? el('div', { class: 'empty' }, [
-                el('div', { class: 'empty-icon' }, [icon('search-lg', { size: 24 })]),
-                el('p', { class: 'empty-text', text: t('search.none', { query }) }),
-            ])
-            : el('ul', { class: 'list' }, found.map((record) => {
-                const subtitle = subtitleOf(record);
-
-                return el('li', {
-                    class: `row row-tappable${record.id === selectedId ? ' is-selected' : ''}`,
-                    onclick: () => openRecord(section, record),
-                }, [
-                    el('div', { class: 'row-main' }, [
-                        el('span', { class: 'row-title', text: titleOf(record) }),
-                        subtitle === '' ? null : el('span', { class: 'row-subtitle', text: subtitle }),
-                    ]),
-                    record.status
-                        ? el('span', { class: `chip chip-${record.status}`, text: String(record.status) })
-                        : null,
-                    /* The sign that this row opens into something. */
-                    icon('chevron-right', { size: 20, class: 'row-chevron' }),
-                ]);
-            }));
-
-        mount(
-            listPane,
-            el('div', { class: 'pane-head' }, [
-                el('h1', { class: 'pane-title', text: t(section.label) }),
-                el('span', { class: 'pane-count', text: String(found.length) }),
-                /* Creating a lease is a tablet act; the phone reads only. */
-                section.id !== 'leases' ? null : el('button', {
-                    class: 'button button-compact button-primary pane-action',
-                    onclick: async () => {
-                        if (await newLease(client)) {
-                            paintList();
-                        }
-                    },
-                }, [icon('plus', { size: 18 }), el('span', { text: t('lease.new') })]),
             ]),
-            section.exports === undefined
-                ? null
-                : exportBar(section.exports.base, section.exports.formats),
-            all.length >= 8 ? search.node : null,
-            listNode
-        );
+            el('button', { class: 'menu-item', type: 'button', onclick: async () => {
+                closePopover();
+                await profileSheet(client, { onUpdated: (fresh) => { user = fresh; setUser(user); mount(chipHost, userChip()); mount(avatarButton, avatar(user)); }, onSignedOut: () => onSignedOut() });
+            } }, [icon('user-01', { size: 18 }), el('span', { class: 'grow' }, [el('span', { class: 'cell-strong', style: 'display:block', text: t('ui.shell.my_profile') }), el('span', { class: 'muted-small', text: t('ui.shell.my_profile_description') })]), icon('chevron-right', { size: 16 })]),
+            el('div', { class: 'menu-section' }, [el('span', { class: 'muted-small', style: 'display:block;margin-bottom:0.375rem', text: t('ui.shell.appearance') }), segmented]),
+            el('button', { class: 'menu-item', type: 'button', onclick: () => { closePopover(); open('help'); } }, [icon('help-circle', { size: 18 }), el('span', { text: t('ui.shell.support') })]),
+            el('button', { class: 'menu-item is-danger', type: 'button', onclick: () => { closePopover(); signOutAsk(); } }, [icon('log-out-01', { size: 18 }), el('span', { class: 'grow' }, [el('span', { class: 'cell-strong', style: 'display:block', text: t('ui.navigation.sign_out') }), el('span', { class: 'muted-small', text: t('ui.navigation.sign_out_description') })])]),
+        ]);
+
+        place(menu, anchor);
     }
 
-    async function select(id) {
-        const changed = current.id !== id;
+    /* ------------------------------------------------------ screens */
 
-        current = SECTIONS.find((section) => section.id === id) ?? SECTIONS[0];
-        selectedId = null;
+    const factories = {
+        dashboard: () => dashboardScreen(client, { onOpenSection: open, onOpenTenant: (id) => open('tenants', { tenantId: id }), onNewLease: async () => { if (await leaseWizard(client)) { await refresh(); } } }),
+        properties: () => propertiesScreen(client),
+        parties: () => partiesScreen(client),
+        leases: () => leasesScreen(client, { onOpenTenant: (id) => open('tenants', { tenantId: id }) }),
+        tenants: (options) => tenantsScreen(client, { initialTenantId: options?.tenantId ?? null }),
+        owners: () => ownersScreen(client),
+        accounting: () => accountingScreen(client),
+        reports: () => reportsScreen(client),
+        settings: (options) => settingsScreen(client, { config, version, initialTab: options?.tab, onOrganisationSaved: (saved, changedLocale) => { paintOrganisation(); if (changedLocale) { refresh(); } }, onSignedOut: () => signOut(true) }),
+        audit: () => auditScreen(client),
+        archive: () => archiveScreen(client, { onChanged: () => store.refreshAll(client) }),
+        help: (options) => helpScreen(client, { apiBase, initialTab: options?.tab }),
+    };
 
-        /* A query from one section means nothing in the next. */
-        if (changed) {
-            query = '';
-            search.input.value = '';
-        }
+    function open(id, options = {}) {
+        closePopover();
+
+        const factory = factories[id] ?? factories.dashboard;
+
+        currentId = factories[id] ? id : 'dashboard';
 
         for (const [key, item] of navItems) {
-            const active = key === current.id;
+            const active = key === currentId;
 
             item.classList.toggle('is-active', active);
             item.setAttribute('aria-current', active ? 'page' : 'false');
         }
 
-        workspace.classList.toggle('is-single', current.kind !== 'list');
-        workspace.classList.remove('has-detail');
-
-        unsubscribe();
-
-        if (current.kind !== 'list') {
-            mount(detailPane, el('div'));
-            await renderSection(current);
-
-            return;
-        }
-
-        showDetailPlaceholder(current.icon);
-        paintList();
-
-        if (current.key) {
-            unsubscribe = store.subscribe(current.key, () => {
-                if (current.id === id) {
-                    paintList();
-                }
-            });
-        } else {
-            /* Sections outside the working set are held after first use. */
-            await store.ensure(client, `section:${current.id}`, current.path);
-            paintList();
-        }
+        currentScreen = factory(options);
+        mount(content, currentScreen.node);
+        content.scrollTop = 0;
     }
 
-    /*
-     * Sections that are one full-width surface rather than a list. Only the
-     * dashboard is built here; the rest state plainly that they are not,
-     * which is better than a screen pretending to be finished.
-     */
-    /*
-     * Download buttons for a screen that has exports. Everything the browser
-     * application can produce is available on the tablet - Komla's
-     * instruction that the iPad has everything.
-     *
-     * Nothing is streamed here: the API signs a link and the system browser
-     * fetches it. See data/exports.js for why that is the only way this can
-     * work inside a WebView.
-     */
-    function exportBar(base, formats) {
-        return el('div', { class: 'export-bar' }, [
-            el('span', { class: 'export-label', text: t('export.download') }),
-            ...formats.map((format) => el('button', {
-                class: 'button button-secondary button-compact',
-                text: t(`export.${format}`),
-                onclick: async (event) => {
-                    const button = event.currentTarget;
-                    const label = button.textContent;
-
-                    button.disabled = true;
-
-                    try {
-                        await openDocument(client, `${base}/${format}`);
-                        button.textContent = label;
-                    } catch {
-                        button.textContent = t('export.failed');
-                    } finally {
-                        button.disabled = false;
-                    }
-                },
-            })),
-        ]);
-    }
-
-    async function renderSection(section) {
-        if (section.kind === 'dashboard') {
-            mount(
-                listPane,
-                el('div', { class: 'workspace-head' }, [refreshButton]),
-                tabletDashboard({ onOpenSection: select, client }),
-                el('footer', { class: 'app-footer' }, [
-                    el('span', { text: t('app.copyright', { year: new Date().getFullYear() }) }),
-                    el('span', { text: `v${version}` }),
-                ])
-            );
-
-            return;
-        }
-
-        if (section.kind === 'reports') {
-            mount(listPane, el('div', { class: 'dashboard' }, [
-                el('h1', { class: 'pane-title', text: t('nav.reports') }),
-                el('div', { class: 'report-grid' }, endpoints.reports.map((report) => el('section', { class: 'card' }, [
-                    el('header', { class: 'card-head' }, [
-                        el('h2', { class: 'card-title', text: t(`reports.${report.key}`) }),
-                        el('button', {
-                            class: 'card-link',
-                            text: t('dash.view_details'),
-                            onclick: () => open({
-                                label: `reports.${report.key}`,
-                                icon: 'bar-chart-square',
-                                async load(inner) {
-                                    const found = rows(await inner.get(report.path));
-
-                                    return el('div', { class: 'record' }, [
-                                        exportBar(report.path, report.formats),
-                                        found.length === 0
-                                            ? el('p', { class: 'muted', text: t('list.empty') })
-                                            : el('ul', { class: 'list' }, found.map((line) => el('li', { class: 'row' }, [
-                                                el('span', { class: 'row-title', text: titleOf(line) }),
-                                                (line.total_formatted ?? line.amount_formatted)
-                                                    ? el('span', { class: 'row-figure', text: line.total_formatted ?? line.amount_formatted })
-                                                    : null,
-                                            ]))),
-                                    ]);
-                                },
-                            }),
-                        }),
-                    ]),
-                    el('div', { class: 'card-body' }, [
-                        exportBar(report.path, report.formats),
-                    ]),
-                ]))),
-            ]));
-
-            return;
-        }
-
-        if (section.kind === 'settings') {
-            mount(listPane, el('p', { class: 'muted centred', text: t('list.loading') }));
-
-            const [organisation, licence, devices] = await Promise.all([
-                client.get(endpoints.managingOrganisation).catch(() => null),
-                client.get(endpoints.license).catch(() => null),
-                client.get(endpoints.auth.devices).catch(() => null),
-            ]);
-
-            const org = organisation?.data ?? organisation ?? {};
-            const lic = licence?.data ?? licence ?? {};
-            const me = store.read('me').data;
-            const user = me?.user ?? me ?? {};
-
-            const pairs = (entries) => el('dl', { class: 'facts' }, entries
-                .filter(([, v]) => v !== null && v !== undefined && v !== '')
-                .flatMap(([label, v]) => [
-                    el('dt', { class: 'fact-label', text: label }),
-                    el('dd', { class: 'fact-value', text: String(v) }),
-                ]));
-
-            mount(listPane, el('div', { class: 'dashboard' }, [
-                el('h1', { class: 'pane-title', text: t('nav.settings') }),
-                el('div', { class: 'report-grid' }, [
-                    el('section', { class: 'card' }, [
-                        el('header', { class: 'card-head' }, [el('h2', { class: 'card-title', text: t('settings.organisation') })]),
-                        pairs([
-                            [t('field.name'), org.name],
-                            [t('signin.email'), org.email],
-                            [t('settings.phone'), org.phone],
-                            [t('field.address'), org.address],
-                            [t('settings.currency'), org.currency],
-                        ]),
-                    ]),
-                    el('section', { class: 'card' }, [
-                        el('header', { class: 'card-head' }, [el('h2', { class: 'card-title', text: t('settings.licence') })]),
-                        pairs([
-                            [t('settings.plan'), lic.plan_label ?? lic.plan],
-                            [t('settings.expires'), lic.expires_at ? shortDate(lic.expires_at) : null],
-                            [t('settings.status'), lic.status],
-                        ]),
-                    ]),
-                    el('section', { class: 'card' }, [
-                        el('header', { class: 'card-head' }, [el('h2', { class: 'card-title', text: t('nav.profile') })]),
-                        pairs([
-                            [t('field.name'), user.name],
-                            [t('signin.email'), user.email],
-                            [t('profile.role'), user.role_label ?? user.role],
-                        ]),
-                    ]),
-                    el('section', { class: 'card' }, [
-                        el('header', { class: 'card-head' }, [el('h2', { class: 'card-title', text: t('nav.devices') })]),
-                        el('ul', { class: 'list list-flush' }, (devices?.data ?? []).map((device) => el('li', { class: 'row' }, [
-                            el('div', { class: 'row-main' }, [
-                                el('span', { class: 'row-title', text: device.name ?? `#${device.id}` }),
-                                el('span', { class: 'row-subtitle', text: [device.platform, device.app_version].filter(Boolean).join(' · ') }),
-                            ]),
-                            device.is_current
-                                ? el('span', { class: 'chip', text: t('devices.current') })
-                                : el('button', {
-                                    class: 'link danger',
-                                    text: t('devices.revoke'),
-                                    onclick: async () => {
-                                        await client.delete(endpoints.auth.device(device.id));
-                                        renderSection(section);
-                                    },
-                                }),
-                        ]))),
-                    ]),
-                ]),
-            ]));
-
-            return;
-        }
-
-        mount(listPane, el('div', { class: 'empty' }, [
-            el('div', { class: 'empty-icon' }, [icon(section.icon, { size: 24 })]),
-            el('p', { class: 'empty-text', text: t('detail.not_built') }),
-        ]));
-    }
-
-    /* ------------------------------------------------------- lifecycle */
-
-    async function signOut() {
-        stopRefreshing();
-        unsubscribe();
-        unsubscribeLoading();
-        store.clear();
+    async function refresh() {
+        refreshButton.classList.add('is-spinning');
 
         try {
-            await client.post(endpoints.auth.logout);
-        } catch {
-            /* Local sign-out happens regardless; see the phone shell. */
+            await store.refreshAll(client);
+            paintOrganisation();
+            const fresh = store.read('me').data;
+
+            if (fresh) {
+                user = fresh.user ?? fresh;
+                setUser(user);
+            }
+
+            await currentScreen?.reload?.();
+        } finally {
+            refreshButton.classList.remove('is-spinning');
+        }
+    }
+
+    /* ----------------------------------------------------- lifecycle */
+
+    async function signOutAsk() {
+        if (await confirmSheet({ title: t('signout.title'), body: t('signout.body'), confirmLabel: t('signout.confirm'), danger: true })) {
+            await signOut(false);
+        }
+    }
+
+    async function signOut(alreadyGone) {
+        stopRefreshing();
+        closePopover();
+        store.clear();
+
+        if (! alreadyGone) {
+            try {
+                await client.post(endpoints.auth.logout);
+            } catch {
+                /* Local sign-out happens regardless. */
+            }
         }
 
         await session.clear();
@@ -582,28 +351,21 @@ export function tabletShell(root, { client, config, version = '1.0.0', onSignedO
         }
     }
 
-    /*
-     * Both panes pull to refresh. The list because that is where somebody
-     * looks for new data, and the record because a figure on it can have
-     * moved since it was opened.
-     */
-    attachPullToRefresh(listPane, async () => {
-        await store.refreshAll(client);
+    attachPullToRefresh(content, () => refresh());
 
-        if (current.kind === 'list') {
-            paintList();
-        } else {
-            await renderSection(current);
-        }
-    });
+    mount(root, el('div', { class: 'tablet-shell' }, [
+        sidebar,
+        el('div', { class: 'workspace-frame' }, [topbar, content]),
+    ]));
 
-    attachPullToRefresh(detailPane, async () => {
-        await store.refreshAll(client);
-    });
+    paintOrganisation();
 
-    mount(root, el('div', { class: 'tablet-shell' }, [sidebar, workspace]));
+    client.get(endpoints.notifications).then((payload) => {
+        const list = payload?.notifications ?? [];
 
-    reflectLoading();
+        bell.classList.toggle('badge-dot', list.some((n) => (n.kind === 'release_notes' && n.unread === true) || n.severity === 'danger'));
+    }).catch(() => {});
+
     startRefreshing();
-    select(current.id);
+    open('dashboard');
 }

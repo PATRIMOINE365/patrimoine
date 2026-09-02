@@ -22,10 +22,14 @@ let decided = null;
 
 export function isTablet() {
     if (decided === null) {
-        const short = Math.min(
-            window.screen?.width ?? window.innerWidth,
-            window.screen?.height ?? window.innerHeight
-        );
+        /*
+         * A screen that reports 0x0 - an embedded WebView before layout, a
+         * headless pane - must not be read as a tiny phone. The window's
+         * own size is the next best witness.
+         */
+        const width = window.screen?.width > 0 ? window.screen.width : window.innerWidth;
+        const height = window.screen?.height > 0 ? window.screen.height : window.innerHeight;
+        const short = Math.min(width, height);
 
         decided = short >= TABLET_SHORT_EDGE;
     }
