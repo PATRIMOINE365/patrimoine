@@ -27,6 +27,8 @@ import { titleOf, subtitleOf, filterRecords } from '../data/record.js';
 import { brandMark } from '../ui/brand.js';
 import { tabletDashboard } from './tablet-dashboard.js';
 import { openDocument } from '../data/exports.js';
+import { recordView } from './tablet-records.js';
+import { shortDate } from '../ui/money.js';
 
 const REFRESH_INTERVAL = 5 * 60 * 1000;
 
@@ -208,42 +210,33 @@ export function tabletShell(root, { client, config, version = '1.0.0', onSignedO
         mount(detailPane, el('p', { class: 'muted centred', text: t('list.loading') }));
 
         try {
-            const payload = section.detail === undefined
-                ? record
-                : await client.get(section.detail(record.id));
+            const render = recordView(section.id);
+            const body = await render(client, record, {
+                reload: () => openRecord(section, record),
+                open,
+            });
 
-            const full = payload?.data ?? payload ?? record;
-
-            const action = ACTIONS[section.id];
-
-            mount(detailPane, el('div', { class: 'detail' }, [
+            mount(detailPane, el('div', {}, [
                 el('header', { class: 'detail-head' }, [
                     el('button', {
                         class: 'detail-back',
                         onclick: clearRecord,
                     }, [icon('arrow-left', { size: 20 }), el('span', { text: t(current.label) })]),
-                    el('h2', { class: 'detail-title', text: titleOf(full) }),
-                    subtitleOf(full) === ''
+                    el('h2', { class: 'detail-title', text: titleOf(record) }),
+                    subtitleOf(record) === ''
                         ? null
-                        : el('p', { class: 'detail-subtitle', text: subtitleOf(full) }),
-                    /*
-                     * The action is offered ON the record, so the id it
-                     * needs is already known and nobody has to pick the
-                     * lease or the account from a second list.
-                     */
-                    action === undefined
-                        ? null
-                        : el('div', { class: 'detail-actions' }, [
-                            el('button', {
-                                class: 'button button-compact',
-                                onclick: () => action.run(client, full),
-                            }, [
-                                icon(action.icon, { size: 20 }),
-                                el('span', { text: t(action.label) }),
-                            ]),
+                        : el('p', { class: 'detail-subtitle', text: subtitleOf(record) }),
+                    ACTIONS[section.id] === undefined ? null : el('div', { class: 'detail-actions' }, [
+                        el('button', {
+                            class: 'button button-compact',
+                            onclick: () => ACTIONS[section.id].run(client, record),
+                        }, [
+                            icon(ACTIONS[section.id].icon, { size: 20 }),
+                            el('span', { text: t(ACTIONS[section.id].label) }),
                         ]),
+                    ]),
                 ]),
-                factsOf(full),
+                body,
             ]));
         } catch (failure) {
             mount(detailPane, errorLine(failure, t('signin.offline')));
@@ -292,6 +285,8 @@ export function tabletShell(root, { client, config, version = '1.0.0', onSignedO
                     record.status
                         ? el('span', { class: `chip chip-${record.status}`, text: String(record.status) })
                         : null,
+                    /* The sign that this row opens into something. */
+                    icon('chevron-right', { size: 20, class: 'row-chevron' }),
                 ]);
             }));
 
@@ -444,6 +439,81 @@ export function tabletShell(root, { client, config, version = '1.0.0', onSignedO
                         exportBar(report.path, report.formats),
                     ]),
                 ]))),
+            ]));
+
+            return;
+        }
+
+        if (section.kind === 'settings') {
+            mount(listPane, el('p', { class: 'muted centred', text: t('list.loading') }));
+
+            const [organisation, licence, devices] = await Promise.all([
+                client.get(endpoints.managingOrganisation).catch(() => null),
+                client.get(endpoints.license).catch(() => null),
+                client.get(endpoints.auth.devices).catch(() => null),
+            ]);
+
+            const org = organisation?.data ?? organisation ?? {};
+            const lic = licence?.data ?? licence ?? {};
+            const me = store.read('me').data;
+            const user = me?.user ?? me ?? {};
+
+            const pairs = (entries) => el('dl', { class: 'facts' }, entries
+                .filter(([, v]) => v !== null && v !== undefined && v !== '')
+                .flatMap(([label, v]) => [
+                    el('dt', { class: 'fact-label', text: label }),
+                    el('dd', { class: 'fact-value', text: String(v) }),
+                ]));
+
+            mount(listPane, el('div', { class: 'dashboard' }, [
+                el('h1', { class: 'pane-title', text: t('nav.settings') }),
+                el('div', { class: 'report-grid' }, [
+                    el('section', { class: 'card' }, [
+                        el('header', { class: 'card-head' }, [el('h2', { class: 'card-title', text: t('settings.organisation') })]),
+                        pairs([
+                            [t('field.name'), org.name],
+                            [t('signin.email'), org.email],
+                            [t('settings.phone'), org.phone],
+                            [t('field.address'), org.address],
+                            [t('settings.currency'), org.currency],
+                        ]),
+                    ]),
+                    el('section', { class: 'card' }, [
+                        el('header', { class: 'card-head' }, [el('h2', { class: 'card-title', text: t('settings.licence') })]),
+                        pairs([
+                            [t('settings.plan'), lic.plan_label ?? lic.plan],
+                            [t('settings.expires'), lic.expires_at ? shortDate(lic.expires_at) : null],
+                            [t('settings.status'), lic.status],
+                        ]),
+                    ]),
+                    el('section', { class: 'card' }, [
+                        el('header', { class: 'card-head' }, [el('h2', { class: 'card-title', text: t('nav.profile') })]),
+                        pairs([
+                            [t('field.name'), user.name],
+                            [t('signin.email'), user.email],
+                            [t('profile.role'), user.role_label ?? user.role],
+                        ]),
+                    ]),
+                    el('section', { class: 'card' }, [
+                        el('header', { class: 'card-head' }, [el('h2', { class: 'card-title', text: t('nav.devices') })]),
+                        el('ul', { class: 'list list-flush' }, (devices?.data ?? []).map((device) => el('li', { class: 'row' }, [
+                            el('div', { class: 'row-main' }, [
+                                el('span', { class: 'row-title', text: device.name ?? `#${device.id}` }),
+                                el('span', { class: 'row-subtitle', text: [device.platform, device.app_version].filter(Boolean).join(' · ') }),
+                            ]),
+                            device.is_current
+                                ? el('span', { class: 'chip', text: t('devices.current') })
+                                : el('button', {
+                                    class: 'link danger',
+                                    text: t('devices.revoke'),
+                                    onclick: async () => {
+                                        await client.delete(endpoints.auth.device(device.id));
+                                        renderSection(section);
+                                    },
+                                }),
+                        ]))),
+                    ]),
+                ]),
             ]));
 
             return;

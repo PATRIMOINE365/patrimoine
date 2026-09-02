@@ -52,6 +52,16 @@ export function wholeUnits(raw) {
 
 function field(spec, error) {
     const id = `sheet-${spec.name}`;
+
+    /* A note explains; it collects nothing and submits nothing. */
+    if (spec.type === 'note') {
+        return {
+            name: spec.name,
+            input: { value: '' },
+            node: el('p', { class: 'sheet-note', text: spec.label }),
+        };
+    }
+
     let input;
 
     if (spec.type === 'select') {

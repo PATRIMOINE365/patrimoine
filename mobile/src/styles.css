@@ -1967,3 +1967,45 @@ html[data-theme="dark"] .chart-line {
     font-size: var(--text-sm);
     color: var(--pm-text-subtle);
 }
+
+/* Actions on a record: edit, and the documents it can produce. */
+.record-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 1rem 1rem 0;
+}
+
+.record-actions .button {
+    width: auto;
+}
+
+.button-primary {
+    background: var(--pm-primary);
+    border-color: var(--pm-primary);
+    color: var(--pm-primary-text);
+}
+
+.record-note {
+    margin: 1rem 1rem 0;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    background: var(--pm-surface-muted);
+    font-size: var(--text-sm);
+    color: var(--pm-text-subtle);
+}
+
+.record .card {
+    margin: 1rem 1rem 0;
+}
+
+.record .facts {
+    padding: 0;
+}
+
+.sheet-note {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-subtle);
+}
