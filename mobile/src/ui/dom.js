@@ -47,8 +47,18 @@ export function clear(node) {
     return node;
 }
 
+/*
+ * Replace a node's contents.
+ *
+ * Nullish arguments are DROPPED. Element.append() stringifies whatever it is
+ * given, so a conditional child written as `condition ? node : null` - which
+ * el() has always allowed - put the literal text "null" on screen. It did,
+ * under the Leases title, until a walkthrough on the device caught it.
+ */
 export function mount(root, ...nodes) {
-    clear(root).append(...nodes);
+    clear(root).append(
+        ...nodes.filter((node) => node !== null && node !== undefined && node !== false)
+    );
 
     return root;
 }

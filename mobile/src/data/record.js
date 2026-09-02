@@ -6,10 +6,21 @@
  * comes to be called one thing on a phone and another on a tablet.
  */
 
-/** The line a person reads first. */
+/**
+ * The line a person reads first.
+ *
+ * The order matters and is not arbitrary. An owner account carries no name
+ * of its own - it belongs to a `party` - so without that branch the whole
+ * Finance tab read "#4, #3, #2, #1", which tells an operator nothing about
+ * whose money it is. A lease is named for its tenant, a property for
+ * itself. Falling through to an id is the last resort, not a default.
+ */
 export function titleOf(record) {
     return String(
         record.name
+        /* Owner and tenant accounts: the account is the party's. */
+        ?? record.party?.name
+        ?? record.owner?.name
         ?? record.tenant?.name
         ?? record.tenant_name
         ?? record.label
@@ -30,6 +41,7 @@ export function subtitleOf(record) {
         record.unit?.building?.name ?? record.building?.name ?? record.building_name,
         record.address,
         record.role_label ?? record.role,
+        record.party?.legal_name,
     ].filter((part) => part !== undefined && part !== null && part !== ''))].join(' · ');
 }
 
