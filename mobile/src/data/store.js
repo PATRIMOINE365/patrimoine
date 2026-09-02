@@ -41,6 +41,15 @@ export const WORKING_SET = {
     leases: '/leases',
     ownerAccounts: '/owner-accounts',
     notifications: '/notifications',
+    /*
+     * Home is the first screen, so what it shows is fetched with everything
+     * else rather than after it. The organisation is here for one field -
+     * the currency - which every figure in the application is written with.
+     */
+    organisation: '/managing-organisation',
+    dashboard: '/dashboard',
+    upcoming: '/dashboard/upcoming',
+    activity: '/activity-log',
 };
 
 function entry(key) {

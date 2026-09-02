@@ -1210,3 +1210,386 @@ textarea.input {
         transition: none;
     }
 }
+
+/*
+|--------------------------------------------------------------------------
+| A NEUTRAL DARK MODE
+|--------------------------------------------------------------------------
+|
+| Komla's instruction: the dark mode must not be the green dark. The product
+| tints its dark palette with the brand green - Night #0E1614 and a green
+| band - and he wants this application's dark inferred from the design
+| instead, which is neutral, card-based and quiet.
+|
+| So the greys are neutral and the brand appears only where the design uses
+| colour: the accent on a badge, the active tab, a positive figure. Mint is
+| lifted to brand-400 on dark, where it reads at 6.5:1 rather than failing
+| the way it does on white.
+|
+| ⚠ THIS DIVERGES DELIBERATELY FROM THE WEB APPLICATION'S DARK MODE. Light
+| mode still comes from the product's own tokens, so the two agree in the
+| theme most people use; dark is this client's own.
+*/
+
+html[data-theme="dark"] {
+    color-scheme: dark;
+
+    --pm-page: #0b0d0f;
+    --pm-surface: #16181c;
+    --pm-surface-subtle: #1b1e23;
+    --pm-surface-muted: #22262c;
+    --pm-surface-sunken: #101215;
+    --pm-surface-elevated: #1b1e23;
+
+    --pm-text: #f2f4f6;
+    --pm-text-secondary: #dfe3e8;
+    --pm-text-muted: #b6bdc6;
+    --pm-text-subtle: #939ba5;
+    --pm-text-placeholder: #6d757f;
+
+    --pm-border: #262a30;
+    --pm-border-strong: #3a4048;
+
+    --pm-overlay: rgba(0, 0, 0, 0.66);
+
+    /* Mint carries the brand on dark, where it finally has the contrast. */
+    --pm-primary: var(--color-brand-400);
+    --pm-primary-hover: var(--color-brand-300, #6ee7b7);
+    --pm-primary-text: #06120e;
+
+    --pm-input-background: #14171a;
+
+    /*
+     * The band is the tab bar and the sidebar. Neutral now, a shade above
+     * the page rather than a green plane.
+     */
+    --pm-band: #131519;
+    --pm-band-elevated: #1b1e23;
+    --pm-band-text: #f2f4f6;
+    --pm-band-text-muted: #8b939d;
+    --pm-band-border: #262a30;
+    --pm-band-hover: #1f2329;
+    --pm-band-selected: rgba(57, 214, 163, 0.14);
+    --pm-band-accent: var(--color-brand-400);
+
+    --pm-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Home
+|--------------------------------------------------------------------------
+*/
+
+.home {
+    padding: 0 0 2rem;
+}
+
+/* Brand lock-up in the header: tile, wordmark, tagline. */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 0;
+}
+
+.brand-tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: none;
+    border-radius: var(--radius-lg);
+    background: var(--color-brand-900);
+}
+
+.brand-words {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.brand-name {
+    font-size: var(--text-md);
+    line-height: 1.25;
+    color: var(--pm-text);
+}
+
+.brand-name strong {
+    font-weight: 700;
+}
+
+.brand-365 {
+    font-weight: 400;
+    color: var(--pm-text-muted);
+}
+
+.brand-tagline {
+    font-size: var(--text-xs);
+    line-height: 1.3;
+    color: var(--pm-text-subtle);
+}
+
+.greeting {
+    padding: 1.25rem 1rem 1rem;
+}
+
+.greeting-title {
+    margin: 0;
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.greeting-sub {
+    margin: 0.25rem 0 0;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-subtle);
+}
+
+/*
+ * The three figures. A scrolling row rather than three squeezed thirds:
+ * at 375pt a third is 110pt, which cannot hold "GHS 42,300" without
+ * shrinking it to the point of illegibility.
+ */
+.stats {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0 1rem 0.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    flex: 0 0 10.5rem;
+    scroll-snap-align: start;
+    padding: 1rem;
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--pm-border);
+    background: var(--pm-surface);
+}
+
+.stat-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 0.25rem;
+    border-radius: 999px;
+    color: #fff;
+}
+
+.stat-brand .stat-badge { background: var(--color-brand-600); }
+.stat-info .stat-badge { background: var(--color-blue-500); }
+.stat-warning .stat-badge { background: var(--color-warning-500); }
+
+.stat-label {
+    font-size: var(--text-sm);
+    color: var(--pm-text-subtle);
+}
+
+.stat-value {
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--pm-text);
+}
+
+.stat-sub {
+    font-size: var(--text-xs);
+    color: var(--pm-text-subtle);
+}
+
+.stat-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-blue-500);
+}
+
+/* Panels: Upcoming Payments, Recent Activity. */
+.card {
+    margin: 1rem 1rem 0;
+    background: var(--pm-surface);
+    border: 1px solid var(--pm-border);
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+}
+
+.card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem 1rem 0.75rem;
+}
+
+.card-title {
+    margin: 0;
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.card-link {
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--pm-primary);
+    padding: 0;
+}
+
+/* Inside a card the list needs no outer rule of its own. */
+.list-flush .row {
+    background: transparent;
+}
+
+.list-flush .row:last-child {
+    border-bottom: 0;
+}
+
+.row-media {
+    gap: 0.75rem;
+}
+
+.media-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: none;
+    border-radius: 999px;
+}
+
+.media-brand {
+    background: var(--pm-band-selected);
+    color: var(--color-brand-600);
+}
+
+.media-muted {
+    background: var(--pm-surface-muted);
+    color: var(--pm-text-subtle);
+}
+
+.row-over {
+    font-size: var(--text-xs);
+    color: var(--pm-text-subtle);
+}
+
+.row-trail {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.125rem;
+    flex: none;
+}
+
+.row-when {
+    font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--pm-text-subtle);
+}
+
+/* Six tabs now, not five. */
+.tab-bar {
+    grid-template-columns: repeat(6, 1fr);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Corrections against the design
+|--------------------------------------------------------------------------
+*/
+
+/*
+ * THE TAB BAR IS LIGHT, not the green band. The design solves the mint
+ * contrast problem differently from the web sidebar: instead of putting
+ * navigation on a dark plane so mint is legible on it, it keeps the bar
+ * white and makes the ACTIVE tab Patrimoine Green - which is 11:1 on white
+ * and needs no band at all. On dark it becomes the neutral surface with
+ * mint active, where mint finally has the contrast.
+ */
+.tab-bar {
+    background: var(--pm-surface);
+    border-top: 1px solid var(--pm-border);
+}
+
+.tab {
+    color: var(--pm-text-subtle);
+}
+
+.tab.is-active {
+    color: var(--pm-primary);
+}
+
+.tab.is-active svg {
+    color: var(--pm-primary);
+}
+
+.tab:active {
+    background: var(--pm-surface-muted);
+}
+
+/* The stat cards carry a wash of their own colour, as the design does. */
+.stat-brand {
+    background: var(--color-brand-50);
+    border-color: var(--color-brand-100, var(--pm-border));
+}
+
+.stat-info {
+    background: var(--color-blue-50);
+    border-color: var(--color-blue-100, var(--pm-border));
+}
+
+.stat-warning {
+    background: var(--color-warning-50);
+    border-color: var(--color-warning-100, var(--pm-border));
+}
+
+/*
+ * On dark those washes would be three bright panels. The badge keeps the
+ * colour; the card returns to the surface.
+ */
+html[data-theme="dark"] .stat-brand,
+html[data-theme="dark"] .stat-info,
+html[data-theme="dark"] .stat-warning {
+    background: var(--pm-surface);
+    border-color: var(--pm-border);
+}
+
+/* The bell carries a dot when something is waiting, as in the design. */
+.bell {
+    position: relative;
+}
+
+.bell.has-unread::after {
+    content: '';
+    position: absolute;
+    top: 0.5rem;
+    right: 0.6rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--color-brand-400);
+    /* Ringed in the header's own colour so it reads as a badge, not a dot. */
+    box-shadow: 0 0 0 2px var(--pm-surface);
+}

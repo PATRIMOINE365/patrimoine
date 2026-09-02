@@ -33,19 +33,31 @@ import { DEVICES, PROFILE, SETTINGS, AUDIT, ARCHIVE, REPORTS_INDEX } from './det
 import * as store from '../data/store.js';
 import { attachSwipeBack } from '../ui/swipe-back.js';
 import { searchField } from '../ui/search.js';
+import { brandMark } from '../ui/brand.js';
+import { homeScreen } from './home.js';
 import { titleOf, subtitleOf, filterRecords } from '../data/record.js';
 
 /*
  * Each tab names a key in the store rather than a path. The data is already
  * held by the time a tab is opened, so switching tabs paints immediately.
  */
+/*
+ * Six tabs, per Komla's design: Home, Properties, Parties, Leases,
+ * Accounting, More. Icon only - he was explicit that the labels under them
+ * are not wanted - so each name reaches assistive technology through
+ * aria-label instead.
+ *
+ * NOTE: this adds a Home tab, reversing the earlier decision that the phone
+ * would have no dashboard because the bell carried the same eight derived
+ * kinds. The design supersedes it; the bell stays as well.
+ */
 const TABS = [
+    { id: 'home', label: 'tab.home', icon: 'home-line', key: null },
     { id: 'properties', label: 'tab.properties', icon: 'building-02', key: 'buildings' },
     { id: 'parties', label: 'tab.parties', icon: 'users-03', key: 'parties' },
     { id: 'leases', label: 'tab.leases', icon: 'file-check', key: 'leases' },
-    /* Accounting is "calculator" in the sidebar; Finance is the same place. */
-    { id: 'finance', label: 'tab.finance', icon: 'calculator', key: 'ownerAccounts' },
-    { id: 'more', label: 'tab.more', icon: 'menu-02', key: null },
+    { id: 'accounting', label: 'tab.accounting', icon: 'calculator', key: 'ownerAccounts' },
+    { id: 'more', label: 'tab.more', icon: 'dots-vertical', key: null },
 ];
 
 /* On resume, and every five minutes while open. */
@@ -82,7 +94,7 @@ function row(record) {
 }
 
 export function appShell(root, { client, config, onSignedOut }) {
-    let active = 'leases';
+    let active = 'home';
 
     /*
      * A stack rather than a flag: Reports opens an index, and a report
@@ -515,7 +527,9 @@ export function appShell(root, { client, config, onSignedOut }) {
 
         unsubscribe();
 
-        if (tab.key === null) {
+        if (tab.id === 'home') {
+            mount(body, homeScreen({ onOpenTab: select }));
+        } else if (tab.key === null) {
             renderMore();
         } else {
             paint(tab);
@@ -543,11 +557,24 @@ export function appShell(root, { client, config, onSignedOut }) {
         if (screen === undefined) {
             mount(
                 header,
-                el('span', { class: 'header-title', text: t('app.name') }),
+                el('div', { class: 'brand' }, [
+                    el('div', { class: 'brand-tile' }, [brandMark(24)]),
+                    el('div', { class: 'brand-words' }, [
+                        el('span', { class: 'brand-name' }, [
+                            el('strong', { text: 'Patrimoine' }),
+                            el('span', { class: 'brand-365', text: ' 365' }),
+                        ]),
+                        el('span', { class: 'brand-tagline', text: t('app.tagline') }),
+                    ]),
+                ]),
                 el('div', { class: 'header-actions' }, [
                     refreshButton,
                     el('button', {
-                        class: 'icon-button',
+                        /*
+                         * The dot appears only when something is actually
+                         * waiting - a badge that is always on is decoration.
+                         */
+                        class: `icon-button bell${(store.read('notifications').data?.data ?? []).length > 0 ? ' has-unread' : ''}`,
                         'aria-label': t('more.notifications'),
                         onclick: () => load('bell-01', endpoints.notifications, () => select(active)),
                     }, [icon('bell-01', { size: 20 })]),

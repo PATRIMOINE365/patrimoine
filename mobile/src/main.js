@@ -19,6 +19,7 @@ import { Capacitor } from '@capacitor/core';
 import { ApiClient } from './api/client.js';
 import { session } from './auth/session.js';
 import * as store from './data/store.js';
+import { setCurrency } from './ui/money.js';
 import { fetchConfig, evaluate, LAUNCH_OK, LAUNCH_UPDATE_REQUIRED, LAUNCH_MAINTENANCE } from './boot/config.js';
 import { setLanguage, preferredLanguage, t } from './i18n/index.js';
 import { el, mount } from './ui/dom.js';
@@ -191,6 +192,15 @@ async function launch() {
          * the whole point. This await is what it is waiting for.
          */
         await store.prime(client);
+
+        /*
+         * Before the first figure is drawn. The currency is a setting on the
+         * organisation, not a constant, and a number rendered with the wrong
+         * symbol is worse than one rendered with none.
+         */
+        const organisation = store.read('organisation').data;
+
+        setCurrency((organisation?.data ?? organisation ?? {}).currency);
 
         /*
          * Two different clients, not one layout at two widths: the tablet is

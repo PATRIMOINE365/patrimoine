@@ -1,5 +1,26 @@
 export const en = {
     'app.name': 'Patrimoine 365',
+    'app.tagline': 'Manage. Grow. Sustain.',
+
+    'tab.home': 'Home',
+    'tab.accounting': 'Accounting',
+
+    'home.morning': 'Good morning, :name',
+    'home.afternoon': 'Good afternoon, :name',
+    'home.evening': 'Good evening, :name',
+    'home.subtitle': "Here's what's happening with your properties today.",
+    'home.revenue': 'Total Revenue',
+    'home.this_month': 'This month',
+    'home.outstanding': 'Outstanding',
+    'home.across_leases': 'Across :count leases',
+    'home.view_dues': 'View dues',
+    'home.occupancy': 'Occupancy Rate',
+    'home.all_properties': 'All properties',
+    'home.upcoming': 'Upcoming Payments',
+    'home.recent': 'Recent Activity',
+    'when.today': 'Today',
+    'when.yesterday': 'Yesterday',
+    'home.view_all': 'View all',
 
     'launch.checking': 'Starting…',
     'launch.loading': 'Getting your organisation’s data…',
