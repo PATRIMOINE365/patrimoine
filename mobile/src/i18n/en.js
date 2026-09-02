@@ -2,6 +2,7 @@ export const en = {
     'app.name': 'Patrimoine 365',
 
     'launch.checking': 'Starting…',
+    'launch.loading': 'Getting your organisation’s data…',
     'launch.unreachable.title': 'Cannot reach Patrimoine',
     'launch.unreachable.body': 'Check the connection and try again.',
 
@@ -46,6 +47,10 @@ export const en = {
     'list.loading': 'Loading…',
     'common.retry': 'Try again',
     'common.back': 'Back',
+    'freshness.now': 'just now',
+    'freshness.updated': 'Updated :when',
+    'freshness.updating': 'Updating…',
+    'freshness.refresh': 'Refresh now',
     'more.notifications': 'Notifications',
 
     'devices.current': 'This device',

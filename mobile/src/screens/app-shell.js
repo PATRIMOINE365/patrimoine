@@ -28,16 +28,26 @@ import { icon } from '../ui/icon.js';
 import { t } from '../i18n/index.js';
 import { endpoints } from '../api/endpoints.js';
 import { session } from '../auth/session.js';
+import { App as CapacitorApp } from '@capacitor/app';
 import { DEVICES, PROFILE, SETTINGS, AUDIT, ARCHIVE, REPORTS_INDEX } from './detail.js';
+import * as store from '../data/store.js';
+import { freshnessLine } from '../ui/freshness.js';
 
+/*
+ * Each tab names a key in the store rather than a path. The data is already
+ * held by the time a tab is opened, so switching tabs paints immediately.
+ */
 const TABS = [
-    { id: 'properties', label: 'tab.properties', icon: 'building-02', path: () => endpoints.buildings },
-    { id: 'parties', label: 'tab.parties', icon: 'users-03', path: () => endpoints.parties },
-    { id: 'leases', label: 'tab.leases', icon: 'file-check', path: () => endpoints.leases },
+    { id: 'properties', label: 'tab.properties', icon: 'building-02', key: 'buildings' },
+    { id: 'parties', label: 'tab.parties', icon: 'users-03', key: 'parties' },
+    { id: 'leases', label: 'tab.leases', icon: 'file-check', key: 'leases' },
     /* Accounting is "calculator" in the sidebar; Finance is the same place. */
-    { id: 'finance', label: 'tab.finance', icon: 'calculator', path: () => endpoints.ownerAccounts },
-    { id: 'more', label: 'tab.more', icon: 'menu-02', path: null },
+    { id: 'finance', label: 'tab.finance', icon: 'calculator', key: 'ownerAccounts' },
+    { id: 'more', label: 'tab.more', icon: 'menu-02', key: null },
 ];
+
+/* On resume, and every five minutes while open. */
+const REFRESH_INTERVAL = 5 * 60 * 1000;
 
 /*
  * Lease CREATE is tablet-only, and lease EDIT does not exist as a concept.
@@ -100,6 +110,10 @@ export function appShell(root, { client, config, onSignedOut }) {
      */
     const stack = [];
 
+    /* The live subscription for whichever tab is showing. */
+    let unsubscribe = () => {};
+    let timer = null;
+
     const body = el('div', { class: 'tab-body' });
 
     function records(payload) {
@@ -118,6 +132,47 @@ export function appShell(root, { client, config, onSignedOut }) {
         ]));
     }
 
+    /*
+     * Render a tab from the store. No await and no spinner: the working set
+     * was fetched at sign-in, so this paints synchronously. A background
+     * refresh re-renders in place when it lands.
+     */
+    function paint(tab) {
+        const held = store.read(tab.key);
+
+        /* Only ever seen if a key failed at sign-in and has nothing yet. */
+        if (held.data === null) {
+            if (held.loading) {
+                mount(body, el('p', { class: 'muted centred', text: t('list.loading') }));
+
+                return;
+            }
+
+            mount(body, el('div', { class: 'empty' }, [
+                el('div', { class: 'empty-icon' }, [icon('alert-circle', { size: 24 })]),
+                errorLine(held.error, t('signin.offline')),
+                el('button', {
+                    class: 'button button-secondary',
+                    text: t('common.retry'),
+                    onclick: () => store.fetchKey(client, tab.key),
+                }),
+            ]));
+
+            return;
+        }
+
+        const found = records(held.data);
+
+        if (found.length === 0) {
+            showEmpty(tab.icon, t('list.empty'));
+
+            return;
+        }
+
+        mount(body, el('ul', { class: 'list' }, found.map(row)));
+    }
+
+    /* The bell and any one-off list still fetch on demand. */
     async function load(iconName, path, onRetry) {
         mount(body, el('p', { class: 'muted centred', text: t('list.loading') }));
 
@@ -238,9 +293,66 @@ export function appShell(root, { client, config, onSignedOut }) {
             /* Deliberately ignored: see above. */
         }
 
+        stopRefreshing();
+        unsubscribe();
+        unsubscribeFreshness();
+        /* Nothing of the previous person may survive a sign-out. */
+        store.clear();
+
         await session.clear();
         onSignedOut();
     }
+
+    /*
+     * The freshness line is what makes rendering from cache honest: it says
+     * how old what you are reading is, and says "Updating" while that is
+     * being fixed.
+     */
+    const freshness = freshnessLine({
+        onRefresh: () => store.refreshAll(client),
+    });
+
+    function refreshFreshness() {
+        freshness.update({
+            fetchedAt: store.oldestFetchedAt(),
+            loading: store.isLoading(),
+        });
+    }
+
+    /*
+     * The freshness line reports on the whole store, so it listens to the
+     * whole store. Hanging it off the active tab's key left it reading
+     * "Updating" after everything had finished, whenever that key happened
+     * to complete before the others.
+     */
+    const unsubscribeFreshness = store.subscribeAny(refreshFreshness);
+
+    /*
+     * Two triggers, as agreed: whenever the application returns to the
+     * foreground, and every five minutes while it is open. A phone in a
+     * pocket must not be refreshing on a cellular plan.
+     */
+    function startRefreshing() {
+        timer = setInterval(() => store.refreshAll(client), REFRESH_INTERVAL);
+
+        CapacitorApp.addListener('appStateChange', ({ isActive }) => {
+            if (isActive) {
+                store.refreshAll(client);
+            }
+        }).catch(() => {
+            /* Web has no lifecycle events; the interval is enough there. */
+        });
+    }
+
+    function stopRefreshing() {
+        if (timer !== null) {
+            clearInterval(timer);
+            timer = null;
+        }
+    }
+
+    /* The clock keeps moving even when nothing is fetched. */
+    setInterval(refreshFreshness, 30_000);
 
     /*
      * Untitled UI's mobile bottom navigation, icon only. The name reaches
@@ -271,10 +383,19 @@ export function appShell(root, { client, config, onSignedOut }) {
 
         const tab = TABS.find((candidate) => candidate.id === id);
 
-        if (tab.path === null) {
+        unsubscribe();
+
+        if (tab.key === null) {
             renderMore();
         } else {
-            load(tab.icon, tab.path(), () => select(id));
+            paint(tab);
+
+            /* Re-paint in place when a background refresh lands. */
+            unsubscribe = store.subscribe(tab.key, () => {
+                if (active === id && stack.length === 0) {
+                    paint(tab);
+                }
+            });
         }
     }
 
@@ -316,8 +437,10 @@ export function appShell(root, { client, config, onSignedOut }) {
         );
     }
 
-    mount(root, el('div', { class: 'shell' }, [header, body, tabBar]));
+    mount(root, el('div', { class: 'shell' }, [header, freshness.node, body, tabBar]));
 
     renderHeader();
+    refreshFreshness();
+    startRefreshing();
     select(active);
 }

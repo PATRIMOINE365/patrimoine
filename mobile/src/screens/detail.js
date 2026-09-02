@@ -16,6 +16,22 @@ import { el, mount, errorLine } from '../ui/dom.js';
 import { icon } from '../ui/icon.js';
 import { t, language } from '../i18n/index.js';
 import { endpoints } from '../api/endpoints.js';
+import * as store from '../data/store.js';
+
+/*
+ * Fetched on first visit, then held. These are not in the working set -
+ * prefetching them would trade one spinner for a slow launch - but a second
+ * visit should be instant like everything else.
+ */
+async function cached(client, key, path) {
+    const held = await store.ensure(client, key, path);
+
+    if (held.data === null && held.error !== null) {
+        throw held.error;
+    }
+
+    return held.data;
+}
 
 /* Dates arrive as ISO strings; the handset knows how to write them. */
 function when(value) {
@@ -71,7 +87,7 @@ export const DEVICES = {
     label: 'more.devices',
     icon: 'smartphone',
     async load(client, { reload }) {
-        const devices = rows(await client.get(endpoints.auth.devices));
+        const devices = rows(await cached(client, 'devices', endpoints.auth.devices));
 
         if (devices.length === 0) {
             return emptyState('smartphone');
@@ -96,6 +112,8 @@ export const DEVICES = {
                         text: t('devices.revoke'),
                         onclick: async () => {
                             await client.delete(endpoints.auth.device(device.id));
+                            /* The held list is now wrong; re-fetch it. */
+                            await store.fetchKey(client, 'devices', endpoints.auth.devices);
                             reload();
                         },
                     }),
@@ -108,7 +126,7 @@ export const PROFILE = {
     label: 'more.profile',
     icon: 'user-01',
     async load(client) {
-        const payload = await client.get(endpoints.auth.me);
+        const payload = await cached(client, 'me', endpoints.auth.me);
         const user = payload?.user ?? payload ?? {};
 
         return facts([
@@ -131,8 +149,8 @@ export const SETTINGS = {
          * shows on its Settings page.
          */
         const [organisation, licence] = await Promise.all([
-            client.get(endpoints.managingOrganisation).catch(() => null),
-            client.get(endpoints.license).catch(() => null),
+            cached(client, 'organisation', endpoints.managingOrganisation).catch(() => null),
+            cached(client, 'license', endpoints.license).catch(() => null),
         ]);
 
         const org = organisation?.data ?? organisation ?? {};
@@ -152,7 +170,7 @@ export const AUDIT = {
     label: 'more.audit',
     icon: 'clock-rewind',
     async load(client) {
-        const entries = rows(await client.get(endpoints.activityLog));
+        const entries = rows(await cached(client, 'audit', endpoints.activityLog));
 
         if (entries.length === 0) {
             return emptyState('clock-rewind');
@@ -181,7 +199,7 @@ export const ARCHIVE = {
     label: 'more.archive',
     icon: 'archive',
     async load(client) {
-        const entries = rows(await client.get(endpoints.archive));
+        const entries = rows(await cached(client, 'archive', endpoints.archive));
 
         if (entries.length === 0) {
             return emptyState('archive');
@@ -228,7 +246,7 @@ export const REPORTS_INDEX = {
                 label: `reports.${report.key}`,
                 icon: 'bar-chart-square',
                 async load(inner) {
-                    const payload = await inner.get(report.path);
+                    const payload = await cached(inner, `report:${report.key}`, report.path);
                     const found = rows(payload);
 
                     if (found.length === 0) {

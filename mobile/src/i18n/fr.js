@@ -2,6 +2,7 @@ export const fr = {
     'app.name': 'Patrimoine 365',
 
     'launch.checking': 'Démarrage…',
+    'launch.loading': 'Récupération des données de votre organisation…',
     'launch.unreachable.title': 'Patrimoine est injoignable',
     'launch.unreachable.body': 'Vérifiez la connexion, puis réessayez.',
 
@@ -46,6 +47,10 @@ export const fr = {
     'list.loading': 'Chargement…',
     'common.retry': 'Réessayer',
     'common.back': 'Retour',
+    'freshness.now': 'à l’instant',
+    'freshness.updated': 'Mis à jour :when',
+    'freshness.updating': 'Mise à jour…',
+    'freshness.refresh': 'Actualiser maintenant',
     'more.notifications': 'Notifications',
 
     'devices.current': 'Cet appareil',

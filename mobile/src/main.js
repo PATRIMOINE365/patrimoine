@@ -18,6 +18,7 @@ import { Capacitor } from '@capacitor/core';
 
 import { ApiClient } from './api/client.js';
 import { session } from './auth/session.js';
+import * as store from './data/store.js';
 import { fetchConfig, evaluate, LAUNCH_OK, LAUNCH_UPDATE_REQUIRED, LAUNCH_MAINTENANCE } from './boot/config.js';
 import { setLanguage, preferredLanguage, t } from './i18n/index.js';
 import { el, mount } from './ui/dom.js';
@@ -142,7 +143,16 @@ async function boot() {
         });
     }
 
-    function showApp() {
+    /*
+     * The organisation's working set is fetched ONCE here, before the shell
+     * is drawn, so that moving between tabs afterwards costs nothing. This
+     * is the only place a person waits for a list.
+     */
+    async function showApp() {
+        mount(root, el('p', { class: 'muted centred', text: t('launch.loading') }));
+
+        await store.prime(client);
+
         appShell(root, { client, config: decision.config, onSignedOut: () => showSignIn(null) });
     }
 
