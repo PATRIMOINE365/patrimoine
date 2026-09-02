@@ -21,6 +21,7 @@ import { endpoints } from '../api/endpoints.js';
 import { session } from '../auth/session.js';
 import * as store from '../data/store.js';
 import { App as CapacitorApp } from '@capacitor/app';
+import { ACTIONS } from './write-flows.js';
 
 const REFRESH_INTERVAL = 5 * 60 * 1000;
 
@@ -184,6 +185,8 @@ export function tabletShell(root, { client, config, onSignedOut }) {
 
             const full = payload?.data ?? payload ?? record;
 
+            const action = ACTIONS[section.id];
+
             mount(detailPane, el('div', { class: 'detail' }, [
                 el('header', { class: 'detail-head' }, [
                     el('button', {
@@ -194,6 +197,22 @@ export function tabletShell(root, { client, config, onSignedOut }) {
                     subtitleOf(full) === ''
                         ? null
                         : el('p', { class: 'detail-subtitle', text: subtitleOf(full) }),
+                    /*
+                     * The action is offered ON the record, so the id it
+                     * needs is already known and nobody has to pick the
+                     * lease or the account from a second list.
+                     */
+                    action === undefined
+                        ? null
+                        : el('div', { class: 'detail-actions' }, [
+                            el('button', {
+                                class: 'button button-compact',
+                                onclick: () => action.run(client, full),
+                            }, [
+                                icon(action.icon, { size: 20 }),
+                                el('span', { text: t(action.label) }),
+                            ]),
+                        ]),
                 ]),
                 factsOf(full),
             ]));

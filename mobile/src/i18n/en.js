@@ -87,4 +87,25 @@ export const en = {
     'reports.funds': 'Funds',
 
     'common.cancel': 'Cancel',
+
+    'sheet.saving': 'Saving…',
+
+    'write.record': 'Record',
+    'write.record_payment': 'Record payment',
+    'write.record_payout': 'Record payout',
+    'write.record_expense': 'Record expense',
+    'write.amount': 'Amount',
+    'write.amount_hint': 'Whole currency units, no decimals.',
+    'write.payment_date': 'Payment date',
+    'write.payout_date': 'Payout date',
+    'write.expense_date': 'Expense date',
+    'write.method': 'Method',
+    'write.description': 'Description',
+    'write.reference': 'Reference',
+    'write.notes': 'Notes',
+
+    'method.cash': 'Cash',
+    'method.bank_transfer': 'Bank transfer',
+    'method.momo': 'Mobile money',
+    'method.cheque': 'Cheque',
 };
