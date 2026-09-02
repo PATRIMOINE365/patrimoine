@@ -28,6 +28,7 @@ import { icon } from '../ui/icon.js';
 import { t } from '../i18n/index.js';
 import { endpoints } from '../api/endpoints.js';
 import { session } from '../auth/session.js';
+import { DEVICES, PROFILE, SETTINGS, AUDIT, ARCHIVE, REPORTS_INDEX } from './detail.js';
 
 const TABS = [
     { id: 'properties', label: 'tab.properties', icon: 'building-02', path: () => endpoints.buildings },
@@ -38,16 +39,14 @@ const TABS = [
     { id: 'more', label: 'tab.more', icon: 'menu-02', path: null },
 ];
 
-/* Lease CREATE is tablet-only, and lease EDIT does not exist as a concept. */
-const MORE_ITEMS = [
-    { label: 'more.reports', icon: 'bar-chart-square' },
-    { label: 'more.audit', icon: 'clock-rewind' },
-    { label: 'more.archive', icon: 'archive' },
-    { label: 'more.settings', icon: 'settings-01' },
-    { label: 'more.profile', icon: 'user-01' },
-    { label: 'more.devices', icon: 'smartphone' },
-    { label: 'more.support', icon: 'life-buoy' },
-];
+/*
+ * Lease CREATE is tablet-only, and lease EDIT does not exist as a concept.
+ *
+ * Every entry here opens a real screen backed by a real endpoint. Support
+ * is the exception and leaves for the browser, because the support form is
+ * a web journey like sign-up and plan changes.
+ */
+const MORE_ITEMS = [REPORTS_INDEX, AUDIT, ARCHIVE, SETTINGS, PROFILE, DEVICES];
 
 function chip(status) {
     if (status === undefined || status === null) {
@@ -86,8 +85,15 @@ function row(record) {
     ]);
 }
 
-export function appShell(root, { client, onSignedOut }) {
+export function appShell(root, { client, config, onSignedOut }) {
     let active = 'leases';
+
+    /*
+     * A stack rather than a flag: Reports opens an index, and a report
+     * opens from inside it, so Back has to mean "the screen before this"
+     * and not "the tab bar".
+     */
+    const stack = [];
 
     const body = el('div', { class: 'tab-body' });
 
@@ -133,15 +139,78 @@ export function appShell(root, { client, onSignedOut }) {
         }
     }
 
+    /* Push a screen from detail.js and draw it. */
+    async function open(screen) {
+        stack.push(screen);
+        await renderDetail();
+    }
+
+    function back() {
+        stack.pop();
+
+        if (stack.length === 0) {
+            renderHeader();
+            renderMore();
+        } else {
+            renderDetail();
+        }
+    }
+
+    async function renderDetail() {
+        const screen = stack[stack.length - 1];
+
+        renderHeader();
+        mount(body, el('p', { class: 'muted centred', text: t('list.loading') }));
+
+        try {
+            const node = await screen.load(client, { open, reload: renderDetail });
+
+            mount(body, node);
+        } catch (failure) {
+            mount(body, el('div', { class: 'empty' }, [
+                el('div', { class: 'empty-icon' }, [icon('alert-circle', { size: 24 })]),
+                errorLine(failure, t('signin.offline')),
+                el('button', {
+                    class: 'button button-secondary',
+                    text: t('common.retry'),
+                    onclick: renderDetail,
+                }),
+            ]));
+        }
+    }
+
     function renderMore() {
         mount(body, el('ul', { class: 'list' }, [
-            ...MORE_ITEMS.map((item) => el('li', { class: 'row row-tappable' }, [
+            ...MORE_ITEMS.map((item) => el('li', {
+                class: 'row row-tappable',
+                onclick: () => open(item),
+            }, [
                 el('div', { class: 'row-lead' }, [
                     icon(item.icon, { size: 20 }),
                     el('span', { class: 'row-title', text: t(item.label) }),
                 ]),
                 icon('chevron-right', { size: 20, class: 'row-chevron' }),
             ])),
+            /*
+             * Support leaves for the browser: the support form is a web
+             * journey, like sign-up and anything to do with a plan.
+             */
+            el('li', {
+                class: 'row row-tappable',
+                onclick: () => {
+                    const url = config?.links?.support;
+
+                    if (url) {
+                        window.open(url, '_blank');
+                    }
+                },
+            }, [
+                el('div', { class: 'row-lead' }, [
+                    icon('life-buoy', { size: 20 }),
+                    el('span', { class: 'row-title', text: t('more.support') }),
+                ]),
+                icon('link-external', { size: 20, class: 'row-chevron' }),
+            ]),
             el('li', { class: 'row row-tappable', onclick: signOut }, [
                 el('div', { class: 'row-lead danger' }, [
                     icon('log-out-01', { size: 20 }),
@@ -169,18 +238,17 @@ export function appShell(root, { client, onSignedOut }) {
     }
 
     /*
-     * Untitled UI's mobile bottom navigation: icon over label, both taking
-     * the same colour, so the active tab reads as one object rather than a
-     * coloured word under a grey glyph.
+     * Untitled UI's mobile bottom navigation, icon only. The name reaches
+     * assistive technology through aria-label rather than a visible label
+     * repeating what the glyph already says.
      */
     const tabBar = el('nav', { class: 'tab-bar' }, TABS.map((tab) => el('button', {
         class: 'tab',
         dataset: { tab: tab.id },
+        'aria-label': t(tab.label),
+        title: t(tab.label),
         onclick: () => select(tab.id),
-    }, [
-        icon(tab.icon, { size: 24 }),
-        el('span', { class: 'tab-label', text: t(tab.label) }),
-    ])));
+    }, [icon(tab.icon, { size: 24 })])));
 
     function select(id) {
         active = id;
@@ -192,6 +260,10 @@ export function appShell(root, { client, onSignedOut }) {
             button.setAttribute('aria-current', selected ? 'page' : 'false');
         }
 
+        /* Changing tab abandons whatever was pushed on the old one. */
+        stack.length = 0;
+        renderHeader();
+
         const tab = TABS.find((candidate) => candidate.id === id);
 
         if (tab.path === null) {
@@ -201,20 +273,46 @@ export function appShell(root, { client, onSignedOut }) {
         }
     }
 
-    const header = el('header', { class: 'header' }, [
-        el('span', { class: 'header-title', text: t('app.name') }),
-        /*
-         * The bell is a header icon on every screen, because on a phone it
-         * and the dashboard are the same surface.
-         */
-        el('button', {
-            class: 'icon-button',
-            'aria-label': 'Notifications',
-            onclick: () => load('bell-01', endpoints.notifications, () => select(active)),
-        }, [icon('bell-01', { size: 20 })]),
-    ]);
+    const header = el('header', { class: 'header' });
+
+    /*
+     * One header, two states. At the top of a tab it names the product and
+     * offers the bell; inside a pushed screen it becomes Back and the
+     * screen's own title. The bell is dropped there deliberately - it would
+     * navigate away from a screen the person has just opened.
+     */
+    function renderHeader() {
+        const screen = stack[stack.length - 1];
+
+        if (screen === undefined) {
+            mount(
+                header,
+                el('span', { class: 'header-title', text: t('app.name') }),
+                el('button', {
+                    class: 'icon-button',
+                    'aria-label': t('more.notifications'),
+                    onclick: () => load('bell-01', endpoints.notifications, () => select(active)),
+                }, [icon('bell-01', { size: 20 })])
+            );
+
+            return;
+        }
+
+        mount(
+            header,
+            el('div', { class: 'header-lead' }, [
+                el('button', {
+                    class: 'icon-button',
+                    'aria-label': t('common.back'),
+                    onclick: back,
+                }, [icon('arrow-left', { size: 20 })]),
+                el('span', { class: 'header-title', text: t(screen.label) }),
+            ])
+        );
+    }
 
     mount(root, el('div', { class: 'shell' }, [header, body, tabBar]));
 
+    renderHeader();
     select(active);
 }

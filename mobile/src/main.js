@@ -143,7 +143,7 @@ async function boot() {
     }
 
     function showApp() {
-        appShell(root, { client, onSignedOut: () => showSignIn(null) });
+        appShell(root, { client, config: decision.config, onSignedOut: () => showSignIn(null) });
     }
 
     if (session.isSignedIn()) {

@@ -45,5 +45,27 @@ export const fr = {
     'list.empty': 'Rien à afficher pour le moment.',
     'list.loading': 'Chargement…',
     'common.retry': 'Réessayer',
+    'common.back': 'Retour',
+    'more.notifications': 'Notifications',
+
+    'devices.current': 'Cet appareil',
+    'devices.revoke': 'Déconnecter',
+
+    'profile.name': 'Nom',
+    'profile.email': 'Adresse e-mail',
+    'profile.role': 'Rôle',
+    'profile.organisation': 'Organisation',
+
+    'settings.organisation': 'Organisation',
+    'settings.email': 'Adresse e-mail',
+    'settings.phone': 'Téléphone',
+    'settings.plan': 'Forfait',
+    'settings.expires': 'Expire le',
+
+    'reports.arrears': 'Impayés',
+    'reports.occupancy': 'Occupation',
+    'reports.payments': 'Paiements',
+    'reports.funds': 'Fonds',
+
     'common.cancel': 'Annuler',
 };

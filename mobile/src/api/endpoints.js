@@ -47,6 +47,7 @@ export const endpoints = {
     accountingSummary: '/accounting/summary',
 
     license: '/license',
+    managingOrganisation: '/managing-organisation',
     guide: '/guide',
     errorCodes: '/error-codes',
     archive: '/archive',

@@ -59,7 +59,16 @@
     box-sizing: border-box;
 }
 
-html {
+/*
+ * The height chain matters more than it looks. A shell that is
+ * `min-height: 100vh` grows past the viewport as soon as its list is long,
+ * and the tab bar goes with it - which is exactly what happened: the bar
+ * had to be scrolled to. An application shell is not a document; it is
+ * exactly the height of the window, and only its body scrolls.
+ */
+html,
+body {
+    height: 100%;
     /* iOS enlarges text in landscape without this. */
     -webkit-text-size-adjust: 100%;
 }
@@ -74,7 +83,8 @@ body {
 }
 
 #app {
-    min-height: 100vh;
+    height: 100%;
+    overflow: hidden;
 }
 
 /*
@@ -86,7 +96,7 @@ body {
 .shell {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100%;
 }
 
 .header {
@@ -126,7 +136,13 @@ body {
 }
 
 .tab-body {
-    flex: 1;
+    flex: 1 1 auto;
+    /*
+     * Without min-height:0 a flex child refuses to shrink below its content,
+     * so the list pushes the tab bar off the bottom of the screen instead of
+     * scrolling inside it. This one line is the fix for that.
+     */
+    min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }
@@ -156,29 +172,24 @@ body {
 }
 
 /*
- * Icon over label, both inheriting one colour, so the active tab reads as
- * a single object rather than a coloured word under a grey glyph. The icon
- * takes 24px here rather than the product's 20px: a tab bar is the one
- * place the glyph is doing the identifying, not the text beside it.
+ * Icon only. The glyph carries the meaning and each destination keeps the
+ * icon it has in the web sidebar, so the label was repeating what the icon
+ * already said and stealing height from the list. The name still reaches
+ * assistive technology through aria-label on the button.
+ *
+ * 24px rather than the product's 20px: here the glyph is doing the
+ * identifying on its own.
  */
 .tab {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.25rem;
     border: 0;
     background: transparent;
     padding: 0.5rem 0.25rem;
-    min-height: 3.25rem;
+    min-height: 3rem;
     font-family: inherit;
     color: var(--pm-band-text-muted);
-}
-
-.tab-label {
-    font-size: var(--text-xs);
-    line-height: var(--text-xs--line-height);
-    font-weight: 500;
 }
 
 /*
@@ -192,10 +203,6 @@ body {
 
 .tab.is-active svg {
     color: var(--pm-band-accent);
-}
-
-.tab.is-active .tab-label {
-    font-weight: 600;
 }
 
 .tab:active {
@@ -284,6 +291,9 @@ body {
     padding: calc(env(safe-area-inset-top) + 2rem) 1.25rem 2rem;
     max-width: 26rem;
     margin: 0 auto;
+    /* These screens stand alone, so they carry their own scroll. */
+    height: 100%;
+    overflow-y: auto;
 }
 
 .screen-title,
@@ -415,6 +425,59 @@ body {
     font-size: var(--text-sm);
     line-height: var(--text-sm--line-height);
     color: var(--pm-primary);
+}
+
+/* Back button and title, kept together on the left of the header. */
+.header-lead {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+.header-lead .header-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*
+ * Facts, not a list: a label above its value, for the screens that are a
+ * handful of stated things rather than rows - profile, settings.
+ */
+.facts {
+    margin: 0;
+    padding: 0.5rem 0;
+}
+
+.fact-label {
+    padding: 0.875rem 1rem 0;
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    color: var(--pm-text-subtle);
+    background: var(--pm-surface);
+}
+
+.fact-value {
+    margin: 0;
+    padding: 0 1rem 0.875rem;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text);
+    background: var(--pm-surface);
+    border-bottom: 1px solid var(--pm-border);
+}
+
+/*
+ * A figure at the end of a row. Tabular numerals so a column of amounts
+ * lines up on the decimal rather than wandering.
+ */
+.row-figure {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--pm-text);
+    white-space: nowrap;
 }
 
 /* A row that leads with an icon: More, and any settings-style list. */

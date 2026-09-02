@@ -45,5 +45,27 @@ export const en = {
     'list.empty': 'Nothing to show yet.',
     'list.loading': 'Loading…',
     'common.retry': 'Try again',
+    'common.back': 'Back',
+    'more.notifications': 'Notifications',
+
+    'devices.current': 'This device',
+    'devices.revoke': 'Sign out',
+
+    'profile.name': 'Name',
+    'profile.email': 'Email address',
+    'profile.role': 'Role',
+    'profile.organisation': 'Organisation',
+
+    'settings.organisation': 'Organisation',
+    'settings.email': 'Email address',
+    'settings.phone': 'Telephone',
+    'settings.plan': 'Plan',
+    'settings.expires': 'Expires',
+
+    'reports.arrears': 'Arrears',
+    'reports.occupancy': 'Occupancy',
+    'reports.payments': 'Payments',
+    'reports.funds': 'Funds',
+
     'common.cancel': 'Cancel',
 };
