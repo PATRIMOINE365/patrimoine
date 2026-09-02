@@ -168,7 +168,13 @@ body {
     }
 }
 
-.tab-body {
+/*
+ * The stage. Pushed screens are layers over the tab body rather than
+ * replacements for it, so there is always something underneath to slide
+ * back to - which is what makes the edge-swipe possible at all.
+ */
+.screens {
+    position: relative;
     flex: 1 1 auto;
     /*
      * Without min-height:0 a flex child refuses to shrink below its content,
@@ -176,8 +182,66 @@ body {
      * scrolling inside it. This one line is the fix for that.
      */
     min-height: 0;
+    overflow: hidden;
+}
+
+.tab-body {
+    position: absolute;
+    inset: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+}
+
+.screen-layer {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background: var(--pm-page);
+    /*
+     * The shadow is what separates the moving screen from the one behind
+     * it during a drag; without it the two grounds merge and the gesture
+     * looks like the list is tearing.
+     */
+    box-shadow: -0.5rem 0 1.5rem rgb(14 22 20 / 0.18);
+    transform: translateX(100%);
+    /*
+     * iOS's own push curve. Nearly all of the distance is covered early,
+     * so the screen arrives rather than drifts.
+     */
+    transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1);
+    will-change: transform;
+}
+
+.screen-layer.is-open {
+    transform: translateX(0);
+}
+
+/* While a finger is on it, the transform follows the finger, not a curve. */
+.screen-layer.is-dragging,
+.tab-body.is-dragging {
+    transition: none;
+}
+
+/*
+ * The screen underneath parallaxes. iOS moves it about a third of the
+ * distance, which is what makes the gesture feel like moving a stack rather
+ * than sliding one card off another.
+ */
+.tab-body,
+.screen-layer {
+    transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.is-covered {
+    transform: translateX(-33.333%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .screen-layer,
+    .tab-body {
+        transition: none;
+    }
 }
 
 /*

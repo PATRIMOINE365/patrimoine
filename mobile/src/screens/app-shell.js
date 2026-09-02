@@ -31,6 +31,7 @@ import { session } from '../auth/session.js';
 import { App as CapacitorApp } from '@capacitor/app';
 import { DEVICES, PROFILE, SETTINGS, AUDIT, ARCHIVE, REPORTS_INDEX } from './detail.js';
 import * as store from '../data/store.js';
+import { attachSwipeBack } from '../ui/swipe-back.js';
 
 /*
  * Each tab names a key in the store rather than a path. The data is already
@@ -113,7 +114,19 @@ export function appShell(root, { client, config, onSignedOut }) {
     let unsubscribe = () => {};
     let timer = null;
 
+    /*
+     * One element per pushed screen, parallel to `stack`. Screens are
+     * layers rather than replaced content so that the one underneath is
+     * still there to slide back to - which is what the edge-swipe needs,
+     * and also what stops a Back tap re-fetching a list that never went
+     * away.
+     */
+    const layers = [];
+
     const body = el('div', { class: 'tab-body' });
+
+    /* The stage: the tab body, plus any pushed screens layered over it. */
+    const screens = el('div', { class: 'screens' }, [body]);
 
     function records(payload) {
         /*
@@ -198,35 +211,101 @@ export function appShell(root, { client, config, onSignedOut }) {
         }
     }
 
-    /* Push a screen from detail.js and draw it. */
+    /* The screen a pushed layer sits on top of. */
+    function beneath() {
+        return layers.length > 1 ? layers[layers.length - 2] : body;
+    }
+
+    /* Push a screen from detail.js as a new layer over the current one. */
     async function open(screen) {
+        const layer = el('div', { class: 'screen-layer' });
+
+        screens.append(layer);
         stack.push(screen);
+        layers.push(layer);
+
+        renderHeader();
+
+        /*
+         * The screen underneath is pushed back while it is covered, so that
+         * a drag continues that movement instead of starting it. Without
+         * this the covered screen sits at zero and jumps a third of the
+         * width the instant a finger touches the edge.
+         */
+        beneath().classList.add('is-covered');
+
+        /*
+         * Flush layout so the off-screen position is committed before the
+         * open class lands - otherwise the browser collapses both styles
+         * into one and there is nothing to animate. A forced reflow rather
+         * than requestAnimationFrame: rAF is throttled when the view is not
+         * visible, and a screen that opened while backgrounded would still
+         * be off-screen when the person came back to it.
+         */
+        void layer.offsetWidth;
+
+        layer.classList.add('is-open');
+
+        attachSwipeBack(layer, { beneath, onComplete: back });
+
         await renderDetail();
     }
 
     function back() {
-        stack.pop();
+        const layer = layers.pop();
 
-        if (stack.length === 0) {
-            renderHeader();
-            renderMore();
-        } else {
-            renderDetail();
+        stack.pop();
+        renderHeader();
+
+        if (layer === undefined) {
+            return;
         }
+
+        beneath().classList.remove('is-covered');
+
+        /*
+         * Remove on transitionend rather than on a timer, so a layer is
+         * never torn out from under a gesture still finishing.
+         */
+        layer.classList.remove('is-open');
+        layer.addEventListener('transitionend', () => layer.remove(), { once: true });
+        window.setTimeout(() => layer.remove(), 400);
+    }
+
+    /* Everything pushed is dropped at once, without animating each one. */
+    function clearLayers() {
+        for (const layer of layers) {
+            layer.remove();
+        }
+
+        layers.length = 0;
+        stack.length = 0;
+        body.classList.remove('is-covered');
     }
 
     async function renderDetail() {
         const screen = stack[stack.length - 1];
+        const layer = layers[layers.length - 1];
 
-        renderHeader();
-        mount(body, el('p', { class: 'muted centred', text: t('list.loading') }));
+        if (screen === undefined || layer === undefined) {
+            return;
+        }
+
+        mount(layer, el('p', { class: 'muted centred', text: t('list.loading') }));
 
         try {
             const node = await screen.load(client, { open, reload: renderDetail });
 
-            mount(body, node);
+            /* The person may have swiped back while this was in flight. */
+            if (layers.includes(layer)) {
+                mount(layer, node);
+            }
         } catch (failure) {
-            mount(body, el('div', { class: 'empty' }, [
+            if (! layers.includes(layer)) {
+                return;
+            }
+
+            mount(layer, el('div', { class: 'empty' }, [
                 el('div', { class: 'empty-icon' }, [icon('alert-circle', { size: 24 })]),
                 errorLine(failure, t('signin.offline')),
                 el('button', {
@@ -376,7 +455,7 @@ export function appShell(root, { client, config, onSignedOut }) {
         }
 
         /* Changing tab abandons whatever was pushed on the old one. */
-        stack.length = 0;
+        clearLayers();
         renderHeader();
 
         const tab = TABS.find((candidate) => candidate.id === id);
@@ -438,7 +517,7 @@ export function appShell(root, { client, config, onSignedOut }) {
         );
     }
 
-    mount(root, el('div', { class: 'shell' }, [header, body, tabBar]));
+    mount(root, el('div', { class: 'shell' }, [header, screens, tabBar]));
 
     renderHeader();
     refreshFreshness();
