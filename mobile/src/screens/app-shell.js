@@ -31,11 +31,12 @@ import { session } from '../auth/session.js';
 import { App as CapacitorApp } from '@capacitor/app';
 import {
     DEVICES, PROFILE, SETTINGS, AUDIT, ARCHIVE, REPORTS_INDEX,
-    TENANTS, OWNERS, ACCOUNTING, recordScreen,
+    TENANTS, OWNERS, ACCOUNTING, recordScreen, signOutScreen,
 } from './detail.js';
 import * as store from '../data/store.js';
 import { attachSwipeBack } from '../ui/swipe-back.js';
 import { searchField } from '../ui/search.js';
+import { attachPullToRefresh } from '../ui/pull-refresh.js';
 import { brandMark } from '../ui/brand.js';
 import { homeScreen } from './home.js';
 import { titleOf, subtitleOf, filterRecords } from '../data/record.js';
@@ -442,7 +443,7 @@ export function appShell(root, { client, config, onSignedOut }) {
                 ]),
                 icon('link-external', { size: 20, class: 'row-chevron' }),
             ]),
-            el('li', { class: 'row row-tappable', onclick: signOut }, [
+            el('li', { class: 'row row-tappable', onclick: () => open(signOutScreen(signOut)) }, [
                 el('div', { class: 'row-lead danger' }, [
                     icon('log-out-01', { size: 20 }),
                     el('span', { class: 'row-title', text: t('nav.sign_out') }),
@@ -635,6 +636,22 @@ export function appShell(root, { client, config, onSignedOut }) {
             ])
         );
     }
+
+    /*
+     * The list pulls to refresh. iOS supplies the bounce; this turns a
+     * deliberate pull into a refresh of everything held.
+     */
+    attachPullToRefresh(body, async () => {
+        await store.refreshAll(client);
+
+        const tab = current();
+
+        if (tab.id === 'dashboard') {
+            mount(body, homeScreen({ onOpenTab: select }));
+        } else if (tab.key !== null) {
+            paint(tab);
+        }
+    });
 
     mount(root, el('div', { class: 'shell' }, [header, screens, tabBar]));
 

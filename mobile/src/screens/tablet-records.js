@@ -25,7 +25,7 @@ import { endpoints } from '../api/endpoints.js';
 import { money, shortDate } from '../ui/money.js';
 import { titleOf, subtitleOf } from '../data/record.js';
 import { openSheet } from '../ui/sheet.js';
-import { openDocument } from '../data/exports.js';
+import { openDocument, FORMATS } from '../data/exports.js';
 import * as store from '../data/store.js';
 
 function rows(payload) {
@@ -256,11 +256,65 @@ const VIEWS = {
     async parties(client, record, { reload }) {
         const full = (await client.get(endpoints.party(record.id)))?.data ?? record;
 
+        /*
+         * A party's report exists per role: an owner statement and a tenant
+         * statement are different documents. Only the ones the party's role
+         * actually supports are offered.
+         */
+        const roles = String(full.roles ?? full.role ?? '');
+        const asOwner = roles.includes('owner');
+        const asTenant = roles.includes('tenant');
+
         return el('div', { class: 'record' }, [
             actionBar([
                 actionButton(t('edit.edit'), 'edit-02', () => editParty(client, full, reload), 'button-primary'),
+                ...(asOwner ? FORMATS.map((format) => actionButton(
+                    `${t('record.owner_statement')} ${format.label ? t(format.label) : ''}`.trim(),
+                    format.icon,
+                    () => openDocument(client, `/reports/owners/${full.id}/${format.id}`)
+                )) : []),
+                ...(asTenant ? FORMATS.map((format) => actionButton(
+                    `${t('record.tenant_statement')} ${t(format.label)}`,
+                    format.icon,
+                    () => openDocument(client, `/reports/tenants/${full.id}/${format.id}`)
+                )) : []),
             ]),
             section(t('record.details'), facts(full)),
+            /*
+             * Erasure is destructive and irreversible - it pseudonymises
+             * every identity field while the ledger keeps the row - so it
+             * sits apart from everything else, at the bottom, behind a
+             * confirmation that names the person.
+             */
+            el('section', { class: 'card card-danger' }, [
+                el('header', { class: 'card-head' }, [
+                    el('h2', { class: 'card-title', text: t('erase.title') }),
+                ]),
+                el('div', { class: 'card-body' }, [
+                    el('p', { class: 'record-note', text: t('erase.body') }),
+                    el('button', {
+                        class: 'button button-danger button-compact',
+                        text: t('erase.action'),
+                        onclick: async () => {
+                            const confirmed = await openSheet({
+                                title: t('erase.title'),
+                                submitLabel: t('erase.action'),
+                                fields: [
+                                    { name: 'note', type: 'note', label: t('erase.confirm', { name: titleOf(full) }) },
+                                ],
+                                onSubmit: async () => {
+                                    await client.post(`${endpoints.party(full.id)}/erase`, {});
+                                },
+                            });
+
+                            if (confirmed) {
+                                await store.refreshAll(client);
+                                reload();
+                            }
+                        },
+                    }),
+                ]),
+            ]),
         ]);
     },
 
@@ -296,6 +350,26 @@ const VIEWS = {
             section(t('record.details'), facts(record)),
         ]);
     },
+};
+
+/*
+ * Archive: a record here can be restored. DELETE /archive/{kind}/{id} is
+ * the restore - the archive is a state, and removing the archive entry is
+ * what puts the record back into the lists and pickers.
+ */
+VIEWS.archive = async function archive(client, record, { reload }) {
+    const kind = record.kind ?? record.type;
+
+    return el('div', { class: 'record' }, [
+        actionBar([
+            kind === undefined ? null : actionButton(t('archive.restore'), 'corner-up-left', async () => {
+                await client.delete(`/archive/${kind}/${record.id}`);
+                await store.refreshAll(client);
+                reload();
+            }, 'button-primary'),
+        ]),
+        section(t('record.details'), facts(record)),
+    ]);
 };
 
 /* Tenants and owners are parties, so they read the party screen. */

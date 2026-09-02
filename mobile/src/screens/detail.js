@@ -395,3 +395,43 @@ function factsOf(record) {
         el('dd', { class: 'fact-value', text: String(value) }),
     ]));
 }
+
+
+/**
+ * Signing out, as a screen.
+ *
+ * The web application makes this a page rather than a menu item that fires
+ * immediately, and it is right to: a tablet on a desk is shared, and an
+ * accidental brush against a sidebar should not end somebody's session and
+ * cost them a six-digit code to get back in.
+ *
+ * The revoke is attempted server-side FIRST, while the token is still
+ * valid; the local clear happens either way, because somebody who asked to
+ * be signed out of this device must be.
+ */
+export function signOutScreen(performSignOut) {
+    return {
+        label: 'nav.sign_out',
+        icon: 'log-out-01',
+        async load() {
+            const button = el('button', {
+                class: 'button button-danger',
+                text: t('signout.confirm'),
+                onclick: async () => {
+                    button.disabled = true;
+                    button.textContent = t('signout.signing_out');
+                    await performSignOut();
+                },
+            });
+
+            return el('div', { class: 'record' }, [
+                el('div', { class: 'signout' }, [
+                    el('div', { class: 'empty-icon' }, [icon('log-out-01', { size: 24 })]),
+                    el('h2', { class: 'record-title', text: t('signout.title') }),
+                    el('p', { class: 'record-subtitle', text: t('signout.body') }),
+                    button,
+                ]),
+            ]);
+        },
+    };
+}

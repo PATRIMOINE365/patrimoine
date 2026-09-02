@@ -28,6 +28,9 @@ import { brandMark } from '../ui/brand.js';
 import { tabletDashboard } from './tablet-dashboard.js';
 import { openDocument } from '../data/exports.js';
 import { recordView } from './tablet-records.js';
+import { attachPullToRefresh } from '../ui/pull-refresh.js';
+import { newLease } from './new-lease.js';
+import { PROFILE, signOutScreen } from './detail.js';
 import { shortDate } from '../ui/money.js';
 
 const REFRESH_INTERVAL = 5 * 60 * 1000;
@@ -144,7 +147,11 @@ export function tabletShell(root, { client, config, version = '1.0.0', onSignedO
         const initials = name.split(/\s+/).filter(Boolean).slice(0, 2)
             .map((part) => part[0].toUpperCase()).join('');
 
-        return el('button', { class: 'user-chip', onclick: () => select('settings') }, [
+        return el('button', {
+            class: 'user-chip',
+            /* The name opens the person, not the organisation's settings. */
+            onclick: () => open(PROFILE),
+        }, [
             el('span', { class: 'user-avatar', text: initials }),
             el('span', { class: 'user-words' }, [
                 el('span', { class: 'user-name', text: name }),
@@ -179,7 +186,12 @@ export function tabletShell(root, { client, config, version = '1.0.0', onSignedO
             }, [icon('life-buoy', { size: 20 }), el('span', { class: 'nav-label', text: t('more.support') })]),
             el('button', {
                 class: 'nav-item is-danger',
-                onclick: signOut,
+                /*
+                 * A screen, not an instant action - as the web application
+                 * does it. Signing out of a tablet somebody shares should
+                 * take a deliberate second tap.
+                 */
+                onclick: () => open(signOutScreen(signOut)),
             }, [icon('log-out-01', { size: 20 }), el('span', { class: 'nav-label', text: t('nav.sign_out') })]),
             userChip(),
         ]),
@@ -295,6 +307,15 @@ export function tabletShell(root, { client, config, version = '1.0.0', onSignedO
             el('div', { class: 'pane-head' }, [
                 el('h1', { class: 'pane-title', text: t(section.label) }),
                 el('span', { class: 'pane-count', text: String(found.length) }),
+                /* Creating a lease is a tablet act; the phone reads only. */
+                section.id !== 'leases' ? null : el('button', {
+                    class: 'button button-compact button-primary pane-action',
+                    onclick: async () => {
+                        if (await newLease(client)) {
+                            paintList();
+                        }
+                    },
+                }, [icon('plus', { size: 18 }), el('span', { text: t('lease.new') })]),
             ]),
             section.exports === undefined
                 ? null
@@ -559,6 +580,25 @@ export function tabletShell(root, { client, config, version = '1.0.0', onSignedO
             timer = null;
         }
     }
+
+    /*
+     * Both panes pull to refresh. The list because that is where somebody
+     * looks for new data, and the record because a figure on it can have
+     * moved since it was opened.
+     */
+    attachPullToRefresh(listPane, async () => {
+        await store.refreshAll(client);
+
+        if (current.kind === 'list') {
+            paintList();
+        } else {
+            await renderSection(current);
+        }
+    });
+
+    attachPullToRefresh(detailPane, async () => {
+        await store.refreshAll(client);
+    });
 
     mount(root, el('div', { class: 'tablet-shell' }, [sidebar, workspace]));
 

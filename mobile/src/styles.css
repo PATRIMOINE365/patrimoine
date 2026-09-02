@@ -679,10 +679,22 @@ body {
 | only legal as an accent on the band.
 */
 
+/*
+ * min-height:0 on the grid items, and it is load-bearing. A grid item
+ * defaults to min-height:auto, so it cannot shrink below its content: the
+ * pane grew past the viewport, overflow-y:auto never engaged, and
+ * #app{overflow:hidden} clipped the rest. Selecting a property produced a
+ * record nobody could scroll. Same fault as the tab bar's min-height:0.
+ */
 .tablet-shell {
     display: grid;
     grid-template-columns: 14rem 1fr;
     height: 100%;
+    min-height: 0;
+}
+
+.tablet-shell > * {
+    min-height: 0;
 }
 
 @media (min-width: 1024px) {
@@ -791,6 +803,11 @@ body {
     grid-template-columns: 1fr;
     height: 100%;
     min-width: 0;
+    min-height: 0;
+}
+
+.workspace > * {
+    min-height: 0;
 }
 
 .pane-detail {
@@ -829,8 +846,16 @@ body {
 }
 
 .pane {
+    position: relative;
     overflow-y: auto;
+    /*
+     * The bounce is iOS's own, and it is the affordance that tells somebody
+     * the list can be pulled. overscroll-behavior is deliberately NOT set
+     * to contain: that would remove it.
+     */
+    overscroll-behavior-y: auto;
     min-width: 0;
+    min-height: 0;
     padding-top: env(safe-area-inset-top);
 }
 
@@ -2008,4 +2033,89 @@ html[data-theme="dark"] .chart-line {
     font-size: var(--text-sm);
     line-height: var(--text-sm--line-height);
     color: var(--pm-text-subtle);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Pull to refresh
+|--------------------------------------------------------------------------
+*/
+
+.pull-indicator {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-left: -1.125rem;
+    border-radius: 999px;
+    background: var(--pm-surface-elevated);
+    border: 1px solid var(--pm-border);
+    box-shadow: var(--pm-shadow-xs);
+    color: var(--pm-text-subtle);
+    opacity: 0;
+    transform: translateY(0);
+    transition: transform 200ms ease, opacity 200ms ease;
+    pointer-events: none;
+}
+
+/* While the finger is down it must track exactly, with no easing. */
+.pull-indicator.is-dragging {
+    transition: none;
+}
+
+.pull-indicator.is-ready {
+    color: var(--pm-primary);
+}
+
+.pull-indicator.is-refreshing {
+    color: var(--pm-primary);
+    opacity: 1;
+}
+
+.pull-indicator.is-refreshing svg {
+    animation: icon-spin 1s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pull-indicator.is-refreshing svg {
+        animation: none;
+    }
+}
+
+.signout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+.signout .button {
+    width: auto;
+    min-width: 12rem;
+}
+
+.button-danger {
+    background: var(--color-error-600);
+    border-color: var(--color-error-600);
+    color: #fff;
+}
+
+/* A destructive section sits apart and says so. */
+.card-danger {
+    border-color: var(--color-error-200, var(--color-error-500));
+}
+
+.card-danger .card-title {
+    color: var(--color-error-600);
+}
+
+.pane-action {
+    margin-left: auto;
 }
