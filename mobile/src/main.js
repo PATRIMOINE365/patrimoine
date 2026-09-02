@@ -129,9 +129,25 @@ async function boot() {
      * The name shown in Settings -> Devices. The handset knows which
      * handset it is; the server, left to guess from a user-agent, would
      * call every one of them "Safari on iOS".
+     *
+     * iOS reports the name the owner gave the device, which is very often
+     * just "iPhone" - and a Devices list of three identical "iPhone" rows
+     * helps nobody decide which one to revoke. So the model identifier is
+     * appended only when the name carries nothing of its own. Joining both
+     * unconditionally produced "iPhone iPhone11,2".
      */
-    const deviceName = [info.name, info.model].filter(Boolean).join(' ')
-        || `Patrimoine on ${platform}`;
+    const GENERIC = ['iphone', 'ipad', 'ipod touch', 'android', 'phone'];
+
+    const named = (info.name ?? '').trim();
+    const model = (info.model ?? '').trim();
+
+    const deviceName = (
+        named === ''
+            ? model
+            : (GENERIC.includes(named.toLowerCase()) && model !== '' && model !== named
+                ? `${named} (${model})`
+                : named)
+    ) || `Patrimoine on ${platform}`;
 
     function showSignIn(reason) {
         signIn(root, {
