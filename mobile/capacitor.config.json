@@ -1,0 +1,13 @@
+{
+    "appId": "com.patrimoine365.app",
+    "appName": "Patrimoine 365",
+    "webDir": "dist",
+    "ios": {
+        "contentInset": "always"
+    },
+    "plugins": {
+        "Keyboard": {
+            "resize": "native"
+        }
+    }
+}

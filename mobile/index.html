@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <!--
+            viewport-fit=cover is what makes env(safe-area-inset-*) return
+            anything other than zero. Without it the tab bar sits under the
+            home indicator on every notched device.
+
+            user-scalable=no is deliberate: the layout already meets the
+            44px touch target and 16px text minimums, and pinch-zoom inside
+            a WebView shell reads as a bug rather than a feature.
+        -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+        <meta name="color-scheme" content="light dark">
+        <title>Patrimoine 365</title>
+    </head>
+    <body>
+        <div id="app"></div>
+        <script type="module" src="/src/main.js"></script>
+    </body>
+</html>

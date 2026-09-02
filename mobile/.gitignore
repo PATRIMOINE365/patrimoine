@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.local
+
+# Native build output. The Xcode project itself is committed; its build
+# artefacts and resolved pods are not.
+ios/App/Pods/
+ios/App/build/
+ios/App/App/public/
+ios/DerivedData/

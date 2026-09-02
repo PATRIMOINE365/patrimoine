@@ -1,0 +1,30 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "name": "patrimoine-mobile",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "test": "node --test \"tests/**/*.test.js\"",
+        "sync": "npm run build && cap sync",
+        "ios": "npm run build && cap sync ios && cap open ios"
+    },
+    "dependencies": {
+        "@capacitor/app": "^8.0.0",
+        "@capacitor/core": "^8.5.1",
+        "@capacitor/device": "^8.0.0",
+        "@capacitor/keyboard": "^8.0.0",
+        "@capacitor/preferences": "^8.0.0",
+        "@capacitor/status-bar": "^8.0.0"
+    },
+    "devDependencies": {
+        "@capacitor/cli": "^8.5.1",
+        "@capacitor/ios": "^8.5.1",
+        "vite": "^8.0.0"
+    },
+    "browserslist": [
+        "ios_saf >= 15.0"
+    ]
+}
