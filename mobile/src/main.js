@@ -12,6 +12,7 @@
  * after sign-in would be a forced update nobody locked out could reach.
  */
 
+import { App } from '@capacitor/app';
 import { Device } from '@capacitor/device';
 import { Capacitor } from '@capacitor/core';
 
@@ -31,7 +32,31 @@ import './styles.css';
  * at the wrong one.
  */
 const API_BASE = import.meta.env.VITE_API_BASE;
-const APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '0.1.0';
+
+/*
+ * The version the forced-update floor is compared against MUST be the one
+ * the store and the device agree on, so on a device it is read from the
+ * bundle (CFBundleShortVersionString) rather than from a build-time
+ * constant. Two numbers that can drift apart would mean a raised floor
+ * either locking out current builds or letting stale ones through - and
+ * that is discovered only after the floor is raised, when it is too late.
+ *
+ * The build-time value is the fallback for `npm run dev` in a browser,
+ * where there is no bundle to read.
+ */
+async function appVersion() {
+    if (! Capacitor.isNativePlatform()) {
+        return import.meta.env.VITE_APP_VERSION ?? '0.0.0';
+    }
+
+    try {
+        const info = await App.getInfo();
+
+        return info.version;
+    } catch {
+        return import.meta.env.VITE_APP_VERSION ?? '0.0.0';
+    }
+}
 
 const root = document.querySelector('#app');
 
@@ -55,10 +80,11 @@ async function boot() {
     const language = setLanguage(preferredLanguage(deviceLanguages));
 
     const platform = Capacitor.getPlatform();
+    const version = await appVersion();
 
     const client = new ApiClient({
         baseUrl: API_BASE,
-        appVersion: APP_VERSION,
+        appVersion: version,
         /* ios | android | web - recorded on the device row at mint time. */
         platform,
         language,
@@ -74,7 +100,7 @@ async function boot() {
     await session.restore();
 
     const config = await fetchConfig(client);
-    const decision = evaluate(config, { appVersion: APP_VERSION, platform });
+    const decision = evaluate(config, { appVersion: version, platform });
 
     if (decision.state === LAUNCH_UPDATE_REQUIRED) {
         updateRequired(root, decision);
