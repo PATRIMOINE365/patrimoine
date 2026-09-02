@@ -9,3 +9,7 @@ ios/App/Pods/
 ios/App/build/
 ios/App/App/public/
 ios/DerivedData/
+
+# AppleDouble resource forks, created when copying from macOS.
+._*
+.DS_Store
