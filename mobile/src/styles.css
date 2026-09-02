@@ -118,6 +118,13 @@ body {
     color: var(--pm-text);
 }
 
+/* Refresh and the bell, kept together at the right of the header. */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+}
+
 /* Untitled UI tertiary icon button: no chrome until it is pressed. */
 .icon-button {
     display: inline-flex;
@@ -133,6 +140,32 @@ body {
 
 .icon-button:active {
     background: var(--pm-surface-muted);
+}
+
+.icon-button[disabled] {
+    opacity: 0.6;
+}
+
+/*
+ * The only feedback a refresh gives. The screen is already showing data, so
+ * a spinner over the list would be a lie about what is happening.
+ */
+.icon-button.is-spinning svg {
+    color: var(--pm-primary);
+    animation: icon-spin 1s linear infinite;
+}
+
+@keyframes icon-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* The colour change already carries the meaning without the movement. */
+@media (prefers-reduced-motion: reduce) {
+    .icon-button.is-spinning svg {
+        animation: none;
+    }
 }
 
 .tab-body {
@@ -425,70 +458,6 @@ body {
     font-size: var(--text-sm);
     line-height: var(--text-sm--line-height);
     color: var(--pm-primary);
-}
-
-/*
- * The freshness strip. Deliberately quiet - it is a fact the operator can
- * check, not a status the interface keeps announcing - but never absent,
- * because rendering from cache without saying how old it is would let
- * somebody read a figure believing it is live.
- */
-.freshness {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.375rem 1rem;
-    background: var(--pm-surface-subtle);
-    border-bottom: 1px solid var(--pm-border);
-    min-height: 1.75rem;
-}
-
-.freshness-text {
-    font-size: var(--text-xs);
-    line-height: var(--text-xs--line-height);
-    color: var(--pm-text-subtle);
-}
-
-.freshness.is-updating .freshness-text {
-    color: var(--pm-primary);
-}
-
-.freshness-refresh {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    /*
-     * Smaller than the 44px minimum on purpose: this duplicates an
-     * automatic behaviour rather than gating anything, and a full-size
-     * control here would read as something the operator must attend to.
-     * Nothing is unreachable without it.
-     */
-    min-width: 1.75rem;
-    min-height: 1.75rem;
-    border: 0;
-    background: transparent;
-    color: var(--pm-text-subtle);
-    font-size: var(--text-sm);
-    line-height: 1;
-}
-
-.freshness.is-updating .freshness-refresh {
-    color: var(--pm-primary);
-    animation: freshness-spin 1s linear infinite;
-}
-
-@keyframes freshness-spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* Motion is decoration here; the wording already carries the meaning. */
-@media (prefers-reduced-motion: reduce) {
-    .freshness.is-updating .freshness-refresh {
-        animation: none;
-    }
 }
 
 /* Back button and title, kept together on the left of the header. */

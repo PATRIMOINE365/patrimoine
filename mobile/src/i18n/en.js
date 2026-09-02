@@ -47,10 +47,7 @@ export const en = {
     'list.loading': 'Loading…',
     'common.retry': 'Try again',
     'common.back': 'Back',
-    'freshness.now': 'just now',
-    'freshness.updated': 'Updated :when',
-    'freshness.updating': 'Updating…',
-    'freshness.refresh': 'Refresh now',
+    'common.refresh': 'Refresh',
     'more.notifications': 'Notifications',
 
     'devices.current': 'This device',

@@ -47,10 +47,7 @@ export const fr = {
     'list.loading': 'Chargement…',
     'common.retry': 'Réessayer',
     'common.back': 'Retour',
-    'freshness.now': 'à l’instant',
-    'freshness.updated': 'Mis à jour :when',
-    'freshness.updating': 'Mise à jour…',
-    'freshness.refresh': 'Actualiser maintenant',
+    'common.refresh': 'Actualiser',
     'more.notifications': 'Notifications',
 
     'devices.current': 'Cet appareil',

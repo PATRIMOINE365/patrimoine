@@ -31,7 +31,6 @@ import { session } from '../auth/session.js';
 import { App as CapacitorApp } from '@capacitor/app';
 import { DEVICES, PROFILE, SETTINGS, AUDIT, ARCHIVE, REPORTS_INDEX } from './detail.js';
 import * as store from '../data/store.js';
-import { freshnessLine } from '../ui/freshness.js';
 
 /*
  * Each tab names a key in the store rather than a path. The data is already
@@ -304,26 +303,28 @@ export function appShell(root, { client, config, onSignedOut }) {
     }
 
     /*
-     * The freshness line is what makes rendering from cache honest: it says
-     * how old what you are reading is, and says "Updating" while that is
-     * being fixed.
+     * Refresh sits in the header beside the bell. Its only state is whether
+     * a refresh is running, shown by spinning the glyph: the screen is
+     * already showing data, so there is nothing else for it to say.
      */
-    const freshness = freshnessLine({
-        onRefresh: () => store.refreshAll(client),
-    });
+    const refreshButton = el('button', {
+        class: 'icon-button',
+        'aria-label': t('common.refresh'),
+        onclick: () => store.refreshAll(client),
+    }, [icon('refresh-cw', { size: 20 })]);
 
     function refreshFreshness() {
-        freshness.update({
-            fetchedAt: store.oldestFetchedAt(),
-            loading: store.isLoading(),
-        });
+        const loading = store.isLoading();
+
+        refreshButton.classList.toggle('is-spinning', loading);
+        /* Disabled while running, so a second tap cannot stack refreshes. */
+        refreshButton.disabled = loading;
     }
 
     /*
-     * The freshness line reports on the whole store, so it listens to the
-     * whole store. Hanging it off the active tab's key left it reading
-     * "Updating" after everything had finished, whenever that key happened
-     * to complete before the others.
+     * Subscribed to the whole store rather than to one key: hung off the
+     * active tab it kept spinning after everything had finished, whenever
+     * that key happened to complete before the others.
      */
     const unsubscribeFreshness = store.subscribeAny(refreshFreshness);
 
@@ -350,9 +351,6 @@ export function appShell(root, { client, config, onSignedOut }) {
             timer = null;
         }
     }
-
-    /* The clock keeps moving even when nothing is fetched. */
-    setInterval(refreshFreshness, 30_000);
 
     /*
      * Untitled UI's mobile bottom navigation, icon only. The name reaches
@@ -414,11 +412,14 @@ export function appShell(root, { client, config, onSignedOut }) {
             mount(
                 header,
                 el('span', { class: 'header-title', text: t('app.name') }),
-                el('button', {
-                    class: 'icon-button',
-                    'aria-label': t('more.notifications'),
-                    onclick: () => load('bell-01', endpoints.notifications, () => select(active)),
-                }, [icon('bell-01', { size: 20 })])
+                el('div', { class: 'header-actions' }, [
+                    refreshButton,
+                    el('button', {
+                        class: 'icon-button',
+                        'aria-label': t('more.notifications'),
+                        onclick: () => load('bell-01', endpoints.notifications, () => select(active)),
+                    }, [icon('bell-01', { size: 20 })]),
+                ])
             );
 
             return;
@@ -437,7 +438,7 @@ export function appShell(root, { client, config, onSignedOut }) {
         );
     }
 
-    mount(root, el('div', { class: 'shell' }, [header, freshness.node, body, tabBar]));
+    mount(root, el('div', { class: 'shell' }, [header, body, tabBar]));
 
     renderHeader();
     refreshFreshness();
