@@ -61,6 +61,10 @@ export const en = {
     'more.signout': 'Sign out',
 
     'list.empty': 'Nothing to show yet.',
+    'search.placeholder': 'Search',
+    'search.none': 'Nothing matches “:query”.',
+    'dashboard.collections': 'Rent collected',
+    'dashboard.expiring': 'Leases ending soon',
     'list.loading': 'Loading…',
     'common.retry': 'Try again',
     'common.back': 'Back',

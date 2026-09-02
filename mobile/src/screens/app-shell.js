@@ -32,6 +32,8 @@ import { App as CapacitorApp } from '@capacitor/app';
 import { DEVICES, PROFILE, SETTINGS, AUDIT, ARCHIVE, REPORTS_INDEX } from './detail.js';
 import * as store from '../data/store.js';
 import { attachSwipeBack } from '../ui/swipe-back.js';
+import { searchField } from '../ui/search.js';
+import { titleOf, subtitleOf, filterRecords } from '../data/record.js';
 
 /*
  * Each tab names a key in the store rather than a path. The data is already
@@ -66,35 +68,14 @@ function chip(status) {
     return el('span', { class: `chip chip-${String(status)}`, text: String(status) });
 }
 
-/*
- * One row shape for every list. The real screens differ per record type;
- * this reads the fields the API already returns so the slice is live data
- * rather than a mock.
- */
+/* One row shape for every list; naming lives in data/record.js. */
 function row(record) {
-    const title = record.name
-        ?? record.tenant?.name
-        ?? record.label
-        ?? record.reference
-        ?? `#${record.id}`;
-
-    /*
-     * De-duplicated, because a single-unit property is commonly named after
-     * the building - and "6 Osekere Rd House · 6 Osekere Rd House" reads
-     * like a bug even though both fields are correct.
-     */
-    const subtitleParts = [...new Set([
-        record.unit?.label ?? record.unit?.name,
-        record.unit?.building?.name ?? record.building?.name,
-        record.address,
-    ].filter((part) => part !== undefined && part !== null && part !== ''))];
+    const subtitle = subtitleOf(record);
 
     return el('li', { class: 'row' }, [
         el('div', { class: 'row-main' }, [
-            el('span', { class: 'row-title', text: String(title) }),
-            subtitleParts.length === 0
-                ? null
-                : el('span', { class: 'row-subtitle', text: subtitleParts.join(' · ') }),
+            el('span', { class: 'row-title', text: titleOf(record) }),
+            subtitle === '' ? null : el('span', { class: 'row-subtitle', text: subtitle }),
         ]),
         chip(record.status),
     ]);
@@ -112,6 +93,12 @@ export function appShell(root, { client, config, onSignedOut }) {
 
     /* The live subscription for whichever tab is showing. */
     let unsubscribe = () => {};
+    let query = '';
+
+    const search = searchField((value) => {
+        query = value;
+        paint(current());
+    });
     let timer = null;
 
     /*
@@ -149,6 +136,36 @@ export function appShell(root, { client, config, onSignedOut }) {
      * was fetched at sign-in, so this paints synchronously. A background
      * refresh re-renders in place when it lands.
      */
+    /*
+     * iOS large title: it sits in the scrolling content and scrolls away,
+     * and the header takes over the name once it has gone. The header is
+     * otherwise the product name, so the section is never stated twice.
+     */
+    function heading(tab) {
+        return el('h1', { class: 'large-title', text: t(tab.label) });
+    }
+
+    function watchTitle(titleNode) {
+        const headerTitle = header.querySelector('.header-title');
+
+        if (headerTitle === null) {
+            return;
+        }
+
+        const onScroll = () => {
+            const gone = titleNode.getBoundingClientRect().bottom < header.getBoundingClientRect().bottom;
+
+            headerTitle.textContent = gone ? t(current().label) : t('app.name');
+        };
+
+        body.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+    }
+
+    function current() {
+        return TABS.find((tab) => tab.id === active) ?? TABS[0];
+    }
+
     function paint(tab) {
         const held = store.read(tab.key);
 
@@ -173,15 +190,39 @@ export function appShell(root, { client, config, onSignedOut }) {
             return;
         }
 
-        const found = records(held.data);
+        const all = records(held.data);
 
-        if (found.length === 0) {
+        if (all.length === 0) {
             showEmpty(tab.icon, t('list.empty'));
 
             return;
         }
 
-        mount(body, el('ul', { class: 'list' }, found.map(row)));
+        const title = heading(tab);
+
+        /*
+         * Search is offered once the list is long enough to need it. Below
+         * that it is a control taking space from the three rows it would
+         * filter.
+         */
+        const searchable = all.length >= 8;
+        const found = filterRecords(all, query);
+
+        const listNode = found.length === 0
+            ? el('div', { class: 'empty' }, [
+                el('div', { class: 'empty-icon' }, [icon('search-lg', { size: 24 })]),
+                el('p', { class: 'empty-text', text: t('search.none', { query }) }),
+            ])
+            : el('ul', { class: 'list' }, found.map(row));
+
+        mount(
+            body,
+            title,
+            searchable ? search.node : null,
+            listNode
+        );
+
+        watchTitle(title);
     }
 
     /* The bell and any one-off list still fetch on demand. */
@@ -445,6 +486,8 @@ export function appShell(root, { client, config, onSignedOut }) {
     }, [icon(tab.icon, { size: 24 })])));
 
     function select(id) {
+        const previous = active;
+
         active = id;
 
         for (const button of tabBar.children) {
@@ -452,6 +495,16 @@ export function appShell(root, { client, config, onSignedOut }) {
 
             button.classList.toggle('is-active', selected);
             button.setAttribute('aria-current', selected ? 'page' : 'false');
+        }
+
+        /*
+         * Changing tab clears the query. A search for a tenant's name means
+         * nothing against owner accounts, and leaving it applied would show
+         * an empty list that looks like missing data.
+         */
+        if (id !== previous) {
+            query = '';
+            search.input.value = '';
         }
 
         /* Changing tab abandons whatever was pushed on the old one. */

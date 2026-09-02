@@ -61,6 +61,10 @@ export const fr = {
     'more.signout': 'Se déconnecter',
 
     'list.empty': 'Rien à afficher pour le moment.',
+    'search.placeholder': 'Rechercher',
+    'search.none': 'Aucun résultat pour « :query ».',
+    'dashboard.collections': 'Loyers encaissés',
+    'dashboard.expiring': 'Baux arrivant à échéance',
     'list.loading': 'Chargement…',
     'common.retry': 'Réessayer',
     'common.back': 'Retour',
