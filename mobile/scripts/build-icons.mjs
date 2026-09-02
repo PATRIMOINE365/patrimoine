@@ -64,19 +64,26 @@ await write(
 );
 
 /*
- * The launch image is one square shown on every device and orientation, so
- * the lockup sits well inside it: the edges are cropped differently on a
- * phone in portrait and an iPad in landscape, and anything near them is
- * lost. The stacked reverse lockup is the brand's form for a dark ground.
+ * The launch image is THE MARK ALONE - no wordmark beneath it, on Komla's
+ * instruction. It is one square shown on every device and orientation, so
+ * it sits well inside: the edges are cropped differently on a phone in
+ * portrait and an iPad in landscape, and anything near them is lost.
  */
 const SPLASH = 2732;
-const LOCKUP_WIDTH = Math.round(SPLASH * 0.34);
+const MARK_WIDTH = Math.round(SPLASH * 0.22);
 
 const lockup = await sharp(
-    resolve(brand, 'patrimoine365-logo-stacked-reverse.svg'),
+    resolve(brand, 'patrimoine365-app-tile-square.svg'),
     { density: 600 }
 )
-    .resize({ width: LOCKUP_WIDTH })
+    .resize({ width: MARK_WIDTH })
+    /* The tile carries its own ground; trim it to the mark itself. */
+    .extract({
+        left: Math.round(MARK_WIDTH * 0.15),
+        top: Math.round(MARK_WIDTH * 0.15),
+        width: Math.round(MARK_WIDTH * 0.70),
+        height: Math.round(MARK_WIDTH * 0.70),
+    })
     .png()
     .toBuffer();
 

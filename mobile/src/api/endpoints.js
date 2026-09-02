@@ -46,6 +46,20 @@ export const endpoints = {
     ownerAccount: (id) => `/owner-accounts/${id}`,
     accountingSummary: '/accounting/summary',
 
+    documentLinks: '/document-links',
+
+    /*
+     * The reports the API exposes without needing a record to hang off, and
+     * the formats each one can be exported in. Read from the route list, not
+     * assumed: every one of these has csv, pdf and xlsx.
+     */
+    reports: [
+        { key: 'arrears', path: '/reports/arrears', formats: ['pdf', 'csv', 'xlsx'] },
+        { key: 'occupancy', path: '/reports/occupancy', formats: ['pdf', 'csv', 'xlsx'] },
+        { key: 'payments', path: '/reports/payments', formats: ['pdf', 'csv', 'xlsx'] },
+        { key: 'funds', path: '/reports/funds', formats: ['pdf', 'csv', 'xlsx'] },
+    ],
+
     license: '/license',
     managingOrganisation: '/managing-organisation',
     guide: '/guide',

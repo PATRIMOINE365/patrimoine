@@ -26,6 +26,7 @@ import { searchField } from '../ui/search.js';
 import { titleOf, subtitleOf, filterRecords } from '../data/record.js';
 import { brandMark } from '../ui/brand.js';
 import { tabletDashboard } from './tablet-dashboard.js';
+import { openDocument } from '../data/exports.js';
 
 const REFRESH_INTERVAL = 5 * 60 * 1000;
 
@@ -45,7 +46,8 @@ const SECTIONS = [
     { id: 'accounting', label: 'nav.accounting', icon: 'calculator', kind: 'list', key: 'ownerAccounts', detail: (id) => endpoints.ownerAccount(id) },
     { id: 'reports', label: 'nav.reports', icon: 'bar-chart-square', kind: 'reports' },
     { id: 'settings', label: 'nav.settings', icon: 'settings-01', kind: 'settings' },
-    { id: 'audit', label: 'nav.audit', icon: 'clock-rewind', kind: 'list', path: endpoints.activityLog },
+    { id: 'audit', label: 'nav.audit', icon: 'clock-rewind', kind: 'list', path: endpoints.activityLog, exports: { base: endpoints.activityLog, formats: ['csv', 'xlsx'] } },
+    { id: 'journal', label: 'nav.financial_journal', icon: 'scale-balanced', kind: 'list', path: endpoints.financialJournal, exports: { base: endpoints.financialJournal, formats: ['csv', 'xlsx'] } },
     { id: 'archive', label: 'nav.archive', icon: 'archive', kind: 'list', path: endpoints.archive },
 ];
 
@@ -164,7 +166,6 @@ export function tabletShell(root, { client, config, version = '1.0.0', onSignedO
                         el('strong', { text: 'Patrimoine' }),
                         el('span', { class: 'brand-365', text: ' 365' }),
                     ]),
-                    el('span', { class: 'brand-tagline', text: t('app.tagline') }),
                 ]),
             ]),
         ]),
@@ -177,7 +178,7 @@ export function tabletShell(root, { client, config, version = '1.0.0', onSignedO
             el('button', {
                 class: 'nav-item is-danger',
                 onclick: signOut,
-            }, [icon('log-out-01', { size: 20 }), el('span', { class: 'nav-label', text: t('more.signout') })]),
+            }, [icon('log-out-01', { size: 20 }), el('span', { class: 'nav-label', text: t('nav.sign_out') })]),
             userChip(),
         ]),
     ]);
@@ -300,6 +301,9 @@ export function tabletShell(root, { client, config, version = '1.0.0', onSignedO
                 el('h1', { class: 'pane-title', text: t(section.label) }),
                 el('span', { class: 'pane-count', text: String(found.length) }),
             ]),
+            section.exports === undefined
+                ? null
+                : exportBar(section.exports.base, section.exports.formats),
             all.length >= 8 ? search.node : null,
             listNode
         );
@@ -357,6 +361,40 @@ export function tabletShell(root, { client, config, version = '1.0.0', onSignedO
      * dashboard is built here; the rest state plainly that they are not,
      * which is better than a screen pretending to be finished.
      */
+    /*
+     * Download buttons for a screen that has exports. Everything the browser
+     * application can produce is available on the tablet - Komla's
+     * instruction that the iPad has everything.
+     *
+     * Nothing is streamed here: the API signs a link and the system browser
+     * fetches it. See data/exports.js for why that is the only way this can
+     * work inside a WebView.
+     */
+    function exportBar(base, formats) {
+        return el('div', { class: 'export-bar' }, [
+            el('span', { class: 'export-label', text: t('export.download') }),
+            ...formats.map((format) => el('button', {
+                class: 'button button-secondary button-compact',
+                text: t(`export.${format}`),
+                onclick: async (event) => {
+                    const button = event.currentTarget;
+                    const label = button.textContent;
+
+                    button.disabled = true;
+
+                    try {
+                        await openDocument(client, `${base}/${format}`);
+                        button.textContent = label;
+                    } catch {
+                        button.textContent = t('export.failed');
+                    } finally {
+                        button.disabled = false;
+                    }
+                },
+            })),
+        ]);
+    }
+
     async function renderSection(section) {
         if (section.kind === 'dashboard') {
             mount(
@@ -368,6 +406,45 @@ export function tabletShell(root, { client, config, version = '1.0.0', onSignedO
                     el('span', { text: `v${version}` }),
                 ])
             );
+
+            return;
+        }
+
+        if (section.kind === 'reports') {
+            mount(listPane, el('div', { class: 'dashboard' }, [
+                el('h1', { class: 'pane-title', text: t('nav.reports') }),
+                el('div', { class: 'report-grid' }, endpoints.reports.map((report) => el('section', { class: 'card' }, [
+                    el('header', { class: 'card-head' }, [
+                        el('h2', { class: 'card-title', text: t(`reports.${report.key}`) }),
+                        el('button', {
+                            class: 'card-link',
+                            text: t('dash.view_details'),
+                            onclick: () => open({
+                                label: `reports.${report.key}`,
+                                icon: 'bar-chart-square',
+                                async load(inner) {
+                                    const found = rows(await inner.get(report.path));
+
+                                    return el('div', { class: 'record' }, [
+                                        exportBar(report.path, report.formats),
+                                        found.length === 0
+                                            ? el('p', { class: 'muted', text: t('list.empty') })
+                                            : el('ul', { class: 'list' }, found.map((line) => el('li', { class: 'row' }, [
+                                                el('span', { class: 'row-title', text: titleOf(line) }),
+                                                (line.total_formatted ?? line.amount_formatted)
+                                                    ? el('span', { class: 'row-figure', text: line.total_formatted ?? line.amount_formatted })
+                                                    : null,
+                                            ]))),
+                                    ]);
+                                },
+                            }),
+                        }),
+                    ]),
+                    el('div', { class: 'card-body' }, [
+                        exportBar(report.path, report.formats),
+                    ]),
+                ]))),
+            ]));
 
             return;
         }

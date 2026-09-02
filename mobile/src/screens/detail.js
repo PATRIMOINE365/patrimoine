@@ -13,6 +13,7 @@
  */
 
 import { el, mount, errorLine } from '../ui/dom.js';
+import { titleOf, subtitleOf } from '../data/record.js';
 import { icon } from '../ui/icon.js';
 import { t, language } from '../i18n/index.js';
 import { endpoints } from '../api/endpoints.js';
@@ -84,7 +85,7 @@ function emptyState(iconName) {
  */
 
 export const DEVICES = {
-    label: 'more.devices',
+    label: 'nav.devices',
     icon: 'smartphone',
     async load(client, { reload }) {
         const devices = rows(await cached(client, 'devices', endpoints.auth.devices));
@@ -123,7 +124,7 @@ export const DEVICES = {
 };
 
 export const PROFILE = {
-    label: 'more.profile',
+    label: 'nav.profile',
     icon: 'user-01',
     async load(client) {
         const payload = await cached(client, 'me', endpoints.auth.me);
@@ -139,7 +140,7 @@ export const PROFILE = {
 };
 
 export const SETTINGS = {
-    label: 'more.settings',
+    label: 'nav.settings',
     icon: 'settings-01',
     async load(client) {
         /*
@@ -167,7 +168,7 @@ export const SETTINGS = {
 };
 
 export const AUDIT = {
-    label: 'more.audit',
+    label: 'nav.audit',
     icon: 'clock-rewind',
     async load(client) {
         const entries = rows(await cached(client, 'audit', endpoints.activityLog));
@@ -196,7 +197,7 @@ export const AUDIT = {
 };
 
 export const ARCHIVE = {
-    label: 'more.archive',
+    label: 'nav.archive',
     icon: 'archive',
     async load(client) {
         const entries = rows(await cached(client, 'archive', endpoints.archive));
@@ -237,7 +238,7 @@ const REPORTS = [
 ];
 
 export const REPORTS_INDEX = {
-    label: 'more.reports',
+    label: 'nav.reports',
     icon: 'bar-chart-square',
     async load(client, { open }) {
         return listOf(REPORTS.map((report) => el('li', {
@@ -285,3 +286,112 @@ export const REPORTS_INDEX = {
 };
 
 export { errorLine, mount };
+
+
+/*
+ * Tenants, Owners and Accounting - the three destinations the phone's tab
+ * bar no longer carries. Same names and same information as the web
+ * application: tenants and owners are parties filtered by role, exactly as
+ * the sidebar does it, and Accounting is the owner accounts.
+ */
+function partyList(role, label, iconName) {
+    return {
+        label,
+        icon: iconName,
+        async load(client, { open }) {
+            const found = rows(await cached(client, `parties:${role}`, `${endpoints.parties}?role=${role}`));
+
+            if (found.length === 0) {
+                return emptyState(iconName);
+            }
+
+            return listOf(found.map((party) => tappableRow(party, () => open(
+                recordScreen({ label, icon: iconName, detail: (id) => endpoints.party(id) }, party)
+            ))));
+        },
+    };
+}
+
+export const TENANTS = partyList('tenant', 'nav.tenants', 'users-01');
+export const OWNERS = partyList('owner', 'nav.owners', 'user-check');
+
+export const ACCOUNTING = {
+    label: 'nav.accounting',
+    icon: 'calculator',
+    async load(client, { open }) {
+        const found = rows(await cached(client, 'accounting', endpoints.ownerAccounts));
+
+        if (found.length === 0) {
+            return emptyState('calculator');
+        }
+
+        return listOf(found.map((account) => tappableRow(account, () => open(
+            recordScreen(
+                { label: 'nav.accounting', icon: 'calculator', detail: (id) => endpoints.ownerAccount(id) },
+                account
+            )
+        ))));
+    },
+};
+
+function tappableRow(record, onOpen) {
+    const subtitle = subtitleOf(record);
+
+    return el('li', { class: 'row row-tappable', onclick: onOpen }, [
+        el('div', { class: 'row-main' }, [
+            el('span', { class: 'row-title', text: titleOf(record) }),
+            subtitle === '' ? null : el('span', { class: 'row-subtitle', text: subtitle }),
+        ]),
+        record.status
+            ? el('span', { class: `chip chip-${record.status}`, text: String(record.status) })
+            : null,
+        icon('chevron-right', { size: 20, class: 'row-chevron' }),
+    ]);
+}
+
+/**
+ * One record, read only.
+ *
+ * The phone shows information and never changes it - Komla's decision, and
+ * the reason there is no action on this screen. Fields come from whatever
+ * the API returned; nothing here invents a shape.
+ */
+export function recordScreen(section, record) {
+    return {
+        label: section.label,
+        icon: section.icon,
+        async load(client) {
+            const full = section.detail === undefined
+                ? record
+                : (await client.get(section.detail(record.id)))?.data ?? record;
+
+            const subtitle = subtitleOf(full);
+
+            return el('div', { class: 'record' }, [
+                el('header', { class: 'record-head' }, [
+                    el('h2', { class: 'record-title', text: titleOf(full) }),
+                    subtitle === '' ? null : el('p', { class: 'record-subtitle', text: subtitle }),
+                ]),
+                factsOf(full),
+            ]);
+        },
+    };
+}
+
+/* Whatever fields came back, as label and value. */
+function factsOf(record) {
+    const skip = new Set(['id', 'created_at', 'updated_at', 'deleted_at', 'archived_at']);
+
+    const pairs = Object.entries(record).filter(([key, value]) => (
+        ! skip.has(key) && value !== null && value !== '' && typeof value !== 'object'
+    ));
+
+    if (pairs.length === 0) {
+        return el('p', { class: 'muted', text: t('list.empty') });
+    }
+
+    return el('dl', { class: 'facts' }, pairs.flatMap(([key, value]) => [
+        el('dt', { class: 'fact-label', text: key.replace(/_/g, ' ') }),
+        el('dd', { class: 'fact-value', text: String(value) }),
+    ]));
+}

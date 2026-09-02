@@ -29,7 +29,10 @@ import { t } from '../i18n/index.js';
 import { endpoints } from '../api/endpoints.js';
 import { session } from '../auth/session.js';
 import { App as CapacitorApp } from '@capacitor/app';
-import { DEVICES, PROFILE, SETTINGS, AUDIT, ARCHIVE, REPORTS_INDEX } from './detail.js';
+import {
+    DEVICES, PROFILE, SETTINGS, AUDIT, ARCHIVE, REPORTS_INDEX,
+    TENANTS, OWNERS, ACCOUNTING, recordScreen,
+} from './detail.js';
 import * as store from '../data/store.js';
 import { attachSwipeBack } from '../ui/swipe-back.js';
 import { searchField } from '../ui/search.js';
@@ -51,13 +54,23 @@ import { titleOf, subtitleOf, filterRecords } from '../data/record.js';
  * would have no dashboard because the bell carried the same eight derived
  * kinds. The design supersedes it; the bell stays as well.
  */
+/*
+ * Five tabs: Dashboard, Properties, Parties, Leases, More. Everything else
+ * lives inside More.
+ *
+ * Icon only - Komla was explicit that the labels under them are not wanted -
+ * so each name reaches assistive technology through aria-label instead.
+ *
+ * The labels are the WEB APPLICATION'S OWN, from lang/{en,fr}/ui.php, and
+ * both shells read the same keys. A destination must not be called one
+ * thing on the web, another on a phone and a third on a tablet.
+ */
 const TABS = [
-    { id: 'home', label: 'tab.home', icon: 'home-line', key: null },
-    { id: 'properties', label: 'tab.properties', icon: 'building-02', key: 'buildings' },
-    { id: 'parties', label: 'tab.parties', icon: 'users-03', key: 'parties' },
-    { id: 'leases', label: 'tab.leases', icon: 'file-check', key: 'leases' },
-    { id: 'accounting', label: 'tab.accounting', icon: 'calculator', key: 'ownerAccounts' },
-    { id: 'more', label: 'tab.more', icon: 'dots-vertical', key: null },
+    { id: 'dashboard', label: 'nav.dashboard', icon: 'grid-01', key: null },
+    { id: 'properties', label: 'nav.properties', icon: 'building-02', key: 'buildings', detail: (id) => endpoints.building(id) },
+    { id: 'parties', label: 'nav.parties', icon: 'users-03', key: 'parties', detail: (id) => endpoints.party(id) },
+    { id: 'leases', label: 'nav.leases', icon: 'file-check', key: 'leases', detail: (id) => endpoints.lease(id) },
+    { id: 'more', label: 'nav.more', icon: 'dots-vertical', key: null },
 ];
 
 /* On resume, and every five minutes while open. */
@@ -70,7 +83,16 @@ const REFRESH_INTERVAL = 5 * 60 * 1000;
  * is the exception and leaves for the browser, because the support form is
  * a web journey like sign-up and plan changes.
  */
-const MORE_ITEMS = [REPORTS_INDEX, AUDIT, ARCHIVE, SETTINGS, PROFILE, DEVICES];
+/*
+ * Everything the tab bar does not carry, in the order the web sidebar has
+ * it - Tenants, Owners, Accounting, then Reports, Settings, Audit, Archive -
+ * followed by the personal entries. Same names, same information.
+ */
+const MORE_ITEMS = [
+    TENANTS, OWNERS, ACCOUNTING,
+    REPORTS_INDEX, SETTINGS, AUDIT, ARCHIVE,
+    PROFILE, DEVICES,
+];
 
 function chip(status) {
     if (status === undefined || status === null) {
@@ -94,7 +116,7 @@ function row(record) {
 }
 
 export function appShell(root, { client, config, onSignedOut }) {
-    let active = 'home';
+    let active = 'dashboard';
 
     /*
      * A stack rather than a flag: Reports opens an index, and a report
@@ -225,7 +247,14 @@ export function appShell(root, { client, config, onSignedOut }) {
                 el('div', { class: 'empty-icon' }, [icon('search-lg', { size: 24 })]),
                 el('p', { class: 'empty-text', text: t('search.none', { query }) }),
             ])
-            : el('ul', { class: 'list' }, found.map(row));
+            : el('ul', { class: 'list' }, found.map((record) => {
+                const node = row(record);
+
+                node.classList.add('row-tappable');
+                node.addEventListener('click', () => open(recordScreen(tab, record)));
+
+                return node;
+            }));
 
         mount(
             body,
@@ -250,7 +279,18 @@ export function appShell(root, { client, config, onSignedOut }) {
                 return;
             }
 
-            mount(body, el('ul', { class: 'list' }, found.map(row)));
+            /*
+             * Every row opens its record. View only: the phone shows
+             * information and never changes it - money moves on the tablet.
+             */
+            mount(body, el('ul', { class: 'list' }, found.map((record) => {
+                const node = row(record);
+
+                node.classList.add('row-tappable');
+                node.addEventListener('click', () => open(recordScreen(tab, record)));
+
+                return node;
+            })));
         } catch (failure) {
             mount(body, el('div', { class: 'empty' }, [
                 el('div', { class: 'empty-icon' }, [icon('alert-circle', { size: 24 })]),
@@ -405,7 +445,7 @@ export function appShell(root, { client, config, onSignedOut }) {
             el('li', { class: 'row row-tappable', onclick: signOut }, [
                 el('div', { class: 'row-lead danger' }, [
                     icon('log-out-01', { size: 20 }),
-                    el('span', { class: 'row-title', text: t('more.signout') }),
+                    el('span', { class: 'row-title', text: t('nav.sign_out') }),
                 ]),
             ]),
         ]));
@@ -527,7 +567,7 @@ export function appShell(root, { client, config, onSignedOut }) {
 
         unsubscribe();
 
-        if (tab.id === 'home') {
+        if (tab.id === 'dashboard') {
             mount(body, homeScreen({ onOpenTab: select }));
         } else if (tab.key === null) {
             renderMore();
@@ -564,7 +604,6 @@ export function appShell(root, { client, config, onSignedOut }) {
                             el('strong', { text: 'Patrimoine' }),
                             el('span', { class: 'brand-365', text: ' 365' }),
                         ]),
-                        el('span', { class: 'brand-tagline', text: t('app.tagline') }),
                     ]),
                 ]),
                 el('div', { class: 'header-actions' }, [
