@@ -68,11 +68,16 @@ function row(record) {
         ?? record.reference
         ?? `#${record.id}`;
 
-    const subtitleParts = [
+    /*
+     * De-duplicated, because a single-unit property is commonly named after
+     * the building - and "6 Osekere Rd House · 6 Osekere Rd House" reads
+     * like a bug even though both fields are correct.
+     */
+    const subtitleParts = [...new Set([
         record.unit?.label ?? record.unit?.name,
         record.unit?.building?.name ?? record.building?.name,
         record.address,
-    ].filter((part) => part !== undefined && part !== null && part !== '');
+    ].filter((part) => part !== undefined && part !== null && part !== ''))];
 
     return el('li', { class: 'row' }, [
         el('div', { class: 'row-main' }, [

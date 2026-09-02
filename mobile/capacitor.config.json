@@ -3,7 +3,8 @@
     "appName": "Patrimoine 365",
     "webDir": "dist",
     "ios": {
-        "contentInset": "always"
+        "contentInset": "never",
+        "backgroundColor": "#123D35"
     },
     "plugins": {
         "Keyboard": {

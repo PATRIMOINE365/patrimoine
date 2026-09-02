@@ -14,10 +14,27 @@
  * hand, and a theme fixed at launch would be stale by evening.
  */
 
+import { Capacitor } from '@capacitor/core';
+import { StatusBar, Style } from '@capacitor/status-bar';
+
 const query = () => window.matchMedia('(prefers-color-scheme: dark)');
 
 function apply(dark) {
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+
+    /*
+     * The WebView runs edge to edge (contentInset "never"), so the status
+     * bar sits over our own header rather than over a system chrome. Its
+     * glyphs therefore have to be told which way to go: Style.Dark means
+     * light glyphs for a dark ground, Style.Light means dark glyphs for a
+     * light one. Left alone, the clock disappears in one theme or the other.
+     */
+    if (Capacitor.isNativePlatform()) {
+        StatusBar.setStyle({ style: dark ? Style.Dark : Style.Light })
+            .catch(() => {
+                /* Not fatal: a wrong-coloured clock is not worth a crash. */
+            });
+    }
 
     return dark;
 }
