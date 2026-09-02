@@ -1,47 +1,88 @@
 /*
- * The oldest supported handset is iOS/iPadOS 15.8.8, WebKit ~ Safari 15.6.
- *
- * That rules out, with no polyfill worth having: container queries, native
- * CSS nesting, and subgrid (all Safari 16+). Available and used here:
- * custom properties, :has(), @layer, flexbox, grid, env() safe areas.
- *
- * Colour comes from the Patrimoine brand package; this is the minimum
- * needed to read the scaffold on a device, not the design system.
+|--------------------------------------------------------------------------
+| Patrimoine 365 — mobile
+|--------------------------------------------------------------------------
+|
+| The same design system as the product: Untitled UI structure over
+| Patrimoine Brand Package colour. The tokens are not restated here - they
+| are GENERATED from the product's own resources/css/scale.css and
+| tokens.css by scripts/build-tokens.mjs, so a colour changed there changes
+| here and the two cannot drift.
+|
+| Markup never names a raw colour. It speaks --pm-* semantics, exactly as
+| the web application does.
+|
+| Two departures from the web component sizes, both because this is a
+| handset and neither a matter of taste:
+|
+|   1. Controls are 44px minimum, not the web's 40px. That is Apple's
+|      minimum touch target; below it, taps are missed.
+|   2. Text inputs are 16px minimum. Below 16px iOS zooms the page when the
+|      field takes focus and never zooms back out.
+|
+| The floor is iOS/iPadOS 15.8 (Safari ~15.6), which rules out container
+| queries, native nesting and subgrid. :has(), @layer, dialog and inert are
+| all available and may be used.
+*/
+
+@import './generated/design-tokens.css';
+
+/*
+ * Inter, self-hosted. Mirrors resources/css/fonts.css; the files themselves
+ * are copied into public/fonts by scripts/build-tokens.mjs.
  */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url('/fonts/inter-latin-ext.woff2') format('woff2');
+    unicode-range:
+        U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+        U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF,
+        U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
 
-:root {
-    --ink: #101828;
-    --muted: #667085;
-    --line: #e4e7ec;
-    --surface: #ffffff;
-    --ground: #f9fafb;
-    --brand: #b54708;
-    --danger: #b42318;
-    --radius: 10px;
-
-    /* Inter, per the brand package. No monospace anywhere. */
-    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    color: var(--ink);
-    background: var(--ground);
-
-    /* iOS bumps text size in landscape without this. */
-    -webkit-text-size-adjust: 100%;
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url('/fonts/inter-latin.woff2') format('woff2');
+    unicode-range:
+        U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+        U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191,
+        U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 * {
     box-sizing: border-box;
 }
 
+html {
+    /* iOS enlarges text in landscape without this. */
+    -webkit-text-size-adjust: 100%;
+}
+
 body {
     margin: 0;
-    background: var(--ground);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: var(--text-md);
+    line-height: var(--text-md--line-height);
+    color: var(--pm-text);
+    background: var(--pm-page);
 }
 
 #app {
     min-height: 100vh;
 }
 
-/* The shell: header, scrolling body, tab bar pinned to the safe area. */
+/*
+|--------------------------------------------------------------------------
+| Shell
+|--------------------------------------------------------------------------
+*/
+
 .shell {
     display: flex;
     flex-direction: column;
@@ -52,58 +93,76 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: calc(env(safe-area-inset-top) + 12px) 16px 12px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--line);
+    gap: 0.75rem;
+    padding: calc(env(safe-area-inset-top) + 0.75rem) 1rem 0.75rem;
+    background: var(--pm-surface);
+    border-bottom: 1px solid var(--pm-border);
     position: sticky;
     top: 0;
     z-index: 2;
 }
 
 .header-title {
+    font-size: var(--text-md);
     font-weight: 600;
+    color: var(--pm-text);
 }
 
 .bell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
     border: 0;
+    border-radius: var(--radius-md);
     background: transparent;
-    font-size: 20px;
-    color: var(--brand);
-    /* 44px is Apple's minimum touch target; smaller is a missed tap. */
-    min-width: 44px;
-    min-height: 44px;
+    color: var(--pm-text-subtle);
+    font-size: var(--text-lg);
 }
 
 .tab-body {
     flex: 1;
     overflow-y: auto;
-    /* Momentum scrolling still needs the prefix on iOS 15. */
     -webkit-overflow-scrolling: touch;
-    padding: 8px 0;
 }
+
+/*
+|--------------------------------------------------------------------------
+| Tab bar — Properties · Parties · Leases · Finance · More
+|--------------------------------------------------------------------------
+*/
 
 .tab-bar {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    background: var(--surface);
-    border-top: 1px solid var(--line);
+    background: var(--pm-surface);
+    border-top: 1px solid var(--pm-border);
     padding-bottom: env(safe-area-inset-bottom);
 }
 
 .tab {
     border: 0;
     background: transparent;
-    padding: 10px 4px;
-    min-height: 48px;
-    font-size: 12px;
-    color: var(--muted);
+    padding: 0.625rem 0.25rem;
+    min-height: 3rem;
+    font-family: inherit;
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    font-weight: 500;
+    color: var(--pm-text-subtle);
 }
 
 .tab.is-active {
-    color: var(--brand);
+    color: var(--pm-primary);
     font-weight: 600;
 }
+
+/*
+|--------------------------------------------------------------------------
+| Lists
+|--------------------------------------------------------------------------
+*/
 
 .list {
     list-style: none;
@@ -115,165 +174,220 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 14px 16px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--line);
-    min-height: 44px;
+    gap: 0.75rem;
+    min-height: 2.75rem;
+    padding: 0.875rem 1rem;
+    background: var(--pm-surface);
+    border-bottom: 1px solid var(--pm-border);
 }
 
 .row-main {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0.125rem;
     min-width: 0;
 }
 
 .row-title {
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
     font-weight: 500;
+    color: var(--pm-text);
 }
 
-.row-subtitle,
-.muted {
-    color: var(--muted);
-    font-size: 13px;
+.row-subtitle {
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    color: var(--pm-text-subtle);
 }
 
 .muted {
-    padding: 16px;
+    padding: 1rem;
+    font-size: var(--text-sm);
+    color: var(--pm-text-subtle);
 }
 
 .centred {
     text-align: center;
 }
 
+/* Untitled UI badge anatomy: pill, xs text, subtle ground. */
 .chip {
-    font-size: 12px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    background: var(--ground);
-    border: 1px solid var(--line);
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--pm-border);
+    background: var(--pm-surface-subtle);
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    font-weight: 500;
+    color: var(--pm-text-muted);
     white-space: nowrap;
 }
 
-/* Forms */
+/*
+|--------------------------------------------------------------------------
+| Forms and single-purpose screens
+|--------------------------------------------------------------------------
+*/
+
 .form,
 .blocked {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: calc(env(safe-area-inset-top) + 32px) 20px 32px;
-    max-width: 420px;
+    gap: 1.25rem;
+    padding: calc(env(safe-area-inset-top) + 2rem) 1.25rem 2rem;
+    max-width: 26rem;
     margin: 0 auto;
 }
 
 .screen-title,
 .blocked-title {
-    font-size: 22px;
     margin: 0;
+    font-size: var(--text-display-xs);
+    line-height: var(--text-display-xs--line-height);
+    font-weight: 600;
+    color: var(--pm-text);
 }
 
 .screen-body,
 .blocked-body {
-    color: var(--muted);
     margin: 0;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-subtle);
 }
 
 .field {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 0.375rem;
 }
 
 .label {
-    font-size: 13px;
-    color: var(--muted);
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 500;
+    color: var(--pm-text-secondary);
 }
 
+/*
+ * Untitled UI input, with the two handset departures. The outline is
+ * --pm-border-strong rather than --pm-border: WCAG 1.4.11 wants 3:1 on the
+ * boundary of a control somebody has to find, and the design system already
+ * makes that deviation for the same reason.
+ */
 .input {
-    padding: 12px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    /*
-     * 16px minimum: below it, iOS zooms the whole page when the field
-     * takes focus and never zooms back out.
-     */
-    font-size: 16px;
-    background: var(--surface);
-    color: var(--ink);
+    display: block;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--pm-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--pm-input-background);
+    box-shadow: var(--pm-shadow-xs);
+    font-family: inherit;
+    font-size: var(--text-md);
+    line-height: var(--text-md--line-height);
+    color: var(--pm-text);
+    outline: none;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.input::placeholder {
+    color: var(--pm-text-placeholder);
+}
+
+.input:focus {
+    border-color: var(--pm-primary);
+    box-shadow: var(--pm-ring-brand);
 }
 
 .button {
-    padding: 14px;
-    min-height: 48px;
-    border: 0;
-    border-radius: var(--radius);
-    background: var(--brand);
-    color: #fff;
-    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--pm-primary);
+    border-radius: var(--radius-md);
+    background: var(--pm-primary);
+    box-shadow: var(--pm-shadow-xs);
+    font-family: inherit;
+    font-size: var(--text-md);
+    line-height: var(--text-md--line-height);
     font-weight: 600;
+    color: var(--pm-primary-text);
+    transition: background-color 120ms ease, border-color 120ms ease, opacity 120ms ease;
 }
 
-.button[disabled] {
-    opacity: 0.6;
+.button:disabled {
+    opacity: 0.5;
 }
 
 .links {
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 1rem;
     justify-content: center;
 }
 
 .link {
+    min-height: 2.75rem;
+    padding: 0.625rem 0.25rem;
     border: 0;
     background: transparent;
-    color: var(--brand);
-    font-size: 14px;
-    padding: 12px 4px;
-    min-height: 44px;
+    font-family: inherit;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--pm-primary);
 }
 
 .link.danger {
-    color: var(--danger);
-}
-
-.error {
-    color: var(--danger);
-    font-size: 14px;
-    margin: 0;
-}
-
-/* The PM-code, kept beside the sentence so support starts from the code. */
-.error-code {
-    color: var(--muted);
-}
-
-.notice {
-    color: var(--brand);
-    font-size: 14px;
-    margin: 0;
+    color: var(--pm-danger, var(--color-error-600));
 }
 
 /*
- * Tablet. The full layout - a real Dashboard and the web sidebar mirrored
- * entry for entry - is not built yet; this only stops the phone shell
- * looking stretched on an iPad.
+ * A failure is the sentence the server wrote plus its PM-code. The code is
+ * kept visible and subdued: support starts from the code, the reader does
+ * not need it shouted.
  */
-@media (min-width: 768px) {
-    .row,
-    .list {
-        max-width: 760px;
-        margin: 0 auto;
-    }
+.error {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--color-error-600);
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --ink: #f5f5f4;
-        --muted: #a1a1aa;
-        --line: #292524;
-        --surface: #1c1917;
-        --ground: #0c0a09;
+.error-code {
+    color: var(--pm-text-subtle);
+}
+
+.notice {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-primary);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Tablet
+|--------------------------------------------------------------------------
+|
+| Only stops the phone shell looking stretched on an iPad. The real tablet
+| layout - a Dashboard and the web sidebar mirrored entry for entry - is
+| still to be built.
+*/
+
+@media (min-width: 768px) {
+    .list,
+    .row {
+        max-width: 48rem;
+        margin-left: auto;
+        margin-right: auto;
     }
 }

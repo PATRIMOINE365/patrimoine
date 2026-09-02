@@ -13,3 +13,7 @@ ios/DerivedData/
 # AppleDouble resource forks, created when copying from macOS.
 ._*
 .DS_Store
+
+# Generated from the product design system by scripts/build-tokens.mjs.
+src/generated/
+public/fonts/
