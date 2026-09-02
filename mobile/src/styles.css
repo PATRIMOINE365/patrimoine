@@ -107,8 +107,15 @@ body {
     padding: calc(env(safe-area-inset-top) + 0.75rem) 1rem 0.75rem;
     background: var(--pm-surface);
     border-bottom: 1px solid var(--pm-border);
-    position: sticky;
-    top: 0;
+    /*
+     * NOT sticky. It was, back when the page itself scrolled - but scrolling
+     * now happens inside .tab-body, so the header is a plain flex child and
+     * sticky did nothing except promote it to its own compositing layer.
+     * On WebKit 15 (iPadOS 15.8) that layer, next to an overflow-scrolling
+     * sibling, painted the tab bar a second time across the header.
+     * position:relative is only here to keep z-index meaningful.
+     */
+    position: relative;
     z-index: 2;
 }
 
@@ -189,14 +196,12 @@ body {
     position: absolute;
     inset: 0;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 .screen-layer {
     position: absolute;
     inset: 0;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
     background: var(--pm-page);
     /*
      * The shadow is what separates the moving screen from the one behind
