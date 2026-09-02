@@ -25,6 +25,8 @@ import { el, mount } from './ui/dom.js';
 import { startTheme } from './ui/theme.js';
 import { signIn } from './screens/signin.js';
 import { appShell } from './screens/app-shell.js';
+import { tabletShell } from './screens/tablet-shell.js';
+import { isTablet } from './ui/device.js';
 import { updateRequired, maintenance, unreachable } from './screens/blocked.js';
 import './styles.css';
 
@@ -169,7 +171,13 @@ async function boot() {
 
         await store.prime(client);
 
-        appShell(root, { client, config: decision.config, onSignedOut: () => showSignIn(null) });
+        /*
+         * Two different clients, not one layout at two widths: the tablet is
+         * the full product, the phone stays a field tool.
+         */
+        const shell = isTablet() ? tabletShell : appShell;
+
+        shell(root, { client, config: decision.config, onSignedOut: () => showSignIn(null) });
     }
 
     if (session.isSignedIn()) {

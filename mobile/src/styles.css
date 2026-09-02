@@ -667,3 +667,278 @@ body {
         margin-right: auto;
     }
 }
+
+/*
+|--------------------------------------------------------------------------
+| The tablet client
+|--------------------------------------------------------------------------
+|
+| A different application, not the phone stretched: Apple's sidebar pattern,
+| a content list, and a detail pane. The sidebar is the green band for the
+| same reason the phone's tab bar is - it is the navigation, and mint is
+| only legal as an accent on the band.
+*/
+
+.tablet-shell {
+    display: grid;
+    grid-template-columns: 14rem 1fr;
+    height: 100%;
+}
+
+@media (min-width: 1024px) {
+    .tablet-shell {
+        grid-template-columns: 17rem 1fr;
+    }
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    background: var(--pm-band);
+    border-right: 1px solid var(--pm-band-border);
+    padding: calc(env(safe-area-inset-top) + 1rem) 0.75rem
+             calc(env(safe-area-inset-bottom) + 1rem);
+    overflow-y: auto;
+}
+
+.sidebar-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0 0.5rem 1rem;
+}
+
+.sidebar-title {
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--pm-band-text);
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.sidebar-foot {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--pm-band-border);
+}
+
+/* Resolves exactly as .pm-nav-item does in the web sidebar. */
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    font-family: inherit;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--pm-band-text-muted);
+    text-align: left;
+}
+
+.nav-item:active {
+    background: var(--pm-band-hover);
+}
+
+.nav-item.is-active {
+    background: var(--pm-band-selected);
+    color: var(--pm-band-text);
+    font-weight: 600;
+}
+
+.nav-item.is-active svg {
+    color: var(--pm-band-accent);
+}
+
+.nav-item.is-danger {
+    color: var(--color-error-400, #f97066);
+}
+
+.icon-button.on-band {
+    color: var(--pm-band-text-muted);
+}
+
+.icon-button.on-band:active {
+    background: var(--pm-band-hover);
+}
+
+/* List in the middle, record on the right - collapsing to one when a
+   section is a single surface such as the dashboard. */
+/*
+ * COMPACT WIDTH FIRST. An iPad mini in portrait is 768pt: minus a 272pt
+ * sidebar and a 320pt list, a third pane would get 176pt, which is what it
+ * got - squashed to the point of wrapping every value onto its own line.
+ *
+ * So below 1024pt the workspace is ONE pane and the record replaces the
+ * list, exactly as a UISplitViewController collapses at compact width. At
+ * 1024 and above - a mini in landscape, or any larger iPad - the list and
+ * the record sit side by side.
+ */
+.workspace {
+    display: grid;
+    grid-template-columns: 1fr;
+    height: 100%;
+    min-width: 0;
+}
+
+.pane-detail {
+    display: none;
+}
+
+.workspace.has-detail .pane-list {
+    display: none;
+}
+
+.workspace.has-detail .pane-detail {
+    display: block;
+}
+
+.workspace.is-single .pane-detail {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .workspace {
+        grid-template-columns: minmax(20rem, 24rem) 1fr;
+    }
+
+    .pane-detail,
+    .workspace.has-detail .pane-list {
+        display: block;
+    }
+
+    .workspace.is-single {
+        grid-template-columns: 1fr;
+    }
+
+    .workspace.is-single .pane-detail {
+        display: none;
+    }
+}
+
+.pane {
+    overflow-y: auto;
+    min-width: 0;
+    padding-top: env(safe-area-inset-top);
+}
+
+.pane-list {
+    border-right: 1px solid var(--pm-border);
+    background: var(--pm-surface);
+}
+
+.pane-detail {
+    background: var(--pm-page);
+}
+
+.row.is-selected {
+    background: var(--pm-surface-muted);
+}
+
+.detail {
+    padding: 1.5rem;
+    max-width: 48rem;
+}
+
+.detail-head {
+    margin-bottom: 1.5rem;
+}
+
+/* Only ever seen at compact width, where the record covers the list. */
+.detail-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2.75rem;
+    margin-bottom: 0.5rem;
+    padding: 0 0.5rem 0 0;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--pm-primary);
+}
+
+/*
+ * Must come AFTER the rule above rather than inside the earlier media block:
+ * same specificity, so the later declaration wins. Side by side with the
+ * list, a back control points at something already on screen.
+ */
+@media (min-width: 1024px) {
+    .detail-back {
+        display: none;
+    }
+}
+
+.detail-title {
+    margin: 0;
+    font-size: var(--text-display-xs);
+    line-height: var(--text-display-xs--line-height);
+    font-weight: 600;
+    color: var(--pm-text);
+}
+
+.detail-subtitle {
+    margin: 0.25rem 0 0;
+    font-size: var(--text-sm);
+    color: var(--pm-text-subtle);
+}
+
+.detail .facts {
+    background: var(--pm-surface);
+    border: 1px solid var(--pm-border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+.detail .fact-value:last-child {
+    border-bottom: 0;
+}
+
+/* Dashboard tiles. Untitled UI metric-tile anatomy at 16px radius. */
+.dashboard {
+    padding: 1.5rem;
+}
+
+.tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 1rem;
+}
+
+.tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1.25rem;
+    background: var(--pm-surface);
+    border: 1px solid var(--pm-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--pm-shadow-xs);
+}
+
+.tile-value {
+    font-size: var(--text-display-sm);
+    line-height: var(--text-display-sm--line-height);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--pm-text);
+}
+
+.tile-label {
+    font-size: var(--text-sm);
+    color: var(--pm-text-subtle);
+}
