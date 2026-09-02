@@ -5,6 +5,12 @@
  * exactly Properties, Parties, Leases, Finance, More. Transactions and
  * receipts live inside Finance, never at top level.
  *
+ * THE ICONS ARE THE PRODUCT'S OWN. Every one is the same Untitled UI icon
+ * the web sidebar uses for that entry, read from the same
+ * resources/icons/untitled-ui.json - properties is building-02 there and
+ * building-02 here. An entry that looked like one thing on the web and
+ * another on a phone would be a worse failure than having no icon at all.
+ *
  * There is deliberately no Dashboard tab on the phone. The dashboard's
  * content and the bell's content are the same eight derived kinds from
  * GET /notifications, so on a phone they are one surface: the bell stays a
@@ -17,28 +23,30 @@
  * them), Plans/Subscription, Add-lease on the phone, and the admin console.
  */
 
-import { el, mount, clear, errorLine } from '../ui/dom.js';
+import { el, mount, errorLine } from '../ui/dom.js';
+import { icon } from '../ui/icon.js';
 import { t } from '../i18n/index.js';
 import { endpoints } from '../api/endpoints.js';
 import { session } from '../auth/session.js';
 
 const TABS = [
-    { id: 'properties', label: 'tab.properties', path: () => endpoints.buildings },
-    { id: 'parties', label: 'tab.parties', path: () => endpoints.parties },
-    { id: 'leases', label: 'tab.leases', path: () => endpoints.leases },
-    { id: 'finance', label: 'tab.finance', path: () => endpoints.ownerAccounts },
-    { id: 'more', label: 'tab.more', path: null },
+    { id: 'properties', label: 'tab.properties', icon: 'building-02', path: () => endpoints.buildings },
+    { id: 'parties', label: 'tab.parties', icon: 'users-03', path: () => endpoints.parties },
+    { id: 'leases', label: 'tab.leases', icon: 'file-check', path: () => endpoints.leases },
+    /* Accounting is "calculator" in the sidebar; Finance is the same place. */
+    { id: 'finance', label: 'tab.finance', icon: 'calculator', path: () => endpoints.ownerAccounts },
+    { id: 'more', label: 'tab.more', icon: 'menu-02', path: null },
 ];
 
 /* Lease CREATE is tablet-only, and lease EDIT does not exist as a concept. */
 const MORE_ITEMS = [
-    'more.reports',
-    'more.audit',
-    'more.archive',
-    'more.settings',
-    'more.profile',
-    'more.devices',
-    'more.support',
+    { label: 'more.reports', icon: 'bar-chart-square' },
+    { label: 'more.audit', icon: 'clock-rewind' },
+    { label: 'more.archive', icon: 'archive' },
+    { label: 'more.settings', icon: 'settings-01' },
+    { label: 'more.profile', icon: 'user-01' },
+    { label: 'more.devices', icon: 'smartphone' },
+    { label: 'more.support', icon: 'life-buoy' },
 ];
 
 function chip(status) {
@@ -83,33 +91,43 @@ export function appShell(root, { client, onSignedOut }) {
 
     const body = el('div', { class: 'tab-body' });
 
-    async function renderList(tab) {
-        mount(body, el('p', { class: 'muted', text: t('list.loading') }));
+    function records(payload) {
+        /*
+         * Laravel paginates as { data: [ … ], meta: { … } } and returns a
+         * bare array when it does not. Both are handled rather than assumed,
+         * because the two shapes differ per endpoint.
+         */
+        return Array.isArray(payload) ? payload : (payload?.data ?? []);
+    }
+
+    function showEmpty(iconName, message) {
+        mount(body, el('div', { class: 'empty' }, [
+            el('div', { class: 'empty-icon' }, [icon(iconName, { size: 24 })]),
+            el('p', { class: 'empty-text', text: message }),
+        ]));
+    }
+
+    async function load(iconName, path, onRetry) {
+        mount(body, el('p', { class: 'muted centred', text: t('list.loading') }));
 
         try {
-            const payload = await client.get(tab.path());
+            const found = records(await client.get(path));
 
-            /*
-             * Laravel paginates as { data: [ … ], meta: { … } } and returns
-             * a bare array when it does not. Both are handled rather than
-             * assumed, because the two shapes differ per endpoint.
-             */
-            const records = Array.isArray(payload) ? payload : (payload?.data ?? []);
-
-            if (records.length === 0) {
-                mount(body, el('p', { class: 'muted', text: t('list.empty') }));
+            if (found.length === 0) {
+                showEmpty(iconName, t('list.empty'));
 
                 return;
             }
 
-            mount(body, el('ul', { class: 'list' }, records.map(row)));
+            mount(body, el('ul', { class: 'list' }, found.map(row)));
         } catch (failure) {
-            mount(body, el('div', {}, [
+            mount(body, el('div', { class: 'empty' }, [
+                el('div', { class: 'empty-icon' }, [icon('alert-circle', { size: 24 })]),
                 errorLine(failure, t('signin.offline')),
                 el('button', {
-                    class: 'button',
+                    class: 'button button-secondary',
                     text: t('common.retry'),
-                    onclick: () => renderList(tab),
+                    onclick: onRetry,
                 }),
             ]));
         }
@@ -117,15 +135,18 @@ export function appShell(root, { client, onSignedOut }) {
 
     function renderMore() {
         mount(body, el('ul', { class: 'list' }, [
-            ...MORE_ITEMS.map((key) => el('li', { class: 'row' }, [
-                el('span', { class: 'row-title', text: t(key) }),
+            ...MORE_ITEMS.map((item) => el('li', { class: 'row row-tappable' }, [
+                el('div', { class: 'row-lead' }, [
+                    icon(item.icon, { size: 20 }),
+                    el('span', { class: 'row-title', text: t(item.label) }),
+                ]),
+                icon('chevron-right', { size: 20, class: 'row-chevron' }),
             ])),
-            el('li', { class: 'row' }, [
-                el('button', {
-                    class: 'link danger',
-                    text: t('more.signout'),
-                    onclick: signOut,
-                }),
+            el('li', { class: 'row row-tappable', onclick: signOut }, [
+                el('div', { class: 'row-lead danger' }, [
+                    icon('log-out-01', { size: 20 }),
+                    el('span', { class: 'row-title', text: t('more.signout') }),
+                ]),
             ]),
         ]));
     }
@@ -147,12 +168,19 @@ export function appShell(root, { client, onSignedOut }) {
         onSignedOut();
     }
 
+    /*
+     * Untitled UI's mobile bottom navigation: icon over label, both taking
+     * the same colour, so the active tab reads as one object rather than a
+     * coloured word under a grey glyph.
+     */
     const tabBar = el('nav', { class: 'tab-bar' }, TABS.map((tab) => el('button', {
         class: 'tab',
         dataset: { tab: tab.id },
-        text: t(tab.label),
         onclick: () => select(tab.id),
-    })));
+    }, [
+        icon(tab.icon, { size: 24 }),
+        el('span', { class: 'tab-label', text: t(tab.label) }),
+    ])));
 
     function select(id) {
         active = id;
@@ -169,7 +197,7 @@ export function appShell(root, { client, onSignedOut }) {
         if (tab.path === null) {
             renderMore();
         } else {
-            renderList(tab);
+            load(tab.icon, tab.path(), () => select(id));
         }
     }
 
@@ -180,24 +208,10 @@ export function appShell(root, { client, onSignedOut }) {
          * and the dashboard are the same surface.
          */
         el('button', {
-            class: 'bell',
+            class: 'icon-button',
             'aria-label': 'Notifications',
-            text: '•',
-            onclick: async () => {
-                mount(body, el('p', { class: 'muted', text: t('list.loading') }));
-
-                try {
-                    const payload = await client.get(endpoints.notifications);
-                    const records = Array.isArray(payload) ? payload : (payload?.data ?? []);
-
-                    mount(body, records.length === 0
-                        ? el('p', { class: 'muted', text: t('list.empty') })
-                        : el('ul', { class: 'list' }, records.map(row)));
-                } catch (failure) {
-                    mount(body, errorLine(failure, t('signin.offline')));
-                }
-            },
-        }),
+            onclick: () => load('bell-01', endpoints.notifications, () => select(active)),
+        }, [icon('bell-01', { size: 20 })]),
     ]);
 
     mount(root, el('div', { class: 'shell' }, [header, body, tabBar]));

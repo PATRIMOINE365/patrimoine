@@ -108,7 +108,8 @@ body {
     color: var(--pm-text);
 }
 
-.bell {
+/* Untitled UI tertiary icon button: no chrome until it is pressed. */
+.icon-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -118,7 +119,10 @@ body {
     border-radius: var(--radius-md);
     background: transparent;
     color: var(--pm-text-subtle);
-    font-size: var(--text-lg);
+}
+
+.icon-button:active {
+    background: var(--pm-surface-muted);
 }
 
 .tab-body {
@@ -133,29 +137,69 @@ body {
 |--------------------------------------------------------------------------
 */
 
+/*
+ * The tab bar IS the band - the same dark green surface the web sidebar
+ * sits on, and for the same reason. The brand package reserves mint's
+ * entire budget in the product for "active nav item, focus ring, selected
+ * row, positive figures and the logo", but mint is 1.9:1 on white and
+ * fails outright there. On the green band it is 6.49:1. Putting navigation
+ * on the band is therefore what makes the brand's own accent legal, rather
+ * than a decoration: a white tab strip would have forced the active state
+ * to some other colour.
+ */
 .tab-bar {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    background: var(--pm-surface);
-    border-top: 1px solid var(--pm-border);
+    background: var(--pm-band);
+    border-top: 1px solid var(--pm-band-border);
     padding-bottom: env(safe-area-inset-bottom);
 }
 
+/*
+ * Icon over label, both inheriting one colour, so the active tab reads as
+ * a single object rather than a coloured word under a grey glyph. The icon
+ * takes 24px here rather than the product's 20px: a tab bar is the one
+ * place the glyph is doing the identifying, not the text beside it.
+ */
 .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
     border: 0;
     background: transparent;
-    padding: 0.625rem 0.25rem;
-    min-height: 3rem;
+    padding: 0.5rem 0.25rem;
+    min-height: 3.25rem;
     font-family: inherit;
+    color: var(--pm-band-text-muted);
+}
+
+.tab-label {
     font-size: var(--text-xs);
     line-height: var(--text-xs--line-height);
     font-weight: 500;
-    color: var(--pm-text-subtle);
 }
 
+/*
+ * Label white, glyph mint - exactly how .pm-nav-item[aria-current] resolves
+ * in the sidebar, where the icon takes --pm-band-accent and the text takes
+ * --pm-band-text.
+ */
 .tab.is-active {
-    color: var(--pm-primary);
+    color: var(--pm-band-text);
+}
+
+.tab.is-active svg {
+    color: var(--pm-band-accent);
+}
+
+.tab.is-active .tab-label {
     font-weight: 600;
+}
+
+.tab:active {
+    background: var(--pm-band-hover);
 }
 
 /*
@@ -371,6 +415,73 @@ body {
     font-size: var(--text-sm);
     line-height: var(--text-sm--line-height);
     color: var(--pm-primary);
+}
+
+/* A row that leads with an icon: More, and any settings-style list. */
+.row-lead {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+    color: var(--pm-text-subtle);
+}
+
+.row-lead .row-title {
+    color: var(--pm-text);
+}
+
+.row-lead.danger,
+.row-lead.danger .row-title {
+    color: var(--color-error-600);
+}
+
+.row-chevron {
+    color: var(--pm-text-placeholder);
+    flex: none;
+}
+
+.row-tappable:active {
+    background: var(--pm-surface-muted);
+}
+
+/*
+ * Untitled UI empty state, reduced to what a phone has room for: the
+ * screen's own icon in a soft disc, then one line. No illustration and no
+ * call to action - most of these lists are filled from a desk, not here.
+ */
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+.empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    background: var(--pm-surface-muted);
+    color: var(--pm-text-subtle);
+}
+
+.empty-text {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--pm-text-subtle);
+}
+
+/* Secondary button, for a retry that must not outrank the failure itself. */
+.button-secondary {
+    width: auto;
+    border-color: var(--pm-border-strong);
+    background: var(--pm-surface);
+    color: var(--pm-text-secondary);
 }
 
 /*
