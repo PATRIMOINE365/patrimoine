@@ -248,7 +248,26 @@ const VIEWS = {
                 actionButton(t('export.xlsx'), 'grid-01', () => openDocument(client, `/reports/buildings/${full.id}/xlsx`)),
             ]),
             section(t('record.details'), facts(full)),
-            section(t('record.units'), relatedList(units)),
+            /*
+             * A unit opens into its own record, with the report the API
+             * produces per unit. This is what the chevron promises.
+             */
+            section(t('record.units'), relatedList(units, (unit) => open({
+                label: 'record.unit',
+                icon: 'building-02',
+                async load(inner) {
+                    const full = (await inner.get(endpoints.unit(unit.id)))?.data ?? unit;
+
+                    return el('div', { class: 'record' }, [
+                        actionBar(FORMATS.map((format) => actionButton(
+                            t(format.label),
+                            format.icon,
+                            () => openDocument(inner, `/reports/units/${full.id}/${format.id}`)
+                        ))),
+                        section(t('record.details'), facts(full)),
+                    ]);
+                },
+            }))),
             section(t('nav.owners'), relatedList(owners.map((o) => o.party ?? o))),
         ]);
     },
@@ -338,9 +357,23 @@ const VIEWS = {
 
     async accounting(client, record) {
         const full = (await client.get(endpoints.ownerAccount(record.id)))?.data ?? record;
+        const owner = full.party ?? {};
 
         return el('div', { class: 'record' }, [
+            /* An owner account's document is the owner's statement. */
+            actionBar(owner.id === undefined ? [] : FORMATS.map((format) => actionButton(
+                `${t('record.owner_statement')} ${t(format.label)}`,
+                format.icon,
+                () => openDocument(client, `/reports/owners/${owner.id}/${format.id}`)
+            ))),
             section(t('record.details'), facts(full)),
+            owner.id === undefined ? null : section(t('nav.owners'), relatedList([owner])),
+        ]);
+    },
+
+    async users(client, record) {
+        return el('div', { class: 'record' }, [
+            section(t('record.details'), facts(record)),
         ]);
     },
 

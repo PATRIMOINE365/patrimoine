@@ -84,6 +84,8 @@ export const fr = {
     'lease.commission': 'Commission d’agence',
     'lease.no_units': 'Aucun lot à louer pour le moment. Ajoutez d’abord un bien avec au moins un lot.',
     'lease.no_tenants': 'Aucun locataire pour le moment. Ajoutez d’abord une partie ayant le rôle locataire.',
+    'record.unit': 'Lot',
+    'record.receipt': 'Reçu',
     'app.tagline': 'Gérer. Développer. Pérenniser.',
 
 

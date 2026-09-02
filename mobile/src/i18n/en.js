@@ -84,6 +84,8 @@ export const en = {
     'lease.commission': 'Agent commission',
     'lease.no_units': 'There is no unit to lease yet. Add a property with at least one unit first.',
     'lease.no_tenants': 'There is no tenant yet. Add a party with the tenant role first.',
+    'record.unit': 'Unit',
+    'record.receipt': 'Receipt',
     'app.tagline': 'Manage. Grow. Sustain.',
 
 

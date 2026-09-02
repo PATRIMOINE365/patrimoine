@@ -48,6 +48,11 @@ export const endpoints = {
 
     documentLinks: '/document-links',
 
+    users: '/users',
+    user: (id) => `/users/${id}`,
+    units: '/units',
+    unit: (id) => `/units/${id}`,
+
     /*
      * The reports the API exposes without needing a record to hang off, and
      * the formats each one can be exported in. Read from the route list, not

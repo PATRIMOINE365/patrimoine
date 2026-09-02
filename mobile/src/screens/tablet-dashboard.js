@@ -25,6 +25,7 @@ import { icon } from '../ui/icon.js';
 import { t } from '../i18n/index.js';
 import { money, relativeDays, shortDate, whenLabel } from '../ui/money.js';
 import * as store from '../data/store.js';
+import { openDocument } from '../data/exports.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -121,7 +122,7 @@ function revenueChart(trend) {
  * @param {object} options
  * @param {(id: string) => void} options.onOpenSection
  */
-export function tabletDashboard({ onOpenSection }) {
+export function tabletDashboard({ onOpenSection, client }) {
     const me = store.read('me').data;
     const user = me?.user ?? me ?? {};
 
@@ -205,6 +206,7 @@ export function tabletDashboard({ onOpenSection }) {
                             el('th', { text: t('dash.tenant_property') }),
                             el('th', { text: t('dash.due_date') }),
                             el('th', { class: 'is-numeric', text: t('write.amount') }),
+                            el('th', { class: 'is-numeric', text: t('export.download') }),
                         ])]),
                         el('tbody', {}, upcoming.map((invoice) => el('tr', {}, [
                             el('td', {}, [
@@ -221,6 +223,26 @@ export function tabletDashboard({ onOpenSection }) {
                             ]),
                             el('td', { class: 'is-numeric' }, [
                                 el('span', { class: 'row-figure', text: money(invoice.outstanding_amount ?? invoice.total_amount) }),
+                            ]),
+                            /*
+                             * The invoice itself, and its receipt once
+                             * something has been paid against it. There is
+                             * no invoice list endpoint, so this row is the
+                             * only place these documents are reachable.
+                             */
+                            el('td', { class: 'is-numeric' }, [
+                                el('button', {
+                                    class: 'icon-button',
+                                    'aria-label': t('export.pdf'),
+                                    onclick: () => openDocument(client, `/invoices/${invoice.id}/pdf`),
+                                }, [icon('file-05', { size: 20 })]),
+                                (invoice.paid_amount ?? 0) > 0
+                                    ? el('button', {
+                                        class: 'icon-button',
+                                        'aria-label': t('record.receipt'),
+                                        onclick: () => openDocument(client, `/invoices/${invoice.id}/payment-receipt`),
+                                    }, [icon('check-circle', { size: 20 })])
+                                    : null,
                             ]),
                         ]))),
                     ]),

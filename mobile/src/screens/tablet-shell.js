@@ -50,6 +50,7 @@ const SECTIONS = [
     { id: 'owners', label: 'nav.owners', icon: 'user-check', kind: 'list', path: '/parties?role=owner', detail: (id) => endpoints.party(id) },
     { id: 'accounting', label: 'nav.accounting', icon: 'calculator', kind: 'list', key: 'ownerAccounts', detail: (id) => endpoints.ownerAccount(id) },
     { id: 'reports', label: 'nav.reports', icon: 'bar-chart-square', kind: 'reports' },
+    { id: 'users', label: 'nav.users', icon: 'user-01', kind: 'list', path: endpoints.users, detail: (id) => endpoints.user(id) },
     { id: 'settings', label: 'nav.settings', icon: 'settings-01', kind: 'settings' },
     { id: 'audit', label: 'nav.audit', icon: 'clock-rewind', kind: 'list', path: endpoints.activityLog, exports: { base: endpoints.activityLog, formats: ['csv', 'xlsx'] } },
     { id: 'journal', label: 'nav.financial_journal', icon: 'scale-balanced', kind: 'list', path: endpoints.financialJournal, exports: { base: endpoints.financialJournal, formats: ['csv', 'xlsx'] } },
@@ -416,7 +417,7 @@ export function tabletShell(root, { client, config, version = '1.0.0', onSignedO
             mount(
                 listPane,
                 el('div', { class: 'workspace-head' }, [refreshButton]),
-                tabletDashboard({ onOpenSection: select }),
+                tabletDashboard({ onOpenSection: select, client }),
                 el('footer', { class: 'app-footer' }, [
                     el('span', { text: t('app.copyright', { year: new Date().getFullYear() }) }),
                     el('span', { text: `v${version}` }),
