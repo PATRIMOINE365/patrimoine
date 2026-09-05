@@ -218,6 +218,7 @@ class PaymentController extends Controller
     {
         return [
             'id' => $payment->id,
+            'receipt_number' => $payment->receiptNumber(),
             'lease_id' => $payment->lease_id,
             'amount' => $payment->amount,
             'payment_date' => $payment->payment_date

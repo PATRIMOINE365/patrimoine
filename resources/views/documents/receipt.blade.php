@@ -375,7 +375,7 @@ $allocatedAmount =
                 <strong>
                     {{ __('documents.receipt.receipt_number') }}:
                 </strong>
-                RCT-{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}
+                {{ $payment->receiptNumber() }}
                 <br>
 
                 <strong>

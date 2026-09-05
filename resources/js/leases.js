@@ -946,7 +946,9 @@ function leaseCard(lease) {
                     </button>
 
                     ${
-                        lease.status !== 'notice'
+                        !['draft', 'notice'].includes(
+                            lease.status
+                        )
                             ? `
                                 <button
                                     type="button"
@@ -997,7 +999,7 @@ function leaseCard(lease) {
                     }
 
                     ${
-                        !['notice', 'terminated'].includes(
+                        !['draft', 'notice', 'terminated'].includes(
                             lease.status
                         )
                             ? `

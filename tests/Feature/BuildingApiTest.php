@@ -30,7 +30,7 @@ class BuildingApiTest extends TestCase
      */
     private function createOwner(string $name): Party
     {
-        return Party::create([
+        $party = Party::create([
             'type' => 'person',
             'name' => $name,
             'phone' => '0200000300',
@@ -38,6 +38,12 @@ class BuildingApiTest extends TestCase
                 str_replace(' ', '-', $name)
             ).'@example.test',
         ]);
+
+        $party->roles()->create([
+            'role' => 'owner',
+        ]);
+
+        return $party;
     }
 
     /**
@@ -313,5 +319,113 @@ class BuildingApiTest extends TestCase
                 'errors.owners.0',
                 'La somme des pourcentages de propriété de l’immeuble doit être égale à 100 %.'
             );
+    }
+
+    /**
+     * V1.0.50: a party without the owner role is not accepted as an
+     * owner, however it reaches the API — and no owner account is opened
+     * for it.
+     */
+    public function test_building_refuses_an_owner_without_the_owner_role(): void
+    {
+        $tenantOnly = Party::create([
+            'type' => 'person',
+            'name' => 'Tenant Only',
+            'phone' => '0200000301',
+            'email' => 'tenant-only@example.test',
+        ]);
+
+        $tenantOnly->roles()->create([
+            'role' => 'tenant',
+        ]);
+
+        $this
+            ->postJson('/api/buildings', [
+                'name' => 'Role Gap Villa',
+                'owners' => [
+                    [
+                        'party_id' => $tenantOnly->id,
+                        'ownership_percentage' => 100,
+                    ],
+                ],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['owners.0.party_id']);
+
+        $this->assertDatabaseMissing('buildings', [
+            'name' => 'Role Gap Villa',
+        ]);
+
+        $this->assertDatabaseMissing('owner_accounts', [
+            'party_id' => $tenantOnly->id,
+        ]);
+    }
+
+    /**
+     * V1.0.50: an owner account that never held anything leaves with the
+     * party's last property, so the Owners list does not keep listing a
+     * landlord who owns nothing.
+     */
+    public function test_an_unused_owner_account_is_released_with_the_last_property(): void
+    {
+        $owner = $this->createOwner('Sole Owner');
+        $keeper = $this->createOwner('Second Owner');
+
+        $created = $this
+            ->postJson('/api/buildings', [
+                'name' => 'Released Court',
+                'owners' => [
+                    [
+                        'party_id' => $owner->id,
+                        'ownership_percentage' => 60,
+                    ],
+                    [
+                        'party_id' => $keeper->id,
+                        'ownership_percentage' => 40,
+                    ],
+                ],
+            ])
+            ->assertCreated();
+
+        $buildingId = $created->json('id');
+
+        $this->assertDatabaseHas('owner_accounts', [
+            'party_id' => $owner->id,
+        ]);
+
+        /*
+         * Replacing the owners drops the first one: their empty account
+         * goes with the ownership.
+         */
+        $this
+            ->putJson("/api/buildings/{$buildingId}", [
+                'name' => 'Released Court',
+                'owners' => [
+                    [
+                        'party_id' => $keeper->id,
+                        'ownership_percentage' => 100,
+                    ],
+                ],
+            ])
+            ->assertOk();
+
+        $this->assertDatabaseMissing('owner_accounts', [
+            'party_id' => $owner->id,
+        ]);
+
+        $this->assertDatabaseHas('owner_accounts', [
+            'party_id' => $keeper->id,
+        ]);
+
+        /*
+         * Deleting the building releases the remaining owner too.
+         */
+        $this
+            ->deleteJson("/api/buildings/{$buildingId}")
+            ->assertNoContent();
+
+        $this->assertDatabaseMissing('owner_accounts', [
+            'party_id' => $keeper->id,
+        ]);
     }
 }

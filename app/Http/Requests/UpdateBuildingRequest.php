@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Party;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -103,6 +104,48 @@ class UpdateBuildingRequest extends FormRequest
                     $validator->errors()->add(
                         'owners',
                         __('api.validation.building_ownership_total')
+                    );
+                }
+            },
+
+            /*
+             * V1.0.50: every owner must carry the owner role.
+             *
+             * The picker on screen only offers owners, so the rule was
+             * never written down here, and a tenant-only party sent
+             * straight to the API was accepted as a landlord — and given
+             * an owner account, and listed among the owners.
+             */
+            function ($validator): void {
+                if ($validator->errors()->isNotEmpty()) {
+                    return;
+                }
+
+                $owners = collect($this->input('owners', []));
+
+                $ownerIds = $owners
+                    ->pluck('party_id')
+                    ->map(fn ($id): int => (int) $id)
+                    ->all();
+
+                $withRole = Party::query()
+                    ->whereIn('id', $ownerIds)
+                    ->whereHas(
+                        'roles',
+                        fn ($query) => $query->where('role', 'owner')
+                    )
+                    ->pluck('id')
+                    ->map(fn ($id): int => (int) $id)
+                    ->all();
+
+                foreach ($owners as $index => $owner) {
+                    if (in_array((int) $owner['party_id'], $withRole, true)) {
+                        continue;
+                    }
+
+                    $validator->errors()->add(
+                        'owners.'.$index.'.party_id',
+                        __('api.validation.owner_role_required')
                     );
                 }
             },

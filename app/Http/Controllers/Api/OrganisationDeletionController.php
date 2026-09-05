@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Mail\CustomerAccountClosedMail;
+use App\Mail\OrganisationClosedMail;
 use App\Models\Organisation;
 use App\Models\User;
 use App\Services\ActivityLogService;
@@ -151,6 +152,24 @@ class OrganisationDeletionController extends Controller
                     administratorName: $closed['administrator'],
                     administratorEmail: $closed['email'],
                     rowsDeleted: array_sum($deleted),
+                )
+            );
+        } catch (Throwable $exception) {
+            report($exception);
+        }
+
+        /*
+         * V1.0.50: the person who closed it is told too. Until now only
+         * Kality heard; the administrator was left with a sign-out and
+         * no written word that it had happened. Same rule as above: a
+         * mail that fails is reported, never a 500.
+         */
+        try {
+            Mail::to($closed['email'])->send(
+                new OrganisationClosedMail(
+                    organisationName: $closed['name'],
+                    administratorName: $closed['administrator'],
+                    closedOn: now()->toDateString(),
                 )
             );
         } catch (Throwable $exception) {

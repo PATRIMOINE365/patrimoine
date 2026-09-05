@@ -42,6 +42,7 @@ final class LeaseTerminationSettlementService
                 'unit.building',
                 'tenantFundAccounts.transactions',
                 'securityDepositDeductions',
+                'securityDepositSettlement',
             ])
             ->findOrFail($lease->id);
 
@@ -207,23 +208,43 @@ final class LeaseTerminationSettlementService
                 'security_deposit'
             ];
 
+        /*
+         * V1.0.50: once the deposit has been settled, the deductions it
+         * was settled against are resolved — either taken out of the
+         * deposit (deduction_amount) or turned into a debt invoice
+         * (tenant_debt_amount), which the outstanding-debt figure above
+         * already counts.
+         *
+         * Comparing deductions against the deposit still HELD was right
+         * only before settlement. Afterwards the held balance is zero
+         * precisely because the deposit was applied, so every deduction
+         * read as uncovered and no lease with a deduction could ever
+         * complete its termination.
+         */
+        $settlement =
+            $lease->securityDepositSettlement;
+
+        $deductionsSettled =
+            $settlement === null
+                ? 0
+                : (int) $settlement->deduction_amount
+                    + (int) $settlement->tenant_debt_amount;
+
         $deductionsCoveredByDeposit =
             min(
-                max(
+                $deductionTotal,
+                $deductionsSettled
+                + max(
                     0,
                     $securityDepositHeld
-                ),
-                $deductionTotal
+                )
             );
 
         $uncoveredSecurityDepositDeductions =
             max(
                 0,
                 $deductionTotal
-                - max(
-                    0,
-                    $securityDepositHeld
-                )
+                - $deductionsCoveredByDeposit
             );
 
         /*
@@ -479,6 +500,17 @@ final class LeaseTerminationSettlementService
 
                 'deduction_total' =>
                     $deductionTotal,
+
+                'settled' =>
+                    $settlement !== null,
+
+                'settlement_date' =>
+                    $settlement
+                        ?->settlement_date
+                        ?->toDateString(),
+
+                'deductions_settled' =>
+                    $deductionsSettled,
 
                 'deductions_covered_by_held_deposit' =>
                     $deductionsCoveredByDeposit,

@@ -61,7 +61,7 @@ class PaymentReportExportTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            'PAY-'.$context['payment']->id,
+            $context['payment']->receiptNumber(),
             $csv->getContent()
         );
 

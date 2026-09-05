@@ -7,6 +7,7 @@ use App\Mail\EmailChangeCurrentCodeMail;
 use App\Mail\EmailChangeProposedCodeMail;
 use App\Models\EmailChangeRequest;
 use App\Models\MfaChallenge;
+use App\Models\PersonalAccessToken;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -236,7 +237,11 @@ class EmailChangeService
                 return $request === null
                     ? ''
                     : $this->accessTokens
-                        ->issue($user, $request)
+                        ->issue(
+                            $user,
+                            $request,
+                            $this->currentDeviceName($user)
+                        )
                         ->plainTextToken;
             }
         );
@@ -268,6 +273,24 @@ class EmailChangeService
             'change' => $change,
             'token' => $plainToken,
         ];
+    }
+
+    /**
+     * V1.0.50: the device finishing the flow keeps its name.
+     *
+     * The fresh token used to be named from the request alone, and an
+     * API call carries no device name, so the session that had just
+     * proved both mailboxes reappeared on the Devices list as
+     * "Unrecognised device". The token being replaced knows what it was
+     * called; the replacement inherits it.
+     */
+    private function currentDeviceName(User $user): ?string
+    {
+        $token = $user->currentAccessToken();
+
+        return $token instanceof PersonalAccessToken
+            ? (string) $token->name
+            : null;
     }
 
     /**

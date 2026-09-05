@@ -4,6 +4,7 @@ namespace App\Services\LeaseDeletion;
 
 use App\Models\Lease;
 use App\Services\Accounting\AccountingRuntimeGate;
+use App\Support\OrganisationContext;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -353,6 +354,28 @@ class LeaseDeletionImpactService
             ];
         }
 
+        /*
+         * V1.0.50: nothing to look for means nothing found.
+         *
+         * A lease that has never been paid or invoiced has no payment
+         * ids and no invoice ids. The closure below then added no
+         * constraint at all, so the raw query returned EVERY allocation
+         * on the installation — other leases', other organisations' —
+         * and each one read as "crossing lease boundaries". Every unpaid
+         * draft was undeletable, and its impact preview listed
+         * allocation ids that belonged to somebody else.
+         */
+        $paymentIds = $hasPaymentId ? $paymentIds : [];
+        $invoiceIds = $hasInvoiceId ? $invoiceIds : [];
+
+        if ($paymentIds === [] && $invoiceIds === []) {
+            return [
+                'count' => 0,
+                'ids' => [],
+                'cross_lease' => [],
+            ];
+        }
+
         $query =
             DB::table('payment_allocations')
                 ->where(function ($query) use (
@@ -386,6 +409,20 @@ class LeaseDeletionImpactService
                         }
                     }
                 });
+
+        /*
+         * DB::table() bypasses OrganisationScope, so the boundary the
+         * scope would have drawn is drawn here by hand.
+         */
+        if (
+            OrganisationContext::bound()
+            && Schema::hasColumn('payment_allocations', 'organisation_id')
+        ) {
+            $query->where(
+                'organisation_id',
+                OrganisationContext::id()
+            );
+        }
 
         $rows =
             $query

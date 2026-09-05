@@ -46,6 +46,7 @@ class DocumentNumberService
         'EXP' => 'Tenant expense invoice',
         'SDD' => 'Security deposit debt invoice',
         'OEB' => 'Owner expense bill',
+        'RCT' => 'Payment receipt',
         'WDR' => 'Tenant fund withdrawal receipt',
         'ADV' => 'Adjustment voucher',
         'SDV' => 'Security deposit settlement voucher',

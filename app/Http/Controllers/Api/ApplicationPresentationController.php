@@ -73,9 +73,17 @@ class ApplicationPresentationController extends Controller
          * operational configuration and is therefore exposed alongside the
          * existing language and currency configuration.
          */
+        /*
+         * V1.0.50: read the organisation's switches only when there IS an
+         * organisation. Unbound, the scope-free query handed the first
+         * organisation's VAT default and feature switches to every
+         * anonymous caller; the product defaults are what the sign-in
+         * screen actually needs.
+         */
         $settings =
-            ApplicationSetting::query()
-                ->first();
+            OrganisationContext::bound()
+                ? ApplicationSetting::query()->first()
+                : null;
 
         $configuration[
             'default_vat_rate'

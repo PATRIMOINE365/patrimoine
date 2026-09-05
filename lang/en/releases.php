@@ -19,6 +19,23 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.50',
+            'date' => '2026-09-05',
+            'title' => 'What a full audit found, fixed',
+            'changes' => [
+                'Nothing about your organisation reaches anybody who has not signed in to it. The sign-in screen and the password-reset email used to be signed with the name and settings of whichever organisation was created first on the platform; they now carry the product name until you sign in, and your reset email is signed by your own organisation, in your own language.',
+                'A termination can be completed after the deposit has been settled with deductions. Once the deposit had been applied, every deduction was counted as still uncovered — precisely because the deposit had paid for it — and the lease could never leave notice. Deductions the settlement already took care of no longer block completion; only a deduction recorded after the settlement does.',
+                'A lease that was never invoiced or paid can be deleted. The safety check ran with nothing to look for and found every payment allocation on the platform instead, so it refused every unpaid draft as "crossing lease boundaries" and listed other people\'s records in the preview.',
+                'Each limit on sign-in, codes, password resets, email changes and support messages now counts on its own. They shared one counter, so a support message could lock you out of changing your email for an hour, and a few sign-in attempts from an office connection locked everyone behind it out of password reset.',
+                'Receipts are numbered by your organisation, like every other document, as RCT-2026-000001 onward. They were numbered from a platform-wide id, which told a tenant how many payments the whole platform had taken. Receipts already issued keep their number.',
+                'The guided assistant no longer starts with "advance already received" ticked. With no advance entered, that tick made the last step refuse the lease; it is now off, and unavailable, until an advance amount is typed.',
+                'A property owner must be registered as an owner. A party with only the tenant role could be sent to the API as a landlord, was accepted, and appeared in the Owners list; and an owner account left over after its last property was removed, with nothing in it, is now removed with it.',
+                'Forms with a required field left empty stopped filling the browser console with a stack-overflow error; their validation messages are back, in your language.',
+                'An expense invoice is emailed as an expense invoice, not as "your rent invoice"; a deposit settlement invoice says so as well.',
+                'Draft leases no longer offer Extend and Terminate, which the server refused anyway. An organisation created in French starts in FCFA rather than cedis. Finishing an email change keeps your device\'s name on the Devices list instead of showing "Unrecognised device". And when you close your organisation, you receive a written confirmation, not only Kality.',
+            ],
+        ],
+        [
             'version' => '1.0.49',
             'date' => '2026-09-02',
             'title' => 'The assistant accepts an existing owner on a new property',

@@ -745,7 +745,14 @@
                 <div class="pm-wizard-divider"></div>
 
                 <label class="pm-toggle-field">
-                    <input id="wizard-advance-received" type="checkbox" class="pm-toggle" checked>
+                    {{--
+                        V1.0.50: off by default, and disabled while the
+                        advance is nil. It used to start ticked, so the
+                        common case — no advance at all — was refused at
+                        the end for saying money was received when there
+                        was none to receive.
+                    --}}
+                    <input id="wizard-advance-received" type="checkbox" class="pm-toggle" disabled>
 
                     <span class="min-w-0">
                         <span class="pm-toggle-label">

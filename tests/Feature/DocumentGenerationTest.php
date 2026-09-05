@@ -396,8 +396,8 @@ class DocumentGenerationTest extends TestCase
             );
 
         $expectedFilename = sprintf(
-            'Patrimoine-Receipt-%06d.pdf',
-            $context['payment']->id
+            'Patrimoine-Receipt-%s.pdf',
+            $context['payment']->receiptNumber()
         );
 
         $this->assertStringContainsString(

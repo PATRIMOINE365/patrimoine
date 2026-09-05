@@ -2,10 +2,18 @@
 
 @php($organisationName = $managingOrganisation?->legal_name ?? $managingOrganisation?->name ?? null)
 
+{{--
+    V1.0.50: an expense invoice is not a rent invoice, and the mail used
+    to call every invoice a rent invoice. The intro is chosen by type,
+    falling back to the rent wording for any type without one of its own.
+--}}
+@php($introKey = 'emails.invoice.intro_before_number_'.$invoice->type)
+@php($intro = \Illuminate\Support\Facades\Lang::has($introKey) ? __($introKey) : __('emails.invoice.intro_before_number'))
+
 @section('title', __('emails.invoice.title', ['number' => $invoice->invoice_number]))
 
 @section('preheader')
-    {{ __('emails.invoice.intro_before_number') }} {{ $invoice->invoice_number }}
+    {{ $intro }} {{ $invoice->invoice_number }}
 @endsection
 
 @section('content')
@@ -22,7 +30,7 @@
     </p>
 
     <p style="margin:0 0 22px 0;">
-        {{ __('emails.invoice.intro_before_number') }}
+        {{ $intro }}
         <strong>{{ $invoice->invoice_number }}</strong>
         {{ __('emails.invoice.intro_for') }}
         <strong>

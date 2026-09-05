@@ -15,6 +15,23 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.50',
+            'date' => '2026-09-05',
+            'title' => 'Ce qu\'un audit complet a trouvé, corrigé',
+            'changes' => [
+                'Rien de votre organisation n\'atteint quelqu\'un qui ne s\'y est pas connecté. L\'écran de connexion et l\'e-mail de réinitialisation du mot de passe étaient signés du nom et des réglages de la première organisation créée sur la plateforme ; ils portent désormais le nom du produit jusqu\'à votre connexion, et votre e-mail de réinitialisation est signé par votre propre organisation, dans votre langue.',
+                'Une résiliation peut être achevée après le règlement du dépôt avec des retenues. Une fois le dépôt appliqué, chaque retenue était comptée comme non couverte — précisément parce que le dépôt l\'avait payée — et le bail ne pouvait jamais sortir du préavis. Les retenues déjà réglées ne bloquent plus l\'achèvement ; seule une retenue enregistrée après le règlement le fait.',
+                'Un bail jamais facturé ni payé peut être supprimé. La vérification de sécurité s\'exécutait sans rien à chercher et trouvait toutes les affectations de paiement de la plateforme, si bien qu\'elle refusait chaque brouillon impayé pour « franchissement des limites du bail » et listait les enregistrements d\'autrui dans l\'aperçu.',
+                'Chaque limite sur la connexion, les codes, les réinitialisations de mot de passe, les changements d\'e-mail et les messages au support compte désormais pour elle-même. Elles partageaient un seul compteur : un message au support pouvait vous empêcher de changer d\'e-mail pendant une heure, et quelques tentatives de connexion depuis une connexion de bureau bloquaient la réinitialisation du mot de passe pour tout le monde derrière elle.',
+                'Les reçus sont numérotés par votre organisation, comme tout autre document, à partir de RCT-2026-000001. Ils l\'étaient d\'après un identifiant commun à toute la plateforme, qui révélait à un locataire le nombre de paiements encaissés par l\'ensemble de la plateforme. Les reçus déjà émis gardent leur numéro.',
+                'L\'assistant guidé ne démarre plus avec « avance déjà reçue » coché. Sans avance saisie, cette case faisait refuser le bail à la dernière étape ; elle est désormais décochée, et indisponible, tant qu\'aucun montant d\'avance n\'est saisi.',
+                'Un propriétaire de bien doit être enregistré comme propriétaire. Une partie n\'ayant que le rôle de locataire pouvait être envoyée à l\'API comme bailleur, était acceptée et apparaissait dans la liste des propriétaires ; et un compte propriétaire resté vide après le retrait de son dernier bien est désormais retiré avec lui.',
+                'Les formulaires dont un champ obligatoire est laissé vide ne remplissent plus la console du navigateur d\'une erreur de dépassement de pile ; leurs messages de validation sont de retour, dans votre langue.',
+                'Une facture de charges est envoyée comme facture de charges, et non comme « votre facture de loyer » ; une facture de règlement du dépôt le dit aussi.',
+                'Les baux en brouillon ne proposent plus Prolonger ni Résilier, que le serveur refusait de toute façon. Une organisation créée en français démarre en FCFA plutôt qu\'en cedis. Terminer un changement d\'e-mail conserve le nom de votre appareil dans la liste des appareils au lieu d\'afficher « Appareil non reconnu ». Et lorsque vous fermez votre organisation, vous recevez une confirmation écrite, et non seulement Kality.',
+            ],
+        ],
+        [
             'version' => '1.0.49',
             'date' => '2026-09-02',
             'title' => 'L\'assistant accepte un propriétaire existant sur un nouveau bien',

@@ -13,6 +13,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
+use App\Mail\OrganisationClosedMail;
 
 /**
  * V1.0.32: an organisation can close its own account.
@@ -350,5 +351,25 @@ class AccountClosureTest extends TestCase
                 $table.' is organisation-owned and must be destroyed with it.'
             );
         }
+    }
+
+    /**
+     * V1.0.50: the person who closed it is told in writing, not only
+     * Kality.
+     */
+    public function test_the_administrator_receives_written_confirmation(): void
+    {
+        Sanctum::actingAs($this->administrator);
+
+        $email = $this->administrator->email;
+
+        $this->close()->assertOk();
+
+        Mail::assertSent(
+            OrganisationClosedMail::class,
+            fn (OrganisationClosedMail $mail): bool =>
+                $mail->hasTo($email)
+                && $mail->organisationName === 'Closing Properties Ltd'
+        );
     }
 }

@@ -137,20 +137,31 @@ Route::get(
 | setup wizard. Each signup provisions a fully isolated organisation.
 |
 */
+/*
+ * V1.0.50: every throttle names its own bucket.
+ *
+ * Laravel keys a bare `throttle:N,M` on the caller alone — one bucket per
+ * signed-in user, one per IP for guests — and the route plays no part in
+ * the key. Fifteen limits were therefore one shared counter: a support
+ * message (five an hour) started an hour-long window in which changing
+ * your email answered "Too Many Attempts", and five sign-in attempts from
+ * an office connection locked everyone behind it out of password reset.
+ * The third parameter is the prefix that keeps the buckets apart.
+ */
 Route::post(
     'auth/register',
     [RegistrationController::class, 'register']
-)->middleware('throttle:5,1');
+)->middleware('throttle:5,1,register');
 
 Route::post(
     'auth/verify-email',
     [RegistrationController::class, 'verifyEmail']
-)->middleware('throttle:10,1');
+)->middleware('throttle:10,1,verify-email');
 
 Route::post(
     'auth/resend-verification',
     [RegistrationController::class, 'resendVerification']
-)->middleware('throttle:3,1');
+)->middleware('throttle:3,1,resend-verification');
 
 /*
 |--------------------------------------------------------------------------
@@ -164,7 +175,7 @@ Route::post(
 Route::post(
     'auth/login',
     [AuthController::class, 'login']
-)->middleware('throttle:5,1');
+)->middleware('throttle:5,1,login');
 
 /*
  * V1.0.10: second factor of every sign-in. Verification is more
@@ -174,12 +185,12 @@ Route::post(
 Route::post(
     'auth/mfa/verify',
     [AuthController::class, 'mfaVerify']
-)->middleware('throttle:10,1');
+)->middleware('throttle:10,1,mfa-verify');
 
 Route::post(
     'auth/mfa/resend',
     [AuthController::class, 'mfaResend']
-)->middleware('throttle:3,1');
+)->middleware('throttle:3,1,mfa-resend');
 
 /*
  * First-time password setup and Forgot Password are public but rate-limited.
@@ -187,17 +198,17 @@ Route::post(
 Route::post(
     'auth/invitations/accept',
     [PasswordController::class, 'acceptInvitation']
-)->middleware('throttle:5,1');
+)->middleware('throttle:5,1,accept-invitation');
 
 Route::post(
     'auth/forgot-password',
     [PasswordController::class, 'forgot']
-)->middleware('throttle:5,1');
+)->middleware('throttle:5,1,forgot-password');
 
 Route::post(
     'auth/reset-password',
     [PasswordController::class, 'reset']
-)->middleware('throttle:5,1');
+)->middleware('throttle:5,1,reset-password');
 
 /*
  * Any authenticated Patrimoine user may inspect their identity
@@ -255,22 +266,22 @@ Route::middleware('auth:sanctum')->group(
         Route::post(
             'auth/email-change',
             [EmailChangeController::class, 'store']
-        )->middleware('throttle:3,10');
+        )->middleware('throttle:3,10,email-change');
 
         Route::post(
             'auth/email-change/verify-current',
             [EmailChangeController::class, 'verifyCurrent']
-        )->middleware('throttle:10,1');
+        )->middleware('throttle:10,1,email-change-verify-current');
 
         Route::post(
             'auth/email-change/verify-new',
             [EmailChangeController::class, 'verifyProposed']
-        )->middleware('throttle:10,1');
+        )->middleware('throttle:10,1,email-change-verify-new');
 
         Route::post(
             'auth/email-change/resend',
             [EmailChangeController::class, 'resend']
-        )->middleware('throttle:3,1');
+        )->middleware('throttle:3,1,email-change-resend');
 
         Route::delete(
             'auth/email-change',
@@ -325,7 +336,7 @@ Route::middleware('auth:sanctum')->group(
         Route::post(
             'support-messages',
             [SupportMessageController::class, 'store']
-        )->middleware('throttle:5,60');
+        )->middleware('throttle:5,60,support-messages');
 
         /*
          * V1.0.34: your own data, on request, by you.
@@ -352,7 +363,7 @@ Route::middleware('auth:sanctum')->group(
         Route::post(
             'auth/confirm-password',
             [AuthController::class, 'confirmPassword']
-        )->middleware('throttle:5,1');
+        )->middleware('throttle:5,1,confirm-password');
 
         Route::post(
             'auth/logout',

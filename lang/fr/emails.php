@@ -15,6 +15,8 @@ return [
         'title' => 'Facture :number',
         'subject' => 'Facture :number - :organisation',
         'intro_before_number' => 'Veuillez trouver ci-joint votre facture de loyer',
+        'intro_before_number_expense' => 'Veuillez trouver ci-joint votre facture de charges',
+        'intro_before_number_security_deposit_debt' => 'Veuillez trouver ci-joint votre facture de règlement du dépôt de garantie',
         'intro_for' => 'pour',
         'invoice_amount' => 'Montant de la facture',
         'amount_paid' => 'Montant payé',
@@ -209,6 +211,17 @@ return [
         'introduction' => 'Cette boîte, :proposed, a été proposée comme nouvelle adresse de connexion d\'un compte Patrimoine 365. Saisissez le code ci-dessous pour confirmer que vous recevez bien les e-mails ici et terminer le changement.',
         'expiry' => 'Ce code expire dans :minutes minutes et ne peut être utilisé qu\'une seule fois.',
         'ignore' => 'Si vous n\'attendiez pas cet e-mail, vous pouvez l\'ignorer en toute sécurité — rien ne change sans ce code.',
+    ],
+
+    'organisation_closed' => [
+        'subject' => 'Votre organisation Patrimoine 365 :organisation a été fermée',
+        'title' => 'Votre organisation a été fermée',
+        'preheader' => ':organisation a été fermée à votre demande.',
+        'heading' => 'Votre organisation a été fermée',
+        'greeting' => 'Bonjour :name,',
+        'introduction' => 'Votre organisation :organisation a été fermée le :date, à votre demande, depuis sa propre page Paramètres.',
+        'what_happened' => 'Tout ce qu’elle contenait — parties, biens, baux, factures, paiements, documents et comptes utilisateurs — a été supprimé, et plus personne ne peut s’y connecter. Ce message vaut confirmation ; il n’y a rien d’autre à faire.',
+        'not_you' => 'Si vous n’êtes pas à l’origine de cette demande, écrivez sans attendre à :support.',
     ],
 
     'email_change_completed' => [

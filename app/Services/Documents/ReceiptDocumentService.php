@@ -50,8 +50,8 @@ class ReceiptDocumentService
     public function filename(Payment $payment): string
     {
         return sprintf(
-            'Patrimoine-Receipt-%06d.pdf',
-            $payment->id
+            'Patrimoine-Receipt-%s.pdf',
+            $payment->receiptNumber()
         );
     }
 }

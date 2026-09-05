@@ -2476,6 +2476,35 @@ function applyConsumableAdvance() {
             consumableAdvance()
         )
     );
+
+    applyAdvanceAvailability();
+}
+
+/**
+ * "Already received" only means something once there is an advance to
+ * receive.
+ *
+ * The tick used to start on, so a lease with no advance — the common
+ * case — was refused on the last step for claiming money was received
+ * when the amount was nil. The toggle now follows the amount: disabled
+ * and off while it is zero, available as soon as an amount is typed.
+ */
+function applyAdvanceAvailability() {
+    const toggle = document.getElementById('wizard-advance-received');
+
+    if (! (toggle instanceof HTMLInputElement)) {
+        return;
+    }
+
+    const available = integer('wizard-advance-amount') > 0;
+
+    toggle.disabled = ! available;
+
+    if (! available && toggle.checked) {
+        toggle.checked = false;
+
+        applyAdvanceReceived();
+    }
 }
 
 /**

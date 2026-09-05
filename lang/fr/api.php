@@ -114,6 +114,8 @@ return [
 
         'tenant_role_required' => 'La partie sélectionnée doit avoir le rôle de locataire.',
 
+        'owner_role_required' => 'La partie sélectionnée doit avoir le rôle de propriétaire.',
+
         'agent_role_required' => 'La partie sélectionnée doit avoir le rôle d’agent.',
 
         'notice_date_required' => 'La date de préavis de résiliation est obligatoire lorsque le bail est en préavis.',

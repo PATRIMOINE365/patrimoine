@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
+use App\Models\Organisation;
+use App\Models\Party;
+use App\Support\OrganisationContext;
 
 /**
  * Freeze the V1.0.3 invitation and password security workflows.
@@ -740,5 +743,80 @@ class UserPasswordWorkflowTest extends TestCase
             'is_active' => true,
             'email_verified_at' => now(),
         ]);
+    }
+
+    /**
+     * V1.0.50: the reset mail is signed by the user's OWN organisation.
+     * Forgot-password runs as a guest, and the unbound identity service
+     * used to answer with the first organisation on the platform.
+     */
+    public function test_reset_mail_is_signed_by_the_users_own_organisation(): void
+    {
+        Mail::fake();
+
+        $first = Party::create([
+            'type' => 'organisation',
+            'name' => 'Home Advantage Ltd',
+            'legal_name' => 'Home Advantage Ltd',
+        ]);
+
+        ApplicationSetting::create([
+            'managing_organisation_party_id' => $first->id,
+            'language' => 'en',
+            'currency' => 'GHS',
+        ]);
+
+        $other = Organisation::factory()->create([
+            'name' => 'Audit Lettings Ltd',
+        ]);
+
+        $user = OrganisationContext::runAs(
+            (int) $other->id,
+            function () use ($other): User {
+                $party = Party::create([
+                    'type' => 'organisation',
+                    'name' => 'Audit Lettings Ltd',
+                    'legal_name' => 'Audit Lettings SARL',
+                ]);
+
+                $party->roles()->create([
+                    'role' => 'managing_organisation',
+                ]);
+
+                ApplicationSetting::create([
+                    'managing_organisation_party_id' => $party->id,
+                    'language' => 'fr',
+                    'currency' => 'FCFA',
+                ]);
+
+                return User::factory()
+                    ->forOrganisation($other)
+                    ->create([
+                        'email' => 'vida@audit.test',
+                        'email_verified_at' => now(),
+                    ]);
+            }
+        );
+
+        OrganisationContext::forget();
+
+        $this
+            ->postJson('/api/auth/forgot-password', [
+                'email' => 'vida@audit.test',
+            ])
+            ->assertOk();
+
+        Mail::assertSent(
+            UserPasswordResetMail::class,
+            fn (UserPasswordResetMail $mail): bool =>
+                $mail->hasTo('vida@audit.test')
+                && $mail->organisationName === 'Audit Lettings SARL'
+                && $mail->locale === 'fr'
+        );
+
+        /*
+         * The binding was for the mail only.
+         */
+        $this->assertFalse(OrganisationContext::bound());
     }
 }

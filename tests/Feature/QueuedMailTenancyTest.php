@@ -70,6 +70,14 @@ class QueuedMailTenancyTest extends TestCase
         \App\Mail\EmailChangeCurrentCodeMail::class,
         \App\Mail\EmailChangeProposedCodeMail::class,
         \App\Mail\EmailChangeCompletedMail::class,
+
+        /*
+         * V1.0.50: the confirmation to whoever closed their organisation.
+         * The organisation a queued job would bind to no longer exists,
+         * and the person is signed out the moment the request returns —
+         * it goes in the same breath as the deletion or not at all.
+         */
+        \App\Mail\OrganisationClosedMail::class,
     ];
 
     /**

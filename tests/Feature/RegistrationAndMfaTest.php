@@ -349,4 +349,33 @@ class RegistrationAndMfaTest extends TestCase
 
         Mail::assertNothingOutgoing();
     }
+
+    /**
+     * V1.0.50: an organisation created in French starts in FCFA.
+     */
+    public function test_a_french_organisation_starts_in_fcfa(): void
+    {
+        Mail::fake();
+
+        $this->postJson(
+            '/api/auth/register',
+            $this->payload([
+                'organisation_name' => 'Acme Immobilier',
+                'email' => 'ama.fr@acme.test',
+                'language' => 'fr',
+            ])
+        )->assertCreated();
+
+        $organisation = Organisation::query()
+            ->where('name', 'Acme Immobilier')
+            ->sole();
+
+        $settings = OrganisationContext::runAs(
+            (int) $organisation->id,
+            fn (): ApplicationSetting => ApplicationSetting::query()->sole()
+        );
+
+        $this->assertSame('fr', $settings->language);
+        $this->assertSame('FCFA', $settings->currency);
+    }
 }

@@ -14,6 +14,7 @@ use App\Services\LeaseTermination\LeaseTerminationSettlementService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use RuntimeException;
 use Tests\TestCase;
+use App\Models\SecurityDepositSettlement;
 
 class LeaseTerminationSettlementServiceTest extends TestCase
 {
@@ -553,6 +554,132 @@ class LeaseTerminationSettlementServiceTest extends TestCase
             LeaseTerminationSettlementService::class
         )->calculate(
             $lease
+        );
+    }
+
+    /**
+     * V1.0.50: deductions the settlement already applied are resolved,
+     * not uncovered. The held deposit is zero AFTER settlement precisely
+     * because it paid for them, and comparing against it blocked every
+     * termination that had a deduction.
+     */
+    public function test_settled_deductions_no_longer_block_completion(): void
+    {
+        $lease =
+            $this->lease();
+
+        /*
+         * The account exists and is empty: the settlement below has
+         * applied the whole GH₵ 800 — 200 retained, 600 refunded.
+         */
+        $this->fund(
+            $lease,
+            'security_deposit',
+            0
+        );
+
+        SecurityDepositDeduction::create([
+            'lease_id' => $lease->id,
+            'description' => 'Cleaning',
+            'amount' => 200,
+            'deduction_date' => '2026-09-01',
+        ]);
+
+        SecurityDepositSettlement::create([
+            'lease_id' => $lease->id,
+            'deposit_amount' => 800,
+            'deduction_amount' => 200,
+            'refund_amount' => 600,
+            'refund_payment_method' => 'mobile_money',
+            'tenant_debt_amount' => 0,
+            'settlement_date' => '2026-09-02',
+        ]);
+
+        $summary =
+            app(LeaseTerminationSettlementService::class)
+                ->calculate($lease);
+
+        $this->assertTrue(
+            $summary['security_deposit']['settled']
+        );
+
+        $this->assertSame(
+            '2026-09-02',
+            $summary['security_deposit']['settlement_date']
+        );
+
+        $this->assertSame(
+            200,
+            $summary['security_deposit']['deductions_settled']
+        );
+
+        $this->assertSame(
+            200,
+            $summary['security_deposit']['deductions_covered_by_held_deposit']
+        );
+
+        $this->assertSame(
+            0,
+            $summary['security_deposit']['uncovered_deductions']
+        );
+
+        $this->assertSame(
+            0,
+            $summary['settlement']['amount_still_owed_by_tenant']
+        );
+
+        $this->assertSame(
+            [],
+            $summary['settlement']['blockers']
+        );
+
+        $this->assertTrue(
+            $summary['settlement']['can_complete']
+        );
+    }
+
+    /**
+     * Before a settlement, a deduction the held deposit cannot cover is
+     * still exactly that — the fix above changes nothing here.
+     */
+    public function test_an_unsettled_deduction_beyond_the_deposit_is_still_uncovered(): void
+    {
+        $lease =
+            $this->lease();
+
+        $this->fund(
+            $lease,
+            'security_deposit',
+            0
+        );
+
+        SecurityDepositDeduction::create([
+            'lease_id' => $lease->id,
+            'description' => 'Cleaning',
+            'amount' => 200,
+            'deduction_date' => '2026-09-01',
+        ]);
+
+        $summary =
+            app(LeaseTerminationSettlementService::class)
+                ->calculate($lease);
+
+        $this->assertFalse(
+            $summary['security_deposit']['settled']
+        );
+
+        $this->assertSame(
+            200,
+            $summary['security_deposit']['uncovered_deductions']
+        );
+
+        $this->assertSame(
+            'uncovered_security_deposit_deductions',
+            $summary['settlement']['blockers'][0]['code']
+        );
+
+        $this->assertFalse(
+            $summary['settlement']['can_complete']
         );
     }
 }

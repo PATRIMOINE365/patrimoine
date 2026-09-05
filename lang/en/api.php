@@ -114,6 +114,8 @@ return [
 
         'tenant_role_required' => 'Selected Party must have the tenant role.',
 
+        'owner_role_required' => 'Selected Party must have the owner role.',
+
         'agent_role_required' => 'Selected Party must have the agent role.',
 
         'notice_date_required' => 'Termination notice date is required when Lease status is notice.',

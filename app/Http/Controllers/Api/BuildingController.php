@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBuildingRequest;
 use App\Http\Requests\UpdateBuildingRequest;
 use App\Models\Building;
+use App\Models\OwnerAccount;
 use App\Services\ActivityLogService;
 use App\Services\BusinessActivitySnapshotService;
 use App\Services\BusinessRecordDeletionService;
@@ -244,6 +245,12 @@ class BuildingController extends Controller
 
                 $building->update($validated);
 
+                $previousOwnerIds = $building
+                    ->ownerships()
+                    ->pluck('party_id')
+                    ->map(fn ($id): int => (int) $id)
+                    ->all();
+
                 $building->ownerships()->delete();
 
                 foreach ($owners as $owner) {
@@ -251,6 +258,15 @@ class BuildingController extends Controller
                         'party_id' => $owner['party_id'],
                         'ownership_percentage' => $owner['ownership_percentage'],
                     ]);
+                }
+
+                /*
+                 * V1.0.50: an owner dropped here who owns nothing else,
+                 * and whose account never held anything, leaves the
+                 * Owners list with the property.
+                 */
+                foreach ($previousOwnerIds as $partyId) {
+                    OwnerAccount::releaseIfUnused($partyId);
                 }
 
                 $building = $building
@@ -309,6 +325,12 @@ class BuildingController extends Controller
         $snapshot =
             $snapshots->building($building);
 
+        $ownerIds = $building
+            ->ownerships()
+            ->pluck('party_id')
+            ->map(fn ($id): int => (int) $id)
+            ->all();
+
         $message =
             $deletions->deleteBuilding(
                 $building
@@ -321,6 +343,15 @@ class BuildingController extends Controller
                 ],
                 409
             );
+        }
+
+        /*
+         * V1.0.50: the ownerships went with the building — by cascade,
+         * so without model events — and accounts that never held
+         * anything go with them.
+         */
+        foreach ($ownerIds as $partyId) {
+            OwnerAccount::releaseIfUnused($partyId);
         }
 
         $activityLog->record(

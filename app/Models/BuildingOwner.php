@@ -69,6 +69,20 @@ class BuildingOwner extends Model
                 ]);
             }
         );
+
+        /*
+         * V1.0.50: the reverse of the invariant above. Bulk deletes
+         * bypass model events, so the two places that remove ownerships
+         * in bulk — replacing a building's owners and deleting the
+         * building — call OwnerAccount::releaseIfUnused() themselves.
+         */
+        static::deleted(
+            function (BuildingOwner $ownership): void {
+                OwnerAccount::releaseIfUnused(
+                    (int) $ownership->party_id
+                );
+            }
+        );
     }
 
     /**

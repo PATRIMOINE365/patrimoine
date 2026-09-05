@@ -243,7 +243,12 @@ class RegistrationService
             'managing_organisation_party_id' => $party->id,
             'default_vat_rate' => 0,
             'language' => $data['language'],
-            'currency' => 'GHS',
+            /*
+             * V1.0.50: the currency follows the language chosen at
+             * signup — FCFA for a French organisation, cedis for an
+             * English one. Both remain changeable in Settings.
+             */
+            'currency' => $data['language'] === 'fr' ? 'FCFA' : 'GHS',
         ]);
 
         /*

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToOrganisation;
+use App\Services\Documents\DocumentNumberService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -25,6 +26,7 @@ class Payment extends Model
      */
     protected $fillable = [
         'lease_id',
+        'receipt_number',
         'amount',
         'payment_date',
         'payment_method',
@@ -50,6 +52,50 @@ class Payment extends Model
             'is_opening_advance' => 'boolean',
             'is_opening_deposit' => 'boolean',
         ];
+    }
+
+    /**
+     * V1.0.50: every payment is numbered from the organisation's own
+     * counter the moment it is recorded.
+     *
+     * The receipt used to be numbered from the payment's database id,
+     * which is allocated across every organisation on the installation:
+     * a customer's first receipt read RCT-000142, and a tenant holding
+     * two of them could work out how much money the whole platform
+     * takes. Payments recorded before this release keep the number their
+     * receipt already carried — a reference that has been on a document
+     * must never change under it.
+     */
+    protected static function booted(): void
+    {
+        static::creating(
+            function (Payment $payment): void {
+                if (
+                    $payment->receipt_number !== null
+                    && $payment->receipt_number !== ''
+                ) {
+                    return;
+                }
+
+                $payment->receipt_number =
+                    app(DocumentNumberService::class)->next('RCT');
+            }
+        );
+    }
+
+    /**
+     * The number printed on this payment's receipt.
+     *
+     * Falls back to the pre-V1.0.50 shape for any row that somehow has
+     * none, so a receipt can always be rendered.
+     */
+    public function receiptNumber(): string
+    {
+        $number = trim((string) $this->receipt_number);
+
+        return $number !== ''
+            ? $number
+            : sprintf('RCT-%06d', (int) $this->id);
     }
 
     /**

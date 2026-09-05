@@ -51,7 +51,7 @@
                 {{ __('emails.receipt.receipt') }}
             </td>
             <td align="right" style="padding:10px 4px; color:#17201E; border-bottom:1px solid #DDE6E2;">
-                RCT-{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}
+                {{ $payment->receiptNumber() }}
             </td>
         </tr>
         <tr>

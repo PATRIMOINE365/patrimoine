@@ -13,6 +13,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
+use App\Services\AccessTokenService;
+use Illuminate\Http\Request;
 
 /**
  * V1.0.48: the sign-in email changes only through the three-step flow.
@@ -733,5 +735,59 @@ class EmailChangeFlowTest extends TestCase
         );
 
         return [$staff, $customerUser];
+    }
+
+    /**
+     * V1.0.50: the fresh token minted for the device that completed the
+     * change carries that device's name. It used to be named from the
+     * completing request alone, which for an API call is no name at all
+     * — "Unrecognised device" on the Devices list, for the one session
+     * that had just proved both mailboxes.
+     */
+    public function test_the_completing_device_keeps_its_name(): void
+    {
+        Mail::fake();
+
+        $user = $this->verifiedUser('old@example.test');
+
+        $token = app(AccessTokenService::class)
+            ->issue($user, Request::create('/api', 'POST'), 'Office laptop')
+            ->plainTextToken;
+
+        $this->withToken($token);
+
+        $changeToken = $this->openChange($user);
+
+        $this
+            ->postJson('/api/auth/email-change/verify-current', [
+                'token' => $changeToken,
+                'code' => $this->lastCurrentCode(),
+            ])
+            ->assertOk();
+
+        $proposedCode = null;
+
+        Mail::assertSent(
+            EmailChangeProposedCodeMail::class,
+            function (EmailChangeProposedCodeMail $mail) use (&$proposedCode): bool {
+                $proposedCode = $mail->code;
+
+                return true;
+            }
+        );
+
+        $this
+            ->postJson('/api/auth/email-change/verify-new', [
+                'token' => $changeToken,
+                'code' => $proposedCode,
+            ])
+            ->assertOk();
+
+        $this->assertSame(1, $user->tokens()->count());
+
+        $this->assertSame(
+            'Office laptop',
+            $user->tokens()->sole()->name
+        );
     }
 }

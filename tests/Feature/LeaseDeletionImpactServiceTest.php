@@ -902,4 +902,59 @@ class LeaseDeletionImpactServiceTest extends TestCase
 
         return DB::table($table)->count();
     }
+
+    /**
+     * V1.0.50: a lease that was never paid or invoiced has nothing to
+     * look for, and must find nothing. With both id lists empty the
+     * allocation query used to run unconstrained and return every
+     * allocation on the installation — every unpaid draft was
+     * undeletable for "crossing lease boundaries", and its preview
+     * listed other leases' (and other organisations') allocation ids.
+     */
+    public function test_a_lease_without_payments_sees_no_allocations_at_all(): void
+    {
+        $paid = $this->createLease();
+
+        $allocation =
+            $this->createLeasePaymentAllocation($paid);
+
+        $draft = $this->createLease();
+
+        $impact = app(
+            LeaseDeletionImpactService::class
+        )->calculate($draft);
+
+        $this->assertSame(
+            0,
+            $impact['indirect_dependencies']['payment_allocations']['count']
+        );
+
+        $this->assertSame(
+            [],
+            $impact['indirect_dependencies']['payment_allocations']['ids']
+        );
+
+        $this->assertSame(
+            [],
+            array_values(
+                array_filter(
+                    $impact['unknown_dependencies'],
+                    fn (array $dependency): bool =>
+                        $dependency['type'] === 'cross_lease_payment_allocation'
+                )
+            )
+        );
+
+        /*
+         * The paid lease still sees its own allocation.
+         */
+        $impact = app(
+            LeaseDeletionImpactService::class
+        )->calculate($paid);
+
+        $this->assertSame(
+            [$allocation->id],
+            $impact['indirect_dependencies']['payment_allocations']['ids']
+        );
+    }
 }

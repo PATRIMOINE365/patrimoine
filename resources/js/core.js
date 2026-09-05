@@ -1113,7 +1113,12 @@ export function initializeNativeValidationMessages() {
             // customError true and hide the real reason.
             input.setCustomValidity('');
 
-            if (input.checkValidity()) {
+            // Read the state rather than ask for it. checkValidity()
+            // fires `invalid` on the same control, which lands back in
+            // this listener, which fires it again — until the stack
+            // gave out with "Maximum call stack size exceeded" on every
+            // form that had a required field left empty.
+            if (! input.validity || input.validity.valid) {
                 return;
             }
 

@@ -30,6 +30,47 @@ class OwnerAccount extends Model
     ];
 
     /**
+     * V1.0.50: let go of an account that has nothing in it once the
+     * party owns nothing.
+     *
+     * Ownership opens an account so a landlord can always be paid; the
+     * reverse never happened, so a party whose only property was removed
+     * — or who should never have been an owner at all — stayed on the
+     * Owners list for good with an empty account. An account that has
+     * carried money, a payout or a bill is history and is kept.
+     */
+    public static function releaseIfUnused(int $partyId): bool
+    {
+        if (
+            BuildingOwner::query()
+                ->where('party_id', $partyId)
+                ->exists()
+        ) {
+            return false;
+        }
+
+        $account = static::query()
+            ->where('party_id', $partyId)
+            ->first();
+
+        if ($account === null) {
+            return false;
+        }
+
+        if (
+            $account->transactions()->exists()
+            || $account->payouts()->exists()
+            || OwnerExpenseBill::query()
+                ->where('owner_account_id', $account->id)
+                ->exists()
+        ) {
+            return false;
+        }
+
+        return (bool) $account->delete();
+    }
+
+    /**
      * Party represented by this OwnerAccount.
      */
     public function party(): BelongsTo

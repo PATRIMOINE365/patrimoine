@@ -15,6 +15,8 @@ return [
         'title' => 'Invoice :number',
         'subject' => 'Invoice :number - :organisation',
         'intro_before_number' => 'Please find attached your rent invoice',
+        'intro_before_number_expense' => 'Please find attached your expense invoice',
+        'intro_before_number_security_deposit_debt' => 'Please find attached your security deposit settlement invoice',
         'intro_for' => 'for',
         'invoice_amount' => 'Invoice Amount',
         'amount_paid' => 'Amount Paid',
@@ -209,6 +211,17 @@ return [
         'introduction' => 'This mailbox, :proposed, was proposed as the new sign-in address for a Patrimoine 365 account. Enter the code below to confirm you can receive email here and complete the change.',
         'expiry' => 'This code expires in :minutes minutes and can only be used once.',
         'ignore' => 'If you were not expecting this email, you can safely ignore it — nothing changes without this code.',
+    ],
+
+    'organisation_closed' => [
+        'subject' => 'Your Patrimoine 365 organisation :organisation has been closed',
+        'title' => 'Your organisation has been closed',
+        'preheader' => ':organisation was closed at your request.',
+        'heading' => 'Your organisation has been closed',
+        'greeting' => 'Hello :name,',
+        'introduction' => 'Your organisation :organisation was closed on :date, at your request, from its own Settings page.',
+        'what_happened' => 'Everything it held — parties, properties, leases, invoices, payments, documents and user accounts — has been deleted, and nobody can sign in to it any more. This message is your confirmation; there is nothing further to do.',
+        'not_you' => 'If you did not ask for this, write to :support straight away.',
     ],
 
     'email_change_completed' => [

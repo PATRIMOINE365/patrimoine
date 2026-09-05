@@ -40,6 +40,7 @@ class DocumentSequenceBackfill
         'EXP' => ['table' => 'invoices', 'column' => 'invoice_number'],
         'SDD' => ['table' => 'invoices', 'column' => 'invoice_number'],
         'OEB' => ['table' => 'owner_expense_bills', 'column' => 'bill_number'],
+        'RCT' => ['table' => 'payments', 'column' => 'receipt_number'],
         'WDR' => ['table' => 'withdrawal_receipts', 'column' => 'receipt_number'],
         'ADV' => ['table' => 'adjustment_vouchers', 'column' => 'voucher_number'],
         'SDV' => ['table' => 'security_deposit_settlements', 'column' => 'refund_voucher_number'],

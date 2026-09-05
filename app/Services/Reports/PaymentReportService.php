@@ -198,7 +198,11 @@ class PaymentReportService
         return [
             'id' => $payment->id,
 
-            'payment_number' => 'PAY-'.$payment->id,
+            /*
+             * V1.0.50: the receipt number, which is the organisation's
+             * own, rather than PAY- and the installation-wide id.
+             */
+            'payment_number' => $payment->receiptNumber(),
 
             'payment_date' => $payment->payment_date?->toDateString(),
 

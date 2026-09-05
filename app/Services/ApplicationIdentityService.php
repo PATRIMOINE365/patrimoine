@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\ApplicationSetting;
 use App\Models\Party;
+use App\Support\OrganisationContext;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -32,6 +33,22 @@ class ApplicationIdentityService
          * instead of preventing the application from rendering.
          */
         if (! Schema::hasTable('application_settings')) {
+            return null;
+        }
+
+        /*
+         * V1.0.50: no organisation bound, no organisation answered.
+         *
+         * OrganisationScope adds no constraint while nothing is bound, so
+         * this query used to return the FIRST organisation's settings to
+         * anybody at all: the public sign-in screen, the presentation
+         * endpoint before sign-in and the password-reset mail were all
+         * signing themselves with organisation 1's legal name. Callers
+         * that legitimately need an organisation's identity bind it
+         * first — every authenticated request does, and console work
+         * goes through OrganisationContext::runAs().
+         */
+        if (! OrganisationContext::bound()) {
             return null;
         }
 

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Mail\UserPasswordResetMail;
 use App\Models\User;
+use App\Support\OrganisationContext;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
@@ -52,37 +53,60 @@ class UserPasswordService
             return;
         }
 
-        $token = Password::broker()->createToken($user);
-
         /*
-         * Resolve the same Managing Organisation identity used by Patrimoine's
-         * other user-facing emails. Fall back to the product name before
-         * organisation setup is available.
+         * V1.0.50: the mail is signed by the USER'S organisation.
+         *
+         * Forgot-password is a guest route, so nothing is bound when it
+         * runs, and the identity service used to answer with whichever
+         * organisation came first — every customer's reset mail was
+         * titled "Reset your <organisation 1> password". Binding the
+         * user's own organisation for the duration also renders the mail
+         * in that organisation's language rather than the platform's.
          */
-        $organisation =
-            $this->identity->managingOrganisation();
+        $send = function () use ($user): void {
+            $token = Password::broker()->createToken($user);
 
-        $organisationName =
-            $organisation?->legal_name
-            ?? $organisation?->name
-            ?? 'Patrimoine';
+            /*
+             * Resolve the same Managing Organisation identity used by
+             * Patrimoine's other user-facing emails. Fall back to the
+             * product name before organisation setup is available.
+             */
+            $organisation =
+                $this->identity->managingOrganisation();
 
-        $url = url(
-            '/reset-password?token='
-            .urlencode($token)
-            .'&email='
-            .urlencode($user->email)
-        );
+            $organisationName =
+                $organisation?->legal_name
+                ?? $organisation?->name
+                ?? 'Patrimoine';
 
-        Mail::to($user->email)
-            ->locale($this->locale->language())
-            ->send(
-                new UserPasswordResetMail(
-                    user: $user,
-                    resetUrl: $url,
-                    organisationName: $organisationName
-                )
+            $url = url(
+                '/reset-password?token='
+                .urlencode($token)
+                .'&email='
+                .urlencode($user->email)
             );
+
+            Mail::to($user->email)
+                ->locale($this->locale->language())
+                ->send(
+                    new UserPasswordResetMail(
+                        user: $user,
+                        resetUrl: $url,
+                        organisationName: $organisationName
+                    )
+                );
+        };
+
+        if ($user->organisation_id === null) {
+            $send();
+
+            return;
+        }
+
+        OrganisationContext::runAs(
+            (int) $user->organisation_id,
+            $send
+        );
     }
 
     /**

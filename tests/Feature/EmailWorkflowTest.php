@@ -373,4 +373,35 @@ class EmailWorkflowTest extends TestCase
                 'Le locataire ne possède pas d’adresse e-mail.'
             );
     }
+
+    /**
+     * V1.0.50: an expense invoice is emailed as an expense invoice. The
+     * intro used to say "your rent invoice" for every type.
+     */
+    public function test_expense_invoice_email_does_not_call_itself_a_rent_invoice(): void
+    {
+        Mail::fake();
+
+        $context = $this->createContext();
+
+        $context['invoice']->update([
+            'type' => 'expense',
+            'invoice_number' => 'EXP-2026-000001',
+        ]);
+
+        $this->postJson(
+            "/api/invoices/{$context['invoice']->id}/send-email"
+        )
+            ->assertOk();
+
+        Mail::assertSent(
+            InvoiceMail::class,
+            function (InvoiceMail $mail): bool {
+                $html = $mail->render();
+
+                return str_contains($html, 'your expense invoice')
+                    && ! str_contains($html, 'rent invoice');
+            }
+        );
+    }
 }
