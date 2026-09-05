@@ -213,6 +213,17 @@ return [
         'ignore' => 'Si vous n\'attendiez pas cet e-mail, vous pouvez l\'ignorer en toute sécurité — rien ne change sans ce code.',
     ],
 
+    'organisation_deleted' => [
+        'subject' => 'Votre organisation Patrimoine 365 :organisation a été supprimée',
+        'title' => 'Votre organisation a été supprimée',
+        'preheader' => ':organisation a été supprimée par l’assistance Patrimoine 365.',
+        'heading' => 'Votre organisation a été supprimée',
+        'greeting' => 'Bonjour :name,',
+        'introduction' => 'Votre organisation :organisation a été définitivement supprimée le :date par l’assistance Patrimoine 365.',
+        'what_happened' => 'Tout ce qu’elle contenait — parties, biens, baux, factures, paiements, documents et comptes utilisateurs — a été retiré, et plus personne ne peut s’y connecter.',
+        'questions' => 'Si vous ne vous y attendiez pas, ou pour toute question, écrivez à :support.',
+    ],
+
     'organisation_closed' => [
         'subject' => 'Votre organisation Patrimoine 365 :organisation a été fermée',
         'title' => 'Votre organisation a été fermée',

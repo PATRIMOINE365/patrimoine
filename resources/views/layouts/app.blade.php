@@ -49,7 +49,7 @@
         content="#123d35"
     >
 
-    <script>
+    <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
         (() => {
             try {
                 const role =
@@ -75,7 +75,7 @@
 
     <x-presentation-language-bootstrap />
 
-    <script>
+    <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
         (() => {
             try {
                 const cachedUser =
@@ -1502,7 +1502,7 @@
 </x-drawer>
 
 
-    <script>
+    <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
         (() => {
             const root =
                 document.documentElement;

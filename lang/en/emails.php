@@ -213,6 +213,17 @@ return [
         'ignore' => 'If you were not expecting this email, you can safely ignore it — nothing changes without this code.',
     ],
 
+    'organisation_deleted' => [
+        'subject' => 'Your Patrimoine 365 organisation :organisation has been deleted',
+        'title' => 'Your organisation has been deleted',
+        'preheader' => ':organisation was deleted by Patrimoine 365 support.',
+        'heading' => 'Your organisation has been deleted',
+        'greeting' => 'Hello :name,',
+        'introduction' => 'Your organisation :organisation was permanently deleted on :date by Patrimoine 365 support.',
+        'what_happened' => 'Everything it held — parties, properties, leases, invoices, payments, documents and user accounts — has been removed, and nobody can sign in to it any more.',
+        'questions' => 'If you did not expect this, or need anything about it, write to :support.',
+    ],
+
     'organisation_closed' => [
         'subject' => 'Your Patrimoine 365 organisation :organisation has been closed',
         'title' => 'Your organisation has been closed',

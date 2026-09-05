@@ -75,7 +75,7 @@
         </div>
     </footer>
 
-    <script>
+    <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
         (function () {
             var toggle = document.getElementById('legal-language-toggle');
             var current = 'en';

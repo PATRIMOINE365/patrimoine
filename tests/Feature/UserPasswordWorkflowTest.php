@@ -819,4 +819,36 @@ class UserPasswordWorkflowTest extends TestCase
          */
         $this->assertFalse(OrganisationContext::bound());
     }
+
+    /**
+     * V1.0.51: a reset follows the product-wide password rule. Eight
+     * characters of anything used to be enough.
+     */
+    public function test_a_reset_refuses_a_weak_password(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'weak@example.test',
+        ]);
+
+        $token = Password::broker()->createToken($user);
+
+        $this
+            ->postJson('/api/auth/reset-password', [
+                'email' => 'weak@example.test',
+                'token' => $token,
+                'password' => 'aaaaaaaa',
+                'password_confirmation' => 'aaaaaaaa',
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['password']);
+
+        $this
+            ->postJson('/api/auth/reset-password', [
+                'email' => 'weak@example.test',
+                'token' => $token,
+                'password' => 'Str0ngCustomerPass',
+                'password_confirmation' => 'Str0ngCustomerPass',
+            ])
+            ->assertOk();
+    }
 }

@@ -19,6 +19,22 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.51',
+            'date' => '2026-09-05',
+            'title' => 'The administration console, hardened',
+            'changes' => [
+                'A message received in the console\'s Emails page can no longer run anything. The reader turned incoming HTML into text by handing it to the page itself, which quietly loaded and executed whatever the sender had put in it; it is parsed in an inert document now, so a hostile e-mail is just text.',
+                'Every page now carries browser hardening headers from the application itself — a content security policy bound to each request, and protection against framing, content sniffing and referrer leaks — on every host, including production, which sent none. PHP\'s version banner is gone from responses.',
+                'Passwords are one rule everywhere: at least twelve characters with upper and lower case letters and a number, and in production a check against known breach lists. Invitations, resets and changes accepted eight characters of anything; the console\'s own staff could be set up with "aaaaaaaa".',
+                'The console asks for your own password again before it suspends an organisation, revokes a licence, deactivates a customer\'s user or changes their sign-in address — and every route that asks for a password now counts the attempts, refuses after a few wrong ones and writes each failure to the platform\'s trail. That includes deleting an organisation, closing your own, deleting a lease and erasing a person.',
+                'Deactivating a user, sending a password reset, re-sending a verification and revoking a licence no longer fire on a single click. Each opens a short confirmation that asks why; the reason is kept in the audit trail.',
+                'Correcting a lease offers the organisation\'s own agents to choose from. The field took any number, so a party from another organisation could be saved onto a lease, and a number nobody owned answered with a server error.',
+                'The platform\'s own activity trail now lists every lease correction, every read of a customer\'s records and every read of a customer\'s lease; corrections used to appear only in the customer\'s log, and reads nowhere.',
+                'A platform staff session ends after an hour without use and never outlives a working day, whatever client signed in. Staff tokens followed the customer policy, and one minted through the API client was good for ninety days.',
+                'When platform staff delete an organisation, its administrators are told in writing, in their language. The Emails page answers a clear "not configured" instead of a server error where support mail is not set up, the console\'s own outgoing mail is rate-limited, and two console endpoints that still answered for the platform organisation now refuse it like the rest.',
+            ],
+        ],
+        [
             'version' => '1.0.50',
             'date' => '2026-09-05',
             'title' => 'What a full audit found, fixed',

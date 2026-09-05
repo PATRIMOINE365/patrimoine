@@ -8,7 +8,7 @@ use App\Services\Support\ResendMailboxService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use RuntimeException;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 /**
  * The platform support mailbox.
@@ -169,11 +169,22 @@ class AdminEmailController extends Controller
         ]);
     }
 
+    /**
+     * V1.0.51: the list degrades politely without a provider key; the
+     * reader and the composer used to throw a bare RuntimeException
+     * and answer 500. They answer 409 with the same sentence now.
+     */
     private function assertConfigured(): void
     {
         if (! $this->mailbox->configured()) {
-            throw new RuntimeException(
-                'Support mail is not configured in this environment.'
+            throw new HttpResponseException(
+                response()->json(
+                    [
+                        'message' => 'Support mail is not configured in this environment.',
+                        'configured' => false,
+                    ],
+                    409
+                )
             );
         }
     }

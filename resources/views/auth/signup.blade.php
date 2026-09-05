@@ -148,7 +148,7 @@
                     type="password"
                     autocomplete="new-password"
                     required
-                    minlength="10"
+                    minlength="12"
                     class="pm-input"
                 >
 
@@ -175,7 +175,7 @@
                     type="password"
                     autocomplete="new-password"
                     required
-                    minlength="10"
+                    minlength="12"
                     class="pm-input"
                 >
             </div>

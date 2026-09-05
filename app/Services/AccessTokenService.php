@@ -36,6 +36,17 @@ class AccessTokenService
     ): NewAccessToken {
         $clientType = $this->clientType($request);
 
+        /*
+         * V1.0.51: platform staff get the platform policy — an hour idle,
+         * a working day at most — whatever client type asked. A staff
+         * token minted with the API client type used to live ninety
+         * days; the console is the last place a credential should
+         * outlive the person's attention.
+         */
+        if ($user->isPlatformAdmin()) {
+            $clientType = PersonalAccessToken::CLIENT_PLATFORM;
+        }
+
         $policy = PersonalAccessToken::policyFor($clientType);
 
         $token = $user->createToken(

@@ -85,9 +85,7 @@ class RegistrationController extends Controller
                 'required',
                 'string',
                 'confirmed',
-                Password::min(10)
-                    ->letters()
-                    ->numbers(),
+                Password::defaults(),
             ],
 
             'language' => [

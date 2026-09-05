@@ -31,7 +31,7 @@ return [
         [
             'through' => '1.0.55',
             'date' => '2026-09-05',
-            'summary' => 'The block the next few releases are being written into. It stays out of the update log until a release moves past 1.0.50, because until then it has nothing to describe.',
+            'summary' => 'The administration console was hardened after a full audit: a received e-mail can no longer run anything in it, every page carries browser hardening headers from the application itself on every host, and one password rule — twelve characters, both cases, a digit — applies everywhere. The console asks for your own password again before it suspends, revokes, deactivates or moves an address, counts and refuses repeated wrong passwords everywhere one is asked, confirms every customer-facing action with a reason kept in the trail, offers an organisation\'s own agents when correcting a lease, lists every read and correction of customer data in its own trail, ends a staff session after an hour idle, and tells a customer\'s administrators in writing when their organisation is deleted.',
         ],
         [
             'through' => '1.0.50',

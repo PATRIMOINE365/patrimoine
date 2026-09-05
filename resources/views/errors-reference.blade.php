@@ -214,7 +214,7 @@
         </div>
     </footer>
 
-    <script>
+    <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
         /*
          * Filtering and paging both happen here rather than on the server:
          * the whole catalogue is already on the page, and somebody hunting

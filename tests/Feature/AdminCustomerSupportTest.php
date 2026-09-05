@@ -212,8 +212,13 @@ class AdminCustomerSupportTest extends TestCase
         $response->assertOk();
         $response->assertJsonPath('lease.rent_amount', 12000);
 
+        /*
+         * V1.0.51: the correction is written to BOTH trails; this is the
+         * customer's copy, the one that carries the before/after.
+         */
         $log = ActivityLog::withoutGlobalScopes()
             ->where('action', 'platform.lease.corrected')
+            ->where('organisation_id', $this->customer->id)
             ->latest('id')
             ->first();
 

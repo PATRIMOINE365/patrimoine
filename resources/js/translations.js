@@ -1763,7 +1763,7 @@ export const translations = {
             'Password',
 
         'signup.password_help':
-            'At least 10 characters, with letters and numbers.',
+            'At least 12 characters, with upper and lower case letters and a number.',
 
         'signup.password_confirmation':
             'Confirm password',
@@ -2917,6 +2917,8 @@ export const translations = {
 
         'devices.client_api':
             'Integration',
+        'devices.client_platform':
+            'Platform console',
 
         'devices.expiry_note':
             'A device that goes unused signs itself out. A browser does so after half a day, the mobile app after two months, and every device has to sign in again eventually however often it is used.',
@@ -6524,7 +6526,7 @@ export const translations = {
             'Mot de passe',
 
         'signup.password_help':
-            'Au moins 10 caract\u00e8res, avec des lettres et des chiffres.',
+            'Au moins 12 caractères, avec majuscules, minuscules et un chiffre.',
 
         'signup.password_confirmation':
             'Confirmez le mot de passe',
@@ -7678,6 +7680,8 @@ export const translations = {
 
         'devices.client_api':
             'Intégration',
+        'devices.client_platform':
+            'Console plateforme',
 
         'devices.expiry_note':
             'Un appareil inutilisé se déconnecte de lui-même : un navigateur au bout d\'une demi-journée, l\'application mobile au bout de deux mois. Et quelle que soit la fréquence d\'utilisation, chaque appareil doit tôt ou tard se reconnecter.',

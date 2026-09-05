@@ -22,6 +22,8 @@ use Illuminate\Validation\Rule;
  */
 class AdminLicenseController extends Controller
 {
+    use Concerns\ReentersPassword;
+
     /**
      * Issue (or extend, by issuing anew) a licence.
      */
@@ -102,6 +104,10 @@ class AdminLicenseController extends Controller
         Request $request,
         PlatformAuditService $audit
     ): JsonResponse {
+        $validated = $request->validate([
+            'reason' => ['nullable', 'string', 'max:255'],
+        ]);
+
         $license = License::query()
             ->whereNull('revoked_at')
             ->findOrFail($licenseId);
@@ -109,6 +115,16 @@ class AdminLicenseController extends Controller
         $organisation = Organisation::query()
             ->customers()
             ->findOrFail($license->organisation_id);
+
+        /*
+         * V1.0.51: revoking a licence downgrades a paying customer on
+         * the spot; it asks for the administrator's own password.
+         */
+        $this->requirePasswordReentry(
+            $request,
+            'license.revoke',
+            $organisation
+        );
 
         $license->forceFill([
             'revoked_at' => now(),
@@ -124,6 +140,7 @@ class AdminLicenseController extends Controller
             entityLabel: $license->plan,
             metadata: [
                 'plan' => $license->plan,
+                'reason' => $validated['reason'] ?? null,
             ],
         );
 

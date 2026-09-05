@@ -16,7 +16,7 @@
 |
 --}}
 
-<script>
+<script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
     (() => {
         const storageKey = 'patrimoine.theme';
 

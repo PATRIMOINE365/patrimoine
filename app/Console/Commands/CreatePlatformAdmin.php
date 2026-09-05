@@ -94,7 +94,7 @@ class CreatePlatformAdmin extends Command
                 'password' => [
                     'required',
                     'confirmed',
-                    Password::min(10)->letters()->numbers(),
+                    Password::defaults(),
                 ],
             ]
         );

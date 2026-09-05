@@ -22,6 +22,8 @@ use Illuminate\Validation\ValidationException;
  */
 class AdminSupportController extends Controller
 {
+    use Concerns\ReentersPassword;
+
     /**
      * Re-send a customer user's verification email.
      */
@@ -31,6 +33,10 @@ class AdminSupportController extends Controller
         RegistrationService $registration,
         PlatformAuditService $audit
     ): JsonResponse {
+        $validated = $request->validate([
+            'reason' => ['nullable', 'string', 'max:255'],
+        ]);
+
         [$user, $organisation] = $this->customerUser($userId);
 
         if ($user->email_verified_at !== null) {
@@ -49,6 +55,9 @@ class AdminSupportController extends Controller
             entityType: 'user',
             entityId: $user->id,
             entityLabel: $user->name,
+            metadata: [
+                'reason' => $validated['reason'] ?? null,
+            ],
         );
 
         return response()->json([
@@ -127,6 +136,7 @@ class AdminSupportController extends Controller
     ): JsonResponse {
         $validated = $request->validate([
             'is_active' => ['required', 'boolean'],
+            'reason' => ['nullable', 'string', 'max:255'],
         ]);
 
         [$user, $organisation] = $this->customerUser($userId);
@@ -134,6 +144,16 @@ class AdminSupportController extends Controller
         $activating = (bool) $validated['is_active'];
 
         if (! $activating) {
+            /*
+             * V1.0.51: locking a customer out asks for the
+             * administrator's own password, and a reason that is kept.
+             */
+            $this->requirePasswordReentry(
+                $request,
+                'user.deactivate',
+                $organisation
+            );
+
             /*
              * Never strand a customer: their last active administrator
              * cannot be deactivated from the console.
@@ -190,6 +210,9 @@ class AdminSupportController extends Controller
             entityType: 'user',
             entityId: $user->id,
             entityLabel: $user->name,
+            metadata: [
+                'reason' => $validated['reason'] ?? null,
+            ],
         );
 
         return response()->json([
@@ -208,6 +231,10 @@ class AdminSupportController extends Controller
         UserPasswordService $passwords,
         PlatformAuditService $audit
     ): JsonResponse {
+        $validated = $request->validate([
+            'reason' => ['nullable', 'string', 'max:255'],
+        ]);
+
         [$user, $organisation] = $this->customerUser($userId);
 
         $passwords->sendResetLink($user->email);
@@ -220,6 +247,9 @@ class AdminSupportController extends Controller
             entityType: 'user',
             entityId: $user->id,
             entityLabel: $user->name,
+            metadata: [
+                'reason' => $validated['reason'] ?? null,
+            ],
         );
 
         return response()->json([
@@ -429,9 +459,20 @@ class AdminSupportController extends Controller
     ): JsonResponse {
         $validated = $request->validate([
             'email' => ['required', 'email', 'max:255'],
+            'reason' => ['nullable', 'string', 'max:255'],
         ]);
 
         [$user, $organisation] = $this->customerUser($userId);
+
+        /*
+         * V1.0.51: moving somebody's sign-in address is the account-
+         * takeover lever; it asks for the administrator's own password.
+         */
+        $this->requirePasswordReentry(
+            $request,
+            'user.email_change',
+            $organisation
+        );
 
         $previousEmail = $user->email;
 
@@ -477,6 +518,7 @@ class AdminSupportController extends Controller
             metadata: [
                 'from' => $previousEmail,
                 'to' => $user->email,
+                'reason' => $validated['reason'] ?? null,
             ],
         );
 

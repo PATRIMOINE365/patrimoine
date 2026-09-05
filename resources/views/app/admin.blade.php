@@ -582,9 +582,20 @@
                 preserved and reactivation is a single click.
             </p>
 
+            <div
+                id="admin-suspend-error"
+                class="pm-auth-error hidden rounded-lg px-4 py-3 text-sm"
+            ></div>
+
             <div>
                 <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-suspend-reason">Reason (internal)</label>
                 <input id="admin-suspend-reason" type="text" class="pm-input">
+            </div>
+
+            {{-- V1.0.51: a customer outage asks for your own password. --}}
+            <div>
+                <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-suspend-password">Your password</label>
+                <input id="admin-suspend-password" type="password" autocomplete="current-password" class="pm-input" required>
             </div>
         </div>
 
@@ -770,12 +781,12 @@
 
                 <div>
                     <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-password-new">New password</label>
-                    <input id="admin-password-new" type="password" autocomplete="new-password" minlength="10" class="pm-input" required>
+                    <input id="admin-password-new" type="password" autocomplete="new-password" minlength="12" class="pm-input" required>
                 </div>
 
                 <div>
                     <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-password-confirm">Confirm new password</label>
-                    <input id="admin-password-confirm" type="password" autocomplete="new-password" minlength="10" class="pm-input" required>
+                    <input id="admin-password-confirm" type="password" autocomplete="new-password" minlength="12" class="pm-input" required>
                 </div>
 
                 <p class="text-xs text-[var(--pm-text-muted)]">
@@ -1113,11 +1124,69 @@
                 <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-email-change-input">New email address</label>
                 <input id="admin-email-change-input" type="email" maxlength="255" class="pm-input" required>
             </div>
+
+            <div>
+                <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-email-change-reason">Reason (kept in the audit trail)</label>
+                <input id="admin-email-change-reason" type="text" maxlength="255" class="pm-input">
+            </div>
+
+            {{-- V1.0.51: the takeover lever asks for your own password. --}}
+            <div>
+                <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-email-change-password">Your password</label>
+                <input id="admin-email-change-password" type="password" autocomplete="current-password" class="pm-input" required>
+            </div>
         </div>
 
         <x-drawer-footer>
             <button id="admin-email-change-cancel" type="button" class="pm-button-secondary">Cancel</button>
             <button id="admin-email-change-submit" type="submit" class="pm-button-primary">Change email</button>
+        </x-drawer-footer>
+    </form>
+</x-drawer>
+
+{{-- ===================== Confirmation drawer (V1.0.51) ===================== --}}
+{{--
+    Deactivating a user, sending a password reset, re-sending a
+    verification and revoking a licence fired on the click itself. They
+    ask here first: a reason that is kept, and for the actions that lock
+    somebody out or downgrade them, the administrator's own password.
+--}}
+<x-drawer
+    id="admin-confirm-modal"
+    backdrop-id="admin-confirm-backdrop"
+    width="sm"
+>
+    <x-drawer-header
+        close-id="admin-confirm-close"
+        close-label="Close"
+    >
+        <x-slot:title><span id="admin-confirm-title">Confirm</span></x-slot:title>
+        <x-slot:description>
+            <span id="admin-confirm-description"></span>
+        </x-slot:description>
+    </x-drawer-header>
+
+    <form id="admin-confirm-form" class="flex min-h-0 flex-1 flex-col">
+        <div class="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6">
+            <div
+                id="admin-confirm-error"
+                class="pm-auth-error hidden rounded-lg px-4 py-3 text-sm"
+            ></div>
+
+            <div>
+                <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-confirm-reason">Reason (kept in the audit trail)</label>
+                <input id="admin-confirm-reason" type="text" maxlength="255" class="pm-input" required>
+            </div>
+
+            <div id="admin-confirm-password-field">
+                <label class="pm-field-label mb-2 block text-sm font-medium" for="admin-confirm-password">Your password</label>
+                <input id="admin-confirm-password" type="password" autocomplete="current-password" class="pm-input">
+            </div>
+        </div>
+
+        <x-drawer-footer>
+            <button id="admin-confirm-cancel" type="button" class="pm-button-secondary">Cancel</button>
+            <button id="admin-confirm-submit" type="submit" class="pm-button-danger">Confirm</button>
         </x-drawer-footer>
     </form>
 </x-drawer>

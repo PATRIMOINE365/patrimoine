@@ -10,6 +10,7 @@ use Dompdf\Dompdf;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
@@ -49,6 +50,28 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        /*
+         * V1.0.51: one password rule for the whole product.
+         *
+         * Invitations, resets and changes accepted eight characters of
+         * anything — a platform staff account was set up with
+         * "aaaaaaaa" during the console audit — while signup asked for
+         * ten with letters and numbers and the bootstrap command for
+         * twelve. Every path now reads this one definition: twelve
+         * characters, both cases, a digit, and in production a check
+         * against the public breach corpus.
+         */
+        Password::defaults(function (): Password {
+            $rule = Password::min(12)
+                ->letters()
+                ->mixedCase()
+                ->numbers();
+
+            return app()->isProduction()
+                ? $rule->uncompromised()
+                : $rule;
+        });
+
         /*
          * V1.0.44: an access token is a device.
          *

@@ -10,6 +10,7 @@ use App\Models\Organisation;
 use App\Models\Party;
 use App\Models\Payment;
 use App\Models\Unit;
+use App\Services\ActivityLogService;
 use App\Support\OrganisationContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -42,8 +43,17 @@ class AdminOrganisationDataController extends Controller
 
     public function index(
         Request $request,
-        Organisation $organisation
+        int $organisationId,
+        ActivityLogService $activityLog
     ): JsonResponse {
+        /*
+         * V1.0.51: through customers(), so the platform organisation is
+         * refused here exactly as it is everywhere else in the console.
+         */
+        $organisation = Organisation::query()
+            ->customers()
+            ->findOrFail($organisationId);
+
         $validated = $request->validate([
             'dataset' => ['nullable', Rule::in(self::DATASETS)],
             'search' => ['nullable', 'string', 'max:191'],
@@ -55,6 +65,30 @@ class AdminOrganisationDataController extends Controller
         $payload = OrganisationContext::runAs(
             (int) $organisation->id,
             fn (): array => $this->load($dataset, $search)
+        );
+
+        /*
+         * V1.0.51: a read of a customer's records — up to five hundred
+         * parties with their e-mail addresses and telephone numbers —
+         * used to leave no trace anywhere. It is written to the
+         * platform's own trail: which dataset, which search, how many
+         * rows came back.
+         */
+        $activityLog->record(
+            action: 'platform.records_viewed',
+            actor: $request->user(),
+            request: $request,
+            entityType: 'organisation',
+            entityId: (int) $organisation->id,
+            entityLabel: $organisation->name,
+            metadata: [
+                'customer_organisation_id' => (int) $organisation->id,
+                'customer_organisation' => $organisation->name,
+                'dataset' => $dataset,
+                'search' => $search === '' ? null : $search,
+                'rows' => count($payload),
+            ],
+            organisationId: (int) $request->user()->organisation_id,
         );
 
         return response()->json([

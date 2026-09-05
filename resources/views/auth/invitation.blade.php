@@ -57,7 +57,7 @@
                 id="invitation-password"
                 type="password"
                 autocomplete="new-password"
-                minlength="8"
+                minlength="12"
                 required
                 class="pm-input"
             >
@@ -77,7 +77,7 @@
                 id="invitation-password-confirmation"
                 type="password"
                 autocomplete="new-password"
-                minlength="8"
+                minlength="12"
                 required
                 class="pm-input"
             >

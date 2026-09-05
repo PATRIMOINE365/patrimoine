@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
  */
 class AdminOrganisationStatusController extends Controller
 {
+    use Concerns\ReentersPassword;
+
     /**
      * Suspend a customer organisation.
      */
@@ -30,6 +32,16 @@ class AdminOrganisationStatusController extends Controller
             ->customers()
             ->where('status', 'active')
             ->findOrFail($organisationId);
+
+        /*
+         * V1.0.51: suspension is a customer outage; it asks for the
+         * administrator's own password.
+         */
+        $this->requirePasswordReentry(
+            $request,
+            'organisation.suspend',
+            $organisation
+        );
 
         $organisation->update(['status' => 'suspended']);
 

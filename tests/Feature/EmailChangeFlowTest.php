@@ -556,6 +556,8 @@ class EmailChangeFlowTest extends TestCase
         $this
             ->patchJson("/api/admin/users/{$customerUser->id}/email", [
                 'email' => 'recovered@example.test',
+                'current_password' => 'password',
+                'reason' => 'Verified by telephone',
             ])
             ->assertOk();
 

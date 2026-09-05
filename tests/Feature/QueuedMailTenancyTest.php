@@ -78,6 +78,12 @@ class QueuedMailTenancyTest extends TestCase
          * it goes in the same breath as the deletion or not at all.
          */
         \App\Mail\OrganisationClosedMail::class,
+
+        /*
+         * V1.0.51: the notice to a customer whose organisation platform
+         * staff deleted — same reasoning as the closure confirmation.
+         */
+        \App\Mail\OrganisationDeletedMail::class,
     ];
 
     /**

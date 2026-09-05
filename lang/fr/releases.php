@@ -15,6 +15,22 @@ return [
 
     'entries' => [
         [
+            'version' => '1.0.51',
+            'date' => '2026-09-05',
+            'title' => 'La console d\'administration, renforcée',
+            'changes' => [
+                'Un message reçu dans la page E-mails de la console ne peut plus rien exécuter. Le lecteur transformait le HTML entrant en texte en le confiant à la page elle-même, qui chargeait et exécutait discrètement ce que l\'expéditeur y avait mis ; il est désormais analysé dans un document inerte, si bien qu\'un e-mail hostile n\'est que du texte.',
+                'Chaque page porte désormais des en-têtes de protection du navigateur émis par l\'application elle-même — une politique de sécurité du contenu liée à chaque requête, et une protection contre l\'encadrement, le reniflage de contenu et les fuites de référent — sur chaque hôte, y compris la production, qui n\'en envoyait aucun. La bannière de version de PHP a disparu des réponses.',
+                'Les mots de passe suivent une seule règle partout : au moins douze caractères avec majuscules, minuscules et un chiffre, et en production une vérification contre les listes de fuites connues. Invitations, réinitialisations et changements acceptaient huit caractères quelconques ; le personnel même de la console pouvait être créé avec « aaaaaaaa ».',
+                'La console redemande votre propre mot de passe avant de suspendre une organisation, de révoquer une licence, de désactiver l\'utilisateur d\'un client ou de changer son adresse de connexion — et chaque route qui demande un mot de passe compte désormais les tentatives, refuse après quelques erreurs et écrit chaque échec dans le journal de la plateforme. Cela inclut la suppression d\'une organisation, la fermeture de la vôtre, la suppression d\'un bail et l\'effacement d\'une personne.',
+                'Désactiver un utilisateur, envoyer une réinitialisation de mot de passe, renvoyer une vérification et révoquer une licence ne se déclenchent plus d\'un seul clic. Chacune ouvre une courte confirmation qui demande pourquoi ; la raison est conservée dans le journal d\'audit.',
+                'La correction d\'un bail propose les agents de l\'organisation elle-même. Le champ acceptait n\'importe quel nombre, si bien qu\'une partie d\'une autre organisation pouvait être enregistrée sur un bail, et qu\'un numéro n\'appartenant à personne répondait par une erreur serveur.',
+                'Le journal d\'activité propre à la plateforme liste désormais chaque correction de bail, chaque lecture des enregistrements d\'un client et chaque lecture d\'un bail ; les corrections n\'apparaissaient que dans le journal du client, et les lectures nulle part.',
+                'Une session du personnel de la plateforme se termine après une heure sans utilisation et ne dépasse jamais une journée de travail, quel que soit le client de connexion. Les jetons du personnel suivaient la politique des clients, et l\'un d\'eux, créé via le client API, valait quatre-vingt-dix jours.',
+                'Quand le personnel de la plateforme supprime une organisation, ses administrateurs en sont informés par écrit, dans leur langue. La page E-mails répond par un « non configuré » clair au lieu d\'une erreur serveur là où le courrier d\'assistance n\'est pas configuré, le courrier sortant de la console est limité en débit, et deux points d\'accès qui répondaient encore pour l\'organisation plateforme la refusent désormais comme les autres.',
+            ],
+        ],
+        [
             'version' => '1.0.50',
             'date' => '2026-09-05',
             'title' => 'Ce qu\'un audit complet a trouvé, corrigé',

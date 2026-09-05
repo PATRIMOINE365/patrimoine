@@ -31,6 +31,12 @@ class PersonalAccessToken extends SanctumPersonalAccessToken
     public const CLIENT_API = 'api';
 
     /**
+     * V1.0.51: not a client that asks for it — the policy every token
+     * minted for platform staff is stamped with, whatever client asked.
+     */
+    public const CLIENT_PLATFORM = 'platform';
+
+    /**
      * @var list<string>
      */
     protected $fillable = [

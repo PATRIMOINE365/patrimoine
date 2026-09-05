@@ -23,7 +23,7 @@ return [
         [
             'through' => '1.0.55',
             'date' => '2026-09-05',
-            'summary' => 'Le bloc dans lequel s\'écrivent les prochaines versions. Il reste hors du journal des mises à jour tant qu\'une version n\'a pas dépassé la 1.0.50, car jusque-là il n\'a rien à décrire.',
+            'summary' => 'La console d\'administration a été renforcée après un audit complet : un e-mail reçu ne peut plus rien y exécuter, chaque page porte des en-têtes de protection du navigateur émis par l\'application elle-même sur chaque hôte, et une seule règle de mot de passe — douze caractères, majuscules et minuscules, un chiffre — s\'applique partout. La console redemande votre propre mot de passe avant de suspendre, révoquer, désactiver ou déplacer une adresse, compte et refuse les mots de passe erronés répétés partout où l\'un est demandé, confirme chaque action visible par le client avec une raison conservée dans le journal, propose les agents de l\'organisation elle-même pour corriger un bail, liste chaque lecture et correction des données d\'un client dans son propre journal, termine une session du personnel après une heure d\'inactivité, et prévient par écrit les administrateurs d\'un client lorsque leur organisation est supprimée.',
         ],
         [
             'through' => '1.0.50',

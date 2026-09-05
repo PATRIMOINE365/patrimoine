@@ -8,6 +8,7 @@ use App\Http\Middleware\AuthenticateSignedDocumentAccess;
 use App\Http\Middleware\EnsureUserHasCapability;
 use App\Http\Middleware\EnsureLicenseFeature;
 use App\Http\Middleware\EnsurePlatformAdmin;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetOrganisationContext;
 use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
@@ -61,6 +62,15 @@ return Application::configure(basePath: dirname(__DIR__))
          */
         $middleware->append(
             ApplyApplicationLocale::class
+        );
+
+        /*
+         * V1.0.51: hardening headers and a nonce-bound Content-Security-
+         * Policy on every response, so the console (and everything else)
+         * is protected the same way on every host it runs on.
+         */
+        $middleware->append(
+            SecurityHeaders::class
         );
 
         /*

@@ -402,7 +402,7 @@ Route::middleware('auth:sanctum')->group(
         Route::post(
             'auth/change-password',
             [PasswordController::class, 'change']
-        );
+        )->middleware('throttle:10,1,change-password');
     }
 );
 
@@ -689,7 +689,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::delete(
                     'leases/{lease}',
                     [LeaseController::class, 'destroy']
-                );
+                )->middleware('throttle:10,1,lease-delete');
 
                 /*
                  * Resending an existing business document is an explicit
@@ -1467,7 +1467,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::delete(
                     'organisation',
                     [OrganisationDeletionController::class, 'destroy']
-                );
+                )->middleware('throttle:5,1,close-organisation');
 
                 /*
                  * V1.0.34: answering a subject access request.
@@ -1489,7 +1489,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::post(
                     'parties/{party}/erase',
                     [PersonalDataController::class, 'erase']
-                );
+                )->middleware('throttle:5,1,erase-party');
 
                 /*
                  * V1.0.7 Registry backup & idempotent restore.
@@ -1583,22 +1583,28 @@ Route::middleware(['auth:sanctum', 'platform.admin'])
         Route::post(
             'licenses/{license}/revoke',
             [AdminLicenseController::class, 'revoke']
-        );
+        )->middleware('throttle:10,1,console-revoke');
 
         Route::post(
             'organisations/{organisation}/suspend',
             [AdminOrganisationStatusController::class, 'suspend']
-        );
+        )->middleware('throttle:10,1,console-suspend');
 
         Route::post(
             'organisations/{organisation}/reactivate',
             [AdminOrganisationStatusController::class, 'reactivate']
         );
 
+        /*
+         * V1.0.51: every route that asks for the administrator's own
+         * password again is throttled in its own bucket. The password
+         * is the one safeguard a copied token cannot carry, and it was
+         * open to unlimited guessing.
+         */
         Route::delete(
             'organisations/{organisation}',
             [AdminOrganisationDeletionController::class, 'destroy']
-        );
+        )->middleware('throttle:5,1,console-delete');
 
         Route::post(
             'users/{user}/resend-verification',
@@ -1608,7 +1614,7 @@ Route::middleware(['auth:sanctum', 'platform.admin'])
         Route::patch(
             'users/{user}/active',
             [AdminSupportController::class, 'setActive']
-        );
+        )->middleware('throttle:10,1,console-user-active');
 
         Route::post(
             'users/{user}/password-reset',
@@ -1634,7 +1640,7 @@ Route::middleware(['auth:sanctum', 'platform.admin'])
         Route::patch(
             'users/{user}/email',
             [AdminSupportController::class, 'changeEmail']
-        );
+        )->middleware('throttle:10,1,console-user-email');
 
         /*
         |------------------------------------------------------------------
@@ -1664,7 +1670,7 @@ Route::middleware(['auth:sanctum', 'platform.admin'])
         Route::post(
             'emails',
             [AdminEmailController::class, 'store']
-        );
+        )->middleware('throttle:30,60,console-send-mail');
 
         /*
         |------------------------------------------------------------------

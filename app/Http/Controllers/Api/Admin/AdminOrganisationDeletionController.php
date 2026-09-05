@@ -8,8 +8,12 @@ use App\Services\ActivityLogService;
 use App\Services\PlatformOrganisationDeletionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Mail\OrganisationDeletedMail;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 /**
  * The most dangerous button on the platform: permanent destruction of
@@ -27,6 +31,8 @@ use Illuminate\Validation\ValidationException;
  */
 class AdminOrganisationDeletionController extends Controller
 {
+    use Concerns\ReentersPassword;
+
     /**
      * Permanently destroy a customer organisation.
      */
@@ -43,22 +49,21 @@ class AdminOrganisationDeletionController extends Controller
 
         $admin = $request->user();
 
-        if (
-            ! Hash::check(
-                $validated['password'],
-                $admin->password
-            )
-        ) {
-            throw ValidationException::withMessages([
-                'password' => [
-                    __('api.auth.password_confirmation_failed'),
-                ],
-            ]);
-        }
-
         $organisation = Organisation::query()
             ->customers()
             ->findOrFail($organisationId);
+
+        /*
+         * V1.0.51: a wrong password is written to the platform trail
+         * and the route is throttled — a copied token could otherwise
+         * guess it at leisure.
+         */
+        $this->requirePasswordReentry(
+            $request,
+            'organisation.delete',
+            $organisation,
+            'password'
+        );
 
         if ($organisation->status !== 'suspended') {
             throw ValidationException::withMessages([
@@ -78,6 +83,26 @@ class AdminOrganisationDeletionController extends Controller
 
         $deletedName = $organisation->name;
 
+        /*
+         * V1.0.51: the people whose data is about to go are told, in
+         * their language. Collected before the rows are destroyed;
+         * sent after, and a mail that fails is reported, never a 500
+         * for a deletion that has already happened.
+         */
+        $administrators = User::withoutGlobalScopes()
+            ->where('organisation_id', $organisation->id)
+            ->where('role', 'administrator')
+            ->where('is_active', true)
+            ->whereNotNull('email_verified_at')
+            ->get(['name', 'email']);
+
+        $language = (string) (
+            DB::table('application_settings')
+                ->where('organisation_id', $organisation->id)
+                ->value('language')
+            ?? 'en'
+        );
+
         $deleted = $deletion->destroy($organisation);
 
         $activityLog->record(
@@ -93,6 +118,22 @@ class AdminOrganisationDeletionController extends Controller
             ],
             organisationId: (int) $admin->organisation_id,
         );
+
+        foreach ($administrators as $administrator) {
+            try {
+                Mail::to($administrator->email)
+                    ->locale($language)
+                    ->send(
+                        new OrganisationDeletedMail(
+                            organisationName: $deletedName,
+                            administratorName: (string) $administrator->name,
+                            deletedOn: now()->toDateString(),
+                        )
+                    );
+            } catch (Throwable $exception) {
+                report($exception);
+            }
+        }
 
         return response()->json([
             'message' => 'Organisation permanently deleted.',

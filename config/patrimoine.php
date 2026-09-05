@@ -29,7 +29,7 @@ return [
     |
     */
 
-    'release' => '1.0.50',
+    'release' => '1.0.51',
 
     /*
     |--------------------------------------------------------------------------
@@ -159,6 +159,17 @@ return [
         'api' => [
             'idle' => (int) env('TOKEN_IDLE_API', 60 * 24 * 30),
             'absolute' => (int) env('TOKEN_ABSOLUTE_API', 60 * 24 * 90),
+        ],
+
+        /*
+         * V1.0.51: platform staff, whatever client they signed in from.
+         * A console session that idles for an hour ends; none lives past
+         * a working day. The console audit minted a staff token through
+         * the API client type and found it good for ninety days.
+         */
+        'platform' => [
+            'idle' => (int) env('TOKEN_IDLE_PLATFORM', 60),
+            'absolute' => (int) env('TOKEN_ABSOLUTE_PLATFORM', 60 * 12),
         ],
 
         /*

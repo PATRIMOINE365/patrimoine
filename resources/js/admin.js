@@ -83,6 +83,16 @@ let currentDataset = 'leases';
 let editingLease = null;
 let leaseFieldGroups = { safe: [], posted_impact: [] };
 
+/**
+ * V1.0.51: the agents of the organisation whose lease is being
+ * corrected, as options. The agent used to be a text box for a number,
+ * which is how a party from another organisation ended up on a lease.
+ */
+let leaseAgentChoices = [];
+
+/** The click that is waiting on the confirmation drawer, if any. */
+let pendingConfirmation = null;
+
 const SECTIONS = [
     'dashboard',
     'users',
@@ -695,10 +705,17 @@ function stripHtml(html) {
         return '';
     }
 
-    const container = document.createElement('div');
-    container.innerHTML = String(html);
+    /*
+     * V1.0.51: parsed in a detached document. Assigning innerHTML on an
+     * element of THIS document — even one never attached to the page —
+     * still loads the markup's resources and runs their handlers: an
+     * <img onerror> inside a received message ran in the console with
+     * the staff member's token. A DOMParser document has no browsing
+     * context, so nothing loads, nothing runs, and the text is the text.
+     */
+    const parsed = new DOMParser().parseFromString(String(html), 'text/html');
 
-    return (container.textContent || '').trim();
+    return (parsed.body?.textContent || '').trim();
 }
 
 async function openCompose(prefill) {
@@ -971,6 +988,14 @@ async function openLeaseCorrection(leaseId) {
     editingLease = data.lease;
     leaseFieldGroups = data.fields;
 
+    leaseAgentChoices = [
+        { value: '', label: '— no agent —' },
+        ...(data.agents ?? []).map((agent) => ({
+            value: String(agent.id),
+            label: `${agent.name} (#${agent.id})`,
+        })),
+    ];
+
     document.getElementById('admin-lease-error')?.classList.add('hidden');
     document.getElementById('admin-lease-reason').value = '';
 
@@ -1013,13 +1038,25 @@ function leaseFieldSection(heading, fields, lease, risky) {
     const inputs = fields.map((field) => {
         const label = LEASE_FIELD_LABELS[field] ?? field;
         const value = lease[field] ?? '';
-        const choices = LEASE_FIELD_CHOICES[field];
+        const choices = field === 'agent_id'
+            ? leaseAgentChoices
+            : LEASE_FIELD_CHOICES[field];
 
+        /*
+         * A choice is either a plain string (the enum fields) or a
+         * {value, label} pair (the agents).
+         */
         const control = choices
             ? `<select id="admin-lease-field-${field}" class="pm-input">
-                   ${choices.map((choice) => `
-                       <option value="${escapeHtml(choice)}"${String(value) === choice ? ' selected' : ''}>${escapeHtml(choice)}</option>
-                   `).join('')}
+                   ${choices.map((choice) => {
+                       const option = typeof choice === 'string'
+                           ? { value: choice, label: choice }
+                           : choice;
+
+                       return `
+                           <option value="${escapeHtml(option.value)}"${String(value) === option.value ? ' selected' : ''}>${escapeHtml(option.label)}</option>
+                       `;
+                   }).join('')}
                </select>`
             : `<input
                    id="admin-lease-field-${field}"
@@ -1180,8 +1217,20 @@ async function submitSupportEmailChange() {
                 email: document
                     .getElementById('admin-email-change-input')
                     .value.trim(),
+                /*
+                 * V1.0.51: moving a sign-in address is the takeover
+                 * lever; it asks for the administrator's own password.
+                 */
+                current_password: document
+                    .getElementById('admin-email-change-password')
+                    .value,
+                reason: document
+                    .getElementById('admin-email-change-reason')
+                    .value.trim() || null,
             }
         );
+
+        document.getElementById('admin-email-change-password').value = '';
 
         closeDrawer('admin-email-change-modal');
 
@@ -1659,12 +1708,21 @@ async function submitSuspend(event) {
 
     clearError();
 
+    const drawerError = document.getElementById('admin-suspend-error');
+
+    drawerError?.classList.add('hidden');
+
     try {
         await adminRequest(
             `/api/admin/organisations/${currentOrganisation.id}/suspend`,
             'POST',
             {
                 reason: document.getElementById('admin-suspend-reason').value.trim() || null,
+                /*
+                 * V1.0.51: suspension asks for the administrator's own
+                 * password; a wrong one keeps the drawer open.
+                 */
+                current_password: document.getElementById('admin-suspend-password').value,
             }
         );
 
@@ -1672,10 +1730,88 @@ async function submitSuspend(event) {
 
         await openOrganisation(currentOrganisation.id);
     } catch (error) {
-        closeDrawer('admin-suspend-modal');
+        if (drawerError) {
+            drawerError.textContent =
+                error instanceof Error ? error.message : 'Unable to suspend.';
 
-        showError(error instanceof Error ? error.message : 'Unable to suspend.');
+            drawerError.classList.remove('hidden');
+        }
+    } finally {
+        document.getElementById('admin-suspend-password').value = '';
     }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Confirmation drawer (V1.0.51)
+|--------------------------------------------------------------------------
+|
+| Deactivating a customer's user, sending them a password reset,
+| re-sending their verification and revoking a licence used to fire on
+| the click itself — one slip locked a customer out. Every one of them
+| now goes through this drawer: a reason that is written to the audit
+| trail, and for the actions that lock somebody out or downgrade them,
+| the administrator's own password.
+|
+*/
+
+/**
+ * Ask before acting. Resolves with {reason, password} when confirmed,
+ * or null when the drawer is dismissed.
+ *
+ * @returns {Promise<{reason: string, password: string}|null>}
+ */
+function confirmAction({ title, description, confirmLabel = 'Confirm', requirePassword = false }) {
+    return new Promise((resolve) => {
+        pendingConfirmation = { resolve };
+
+        document.getElementById('admin-confirm-title').textContent = title;
+        document.getElementById('admin-confirm-description').textContent = description;
+        document.getElementById('admin-confirm-submit').textContent = confirmLabel;
+        document.getElementById('admin-confirm-error')?.classList.add('hidden');
+
+        const reason = document.getElementById('admin-confirm-reason');
+        const password = document.getElementById('admin-confirm-password');
+
+        reason.value = '';
+        password.value = '';
+        password.required = requirePassword;
+
+        document.getElementById('admin-confirm-password-field')
+            .classList.toggle('hidden', ! requirePassword);
+
+        openDrawer('admin-confirm-modal');
+
+        reason.focus();
+    });
+}
+
+/**
+ * Hand the drawer's answer back to whoever asked. Called once per
+ * question: a second call (the drawer closing after a submit) finds
+ * nothing waiting and does nothing.
+ */
+function settleConfirmation(result) {
+    const waiting = pendingConfirmation;
+
+    pendingConfirmation = null;
+
+    if (waiting) {
+        waiting.resolve(result);
+    }
+}
+
+function submitConfirmation(event) {
+    event.preventDefault();
+
+    const reason = document.getElementById('admin-confirm-reason').value.trim();
+    const password = document.getElementById('admin-confirm-password').value;
+
+    settleConfirmation({ reason, password });
+
+    closeDrawer('admin-confirm-modal');
+
+    document.getElementById('admin-confirm-password').value = '';
 }
 
 async function submitDelete(event) {
@@ -2333,6 +2469,14 @@ export async function initializeAdmin() {
         closers: ['admin-license-close', 'admin-license-cancel', 'admin-license-backdrop'],
     });
 
+    wireDrawer('admin-confirm-modal', {
+        closers: ['admin-confirm-close', 'admin-confirm-cancel'],
+        onClose: () => settleConfirmation(null),
+    });
+
+    document.getElementById('admin-confirm-form')
+        ?.addEventListener('submit', submitConfirmation);
+
     wireDrawer('admin-suspend-modal', {
         closers: ['admin-suspend-close', 'admin-suspend-cancel', 'admin-suspend-backdrop'],
     });
@@ -2503,36 +2647,89 @@ export async function initializeAdmin() {
             } else if (target.dataset.adminOpen) {
                 await openOrganisation(Number(target.dataset.adminOpen));
             } else if (target.dataset.adminRevoke) {
+                const answer = await confirmAction({
+                    title: 'Revoke licence',
+                    description: 'The organisation falls back to trial or Free rules the moment this is confirmed.',
+                    confirmLabel: 'Revoke',
+                    requirePassword: true,
+                });
+
+                if (! answer) {
+                    return;
+                }
+
                 await adminRequest(
                     `/api/admin/licenses/${target.dataset.adminRevoke}/revoke`,
                     'POST',
-                    {}
+                    { reason: answer.reason, current_password: answer.password }
                 );
 
                 await openOrganisation(currentOrganisation.id);
             } else if (target.dataset.adminReverify) {
+                const answer = await confirmAction({
+                    title: 'Resend verification',
+                    description: 'A fresh verification e-mail goes to this person now.',
+                    confirmLabel: 'Send',
+                });
+
+                if (! answer) {
+                    return;
+                }
+
                 await adminRequest(
                     `/api/admin/users/${target.dataset.adminReverify}/resend-verification`,
                     'POST',
-                    {}
+                    { reason: answer.reason }
                 );
 
                 target.textContent = 'Sent ✓';
             } else if (target.dataset.adminToggle) {
+                const deactivating = target.dataset.adminToggleTo !== '1';
+
+                const answer = await confirmAction({
+                    title: deactivating ? 'Deactivate this user' : 'Reactivate this user',
+                    description: deactivating
+                        ? 'They are signed out everywhere at once and cannot sign in again until reactivated.'
+                        : 'They can sign in again; an invitation is re-sent if they never accepted one.',
+                    confirmLabel: deactivating ? 'Deactivate' : 'Reactivate',
+                    requirePassword: deactivating,
+                });
+
+                if (! answer) {
+                    return;
+                }
+
+                const body = {
+                    is_active: ! deactivating,
+                    reason: answer.reason,
+                };
+
+                if (deactivating) {
+                    body.current_password = answer.password;
+                }
+
                 await adminRequest(
                     `/api/admin/users/${target.dataset.adminToggle}/active`,
                     'PATCH',
-                    {
-                        is_active: target.dataset.adminToggleTo === '1',
-                    }
+                    body
                 );
 
                 await openOrganisation(currentOrganisation.id);
             } else if (target.dataset.adminPwreset) {
+                const answer = await confirmAction({
+                    title: 'Send a password reset',
+                    description: 'A reset link goes to this person\'s current address now.',
+                    confirmLabel: 'Send',
+                });
+
+                if (! answer) {
+                    return;
+                }
+
                 await adminRequest(
                     `/api/admin/users/${target.dataset.adminPwreset}/password-reset`,
                     'POST',
-                    {}
+                    { reason: answer.reason }
                 );
 
                 target.textContent = 'Sent ✓';

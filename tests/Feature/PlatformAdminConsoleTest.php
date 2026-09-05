@@ -106,7 +106,7 @@ class PlatformAdminConsoleTest extends TestCase
 
         $this->postJson(
             '/api/admin/organisations/'.$this->testOrganisation->id.'/suspend',
-            ['reason' => 'test']
+            ['reason' => 'test', 'current_password' => 'password']
         )->assertOk();
 
         $rows = $this->getJson('/api/admin/activity')
@@ -343,7 +343,8 @@ class PlatformAdminConsoleTest extends TestCase
         $license = License::query()->first();
 
         $this->postJson(
-            '/api/admin/licenses/'.$license->id.'/revoke'
+            '/api/admin/licenses/'.$license->id.'/revoke',
+            ['current_password' => 'password', 'reason' => 'Unpaid']
         )->assertOk();
 
         $this->assertFalse($license->fresh()->coversToday());
@@ -355,7 +356,7 @@ class PlatformAdminConsoleTest extends TestCase
 
         $this->postJson(
             '/api/admin/organisations/'.$this->testOrganisation->id.'/suspend',
-            ['reason' => 'Non-payment']
+            ['reason' => 'Non-payment', 'current_password' => 'password']
         )->assertOk();
 
         $this->assertSame(
@@ -410,7 +411,7 @@ class PlatformAdminConsoleTest extends TestCase
          */
         $this->patchJson(
             '/api/admin/users/'.$admin->id.'/active',
-            ['is_active' => false]
+            ['is_active' => false, 'current_password' => 'password', 'reason' => 'Left the company']
         )->assertStatus(422);
 
         /*
@@ -421,7 +422,7 @@ class PlatformAdminConsoleTest extends TestCase
 
         $this->patchJson(
             '/api/admin/users/'.$manager->id.'/active',
-            ['is_active' => false]
+            ['is_active' => false, 'current_password' => 'password', 'reason' => 'Left the company']
         )->assertOk();
 
         $this->assertFalse((bool) $manager->fresh()->is_active);

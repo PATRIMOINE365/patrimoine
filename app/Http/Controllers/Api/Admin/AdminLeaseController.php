@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\JournalEntry;
 use App\Models\Lease;
 use App\Models\Organisation;
+use App\Models\Party;
 use App\Models\Payment;
 use App\Services\ActivityLogService;
 use App\Services\BusinessActivitySnapshotService;
@@ -76,9 +77,18 @@ class AdminLeaseController extends Controller
      * against it.
      */
     public function show(
-        Organisation $organisation,
+        Request $request,
+        int $organisationId,
         int $lease
     ): JsonResponse {
+        /*
+         * V1.0.51: resolved through customers() like every other console
+         * endpoint, so the platform organisation answers 404 here too.
+         */
+        $organisation = Organisation::query()
+            ->customers()
+            ->findOrFail($organisationId);
+
         $payload = OrganisationContext::runAs(
             (int) $organisation->id,
             function () use ($lease): array {
@@ -89,8 +99,46 @@ class AdminLeaseController extends Controller
                 return [
                     'lease' => $this->present($model),
                     'posted' => $this->postedFootprint($model),
+
+                    /*
+                     * V1.0.51: the agents this organisation actually has,
+                     * so the drawer offers a choice instead of a box for
+                     * a number that could belong to anybody.
+                     */
+                    'agents' => Party::query()
+                        ->whereHas(
+                            'roles',
+                            fn ($query) => $query->where('role', 'agent')
+                        )
+                        ->orderBy('name')
+                        ->get(['id', 'name'])
+                        ->map(fn (Party $party): array => [
+                            'id' => (int) $party->id,
+                            'name' => (string) $party->name,
+                        ])
+                        ->all(),
                 ];
             }
+        );
+
+        /*
+         * V1.0.51: reading a customer's lease is written to the
+         * platform's own trail. A read leaves no mark on the customer's
+         * side — their log would fill with support's every glance — but
+         * the platform must be able to say who looked at what.
+         */
+        $this->activityLog->record(
+            action: 'platform.lease_viewed',
+            actor: $request->user(),
+            request: $request,
+            entityType: 'lease',
+            entityId: $lease,
+            entityLabel: (string) ($payload['lease']['tenant_name'] ?? ('#'.$lease)),
+            metadata: [
+                'customer_organisation_id' => (int) $organisation->id,
+                'customer_organisation' => $organisation->name,
+            ],
+            organisationId: (int) $request->user()->organisation_id,
         );
 
         return response()->json($payload + [
@@ -111,9 +159,13 @@ class AdminLeaseController extends Controller
      */
     public function update(
         Request $request,
-        Organisation $organisation,
+        int $organisationId,
         int $lease
     ): JsonResponse {
+        $organisation = Organisation::query()
+            ->customers()
+            ->findOrFail($organisationId);
+
         $validated = $request->validate([
             'reason' => ['nullable', 'string', 'max:500'],
 
@@ -191,6 +243,36 @@ class AdminLeaseController extends Controller
                         ->whereKey($lease)
                         ->lockForUpdate()
                         ->firstOrFail();
+
+                    /*
+                     * V1.0.51: an agent must be one of THIS organisation's
+                     * agents. The field was validated as a bare integer,
+                     * so a party from another organisation was saved
+                     * (and then could not be resolved), and a number
+                     * nobody owns hit the foreign key and answered 500.
+                     * Checked inside runAs so the tenant scope does the
+                     * boundary work.
+                     */
+                    if (
+                        array_key_exists('agent_id', $validated)
+                        && $validated['agent_id'] !== null
+                    ) {
+                        $isAgentHere = Party::query()
+                            ->whereKey((int) $validated['agent_id'])
+                            ->whereHas(
+                                'roles',
+                                fn ($query) => $query->where('role', 'agent')
+                            )
+                            ->exists();
+
+                        if (! $isAgentHere) {
+                            throw \Illuminate\Validation\ValidationException::withMessages([
+                                'agent_id' => [
+                                    __('api.validation.agent_role_required'),
+                                ],
+                            ]);
+                        }
+                    }
 
                     $changes = $this->intendedChanges($model, $validated);
 
@@ -270,6 +352,29 @@ class AdminLeaseController extends Controller
                             'organisation_id' => (int) $organisation->id,
                         ],
                         organisationId: (int) $organisation->id,
+                    );
+
+                    /*
+                     * V1.0.51: the same correction in the platform's OWN
+                     * trail. It was written to the customer's log only,
+                     * so the console page that says "every console
+                     * action" never listed a lease correction.
+                     */
+                    $this->activityLog->record(
+                        action: 'platform.lease.corrected',
+                        actor: $actor,
+                        request: $request,
+                        entityType: 'lease',
+                        entityId: (int) $lease,
+                        entityLabel: $this->snapshots->leaseLabel($fresh),
+                        metadata: [
+                            'customer_organisation_id' => (int) $organisation->id,
+                            'customer_organisation' => $organisation->name,
+                            'reason' => $reason,
+                            'changed_fields' => array_keys($changes),
+                            'posted_impact_fields' => $risky,
+                        ],
+                        organisationId: (int) $actor->organisation_id,
                     );
 
                     return [
