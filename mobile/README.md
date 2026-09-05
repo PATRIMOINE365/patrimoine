@@ -83,7 +83,7 @@ silently pointing at the wrong one.
 
 | Environment | `VITE_API_BASE` |
 | --- | --- |
-| Pre-production | `https://patrimoine.koaditech.com/api/v1` |
+| Pre-production | `https://patrimoine-dev.kalitygroup.com/api/v1` (internal, nx-vps-01) |
 | Production | `https://app.patrimoine365.com/api/v1` |
 
 ## Building for a device
